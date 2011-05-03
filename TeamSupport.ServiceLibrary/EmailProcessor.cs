@@ -1,0 +1,827 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using TeamSupport.Data;
+using Microsoft.Win32;
+using System.IO;
+using System.Data;
+using System.Data.SqlClient;
+using System.Globalization;
+
+using System.Net;
+using System.Net.Mail;
+using System.Net.Mime;
+using System.Threading;
+using System.ComponentModel;
+
+
+namespace TeamSupport.ServiceLibrary
+{
+  public class EmailProcessor : ServiceThread
+  {
+    class UserEmail
+    {
+      public UserEmail(int userID, string name, string address)
+      {
+        _userID = userID;
+        _name = name;
+        _address = address;
+      }
+
+      private string _address;
+      private string _name;
+      private int _userID;
+
+      public string Address
+      {
+        get { return _address; }
+        set { _address = value; }
+      }
+
+      public string Name
+      {
+        get { return _name; }
+        set { _name = value; }
+      }
+
+      public int UserID
+      {
+        get { return _userID; }
+        set { _userID = value; }
+      }
+    }
+
+    private LoginUser _loginUser;
+    private bool _isDebug = false;
+    private MailAddressCollection _debugAddresses;
+
+    public EmailProcessor()
+    {
+      _debugAddresses = new MailAddressCollection();
+    }
+
+
+    public override void Run()
+    {
+      _loginUser = Utils.GetLoginUser("Email Processor");
+      try
+      {
+        _isDebug = Utils.GetSettingInt("EmailDebug") > 0;
+        _debugAddresses.Clear();
+        try
+        {
+          string[] addresses = Utils.GetSettingString("EmailDebugAddress").Split(';');
+          foreach (string item in addresses) { _debugAddresses.Add(new MailAddress(item.Trim())); }
+        }
+        catch (Exception)
+        {
+        }
+
+        EmailPosts emailPosts = new EmailPosts(_loginUser);
+        emailPosts.LoadAll();
+
+        foreach (EmailPost emailPost in emailPosts)
+        {
+          if (DateTime.UtcNow > ((DateTime)emailPost.Row["DateCreated"]).AddSeconds(emailPost.HoldTime) || _isDebug)
+          {
+            try
+            {
+              SetTimeZone(emailPost);
+              ProcessEmail(emailPost);
+            }
+            catch (Exception ex)
+            {
+              Utils.LogException(_loginUser, ex, "Email", emailPost.Row);
+            }
+            emailPost.Collection.DeleteFromDB(emailPost.EmailPostID);
+          }
+          System.Threading.Thread.Sleep(0);
+          if (IsStopped) break;
+        }
+      }
+      catch (Exception ex)
+      {
+        Utils.LogException(_loginUser, ex, "Email", "Error processing emails");
+      }
+
+      _loginUser = null;
+    }
+
+    public void SetTimeZone(EmailPost emailPost)
+    {
+      _loginUser.TimeZoneInfo = null;
+      Organization organization = Users.GetTSOrganization(_loginUser, emailPost.CreatorID);
+      if (organization != null)
+      {
+        try
+        {
+          _loginUser.TimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(organization.TimeZoneID);
+        }
+        catch (Exception)
+        {
+          _loginUser.TimeZoneInfo = null;
+        }
+
+        try
+        {
+          _loginUser.OrganizationCulture = new CultureInfo(organization.CultureName);
+        }
+        catch (Exception)
+        {
+          _loginUser.OrganizationCulture = new CultureInfo("en-US");
+        }
+      }
+
+      if (_loginUser.TimeZoneInfo == null)
+      {
+        _loginUser.TimeZoneInfo = TimeZoneInfo.Utc;
+      }
+
+    }
+
+    public void ProcessEmail(EmailPost emailPost)
+    {
+      switch (emailPost.EmailPostType)
+      {
+        case EmailPostType.TicketModified:
+          //PARAMS: 1:TicketID, 2:OldUserID, 3:OldGroupID, 4:OldTicketStatusID, 5:OldTicketSeverityID, 6:LastActionModified
+          //        7: IsNew 8: UserTickets[] 9:OrganizationTickets[]
+          List<int> actionList = new List<int>();
+
+          if (!string.IsNullOrEmpty(emailPost.Param6))
+          {
+            string[] actions = emailPost.Param6.Split(';');
+            foreach (string s in actions)
+            {
+              try
+              {
+                actionList.Add(int.Parse(s.Trim()));
+              }
+              catch (Exception)
+              {
+              }
+            }
+          }
+
+          List<int> userList = new List<int>();
+
+          if (!string.IsNullOrEmpty(emailPost.Param8))
+          {
+            string[] users = emailPost.Param8.Split(';');
+            foreach (string s in users)
+            {
+              try
+              {
+                userList.Add(int.Parse(s.Trim()));
+              }
+              catch (Exception)
+              {
+              }
+            }
+          }
+
+          ProcessTicketModified(GetIntParam(emailPost.Param1),
+            GetNullIntParam(emailPost.Param2),
+            GetNullIntParam(emailPost.Param3),
+            GetNullIntParam(emailPost.Param4),
+            GetNullIntParam(emailPost.Param5),
+            actionList.ToArray(),
+            userList.ToArray(),
+            emailPost.CreatorID,
+            GetIntParam(emailPost.Param7) == 1
+            );
+          break;
+
+        case EmailPostType.TicketUpdateRequest:
+          ProcessTicketUpdateRequest(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2));
+          break;
+        case EmailPostType.TicketSendEmail:
+          ProcessTicketSendEmail(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2), emailPost.Param3);
+          break;
+        case EmailPostType.WelcomeNewSignup:
+          ProcessWelcomeNewSignup(GetIntParam(emailPost.Param1), emailPost.Param2);
+          break;
+        case EmailPostType.WelcomeTSUser:
+          ProcessWelcomeTSUser(GetIntParam(emailPost.Param1), emailPost.Param2);
+          break;
+        case EmailPostType.WelcomePortalUser:
+          ProcessWelcomePortalUser(GetIntParam(emailPost.Param1), emailPost.Param2);
+          break;
+        case EmailPostType.ResetTSPassword:
+          ProcessResetTSPassword(GetIntParam(emailPost.Param1), emailPost.Param2);
+          break;
+        case EmailPostType.ResetPortalPassword:
+          ProcessResetPortalPassword(GetIntParam(emailPost.Param1), emailPost.Param2);
+          break;
+        case EmailPostType.ChangedTSPassword:
+          ProcessChangedTSPassword(GetIntParam(emailPost.Param1));
+          break;
+        case EmailPostType.ChangedPortalPassword:
+          ProcessChangedPortalPassword(GetIntParam(emailPost.Param1));
+          break;
+        case EmailPostType.InternalSignupNotification:
+          ProcessSignUpNotification(GetIntParam(emailPost.Param1));
+          break;
+        default:
+          break;
+      }
+    }
+
+    private void AddMessage(int organizationID, string description, MailMessage message)
+    {
+      AddMessage(organizationID, description, message, null);
+    }
+
+    private void AddMessage(int organizationID, string description, MailMessage message, string[] attachments)
+    {
+      Organization organization = Organizations.GetOrganization(_loginUser, organizationID);
+      string replyAddress = organization.GetReplyToAddress();
+
+      try
+      {
+        foreach (MailAddress address in message.To)
+        {
+          if (address.Address.ToLower().Trim() == message.From.Address.ToLower().Trim() || address.Address.ToLower().Trim() == replyAddress)
+          {
+            message.To.Remove(address);
+          }
+        }
+      }
+      catch { }
+
+      if (message.To.Count < 1) return;
+
+      StringBuilder builder = new StringBuilder();
+      //builder.AppendLine("<span class=\"TeamSupportStart\">&nbsp</span>");
+      builder.AppendLine(message.Body);
+
+      if (_isDebug)
+      {
+        builder.AppendLine("<br/><br/><br/><br/><br/><br/><br/><br /><div style\"color:red;\">ORIGINAL TO LIST:");
+        builder.AppendLine();
+        foreach (MailAddress address in message.To)
+        {
+          builder.AppendLine(" " + address.Address + ", ");
+        }
+        builder.AppendLine("</div>");
+        builder.AppendLine("<div style\"color:red;\">ORIGINAL FROM: " + message.From.Address + "</div>");
+
+        message.To.Clear();
+        foreach (MailAddress address in _debugAddresses)
+        {
+          message.To.Add(address);
+        }
+        message.Subject = "TEST: " + message.Subject;
+        //message.From = new MailAddress("kjones@murocsystems.com", "Kevin Jones");
+      }
+
+      message.Body = builder.ToString();
+      List<MailAddress> addresses = message.To.ToList();
+
+      foreach (MailAddress address in addresses)
+      {
+        message.To.Clear();
+        message.To.Add(address);
+        Emails.AddEmail(_loginUser, organizationID, description, message, attachments);
+      }
+    }
+
+    #region Ticket Processing
+
+    public void ProcessTicketModified(int ticketID, int? oldUserID, int? oldGroupID, int? oldTicketStatusID, int? oldTicketSeverityID, int[] modifiedActions, int[] users, int modifierID, bool isNew)
+    {
+      Ticket ticket = Tickets.GetTicket(_loginUser, ticketID);
+      if (ticket == null) return;
+
+      User modifier = Users.GetUser(_loginUser, modifierID);
+      string modifierName = modifier == null ? "Anonymous User" : modifier.FirstLastName;
+
+      Organization ticketOrganization = Organizations.GetOrganization(_loginUser, ticket.OrganizationID);
+
+
+      
+      if (bool.Parse(OrganizationSettings.ReadString(_loginUser, ticket.OrganizationID, "DisableStatusNotification", "False")))
+      {
+        oldTicketStatusID = null;
+      }
+
+      Actions actions = new Actions(_loginUser);
+      actions.LoadByActionIDs(modifiedActions);
+
+      int publicActionCount = 0;
+      foreach (TeamSupport.Data.Action action in actions)
+      {
+        if (action.IsVisibleOnPortal) publicActionCount++;
+      }
+
+      AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
+      AddMessagePortalTicketModified(ticket, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
+      if (!isNew)
+      {
+        AddMessageInternalTicketModified(ticket, oldUserID, oldGroupID, isNew, oldTicketStatusID, oldTicketSeverityID, !actions.IsEmpty, modifierName, modifier == null ? -1 : modifier.UserID, ticketOrganization);
+        AddMessagePortalTicketModified(ticket, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, true);
+      }
+      else
+      {
+        AddMessageNewTicket(ticket, modifier, ticketOrganization);
+      }
+    }
+
+    private void AddMessageTicketAssignment(Ticket ticket, int? oldUserID, int? oldGroupID, bool isNew, User modifier, Organization ticketOrganization)
+    {
+      if (oldUserID == null && oldGroupID == null && !isNew) return;
+
+      int modifierID = modifier == null ? -1 : modifier.UserID;
+      string modifierName = modifier == null ? "Anonymous User" : modifier.FirstLastName;
+
+      Actions actions = new Actions(_loginUser);
+      actions.LoadLatestByTicket(ticket.TicketID, false);
+      string subject = " [pvt]";
+      if (ticket.IsVisibleOnPortal && !actions.IsEmpty && actions[0].IsVisibleOnPortal) subject = "";
+
+
+      if (ticket.UserID != null && oldUserID != null)
+      {
+        User owner = Users.GetUser(_loginUser, (int)ticket.UserID);
+        if (modifierID != owner.UserID && owner.ReceiveTicketNotifications)
+        {
+
+          MailMessage message = EmailTemplates.GetTicketAssignmentUser(_loginUser, modifierName, ticket.GetTicketView());
+          message.To.Add(new MailAddress(owner.Email, owner.FirstLastName));
+          message.Subject = message.Subject + subject;
+          AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message);
+        }
+      }
+
+      if (ticket.GroupID != null && oldGroupID != null)
+      {
+        Group owner = Groups.GetGroup(_loginUser, (int)ticket.GroupID);
+        List<UserEmail> list = new List<UserEmail>();
+        AddTicketOwners(list, ticket);
+        if (ticket.UserID != null) RemoveUser(list, (int)ticket.UserID);
+
+        MailMessage message = EmailTemplates.GetTicketAssignmentGroup(_loginUser, modifierName, ticket.GetTicketView());
+        AddUsersToAddresses(message.To, list, modifierID);
+        message.Subject = message.Subject + subject;
+        AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message);
+
+      }
+
+
+    }
+
+    private void AddMessageInternalTicketModified(Ticket ticket, int? oldUserID, int? oldGroupID, bool isNew, int? oldTicketStatusID, int? oldTicketSeverityID, bool includeActions, string modifierName, int modifierID, Organization ticketOrganization)
+    {
+      if (oldTicketSeverityID == null && oldTicketStatusID == null && !includeActions) return;
+      List<UserEmail> userList = new List<UserEmail>();
+      AddTicketOwners(userList, ticket);
+      AddTicketSubscribers(userList, ticket);
+      List<string> fileNames = new List<string>();
+
+      if (isNew || oldUserID != null || oldGroupID != null) // assignment already sent
+      {
+        List<UserEmail> removeList = new List<UserEmail>();
+        AddTicketOwners(removeList, ticket);
+        foreach (UserEmail item in removeList)
+        {
+          RemoveUser(userList, item.UserID);
+        }
+      }
+
+      if (oldUserID != null && ticket.UserID != null) RemoveUser(userList, (int)ticket.UserID);
+      if (userList.Count < 1) return;
+
+      StringBuilder builder = new StringBuilder();
+      if (oldTicketStatusID != null) builder.Append(string.Format("<div>The status changed from {0} to {1}.</div>", TicketStatuses.GetTicketStatus(_loginUser, (int)oldTicketStatusID).Name, TicketStatuses.GetTicketStatus(_loginUser, (int)ticket.TicketStatusID).Name));
+      if (oldTicketSeverityID != null) builder.Append(string.Format("<div>The severity changed from {0} to {1}.</div>", TicketSeverities.GetTicketSeverity(_loginUser, (int)oldTicketSeverityID).Name, TicketSeverities.GetTicketSeverity(_loginUser, (int)ticket.TicketSeverityID).Name));
+
+      MailMessage message = EmailTemplates.GetTicketUpdateUser(_loginUser, modifierName, ticket.GetTicketView(), builder.ToString(), includeActions);
+
+      if (includeActions)
+      {
+        Actions actions = new Actions(_loginUser);
+        actions.LoadLatestByTicket(ticket.TicketID, false);
+        if (!actions.IsEmpty)
+        {
+          Attachments attachments = actions[0].GetAttachments();
+          foreach (TeamSupport.Data.Attachment attachment in attachments)
+          {
+            fileNames.Add(attachment.Path);
+          }
+        }
+        
+        foreach (TeamSupport.Data.Action item in actions)
+        {
+          if (!item.IsVisibleOnPortal)
+          {
+            message.Subject = message.Subject + " [pvt]";
+            break;
+          }
+        }
+      }
+
+      AddUsersToAddresses(message.To, userList, modifierID);
+      AddMessage(ticketOrganization.OrganizationID, "Internal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, fileNames.ToArray());
+    }
+
+    private void AddMessagePortalTicketModified(Ticket ticket, int? oldTicketStatusID, bool includeActions, int[] users, string modifierName, int modifierID, Organization ticketOrganization, bool isBasic)
+    {
+      if (!ticket.IsVisibleOnPortal) return;
+      if (oldTicketStatusID == null && !includeActions && users.Length < 1) return;
+      TicketStatus status = TicketStatuses.GetTicketStatus(_loginUser, ticket.TicketStatusID);
+      if (status.IsEmailResponse == true && oldTicketStatusID != null) return;
+
+      List<UserEmail> userList;
+      List<UserEmail> advUsers = new List<UserEmail>();
+      AddAdvancedPortalUsers(advUsers, ticket);
+      if (isBasic)
+      {
+        userList = new List<UserEmail>();
+        AddBasicPortalUsers(userList, ticket);
+        if (!string.IsNullOrEmpty(ticket.PortalEmail))
+        {
+          UserEmail email = FindByUserEmail(ticket.PortalEmail, userList);
+          if (email == null) userList.Add(new UserEmail(-2, "", ticket.PortalEmail));
+        }
+
+        foreach (UserEmail item in advUsers)
+        {
+          UserEmail email = FindByUserEmail(item.Address, userList);
+          if (email != null) userList.Remove(email);
+        }
+      }
+      else
+      {
+        userList = advUsers;
+      }
+
+      if (oldTicketStatusID == null && !includeActions)
+      {
+        List<UserEmail> newList = new List<UserEmail>();
+        foreach (UserEmail email in userList)
+        {
+          if (users.Contains(email.UserID))
+          {
+            newList.Add(email);
+          }
+        }
+        userList = newList;
+      }
+
+
+      if (userList.Count < 1) return;
+
+      List<string> fileNames = new List<string>();
+      if (includeActions)
+      {
+        Actions actions = new Actions(_loginUser);
+        actions.LoadLatestByTicket(ticket.TicketID, true);
+        if (!actions.IsEmpty)
+        {
+          Attachments attachments = actions[0].GetAttachments();
+          foreach (TeamSupport.Data.Attachment attachment in attachments)
+          {
+            fileNames.Add(attachment.Path);
+          }
+
+        }
+      }
+
+      MailMessage message = null;
+
+      if (status.IsClosedEmail)
+      {
+        message = EmailTemplates.GetTicketClosed(_loginUser, modifierName, ticket.GetTicketView(), includeActions);
+      
+      }
+      else
+      {
+        message = isBasic ? EmailTemplates.GetTicketUpdateBasicPortal(_loginUser, modifierName, ticket.GetTicketView(), includeActions) :
+                            EmailTemplates.GetTicketUpdateAdvPortal(_loginUser, modifierName, ticket.GetTicketView(), includeActions);
+      }
+
+      AddUsersToAddresses(message.To, userList, modifierID);
+      AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, fileNames.ToArray());
+    }
+
+    private void ProcessTicketUpdateRequest(int ticketID, int modifierID)
+    {
+      Ticket ticket = Tickets.GetTicket(_loginUser, ticketID);
+      User modifier = Users.GetUser(_loginUser, modifierID);
+      if (ticket == null || modifier == null || ticket.UserID == null) return;
+      Organization ticketOrganization = Organizations.GetOrganization(_loginUser, ticket.OrganizationID);
+      if (ticketOrganization == null) return;
+
+      User owner = Users.GetUser(_loginUser, (int)ticket.UserID);
+
+      MailMessage message = EmailTemplates.GetTicketUpdateRequest(_loginUser, UsersView.GetUsersViewItem(_loginUser, modifierID), ticket.GetTicketView(), true);
+      message.To.Add(new MailAddress(owner.Email, owner.FirstLastName));
+      message.Subject = message.Subject + " [pvt]";
+
+      AddMessage(ticketOrganization.OrganizationID, "Ticket Update Request [" + ticket.TicketNumber.ToString() + "]", message);
+    }
+
+    private void ProcessTicketSendEmail(int userID, int ticketID, string addresses)
+    {
+      Ticket ticket = Tickets.GetTicket(_loginUser, ticketID);
+      User sender = Users.GetUser(_loginUser, userID);
+      if (ticket == null || sender == null || ticket.OrganizationID != sender.OrganizationID) return;
+      LoginUser loginUser = new LoginUser(_loginUser.ConnectionString, sender.UserID, sender.OrganizationID, null);
+
+
+      char split = ';';
+      if (addresses.IndexOf(';') < 0) split = ',';
+
+      string[] list = addresses.Split(split);
+      foreach (string item in list)
+      {
+        try
+        {
+          MailMessage message = EmailTemplates.GetTicketSendEmail(_loginUser, sender.GetUserView(), ticket.GetTicketView(), item.Trim());
+          message.To.Add(new MailAddress(item.Trim()));
+          message.Subject = message.Subject;
+
+          AddMessage(sender.OrganizationID, "Ticket Email [" + ticket.TicketNumber.ToString() + "] to " + item, message);
+
+        }
+        catch (Exception ex) {
+          ExceptionLogs.LogException(loginUser, ex, "Email Processor", "Email Ticket");
+        }
+      }
+
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Sent this ticket via email to: " + addresses);
+
+    }
+
+    private void AddMessageNewTicket(Ticket ticket, User modifier, Organization ticketOrganization)
+    {
+      if (string.IsNullOrEmpty(ticket.TicketSource)) return;
+
+      string source = ticket.TicketSource.ToLower().Trim();
+      if (source != "web" && source != "email" && source != "chatoffline") return;
+
+      if (modifier == null && string.IsNullOrEmpty(ticket.PortalEmail)) return;
+      MailAddress modifierAddress = (modifier == null) ? new MailAddress(ticket.PortalEmail) : new MailAddress(modifier.Email, modifier.FirstLastName);
+
+      if (modifier != null && modifier.OrganizationID == ticketOrganization.OrganizationID) // internal
+      {
+        MailMessage message = EmailTemplates.GetNewTicketInternal(_loginUser, modifier.GetUserView(), ticket.GetTicketView());
+        message.To.Add(modifierAddress);
+        AddMessage(ticket.OrganizationID, "Internal New Ticket [" + ticket.TicketNumber.ToString() + "]", message);
+      }
+      else // portal
+      {
+        MailMessage message = modifier != null && modifier.IsPortalUser ? EmailTemplates.GetNewTicketAdvPortal(_loginUser, modifier.GetUserView(), ticket.GetTicketView()) :
+                                                                          EmailTemplates.GetNewTicketBasicPortal(_loginUser, modifierAddress, ticket.GetTicketView());
+        message.To.Add(modifierAddress);
+        AddMessage(ticketOrganization.OrganizationID, "New Ticket [" + ticket.TicketNumber.ToString() + "]", message);
+      }
+
+
+    }
+
+    #endregion
+
+    public void ProcessSignUpNotification(int userID)
+    {
+      User user = Users.GetUser(_loginUser, userID);
+
+      Organization organization = Organizations.GetOrganization(_loginUser, user.OrganizationID);
+
+      MailMessage message = EmailTemplates.GetSignUpNotification(_loginUser, user);
+      message.To.Add(new MailAddress("kjones@teamsupport.com"));
+      message.To.Add(new MailAddress("rjohnson@teamsupport.com"));
+      message.To.Add(new MailAddress("eharrington@teamsupport.com"));
+      message.To.Add(new MailAddress("jhathaway@teamsupport.com"));
+      if (!string.IsNullOrEmpty(organization.PromoCode) && organization.PromoCode.ToLower() == "lowcostwebsites")
+      {
+        message.To.Add(new MailAddress("simon@easywebpeople.com"));
+        AddMessage(1078, "New Low Cost Websites Sign Up", message);
+      }
+      else
+      {
+        AddMessage(1078, "New Internal Sign Up", message);
+      }
+      
+    }
+
+    public void ProcessWelcomeNewSignup(int userID, string password)
+    {
+      User user = Users.GetUser(_loginUser, userID);
+      Organization organization = Organizations.GetOrganization(_loginUser, user.OrganizationID);
+
+      int templateID = !string.IsNullOrEmpty(organization.PromoCode) && organization.PromoCode.ToLower() == "lowcostwebsites" ? 19 : 10;
+      string from = "sales@teamsupport.com";
+      switch (templateID)
+      {
+        case 19: from = "simon@easywebpeople.com"; break;
+        default:
+          break;
+      }
+
+      MailMessage message = EmailTemplates.GetWelcomeNewSignUp(_loginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), templateID);
+      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      message.Bcc.Add(new MailAddress("dropbox@79604342.murocsystems.highrisehq.com"));
+      message.From = new MailAddress(from);
+      AddMessage(1078, "New Sign Up [" + organization.Name + "]", message);
+    }
+
+    public void ProcessWelcomeTSUser(int userID, string password)
+    {
+      User user = Users.GetUser(_loginUser, userID);
+      MailMessage message = EmailTemplates.GetWelcomeTSUser(_loginUser, user.GetUserView(), password);
+      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      AddMessage(user.OrganizationID, "Welcome New User [" + user.FirstLastName + "]", message);
+    }
+
+    public void ProcessWelcomePortalUser(int userID, string password)
+    {
+      User user = Users.GetUser(_loginUser, userID);
+      Organization organization = (Organization)Organizations.GetOrganization(_loginUser, (int)Organizations.GetOrganization(_loginUser, user.OrganizationID).ParentID);
+      MailMessage message = EmailTemplates.GetWelcomePortalUser(_loginUser, user.GetUserView(), password);
+      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      AddMessage(organization.OrganizationID, "Welcome New Portal User [" + user.FirstLastName + "]", message);
+    }
+
+    public void ProcessResetTSPassword(int userID, string password)
+    {
+      User user = Users.GetUser(_loginUser, userID);
+
+      MailMessage message = EmailTemplates.GetResetPasswordTS(_loginUser, user.GetUserView(), password);
+      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      message.From = new MailAddress("support@teamsupport.com", "TeamSupport.com");
+      AddMessage(user.OrganizationID, "Reset TS Password [" + user.FirstLastName + "]", message);
+    }
+
+    public void ProcessResetPortalPassword(int userID, string password)
+    {
+      User user = (User)Users.GetUser(_loginUser, userID);
+      Organization organization = (Organization)Organizations.GetOrganization(_loginUser, (int)Organizations.GetOrganization(_loginUser, user.OrganizationID).ParentID);
+      MailMessage message = EmailTemplates.GetResetPasswordPortal(_loginUser, user.GetUserView(), password);
+      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      AddMessage(organization.OrganizationID, "Reset Portal Password [" + user.FirstLastName + "]", message);
+    }
+
+    public void ProcessChangedPortalPassword(int userID)
+    {
+      User user = (User)Users.GetUser(_loginUser, userID);
+      Organization organization = (Organization)Organizations.GetOrganization(_loginUser, (int)Organizations.GetOrganization(_loginUser, user.OrganizationID).ParentID);
+      MailMessage message = EmailTemplates.GetChangedPasswordPortal(_loginUser, user.GetUserView());
+      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      AddMessage(organization.OrganizationID, "Portal Password Changed [" + user.FirstLastName + "]", message);
+    }
+
+    public void ProcessChangedTSPassword(int userID)
+    {
+      User user = (User)Users.GetUser(_loginUser, userID);
+      MailMessage message = EmailTemplates.GetChangedPasswordTS(_loginUser, user.GetUserView());
+      message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+      message.From = new MailAddress("support@teamsupport.com", "TeamSupport.com");
+      AddMessage(user.OrganizationID, "TS Password Changed [" + user.FirstLastName + "]", message);
+    }
+
+    #region Utility Methods
+
+    private int GetIntParam(string param)
+    {
+      if (string.IsNullOrEmpty(param)) return -1;
+      try
+      {
+        return int.Parse(param);
+      }
+      catch (Exception)
+      {
+        return -1;
+      }
+    }
+
+    private int? GetNullIntParam(string param)
+    {
+      if (string.IsNullOrEmpty(param)) return null;
+      try
+      {
+        return int.Parse(param);
+      }
+      catch (Exception)
+      {
+        return null;
+      }
+    }
+
+    private void AddUser(List<UserEmail> list, User user)
+    {
+      AddUser(list, user, false);
+    }
+
+    private void AddUser(List<UserEmail> list, User user, bool honorTicketNotifications)
+    {
+      if (IsUserAlreadyInList(list, user.UserID) || (!user.ReceiveTicketNotifications && honorTicketNotifications)) return;
+      list.Add(new UserEmail(user.UserID, user.FirstName + " " + user.LastName, user.Email));
+    }
+
+    private void RemoveUser(List<UserEmail> list, int userID)
+    {
+      UserEmail email = null;
+      foreach (UserEmail item in list)
+      {
+        if (item.UserID == userID)
+        {
+          email = item;
+          break;
+        }
+      }
+
+      if (email != null) list.Remove(email);
+    }
+
+    private bool IsUserAlreadyInList(List<UserEmail> list, int userID)
+    {
+      foreach (UserEmail item in list)
+      {
+        if (item.UserID == userID)
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    private void AddTicketOwners(List<UserEmail> userList, Ticket ticket)
+    {
+      Users users;
+      if (ticket.UserID != null)
+      {
+        AddUser(userList, Users.GetUser(_loginUser, (int)ticket.UserID), true);
+      }
+      
+      
+      if (ticket.GroupID != null)
+      {
+        users = new Users(_loginUser);
+        users.LoadByGroupID((int)ticket.GroupID);
+        foreach (User user in users) { 
+          if (user.ReceiveAllGroupNotifications || ticket.UserID == null) AddUser(userList, user, true);
+        }
+      }
+    }
+
+    private void AddTicketSubscribers(List<UserEmail> userList, Ticket ticket)
+    {
+      Users users;
+
+      // Ticket Subscribers
+      users = new Users(_loginUser);
+      users.LoadByTicketSubscription(ticket.TicketID);
+      foreach (User user in users) { AddUser(userList, user); }
+
+      // Customer Subscribers
+      users = new Users(_loginUser);
+      users.LoadByCustomerSubscription(ticket.TicketID);
+      foreach (User user in users) { AddUser(userList, user); }
+    }
+
+    private void AddBasicPortalUsers(List<UserEmail> userList, Ticket ticket)
+    {
+      Users users;
+      users = new Users(_loginUser);
+      users.LoadBasicPortalUsers(ticket.TicketID);
+      foreach (User user in users) { AddUser(userList, user); }
+    }
+
+    private void AddAdvancedPortalUsers(List<UserEmail> userList, Ticket ticket)
+    {
+      Users users;
+      users = new Users(_loginUser);
+      users.LoadAdvancedPortalUsers(ticket.TicketID);
+      foreach (User user in users) { AddUser(userList, user); }
+    }
+
+    private void AddUsersToAddresses(MailAddressCollection collection, List<UserEmail> users, int modifierID)
+    {
+      foreach (UserEmail user in users)
+      {
+        try
+        {
+          if (user != null && modifierID != user.UserID) collection.Add(new MailAddress(user.Address, user.Name));
+          //if (modifierID != -1 && modifierID != user.UserID) collection.Add(new MailAddress(user.Address, user.Name));
+        }
+        catch
+        {
+        }
+      }
+    }
+
+    private UserEmail FindByUserEmail(string address, List<UserEmail> list)
+    {
+      address = address.Trim().ToLower();
+      foreach (UserEmail item in list)
+      {
+        if (item.Address.ToLower().Trim() == address) return item;
+      }
+      return null;
+    }
+
+    #endregion
+  }
+}

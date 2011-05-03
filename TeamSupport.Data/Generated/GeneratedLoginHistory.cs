@@ -1,0 +1,588 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace TeamSupport.Data
+{
+  [Serializable]
+  public partial class LoginHistoryItem : BaseItem
+  {
+    private LoginHistory _loginHistory;
+    
+    public LoginHistoryItem(DataRow row, LoginHistory loginHistory): base(row, loginHistory)
+    {
+      _loginHistory = loginHistory;
+    }
+	
+    #region Properties
+    
+    public LoginHistory Collection
+    {
+      get { return _loginHistory; }
+    }
+        
+    
+    
+    
+    public int LoginHistoryID
+    {
+      get { return (int)Row["LoginHistoryID"]; }
+    }
+    
+
+    
+    public int? UserID
+    {
+      get { return Row["UserID"] != DBNull.Value ? (int?)Row["UserID"] : null; }
+      set { Row["UserID"] = CheckNull(value); }
+    }
+    
+    public string IPAddress
+    {
+      get { return Row["IPAddress"] != DBNull.Value ? (string)Row["IPAddress"] : null; }
+      set { Row["IPAddress"] = CheckNull(value); }
+    }
+    
+    public string Browser
+    {
+      get { return Row["Browser"] != DBNull.Value ? (string)Row["Browser"] : null; }
+      set { Row["Browser"] = CheckNull(value); }
+    }
+    
+    public string Version
+    {
+      get { return Row["Version"] != DBNull.Value ? (string)Row["Version"] : null; }
+      set { Row["Version"] = CheckNull(value); }
+    }
+    
+    public string MajorVersion
+    {
+      get { return Row["MajorVersion"] != DBNull.Value ? (string)Row["MajorVersion"] : null; }
+      set { Row["MajorVersion"] = CheckNull(value); }
+    }
+    
+    public bool? CookiesEnabled
+    {
+      get { return Row["CookiesEnabled"] != DBNull.Value ? (bool?)Row["CookiesEnabled"] : null; }
+      set { Row["CookiesEnabled"] = CheckNull(value); }
+    }
+    
+    public string Platform
+    {
+      get { return Row["Platform"] != DBNull.Value ? (string)Row["Platform"] : null; }
+      set { Row["Platform"] = CheckNull(value); }
+    }
+    
+    public string UserAgent
+    {
+      get { return Row["UserAgent"] != DBNull.Value ? (string)Row["UserAgent"] : null; }
+      set { Row["UserAgent"] = CheckNull(value); }
+    }
+    
+    public string Language
+    {
+      get { return Row["Language"] != DBNull.Value ? (string)Row["Language"] : null; }
+      set { Row["Language"] = CheckNull(value); }
+    }
+    
+    public string PixelDepth
+    {
+      get { return Row["PixelDepth"] != DBNull.Value ? (string)Row["PixelDepth"] : null; }
+      set { Row["PixelDepth"] = CheckNull(value); }
+    }
+    
+    public string ScreenHeight
+    {
+      get { return Row["ScreenHeight"] != DBNull.Value ? (string)Row["ScreenHeight"] : null; }
+      set { Row["ScreenHeight"] = CheckNull(value); }
+    }
+    
+    public string ScreenWidth
+    {
+      get { return Row["ScreenWidth"] != DBNull.Value ? (string)Row["ScreenWidth"] : null; }
+      set { Row["ScreenWidth"] = CheckNull(value); }
+    }
+    
+    public string URL
+    {
+      get { return Row["URL"] != DBNull.Value ? (string)Row["URL"] : null; }
+      set { Row["URL"] = CheckNull(value); }
+    }
+    
+
+    
+
+    /* DateTime */
+    
+    
+    
+
+    
+
+    
+    public DateTime DateCreated
+    {
+      get { return DateToLocal((DateTime)Row["DateCreated"]); }
+      set { Row["DateCreated"] = CheckNull(value); }
+    }
+    
+
+    #endregion
+    
+    
+  }
+
+  public partial class LoginHistory : BaseCollection, IEnumerable<LoginHistoryItem>
+  {
+    public LoginHistory(LoginUser loginUser): base (loginUser)
+    {
+    }
+
+    #region Properties
+
+    public override string TableName
+    {
+      get { return "LoginHistory"; }
+    }
+    
+    public override string PrimaryKeyFieldName
+    {
+      get { return "LoginHistoryID"; }
+    }
+
+
+
+    public LoginHistoryItem this[int index]
+    {
+      get { return new LoginHistoryItem(Table.Rows[index], this); }
+    }
+    
+
+    #endregion
+
+    #region Protected Members
+    
+    partial void BeforeRowInsert(LoginHistoryItem loginHistoryItem);
+    partial void AfterRowInsert(LoginHistoryItem loginHistoryItem);
+    partial void BeforeRowEdit(LoginHistoryItem loginHistoryItem);
+    partial void AfterRowEdit(LoginHistoryItem loginHistoryItem);
+    partial void BeforeRowDelete(int loginHistoryID);
+    partial void AfterRowDelete(int loginHistoryID);    
+
+    partial void BeforeDBDelete(int loginHistoryID);
+    partial void AfterDBDelete(int loginHistoryID);    
+
+    #endregion
+
+    #region Public Methods
+
+    public LoginHistoryItemProxy[] GetLoginHistoryItemProxies()
+    {
+      List<LoginHistoryItemProxy> list = new List<LoginHistoryItemProxy>();
+
+      foreach (LoginHistoryItem item in this)
+      {
+        list.Add(item.GetProxy()); 
+      }
+
+      return list.ToArray();
+    }	
+	
+    public virtual void DeleteFromDB(int loginHistoryID)
+    {
+      BeforeDBDelete(loginHistoryID);
+      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
+      {
+        connection.Open();
+
+        SqlCommand deleteCommand = connection.CreateCommand();
+
+        deleteCommand.Connection = connection;
+        deleteCommand.CommandType = CommandType.StoredProcedure;
+        deleteCommand.CommandText = "uspGeneratedDeleteLoginHistoryItem";
+        deleteCommand.Parameters.Add("LoginHistoryID", SqlDbType.Int);
+        deleteCommand.Parameters["LoginHistoryID"].Value = loginHistoryID;
+
+        BeforeRowDelete(loginHistoryID);
+        deleteCommand.ExecuteNonQuery();
+		connection.Close();
+        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        AfterRowDelete(loginHistoryID);
+      }
+      AfterDBDelete(loginHistoryID);
+      
+    }
+
+    public override void Save(SqlConnection connection)    {
+		//SqlTransaction transaction = connection.BeginTransaction("LoginHistorySave");
+		SqlParameter tempParameter;
+		SqlCommand updateCommand = connection.CreateCommand();
+		updateCommand.Connection = connection;
+		//updateCommand.Transaction = transaction;
+		updateCommand.CommandType = CommandType.StoredProcedure;
+		updateCommand.CommandText = "uspGeneratedUpdateLoginHistoryItem";
+
+		
+		tempParameter = updateCommand.Parameters.Add("LoginHistoryID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IPAddress", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Browser", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Version", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("MajorVersion", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("CookiesEnabled", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Platform", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("UserAgent", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Language", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("PixelDepth", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ScreenHeight", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ScreenWidth", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("URL", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+
+		SqlCommand insertCommand = connection.CreateCommand();
+		insertCommand.Connection = connection;
+		//insertCommand.Transaction = transaction;
+		insertCommand.CommandType = CommandType.StoredProcedure;
+		insertCommand.CommandText = "uspGeneratedInsertLoginHistoryItem";
+
+		
+		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("URL", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ScreenWidth", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ScreenHeight", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("PixelDepth", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Language", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("UserAgent", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Platform", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CookiesEnabled", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("MajorVersion", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Version", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Browser", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IPAddress", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+
+		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;
+		SqlCommand deleteCommand = connection.CreateCommand();
+		deleteCommand.Connection = connection;
+		//deleteCommand.Transaction = transaction;
+		deleteCommand.CommandType = CommandType.StoredProcedure;
+		deleteCommand.CommandText = "uspGeneratedDeleteLoginHistoryItem";
+		deleteCommand.Parameters.Add("LoginHistoryID", SqlDbType.Int);
+
+		try
+		{
+		  foreach (LoginHistoryItem loginHistoryItem in this)
+		  {
+			if (loginHistoryItem.Row.RowState == DataRowState.Added)
+			{
+			  BeforeRowInsert(loginHistoryItem);
+			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
+			  {
+				SqlParameter parameter = insertCommand.Parameters[i];
+				if (parameter.Direction != ParameterDirection.Output)
+				{
+				  parameter.Value = loginHistoryItem.Row[parameter.ParameterName];
+				}
+			  }
+
+			  if (insertCommand.Parameters.Contains("ModifierID")) insertCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
+			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
+
+			  insertCommand.ExecuteNonQuery();
+			  Table.Columns["LoginHistoryID"].AutoIncrement = false;
+			  Table.Columns["LoginHistoryID"].ReadOnly = false;
+			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
+				loginHistoryItem.Row["LoginHistoryID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(loginHistoryItem);
+			}
+			else if (loginHistoryItem.Row.RowState == DataRowState.Modified)
+			{
+			  BeforeRowEdit(loginHistoryItem);
+			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
+			  {
+				SqlParameter parameter = updateCommand.Parameters[i];
+				parameter.Value = loginHistoryItem.Row[parameter.ParameterName];
+			  }
+			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
+			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
+
+			  updateCommand.ExecuteNonQuery();
+			  AfterRowEdit(loginHistoryItem);
+			}
+			else if (loginHistoryItem.Row.RowState == DataRowState.Deleted)
+			{
+			  int id = (int)loginHistoryItem.Row["LoginHistoryID", DataRowVersion.Original];
+			  deleteCommand.Parameters["LoginHistoryID"].Value = id;
+			  BeforeRowDelete(id);
+			  deleteCommand.ExecuteNonQuery();
+			  AfterRowDelete(id);
+			}
+		  }
+		  //transaction.Commit();
+		}
+		catch (Exception)
+		{
+		  //transaction.Rollback();
+		  throw;
+		}
+		Table.AcceptChanges();
+      if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+    }
+
+    public void BulkSave()
+    {
+
+      foreach (LoginHistoryItem loginHistoryItem in this)
+      {
+        if (loginHistoryItem.Row.Table.Columns.Contains("CreatorID") && (int)loginHistoryItem.Row["CreatorID"] == 0) loginHistoryItem.Row["CreatorID"] = LoginUser.UserID;
+        if (loginHistoryItem.Row.Table.Columns.Contains("ModifierID")) loginHistoryItem.Row["ModifierID"] = LoginUser.UserID;
+      }
+    
+      SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
+      copy.BulkCopyTimeout = 0;
+      copy.DestinationTableName = TableName;
+      copy.WriteToServer(Table);
+
+      Table.AcceptChanges();
+     
+      if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+    }
+
+    public LoginHistoryItem FindByLoginHistoryID(int loginHistoryID)
+    {
+      foreach (LoginHistoryItem loginHistoryItem in this)
+      {
+        if (loginHistoryItem.LoginHistoryID == loginHistoryID)
+        {
+          return loginHistoryItem;
+        }
+      }
+      return null;
+    }
+
+    public virtual LoginHistoryItem AddNewLoginHistoryItem()
+    {
+      if (Table.Columns.Count < 1) LoadColumns("LoginHistory");
+      DataRow row = Table.NewRow();
+      Table.Rows.Add(row);
+      return new LoginHistoryItem(row, this);
+    }
+    
+    public virtual void LoadByLoginHistoryID(int loginHistoryID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "uspGeneratedSelectLoginHistoryItem";
+        command.CommandType = CommandType.StoredProcedure;
+        command.Parameters.AddWithValue("LoginHistoryID", loginHistoryID);
+        Fill(command);
+      }
+    }
+    
+    public static LoginHistoryItem GetLoginHistoryItem(LoginUser loginUser, int loginHistoryID)
+    {
+      LoginHistory loginHistory = new LoginHistory(loginUser);
+      loginHistory.LoadByLoginHistoryID(loginHistoryID);
+      if (loginHistory.IsEmpty)
+        return null;
+      else
+        return loginHistory[0];
+    }
+    
+    
+    
+
+    #endregion
+
+    #region IEnumerable<LoginHistoryItem> Members
+
+    public IEnumerator<LoginHistoryItem> GetEnumerator()
+    {
+      foreach (DataRow row in Table.Rows)
+      {
+        yield return new LoginHistoryItem(row, this);
+      }
+    }
+
+    #endregion
+
+    #region IEnumerable Members
+
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    {
+      return GetEnumerator();
+    }
+
+    #endregion
+  }
+}

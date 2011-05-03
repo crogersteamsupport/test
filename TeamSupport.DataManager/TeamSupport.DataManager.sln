@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.DataManager", "TeamSupport.DataManager.csproj", "{67CB63E1-96DC-4B00-AFDF-852A2C1B2C92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Data", "..\TeamSupport.Data\TeamSupport.Data.csproj", "{1943AC11-1F2D-4B85-9F0F-4D67284814BE}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TeamSupport.DataManager.Setup", "..\TeamSupport.DataManager.Setup\TeamSupport.DataManager.Setup.vdproj", "{D7E404D7-934F-4DD5-B32F-3E52D5D85370}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{67CB63E1-96DC-4B00-AFDF-852A2C1B2C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67CB63E1-96DC-4B00-AFDF-852A2C1B2C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67CB63E1-96DC-4B00-AFDF-852A2C1B2C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67CB63E1-96DC-4B00-AFDF-852A2C1B2C92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1943AC11-1F2D-4B85-9F0F-4D67284814BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1943AC11-1F2D-4B85-9F0F-4D67284814BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1943AC11-1F2D-4B85-9F0F-4D67284814BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1943AC11-1F2D-4B85-9F0F-4D67284814BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7E404D7-934F-4DD5-B32F-3E52D5D85370}.Debug|Any CPU.ActiveCfg = Debug
+		{D7E404D7-934F-4DD5-B32F-3E52D5D85370}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
