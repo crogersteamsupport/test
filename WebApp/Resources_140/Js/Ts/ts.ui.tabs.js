@@ -1,0 +1,165 @@
+/// <reference path="ts.js" />
+
+if (typeof Ts == "undefined") Ts = {};
+if (typeof Ts.Ui == "undefined") Ts.Ui = {};
+
+Ts.Ui.Tabs = function (element) {
+  this._element = element;
+  var self = this;
+  this._history = [];
+  this._events = [];
+  this._list = $(this._element).addClass('ts-tabs ui-widget-header').html('<ul class="ui-helper-reset ui-helper-clearfix"></ul>').disableSelection().children('ul');
+  this._sortStop = function (event, ui) { if (self._events.sort) { self._events.sort(self); } };
+  this._callEvent = function (event, sender) { if (self._events[event]) { return self._events[event](sender ? sender : self); } return true; };
+  $(this._list).sortable({ items: 'li.ts-tab-sortable', stop: this._sortStop });
+}
+
+Ts.Ui.Tabs.prototype = {
+  constructor: Ts.Ui.Tabs,
+  getElement: function () { return this._element; },
+  add: function (isSelected, tabType, id, caption, isClosable, isSortable, isHighlighted, icon, imageUrl, data) {
+    var tab = this.find(id, tabType);
+    if (tab) { tab.select(); return tab; }
+    var self = this;
+    if (self._callEvent('beforeAdd') === false) { return null; }
+    var html = '<li class="ui-state-default ui-corner-top ts-tab ts-tab-' + tabType + '-' + id + '"><span class="ts-tabs-hide tab-icon ts-icon"></span><img class="ts-tabs-hide tab-image"/><a href="#"></a><span class="ts-tabs-hide tab-close ui-icon ui-icon-close"></span></li>';
+    $(this._list).append(html).children('.ts-tab-' + tabType + '-' + id).hover(function () { $(this).addClass('ui-state-hover'); }, function () { $(this).removeClass('ui-state-hover'); });
+    var element = $(this._list).find('.ts-tab-' + tabType + '-' + id);
+    tab = new Ts.Ui.Tabs.Tab(element);
+
+    tab.setCaption(caption);
+    tab.setIsClosable(isClosable);
+    tab.setIcon(icon);
+    tab.setImageUrl(imageUrl);
+    tab.setIsHighlighted(isHighlighted);
+    tab.setData(data);
+    if (isSortable) { $(element).addClass('ts-tab-sortable'); }
+    $(element).find('.tab-close').click(function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      if (tab.getIsHighlighted() && !confirm('Are you sure you would like to close this tab?')) { return false; }
+      if (self._callEvent('beforeRemove', tab) === false) { return; }
+      var selected = tab.getIsSelected();
+      $(element).remove();
+      var flag = false;
+      if (selected) {
+        var lastTab = self._history.pop();
+        while (lastTab) {
+          var item = $(self._element).find('.ts-tab-' + lastTab);
+          if (item.length > 0) {
+            (new Ts.Ui.Tabs.Tab(item)).select();
+            flag = true;
+            break;
+          }
+          lastTab = self._history.pop();
+        }
+        if (flag === false) {
+          var first = $(self._element).find('.ts-tab:first');
+          if (first.length > 0) { (new Ts.Ui.Tabs.Tab(first)).select(); }
+        }
+      }
+      self._callEvent('afterRemove');
+      return true;
+    });
+
+    $(element).click(function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      if (self._callEvent('beforeSelect', tab) === false) { return; }
+      $(element).parents('ul').find('.ui-state-error-hidden').removeClass('ui-state-error-hidden').addClass('ui-state-error');
+      $(element).parents('ul').find('.ui-state-active').removeClass('ui-state-active');
+      $(element).addClass('ui-state-active');
+      if (tab.getIsHighlighted()) {
+        $(element).addClass('ui-state-error-hidden').removeClass('ui-state-error');
+      }
+      self._history.push(tabType + '-' + id);
+      self._callEvent('afterSelect', tab);
+    });
+    self._callEvent('afterAdd');
+
+    if (isSelected) { tab.select(); }
+    return tab;
+
+  },
+  find: function (id, type) {
+    var item = $(this._element).find('.ts-tab-' + type + '-' + id);
+    if (item.length < 1) { return null; }
+    return new Ts.Ui.Tabs.Tab(item[0]);
+  },
+  getTabs: function () {
+    var items = $(this._element).find('li');
+    var result = [];
+    for (var i = 0; i < items.length; i++) {
+      result[result.length] = new Ts.Ui.Tabs.Tab(items[i]);
+    }
+    return result;
+  },
+  getByIndex: function (index) {
+    var items = $(this._element).find('li');
+    var result = null;
+    for (var i = 0; i < items.length; i++) {
+      if (i == index) { return new Ts.Ui.Tabs.Tab(items[i]); }
+    }
+    return result;
+
+  },
+  getSelected: function () {
+    var element = $(this._element).find('.ui-state-active');
+    if (element.length < 1) return null;
+    return new Ts.Ui.Tabs.Tab(element[0]);
+  },
+  bind: function (event, callback) {
+    this._events[event] = callback;
+  }
+
+};
+
+
+
+Ts.Ui.Tabs.Tab =  function (element) { this._element = element; }
+
+Ts.Ui.Tabs.Tab.prototype = {
+  constructor: Ts.Ui.Tabs.Tab,
+  //
+  getElement: function () { return this._element; },
+  getId: function () { return top.Ts.Utils.getNameParam('ts-tab', this._element, 0); },
+  getTabType: function () { return top.Ts.Utils.getNameParam('ts-tab', this._element, 1); },
+  getCaption: function () { return $(this._element).children('a').html(); },
+  setCaption: function (value) { $(this._element).children('a').html(value); },
+
+  getIsClosable: function () { return $(this._element).children('.tab-close').hasClass('ts-tabs-hide'); },
+  setIsClosable: function (value) {
+    if (value && value === true) { $(this._element).children('.tab-close').removeClass('ts-tabs-hide'); }
+    else { $(this._element).children('.tab-close').addClass('ts-tabs-hide'); }
+  },
+  setIcon: function (value) {
+    var clss = (value && value !== '') ? 'tab-icon ts-icon ' + value : 'tab-icon ts-tabs-hide';
+    $(this._element).children('.tab-icon').attr('class', clss);
+  },
+  setImageUrl: function (value) {
+    if (value && value !== '') {
+      $(this._element).children('.tab-image').removeClass('ts-tabs-hide').attr('src', value);
+    }
+    else {
+      $(this._element).children('.tab-image').addClass('ts-tabs-hide');
+    }
+
+  },
+  getIsHighlighted: function () { return $(this._element).hasClass('ui-state-error'); },
+  setIsHighlighted: function (value) {
+    if (value && value === true) { $(this._element).addClass('ui-state-error'); }
+    else { $(this._element).removeClass('ui-state-error'); }
+  },
+
+  getIsSelected: function () { return $(this._element).hasClass('ui-state-active'); },
+  getData: function () { return $(this._element).data('data'); },
+  setData: function (value) { $(this._element).data('data', value); },
+  select: function () { $(this._element).click(); },
+  remove: function () { return $(this._element).find('.tab-close').click(); }
+};
+
+Ts.Ui.Tabs.Tab.Type = {};
+Ts.Ui.Tabs.Tab.Type.None = '';
+Ts.Ui.Tabs.Tab.Type.Main = 'main';
+Ts.Ui.Tabs.Tab.Type.Ticket = 'ticket';
+Ts.Ui.Tabs.Tab.Type.NewTicket = 'new_ticket';

@@ -1,0 +1,651 @@
+﻿using System;
+using System.Collections;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.HtmlControls;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Xml.Linq;
+using TeamSupport.Data;
+using TeamSupport.WebUtils;
+using Telerik.Web.UI;
+using System.Text;
+using System.Web.Services;
+using System.Collections.Generic;
+using System.IO;
+
+
+public partial class Frames_AdminCustomProperties : BaseFramePage
+{
+  public enum SelectedType { ActionTypes = 0, PhoneTypes=1, ProductVersionStatuses=2, TicketSeverities=3, TicketStatuses=4, TicketTypes=5 };
+
+  protected override void OnInit(EventArgs e)
+  {
+    base.OnInit(e);
+  }
+
+  protected override void OnLoad(EventArgs e)
+  {
+    base.OnLoad(e);
+
+    if (!IsPostBack)
+    { 
+      cmbTypes.Items.Add(new RadComboBoxItem("Action Types", ((int)SelectedType.ActionTypes).ToString()));
+      cmbTypes.Items.Add(new RadComboBoxItem("Phone Types", ((int)SelectedType.PhoneTypes).ToString()));
+      cmbTypes.Items.Add(new RadComboBoxItem("Product Version Statuses", ((int)SelectedType.ProductVersionStatuses).ToString()));
+      cmbTypes.Items.Add(new RadComboBoxItem("Ticket Severities", ((int)SelectedType.TicketSeverities).ToString()));
+      cmbTypes.Items.Add(new RadComboBoxItem("Ticket Statuses", ((int)SelectedType.TicketStatuses).ToString()));
+      cmbTypes.Items.Add(new RadComboBoxItem("Ticket Types", ((int)SelectedType.TicketTypes).ToString()));
+      spanNewType.Visible = UserSession.CurrentUser.IsSystemAdmin;
+    }
+  }
+
+  [WebMethod(true)]
+  public static ImageComboBoxData[] GetTicketTypeImagesComboData()
+  {
+    List<ImageComboBoxData> data = new List<ImageComboBoxData>();
+    string[] files = Directory.GetFiles(AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, AttachmentPath.Folder.TicketTypeImages), "*.*", SearchOption.TopDirectoryOnly);
+
+    foreach (string file in files)
+    {
+      ImageComboBoxData item = new ImageComboBoxData();
+      item.Text = Path.GetFileName(file);
+      item.Value = ("dc/" + UserSession.LoginUser.OrganizationID + "/images/tickettypes/" + item.Text).ToLower();
+      item.ImageUrl = "../" + item.Value;
+      data.Add(item);
+    }
+
+    string path = HttpContext.Current.Request.MapPath("../images/TicketTypes/");
+    files = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly);
+    foreach (string file in files)
+    {
+      ImageComboBoxData item = new ImageComboBoxData();
+      item.Text = Path.GetFileName(file);
+      item.Value = ("images/TicketTypes/" + item.Text).ToLower();
+      item.ImageUrl = "../" + item.Value;
+      data.Add(item);
+    }
+
+    return data.ToArray();
+  }
+
+  [WebMethod(true)]
+  public static RadComboBoxItemData[] GetTicketTypesComboData()
+  {
+    TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
+    ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+
+    List<RadComboBoxItemData> data = new List<RadComboBoxItemData>();
+    foreach (TicketType ticketType in ticketTypes)
+    {
+      RadComboBoxItemData item = new RadComboBoxItemData();
+      item.Text = ticketType.Name;
+      item.Value = ticketType.TicketTypeID.ToString();
+      data.Add(item);
+    }
+    return data.ToArray();
+  }
+
+  [WebMethod(true)]
+  public static RadComboBoxItemData[] GetTypesCombo()
+  {
+    TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
+    ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+
+    List<RadComboBoxItemData> data = new List<RadComboBoxItemData>();
+    foreach (TicketType ticketType in ticketTypes)
+    {
+      RadComboBoxItemData item = new RadComboBoxItemData();
+      item.Text = ticketType.Name;
+      item.Value = ticketType.TicketTypeID.ToString();
+      data.Add(item);
+    }
+    return data.ToArray();
+  }
+
+  [WebMethod(true)]
+  public static RadComboBoxItemData[] GetReplaceTypeComboData(int id, SelectedType type, int ticketTypeID)
+  {
+    //IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
+    List<RadComboBoxItemData> list = new List<RadComboBoxItemData>();
+    /*string[] s = context["FilterString"].ToString().Split(',');
+    SelectedType type = (SelectedType)int.Parse(s[0]);
+    int ticketTypeID = int.Parse(s[1]);
+    int id = int.Parse(s[2]);*/
+
+    BaseCollection collection = null;
+    string nameColName = "Name";
+    string idColName = "ID";
+    switch (type)
+    {
+      case SelectedType.ActionTypes:
+        ActionTypes actionTypes = new ActionTypes(UserSession.LoginUser);
+        actionTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        collection = actionTypes;
+        idColName = "ActionTypeID";
+        break;
+      case SelectedType.PhoneTypes:
+        PhoneTypes phoneTypes = new PhoneTypes(UserSession.LoginUser);
+        phoneTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        collection = phoneTypes;
+        idColName = "PhoneTypeID";
+        break;
+      case SelectedType.ProductVersionStatuses:
+        ProductVersionStatuses productVersionStatuses = new ProductVersionStatuses(UserSession.LoginUser);
+        productVersionStatuses.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        collection = productVersionStatuses;
+        idColName = "ProductVersionStatusID";
+        break;
+      case SelectedType.TicketSeverities:
+        TicketSeverities ticketSeverities = new TicketSeverities(UserSession.LoginUser);
+        ticketSeverities.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        collection = ticketSeverities;
+        idColName = "TicketSeverityID";
+        break;
+      case SelectedType.TicketStatuses:
+        TicketStatuses ticketStatuses = new TicketStatuses(UserSession.LoginUser);
+        TicketType ticketType = TicketTypes.GetTicketType(UserSession.LoginUser, ticketTypeID);
+        if (ticketType.OrganizationID == UserSession.LoginUser.OrganizationID)
+        {
+          ticketStatuses.LoadAllPositions(ticketTypeID);
+          collection = ticketStatuses;
+          idColName = "TicketStatusID";
+        }
+        break;
+      case SelectedType.TicketTypes:
+        TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
+        ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        collection = ticketTypes;
+        idColName = "TicketTypeID";
+        break;
+      default:
+        break;
+    }
+
+    foreach (DataRow row in collection.Table.Rows)
+    {
+      int i = (int)row[idColName];
+      if (id != i) 
+      {
+        RadComboBoxItemData itemData = new RadComboBoxItemData();
+        itemData.Text = row[nameColName].ToString();
+        itemData.Value = i.ToString();
+        list.Add(itemData);
+      }
+    }
+
+    if (list.Count < 1)
+    {
+      RadComboBoxItemData noData = new RadComboBoxItemData();
+      noData.Text = "[No types to display.]";
+      noData.Value = "-1";
+      list.Add(noData);
+    }
+
+    return list.ToArray();
+  }
+
+  /// <summary>
+  /// Generates the HTML Table to be returned client side.
+  /// </summary>
+  /// <param name="type"></param>
+  /// <returns></returns>
+  [WebMethod(true)]
+  public static string GetTypesHtml(SelectedType type, string arg)
+  {
+    DataTable table = new DataTable();
+    table.Columns.Add("ID");
+    table.Columns.Add("Name");
+    table.Columns.Add("Description");
+    string result = "";
+    switch (type)
+    {
+      case SelectedType.ActionTypes:
+        ActionTypes actionTypes = new ActionTypes(UserSession.LoginUser);
+        actionTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        table.Columns.Add("Is Timed");
+        foreach (ActionType actionType in actionTypes)
+        {
+          table.Rows.Add(new string[] {actionType.ActionTypeID.ToString(), actionType.Name, actionType.Description, actionType.IsTimed.ToString() });
+        }
+        break;
+      case SelectedType.PhoneTypes:
+        PhoneTypes phoneTypes = new PhoneTypes(UserSession.LoginUser);
+        phoneTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        foreach (PhoneType phoneType in phoneTypes)
+        {
+          table.Rows.Add(new string[] { phoneType.PhoneTypeID.ToString(), phoneType.Name, phoneType.Description });
+        }
+        break;
+      case SelectedType.ProductVersionStatuses:
+        ProductVersionStatuses productVersionStatuses = new ProductVersionStatuses(UserSession.LoginUser);
+        productVersionStatuses.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        table.Columns.Add("Is Shipping");
+        table.Columns.Add("Is Discontinued");
+        foreach (ProductVersionStatus productVersionStatus in productVersionStatuses)
+        {
+          table.Rows.Add(new string[] { productVersionStatus.ProductVersionStatusID.ToString(), productVersionStatus.Name, productVersionStatus.Description, productVersionStatus.IsShipping.ToString(), productVersionStatus.IsDiscontinued.ToString() });
+        }
+        break;
+      case SelectedType.TicketSeverities:
+        TicketSeverities ticketSeverities = new TicketSeverities(UserSession.LoginUser);
+        ticketSeverities.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        foreach (TicketSeverity ticketSeverity in ticketSeverities)
+        {
+          table.Rows.Add(new string[] { ticketSeverity.TicketSeverityID.ToString(), ticketSeverity.Name, ticketSeverity.Description });
+        }
+        break;
+      case SelectedType.TicketStatuses:
+        TicketStatuses ticketStatuses = new TicketStatuses(UserSession.LoginUser);
+        ticketStatuses.LoadAllPositions(int.Parse(arg));
+
+        table.Columns.Add("Is Closed");
+        table.Columns.Add("Closed Email");
+        table.Columns.Add("Email Response");
+        foreach (TicketStatus ticketStatus in ticketStatuses)
+        {
+          table.Rows.Add(new string[] { ticketStatus.TicketStatusID.ToString(), ticketStatus.Name, ticketStatus.Description, ticketStatus.IsClosed.ToString(), ticketStatus.IsClosedEmail.ToString(), ticketStatus.IsEmailResponse.ToString() });
+        }
+        break;
+      case SelectedType.TicketTypes:
+        TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
+        ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
+        table.Columns.Add("Icon");
+        table.Columns.Add("Visible on Portal");
+        string icon = "<img src=\"../{0}\" />";
+        foreach (TicketType ticketType in ticketTypes)
+        {
+          table.Rows.Add(new string[] { ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.Description, string.Format(icon, ticketType.IconUrl), ticketType.IsVisibleOnPortal.ToString() });
+        }
+        break;
+      default:
+        break;
+    }
+
+    return BuildTable(table);
+
+  }
+
+  /// <summary>
+  /// Generates HTML from a DataTable.  The first column must be the ID.
+  /// </summary>
+  /// <param name="table"></param>
+  /// <returns></returns>
+  private static string BuildTable(DataTable table)
+  { 
+    StringBuilder builder = new StringBuilder();
+    builder.Append("<table width=\"748px\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\"><thead><tr><th /><th /><th /><th />");
+    for (int i = 0; i < table.Columns.Count; i++)
+		{
+      builder.Append("<th>" + table.Columns[i].ColumnName + "</th>");
+		}
+    builder.Append("</tr></thead><tbody>");
+
+    string editFormat = "<img src=\"../images/icons/Edit.png\" alt=\"Edit\" onclick=\"editType({0});\" />";
+    string deleteFormat = "<img src=\"../images/icons/Trash.png\" alt=\"Delete\" onclick=\"deleteType({0},'{1}');\" />";
+    string upFormat = "<img src=\"../images/icons/Arrow_Up.png\" alt=\"Move Up\" onclick=\"moveUp({0});\" />";
+    string downFormat = "<img src=\"../images/icons/Arrow_Down.png\" alt=\"Move Down\" onclick=\"moveDown({0});\" />";
+
+    foreach (DataRow row in table.Rows)
+	  {
+      string edit = UserSession.CurrentUser.IsSystemAdmin ? string.Format(editFormat, row[0].ToString()) : "&nbsp";
+      string delete = UserSession.CurrentUser.IsSystemAdmin ? string.Format(deleteFormat, row[0].ToString(), row[1].ToString()) : "&nbsp";
+      string up = UserSession.CurrentUser.IsSystemAdmin ? string.Format(upFormat, row[0].ToString()) : "&nbsp";
+      string down = UserSession.CurrentUser.IsSystemAdmin ? string.Format(downFormat, row[0].ToString()) : "&nbsp";
+      if (table.Rows.Count < 2) delete = up = down = "&nbsp";
+      
+      builder.Append(string.Format("<tr><td class=\"headImage\">{0}</td><td class=\"headImage\">{1}</td><td class=\"headImage\">{2}</td><td class=\"headImage\">{3}</td>", edit, delete, up, down));
+      for (int i = 0; i < table.Columns.Count; i++)
+		  {
+        var s = row[i].ToString().Trim() == "" ? " &nbsp " : row[i].ToString();
+        builder.Append("<td>" + s + "</td>");
+		  }
+      builder.Append("</tr>");
+	  }
+
+    if (table.Rows.Count < 1)
+    {
+      builder.Append("<tr><td colspan=\"7\" >There are no types to display.</td></tr>");
+    }
+    builder.Append("</tbody></table>");
+
+    return builder.ToString();
+  }
+
+  [WebMethod(true)]
+  public static string CanDelete(int id, SelectedType type, string arg)
+  {
+    string result = null;
+    switch (type)
+    {
+      case SelectedType.ActionTypes:
+        break;
+      case SelectedType.PhoneTypes:
+        break;
+      case SelectedType.ProductVersionStatuses:
+        break;
+      case SelectedType.TicketSeverities:
+        break;
+      case SelectedType.TicketStatuses:
+        break;
+      case SelectedType.TicketTypes:
+        Tickets tickets = new Tickets(UserSession.LoginUser);
+        tickets.LoadByTicketType(id);
+        if (tickets.Count > 0) result = string.Format("This ticket type contains {0} tickets.  Please reassign these tickets before deleting this ticket type.  Please note that you can also rename this ticket type as well", tickets.Count);
+        break;
+      default:
+        break;
+    }
+    return result;
+  }
+
+  [WebMethod(true)]
+  public static string ReplaceType(SelectedType type, int oldID, int newID, string arg)
+  {
+    if (!UserSession.CurrentUser.IsSystemAdmin) return "";
+    switch (type)
+    {
+      case SelectedType.ActionTypes:
+        if (ActionTypes.GetActionType(UserSession.LoginUser, oldID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        if (ActionTypes.GetActionType(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        (new Actions(UserSession.LoginUser)).ReplaceActionType(oldID, newID);
+        ActionTypes actionTypes = new ActionTypes(UserSession.LoginUser);
+        actionTypes.DeleteFromDB(oldID);
+        actionTypes.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
+      case SelectedType.PhoneTypes:
+        if (PhoneTypes.GetPhoneType(UserSession.LoginUser, oldID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        if (PhoneTypes.GetPhoneType(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        (new PhoneNumbers(UserSession.LoginUser)).ReplacePhoneType(oldID, newID);
+        PhoneTypes phoneTypes = new PhoneTypes(UserSession.LoginUser);
+        phoneTypes.DeleteFromDB(oldID);
+        phoneTypes.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
+      case SelectedType.ProductVersionStatuses:
+        if (ProductVersionStatuses.GetProductVersionStatus(UserSession.LoginUser, oldID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        if (ProductVersionStatuses.GetProductVersionStatus(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        (new ProductVersions(UserSession.LoginUser)).ReplaceProductVersionStatus(oldID, newID);
+        ProductVersionStatuses productVersionStatuses = new ProductVersionStatuses(UserSession.LoginUser);
+        productVersionStatuses.DeleteFromDB(oldID);
+        productVersionStatuses.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
+      case SelectedType.TicketSeverities:
+        if (TicketSeverities.GetTicketSeverity(UserSession.LoginUser, oldID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        if (TicketSeverities.GetTicketSeverity(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        (new Tickets(UserSession.LoginUser)).ReplaceTicketSeverity(oldID, newID);
+        TicketSeverities ticketSeverities = new TicketSeverities(UserSession.LoginUser);
+        ticketSeverities.DeleteFromDB(oldID);
+        ticketSeverities.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
+      case SelectedType.TicketStatuses:
+        TicketStatus oldStatus = TicketStatuses.GetTicketStatus(UserSession.LoginUser, oldID);
+        if (oldStatus.OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        if (TicketStatuses.GetTicketStatus(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        (new Tickets(UserSession.LoginUser)).ReplaceTicketStatus(oldID, newID);
+        TicketStatuses ticketStatuses = new TicketStatuses(UserSession.LoginUser);
+        ticketStatuses.DeleteFromDB(oldID);
+        ticketStatuses.ValidatePositions(oldStatus.TicketTypeID);
+        break;
+      case SelectedType.TicketTypes:
+        if (TicketTypes.GetTicketType(UserSession.LoginUser, oldID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        if (TicketTypes.GetTicketType(UserSession.LoginUser, newID).OrganizationID != UserSession.LoginUser.OrganizationID) return "";
+        (new Tickets(UserSession.LoginUser)).ReplaceTicketType(oldID, newID);
+        TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
+        ticketTypes.DeleteFromDB(oldID);
+        ticketTypes.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
+      default:
+        break;
+    }
+    return GetTypesHtml(type, arg);
+  }
+
+  [WebMethod(true)]
+  public static string MoveUp(SelectedType type, int id, string arg)
+  {
+    if (!UserSession.CurrentUser.IsSystemAdmin) return "";
+    switch (type)
+    {
+      case SelectedType.ActionTypes: (new ActionTypes(UserSession.LoginUser)).MovePositionUp(id); break;
+      case SelectedType.PhoneTypes: (new PhoneTypes(UserSession.LoginUser)).MovePositionUp(id); break;
+      case SelectedType.ProductVersionStatuses: (new ProductVersionStatuses(UserSession.LoginUser)).MovePositionUp(id); break;
+      case SelectedType.TicketSeverities: (new TicketSeverities(UserSession.LoginUser)).MovePositionUp(id); break;
+      case SelectedType.TicketStatuses: (new TicketStatuses(UserSession.LoginUser)).MovePositionUp(id); break;
+      case SelectedType.TicketTypes: (new TicketTypes(UserSession.LoginUser)).MovePositionUp(id); break;
+      default: break;
+    }
+    return GetTypesHtml(type, arg);
+  }
+
+  [WebMethod(true)]
+  public static string MoveDown(SelectedType type, int id, string arg)
+  {
+    if (!UserSession.CurrentUser.IsSystemAdmin) return "";
+    switch (type)
+    {
+      case SelectedType.ActionTypes: (new ActionTypes(UserSession.LoginUser)).MovePositionDown(id); break;
+      case SelectedType.PhoneTypes: (new PhoneTypes(UserSession.LoginUser)).MovePositionDown(id); break;
+      case SelectedType.ProductVersionStatuses: (new ProductVersionStatuses(UserSession.LoginUser)).MovePositionDown(id); break;
+      case SelectedType.TicketSeverities: (new TicketSeverities(UserSession.LoginUser)).MovePositionDown(id); break;
+      case SelectedType.TicketStatuses: (new TicketStatuses(UserSession.LoginUser)).MovePositionDown(id); break;
+      case SelectedType.TicketTypes: (new TicketTypes(UserSession.LoginUser)).MovePositionDown(id); break;
+      default: break;
+    }
+    return GetTypesHtml(type, arg);
+  }
+
+  [WebMethod(true)]
+  public static TypeObject GetTypeObject(SelectedType type, int id)
+  {
+    TypeObject result = new TypeObject();
+    
+    switch (type)
+    {
+      case SelectedType.ActionTypes:
+        ActionType actionType =  ActionTypes.GetActionType(UserSession.LoginUser, id);
+        result.ID = actionType.ActionTypeID;
+        result.Name = actionType.Name;
+        result.Description = actionType.Description;
+        result.IsTimed = actionType.IsTimed;
+        break;
+      case SelectedType.PhoneTypes:
+        PhoneType phoneType = PhoneTypes.GetPhoneType(UserSession.LoginUser, id);
+        result.ID = phoneType.PhoneTypeID;
+        result.Name = phoneType.Name;
+        result.Description = phoneType.Description;
+        break;
+      case SelectedType.ProductVersionStatuses:
+        ProductVersionStatus productVersionStatus = ProductVersionStatuses.GetProductVersionStatus(UserSession.LoginUser, id);
+        result.ID = productVersionStatus.ProductVersionStatusID;
+        result.Name = productVersionStatus.Name;
+        result.Description = productVersionStatus.Description;
+        result.IsShipping = productVersionStatus.IsShipping;
+        result.IsDiscontinued = productVersionStatus.IsDiscontinued;
+        break;
+      case SelectedType.TicketSeverities:
+        TicketSeverity ticketSeverity = TicketSeverities.GetTicketSeverity(UserSession.LoginUser, id);
+        result.ID = ticketSeverity.TicketSeverityID;
+        result.Name = ticketSeverity.Name;
+        result.Description = ticketSeverity.Description;
+        break;
+      case SelectedType.TicketStatuses:
+        TicketStatus ticketStatus = TicketStatuses.GetTicketStatus(UserSession.LoginUser, id);
+        result.ID = ticketStatus.TicketStatusID;
+        result.Name = ticketStatus.Name;
+        result.Description = ticketStatus.Description;
+        result.IsClosed = ticketStatus.IsClosed;
+        result.IsClosedEmail = ticketStatus.IsClosedEmail;
+        result.IsEmailResponse = ticketStatus.IsEmailResponse;
+        break;
+      case SelectedType.TicketTypes:
+        TicketType ticketType = TicketTypes.GetTicketType(UserSession.LoginUser, id);
+        result.ID = ticketType.TicketTypeID;
+        result.Name = ticketType.Name;
+        result.Description = ticketType.Description;
+        result.IsVisibleOnPortal = ticketType.IsVisibleOnPortal;
+        result.IconUrl = ticketType.IconUrl;
+        break;
+      default:
+        break;
+    }
+
+    return result;
+  }
+
+  [WebMethod(true)]
+  public static string UpdateType(SelectedType type, string arg, int? id, string name, string description, bool isTimed, bool isClosed, bool isClosedEmail, bool isEmailResponse, bool isShipping, bool isDiscontinued, string iconUrl, bool isVisibleOnPortal)
+  {
+    if (!UserSession.CurrentUser.IsSystemAdmin) return "";
+    switch (type)
+    {
+      case SelectedType.ActionTypes:
+        ActionType actionType = id == null ? (new ActionTypes(UserSession.LoginUser)).AddNewActionType() : ActionTypes.GetActionType(UserSession.LoginUser, (int)id);
+        actionType.IsTimed = isTimed;
+        actionType.Name = name;
+        actionType.Description = description;
+        if (id == null) actionType.Position = actionType.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
+        if (id == null) actionType.OrganizationID = UserSession.LoginUser.OrganizationID;
+        actionType.Collection.Save();
+        actionType.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
+      case SelectedType.PhoneTypes:
+        PhoneType phoneType = id == null ? (new PhoneTypes(UserSession.LoginUser)).AddNewPhoneType() : PhoneTypes.GetPhoneType(UserSession.LoginUser, (int)id);
+        phoneType.Name = name;
+        phoneType.Description = description;
+        if (id == null) phoneType.Position = phoneType.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
+        if (id == null) phoneType.OrganizationID = UserSession.LoginUser.OrganizationID;
+        phoneType.Collection.Save();
+        phoneType.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
+      case SelectedType.ProductVersionStatuses:
+        ProductVersionStatus productVersionStatus = id == null ? (new ProductVersionStatuses(UserSession.LoginUser)).AddNewProductVersionStatus() : ProductVersionStatuses.GetProductVersionStatus(UserSession.LoginUser, (int)id);
+        productVersionStatus.IsDiscontinued = isDiscontinued;
+        productVersionStatus.IsShipping = isShipping;
+        productVersionStatus.Name = name;
+        productVersionStatus.Description = description;
+        if (id == null) productVersionStatus.Position = productVersionStatus.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
+        if (id == null) productVersionStatus.OrganizationID = UserSession.LoginUser.OrganizationID;
+        productVersionStatus.Collection.Save();
+        productVersionStatus.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
+      case SelectedType.TicketSeverities:
+        TicketSeverity ticketSeverity = id == null ? (new TicketSeverities(UserSession.LoginUser)).AddNewTicketSeverity() : TicketSeverities.GetTicketSeverity(UserSession.LoginUser, (int)id);
+        ticketSeverity.Name = name;
+        ticketSeverity.Description = description;
+        if (id == null) ticketSeverity.Position = ticketSeverity.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
+        if (id == null) ticketSeverity.OrganizationID = UserSession.LoginUser.OrganizationID;
+        ticketSeverity.Collection.Save();
+        ticketSeverity.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
+      case SelectedType.TicketStatuses:
+        if (isEmailResponse == true)
+        {
+          TicketStatuses statuses = new TicketStatuses(UserSession.LoginUser);
+          statuses.LoadByTicketTypeID(int.Parse(arg));
+          foreach (TicketStatus status in statuses)
+          {
+            status.IsEmailResponse = false;
+          }
+          statuses.Save();
+        }
+
+        TicketStatus ticketStatus = id == null ? (new TicketStatuses(UserSession.LoginUser)).AddNewTicketStatus() : TicketStatuses.GetTicketStatus(UserSession.LoginUser, (int)id);
+        ticketStatus.TicketTypeID = int.Parse(arg);
+        ticketStatus.IsClosed = isClosed;
+        ticketStatus.IsClosedEmail = isClosedEmail;
+        ticketStatus.IsEmailResponse = isEmailResponse;
+        ticketStatus.Name = name;
+        ticketStatus.Description = description;
+        if (id == null) ticketStatus.Position = ticketStatus.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
+        if (id == null) ticketStatus.OrganizationID = UserSession.LoginUser.OrganizationID;
+        ticketStatus.Collection.Save();
+        ticketStatus.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        break;
+      case SelectedType.TicketTypes:
+        TicketType ticketType = id == null ? (new TicketTypes(UserSession.LoginUser)).AddNewTicketType() : TicketTypes.GetTicketType(UserSession.LoginUser, (int)id);
+        ticketType.Name = name;
+        ticketType.Description = description;
+        ticketType.IconUrl = iconUrl;
+        ticketType.IsVisibleOnPortal = isVisibleOnPortal;
+        if (id == null) ticketType.Position = ticketType.Collection.GetMaxPosition(UserSession.LoginUser.OrganizationID) + 1;
+        if (id == null) ticketType.OrganizationID = UserSession.LoginUser.OrganizationID;
+        ticketType.Collection.Save();
+        ticketType.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
+        if (id == null)
+        {
+          TicketStatuses ticketStatuses = new TicketStatuses(UserSession.LoginUser);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "New";
+          ticketStatus.Description = "New";
+          ticketStatus.Position = 0;
+          ticketStatus.OrganizationID = UserSession.LoginUser.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
+          ticketStatus.IsClosedEmail = false;
+
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Closed";
+          ticketStatus.Description = "Closed";
+          ticketStatus.Position = 30;
+          ticketStatus.OrganizationID = UserSession.LoginUser.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = true;
+          ticketStatus.IsClosedEmail = false;
+          ticketStatus.Collection.Save();
+          ticketStatus.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
+
+/*          TicketNextStatuses ticketNextStatuses = new TicketNextStatuses(UserSession.LoginUser);
+          ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[1], 0);
+          ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[0], 1);
+          ticketNextStatuses.Save();*/
+        }
+
+        break;
+      default:
+        break;
+    }
+
+
+    return GetTypesHtml(type, arg);
+  }
+
+  [Serializable]
+  public class ImageComboBoxData
+  {
+    public string Text { get; set; }
+    public string Value { get; set; }
+    public string ImageUrl { get; set; }
+  }
+
+  [Serializable]
+  public class TypeObject
+  {
+    public TypeObject()
+    {
+      ID = -1;
+      Name = "";
+      Description = "";
+      IsClosed = false;
+      IsClosedEmail = false;
+      IsTimed = false;
+      IsShipping = false;
+      IsDiscontinued = false;
+    }
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public bool IsClosed { get; set; }
+    public bool IsClosedEmail { get; set; }
+    public bool IsEmailResponse { get; set; }
+    public bool IsTimed { get; set; }
+    public bool IsShipping { get; set; }
+    public bool IsDiscontinued { get; set; }
+    public string IconUrl { get; set; }
+    public bool IsVisibleOnPortal { get; set; }
+
+  }
+}

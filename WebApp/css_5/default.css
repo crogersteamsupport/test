@@ -1,0 +1,415 @@
+#divMenuTree
+{ 
+  width:100%; 
+  background: #fff; 
+  font-size: 1em;
+}
+    
+
+
+div#divQuickBar
+{
+ height:71px;
+ background: transparent url('../images/quickbar_bg.png') repeat-x;
+ padding: 9px 6px 0 5px;
+}
+
+
+a#lnkQuickOpen
+{
+ 
+ background: transparent url('../images/quickbar.png') no-repeat scroll -2px -7px;
+ height:22px;
+ width: 22px;
+ display:block;
+}
+
+a#lnkQuickOpen:hover
+{
+ background: transparent url('../images/quickbar.png') no-repeat scroll -2px -41px;
+}
+
+a#lnkQuickNew
+{
+ text-align:center;
+ margin: 0 auto;
+ 
+ background: transparent url('../images/quickbar.png') no-repeat scroll -25px 0px;
+ height:23px;
+ width: 128px;
+ display:block;
+}
+
+a#lnkQuickNew:hover
+{
+ 
+ background: transparent url('../images/quickbar.png') no-repeat scroll -25px -23px;
+}
+
+#header
+{
+background-image: url('../images/header_bg.gif');
+background-repeat: repeat-x;
+background-color: #ddeafa;
+padding: 0 0 5px 5px;
+height:64px;
+width:100%;
+}
+
+.statusBar
+{
+background-image: url('../images/statusbar_bg.gif' );
+background-repeat: repeat-x;
+background-color: #BBD7FA;
+height: 25px;
+line-height:25px;
+width: 100%;
+padding: 0 0 0 10px;
+margin:0;
+font-size: 11px;
+}
+
+.productDiv
+{
+  display:none;
+}
+
+.customerDiv
+{
+  display:none;
+}
+
+.statusItemLeftDiv
+{
+height: 23px;
+line-height:23px;
+margin: 0 5px 0 0;
+float:left;
+}
+
+.statusSeperatorLeftDiv
+{
+background-image: url('../images/status_seperator.gif' );
+background-repeat: no-repeat;
+background-color: #BBD7FA;
+height: 23px;
+line-height:23px;
+width: 7px;
+top: 1px;
+position:relative;
+margin:0;
+float:left;
+margin: 0 5px 0 0;
+}
+
+.statusItemRightDiv
+{
+height: 23px;
+line-height:23px;
+margin: 0 5px 0 0;
+float:right;
+}
+
+.statusEndRightDiv
+{
+height: 23px;
+line-height:23px;
+margin: 0 20px 0 0;
+float:right;
+}
+
+.statusSeperatorRightDiv
+{
+background-image: url('../images/status_seperator.gif' );
+background-repeat: no-repeat;
+background-color: #BBD7FA;
+height: 23px;
+line-height:23px;
+width: 7px;
+top: 1px;
+position:relative;
+margin:0;
+float:right;
+margin: 0 5px 0 0;
+}
+
+#header-controls
+{
+float:right;  
+}
+
+
+
+
+
+
+body
+{
+background: #ddeafa; 
+}
+
+
+#quickBar
+{
+background: #ddeafa;
+height: 92px;
+width: 158px;
+position: relative;
+top: 0px;
+left: 3px;
+}
+
+#quickLeft
+{
+background: #ddeafa;
+background-image: url('../images/quick_left.gif' );
+background-repeat: no-repeat;
+float: left;
+height:92px;
+width:7px;
+}
+
+#quickRight
+{
+background: #ddeafa;
+background-image: url('../images/quick_right.gif' );
+background-repeat: no-repeat;
+float: left;
+height: 92px;
+width: 7px;
+}
+
+#quickContent
+{
+background: #ddeafa;
+background-image: url('../images/quick_bg.gif' );
+background-repeat: repeat-x;
+float: left;
+height:92px;
+width:144px;
+}
+
+#container
+{
+height: 540px;
+width: 580px;
+border-style:solid;
+border-color: #688caf; 
+border-width: 1px 1px 1px 1px;
+position: relative;
+top: 3px;
+left: 4px;
+overflow:hidden;
+background: #fcfdfe;
+padding:0 0;
+margin:0 0;
+clear:both;
+}
+
+#containerHeader
+{
+background-image: url('../images/content_header_bg.gif' );
+background-repeat: repeat-x;
+background-color: #BBD7FA;
+border-style:solid;
+border-color: #688caf; 
+border-width: 0 0 1px 0;
+height: 28px;
+width: 100%;
+padding:0;
+margin:0;
+display:block;
+}
+
+#contentCaption
+{
+padding: 0 0 0 8px;
+font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+font-size: 16px;
+font-weight: bold;
+color: #15428B;
+line-height:28px;
+}
+
+.contentTabs
+{
+width:100%; 
+background-image: url('../images/tabsBg.gif'); 
+background-repeat: repeat-x;
+background-position: 0px 5px;
+background-color: #bbd7fa;
+padding: 5px 0 0 0;
+}
+
+.contentTabWrapper
+{
+width:100%; 
+padding:0;
+margin:0;
+}
+
+.contentControls
+{
+position: relative;
+width: 100%;
+height: 100%;
+font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+font-size: 12px;
+font-weight: normal;
+background-color: #F9F9F9;
+display:block;
+}
+
+
+
+
+
+.maxWrapperDiv
+{
+width: 100%;
+height: 100%;
+position: relative;
+}
+
+.radInput_Telerik a.gobutton
+{
+width:20px;
+height:17px; 
+line-height:17px;
+background-position:3px 40px;
+}
+
+
+.linkButtonSpan
+{
+display:inline;
+vertical-align:middle;
+}
+
+a.panelLinkImage
+{
+color:#204d89;
+text-decoration: none;
+font: normal 11px "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+padding-left: 5px;
+}
+
+a:hover.panelLinkImage
+{
+text-decoration: underline;
+}
+
+img.panelLinkImage
+{
+text-decoration: none;
+border-width: 0;
+position: relative;
+top: 0px;
+left: 0px;
+padding: 8px 5px 0 5px;
+display: block;
+float: left;
+}
+
+a.linkButton
+{
+color:#204d89;
+text-decoration: none;
+font: normal 11px "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+padding-left: 5px;
+}
+
+a:hover.linkButton
+{
+text-decoration: underline;
+}
+
+img.linkImage
+{
+text-decoration: none;
+border-width: 0;
+position: relative;
+top: 0px;
+left: 0px;
+padding: 0px 5px 0 5px;
+display: block;
+float: left;
+}
+
+
+
+.panelBarButtonDiv
+{
+margin: -32px 10px 0 0;
+float: right;
+overflow:hidden;
+position:relative;
+}
+
+
+
+.commandItemLinkButton
+{
+text-decoration: none;  
+}
+
+
+
+
+  .fullGridWrapperDiv
+    {
+        background-color: White;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    .contentDetailWrapperDiv
+    {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    .tabHeaderDiv
+    {
+        background-color: #bbd7fa;
+        width: 100%;
+    }
+    .tabCaption
+    {
+        font-weight: bold;
+        font-size: 18px;
+        color: #003399;
+    }
+    .tabText
+    {
+        font-size: 14px;
+        color: #003399;
+    }
+    .tabDescription
+    {
+        font-size: 12px;
+        color: #003399;
+    }
+.elementCaptionDiv
+{
+  padding-top: 5px;
+  text-align:left;
+}
+
+
+
+.gridHeaderDiv
+{
+  width: 100%; 
+  height: 30px; 
+  margin: 10px 0 0 0;
+  padding: 0 0 0 10px;
+  border-bottom: Solid 0px #688caf;
+  }
+  
+
+
+  
+

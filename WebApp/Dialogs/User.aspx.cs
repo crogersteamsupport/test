@@ -1,0 +1,340 @@
+﻿using System;
+using System.Collections;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.HtmlControls;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Xml.Linq;
+using TeamSupport.WebUtils;
+using TeamSupport.Data;
+using Telerik.Web.UI;
+using System.Globalization;
+
+public partial class Dialogs_User : BaseDialogPage
+{
+  private int _userID = -1;
+  private int _organizationID = -1;
+
+  private CustomFieldControls _fieldControls;
+
+  protected override void OnInit(EventArgs e)
+  {
+    base.OnInit(e);
+    if (Request["UserID"] != null)
+    {
+      _userID = int.Parse(Request["UserID"]);
+    }
+
+    if (Request["OrganizationID"] != null)
+    {
+      _organizationID = int.Parse(Request["OrganizationID"]);
+    }
+
+    if (!UserSession.CurrentUser.IsSystemAdmin && _userID != UserSession.LoginUser.UserID)
+    {
+      Response.Write("");
+      Response.End();
+      return;
+    }
+
+    _fieldControls = new CustomFieldControls(ReferenceType.Users, -1, 2, tblCustomControls, false);
+    _fieldControls.LoadCustomControls(200);
+  }
+
+  protected override void OnLoad(EventArgs e)
+  {
+    base.OnLoad(e);
+
+    
+    Organization organization = (Organization)Organizations.GetOrganization(UserSession.LoginUser, _organizationID);
+
+    if (organization.OrganizationID != UserSession.LoginUser.OrganizationID && organization.ParentID != UserSession.LoginUser.OrganizationID)
+    {
+      Response.Write("Invalid Request");
+      Response.End();
+      return;
+    }
+    
+    if (!IsPostBack)
+    {
+      LoadTimeZones();
+      LoadDateFormats();
+      textEmail.Text = "";
+      textFirstName.Text = "";
+      textLastName.Text = "";
+      cbActive.Checked = true;
+      cbIsFinanceAdmin.Checked = false;
+      cbIsSystemAdmin.Checked = false;
+      cbChat.Checked = false;
+      cbEmailNotify.Checked = true;
+      cbSubscribe.Checked = false;
+      cbReceiveGroup.Checked = false;
+      cbNoAutoSubscribe.Checked = false;
+      Page.Title = "New User";
+
+      if (!string.IsNullOrEmpty(organization.TimeZoneID))
+      {
+        cmbTimeZones.SelectedValue = organization.TimeZoneID;
+      }
+
+      if (_userID > -1) LoadUser(_userID);
+      cbEmail.Visible = _userID < 0;
+      _fieldControls.RefID = _userID;
+      _fieldControls.LoadValues();
+    }
+
+
+    btnReset.Visible = UserSession.CurrentUser.IsSystemAdmin && _userID != UserSession.LoginUser.UserID && (_userID > -1); 
+    pnlChange.Visible = _userID == UserSession.LoginUser.UserID;
+    cbActive.Visible = tdActive.Visible = trAdmin.Visible = UserSession.CurrentUser.IsSystemAdmin;
+    tdChatLabel.Visible = UserSession.CurrentUser.HasChatRights;
+    cbChat.Visible = tdChatLabel.Visible;
+  }
+
+  private void LoadTimeZones()
+  {
+    cmbTimeZones.Items.Clear();
+
+    System.Collections.ObjectModel.ReadOnlyCollection<TimeZoneInfo> timeZones = TimeZoneInfo.GetSystemTimeZones();
+    foreach (TimeZoneInfo info in timeZones)
+    {
+      cmbTimeZones.Items.Add(new RadComboBoxItem(info.DisplayName, info.Id));
+    }
+  }
+
+  private void LoadDateFormats()
+  {
+    cmbDateFormat.Items.Clear();
+
+    foreach (CultureInfo info in CultureInfo.GetCultures(CultureTypes.AllCultures))
+    {
+      if(!info.IsNeutralCulture) cmbDateFormat.Items.Add(new RadComboBoxItem(info.DisplayName, info.Name));
+    }
+    cmbDateFormat.Sort = RadComboBoxSort.Ascending;
+    cmbDateFormat.SortItems();
+    cmbDateFormat.SelectedValue = "en-US";
+
+  }
+
+
+  private void LoadUser(int userID)
+  {
+    Users users = new Users(UserSession.LoginUser);
+    users.LoadByUserID(userID);
+    if (!users.IsEmpty)
+    {
+      Page.Title = "User - " + users[0].FirstName + " " + users[0].LastName;
+
+      textEmail.Text = users[0].Email;
+      textFirstName.Text = users[0].FirstName;
+      textLastName.Text = users[0].LastName;
+      textMiddleName.Text = users[0].MiddleName;
+      textTitle.Text = users[0].Title;
+      cbActive.Checked = users[0].IsActive;
+      cbIsSystemAdmin.Checked = users[0].IsSystemAdmin;
+      cbIsFinanceAdmin.Checked = users[0].IsFinanceAdmin;
+      cbChat.Checked = users[0].IsChatUser;
+      cbEmailNotify.Checked = users[0].ReceiveTicketNotifications;
+      cbSubscribe.Checked = users[0].SubscribeToNewTickets;
+      cbReceiveGroup.Checked = users[0].ReceiveAllGroupNotifications;
+      cbNoAutoSubscribe.Checked = users[0].DoNotAutoSubscribe;
+
+
+      cmbTimeZones.SelectedValue = "Central Standard Time";
+      
+      if (string.IsNullOrEmpty(users[0].TimeZoneID))
+      {
+        Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
+        if (!string.IsNullOrEmpty(organization.TimeZoneID))
+        {
+          cmbTimeZones.SelectedValue = organization.TimeZoneID;
+        }
+      }
+      else
+      {
+        cmbTimeZones.SelectedValue = users[0].TimeZoneID;
+      }
+
+      if (string.IsNullOrEmpty(users[0].CultureName))
+      {
+        Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
+        if (!string.IsNullOrEmpty(organization.CultureName))
+        {
+          cmbDateFormat.SelectedValue = organization.CultureName;
+        }
+      }
+      else
+      {
+        cmbDateFormat.SelectedValue = users[0].CultureName;
+      }
+
+
+    }
+  }
+
+  public override bool Save()
+  {
+    User user;
+    Users users = new Users(UserSession.LoginUser); ;
+
+    Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
+
+
+    string email = textEmail.Text.Trim();
+    if (email.Length < 1 || email.IndexOf('@') < 0 || email.IndexOf('.') < 0 ||  !users.IsEmailValid(email, _userID, _organizationID))
+    {
+      _manager.Alert("The email you have specified is invalid.  Please choose another email.");
+      return false;
+    }
+
+    if (textFirstName.Text.Trim().Length < 1 || textLastName.Text.Trim().Length < 1)
+    {
+      _manager.Alert("The name you have specified is invalid.  Please enter your name.");
+      return false;
+    }
+
+
+    if (cbChat.Checked && Organizations.GetChatCount(UserSession.LoginUser, UserSession.LoginUser.OrganizationID) >= organization.ChatSeats)
+    {
+      _manager.Alert("You have exceeded your chat licenses.  Please purchase more seats to add additional chat users.");
+      cbChat.Checked = false;
+      return false;
+    }
+
+    if (_userID < 0)
+    {
+      if (Organizations.GetUserCount(UserSession.LoginUser, UserSession.LoginUser.OrganizationID) >= organization.UserSeats)
+      {
+        _manager.Alert("You have exceeded your user licenses.  Please send an email to sales@teamsupport.com if you would like to add additional users your account.");
+        return false;
+      }
+
+      user = users.AddNewUser();
+      user.OrganizationID = _organizationID;
+      if (cbActive.Checked) user.ActivatedOn = DateTime.UtcNow;
+      user.LastLogin = DateTime.UtcNow;
+      user.LastActivity = DateTime.UtcNow;
+      user.IsPasswordExpired = true;
+      user.ReceiveTicketNotifications = true;
+    }
+    else
+    {
+      users.LoadByUserID(_userID);
+      if (users.IsEmpty)
+      {
+        _manager.Alert("There was an error updating the user information");
+        return false;
+      } 
+
+      user = users[0];
+      if (user.IsActive && !cbActive.Checked) user.DeactivatedOn = DateTime.UtcNow;
+
+      if (true)
+      {
+        if (!user.IsActive && cbActive.Checked && Organizations.GetUserCount(UserSession.LoginUser, UserSession.LoginUser.OrganizationID) >= organization.UserSeats)
+        {
+          _manager.Alert("You have exceeded your user licenses.  Please send an email to sales@teamsupport.com if you would like to add additional users your account.");
+          return false;
+        }
+      }
+    }
+
+    user.Email = textEmail.Text;
+    user.FirstName = textFirstName.Text;
+    user.LastName = textLastName.Text;
+    user.MiddleName = textMiddleName.Text;
+    user.Title = textTitle.Text;
+    user.IsPortalUser = true;
+    user.TimeZoneID = cmbTimeZones.SelectedValue;
+    user.CultureName = cmbDateFormat.SelectedValue;
+    user.ReceiveTicketNotifications = cbEmailNotify.Checked;
+    user.SubscribeToNewTickets = cbSubscribe.Checked;
+    user.ReceiveAllGroupNotifications = cbReceiveGroup.Checked;
+    user.DoNotAutoSubscribe = cbNoAutoSubscribe.Checked;
+    UserSession.LoginUser.TimeZoneInfo = null;
+
+    if (UserSession.CurrentUser.IsSystemAdmin)
+    {
+      user.IsActive = cbActive.Checked;
+      user.IsSystemAdmin = cbIsSystemAdmin.Checked;
+      user.IsFinanceAdmin = cbIsFinanceAdmin.Checked;
+      user.IsChatUser = cbChat.Checked;
+    }
+
+    user.Collection.Save();
+
+    _fieldControls.RefID = user.UserID;
+    _fieldControls.SaveCustomFields();
+
+    if (_userID < 0)
+    {
+      string password = DataUtils.GenerateRandomPassword();
+      user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
+      user.IsPasswordExpired = true;
+      user.Collection.Save();
+      if (cbEmail.Checked) EmailPosts.SendWelcomeTSUser(UserSession.LoginUser, user.UserID, password);
+    }
+
+    UpdateMuroc(user);
+
+    if (UserSession.CurrentUser.UserID == _userID)
+    {
+      UserSession.RefreshCurrentUserInfo();
+      UserSession.RefreshLoginUser();
+    }
+    
+
+    return true;
+  }
+
+  private static void UpdateMuroc(User user)
+  {
+    User tsUser = null;
+
+    Organization organization = Organizations.GetOrganization(UserSession.LoginUser, user.OrganizationID);
+    Organizations organizations = new Organizations(UserSession.LoginUser);
+    organizations.LoadByOrganizationName(organization.Name, 1078);
+    if (organizations.IsEmpty) return;
+
+    Users users = new Users(UserSession.LoginUser);
+    users.LoadByImportID(user.UserID.ToString());
+    if (users.IsEmpty) users.LoadByEmail(user.Email, organizations[0].OrganizationID);
+
+    if (users.IsEmpty)
+    { 
+      tsUser = (new Users(UserSession.LoginUser)).AddNewUser();
+      tsUser.OrganizationID = organizations[0].OrganizationID;
+      tsUser.ImportID = user.ImportID;
+      tsUser.IsActive = true;
+      tsUser.IsPortalUser = true;
+    }
+    else 
+    {
+      tsUser = users[0];
+    }
+    tsUser.FirstName = user.FirstName;
+    tsUser.LastName = user.LastName;
+    tsUser.Email = user.Email;
+    tsUser.Collection.Save();
+  }
+
+  protected void btnReset_Click(object sender, EventArgs e)
+  {
+    Users users = new Users(UserSession.LoginUser);
+    users.LoadByUserID(_userID);
+    if (!users.IsEmpty)
+    {
+      if (DataUtils.ResetPassword(UserSession.LoginUser, users[0], false))
+      {
+        _manager.Alert("A new password has been sent to " + users[0].FirstName + " " + users[0].LastName);
+        return;
+      }
+    }
+    _manager.Alert("There was an error reseting the password.");
+  }
+}

@@ -92,20 +92,6 @@ namespace TeamSupport.ServiceTestApplication
       }
     }
 
-    private void button2_Click(object sender, EventArgs e)
-    {
-      IisDbLogger logger = new IisDbLogger();
-      logger.Run();
-    }
-
-    private void button3_Click(object sender, EventArgs e)
-    {
-      IisDbLogger logger = new IisDbLogger();
-      while (logger.ProcessLogs())
-      {
-        
-      }
-    }
 
     private void btnOnStart_Click(object sender, EventArgs e)
     {

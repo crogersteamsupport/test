@@ -594,16 +594,8 @@ namespace TeamSupport.ServiceLibrary
       message.To.Add(new MailAddress("rjohnson@teamsupport.com"));
       message.To.Add(new MailAddress("eharrington@teamsupport.com"));
       message.To.Add(new MailAddress("jhathaway@teamsupport.com"));
-      if (!string.IsNullOrEmpty(organization.PromoCode) && organization.PromoCode.ToLower() == "lowcostwebsites")
-      {
-        message.To.Add(new MailAddress("simon@easywebpeople.com"));
-        AddMessage(1078, "New Low Cost Websites Sign Up", message);
-      }
-      else
-      {
-        AddMessage(1078, "New Internal Sign Up", message);
-      }
-      
+      message.To.Add(new MailAddress("jharada@teamsupport.com"));
+      AddMessage(1078, "New Internal Sign Up", message);
     }
 
     public void ProcessWelcomeNewSignup(int userID, string password)
@@ -611,16 +603,8 @@ namespace TeamSupport.ServiceLibrary
       User user = Users.GetUser(_loginUser, userID);
       Organization organization = Organizations.GetOrganization(_loginUser, user.OrganizationID);
 
-      int templateID = !string.IsNullOrEmpty(organization.PromoCode) && organization.PromoCode.ToLower() == "lowcostwebsites" ? 19 : 10;
       string from = "sales@teamsupport.com";
-      switch (templateID)
-      {
-        case 19: from = "simon@easywebpeople.com"; break;
-        default:
-          break;
-      }
-
-      MailMessage message = EmailTemplates.GetWelcomeNewSignUp(_loginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), templateID);
+      MailMessage message = EmailTemplates.GetWelcomeNewSignUp(_loginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 10);
       message.To.Add(new MailAddress(user.Email, user.FirstLastName));
       message.Bcc.Add(new MailAddress("dropbox@79604342.murocsystems.highrisehq.com"));
       message.From = new MailAddress(from);

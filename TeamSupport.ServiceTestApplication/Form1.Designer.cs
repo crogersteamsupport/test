@@ -75,16 +75,6 @@
       this.timerEmails.Interval = 10000;
       this.timerEmails.Tick += new System.EventHandler(this.timerEmails_Tick);
       // 
-      // button2
-      // 
-      this.button2.Location = new System.Drawing.Point(12, 41);
-      this.button2.Name = "button2";
-      this.button2.Size = new System.Drawing.Size(75, 23);
-      this.button2.TabIndex = 18;
-      this.button2.Text = "IIS Logs";
-      this.button2.UseVisualStyleBackColor = true;
-      this.button2.Click += new System.EventHandler(this.button2_Click);
-      // 
       // listBox1
       // 
       this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -95,16 +85,6 @@
       this.listBox1.Name = "listBox1";
       this.listBox1.Size = new System.Drawing.Size(374, 420);
       this.listBox1.TabIndex = 19;
-      // 
-      // button3
-      // 
-      this.button3.Location = new System.Drawing.Point(93, 41);
-      this.button3.Name = "button3";
-      this.button3.Size = new System.Drawing.Size(107, 23);
-      this.button3.TabIndex = 20;
-      this.button3.Text = "Loop IIS Logs";
-      this.button3.UseVisualStyleBackColor = true;
-      this.button3.Click += new System.EventHandler(this.button3_Click);
       // 
       // btnOnStart
       // 

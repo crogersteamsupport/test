@@ -64,19 +64,18 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Telerik.Web.Design, Version=2009.3.1314.35, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
+    <Reference Include="Telerik.Web.Design, Version=2009.3.1208.35, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Website2\Bin\Telerik.Web.Design.dll</HintPath>
+      <HintPath>..\WebApp\Bin\Telerik.Web.Design.dll</HintPath>
     </Reference>
-    <Reference Include="Telerik.Web.UI, Version=2009.3.1314.35, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
+    <Reference Include="Telerik.Web.UI, Version=2009.3.1208.35, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Website2\Bin\Telerik.Web.UI.dll</HintPath>
+      <HintPath>..\WebApp\Bin\Telerik.Web.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AjaxRequest.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Copy of Settings.cs" />
     <Compile Include="CustomFieldControls.cs" />
     <Compile Include="DynamicScript.cs" />
     <Compile Include="MenuTree.cs" />

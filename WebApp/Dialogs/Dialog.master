@@ -1,0 +1,114 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Dialog.master.cs" Inherits="Dialogs_Dialog" %>
+
+<%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+  <title>Untitled Page</title>
+  <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="css_5/ui-ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="css_5/ui-ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <link href="../css_5/dialog.css" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+    html, body, form
+    {
+      height: 100%;
+      margin: 0px;
+      padding: 0px;
+      overflow:hidden;
+    }
+    .dialogContentWrapperDiv
+    {
+    	overflow-x: hidden;
+    	overflow-y: auto;
+    	width:100%;
+    	height:100%;
+    	
+    	}
+    .dialogContentDiv
+    {
+    	padding:10px 10px;
+  	}
+  	
+    .reToolbar.Office2007 .InsertTicketLink
+    {
+      background-image: url(../images/icons/add.png);
+    }
+    
+    .reButton_text
+    {
+        text-indent:0px !important;
+    }    
+    
+    .relativePane
+    {
+    	position:relative;
+    	}
+  </style>
+  	
+
+  <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+</head>
+<body>
+  <form id="form1" runat="server">
+  <telerik:RadScriptManager ID="RadScriptManager1" runat="server" ScriptMode="Release" OutputCompression="Forced"></telerik:RadScriptManager>
+  <telerik:RadAjaxManager ID="ajaxManager" runat="server" UpdatePanelsRenderMode="Inline">
+    <AjaxSettings>
+      <telerik:AjaxSetting AjaxControlID="btnSave">
+        <UpdatedControls>
+          <telerik:AjaxUpdatedControl ControlID="btnSave" />
+        </UpdatedControls>
+      </telerik:AjaxSetting>
+      <telerik:AjaxSetting AjaxControlID="btnCancel">
+        <UpdatedControls>
+          <telerik:AjaxUpdatedControl ControlID="btnCancel" />
+        </UpdatedControls>
+      </telerik:AjaxSetting>
+    </AjaxSettings>
+  </telerik:RadAjaxManager>
+  <div style="width:100%; height:100%;">
+  <telerik:RadSplitter ID="RadSplitter1" runat="server" Height="100%" Width="100%"
+    BorderSize="0" Orientation="Horizontal" FullScreenMode="true" VisibleDuringInit="false">
+    <telerik:RadPane ID="RadPane1" runat="server" Height="100%" Width="100%" Scrolling="None" CssClass="relativePane">
+      <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+    </telerik:RadPane>
+    <telerik:RadPane ID="RadPane2" runat="server" Scrolling="None" Height="50px">
+      <div id="pnlButtons" runat="server" style="margin: 5px 15px 0 0; float: right; height: 50px;">
+        <table border="0" cellpadding="0" cellspacing="10">
+          <tr>
+            <td>
+              <asp:Button ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" />
+            </td>
+            <td>
+              <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClientClick="Close(); return false;" />
+            </td>
+          </tr>
+        </table>
+      </div>
+    </telerik:RadPane>
+  </telerik:RadSplitter>
+  </div>
+  
+  <asp:HiddenField ID="fieldPostToken" runat="server" />
+  
+  <telerik:RadCodeBlock ID="RadCodeBlock1" runat="server">
+    <script language="javascript" type="text/javascript">
+      function GetRadWindow() {
+        if (window.radWindow) {
+          return window.radWindow;
+        }
+        if (window.frameElement && window.frameElement.radWindow) {
+          return window.frameElement.radWindow;
+        }
+        return null;
+      }
+      function Close(arg) {
+        if (arg) GetRadWindow().Close(arg); else GetRadWindow().Close();
+      }
+
+
+          
+    </script>
+  </telerik:RadCodeBlock>
+  </form>
+</body>
+</html>

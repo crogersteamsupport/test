@@ -1,0 +1,233 @@
+﻿using System;
+using System.Collections;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.HtmlControls;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Xml.Linq;
+using TeamSupport.WebUtils;
+using TeamSupport.Data;
+using Telerik.Web.UI;
+
+public partial class Dialogs_SlaTrigger : BaseDialogPage
+{
+  enum TimeUnit { Minutes, Hours, Days }
+
+  private int _slaTriggerID = -1;
+  private int _slaLevelID = -1;
+  private int _ticketTypeID = -1;
+  private SlaTrigger _trigger = null;
+
+  protected override void OnLoad(EventArgs e)
+  {
+    if (!UserSession.CurrentUser.IsSystemAdmin)
+    {
+      Response.Write("Invalid Request");
+      Response.End();
+      return;
+    }
+
+
+    base.OnLoad(e);
+
+    if (Request["SlaTriggerID"] != null) _slaTriggerID = int.Parse(Request["SlaTriggerID"]);
+    if (Request["SlaLevelID"] != null) _slaLevelID = int.Parse(Request["SlaLevelID"]);
+    if (Request["TicketTypeID"] != null) _ticketTypeID = int.Parse(Request["TicketTypeID"]);
+
+    if (!IsPostBack)
+    {
+      SetTimes(Settings.UserDB.ReadInt("SlaTriggerWarningTime", 1440),
+         Settings.UserDB.ReadInt("SlaTriggerInitialResponseTime", 60),
+         Settings.UserDB.ReadInt("SlaTriggerLastActionTime", 60),
+         Settings.UserDB.ReadInt("SlaTriggerClosedTime", 60));
+
+      cbGroupViolations.Checked = Settings.UserDB.ReadBool("SlaTriggerGroupViolations", true);
+      cbGroupWarnings.Checked = Settings.UserDB.ReadBool("SlaTriggerGroupWarnings", true);
+      cbUserViolations.Checked = Settings.UserDB.ReadBool("SlaTriggerUserViolations", true);
+      cbUserWarnings.Checked = Settings.UserDB.ReadBool("SlaTriggerUserWarnings", true);
+      cbBusinessHours.Checked = Settings.UserDB.ReadBool("SlaTriggerUseBusinessHours", true);
+    }
+
+    if (_slaTriggerID > -1)
+    {
+      _trigger = SlaTriggers.GetSlaTrigger(UserSession.LoginUser, _slaTriggerID);
+      if (_trigger == null || SlaLevels.GetSlaLevel(UserSession.LoginUser, _trigger.SlaLevelID).OrganizationID != UserSession.LoginUser.OrganizationID)
+      {
+        Response.Write("Invalid Request");
+        Response.End();
+        return;
+      }
+      _slaLevelID = _trigger.SlaLevelID;
+      _ticketTypeID = _trigger.TicketTypeID;
+
+      if (!IsPostBack) LoadTrigger(_trigger);
+    }
+
+    SlaLevel level =SlaLevels.GetSlaLevel(UserSession.LoginUser, _slaLevelID);
+    TicketType type = TicketTypes.GetTicketType(UserSession.LoginUser, _ticketTypeID);
+    if (level == null || type == null || level.OrganizationID != UserSession.LoginUser.OrganizationID || type.OrganizationID != UserSession.LoginUser.OrganizationID)
+    {
+      Response.Write("Invalid Request");
+      Response.End();
+      return;
+    }
+
+    lblSla.Text = level.Name;
+    lblTicketType.Text = type.Name;
+
+    if (!IsPostBack) LoadSeverities();
+  }
+
+  private void LoadSeverities()
+  {
+    TicketSeverities severities = new TicketSeverities(UserSession.LoginUser);
+    severities.LoadNotSlaTriggers(UserSession.LoginUser.OrganizationID, _slaLevelID, _ticketTypeID);
+    cmbSeverities.Items.Clear();
+    if (_trigger != null) 
+    {
+      TicketSeverity selected = TicketSeverities.GetTicketSeverity(UserSession.LoginUser, _trigger.TicketSeverityID);
+      cmbSeverities.Items.Add(new RadComboBoxItem(selected.Name, selected.TicketSeverityID.ToString()));
+    }
+
+    foreach (TicketSeverity severity in severities)
+    {
+      cmbSeverities.Items.Add(new RadComboBoxItem(severity.Name, severity.TicketSeverityID.ToString()));
+    }
+
+    if (cmbSeverities.Items.Count > 0) cmbSeverities.SelectedIndex = 0;
+
+  }
+  
+  private void LoadTrigger(SlaTrigger trigger)
+  {
+    SetTimes(trigger.WarningTime, trigger.TimeInitialResponse, trigger.TimeLastAction, trigger.TimeToClose);
+    cbGroupViolations.Checked = trigger.NotifyGroupOnViolation;
+    cbGroupWarnings.Checked = trigger.NotifyGroupOnWarning;
+    cbUserViolations.Checked = trigger.NotifyUserOnViolation;
+    cbUserWarnings.Checked = trigger.NotifyUserOnWarning;
+    cbBusinessHours.Checked = trigger.UseBusinessHours;
+  }
+
+  private void SetTimes(int warning, int initial, int action, int closed)
+  {
+    TimeUnit timeUnit;
+    timeUnit = GetTimeUnit(warning);
+    numWarning.Value = GetTimeNumber(warning, timeUnit);
+    rbWarningMin.Checked = timeUnit == TimeUnit.Minutes;
+    rbWarningHour.Checked = timeUnit == TimeUnit.Hours;
+    rbWarningDay.Checked = timeUnit == TimeUnit.Days;
+
+    timeUnit = GetTimeUnit(initial);
+    numInitial.Value = GetTimeNumber(initial, timeUnit);
+    rbInitialMin.Checked = timeUnit == TimeUnit.Minutes;
+    rbInitialHour.Checked = timeUnit == TimeUnit.Hours;
+    rbInitialDay.Checked = timeUnit == TimeUnit.Days;
+
+    timeUnit = GetTimeUnit(action);
+    numAction.Value = GetTimeNumber(action, timeUnit);
+    rbActionMin.Checked = timeUnit == TimeUnit.Minutes;
+    rbActionHour.Checked = timeUnit == TimeUnit.Hours;
+    rbActionDay.Checked = timeUnit == TimeUnit.Days;
+
+    timeUnit = GetTimeUnit(closed);
+    numClosed.Value = GetTimeNumber(closed, timeUnit);
+    rbClosedMin.Checked = timeUnit == TimeUnit.Minutes;
+    rbClosedHour.Checked = timeUnit == TimeUnit.Hours;
+    rbClosedDay.Checked = timeUnit == TimeUnit.Days;
+  
+  }
+
+  private TimeUnit GetTimeUnit(int minutes)
+  {
+    if (minutes < 60) return TimeUnit.Minutes;
+    if (minutes < 24 * 60) return TimeUnit.Hours;
+    return TimeUnit.Days;
+  }
+
+  private int GetTimeNumber(int minutes)
+  {
+    return GetTimeNumber(minutes, GetTimeUnit(minutes)); 
+  }
+
+  private int GetTimeNumber(int minutes, TimeUnit unit)
+  {
+    switch (unit)
+    {
+      case TimeUnit.Minutes: return minutes;
+      case TimeUnit.Hours: return minutes / 60;
+      case TimeUnit.Days: return minutes / (60 * 24);
+      default: break;
+    }
+    return 0;
+  }
+
+  public override bool Save()
+  {
+    SlaTrigger trigger;
+    SlaTriggers triggers = new SlaTriggers(UserSession.LoginUser);
+
+    if (_slaTriggerID < 0)
+    {
+      trigger = triggers.AddNewSlaTrigger();
+      trigger.SlaLevelID = _slaLevelID;
+      trigger.TicketTypeID = _ticketTypeID;
+    }
+    else
+    {
+      trigger = SlaTriggers.GetSlaTrigger(UserSession.LoginUser, _slaTriggerID);
+      if (trigger == null) return false;
+    }
+
+    trigger.TicketSeverityID = int.Parse(cmbSeverities.SelectedValue);
+    trigger.NotifyGroupOnViolation = cbGroupViolations.Checked;
+    trigger.NotifyGroupOnWarning = cbGroupWarnings.Checked;
+    trigger.NotifyUserOnViolation = cbUserViolations.Checked;
+    trigger.NotifyUserOnWarning = cbUserWarnings.Checked;
+    trigger.UseBusinessHours = cbBusinessHours.Checked;
+
+    int value = numWarning.Value == null ? 0 : (int)numWarning.Value; 
+    if (rbWarningDay.Checked) trigger.WarningTime = value * 24 * 60;
+    else if (rbWarningHour.Checked) trigger.WarningTime = value * 60;
+    else trigger.WarningTime = value;
+
+    value = numInitial.Value == null ? 0 : (int)numInitial.Value;
+    if (rbInitialDay.Checked) trigger.TimeInitialResponse = value * 24 * 60;
+    else if (rbInitialHour.Checked) trigger.TimeInitialResponse = value * 60;
+    else trigger.TimeInitialResponse = value;
+
+    value = numAction.Value == null ? 0 : (int)numAction.Value;
+    if (rbActionDay.Checked) trigger.TimeLastAction = value * 24 * 60;
+    else if (rbActionHour.Checked) trigger.TimeLastAction = value * 60;
+    else trigger.TimeLastAction = value;
+
+    value = numClosed.Value == null ? 0 : (int)numClosed.Value;
+    if (rbClosedDay.Checked) trigger.TimeToClose = value * 24 * 60;
+    else if (rbClosedHour.Checked) trigger.TimeToClose = value * 60;
+    else trigger.TimeToClose = value;
+
+    trigger.Collection.Save();
+
+    
+    Settings.UserDB.WriteInt("SlaTriggerWarningTime", trigger.WarningTime);
+    Settings.UserDB.WriteInt("SlaTriggerInitialResponseTime", trigger.TimeInitialResponse);
+    Settings.UserDB.WriteInt("SlaTriggerLastActionTime", trigger.TimeLastAction);
+    Settings.UserDB.WriteInt("SlaTriggerClosedTime", trigger.TimeToClose);
+    Settings.UserDB.WriteBool("SlaTriggerGroupViolations", cbGroupViolations.Checked);
+    Settings.UserDB.WriteBool("SlaTriggerGroupWarnings", cbGroupWarnings.Checked);
+    Settings.UserDB.WriteBool("SlaTriggerUserViolations", cbUserViolations.Checked);
+    Settings.UserDB.WriteBool("SlaTriggerUserWarnings", cbUserWarnings.Checked);
+    Settings.UserDB.WriteBool("SlaTriggerUseBusinessHours", cbBusinessHours.Checked);
+
+
+    DialogResult = trigger.SlaTriggerID.ToString();
+    return true;
+  }
+
+  
+}
+

@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+  <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="Resources_140/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="Resources_140/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+
+  <style type="text/css">
+    .utils-content { border:none; overflow:auto; height:100%;}
+    .utils-content-wrapper { padding: 2em 2em;}
+  </style>
+
+  <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+
+  <script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+      $('button').button();
+      $('.ts-loading').hide().next().show();
+
+      var execGetOrganization = null;
+      function getOrganizations(request, response) {
+        if (execGetOrganization) { execGetOrganization._executor.abort(); }
+        execGetOrganization = top.Ts.Services.Organizations.AdminGetOrganizations(request.term, function (result) { response(result); });
+      }
+
+      $('#textOrgID').autocomplete({
+        minLength: 2,
+        source: getOrganizations,
+        select: function (event, ui) {
+          $(this).data('itemID', ui.item.id);
+          top.Ts.Services.Organizations.GetOrganization(ui.item.id, function (org) {
+            $('<h1>').text(org.Name).appendTo('#divOrganization');
+            var table = $('<table>').appendTo('#divOrganization');
+            function addRow(k, v) {
+              var row = $('<tr>').appendTo(table);
+              $('<td>').html(k + ':').appendTo(row);
+              $('<td>').html(v == null ? 'NULL' : v + '').appendTo(row);
+            }
+            var apiLink = 'https://' + org.OrganizationID + ':' + org.WebServiceID + '@app.teamsupport.com/api/xml/users';
+            addRow('API Login', '<a href="' + apiLink + '" target="_blank">' + apiLink + '</a>');
+            for (prop in org) { addRow(prop, org[prop]); }
+
+          });
+        }
+
+      });
+    });  
+  </script>
+
+
+</head>
+<body>
+  <div class="ts-loading"></div>
+
+  <div class="utils-content ui-widget ui-widget-content">
+  <div class="utils-content-wrapper">
+    Organization Name: <input class="text ui-corner-all ui-widget-content" type="text" id="textOrgID" style="width: 250px;" />  
+    <div id="divOrganization"></div>
+  </div>
+  </div>
+</body>
+</html>
