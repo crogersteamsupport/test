@@ -27,8 +27,6 @@ namespace TeamSupport.Handlers
 {
   public class ContentHandler : IHttpHandler, IRequiresSessionState
   {
-    Organization _organization;
-
     #region IHttpHandler Members
 
     public bool IsReusable
@@ -52,17 +50,30 @@ namespace TeamSupport.Handlers
           if (s == "dc") flag = true;
         }
 
-        _organization = Organizations.GetOrganization(LoginUser.Anonymous, int.Parse(segments[0]));
-
-        switch (segments[1])
+        int organizationID = -1;
+        if (int.TryParse(segments[0], out organizationID))
         {
-          case "images": ProcessImages(context, segments.ToArray()); break;
-          case "chat": ProcessChat(context, segments[2]); break;
-          case "reports": ProcessReport(context, int.Parse(segments[2])); break;
-          case "ticketexport": ProcessTicketExport(context); break;
-          case "attachments": ProcessAttachment(context, int.Parse(segments[2])); break;
-          default: context.Response.End(); break;
+          switch (segments[1])
+          {
+            case "images": ProcessImages(context, segments.ToArray(), organizationID); break;
+            case "chat": ProcessChat(context, segments[2], organizationID); break;
+            case "reports": ProcessReport(context, int.Parse(segments[2])); break;
+            case "ticketexport": ProcessTicketExport(context); break;
+            case "attachments": ProcessAttachment(context, int.Parse(segments[2])); break;
+            default: context.Response.End(); break;
+          }
         }
+        else
+        {
+          switch (segments[0])
+          {
+            case "reports": ProcessReport(context, int.Parse(segments[1])); break;
+            case "ticketexport": ProcessTicketExport(context); break;
+            case "attachments": ProcessAttachment(context, int.Parse(segments[1])); break;
+            default: context.Response.End(); break;
+          }
+        }
+
       }
       catch (Exception ex)
       {
@@ -75,7 +86,7 @@ namespace TeamSupport.Handlers
 
     #endregion
 
-    private void ProcessImages(HttpContext context, string[] segments)
+    private void ProcessImages(HttpContext context, string[] segments, int organizationID)
     {
       StringBuilder builder = new StringBuilder();
       for (int i = 2; i < segments.Length; i++)
@@ -90,7 +101,7 @@ namespace TeamSupport.Handlers
         path = Path.ChangeExtension(path, ".jpg");
         string imageFile = Path.GetFileName(path);
         path = Path.GetDirectoryName(path);
-        string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, _organization.OrganizationID, AttachmentPath.Folder.Images), path);
+        string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
         fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
         if (!File.Exists(fileName))
         {
@@ -101,23 +112,23 @@ namespace TeamSupport.Handlers
       }
       else
       {
-        fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, _organization.OrganizationID, AttachmentPath.Folder.Images), path);
+        fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
       }
       if (File.Exists(fileName)) WriteImage(context, fileName);
     }
 
-    private void ProcessChat(HttpContext context, string command)
+    private void ProcessChat(HttpContext context, string command, int organizationID)
     {
       if (command == "image")
       {
-        bool isAvailable = ChatRequests.IsOperatorAvailable(LoginUser.Anonymous, _organization.OrganizationID);
+        bool isAvailable = ChatRequests.IsOperatorAvailable(LoginUser.Anonymous, organizationID);
         string fileName = isAvailable ? "chat_available" : "chat_unavailable";
-        fileName = AttachmentPath.FindImageFileName(LoginUser.Anonymous, _organization.OrganizationID, AttachmentPath.Folder.ChatImages, fileName);
+        fileName = AttachmentPath.FindImageFileName(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatImages, fileName);
         WriteImage(context, fileName);
       }
       else if (command == "logo")
       {
-        string fileName = AttachmentPath.FindImageFileName(LoginUser.Anonymous, _organization.OrganizationID, AttachmentPath.Folder.ChatImages, "chat_logo");
+        string fileName = AttachmentPath.FindImageFileName(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatImages, "chat_logo");
         WriteImage(context, fileName);
       }
     }
@@ -125,7 +136,8 @@ namespace TeamSupport.Handlers
     private void ProcessAttachment(HttpContext context, int attachmentID)
     {
 
-      //http://127.0.0.1/tsdev/dc/1078/attachments/7401
+      //http://127.0.0.1/tsdev/dc/attachments/7401
+      //https://app.teamsupport.com/dc/attachments/{AttachmentID}
       Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
       User user = null;
       bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
@@ -160,7 +172,7 @@ namespace TeamSupport.Handlers
           }
 
         }
-        catch (Exception ex)
+        catch (Exception)
         {
           context.Response.Write("Unauthorized");
           context.Response.ContentType = "text/html";
@@ -259,7 +271,7 @@ namespace TeamSupport.Handlers
       //http://127.0.0.1/tsdev/dc/1078/reports/7401
       Report report = Reports.GetReport(UserSession.LoginUser, reportID);
 
-      if (report == null || UserSession.LoginUser.OrganizationID != _organization.OrganizationID || (report.OrganizationID != UserSession.LoginUser.OrganizationID && report.OrganizationID != null))
+      if (report == null ||  (report.OrganizationID != UserSession.LoginUser.OrganizationID && report.OrganizationID != null))
       {
         context.Response.Write("Unauthorized");
         context.Response.ContentType = "text/html";

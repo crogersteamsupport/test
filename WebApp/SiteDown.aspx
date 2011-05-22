@@ -9,13 +9,14 @@
     setInterval(tryLogin, 20000);
 
     function tryLogin() {
-      window.location = 'Login.aspx';
+      window.location = 'https://app.teamsupport.com/Login.aspx';
     }
   </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
-  <div style="font-size: 2em; padding: 20px 0 20px 0;">We have updated our servers, sorry for any inconvenience.</div>
-  <button onclick="tryLogin(); return false;">Continue</button>
+  <div style="font-size: 2em; padding: 20px 0 20px 0;">The TeamSupport servers are undergoing maintenance.</div>
+  <div style="font-size: 2em; padding: 20px 0 20px 0;">Please try again later.</div>
+  <button onclick="tryLogin(); return false;">Try Again</button>
   <br />
   <br />
   <br />

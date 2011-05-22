@@ -1,0 +1,621 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace TeamSupport.Data
+{
+  [Serializable]
+  public partial class CustomField : BaseItem
+  {
+    private CustomFields _customFields;
+    
+    public CustomField(DataRow row, CustomFields customFields): base(row, customFields)
+    {
+      _customFields = customFields;
+    }
+	
+    #region Properties
+    
+    public CustomFields Collection
+    {
+      get { return _customFields; }
+    }
+        
+    
+    
+    
+    public int CustomFieldID
+    {
+      get { return (int)Row["CustomFieldID"]; }
+    }
+    
+
+    
+    public string ListValues
+    {
+      get { return Row["ListValues"] != DBNull.Value ? (string)Row["ListValues"] : null; }
+      set { Row["ListValues"] = CheckNull(value); }
+    }
+    
+    public string Description
+    {
+      get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
+      set { Row["Description"] = CheckNull(value); }
+    }
+    
+    public bool? IsVisibleOnPortal
+    {
+      get { return Row["IsVisibleOnPortal"] != DBNull.Value ? (bool?)Row["IsVisibleOnPortal"] : null; }
+      set { Row["IsVisibleOnPortal"] = CheckNull(value); }
+    }
+    
+
+    
+    public int ModifierID
+    {
+      get { return (int)Row["ModifierID"]; }
+      set { Row["ModifierID"] = CheckNull(value); }
+    }
+    
+    public int CreatorID
+    {
+      get { return (int)Row["CreatorID"]; }
+      set { Row["CreatorID"] = CheckNull(value); }
+    }
+    
+    public bool IsRequired
+    {
+      get { return (bool)Row["IsRequired"]; }
+      set { Row["IsRequired"] = CheckNull(value); }
+    }
+    
+    public bool IsFirstIndexSelect
+    {
+      get { return (bool)Row["IsFirstIndexSelect"]; }
+      set { Row["IsFirstIndexSelect"] = CheckNull(value); }
+    }
+    
+    public int Position
+    {
+      get { return (int)Row["Position"]; }
+      set { Row["Position"] = CheckNull(value); }
+    }
+    
+    public int AuxID
+    {
+      get { return (int)Row["AuxID"]; }
+      set { Row["AuxID"] = CheckNull(value); }
+    }
+    
+    public CustomFieldType FieldType
+    {
+      get { return (CustomFieldType)Row["FieldType"]; }
+      set { Row["FieldType"] = CheckNull(value); }
+    }
+    
+    public ReferenceType RefType
+    {
+      get { return (ReferenceType)Row["RefType"]; }
+      set { Row["RefType"] = CheckNull(value); }
+    }
+    
+    public string ApiFieldName
+    {
+      get { return (string)Row["ApiFieldName"]; }
+      set { Row["ApiFieldName"] = CheckNull(value); }
+    }
+    
+    public string Name
+    {
+      get { return (string)Row["Name"]; }
+      set { Row["Name"] = CheckNull(value); }
+    }
+    
+    public int OrganizationID
+    {
+      get { return (int)Row["OrganizationID"]; }
+      set { Row["OrganizationID"] = CheckNull(value); }
+    }
+    
+
+    /* DateTime */
+    
+    
+    
+
+    
+
+    
+    public DateTime DateModified
+    {
+      get { return DateToLocal((DateTime)Row["DateModified"]); }
+      set { Row["DateModified"] = CheckNull(value); }
+    }
+    
+    public DateTime DateCreated
+    {
+      get { return DateToLocal((DateTime)Row["DateCreated"]); }
+      set { Row["DateCreated"] = CheckNull(value); }
+    }
+    
+
+    #endregion
+    
+    
+  }
+
+  public partial class CustomFields : BaseCollection, IEnumerable<CustomField>
+  {
+    public CustomFields(LoginUser loginUser): base (loginUser)
+    {
+    }
+
+    #region Properties
+
+    public override string TableName
+    {
+      get { return "CustomFields"; }
+    }
+    
+    public override string PrimaryKeyFieldName
+    {
+      get { return "CustomFieldID"; }
+    }
+
+
+
+    public CustomField this[int index]
+    {
+      get { return new CustomField(Table.Rows[index], this); }
+    }
+    
+
+    #endregion
+
+    #region Protected Members
+    
+    partial void BeforeRowInsert(CustomField customField);
+    partial void AfterRowInsert(CustomField customField);
+    partial void BeforeRowEdit(CustomField customField);
+    partial void AfterRowEdit(CustomField customField);
+    partial void BeforeRowDelete(int customFieldID);
+    partial void AfterRowDelete(int customFieldID);    
+
+    partial void BeforeDBDelete(int customFieldID);
+    partial void AfterDBDelete(int customFieldID);    
+
+    #endregion
+
+    #region Public Methods
+
+    public CustomFieldProxy[] GetCustomFieldProxies()
+    {
+      List<CustomFieldProxy> list = new List<CustomFieldProxy>();
+
+      foreach (CustomField item in this)
+      {
+        list.Add(item.GetProxy()); 
+      }
+
+      return list.ToArray();
+    }	
+	
+    public virtual void DeleteFromDB(int customFieldID)
+    {
+      BeforeDBDelete(customFieldID);
+      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
+      {
+        connection.Open();
+
+        SqlCommand deleteCommand = connection.CreateCommand();
+
+        deleteCommand.Connection = connection;
+        deleteCommand.CommandType = CommandType.StoredProcedure;
+        deleteCommand.CommandText = "uspGeneratedDeleteCustomField";
+        deleteCommand.Parameters.Add("CustomFieldID", SqlDbType.Int);
+        deleteCommand.Parameters["CustomFieldID"].Value = customFieldID;
+
+        BeforeRowDelete(customFieldID);
+        deleteCommand.ExecuteNonQuery();
+		connection.Close();
+        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        AfterRowDelete(customFieldID);
+      }
+      AfterDBDelete(customFieldID);
+      
+    }
+
+    public override void Save(SqlConnection connection)    {
+		//SqlTransaction transaction = connection.BeginTransaction("CustomFieldsSave");
+		SqlParameter tempParameter;
+		SqlCommand updateCommand = connection.CreateCommand();
+		updateCommand.Connection = connection;
+		//updateCommand.Transaction = transaction;
+		updateCommand.CommandType = CommandType.StoredProcedure;
+		updateCommand.CommandText = "uspGeneratedUpdateCustomField";
+
+		
+		tempParameter = updateCommand.Parameters.Add("CustomFieldID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Name", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ApiFieldName", SqlDbType.VarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("FieldType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("AuxID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Position", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ListValues", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Description", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IsVisibleOnPortal", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IsFirstIndexSelect", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IsRequired", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+
+		SqlCommand insertCommand = connection.CreateCommand();
+		insertCommand.Connection = connection;
+		//insertCommand.Transaction = transaction;
+		insertCommand.CommandType = CommandType.StoredProcedure;
+		insertCommand.CommandText = "uspGeneratedInsertCustomField";
+
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsRequired", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsFirstIndexSelect", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsVisibleOnPortal", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Description", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ListValues", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Position", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("AuxID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("FieldType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ApiFieldName", SqlDbType.VarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+
+		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;
+		SqlCommand deleteCommand = connection.CreateCommand();
+		deleteCommand.Connection = connection;
+		//deleteCommand.Transaction = transaction;
+		deleteCommand.CommandType = CommandType.StoredProcedure;
+		deleteCommand.CommandText = "uspGeneratedDeleteCustomField";
+		deleteCommand.Parameters.Add("CustomFieldID", SqlDbType.Int);
+
+		try
+		{
+		  foreach (CustomField customField in this)
+		  {
+			if (customField.Row.RowState == DataRowState.Added)
+			{
+			  BeforeRowInsert(customField);
+			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
+			  {
+				SqlParameter parameter = insertCommand.Parameters[i];
+				if (parameter.Direction != ParameterDirection.Output)
+				{
+				  parameter.Value = customField.Row[parameter.ParameterName];
+				}
+			  }
+
+			  if (insertCommand.Parameters.Contains("ModifierID")) insertCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
+			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
+
+			  insertCommand.ExecuteNonQuery();
+			  Table.Columns["CustomFieldID"].AutoIncrement = false;
+			  Table.Columns["CustomFieldID"].ReadOnly = false;
+			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
+				customField.Row["CustomFieldID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(customField);
+			}
+			else if (customField.Row.RowState == DataRowState.Modified)
+			{
+			  BeforeRowEdit(customField);
+			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
+			  {
+				SqlParameter parameter = updateCommand.Parameters[i];
+				parameter.Value = customField.Row[parameter.ParameterName];
+			  }
+			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
+			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
+
+			  updateCommand.ExecuteNonQuery();
+			  AfterRowEdit(customField);
+			}
+			else if (customField.Row.RowState == DataRowState.Deleted)
+			{
+			  int id = (int)customField.Row["CustomFieldID", DataRowVersion.Original];
+			  deleteCommand.Parameters["CustomFieldID"].Value = id;
+			  BeforeRowDelete(id);
+			  deleteCommand.ExecuteNonQuery();
+			  AfterRowDelete(id);
+			}
+		  }
+		  //transaction.Commit();
+		}
+		catch (Exception)
+		{
+		  //transaction.Rollback();
+		  throw;
+		}
+		Table.AcceptChanges();
+      if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+    }
+
+    public void BulkSave()
+    {
+
+      foreach (CustomField customField in this)
+      {
+        if (customField.Row.Table.Columns.Contains("CreatorID") && (int)customField.Row["CreatorID"] == 0) customField.Row["CreatorID"] = LoginUser.UserID;
+        if (customField.Row.Table.Columns.Contains("ModifierID")) customField.Row["ModifierID"] = LoginUser.UserID;
+      }
+    
+      SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
+      copy.BulkCopyTimeout = 0;
+      copy.DestinationTableName = TableName;
+      copy.WriteToServer(Table);
+
+      Table.AcceptChanges();
+     
+      if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+    }
+
+    public CustomField FindByCustomFieldID(int customFieldID)
+    {
+      foreach (CustomField customField in this)
+      {
+        if (customField.CustomFieldID == customFieldID)
+        {
+          return customField;
+        }
+      }
+      return null;
+    }
+
+    public virtual CustomField AddNewCustomField()
+    {
+      if (Table.Columns.Count < 1) LoadColumns("CustomFields");
+      DataRow row = Table.NewRow();
+      Table.Rows.Add(row);
+      return new CustomField(row, this);
+    }
+    
+    public virtual void LoadByCustomFieldID(int customFieldID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "uspGeneratedSelectCustomField";
+        command.CommandType = CommandType.StoredProcedure;
+        command.Parameters.AddWithValue("CustomFieldID", customFieldID);
+        Fill(command);
+      }
+    }
+    
+    public static CustomField GetCustomField(LoginUser loginUser, int customFieldID)
+    {
+      CustomFields customFields = new CustomFields(loginUser);
+      customFields.LoadByCustomFieldID(customFieldID);
+      if (customFields.IsEmpty)
+        return null;
+      else
+        return customFields[0];
+    }
+    
+    
+    
+
+    #endregion
+
+    #region IEnumerable<CustomField> Members
+
+    public IEnumerator<CustomField> GetEnumerator()
+    {
+      foreach (DataRow row in Table.Rows)
+      {
+        yield return new CustomField(row, this);
+      }
+    }
+
+    #endregion
+
+    #region IEnumerable Members
+
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    {
+      return GetEnumerator();
+    }
+
+    #endregion
+  }
+}

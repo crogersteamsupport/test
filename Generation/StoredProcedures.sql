@@ -919,7 +919,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportDataItem
 (
   @UserID int,
   @ReportID int,
-  @ReportData text,
+  @ReportData varchar(MAX),
   @QueryObject varchar(8000),
   @CreatorID int,
   @ModifierID int,
@@ -961,7 +961,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportDataItem
   @ReportDataID int,
   @UserID int,
   @ReportID int,
-  @ReportData text,
+  @ReportData varchar(MAX),
   @QueryObject varchar(8000),
   @ModifierID int,
   @DateModified datetime
@@ -1110,144 +1110,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketTypes]
   WHERE ([TicketTypeID] = @TicketTypeID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmailTemplate
-
-(
-  @EmailTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailTemplateID],
-    [Position],
-    [Name],
-    [Description],
-    [IsTSOnly],
-    [Subject],
-    [Header],
-    [Footer],
-    [IsHtml],
-    [IncludeDelimiter],
-    [IsEmail],
-    [UseGlobalTemplate],
-    [Body]
-  FROM [dbo].[EmailTemplates]
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmailTemplate
-
-(
-  @EmailTemplateID int,
-  @Position int,
-  @Name varchar(100),
-  @Description varchar(1000),
-  @IsTSOnly bit,
-  @Subject varchar(200),
-  @Header varchar(1000),
-  @Footer varchar(1000),
-  @IsHtml bit,
-  @IncludeDelimiter bit,
-  @IsEmail bit,
-  @UseGlobalTemplate bit,
-  @Body text,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[EmailTemplates]
-  (
-    [EmailTemplateID],
-    [Position],
-    [Name],
-    [Description],
-    [IsTSOnly],
-    [Subject],
-    [Header],
-    [Footer],
-    [IsHtml],
-    [IncludeDelimiter],
-    [IsEmail],
-    [UseGlobalTemplate],
-    [Body])
-  VALUES (
-    @EmailTemplateID,
-    @Position,
-    @Name,
-    @Description,
-    @IsTSOnly,
-    @Subject,
-    @Header,
-    @Footer,
-    @IsHtml,
-    @IncludeDelimiter,
-    @IsEmail,
-    @UseGlobalTemplate,
-    @Body)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
-
-(
-  @EmailTemplateID int,
-  @Position int,
-  @Name varchar(100),
-  @Description varchar(1000),
-  @IsTSOnly bit,
-  @Subject varchar(200),
-  @Header varchar(1000),
-  @Footer varchar(1000),
-  @IsHtml bit,
-  @IncludeDelimiter bit,
-  @IsEmail bit,
-  @UseGlobalTemplate bit,
-  @Body text
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[EmailTemplates]
-  SET
-    [Position] = @Position,
-    [Name] = @Name,
-    [Description] = @Description,
-    [IsTSOnly] = @IsTSOnly,
-    [Subject] = @Subject,
-    [Header] = @Header,
-    [Footer] = @Footer,
-    [IsHtml] = @IsHtml,
-    [IncludeDelimiter] = @IncludeDelimiter,
-    [IsEmail] = @IsEmail,
-    [UseGlobalTemplate] = @UseGlobalTemplate,
-    [Body] = @Body
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
-
-(
-  @EmailTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[EmailTemplates]
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
 GO
 
 
@@ -1453,6 +1315,263 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [DocID],
+    [NeedsIndexing],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @DocID int,
+  @NeedsIndexing bit,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [DocID],
+    [NeedsIndexing],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @DocID,
+    @NeedsIndexing,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @DocID int,
+  @NeedsIndexing bit,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [DocID] = @DocID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -1487,7 +1606,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertApiLog
   @Url varchar(2100),
   @Verb varchar(20),
   @StatusCode int,
-  @RequestBody text,
+  @RequestBody varchar(MAX),
   @DateCreated datetime,
   @Identity int OUT
 )
@@ -1526,7 +1645,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateApiLog
   @Url varchar(2100),
   @Verb varchar(20),
   @StatusCode int,
-  @RequestBody text
+  @RequestBody varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -2959,6 +3078,181 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailID],
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated]
+  FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmail
+
+(
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(8000),
+  @CCAddress varchar(8000),
+  @BCCAddress varchar(8000),
+  @Subject varchar(8000),
+  @Body varchar(MAX),
+  @Attachments varchar(8000),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(8000),
+  @EmailPostID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Emails]
+  (
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @Description,
+    @FromAddress,
+    @ToAddress,
+    @CCAddress,
+    @BCCAddress,
+    @Subject,
+    @Body,
+    @Attachments,
+    @Size,
+    @IsSuccess,
+    @IsWaiting,
+    @IsHtml,
+    @Attempts,
+    @NextAttempt,
+    @DateSent,
+    @LastFailedReason,
+    @EmailPostID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
+
+(
+  @EmailID int,
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(8000),
+  @CCAddress varchar(8000),
+  @BCCAddress varchar(8000),
+  @Subject varchar(8000),
+  @Body varchar(MAX),
+  @Attachments varchar(8000),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(8000),
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Emails]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Description] = @Description,
+    [FromAddress] = @FromAddress,
+    [ToAddress] = @ToAddress,
+    [CCAddress] = @CCAddress,
+    [BCCAddress] = @BCCAddress,
+    [Subject] = @Subject,
+    [Body] = @Body,
+    [Attachments] = @Attachments,
+    [Size] = @Size,
+    [IsSuccess] = @IsSuccess,
+    [IsWaiting] = @IsWaiting,
+    [IsHtml] = @IsHtml,
+    [Attempts] = @Attempts,
+    [NextAttempt] = @NextAttempt,
+    [DateSent] = @DateSent,
+    [LastFailedReason] = @LastFailedReason,
+    [EmailPostID] = @EmailPostID
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatParticipant' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatParticipant
 GO
 
@@ -3679,7 +3973,8 @@ AS
     [OrganizationID],
     [OrganizationName],
     [Success],
-    [LoginDateTime]
+    [LoginDateTime],
+    [IPAddress]
   FROM [dbo].[PortalLoginHistory]
   WHERE ([PortalLoginID] = @PortalLoginID)
 GO
@@ -3695,6 +3990,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalLoginHistoryItem
   @OrganizationName varchar(200),
   @Success bit,
   @LoginDateTime datetime,
+  @IPAddress varchar(1000),
   @Identity int OUT
 )
 AS
@@ -3705,13 +4001,15 @@ AS
     [OrganizationID],
     [OrganizationName],
     [Success],
-    [LoginDateTime])
+    [LoginDateTime],
+    [IPAddress])
   VALUES (
     @UserName,
     @OrganizationID,
     @OrganizationName,
     @Success,
-    @LoginDateTime)
+    @LoginDateTime,
+    @IPAddress)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -3727,7 +4025,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalLoginHistoryItem
   @OrganizationID int,
   @OrganizationName varchar(200),
   @Success bit,
-  @LoginDateTime datetime
+  @LoginDateTime datetime,
+  @IPAddress varchar(1000)
 )
 AS
   SET NOCOUNT OFF;
@@ -3737,7 +4036,8 @@ AS
     [OrganizationID] = @OrganizationID,
     [OrganizationName] = @OrganizationName,
     [Success] = @Success,
-    [LoginDateTime] = @LoginDateTime
+    [LoginDateTime] = @LoginDateTime,
+    [IPAddress] = @IPAddress
   WHERE ([PortalLoginID] = @PortalLoginID)
 GO
 
@@ -4416,7 +4716,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertNote
   @RefType int,
   @RefID int,
   @Title varchar(1000),
-  @Description text,
+  @Description varchar(MAX),
   @CreatorID int,
   @ModifierID int,
   @DateCreated datetime,
@@ -4458,7 +4758,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateNote
   @RefType int,
   @RefID int,
   @Title varchar(1000),
-  @Description text,
+  @Description varchar(MAX),
   @ModifierID int,
   @DateModified datetime
 )
@@ -4615,7 +4915,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertProductVersion
   @VersionNumber varchar(50),
   @ReleaseDate datetime,
   @IsReleased bit,
-  @Description text,
+  @Description varchar(MAX),
   @ImportID varchar(50),
   @DateCreated datetime,
   @DateModified datetime,
@@ -4666,7 +4966,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersion
   @VersionNumber varchar(50),
   @ReleaseDate datetime,
   @IsReleased bit,
-  @Description text,
+  @Description varchar(MAX),
   @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int
@@ -4868,7 +5168,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganizationEmail
   @Subject varchar(200),
   @Header varchar(1000),
   @Footer varchar(1000),
-  @Body text,
+  @Body varchar(MAX),
   @IsHtml bit,
   @UseGlobalTemplate bit,
   @Identity int OUT
@@ -4910,7 +5210,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganizationEmail
   @Subject varchar(200),
   @Header varchar(1000),
   @Footer varchar(1000),
-  @Body text,
+  @Body varchar(MAX),
   @IsHtml bit,
   @UseGlobalTemplate bit
 )
@@ -6182,6 +6482,167 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailPost
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3]
+  FROM [dbo].[EmailPosts]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
+
+(
+  @EmailPostType int,
+  @HoldTime int,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailPosts]
+  (
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3])
+  VALUES (
+    @EmailPostType,
+    @HoldTime,
+    @DateCreated,
+    @CreatorID,
+    @Param1,
+    @Param2,
+    @Param3,
+    @Param4,
+    @Param5,
+    @Param6,
+    @Param7,
+    @Param8,
+    @Param9,
+    @Param10,
+    @Text1,
+    @Text2,
+    @Text3)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailPosts]
+  SET
+    [EmailPostType] = @EmailPostType,
+    [HoldTime] = @HoldTime,
+    [Param1] = @Param1,
+    [Param2] = @Param2,
+    [Param3] = @Param3,
+    [Param4] = @Param4,
+    [Param5] = @Param5,
+    [Param6] = @Param6,
+    [Param7] = @Param7,
+    [Param8] = @Param8,
+    [Param9] = @Param9,
+    [Param10] = @Param10,
+    [Text1] = @Text1,
+    [Text2] = @Text2,
+    [Text3] = @Text3
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPost
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailPosts]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatSetting
 GO
 
@@ -6208,7 +6669,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertChatSetting
 (
   @OrganizationID int,
   @UseCss bit,
-  @ClientCss text,
+  @ClientCss varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -6234,7 +6695,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateChatSetting
 (
   @OrganizationID int,
   @UseCss bit,
-  @ClientCss text
+  @ClientCss varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -6775,6 +7236,144 @@ AS
     [Name]
   FROM [dbo].[ExceptionLogView]
   WHERE ([ExceptionLogID] = @ExceptionLogID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailTemplate
+
+(
+  @EmailTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailTemplateID],
+    [Position],
+    [Name],
+    [Description],
+    [IsTSOnly],
+    [Subject],
+    [Header],
+    [Footer],
+    [IsHtml],
+    [IncludeDelimiter],
+    [IsEmail],
+    [UseGlobalTemplate],
+    [Body]
+  FROM [dbo].[EmailTemplates]
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailTemplate
+
+(
+  @EmailTemplateID int,
+  @Position int,
+  @Name varchar(100),
+  @Description varchar(1000),
+  @IsTSOnly bit,
+  @Subject varchar(200),
+  @Header varchar(1000),
+  @Footer varchar(1000),
+  @IsHtml bit,
+  @IncludeDelimiter bit,
+  @IsEmail bit,
+  @UseGlobalTemplate bit,
+  @Body varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailTemplates]
+  (
+    [EmailTemplateID],
+    [Position],
+    [Name],
+    [Description],
+    [IsTSOnly],
+    [Subject],
+    [Header],
+    [Footer],
+    [IsHtml],
+    [IncludeDelimiter],
+    [IsEmail],
+    [UseGlobalTemplate],
+    [Body])
+  VALUES (
+    @EmailTemplateID,
+    @Position,
+    @Name,
+    @Description,
+    @IsTSOnly,
+    @Subject,
+    @Header,
+    @Footer,
+    @IsHtml,
+    @IncludeDelimiter,
+    @IsEmail,
+    @UseGlobalTemplate,
+    @Body)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
+
+(
+  @EmailTemplateID int,
+  @Position int,
+  @Name varchar(100),
+  @Description varchar(1000),
+  @IsTSOnly bit,
+  @Subject varchar(200),
+  @Header varchar(1000),
+  @Footer varchar(1000),
+  @IsHtml bit,
+  @IncludeDelimiter bit,
+  @IsEmail bit,
+  @UseGlobalTemplate bit,
+  @Body varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailTemplates]
+  SET
+    [Position] = @Position,
+    [Name] = @Name,
+    [Description] = @Description,
+    [IsTSOnly] = @IsTSOnly,
+    [Subject] = @Subject,
+    [Header] = @Header,
+    [Footer] = @Footer,
+    [IsHtml] = @IsHtml,
+    [IncludeDelimiter] = @IncludeDelimiter,
+    [IsEmail] = @IsEmail,
+    [UseGlobalTemplate] = @UseGlobalTemplate,
+    [Body] = @Body
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
+
+(
+  @EmailTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailTemplates]
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
 GO
 
 
@@ -7711,6 +8310,170 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailPostHistoryItem
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3]
+  FROM [dbo].[EmailPostHistory]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailPostHistory]
+  (
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3])
+  VALUES (
+    @EmailPostID,
+    @EmailPostType,
+    @HoldTime,
+    @DateCreated,
+    @CreatorID,
+    @Param1,
+    @Param2,
+    @Param3,
+    @Param4,
+    @Param5,
+    @Param6,
+    @Param7,
+    @Param8,
+    @Param9,
+    @Param10,
+    @Text1,
+    @Text2,
+    @Text3)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailPostHistory]
+  SET
+    [EmailPostType] = @EmailPostType,
+    [HoldTime] = @HoldTime,
+    [Param1] = @Param1,
+    [Param2] = @Param2,
+    [Param3] = @Param3,
+    [Param4] = @Param4,
+    [Param5] = @Param5,
+    [Param6] = @Param6,
+    [Param7] = @Param7,
+    [Param8] = @Param8,
+    [Param9] = @Param9,
+    [Param10] = @Param10,
+    [Text1] = @Text1,
+    [Text2] = @Text2,
+    [Text3] = @Text3
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPostHistoryItem
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailPostHistory]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserTicketStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserTicketStatus
 GO
 
@@ -7930,6 +8693,87 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[SlaTriggers]
   WHERE ([SlaTriggerID] = @SlaTriggerID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [DeletedIndexID],
+    [RefID],
+    [RefType],
+    [DateDeleted]
+  FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+
+(
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[DeletedIndexItems]
+  (
+    [RefID],
+    [RefType],
+    [DateDeleted])
+  VALUES (
+    @RefID,
+    @RefType,
+    @DateDeleted)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+
+(
+  @DeletedIndexID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[DeletedIndexItems]
+  SET
+    [RefID] = @RefID,
+    [RefType] = @RefType,
+    [DateDeleted] = @DateDeleted
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
 GO
 
 
@@ -8352,167 +9196,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[WaterCooler]
   WHERE ([MessageID] = @MessageID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmailPost
-
-(
-  @EmailPostID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailPostID],
-    [EmailPostType],
-    [HoldTime],
-    [DateCreated],
-    [CreatorID],
-    [Param1],
-    [Param2],
-    [Param3],
-    [Param4],
-    [Param5],
-    [Param6],
-    [Param7],
-    [Param8],
-    [Param9],
-    [Param10],
-    [Text1],
-    [Text2],
-    [Text3]
-  FROM [dbo].[EmailPosts]
-  WHERE ([EmailPostID] = @EmailPostID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
-
-(
-  @EmailPostType int,
-  @HoldTime int,
-  @DateCreated datetime,
-  @CreatorID int,
-  @Param1 varchar(8000),
-  @Param2 varchar(8000),
-  @Param3 varchar(8000),
-  @Param4 varchar(8000),
-  @Param5 varchar(8000),
-  @Param6 varchar(8000),
-  @Param7 varchar(8000),
-  @Param8 varchar(8000),
-  @Param9 varchar(8000),
-  @Param10 varchar(8000),
-  @Text1 text,
-  @Text2 text,
-  @Text3 text,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[EmailPosts]
-  (
-    [EmailPostType],
-    [HoldTime],
-    [DateCreated],
-    [CreatorID],
-    [Param1],
-    [Param2],
-    [Param3],
-    [Param4],
-    [Param5],
-    [Param6],
-    [Param7],
-    [Param8],
-    [Param9],
-    [Param10],
-    [Text1],
-    [Text2],
-    [Text3])
-  VALUES (
-    @EmailPostType,
-    @HoldTime,
-    @DateCreated,
-    @CreatorID,
-    @Param1,
-    @Param2,
-    @Param3,
-    @Param4,
-    @Param5,
-    @Param6,
-    @Param7,
-    @Param8,
-    @Param9,
-    @Param10,
-    @Text1,
-    @Text2,
-    @Text3)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
-
-(
-  @EmailPostID int,
-  @EmailPostType int,
-  @HoldTime int,
-  @Param1 varchar(8000),
-  @Param2 varchar(8000),
-  @Param3 varchar(8000),
-  @Param4 varchar(8000),
-  @Param5 varchar(8000),
-  @Param6 varchar(8000),
-  @Param7 varchar(8000),
-  @Param8 varchar(8000),
-  @Param9 varchar(8000),
-  @Param10 varchar(8000),
-  @Text1 text,
-  @Text2 text,
-  @Text3 text
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[EmailPosts]
-  SET
-    [EmailPostType] = @EmailPostType,
-    [HoldTime] = @HoldTime,
-    [Param1] = @Param1,
-    [Param2] = @Param2,
-    [Param3] = @Param3,
-    [Param4] = @Param4,
-    [Param5] = @Param5,
-    [Param6] = @Param6,
-    [Param7] = @Param7,
-    [Param8] = @Param8,
-    [Param9] = @Param9,
-    [Param10] = @Param10,
-    [Text1] = @Text1,
-    [Text2] = @Text2,
-    [Text3] = @Text3
-  WHERE ([EmailPostID] = @EmailPostID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPost
-
-(
-  @EmailPostID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[EmailPosts]
-  WHERE ([EmailPostID] = @EmailPostID)
 GO
 
 
@@ -9547,175 +10230,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailID],
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [DateCreated]
-  FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmail
-
-(
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject varchar(8000),
-  @Body text,
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @DateCreated datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Emails]
-  (
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [DateCreated])
-  VALUES (
-    @OrganizationID,
-    @Description,
-    @FromAddress,
-    @ToAddress,
-    @CCAddress,
-    @BCCAddress,
-    @Subject,
-    @Body,
-    @Attachments,
-    @Size,
-    @IsSuccess,
-    @IsWaiting,
-    @IsHtml,
-    @Attempts,
-    @NextAttempt,
-    @DateSent,
-    @LastFailedReason,
-    @DateCreated)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
-
-(
-  @EmailID int,
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject varchar(8000),
-  @Body text,
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Emails]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Description] = @Description,
-    [FromAddress] = @FromAddress,
-    [ToAddress] = @ToAddress,
-    [CCAddress] = @CCAddress,
-    [BCCAddress] = @BCCAddress,
-    [Subject] = @Subject,
-    [Body] = @Body,
-    [Attachments] = @Attachments,
-    [Size] = @Size,
-    [IsSuccess] = @IsSuccess,
-    [IsWaiting] = @IsWaiting,
-    [IsHtml] = @IsHtml,
-    [Attempts] = @Attempts,
-    [NextAttempt] = @NextAttempt,
-    [DateSent] = @DateSent,
-    [LastFailedReason] = @LastFailedReason
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserSetting
 GO
 
@@ -10158,251 +10672,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[Actions]
   WHERE ([ActionID] = @ActionID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
 GO
 
 
@@ -11664,7 +11933,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportDataItem
 (
   @UserID int,
   @ReportID int,
-  @ReportData text,
+  @ReportData varchar(MAX),
   @QueryObject varchar(8000),
   @CreatorID int,
   @ModifierID int,
@@ -11706,7 +11975,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportDataItem
   @ReportDataID int,
   @UserID int,
   @ReportID int,
-  @ReportData text,
+  @ReportData varchar(MAX),
   @QueryObject varchar(8000),
   @ModifierID int,
   @DateModified datetime
@@ -11855,144 +12124,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketTypes]
   WHERE ([TicketTypeID] = @TicketTypeID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmailTemplate
-
-(
-  @EmailTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailTemplateID],
-    [Position],
-    [Name],
-    [Description],
-    [IsTSOnly],
-    [Subject],
-    [Header],
-    [Footer],
-    [IsHtml],
-    [IncludeDelimiter],
-    [IsEmail],
-    [UseGlobalTemplate],
-    [Body]
-  FROM [dbo].[EmailTemplates]
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmailTemplate
-
-(
-  @EmailTemplateID int,
-  @Position int,
-  @Name varchar(100),
-  @Description varchar(1000),
-  @IsTSOnly bit,
-  @Subject varchar(200),
-  @Header varchar(1000),
-  @Footer varchar(1000),
-  @IsHtml bit,
-  @IncludeDelimiter bit,
-  @IsEmail bit,
-  @UseGlobalTemplate bit,
-  @Body text,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[EmailTemplates]
-  (
-    [EmailTemplateID],
-    [Position],
-    [Name],
-    [Description],
-    [IsTSOnly],
-    [Subject],
-    [Header],
-    [Footer],
-    [IsHtml],
-    [IncludeDelimiter],
-    [IsEmail],
-    [UseGlobalTemplate],
-    [Body])
-  VALUES (
-    @EmailTemplateID,
-    @Position,
-    @Name,
-    @Description,
-    @IsTSOnly,
-    @Subject,
-    @Header,
-    @Footer,
-    @IsHtml,
-    @IncludeDelimiter,
-    @IsEmail,
-    @UseGlobalTemplate,
-    @Body)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
-
-(
-  @EmailTemplateID int,
-  @Position int,
-  @Name varchar(100),
-  @Description varchar(1000),
-  @IsTSOnly bit,
-  @Subject varchar(200),
-  @Header varchar(1000),
-  @Footer varchar(1000),
-  @IsHtml bit,
-  @IncludeDelimiter bit,
-  @IsEmail bit,
-  @UseGlobalTemplate bit,
-  @Body text
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[EmailTemplates]
-  SET
-    [Position] = @Position,
-    [Name] = @Name,
-    [Description] = @Description,
-    [IsTSOnly] = @IsTSOnly,
-    [Subject] = @Subject,
-    [Header] = @Header,
-    [Footer] = @Footer,
-    [IsHtml] = @IsHtml,
-    [IncludeDelimiter] = @IncludeDelimiter,
-    [IsEmail] = @IsEmail,
-    [UseGlobalTemplate] = @UseGlobalTemplate,
-    [Body] = @Body
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
-
-(
-  @EmailTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[EmailTemplates]
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
 GO
 
 
@@ -12198,6 +12329,263 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [DocID],
+    [NeedsIndexing],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @DocID int,
+  @NeedsIndexing bit,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [DocID],
+    [NeedsIndexing],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @DocID,
+    @NeedsIndexing,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @DocID int,
+  @NeedsIndexing bit,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [DocID] = @DocID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -12232,7 +12620,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertApiLog
   @Url varchar(2100),
   @Verb varchar(20),
   @StatusCode int,
-  @RequestBody text,
+  @RequestBody varchar(MAX),
   @DateCreated datetime,
   @Identity int OUT
 )
@@ -12271,7 +12659,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateApiLog
   @Url varchar(2100),
   @Verb varchar(20),
   @StatusCode int,
-  @RequestBody text
+  @RequestBody varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -13704,6 +14092,181 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailID],
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated]
+  FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmail
+
+(
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(8000),
+  @CCAddress varchar(8000),
+  @BCCAddress varchar(8000),
+  @Subject varchar(8000),
+  @Body varchar(MAX),
+  @Attachments varchar(8000),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(8000),
+  @EmailPostID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Emails]
+  (
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @Description,
+    @FromAddress,
+    @ToAddress,
+    @CCAddress,
+    @BCCAddress,
+    @Subject,
+    @Body,
+    @Attachments,
+    @Size,
+    @IsSuccess,
+    @IsWaiting,
+    @IsHtml,
+    @Attempts,
+    @NextAttempt,
+    @DateSent,
+    @LastFailedReason,
+    @EmailPostID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
+
+(
+  @EmailID int,
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(8000),
+  @CCAddress varchar(8000),
+  @BCCAddress varchar(8000),
+  @Subject varchar(8000),
+  @Body varchar(MAX),
+  @Attachments varchar(8000),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(8000),
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Emails]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Description] = @Description,
+    [FromAddress] = @FromAddress,
+    [ToAddress] = @ToAddress,
+    [CCAddress] = @CCAddress,
+    [BCCAddress] = @BCCAddress,
+    [Subject] = @Subject,
+    [Body] = @Body,
+    [Attachments] = @Attachments,
+    [Size] = @Size,
+    [IsSuccess] = @IsSuccess,
+    [IsWaiting] = @IsWaiting,
+    [IsHtml] = @IsHtml,
+    [Attempts] = @Attempts,
+    [NextAttempt] = @NextAttempt,
+    [DateSent] = @DateSent,
+    [LastFailedReason] = @LastFailedReason,
+    [EmailPostID] = @EmailPostID
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatParticipant' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatParticipant
 GO
 
@@ -14424,7 +14987,8 @@ AS
     [OrganizationID],
     [OrganizationName],
     [Success],
-    [LoginDateTime]
+    [LoginDateTime],
+    [IPAddress]
   FROM [dbo].[PortalLoginHistory]
   WHERE ([PortalLoginID] = @PortalLoginID)
 GO
@@ -14440,6 +15004,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalLoginHistoryItem
   @OrganizationName varchar(200),
   @Success bit,
   @LoginDateTime datetime,
+  @IPAddress varchar(1000),
   @Identity int OUT
 )
 AS
@@ -14450,13 +15015,15 @@ AS
     [OrganizationID],
     [OrganizationName],
     [Success],
-    [LoginDateTime])
+    [LoginDateTime],
+    [IPAddress])
   VALUES (
     @UserName,
     @OrganizationID,
     @OrganizationName,
     @Success,
-    @LoginDateTime)
+    @LoginDateTime,
+    @IPAddress)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -14472,7 +15039,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalLoginHistoryItem
   @OrganizationID int,
   @OrganizationName varchar(200),
   @Success bit,
-  @LoginDateTime datetime
+  @LoginDateTime datetime,
+  @IPAddress varchar(1000)
 )
 AS
   SET NOCOUNT OFF;
@@ -14482,7 +15050,8 @@ AS
     [OrganizationID] = @OrganizationID,
     [OrganizationName] = @OrganizationName,
     [Success] = @Success,
-    [LoginDateTime] = @LoginDateTime
+    [LoginDateTime] = @LoginDateTime,
+    [IPAddress] = @IPAddress
   WHERE ([PortalLoginID] = @PortalLoginID)
 GO
 
@@ -15161,7 +15730,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertNote
   @RefType int,
   @RefID int,
   @Title varchar(1000),
-  @Description text,
+  @Description varchar(MAX),
   @CreatorID int,
   @ModifierID int,
   @DateCreated datetime,
@@ -15203,7 +15772,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateNote
   @RefType int,
   @RefID int,
   @Title varchar(1000),
-  @Description text,
+  @Description varchar(MAX),
   @ModifierID int,
   @DateModified datetime
 )
@@ -15360,7 +15929,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertProductVersion
   @VersionNumber varchar(50),
   @ReleaseDate datetime,
   @IsReleased bit,
-  @Description text,
+  @Description varchar(MAX),
   @ImportID varchar(50),
   @DateCreated datetime,
   @DateModified datetime,
@@ -15411,7 +15980,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersion
   @VersionNumber varchar(50),
   @ReleaseDate datetime,
   @IsReleased bit,
-  @Description text,
+  @Description varchar(MAX),
   @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int
@@ -15613,7 +16182,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganizationEmail
   @Subject varchar(200),
   @Header varchar(1000),
   @Footer varchar(1000),
-  @Body text,
+  @Body varchar(MAX),
   @IsHtml bit,
   @UseGlobalTemplate bit,
   @Identity int OUT
@@ -15655,7 +16224,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganizationEmail
   @Subject varchar(200),
   @Header varchar(1000),
   @Footer varchar(1000),
-  @Body text,
+  @Body varchar(MAX),
   @IsHtml bit,
   @UseGlobalTemplate bit
 )
@@ -16927,6 +17496,167 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailPost
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3]
+  FROM [dbo].[EmailPosts]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
+
+(
+  @EmailPostType int,
+  @HoldTime int,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailPosts]
+  (
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3])
+  VALUES (
+    @EmailPostType,
+    @HoldTime,
+    @DateCreated,
+    @CreatorID,
+    @Param1,
+    @Param2,
+    @Param3,
+    @Param4,
+    @Param5,
+    @Param6,
+    @Param7,
+    @Param8,
+    @Param9,
+    @Param10,
+    @Text1,
+    @Text2,
+    @Text3)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailPosts]
+  SET
+    [EmailPostType] = @EmailPostType,
+    [HoldTime] = @HoldTime,
+    [Param1] = @Param1,
+    [Param2] = @Param2,
+    [Param3] = @Param3,
+    [Param4] = @Param4,
+    [Param5] = @Param5,
+    [Param6] = @Param6,
+    [Param7] = @Param7,
+    [Param8] = @Param8,
+    [Param9] = @Param9,
+    [Param10] = @Param10,
+    [Text1] = @Text1,
+    [Text2] = @Text2,
+    [Text3] = @Text3
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPost
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailPosts]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatSetting
 GO
 
@@ -16953,7 +17683,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertChatSetting
 (
   @OrganizationID int,
   @UseCss bit,
-  @ClientCss text,
+  @ClientCss varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -16979,7 +17709,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateChatSetting
 (
   @OrganizationID int,
   @UseCss bit,
-  @ClientCss text
+  @ClientCss varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -17520,6 +18250,144 @@ AS
     [Name]
   FROM [dbo].[ExceptionLogView]
   WHERE ([ExceptionLogID] = @ExceptionLogID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailTemplate
+
+(
+  @EmailTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailTemplateID],
+    [Position],
+    [Name],
+    [Description],
+    [IsTSOnly],
+    [Subject],
+    [Header],
+    [Footer],
+    [IsHtml],
+    [IncludeDelimiter],
+    [IsEmail],
+    [UseGlobalTemplate],
+    [Body]
+  FROM [dbo].[EmailTemplates]
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailTemplate
+
+(
+  @EmailTemplateID int,
+  @Position int,
+  @Name varchar(100),
+  @Description varchar(1000),
+  @IsTSOnly bit,
+  @Subject varchar(200),
+  @Header varchar(1000),
+  @Footer varchar(1000),
+  @IsHtml bit,
+  @IncludeDelimiter bit,
+  @IsEmail bit,
+  @UseGlobalTemplate bit,
+  @Body varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailTemplates]
+  (
+    [EmailTemplateID],
+    [Position],
+    [Name],
+    [Description],
+    [IsTSOnly],
+    [Subject],
+    [Header],
+    [Footer],
+    [IsHtml],
+    [IncludeDelimiter],
+    [IsEmail],
+    [UseGlobalTemplate],
+    [Body])
+  VALUES (
+    @EmailTemplateID,
+    @Position,
+    @Name,
+    @Description,
+    @IsTSOnly,
+    @Subject,
+    @Header,
+    @Footer,
+    @IsHtml,
+    @IncludeDelimiter,
+    @IsEmail,
+    @UseGlobalTemplate,
+    @Body)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
+
+(
+  @EmailTemplateID int,
+  @Position int,
+  @Name varchar(100),
+  @Description varchar(1000),
+  @IsTSOnly bit,
+  @Subject varchar(200),
+  @Header varchar(1000),
+  @Footer varchar(1000),
+  @IsHtml bit,
+  @IncludeDelimiter bit,
+  @IsEmail bit,
+  @UseGlobalTemplate bit,
+  @Body varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailTemplates]
+  SET
+    [Position] = @Position,
+    [Name] = @Name,
+    [Description] = @Description,
+    [IsTSOnly] = @IsTSOnly,
+    [Subject] = @Subject,
+    [Header] = @Header,
+    [Footer] = @Footer,
+    [IsHtml] = @IsHtml,
+    [IncludeDelimiter] = @IncludeDelimiter,
+    [IsEmail] = @IsEmail,
+    [UseGlobalTemplate] = @UseGlobalTemplate,
+    [Body] = @Body
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
+
+(
+  @EmailTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailTemplates]
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
 GO
 
 
@@ -18456,6 +19324,170 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailPostHistoryItem
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3]
+  FROM [dbo].[EmailPostHistory]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailPostHistory]
+  (
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3])
+  VALUES (
+    @EmailPostID,
+    @EmailPostType,
+    @HoldTime,
+    @DateCreated,
+    @CreatorID,
+    @Param1,
+    @Param2,
+    @Param3,
+    @Param4,
+    @Param5,
+    @Param6,
+    @Param7,
+    @Param8,
+    @Param9,
+    @Param10,
+    @Text1,
+    @Text2,
+    @Text3)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailPostHistory]
+  SET
+    [EmailPostType] = @EmailPostType,
+    [HoldTime] = @HoldTime,
+    [Param1] = @Param1,
+    [Param2] = @Param2,
+    [Param3] = @Param3,
+    [Param4] = @Param4,
+    [Param5] = @Param5,
+    [Param6] = @Param6,
+    [Param7] = @Param7,
+    [Param8] = @Param8,
+    [Param9] = @Param9,
+    [Param10] = @Param10,
+    [Text1] = @Text1,
+    [Text2] = @Text2,
+    [Text3] = @Text3
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPostHistoryItem
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailPostHistory]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserTicketStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserTicketStatus
 GO
 
@@ -18675,6 +19707,87 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[SlaTriggers]
   WHERE ([SlaTriggerID] = @SlaTriggerID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [DeletedIndexID],
+    [RefID],
+    [RefType],
+    [DateDeleted]
+  FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+
+(
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[DeletedIndexItems]
+  (
+    [RefID],
+    [RefType],
+    [DateDeleted])
+  VALUES (
+    @RefID,
+    @RefType,
+    @DateDeleted)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+
+(
+  @DeletedIndexID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[DeletedIndexItems]
+  SET
+    [RefID] = @RefID,
+    [RefType] = @RefType,
+    [DateDeleted] = @DateDeleted
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
 GO
 
 
@@ -19097,167 +20210,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[WaterCooler]
   WHERE ([MessageID] = @MessageID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmailPost
-
-(
-  @EmailPostID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailPostID],
-    [EmailPostType],
-    [HoldTime],
-    [DateCreated],
-    [CreatorID],
-    [Param1],
-    [Param2],
-    [Param3],
-    [Param4],
-    [Param5],
-    [Param6],
-    [Param7],
-    [Param8],
-    [Param9],
-    [Param10],
-    [Text1],
-    [Text2],
-    [Text3]
-  FROM [dbo].[EmailPosts]
-  WHERE ([EmailPostID] = @EmailPostID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
-
-(
-  @EmailPostType int,
-  @HoldTime int,
-  @DateCreated datetime,
-  @CreatorID int,
-  @Param1 varchar(8000),
-  @Param2 varchar(8000),
-  @Param3 varchar(8000),
-  @Param4 varchar(8000),
-  @Param5 varchar(8000),
-  @Param6 varchar(8000),
-  @Param7 varchar(8000),
-  @Param8 varchar(8000),
-  @Param9 varchar(8000),
-  @Param10 varchar(8000),
-  @Text1 text,
-  @Text2 text,
-  @Text3 text,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[EmailPosts]
-  (
-    [EmailPostType],
-    [HoldTime],
-    [DateCreated],
-    [CreatorID],
-    [Param1],
-    [Param2],
-    [Param3],
-    [Param4],
-    [Param5],
-    [Param6],
-    [Param7],
-    [Param8],
-    [Param9],
-    [Param10],
-    [Text1],
-    [Text2],
-    [Text3])
-  VALUES (
-    @EmailPostType,
-    @HoldTime,
-    @DateCreated,
-    @CreatorID,
-    @Param1,
-    @Param2,
-    @Param3,
-    @Param4,
-    @Param5,
-    @Param6,
-    @Param7,
-    @Param8,
-    @Param9,
-    @Param10,
-    @Text1,
-    @Text2,
-    @Text3)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
-
-(
-  @EmailPostID int,
-  @EmailPostType int,
-  @HoldTime int,
-  @Param1 varchar(8000),
-  @Param2 varchar(8000),
-  @Param3 varchar(8000),
-  @Param4 varchar(8000),
-  @Param5 varchar(8000),
-  @Param6 varchar(8000),
-  @Param7 varchar(8000),
-  @Param8 varchar(8000),
-  @Param9 varchar(8000),
-  @Param10 varchar(8000),
-  @Text1 text,
-  @Text2 text,
-  @Text3 text
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[EmailPosts]
-  SET
-    [EmailPostType] = @EmailPostType,
-    [HoldTime] = @HoldTime,
-    [Param1] = @Param1,
-    [Param2] = @Param2,
-    [Param3] = @Param3,
-    [Param4] = @Param4,
-    [Param5] = @Param5,
-    [Param6] = @Param6,
-    [Param7] = @Param7,
-    [Param8] = @Param8,
-    [Param9] = @Param9,
-    [Param10] = @Param10,
-    [Text1] = @Text1,
-    [Text2] = @Text2,
-    [Text3] = @Text3
-  WHERE ([EmailPostID] = @EmailPostID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPost
-
-(
-  @EmailPostID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[EmailPosts]
-  WHERE ([EmailPostID] = @EmailPostID)
 GO
 
 
@@ -20292,175 +21244,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailID],
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [DateCreated]
-  FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmail
-
-(
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject varchar(8000),
-  @Body text,
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @DateCreated datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Emails]
-  (
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [DateCreated])
-  VALUES (
-    @OrganizationID,
-    @Description,
-    @FromAddress,
-    @ToAddress,
-    @CCAddress,
-    @BCCAddress,
-    @Subject,
-    @Body,
-    @Attachments,
-    @Size,
-    @IsSuccess,
-    @IsWaiting,
-    @IsHtml,
-    @Attempts,
-    @NextAttempt,
-    @DateSent,
-    @LastFailedReason,
-    @DateCreated)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
-
-(
-  @EmailID int,
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject varchar(8000),
-  @Body text,
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Emails]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Description] = @Description,
-    [FromAddress] = @FromAddress,
-    [ToAddress] = @ToAddress,
-    [CCAddress] = @CCAddress,
-    [BCCAddress] = @BCCAddress,
-    [Subject] = @Subject,
-    [Body] = @Body,
-    [Attachments] = @Attachments,
-    [Size] = @Size,
-    [IsSuccess] = @IsSuccess,
-    [IsWaiting] = @IsWaiting,
-    [IsHtml] = @IsHtml,
-    [Attempts] = @Attempts,
-    [NextAttempt] = @NextAttempt,
-    [DateSent] = @DateSent,
-    [LastFailedReason] = @LastFailedReason
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserSetting
 GO
 
@@ -20903,251 +21686,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[Actions]
   WHERE ([ActionID] = @ActionID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
 GO
 
 
@@ -22409,7 +22947,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportDataItem
 (
   @UserID int,
   @ReportID int,
-  @ReportData text,
+  @ReportData varchar(MAX),
   @QueryObject varchar(8000),
   @CreatorID int,
   @ModifierID int,
@@ -22451,7 +22989,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportDataItem
   @ReportDataID int,
   @UserID int,
   @ReportID int,
-  @ReportData text,
+  @ReportData varchar(MAX),
   @QueryObject varchar(8000),
   @ModifierID int,
   @DateModified datetime
@@ -22600,144 +23138,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketTypes]
   WHERE ([TicketTypeID] = @TicketTypeID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmailTemplate
-
-(
-  @EmailTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailTemplateID],
-    [Position],
-    [Name],
-    [Description],
-    [IsTSOnly],
-    [Subject],
-    [Header],
-    [Footer],
-    [IsHtml],
-    [IncludeDelimiter],
-    [IsEmail],
-    [UseGlobalTemplate],
-    [Body]
-  FROM [dbo].[EmailTemplates]
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmailTemplate
-
-(
-  @EmailTemplateID int,
-  @Position int,
-  @Name varchar(100),
-  @Description varchar(1000),
-  @IsTSOnly bit,
-  @Subject varchar(200),
-  @Header varchar(1000),
-  @Footer varchar(1000),
-  @IsHtml bit,
-  @IncludeDelimiter bit,
-  @IsEmail bit,
-  @UseGlobalTemplate bit,
-  @Body text,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[EmailTemplates]
-  (
-    [EmailTemplateID],
-    [Position],
-    [Name],
-    [Description],
-    [IsTSOnly],
-    [Subject],
-    [Header],
-    [Footer],
-    [IsHtml],
-    [IncludeDelimiter],
-    [IsEmail],
-    [UseGlobalTemplate],
-    [Body])
-  VALUES (
-    @EmailTemplateID,
-    @Position,
-    @Name,
-    @Description,
-    @IsTSOnly,
-    @Subject,
-    @Header,
-    @Footer,
-    @IsHtml,
-    @IncludeDelimiter,
-    @IsEmail,
-    @UseGlobalTemplate,
-    @Body)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
-
-(
-  @EmailTemplateID int,
-  @Position int,
-  @Name varchar(100),
-  @Description varchar(1000),
-  @IsTSOnly bit,
-  @Subject varchar(200),
-  @Header varchar(1000),
-  @Footer varchar(1000),
-  @IsHtml bit,
-  @IncludeDelimiter bit,
-  @IsEmail bit,
-  @UseGlobalTemplate bit,
-  @Body text
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[EmailTemplates]
-  SET
-    [Position] = @Position,
-    [Name] = @Name,
-    [Description] = @Description,
-    [IsTSOnly] = @IsTSOnly,
-    [Subject] = @Subject,
-    [Header] = @Header,
-    [Footer] = @Footer,
-    [IsHtml] = @IsHtml,
-    [IncludeDelimiter] = @IncludeDelimiter,
-    [IsEmail] = @IsEmail,
-    [UseGlobalTemplate] = @UseGlobalTemplate,
-    [Body] = @Body
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
-
-(
-  @EmailTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[EmailTemplates]
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
 GO
 
 
@@ -22943,6 +23343,263 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [DocID],
+    [NeedsIndexing],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @DocID int,
+  @NeedsIndexing bit,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [DocID],
+    [NeedsIndexing],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @DocID,
+    @NeedsIndexing,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @DocID int,
+  @NeedsIndexing bit,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [DocID] = @DocID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -22977,7 +23634,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertApiLog
   @Url varchar(2100),
   @Verb varchar(20),
   @StatusCode int,
-  @RequestBody text,
+  @RequestBody varchar(MAX),
   @DateCreated datetime,
   @Identity int OUT
 )
@@ -23016,7 +23673,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateApiLog
   @Url varchar(2100),
   @Verb varchar(20),
   @StatusCode int,
-  @RequestBody text
+  @RequestBody varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -24449,6 +25106,181 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailID],
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated]
+  FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmail
+
+(
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(8000),
+  @CCAddress varchar(8000),
+  @BCCAddress varchar(8000),
+  @Subject varchar(8000),
+  @Body varchar(MAX),
+  @Attachments varchar(8000),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(8000),
+  @EmailPostID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Emails]
+  (
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @Description,
+    @FromAddress,
+    @ToAddress,
+    @CCAddress,
+    @BCCAddress,
+    @Subject,
+    @Body,
+    @Attachments,
+    @Size,
+    @IsSuccess,
+    @IsWaiting,
+    @IsHtml,
+    @Attempts,
+    @NextAttempt,
+    @DateSent,
+    @LastFailedReason,
+    @EmailPostID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
+
+(
+  @EmailID int,
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(8000),
+  @CCAddress varchar(8000),
+  @BCCAddress varchar(8000),
+  @Subject varchar(8000),
+  @Body varchar(MAX),
+  @Attachments varchar(8000),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(8000),
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Emails]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Description] = @Description,
+    [FromAddress] = @FromAddress,
+    [ToAddress] = @ToAddress,
+    [CCAddress] = @CCAddress,
+    [BCCAddress] = @BCCAddress,
+    [Subject] = @Subject,
+    [Body] = @Body,
+    [Attachments] = @Attachments,
+    [Size] = @Size,
+    [IsSuccess] = @IsSuccess,
+    [IsWaiting] = @IsWaiting,
+    [IsHtml] = @IsHtml,
+    [Attempts] = @Attempts,
+    [NextAttempt] = @NextAttempt,
+    [DateSent] = @DateSent,
+    [LastFailedReason] = @LastFailedReason,
+    [EmailPostID] = @EmailPostID
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatParticipant' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatParticipant
 GO
 
@@ -25169,7 +26001,8 @@ AS
     [OrganizationID],
     [OrganizationName],
     [Success],
-    [LoginDateTime]
+    [LoginDateTime],
+    [IPAddress]
   FROM [dbo].[PortalLoginHistory]
   WHERE ([PortalLoginID] = @PortalLoginID)
 GO
@@ -25185,6 +26018,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalLoginHistoryItem
   @OrganizationName varchar(200),
   @Success bit,
   @LoginDateTime datetime,
+  @IPAddress varchar(1000),
   @Identity int OUT
 )
 AS
@@ -25195,13 +26029,15 @@ AS
     [OrganizationID],
     [OrganizationName],
     [Success],
-    [LoginDateTime])
+    [LoginDateTime],
+    [IPAddress])
   VALUES (
     @UserName,
     @OrganizationID,
     @OrganizationName,
     @Success,
-    @LoginDateTime)
+    @LoginDateTime,
+    @IPAddress)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -25217,7 +26053,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalLoginHistoryItem
   @OrganizationID int,
   @OrganizationName varchar(200),
   @Success bit,
-  @LoginDateTime datetime
+  @LoginDateTime datetime,
+  @IPAddress varchar(1000)
 )
 AS
   SET NOCOUNT OFF;
@@ -25227,7 +26064,8 @@ AS
     [OrganizationID] = @OrganizationID,
     [OrganizationName] = @OrganizationName,
     [Success] = @Success,
-    [LoginDateTime] = @LoginDateTime
+    [LoginDateTime] = @LoginDateTime,
+    [IPAddress] = @IPAddress
   WHERE ([PortalLoginID] = @PortalLoginID)
 GO
 
@@ -25906,7 +26744,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertNote
   @RefType int,
   @RefID int,
   @Title varchar(1000),
-  @Description text,
+  @Description varchar(MAX),
   @CreatorID int,
   @ModifierID int,
   @DateCreated datetime,
@@ -25948,7 +26786,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateNote
   @RefType int,
   @RefID int,
   @Title varchar(1000),
-  @Description text,
+  @Description varchar(MAX),
   @ModifierID int,
   @DateModified datetime
 )
@@ -26105,7 +26943,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertProductVersion
   @VersionNumber varchar(50),
   @ReleaseDate datetime,
   @IsReleased bit,
-  @Description text,
+  @Description varchar(MAX),
   @ImportID varchar(50),
   @DateCreated datetime,
   @DateModified datetime,
@@ -26156,7 +26994,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersion
   @VersionNumber varchar(50),
   @ReleaseDate datetime,
   @IsReleased bit,
-  @Description text,
+  @Description varchar(MAX),
   @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int
@@ -26358,7 +27196,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganizationEmail
   @Subject varchar(200),
   @Header varchar(1000),
   @Footer varchar(1000),
-  @Body text,
+  @Body varchar(MAX),
   @IsHtml bit,
   @UseGlobalTemplate bit,
   @Identity int OUT
@@ -26400,7 +27238,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganizationEmail
   @Subject varchar(200),
   @Header varchar(1000),
   @Footer varchar(1000),
-  @Body text,
+  @Body varchar(MAX),
   @IsHtml bit,
   @UseGlobalTemplate bit
 )
@@ -27672,6 +28510,167 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailPost
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3]
+  FROM [dbo].[EmailPosts]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
+
+(
+  @EmailPostType int,
+  @HoldTime int,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailPosts]
+  (
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3])
+  VALUES (
+    @EmailPostType,
+    @HoldTime,
+    @DateCreated,
+    @CreatorID,
+    @Param1,
+    @Param2,
+    @Param3,
+    @Param4,
+    @Param5,
+    @Param6,
+    @Param7,
+    @Param8,
+    @Param9,
+    @Param10,
+    @Text1,
+    @Text2,
+    @Text3)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailPosts]
+  SET
+    [EmailPostType] = @EmailPostType,
+    [HoldTime] = @HoldTime,
+    [Param1] = @Param1,
+    [Param2] = @Param2,
+    [Param3] = @Param3,
+    [Param4] = @Param4,
+    [Param5] = @Param5,
+    [Param6] = @Param6,
+    [Param7] = @Param7,
+    [Param8] = @Param8,
+    [Param9] = @Param9,
+    [Param10] = @Param10,
+    [Text1] = @Text1,
+    [Text2] = @Text2,
+    [Text3] = @Text3
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPost
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailPosts]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatSetting
 GO
 
@@ -27698,7 +28697,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertChatSetting
 (
   @OrganizationID int,
   @UseCss bit,
-  @ClientCss text,
+  @ClientCss varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -27724,7 +28723,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateChatSetting
 (
   @OrganizationID int,
   @UseCss bit,
-  @ClientCss text
+  @ClientCss varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -28265,6 +29264,144 @@ AS
     [Name]
   FROM [dbo].[ExceptionLogView]
   WHERE ([ExceptionLogID] = @ExceptionLogID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailTemplate
+
+(
+  @EmailTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailTemplateID],
+    [Position],
+    [Name],
+    [Description],
+    [IsTSOnly],
+    [Subject],
+    [Header],
+    [Footer],
+    [IsHtml],
+    [IncludeDelimiter],
+    [IsEmail],
+    [UseGlobalTemplate],
+    [Body]
+  FROM [dbo].[EmailTemplates]
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailTemplate
+
+(
+  @EmailTemplateID int,
+  @Position int,
+  @Name varchar(100),
+  @Description varchar(1000),
+  @IsTSOnly bit,
+  @Subject varchar(200),
+  @Header varchar(1000),
+  @Footer varchar(1000),
+  @IsHtml bit,
+  @IncludeDelimiter bit,
+  @IsEmail bit,
+  @UseGlobalTemplate bit,
+  @Body varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailTemplates]
+  (
+    [EmailTemplateID],
+    [Position],
+    [Name],
+    [Description],
+    [IsTSOnly],
+    [Subject],
+    [Header],
+    [Footer],
+    [IsHtml],
+    [IncludeDelimiter],
+    [IsEmail],
+    [UseGlobalTemplate],
+    [Body])
+  VALUES (
+    @EmailTemplateID,
+    @Position,
+    @Name,
+    @Description,
+    @IsTSOnly,
+    @Subject,
+    @Header,
+    @Footer,
+    @IsHtml,
+    @IncludeDelimiter,
+    @IsEmail,
+    @UseGlobalTemplate,
+    @Body)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
+
+(
+  @EmailTemplateID int,
+  @Position int,
+  @Name varchar(100),
+  @Description varchar(1000),
+  @IsTSOnly bit,
+  @Subject varchar(200),
+  @Header varchar(1000),
+  @Footer varchar(1000),
+  @IsHtml bit,
+  @IncludeDelimiter bit,
+  @IsEmail bit,
+  @UseGlobalTemplate bit,
+  @Body varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailTemplates]
+  SET
+    [Position] = @Position,
+    [Name] = @Name,
+    [Description] = @Description,
+    [IsTSOnly] = @IsTSOnly,
+    [Subject] = @Subject,
+    [Header] = @Header,
+    [Footer] = @Footer,
+    [IsHtml] = @IsHtml,
+    [IncludeDelimiter] = @IncludeDelimiter,
+    [IsEmail] = @IsEmail,
+    [UseGlobalTemplate] = @UseGlobalTemplate,
+    [Body] = @Body
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
+
+(
+  @EmailTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailTemplates]
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
 GO
 
 
@@ -29201,6 +30338,170 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailPostHistoryItem
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3]
+  FROM [dbo].[EmailPostHistory]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailPostHistory]
+  (
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3])
+  VALUES (
+    @EmailPostID,
+    @EmailPostType,
+    @HoldTime,
+    @DateCreated,
+    @CreatorID,
+    @Param1,
+    @Param2,
+    @Param3,
+    @Param4,
+    @Param5,
+    @Param6,
+    @Param7,
+    @Param8,
+    @Param9,
+    @Param10,
+    @Text1,
+    @Text2,
+    @Text3)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailPostHistory]
+  SET
+    [EmailPostType] = @EmailPostType,
+    [HoldTime] = @HoldTime,
+    [Param1] = @Param1,
+    [Param2] = @Param2,
+    [Param3] = @Param3,
+    [Param4] = @Param4,
+    [Param5] = @Param5,
+    [Param6] = @Param6,
+    [Param7] = @Param7,
+    [Param8] = @Param8,
+    [Param9] = @Param9,
+    [Param10] = @Param10,
+    [Text1] = @Text1,
+    [Text2] = @Text2,
+    [Text3] = @Text3
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPostHistoryItem
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailPostHistory]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserTicketStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserTicketStatus
 GO
 
@@ -29420,6 +30721,87 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[SlaTriggers]
   WHERE ([SlaTriggerID] = @SlaTriggerID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [DeletedIndexID],
+    [RefID],
+    [RefType],
+    [DateDeleted]
+  FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+
+(
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[DeletedIndexItems]
+  (
+    [RefID],
+    [RefType],
+    [DateDeleted])
+  VALUES (
+    @RefID,
+    @RefType,
+    @DateDeleted)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+
+(
+  @DeletedIndexID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[DeletedIndexItems]
+  SET
+    [RefID] = @RefID,
+    [RefType] = @RefType,
+    [DateDeleted] = @DateDeleted
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
 GO
 
 
@@ -29842,167 +31224,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[WaterCooler]
   WHERE ([MessageID] = @MessageID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmailPost
-
-(
-  @EmailPostID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailPostID],
-    [EmailPostType],
-    [HoldTime],
-    [DateCreated],
-    [CreatorID],
-    [Param1],
-    [Param2],
-    [Param3],
-    [Param4],
-    [Param5],
-    [Param6],
-    [Param7],
-    [Param8],
-    [Param9],
-    [Param10],
-    [Text1],
-    [Text2],
-    [Text3]
-  FROM [dbo].[EmailPosts]
-  WHERE ([EmailPostID] = @EmailPostID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
-
-(
-  @EmailPostType int,
-  @HoldTime int,
-  @DateCreated datetime,
-  @CreatorID int,
-  @Param1 varchar(8000),
-  @Param2 varchar(8000),
-  @Param3 varchar(8000),
-  @Param4 varchar(8000),
-  @Param5 varchar(8000),
-  @Param6 varchar(8000),
-  @Param7 varchar(8000),
-  @Param8 varchar(8000),
-  @Param9 varchar(8000),
-  @Param10 varchar(8000),
-  @Text1 text,
-  @Text2 text,
-  @Text3 text,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[EmailPosts]
-  (
-    [EmailPostType],
-    [HoldTime],
-    [DateCreated],
-    [CreatorID],
-    [Param1],
-    [Param2],
-    [Param3],
-    [Param4],
-    [Param5],
-    [Param6],
-    [Param7],
-    [Param8],
-    [Param9],
-    [Param10],
-    [Text1],
-    [Text2],
-    [Text3])
-  VALUES (
-    @EmailPostType,
-    @HoldTime,
-    @DateCreated,
-    @CreatorID,
-    @Param1,
-    @Param2,
-    @Param3,
-    @Param4,
-    @Param5,
-    @Param6,
-    @Param7,
-    @Param8,
-    @Param9,
-    @Param10,
-    @Text1,
-    @Text2,
-    @Text3)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
-
-(
-  @EmailPostID int,
-  @EmailPostType int,
-  @HoldTime int,
-  @Param1 varchar(8000),
-  @Param2 varchar(8000),
-  @Param3 varchar(8000),
-  @Param4 varchar(8000),
-  @Param5 varchar(8000),
-  @Param6 varchar(8000),
-  @Param7 varchar(8000),
-  @Param8 varchar(8000),
-  @Param9 varchar(8000),
-  @Param10 varchar(8000),
-  @Text1 text,
-  @Text2 text,
-  @Text3 text
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[EmailPosts]
-  SET
-    [EmailPostType] = @EmailPostType,
-    [HoldTime] = @HoldTime,
-    [Param1] = @Param1,
-    [Param2] = @Param2,
-    [Param3] = @Param3,
-    [Param4] = @Param4,
-    [Param5] = @Param5,
-    [Param6] = @Param6,
-    [Param7] = @Param7,
-    [Param8] = @Param8,
-    [Param9] = @Param9,
-    [Param10] = @Param10,
-    [Text1] = @Text1,
-    [Text2] = @Text2,
-    [Text3] = @Text3
-  WHERE ([EmailPostID] = @EmailPostID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPost
-
-(
-  @EmailPostID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[EmailPosts]
-  WHERE ([EmailPostID] = @EmailPostID)
 GO
 
 
@@ -31037,175 +32258,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailID],
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [DateCreated]
-  FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmail
-
-(
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject varchar(8000),
-  @Body text,
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @DateCreated datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Emails]
-  (
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [DateCreated])
-  VALUES (
-    @OrganizationID,
-    @Description,
-    @FromAddress,
-    @ToAddress,
-    @CCAddress,
-    @BCCAddress,
-    @Subject,
-    @Body,
-    @Attachments,
-    @Size,
-    @IsSuccess,
-    @IsWaiting,
-    @IsHtml,
-    @Attempts,
-    @NextAttempt,
-    @DateSent,
-    @LastFailedReason,
-    @DateCreated)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
-
-(
-  @EmailID int,
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject varchar(8000),
-  @Body text,
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Emails]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Description] = @Description,
-    [FromAddress] = @FromAddress,
-    [ToAddress] = @ToAddress,
-    [CCAddress] = @CCAddress,
-    [BCCAddress] = @BCCAddress,
-    [Subject] = @Subject,
-    [Body] = @Body,
-    [Attachments] = @Attachments,
-    [Size] = @Size,
-    [IsSuccess] = @IsSuccess,
-    [IsWaiting] = @IsWaiting,
-    [IsHtml] = @IsHtml,
-    [Attempts] = @Attempts,
-    [NextAttempt] = @NextAttempt,
-    [DateSent] = @DateSent,
-    [LastFailedReason] = @LastFailedReason
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserSetting
 GO
 
@@ -31648,251 +32700,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[Actions]
   WHERE ([ActionID] = @ActionID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
 GO
 
 
@@ -33154,7 +33961,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportDataItem
 (
   @UserID int,
   @ReportID int,
-  @ReportData text,
+  @ReportData varchar(MAX),
   @QueryObject varchar(8000),
   @CreatorID int,
   @ModifierID int,
@@ -33196,7 +34003,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportDataItem
   @ReportDataID int,
   @UserID int,
   @ReportID int,
-  @ReportData text,
+  @ReportData varchar(MAX),
   @QueryObject varchar(8000),
   @ModifierID int,
   @DateModified datetime
@@ -33345,144 +34152,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketTypes]
   WHERE ([TicketTypeID] = @TicketTypeID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmailTemplate
-
-(
-  @EmailTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailTemplateID],
-    [Position],
-    [Name],
-    [Description],
-    [IsTSOnly],
-    [Subject],
-    [Header],
-    [Footer],
-    [IsHtml],
-    [IncludeDelimiter],
-    [IsEmail],
-    [UseGlobalTemplate],
-    [Body]
-  FROM [dbo].[EmailTemplates]
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmailTemplate
-
-(
-  @EmailTemplateID int,
-  @Position int,
-  @Name varchar(100),
-  @Description varchar(1000),
-  @IsTSOnly bit,
-  @Subject varchar(200),
-  @Header varchar(1000),
-  @Footer varchar(1000),
-  @IsHtml bit,
-  @IncludeDelimiter bit,
-  @IsEmail bit,
-  @UseGlobalTemplate bit,
-  @Body text,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[EmailTemplates]
-  (
-    [EmailTemplateID],
-    [Position],
-    [Name],
-    [Description],
-    [IsTSOnly],
-    [Subject],
-    [Header],
-    [Footer],
-    [IsHtml],
-    [IncludeDelimiter],
-    [IsEmail],
-    [UseGlobalTemplate],
-    [Body])
-  VALUES (
-    @EmailTemplateID,
-    @Position,
-    @Name,
-    @Description,
-    @IsTSOnly,
-    @Subject,
-    @Header,
-    @Footer,
-    @IsHtml,
-    @IncludeDelimiter,
-    @IsEmail,
-    @UseGlobalTemplate,
-    @Body)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
-
-(
-  @EmailTemplateID int,
-  @Position int,
-  @Name varchar(100),
-  @Description varchar(1000),
-  @IsTSOnly bit,
-  @Subject varchar(200),
-  @Header varchar(1000),
-  @Footer varchar(1000),
-  @IsHtml bit,
-  @IncludeDelimiter bit,
-  @IsEmail bit,
-  @UseGlobalTemplate bit,
-  @Body text
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[EmailTemplates]
-  SET
-    [Position] = @Position,
-    [Name] = @Name,
-    [Description] = @Description,
-    [IsTSOnly] = @IsTSOnly,
-    [Subject] = @Subject,
-    [Header] = @Header,
-    [Footer] = @Footer,
-    [IsHtml] = @IsHtml,
-    [IncludeDelimiter] = @IncludeDelimiter,
-    [IsEmail] = @IsEmail,
-    [UseGlobalTemplate] = @UseGlobalTemplate,
-    [Body] = @Body
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
-
-(
-  @EmailTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[EmailTemplates]
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
 GO
 
 
@@ -33688,6 +34357,263 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [DocID],
+    [NeedsIndexing],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @DocID int,
+  @NeedsIndexing bit,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [DocID],
+    [NeedsIndexing],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @DocID,
+    @NeedsIndexing,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @DocID int,
+  @NeedsIndexing bit,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [DocID] = @DocID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -33722,7 +34648,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertApiLog
   @Url varchar(2100),
   @Verb varchar(20),
   @StatusCode int,
-  @RequestBody text,
+  @RequestBody varchar(MAX),
   @DateCreated datetime,
   @Identity int OUT
 )
@@ -33761,7 +34687,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateApiLog
   @Url varchar(2100),
   @Verb varchar(20),
   @StatusCode int,
-  @RequestBody text
+  @RequestBody varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -35194,6 +36120,181 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailID],
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated]
+  FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmail
+
+(
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(8000),
+  @CCAddress varchar(8000),
+  @BCCAddress varchar(8000),
+  @Subject varchar(8000),
+  @Body varchar(MAX),
+  @Attachments varchar(8000),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(8000),
+  @EmailPostID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Emails]
+  (
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @Description,
+    @FromAddress,
+    @ToAddress,
+    @CCAddress,
+    @BCCAddress,
+    @Subject,
+    @Body,
+    @Attachments,
+    @Size,
+    @IsSuccess,
+    @IsWaiting,
+    @IsHtml,
+    @Attempts,
+    @NextAttempt,
+    @DateSent,
+    @LastFailedReason,
+    @EmailPostID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
+
+(
+  @EmailID int,
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(8000),
+  @CCAddress varchar(8000),
+  @BCCAddress varchar(8000),
+  @Subject varchar(8000),
+  @Body varchar(MAX),
+  @Attachments varchar(8000),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(8000),
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Emails]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Description] = @Description,
+    [FromAddress] = @FromAddress,
+    [ToAddress] = @ToAddress,
+    [CCAddress] = @CCAddress,
+    [BCCAddress] = @BCCAddress,
+    [Subject] = @Subject,
+    [Body] = @Body,
+    [Attachments] = @Attachments,
+    [Size] = @Size,
+    [IsSuccess] = @IsSuccess,
+    [IsWaiting] = @IsWaiting,
+    [IsHtml] = @IsHtml,
+    [Attempts] = @Attempts,
+    [NextAttempt] = @NextAttempt,
+    [DateSent] = @DateSent,
+    [LastFailedReason] = @LastFailedReason,
+    [EmailPostID] = @EmailPostID
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatParticipant' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatParticipant
 GO
 
@@ -35914,7 +37015,8 @@ AS
     [OrganizationID],
     [OrganizationName],
     [Success],
-    [LoginDateTime]
+    [LoginDateTime],
+    [IPAddress]
   FROM [dbo].[PortalLoginHistory]
   WHERE ([PortalLoginID] = @PortalLoginID)
 GO
@@ -35930,6 +37032,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalLoginHistoryItem
   @OrganizationName varchar(200),
   @Success bit,
   @LoginDateTime datetime,
+  @IPAddress varchar(1000),
   @Identity int OUT
 )
 AS
@@ -35940,13 +37043,15 @@ AS
     [OrganizationID],
     [OrganizationName],
     [Success],
-    [LoginDateTime])
+    [LoginDateTime],
+    [IPAddress])
   VALUES (
     @UserName,
     @OrganizationID,
     @OrganizationName,
     @Success,
-    @LoginDateTime)
+    @LoginDateTime,
+    @IPAddress)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -35962,7 +37067,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalLoginHistoryItem
   @OrganizationID int,
   @OrganizationName varchar(200),
   @Success bit,
-  @LoginDateTime datetime
+  @LoginDateTime datetime,
+  @IPAddress varchar(1000)
 )
 AS
   SET NOCOUNT OFF;
@@ -35972,7 +37078,8 @@ AS
     [OrganizationID] = @OrganizationID,
     [OrganizationName] = @OrganizationName,
     [Success] = @Success,
-    [LoginDateTime] = @LoginDateTime
+    [LoginDateTime] = @LoginDateTime,
+    [IPAddress] = @IPAddress
   WHERE ([PortalLoginID] = @PortalLoginID)
 GO
 
@@ -36651,7 +37758,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertNote
   @RefType int,
   @RefID int,
   @Title varchar(1000),
-  @Description text,
+  @Description varchar(MAX),
   @CreatorID int,
   @ModifierID int,
   @DateCreated datetime,
@@ -36693,7 +37800,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateNote
   @RefType int,
   @RefID int,
   @Title varchar(1000),
-  @Description text,
+  @Description varchar(MAX),
   @ModifierID int,
   @DateModified datetime
 )
@@ -36850,7 +37957,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertProductVersion
   @VersionNumber varchar(50),
   @ReleaseDate datetime,
   @IsReleased bit,
-  @Description text,
+  @Description varchar(MAX),
   @ImportID varchar(50),
   @DateCreated datetime,
   @DateModified datetime,
@@ -36901,7 +38008,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersion
   @VersionNumber varchar(50),
   @ReleaseDate datetime,
   @IsReleased bit,
-  @Description text,
+  @Description varchar(MAX),
   @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int
@@ -37103,7 +38210,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganizationEmail
   @Subject varchar(200),
   @Header varchar(1000),
   @Footer varchar(1000),
-  @Body text,
+  @Body varchar(MAX),
   @IsHtml bit,
   @UseGlobalTemplate bit,
   @Identity int OUT
@@ -37145,7 +38252,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganizationEmail
   @Subject varchar(200),
   @Header varchar(1000),
   @Footer varchar(1000),
-  @Body text,
+  @Body varchar(MAX),
   @IsHtml bit,
   @UseGlobalTemplate bit
 )
@@ -38417,6 +39524,167 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailPost
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3]
+  FROM [dbo].[EmailPosts]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
+
+(
+  @EmailPostType int,
+  @HoldTime int,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailPosts]
+  (
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3])
+  VALUES (
+    @EmailPostType,
+    @HoldTime,
+    @DateCreated,
+    @CreatorID,
+    @Param1,
+    @Param2,
+    @Param3,
+    @Param4,
+    @Param5,
+    @Param6,
+    @Param7,
+    @Param8,
+    @Param9,
+    @Param10,
+    @Text1,
+    @Text2,
+    @Text3)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailPosts]
+  SET
+    [EmailPostType] = @EmailPostType,
+    [HoldTime] = @HoldTime,
+    [Param1] = @Param1,
+    [Param2] = @Param2,
+    [Param3] = @Param3,
+    [Param4] = @Param4,
+    [Param5] = @Param5,
+    [Param6] = @Param6,
+    [Param7] = @Param7,
+    [Param8] = @Param8,
+    [Param9] = @Param9,
+    [Param10] = @Param10,
+    [Text1] = @Text1,
+    [Text2] = @Text2,
+    [Text3] = @Text3
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPost
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailPosts]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatSetting
 GO
 
@@ -38443,7 +39711,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertChatSetting
 (
   @OrganizationID int,
   @UseCss bit,
-  @ClientCss text,
+  @ClientCss varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -38469,7 +39737,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateChatSetting
 (
   @OrganizationID int,
   @UseCss bit,
-  @ClientCss text
+  @ClientCss varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -39010,6 +40278,144 @@ AS
     [Name]
   FROM [dbo].[ExceptionLogView]
   WHERE ([ExceptionLogID] = @ExceptionLogID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailTemplate
+
+(
+  @EmailTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailTemplateID],
+    [Position],
+    [Name],
+    [Description],
+    [IsTSOnly],
+    [Subject],
+    [Header],
+    [Footer],
+    [IsHtml],
+    [IncludeDelimiter],
+    [IsEmail],
+    [UseGlobalTemplate],
+    [Body]
+  FROM [dbo].[EmailTemplates]
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailTemplate
+
+(
+  @EmailTemplateID int,
+  @Position int,
+  @Name varchar(100),
+  @Description varchar(1000),
+  @IsTSOnly bit,
+  @Subject varchar(200),
+  @Header varchar(1000),
+  @Footer varchar(1000),
+  @IsHtml bit,
+  @IncludeDelimiter bit,
+  @IsEmail bit,
+  @UseGlobalTemplate bit,
+  @Body varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailTemplates]
+  (
+    [EmailTemplateID],
+    [Position],
+    [Name],
+    [Description],
+    [IsTSOnly],
+    [Subject],
+    [Header],
+    [Footer],
+    [IsHtml],
+    [IncludeDelimiter],
+    [IsEmail],
+    [UseGlobalTemplate],
+    [Body])
+  VALUES (
+    @EmailTemplateID,
+    @Position,
+    @Name,
+    @Description,
+    @IsTSOnly,
+    @Subject,
+    @Header,
+    @Footer,
+    @IsHtml,
+    @IncludeDelimiter,
+    @IsEmail,
+    @UseGlobalTemplate,
+    @Body)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
+
+(
+  @EmailTemplateID int,
+  @Position int,
+  @Name varchar(100),
+  @Description varchar(1000),
+  @IsTSOnly bit,
+  @Subject varchar(200),
+  @Header varchar(1000),
+  @Footer varchar(1000),
+  @IsHtml bit,
+  @IncludeDelimiter bit,
+  @IsEmail bit,
+  @UseGlobalTemplate bit,
+  @Body varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailTemplates]
+  SET
+    [Position] = @Position,
+    [Name] = @Name,
+    [Description] = @Description,
+    [IsTSOnly] = @IsTSOnly,
+    [Subject] = @Subject,
+    [Header] = @Header,
+    [Footer] = @Footer,
+    [IsHtml] = @IsHtml,
+    [IncludeDelimiter] = @IncludeDelimiter,
+    [IsEmail] = @IsEmail,
+    [UseGlobalTemplate] = @UseGlobalTemplate,
+    [Body] = @Body
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
+
+(
+  @EmailTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailTemplates]
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
 GO
 
 
@@ -39946,6 +41352,170 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailPostHistoryItem
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3]
+  FROM [dbo].[EmailPostHistory]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailPostHistory]
+  (
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3])
+  VALUES (
+    @EmailPostID,
+    @EmailPostType,
+    @HoldTime,
+    @DateCreated,
+    @CreatorID,
+    @Param1,
+    @Param2,
+    @Param3,
+    @Param4,
+    @Param5,
+    @Param6,
+    @Param7,
+    @Param8,
+    @Param9,
+    @Param10,
+    @Text1,
+    @Text2,
+    @Text3)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailPostHistory]
+  SET
+    [EmailPostType] = @EmailPostType,
+    [HoldTime] = @HoldTime,
+    [Param1] = @Param1,
+    [Param2] = @Param2,
+    [Param3] = @Param3,
+    [Param4] = @Param4,
+    [Param5] = @Param5,
+    [Param6] = @Param6,
+    [Param7] = @Param7,
+    [Param8] = @Param8,
+    [Param9] = @Param9,
+    [Param10] = @Param10,
+    [Text1] = @Text1,
+    [Text2] = @Text2,
+    [Text3] = @Text3
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPostHistoryItem
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailPostHistory]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserTicketStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserTicketStatus
 GO
 
@@ -40165,6 +41735,87 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[SlaTriggers]
   WHERE ([SlaTriggerID] = @SlaTriggerID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [DeletedIndexID],
+    [RefID],
+    [RefType],
+    [DateDeleted]
+  FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+
+(
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[DeletedIndexItems]
+  (
+    [RefID],
+    [RefType],
+    [DateDeleted])
+  VALUES (
+    @RefID,
+    @RefType,
+    @DateDeleted)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+
+(
+  @DeletedIndexID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[DeletedIndexItems]
+  SET
+    [RefID] = @RefID,
+    [RefType] = @RefType,
+    [DateDeleted] = @DateDeleted
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
 GO
 
 
@@ -40587,167 +42238,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[WaterCooler]
   WHERE ([MessageID] = @MessageID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmailPost
-
-(
-  @EmailPostID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailPostID],
-    [EmailPostType],
-    [HoldTime],
-    [DateCreated],
-    [CreatorID],
-    [Param1],
-    [Param2],
-    [Param3],
-    [Param4],
-    [Param5],
-    [Param6],
-    [Param7],
-    [Param8],
-    [Param9],
-    [Param10],
-    [Text1],
-    [Text2],
-    [Text3]
-  FROM [dbo].[EmailPosts]
-  WHERE ([EmailPostID] = @EmailPostID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
-
-(
-  @EmailPostType int,
-  @HoldTime int,
-  @DateCreated datetime,
-  @CreatorID int,
-  @Param1 varchar(8000),
-  @Param2 varchar(8000),
-  @Param3 varchar(8000),
-  @Param4 varchar(8000),
-  @Param5 varchar(8000),
-  @Param6 varchar(8000),
-  @Param7 varchar(8000),
-  @Param8 varchar(8000),
-  @Param9 varchar(8000),
-  @Param10 varchar(8000),
-  @Text1 text,
-  @Text2 text,
-  @Text3 text,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[EmailPosts]
-  (
-    [EmailPostType],
-    [HoldTime],
-    [DateCreated],
-    [CreatorID],
-    [Param1],
-    [Param2],
-    [Param3],
-    [Param4],
-    [Param5],
-    [Param6],
-    [Param7],
-    [Param8],
-    [Param9],
-    [Param10],
-    [Text1],
-    [Text2],
-    [Text3])
-  VALUES (
-    @EmailPostType,
-    @HoldTime,
-    @DateCreated,
-    @CreatorID,
-    @Param1,
-    @Param2,
-    @Param3,
-    @Param4,
-    @Param5,
-    @Param6,
-    @Param7,
-    @Param8,
-    @Param9,
-    @Param10,
-    @Text1,
-    @Text2,
-    @Text3)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
-
-(
-  @EmailPostID int,
-  @EmailPostType int,
-  @HoldTime int,
-  @Param1 varchar(8000),
-  @Param2 varchar(8000),
-  @Param3 varchar(8000),
-  @Param4 varchar(8000),
-  @Param5 varchar(8000),
-  @Param6 varchar(8000),
-  @Param7 varchar(8000),
-  @Param8 varchar(8000),
-  @Param9 varchar(8000),
-  @Param10 varchar(8000),
-  @Text1 text,
-  @Text2 text,
-  @Text3 text
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[EmailPosts]
-  SET
-    [EmailPostType] = @EmailPostType,
-    [HoldTime] = @HoldTime,
-    [Param1] = @Param1,
-    [Param2] = @Param2,
-    [Param3] = @Param3,
-    [Param4] = @Param4,
-    [Param5] = @Param5,
-    [Param6] = @Param6,
-    [Param7] = @Param7,
-    [Param8] = @Param8,
-    [Param9] = @Param9,
-    [Param10] = @Param10,
-    [Text1] = @Text1,
-    [Text2] = @Text2,
-    [Text3] = @Text3
-  WHERE ([EmailPostID] = @EmailPostID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPost
-
-(
-  @EmailPostID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[EmailPosts]
-  WHERE ([EmailPostID] = @EmailPostID)
 GO
 
 
@@ -41782,175 +43272,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailID],
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [DateCreated]
-  FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmail
-
-(
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject varchar(8000),
-  @Body text,
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @DateCreated datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Emails]
-  (
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [DateCreated])
-  VALUES (
-    @OrganizationID,
-    @Description,
-    @FromAddress,
-    @ToAddress,
-    @CCAddress,
-    @BCCAddress,
-    @Subject,
-    @Body,
-    @Attachments,
-    @Size,
-    @IsSuccess,
-    @IsWaiting,
-    @IsHtml,
-    @Attempts,
-    @NextAttempt,
-    @DateSent,
-    @LastFailedReason,
-    @DateCreated)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
-
-(
-  @EmailID int,
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject varchar(8000),
-  @Body text,
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Emails]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Description] = @Description,
-    [FromAddress] = @FromAddress,
-    [ToAddress] = @ToAddress,
-    [CCAddress] = @CCAddress,
-    [BCCAddress] = @BCCAddress,
-    [Subject] = @Subject,
-    [Body] = @Body,
-    [Attachments] = @Attachments,
-    [Size] = @Size,
-    [IsSuccess] = @IsSuccess,
-    [IsWaiting] = @IsWaiting,
-    [IsHtml] = @IsHtml,
-    [Attempts] = @Attempts,
-    [NextAttempt] = @NextAttempt,
-    [DateSent] = @DateSent,
-    [LastFailedReason] = @LastFailedReason
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserSetting
 GO
 
@@ -42393,251 +43714,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[Actions]
   WHERE ([ActionID] = @ActionID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
 GO
 
 
@@ -43899,7 +44975,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportDataItem
 (
   @UserID int,
   @ReportID int,
-  @ReportData text,
+  @ReportData varchar(MAX),
   @QueryObject varchar(8000),
   @CreatorID int,
   @ModifierID int,
@@ -43941,7 +45017,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportDataItem
   @ReportDataID int,
   @UserID int,
   @ReportID int,
-  @ReportData text,
+  @ReportData varchar(MAX),
   @QueryObject varchar(8000),
   @ModifierID int,
   @DateModified datetime
@@ -44090,144 +45166,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketTypes]
   WHERE ([TicketTypeID] = @TicketTypeID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmailTemplate
-
-(
-  @EmailTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailTemplateID],
-    [Position],
-    [Name],
-    [Description],
-    [IsTSOnly],
-    [Subject],
-    [Header],
-    [Footer],
-    [IsHtml],
-    [IncludeDelimiter],
-    [IsEmail],
-    [UseGlobalTemplate],
-    [Body]
-  FROM [dbo].[EmailTemplates]
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmailTemplate
-
-(
-  @EmailTemplateID int,
-  @Position int,
-  @Name varchar(100),
-  @Description varchar(1000),
-  @IsTSOnly bit,
-  @Subject varchar(200),
-  @Header varchar(1000),
-  @Footer varchar(1000),
-  @IsHtml bit,
-  @IncludeDelimiter bit,
-  @IsEmail bit,
-  @UseGlobalTemplate bit,
-  @Body text,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[EmailTemplates]
-  (
-    [EmailTemplateID],
-    [Position],
-    [Name],
-    [Description],
-    [IsTSOnly],
-    [Subject],
-    [Header],
-    [Footer],
-    [IsHtml],
-    [IncludeDelimiter],
-    [IsEmail],
-    [UseGlobalTemplate],
-    [Body])
-  VALUES (
-    @EmailTemplateID,
-    @Position,
-    @Name,
-    @Description,
-    @IsTSOnly,
-    @Subject,
-    @Header,
-    @Footer,
-    @IsHtml,
-    @IncludeDelimiter,
-    @IsEmail,
-    @UseGlobalTemplate,
-    @Body)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
-
-(
-  @EmailTemplateID int,
-  @Position int,
-  @Name varchar(100),
-  @Description varchar(1000),
-  @IsTSOnly bit,
-  @Subject varchar(200),
-  @Header varchar(1000),
-  @Footer varchar(1000),
-  @IsHtml bit,
-  @IncludeDelimiter bit,
-  @IsEmail bit,
-  @UseGlobalTemplate bit,
-  @Body text
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[EmailTemplates]
-  SET
-    [Position] = @Position,
-    [Name] = @Name,
-    [Description] = @Description,
-    [IsTSOnly] = @IsTSOnly,
-    [Subject] = @Subject,
-    [Header] = @Header,
-    [Footer] = @Footer,
-    [IsHtml] = @IsHtml,
-    [IncludeDelimiter] = @IncludeDelimiter,
-    [IsEmail] = @IsEmail,
-    [UseGlobalTemplate] = @UseGlobalTemplate,
-    [Body] = @Body
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
-
-(
-  @EmailTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[EmailTemplates]
-  WHERE ([EmailTemplateID] = @EmailTemplateID)
 GO
 
 
@@ -44433,6 +45371,263 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [DocID],
+    [NeedsIndexing],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @DocID int,
+  @NeedsIndexing bit,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [DocID],
+    [NeedsIndexing],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @DocID,
+    @NeedsIndexing,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @DocID int,
+  @NeedsIndexing bit,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [DocID] = @DocID,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -44467,7 +45662,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertApiLog
   @Url varchar(2100),
   @Verb varchar(20),
   @StatusCode int,
-  @RequestBody text,
+  @RequestBody varchar(MAX),
   @DateCreated datetime,
   @Identity int OUT
 )
@@ -44506,7 +45701,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateApiLog
   @Url varchar(2100),
   @Verb varchar(20),
   @StatusCode int,
-  @RequestBody text
+  @RequestBody varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -45939,6 +47134,181 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailID],
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated]
+  FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmail
+
+(
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(8000),
+  @CCAddress varchar(8000),
+  @BCCAddress varchar(8000),
+  @Subject varchar(8000),
+  @Body varchar(MAX),
+  @Attachments varchar(8000),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(8000),
+  @EmailPostID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Emails]
+  (
+    [OrganizationID],
+    [Description],
+    [FromAddress],
+    [ToAddress],
+    [CCAddress],
+    [BCCAddress],
+    [Subject],
+    [Body],
+    [Attachments],
+    [Size],
+    [IsSuccess],
+    [IsWaiting],
+    [IsHtml],
+    [Attempts],
+    [NextAttempt],
+    [DateSent],
+    [LastFailedReason],
+    [EmailPostID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @Description,
+    @FromAddress,
+    @ToAddress,
+    @CCAddress,
+    @BCCAddress,
+    @Subject,
+    @Body,
+    @Attachments,
+    @Size,
+    @IsSuccess,
+    @IsWaiting,
+    @IsHtml,
+    @Attempts,
+    @NextAttempt,
+    @DateSent,
+    @LastFailedReason,
+    @EmailPostID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
+
+(
+  @EmailID int,
+  @OrganizationID int,
+  @Description varchar(250),
+  @FromAddress varchar(250),
+  @ToAddress varchar(8000),
+  @CCAddress varchar(8000),
+  @BCCAddress varchar(8000),
+  @Subject varchar(8000),
+  @Body varchar(MAX),
+  @Attachments varchar(8000),
+  @Size int,
+  @IsSuccess bit,
+  @IsWaiting bit,
+  @IsHtml bit,
+  @Attempts int,
+  @NextAttempt datetime,
+  @DateSent datetime,
+  @LastFailedReason varchar(8000),
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Emails]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Description] = @Description,
+    [FromAddress] = @FromAddress,
+    [ToAddress] = @ToAddress,
+    [CCAddress] = @CCAddress,
+    [BCCAddress] = @BCCAddress,
+    [Subject] = @Subject,
+    [Body] = @Body,
+    [Attachments] = @Attachments,
+    [Size] = @Size,
+    [IsSuccess] = @IsSuccess,
+    [IsWaiting] = @IsWaiting,
+    [IsHtml] = @IsHtml,
+    [Attempts] = @Attempts,
+    [NextAttempt] = @NextAttempt,
+    [DateSent] = @DateSent,
+    [LastFailedReason] = @LastFailedReason,
+    [EmailPostID] = @EmailPostID
+  WHERE ([EmailID] = @EmailID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
+
+(
+  @EmailID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Emails]
+  WHERE ([EmailID] = @EmailID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatParticipant' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatParticipant
 GO
 
@@ -46659,7 +48029,8 @@ AS
     [OrganizationID],
     [OrganizationName],
     [Success],
-    [LoginDateTime]
+    [LoginDateTime],
+    [IPAddress]
   FROM [dbo].[PortalLoginHistory]
   WHERE ([PortalLoginID] = @PortalLoginID)
 GO
@@ -46675,6 +48046,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalLoginHistoryItem
   @OrganizationName varchar(200),
   @Success bit,
   @LoginDateTime datetime,
+  @IPAddress varchar(1000),
   @Identity int OUT
 )
 AS
@@ -46685,13 +48057,15 @@ AS
     [OrganizationID],
     [OrganizationName],
     [Success],
-    [LoginDateTime])
+    [LoginDateTime],
+    [IPAddress])
   VALUES (
     @UserName,
     @OrganizationID,
     @OrganizationName,
     @Success,
-    @LoginDateTime)
+    @LoginDateTime,
+    @IPAddress)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -46707,7 +48081,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalLoginHistoryItem
   @OrganizationID int,
   @OrganizationName varchar(200),
   @Success bit,
-  @LoginDateTime datetime
+  @LoginDateTime datetime,
+  @IPAddress varchar(1000)
 )
 AS
   SET NOCOUNT OFF;
@@ -46717,7 +48092,8 @@ AS
     [OrganizationID] = @OrganizationID,
     [OrganizationName] = @OrganizationName,
     [Success] = @Success,
-    [LoginDateTime] = @LoginDateTime
+    [LoginDateTime] = @LoginDateTime,
+    [IPAddress] = @IPAddress
   WHERE ([PortalLoginID] = @PortalLoginID)
 GO
 
@@ -47396,7 +48772,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertNote
   @RefType int,
   @RefID int,
   @Title varchar(1000),
-  @Description text,
+  @Description varchar(MAX),
   @CreatorID int,
   @ModifierID int,
   @DateCreated datetime,
@@ -47438,7 +48814,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateNote
   @RefType int,
   @RefID int,
   @Title varchar(1000),
-  @Description text,
+  @Description varchar(MAX),
   @ModifierID int,
   @DateModified datetime
 )
@@ -47595,7 +48971,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertProductVersion
   @VersionNumber varchar(50),
   @ReleaseDate datetime,
   @IsReleased bit,
-  @Description text,
+  @Description varchar(MAX),
   @ImportID varchar(50),
   @DateCreated datetime,
   @DateModified datetime,
@@ -47646,7 +49022,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateProductVersion
   @VersionNumber varchar(50),
   @ReleaseDate datetime,
   @IsReleased bit,
-  @Description text,
+  @Description varchar(MAX),
   @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int
@@ -47848,7 +49224,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganizationEmail
   @Subject varchar(200),
   @Header varchar(1000),
   @Footer varchar(1000),
-  @Body text,
+  @Body varchar(MAX),
   @IsHtml bit,
   @UseGlobalTemplate bit,
   @Identity int OUT
@@ -47890,7 +49266,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganizationEmail
   @Subject varchar(200),
   @Header varchar(1000),
   @Footer varchar(1000),
-  @Body text,
+  @Body varchar(MAX),
   @IsHtml bit,
   @UseGlobalTemplate bit
 )
@@ -49162,6 +50538,167 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailPost
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3]
+  FROM [dbo].[EmailPosts]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
+
+(
+  @EmailPostType int,
+  @HoldTime int,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailPosts]
+  (
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3])
+  VALUES (
+    @EmailPostType,
+    @HoldTime,
+    @DateCreated,
+    @CreatorID,
+    @Param1,
+    @Param2,
+    @Param3,
+    @Param4,
+    @Param5,
+    @Param6,
+    @Param7,
+    @Param8,
+    @Param9,
+    @Param10,
+    @Text1,
+    @Text2,
+    @Text3)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailPosts]
+  SET
+    [EmailPostType] = @EmailPostType,
+    [HoldTime] = @HoldTime,
+    [Param1] = @Param1,
+    [Param2] = @Param2,
+    [Param3] = @Param3,
+    [Param4] = @Param4,
+    [Param5] = @Param5,
+    [Param6] = @Param6,
+    [Param7] = @Param7,
+    [Param8] = @Param8,
+    [Param9] = @Param9,
+    [Param10] = @Param10,
+    [Text1] = @Text1,
+    [Text2] = @Text2,
+    [Text3] = @Text3
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPost
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPost
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailPosts]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatSetting
 GO
 
@@ -49188,7 +50725,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertChatSetting
 (
   @OrganizationID int,
   @UseCss bit,
-  @ClientCss text,
+  @ClientCss varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -49214,7 +50751,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateChatSetting
 (
   @OrganizationID int,
   @UseCss bit,
-  @ClientCss text
+  @ClientCss varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -49755,6 +51292,144 @@ AS
     [Name]
   FROM [dbo].[ExceptionLogView]
   WHERE ([ExceptionLogID] = @ExceptionLogID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailTemplate
+
+(
+  @EmailTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailTemplateID],
+    [Position],
+    [Name],
+    [Description],
+    [IsTSOnly],
+    [Subject],
+    [Header],
+    [Footer],
+    [IsHtml],
+    [IncludeDelimiter],
+    [IsEmail],
+    [UseGlobalTemplate],
+    [Body]
+  FROM [dbo].[EmailTemplates]
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailTemplate
+
+(
+  @EmailTemplateID int,
+  @Position int,
+  @Name varchar(100),
+  @Description varchar(1000),
+  @IsTSOnly bit,
+  @Subject varchar(200),
+  @Header varchar(1000),
+  @Footer varchar(1000),
+  @IsHtml bit,
+  @IncludeDelimiter bit,
+  @IsEmail bit,
+  @UseGlobalTemplate bit,
+  @Body varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailTemplates]
+  (
+    [EmailTemplateID],
+    [Position],
+    [Name],
+    [Description],
+    [IsTSOnly],
+    [Subject],
+    [Header],
+    [Footer],
+    [IsHtml],
+    [IncludeDelimiter],
+    [IsEmail],
+    [UseGlobalTemplate],
+    [Body])
+  VALUES (
+    @EmailTemplateID,
+    @Position,
+    @Name,
+    @Description,
+    @IsTSOnly,
+    @Subject,
+    @Header,
+    @Footer,
+    @IsHtml,
+    @IncludeDelimiter,
+    @IsEmail,
+    @UseGlobalTemplate,
+    @Body)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailTemplate
+
+(
+  @EmailTemplateID int,
+  @Position int,
+  @Name varchar(100),
+  @Description varchar(1000),
+  @IsTSOnly bit,
+  @Subject varchar(200),
+  @Header varchar(1000),
+  @Footer varchar(1000),
+  @IsHtml bit,
+  @IncludeDelimiter bit,
+  @IsEmail bit,
+  @UseGlobalTemplate bit,
+  @Body varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailTemplates]
+  SET
+    [Position] = @Position,
+    [Name] = @Name,
+    [Description] = @Description,
+    [IsTSOnly] = @IsTSOnly,
+    [Subject] = @Subject,
+    [Header] = @Header,
+    [Footer] = @Footer,
+    [IsHtml] = @IsHtml,
+    [IncludeDelimiter] = @IncludeDelimiter,
+    [IsEmail] = @IsEmail,
+    [UseGlobalTemplate] = @UseGlobalTemplate,
+    [Body] = @Body
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailTemplate
+
+(
+  @EmailTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailTemplates]
+  WHERE ([EmailTemplateID] = @EmailTemplateID)
 GO
 
 
@@ -50691,6 +52366,170 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectEmailPostHistoryItem
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3]
+  FROM [dbo].[EmailPostHistory]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @DateCreated datetime,
+  @CreatorID int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[EmailPostHistory]
+  (
+    [EmailPostID],
+    [EmailPostType],
+    [HoldTime],
+    [DateCreated],
+    [CreatorID],
+    [Param1],
+    [Param2],
+    [Param3],
+    [Param4],
+    [Param5],
+    [Param6],
+    [Param7],
+    [Param8],
+    [Param9],
+    [Param10],
+    [Text1],
+    [Text2],
+    [Text3])
+  VALUES (
+    @EmailPostID,
+    @EmailPostType,
+    @HoldTime,
+    @DateCreated,
+    @CreatorID,
+    @Param1,
+    @Param2,
+    @Param3,
+    @Param4,
+    @Param5,
+    @Param6,
+    @Param7,
+    @Param8,
+    @Param9,
+    @Param10,
+    @Text1,
+    @Text2,
+    @Text3)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
+
+(
+  @EmailPostID int,
+  @EmailPostType int,
+  @HoldTime int,
+  @Param1 varchar(8000),
+  @Param2 varchar(8000),
+  @Param3 varchar(8000),
+  @Param4 varchar(8000),
+  @Param5 varchar(8000),
+  @Param6 varchar(8000),
+  @Param7 varchar(8000),
+  @Param8 varchar(8000),
+  @Param9 varchar(8000),
+  @Param10 varchar(8000),
+  @Text1 varchar(MAX),
+  @Text2 varchar(MAX),
+  @Text3 varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[EmailPostHistory]
+  SET
+    [EmailPostType] = @EmailPostType,
+    [HoldTime] = @HoldTime,
+    [Param1] = @Param1,
+    [Param2] = @Param2,
+    [Param3] = @Param3,
+    [Param4] = @Param4,
+    [Param5] = @Param5,
+    [Param6] = @Param6,
+    [Param7] = @Param7,
+    [Param8] = @Param8,
+    [Param9] = @Param9,
+    [Param10] = @Param10,
+    [Text1] = @Text1,
+    [Text2] = @Text2,
+    [Text3] = @Text3
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPostHistoryItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPostHistoryItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPostHistoryItem
+
+(
+  @EmailPostID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[EmailPostHistory]
+  WHERE ([EmailPostID] = @EmailPostID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserTicketStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserTicketStatus
 GO
 
@@ -50910,6 +52749,87 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[SlaTriggers]
   WHERE ([SlaTriggerID] = @SlaTriggerID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [DeletedIndexID],
+    [RefID],
+    [RefType],
+    [DateDeleted]
+  FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+
+(
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[DeletedIndexItems]
+  (
+    [RefID],
+    [RefType],
+    [DateDeleted])
+  VALUES (
+    @RefID,
+    @RefType,
+    @DateDeleted)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+
+(
+  @DeletedIndexID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[DeletedIndexItems]
+  SET
+    [RefID] = @RefID,
+    [RefType] = @RefType,
+    [DateDeleted] = @DateDeleted
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
 GO
 
 
@@ -51332,167 +53252,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[WaterCooler]
   WHERE ([MessageID] = @MessageID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmailPost
-
-(
-  @EmailPostID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailPostID],
-    [EmailPostType],
-    [HoldTime],
-    [DateCreated],
-    [CreatorID],
-    [Param1],
-    [Param2],
-    [Param3],
-    [Param4],
-    [Param5],
-    [Param6],
-    [Param7],
-    [Param8],
-    [Param9],
-    [Param10],
-    [Text1],
-    [Text2],
-    [Text3]
-  FROM [dbo].[EmailPosts]
-  WHERE ([EmailPostID] = @EmailPostID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
-
-(
-  @EmailPostType int,
-  @HoldTime int,
-  @DateCreated datetime,
-  @CreatorID int,
-  @Param1 varchar(8000),
-  @Param2 varchar(8000),
-  @Param3 varchar(8000),
-  @Param4 varchar(8000),
-  @Param5 varchar(8000),
-  @Param6 varchar(8000),
-  @Param7 varchar(8000),
-  @Param8 varchar(8000),
-  @Param9 varchar(8000),
-  @Param10 varchar(8000),
-  @Text1 text,
-  @Text2 text,
-  @Text3 text,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[EmailPosts]
-  (
-    [EmailPostType],
-    [HoldTime],
-    [DateCreated],
-    [CreatorID],
-    [Param1],
-    [Param2],
-    [Param3],
-    [Param4],
-    [Param5],
-    [Param6],
-    [Param7],
-    [Param8],
-    [Param9],
-    [Param10],
-    [Text1],
-    [Text2],
-    [Text3])
-  VALUES (
-    @EmailPostType,
-    @HoldTime,
-    @DateCreated,
-    @CreatorID,
-    @Param1,
-    @Param2,
-    @Param3,
-    @Param4,
-    @Param5,
-    @Param6,
-    @Param7,
-    @Param8,
-    @Param9,
-    @Param10,
-    @Text1,
-    @Text2,
-    @Text3)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
-
-(
-  @EmailPostID int,
-  @EmailPostType int,
-  @HoldTime int,
-  @Param1 varchar(8000),
-  @Param2 varchar(8000),
-  @Param3 varchar(8000),
-  @Param4 varchar(8000),
-  @Param5 varchar(8000),
-  @Param6 varchar(8000),
-  @Param7 varchar(8000),
-  @Param8 varchar(8000),
-  @Param9 varchar(8000),
-  @Param10 varchar(8000),
-  @Text1 text,
-  @Text2 text,
-  @Text3 text
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[EmailPosts]
-  SET
-    [EmailPostType] = @EmailPostType,
-    [HoldTime] = @HoldTime,
-    [Param1] = @Param1,
-    [Param2] = @Param2,
-    [Param3] = @Param3,
-    [Param4] = @Param4,
-    [Param5] = @Param5,
-    [Param6] = @Param6,
-    [Param7] = @Param7,
-    [Param8] = @Param8,
-    [Param9] = @Param9,
-    [Param10] = @Param10,
-    [Text1] = @Text1,
-    [Text2] = @Text2,
-    [Text3] = @Text3
-  WHERE ([EmailPostID] = @EmailPostID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmailPost' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmailPost
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmailPost
-
-(
-  @EmailPostID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[EmailPosts]
-  WHERE ([EmailPostID] = @EmailPostID)
 GO
 
 
@@ -52527,175 +54286,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [EmailID],
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [DateCreated]
-  FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertEmail
-
-(
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject varchar(8000),
-  @Body text,
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000),
-  @DateCreated datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Emails]
-  (
-    [OrganizationID],
-    [Description],
-    [FromAddress],
-    [ToAddress],
-    [CCAddress],
-    [BCCAddress],
-    [Subject],
-    [Body],
-    [Attachments],
-    [Size],
-    [IsSuccess],
-    [IsWaiting],
-    [IsHtml],
-    [Attempts],
-    [NextAttempt],
-    [DateSent],
-    [LastFailedReason],
-    [DateCreated])
-  VALUES (
-    @OrganizationID,
-    @Description,
-    @FromAddress,
-    @ToAddress,
-    @CCAddress,
-    @BCCAddress,
-    @Subject,
-    @Body,
-    @Attachments,
-    @Size,
-    @IsSuccess,
-    @IsWaiting,
-    @IsHtml,
-    @Attempts,
-    @NextAttempt,
-    @DateSent,
-    @LastFailedReason,
-    @DateCreated)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateEmail
-
-(
-  @EmailID int,
-  @OrganizationID int,
-  @Description varchar(250),
-  @FromAddress varchar(250),
-  @ToAddress varchar(8000),
-  @CCAddress varchar(8000),
-  @BCCAddress varchar(8000),
-  @Subject varchar(8000),
-  @Body text,
-  @Attachments varchar(8000),
-  @Size int,
-  @IsSuccess bit,
-  @IsWaiting bit,
-  @IsHtml bit,
-  @Attempts int,
-  @NextAttempt datetime,
-  @DateSent datetime,
-  @LastFailedReason varchar(8000)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Emails]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Description] = @Description,
-    [FromAddress] = @FromAddress,
-    [ToAddress] = @ToAddress,
-    [CCAddress] = @CCAddress,
-    [BCCAddress] = @BCCAddress,
-    [Subject] = @Subject,
-    [Body] = @Body,
-    [Attachments] = @Attachments,
-    [Size] = @Size,
-    [IsSuccess] = @IsSuccess,
-    [IsWaiting] = @IsWaiting,
-    [IsHtml] = @IsHtml,
-    [Attempts] = @Attempts,
-    [NextAttempt] = @NextAttempt,
-    [DateSent] = @DateSent,
-    [LastFailedReason] = @LastFailedReason
-  WHERE ([EmailID] = @EmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteEmail
-
-(
-  @EmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Emails]
-  WHERE ([EmailID] = @EmailID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserSetting
 GO
 
@@ -53138,251 +54728,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[Actions]
   WHERE ([ActionID] = @ActionID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
 GO
 
 

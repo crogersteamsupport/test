@@ -70,6 +70,11 @@ public partial class Frames_AdminPortal : BaseFramePage
 
       if (organization.IsAdvancedPortal)
       {
+        builder.Append("<tr><td><strong>Articles Portal:</strong></td><td>");
+        string articleLink = "http://articles.TeamSupport.com/" + portalOption.PortalName;
+        builder.Append(@"<a href=""" + articleLink + @""" target=""PortalLink"" onclick=""window.open('" + articleLink + @"', 'PortalLink')"">" + articleLink + "</a>");
+        builder.Append("</td></tr>");
+
         builder.Append("<tr><td><strong>Advanced Portal:</strong></td><td>");
         string portalLink = "http://portal.TeamSupport.com/" + portalOption.PortalName;
         builder.Append(@"<a href=""" + portalLink + @""" target=""PortalLink"" onclick=""window.open('" + portalLink + @"', 'PortalLink')"">" + portalLink + "</a>");
@@ -126,6 +131,10 @@ public partial class Frames_AdminPortal : BaseFramePage
 
       builder.Append("<tr><td><strong>Display Group Pulldown in Portals:</strong></td><td>");
       builder.Append(portalOption.DisplayGroups == null ? "True" : ((bool)portalOption.DisplayGroups).ToString());
+      builder.Append("</td></tr>");
+
+      builder.Append("<tr><td><strong>Basic Portal Header Message:</strong></td><td>");
+      builder.Append(portalOption.BasicPortalDirections == null ? "" : portalOption.BasicPortalDirections);
       builder.Append("</td></tr>");
 
       builder.Append("<tr><td><strong>Basic Portal Width:</strong></td><td>");

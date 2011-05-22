@@ -97,6 +97,7 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
     cbKb.Checked = portalOption.KBAccess == null ? false : (bool)portalOption.KBAccess;
     cbGroup.Checked = portalOption.DisplayGroups == null ? false : (bool)portalOption.DisplayGroups;
     textWidth.Value = portalOption.BasicPortalColumnWidth;
+    textBasicPortalDirections.Text = portalOption.BasicPortalDirections;
     textAdvWidth.Value = portalOption.AdvPortalWidth;
     textExternalLink.Text = Settings.OrganizationDB.ReadString("ExternalPortalLink", "");
     cmbGroups.SelectedValue = organization.DefaultPortalGroupID.ToString();
@@ -138,6 +139,7 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
     portalOption.DisplayGroups = cbGroup.Checked;
     portalOption.DisplayProducts = cbProduct.Checked;
     portalOption.BasicPortalColumnWidth = textWidth.Value == null ? null : (int?)textWidth.Value;
+    portalOption.BasicPortalDirections = textBasicPortalDirections.Text == null ? "" : textBasicPortalDirections.Text;
     portalOption.AdvPortalWidth = textAdvWidth.Value == null ? null : (int?)textAdvWidth.Value;
     portalOption.Theme = cmbTheme.SelectedValue;
 

@@ -1,0 +1,8 @@
+.ui-panel { margin: 10px 0; width: 100%; }
+.ui-panel-content { border-top: none; padding: .5em .5em 1em .5em; }
+.ui-panel-titlebar { padding: 0 .4em;  font-weight:normal; height: 2em;}
+.ui-panel-title { padding: .4em .4em; font-weight:bold; float:left;}
+.ui-panel-button { float:right; border: 1px solid transparent; margin: .2em 0; padding: .1em .4em; cursor:pointer; }
+.ui-panel-button-text { float:left; display:block; margin: 0 .4em; }
+.ui-panel-button-icon { float:left; margin: 0 .2em; }
+.ui-panel-buttonpane { float:right; }

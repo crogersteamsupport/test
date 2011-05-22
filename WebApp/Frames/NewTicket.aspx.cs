@@ -156,135 +156,144 @@ public partial class Frames_NewTicket : BaseFramePage
 
   public int Save()
   {
-    if (uploadMain.UploadedFiles.Count > 0)
+    try
     {
-      int used = Organizations.GetStorageUsed(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
-      int allowed = Organizations.GetTotalStorageAllowed(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
-
-      if (used > allowed)
+      if (uploadMain.UploadedFiles.Count > 0)
       {
-        if (UserSession.CurrentUser.IsFinanceAdmin)
+        int used = Organizations.GetStorageUsed(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
+        int allowed = Organizations.GetTotalStorageAllowed(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
+
+        if (used > allowed)
         {
-          RadAjaxManager1.Alert("You have exceeded your allocated storage capacity.  If you would like to add additional storage, please contact our sales team at 800.596.2820 x806, or send an email to sales@teamsupport.com");
-        }
-        else
-        {
-          Users users = new Users(UserSession.LoginUser);
-          users.LoadFinanceAdmins(UserSession.LoginUser.OrganizationID);
-          if (users.IsEmpty)
+          if (UserSession.CurrentUser.IsFinanceAdmin)
           {
-            RadAjaxManager1.Alert("Please ask your billing administrator to purchase additional storage to add additional attachments.");
+            RadAjaxManager1.Alert("You have exceeded your allocated storage capacity.  If you would like to add additional storage, please contact our sales team at 800.596.2820 x806, or send an email to sales@teamsupport.com");
           }
           else
           {
-            RadAjaxManager1.Alert("Please ask your billing administrator (" + users[0].FirstLastName + ") to purchase additional storage to add additional attachments.");
+            Users users = new Users(UserSession.LoginUser);
+            users.LoadFinanceAdmins(UserSession.LoginUser.OrganizationID);
+            if (users.IsEmpty)
+            {
+              RadAjaxManager1.Alert("Please ask your billing administrator to purchase additional storage to add additional attachments.");
+            }
+            else
+            {
+              RadAjaxManager1.Alert("Please ask your billing administrator (" + users[0].FirstLastName + ") to purchase additional storage to add additional attachments.");
+            }
+          }
+          return -1;
+        }
+      }
+
+      try
+      {
+        SetStickyID(ComboBoxIDTypes.Customer, GetComboID(cmbCustomer));
+        SetStickyID(ComboBoxIDTypes.Version, GetComboID(cmbVersion));
+        SetStickyID(ComboBoxIDTypes.Product, GetComboID(cmbProduct));
+
+        SetStickyID(ComboBoxIDTypes.Group, GetComboID(cmbGroup));
+        SetStickyID(ComboBoxIDTypes.Severity, GetComboID(cmbSeverity));
+        SetStickyID(ComboBoxIDTypes.Status, GetComboID(cmbStatus));
+        SetStickyID(ComboBoxIDTypes.User, GetComboID(cmbUser));
+      }
+      catch (Exception)
+      {
+      }
+
+      if (textName.Text.Trim() == "")
+      {
+        RadAjaxManager1.Alert("Please enter a name for this ticket.");
+        return -1;
+      }
+
+
+      Tickets tickets = new Tickets(UserSession.LoginUser);
+      Ticket ticket = tickets.AddNewTicket();
+      ticket.OrganizationID = UserSession.LoginUser.OrganizationID;
+      ticket.Name = textName.Text;
+      ticket.TicketTypeID = int.Parse(cmbTicketType.SelectedValue);
+      ticket.TicketStatusID = int.Parse(cmbStatus.SelectedValue);
+      ticket.TicketSeverityID = int.Parse(cmbSeverity.SelectedValue);
+      ticket.IsKnowledgeBase = cbKnowledgeBase.Checked;
+      ticket.IsVisibleOnPortal = cbPortal.Checked;
+      if (cmbUser.SelectedIndex > 0) ticket.UserID = int.Parse(cmbUser.SelectedValue);
+      if (cmbGroup.SelectedIndex > 0) ticket.GroupID = int.Parse(cmbGroup.SelectedValue);
+      if (cmbProduct.SelectedIndex > 0) ticket.ProductID = int.Parse(cmbProduct.SelectedValue);
+      if (cmbVersion.SelectedIndex > 0) ticket.ReportedVersionID = int.Parse(cmbVersion.SelectedValue);
+      tickets.Save();
+
+      Actions actions = new Actions(UserSession.LoginUser);
+      TeamSupport.Data.Action action = actions.AddNewAction();
+      action.ActionTypeID = null;
+      action.Name = "Description";
+      action.SystemActionTypeID = SystemActionType.Description;
+      action.Description = editorDescription.Content;
+      action.IsVisibleOnPortal = cbPortal.Checked;
+      action.IsKnowledgeBase = cbKnowledgeBase.Checked;
+      action.TicketID = ticket.TicketID;
+      actions.Save();
+
+      if (_chatID > -1)
+      {
+        Chat chat = Chats.GetChat(UserSession.LoginUser, _chatID);
+        if (chat != null)
+        {
+          actions = new Actions(UserSession.LoginUser);
+          TeamSupport.Data.Action chatAction = actions.AddNewAction();
+          chatAction.ActionTypeID = null;
+          chatAction.Name = "Chat";
+          chatAction.SystemActionTypeID = SystemActionType.Chat;
+          chatAction.Description = chat.GetHtml(true, UserSession.LoginUser.OrganizationCulture);
+          chatAction.IsVisibleOnPortal = cbPortal.Checked;
+          chatAction.IsKnowledgeBase = cbKnowledgeBase.Checked;
+          chatAction.TicketID = ticket.TicketID;
+          actions.Save();
+          chat.ActionID = chatAction.ActionID;
+          chat.Collection.Save();
+        }
+
+      }
+
+
+      try
+      {
+        if (cmbCustomer.SelectedValue.Length > 0 && cmbCustomer.SelectedValue != "-1")
+        {
+          int id = int.Parse(cmbCustomer.SelectedValue.Remove(0, 1));
+          if (cmbCustomer.SelectedValue[0] == 'o')
+          {
+            tickets.AddOrganization(id, ticket.TicketID);
+          }
+          else
+          {
+            tickets.AddContact(id, ticket.TicketID);
           }
         }
-        return -1; 
+
       }
-    }
+      catch (Exception)
+      {
 
-    try
-    {
-      SetStickyID(ComboBoxIDTypes.Customer, GetComboID(cmbCustomer));
-      SetStickyID(ComboBoxIDTypes.Version, GetComboID(cmbVersion));
-      SetStickyID(ComboBoxIDTypes.Product, GetComboID(cmbProduct));
+      }
 
-      SetStickyID(ComboBoxIDTypes.Group, GetComboID(cmbGroup));
-      SetStickyID(ComboBoxIDTypes.Severity, GetComboID(cmbSeverity));
-      SetStickyID(ComboBoxIDTypes.Status, GetComboID(cmbStatus));
-      SetStickyID(ComboBoxIDTypes.User, GetComboID(cmbUser));
-    }
-    catch (Exception)
-    {
-    }
+      SaveAttachments(action.ActionID);
 
-    if (textName.Text.Trim() == "")
+      (new CustomFieldControls(ReferenceType.Tickets, GetSelectedTicketTypeID(), ticket.TicketID, 2, tblCustomControls, false)).SaveCustomFields();
+
+
+      User user = Users.GetUser(UserSession.LoginUser, UserSession.LoginUser.UserID);
+      if (user.SubscribeToNewTickets)
+        Subscriptions.AddSubscription(UserSession.LoginUser, UserSession.LoginUser.UserID, ReferenceType.Tickets, ticket.TicketID);
+
+      return ticket.TicketID;
+    }
+    catch (Exception ex)
     {
-      RadAjaxManager1.Alert("Please enter a name for this ticket.");
+      RadAjaxManager1.Alert("There was an error saving your ticket.  Please try again later.");
+      ExceptionLogs.LogException(UserSession.LoginUser, ex, "New Ticket");
       return -1;
     }
-
-
-    Tickets tickets = new Tickets(UserSession.LoginUser);
-    Ticket ticket = tickets.AddNewTicket();
-    ticket.OrganizationID = UserSession.LoginUser.OrganizationID;
-    ticket.Name = textName.Text;
-    ticket.TicketTypeID = int.Parse(cmbTicketType.SelectedValue);
-    ticket.TicketStatusID = int.Parse(cmbStatus.SelectedValue);
-    ticket.TicketSeverityID = int.Parse(cmbSeverity.SelectedValue);
-    ticket.IsKnowledgeBase = cbKnowledgeBase.Checked;
-    ticket.IsVisibleOnPortal = cbPortal.Checked;
-    if (cmbUser.SelectedIndex > 0) ticket.UserID = int.Parse(cmbUser.SelectedValue);
-    if (cmbGroup.SelectedIndex > 0) ticket.GroupID = int.Parse(cmbGroup.SelectedValue);
-    if (cmbProduct.SelectedIndex > 0) ticket.ProductID = int.Parse(cmbProduct.SelectedValue);
-    if (cmbVersion.SelectedIndex > 0) ticket.ReportedVersionID = int.Parse(cmbVersion.SelectedValue);
-    tickets.Save();
-
-    Actions actions = new Actions(UserSession.LoginUser);
-    TeamSupport.Data.Action action = actions.AddNewAction();
-    action.ActionTypeID = null;
-    action.Name = "Description";
-    action.SystemActionTypeID = SystemActionType.Description;
-    action.Description = editorDescription.Content;
-    action.IsVisibleOnPortal = cbPortal.Checked;
-    action.IsKnowledgeBase = cbKnowledgeBase.Checked;
-    action.TicketID = ticket.TicketID;
-    actions.Save();
-
-    if (_chatID > -1)
-    {
-      Chat chat = Chats.GetChat(UserSession.LoginUser, _chatID);
-      if (chat != null)
-      {
-        actions = new Actions(UserSession.LoginUser);
-        TeamSupport.Data.Action chatAction = actions.AddNewAction();
-        chatAction.ActionTypeID = null;
-        chatAction.Name = "Chat";
-        chatAction.SystemActionTypeID = SystemActionType.Chat;
-        chatAction.Description = chat.GetHtml(true, UserSession.LoginUser.OrganizationCulture);
-        chatAction.IsVisibleOnPortal = cbPortal.Checked;
-        chatAction.IsKnowledgeBase = cbKnowledgeBase.Checked;
-        chatAction.TicketID = ticket.TicketID;
-        actions.Save();
-        chat.ActionID = chatAction.ActionID;
-        chat.Collection.Save();
-      }
-
-    }
-
-
-    try
-    {
-      if (cmbCustomer.SelectedValue.Length > 0 && cmbCustomer.SelectedValue != "-1")
-      {
-        int id = int.Parse(cmbCustomer.SelectedValue.Remove(0, 1));
-        if (cmbCustomer.SelectedValue[0] == 'o')
-        {
-          tickets.AddOrganization(id, ticket.TicketID);
-        }
-        else
-        {
-          tickets.AddContact(id, ticket.TicketID);
-        }
-      }
-
-    }
-    catch (Exception)
-    {
-      
-    }
-
-    SaveAttachments(action.ActionID);
-
-    (new CustomFieldControls(ReferenceType.Tickets, GetSelectedTicketTypeID(), ticket.TicketID, 2, tblCustomControls, false)).SaveCustomFields();
-
-
-    User user = Users.GetUser(UserSession.LoginUser, UserSession.LoginUser.UserID);
-    if (user.SubscribeToNewTickets)
-      Subscriptions.AddSubscription(UserSession.LoginUser, UserSession.LoginUser.UserID, ReferenceType.Tickets, ticket.TicketID);
-
-    return ticket.TicketID;
   }
 
   private void SaveAttachments(int actionID)

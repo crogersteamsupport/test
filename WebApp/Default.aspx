@@ -8,17 +8,17 @@
 <head id="Head1" runat="server">
   <title>Team Support</title>
   <link rel="SHORTCUT ICON" href="~/favicon.ico" />
-  <link href="Resources_140/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_140/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_140/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_140/Css/jquery.ketchup.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_140/Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="Resources_140/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="Resources_140/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
-  <link href="Resources_140/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_141/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_141/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_141/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_141/Css/jquery.ketchup.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_141/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="Resources_141/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="Resources_141/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <link href="Resources_141/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
 
 
-  <script src="Resources_140/Js/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="Resources_140/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+  <script src="Resources_141/Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="Resources_141/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <script type="text/javascript" language="javascript">
 
     var g_uac = ''
@@ -57,21 +57,22 @@
         <asp:ServiceReference Path="~/Services/UserService.asmx" />
         <asp:ServiceReference Path="~/Services/OrganizationService.asmx" />
         <asp:ServiceReference Path="~/Services/ProductService.asmx" />
+        <asp:ServiceReference Path="~/Services/CustomFieldsService.asmx" />
 
         <asp:ServiceReference Path="~/Services/PrivateServices.asmx" />
       </services>
     <scripts>
         
-          <asp:ScriptReference Path="Resources_140/Js/json2.js" />
-          <asp:ScriptReference Path="Resources_140/Js/jquery.layout.min.js" />
-          <asp:ScriptReference Path="Resources_140/Js/jquery.jgrowl_minimized.js" />
-          <asp:ScriptReference Path="Resources_140/Js/jquery.editlabel.js" />
-          <asp:ScriptReference Path="Resources_140/Js/jquery.cookie.js" />
-          <asp:ScriptReference Path="Resources_140/Js/ts/ts.system.js" />
-          <asp:ScriptReference Path="Resources_140/Js/ts/ts.utils.js" />
-          <asp:ScriptReference Path="Resources_140/Js/ts/ts.ui.tabs.js" />
-          <asp:ScriptReference Path="Resources_140/Js/ts/ts.ui.menutree.js" />
-          <asp:ScriptReference Path="Resources_140/Js/ts/ts.pages.main.js" />
+          <asp:ScriptReference Path="Resources_141/Js/json2.js" />
+          <asp:ScriptReference Path="Resources_141/Js/jquery.layout.min.js" />
+          <asp:ScriptReference Path="Resources_141/Js/jquery.jgrowl_minimized.js" />
+          <asp:ScriptReference Path="Resources_141/Js/jquery.editlabel.js" />
+          <asp:ScriptReference Path="Resources_141/Js/jquery.cookie.js" />
+          <asp:ScriptReference Path="Resources_141/Js/ts/ts.system.js" />
+          <asp:ScriptReference Path="Resources_141/Js/ts/ts.utils.js" />
+          <asp:ScriptReference Path="Resources_141/Js/ts/ts.ui.tabs.js" />
+          <asp:ScriptReference Path="Resources_141/Js/ts/ts.ui.menutree.js" />
+          <asp:ScriptReference Path="Resources_141/Js/ts/ts.pages.main.js" />
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>

@@ -38,6 +38,7 @@ namespace TeamSupport.ServiceLibrary
       _thread.Join(30000);
     }
 
+
     public void Start(string enableKey, string intervalKey, int defaultInterval)
     {
       if (!IsStopped) return;

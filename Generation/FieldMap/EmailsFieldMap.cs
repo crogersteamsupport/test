@@ -31,6 +31,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("NextAttempt", "NextAttempt", false, false, false);
       _fieldMap.AddMap("DateSent", "DateSent", false, false, false);
       _fieldMap.AddMap("LastFailedReason", "LastFailedReason", false, false, false);
+      _fieldMap.AddMap("EmailPostID", "EmailPostID", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
             
     }

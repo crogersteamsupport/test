@@ -2372,7 +2372,6 @@ namespace TeamSupport.Data
                 catch (Exception ex)
                 {
                   _log.AppendError(value.Row, ex.Message + ex.StackTrace);
-                  throw;
                 }
 
                 /*if (++count % BULK_LIMIT == 0)

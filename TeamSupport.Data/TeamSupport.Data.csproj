@@ -45,7 +45,75 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\TeamSupport.Data.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\TeamSupport.Data.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\TeamSupport.Data.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\TeamSupport.Data.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dtSearchNetApi3">
+      <HintPath>C:\Program Files (x86)\dtSearch Developer\bin\dtSearchNetApi3.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -95,8 +163,10 @@
     <Compile Include="BusinessObjects\CRMLinkTable.cs" />
     <Compile Include="BusinessObjects\CustomFields.cs" />
     <Compile Include="BusinessObjects\CustomValues.cs" />
+    <Compile Include="BusinessObjects\DeletedIndexItems.cs" />
     <Compile Include="BusinessObjects\EMailActions.cs" />
     <Compile Include="BusinessObjects\EMailAlternateInbound.cs" />
+    <Compile Include="BusinessObjects\EmailPostHistory.cs" />
     <Compile Include="BusinessObjects\EmailPosts.cs" />
     <Compile Include="BusinessObjects\Emails.cs" />
     <Compile Include="BusinessObjects\EmailTemplateParameters.cs" />
@@ -118,6 +188,7 @@
     <Compile Include="BusinessObjects\UserTicketStatuses.cs" />
     <Compile Include="Classes\AttachmentPath.cs" />
     <Compile Include="Classes\HtmlUtility.cs" />
+    <Compile Include="Classes\IndexSearch.cs" />
     <Compile Include="Classes\LogFile.cs" />
     <Compile Include="Classes\HtmlCleaner.cs" />
     <Compile Include="Classes\Importer.cs" />
@@ -130,7 +201,9 @@
     <Compile Include="FieldMaps\AttachmentDownloadsFieldMap.cs" />
     <Compile Include="FieldMaps\ChatClientsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ChatUserSettingsFieldMap.cs" />
+    <Compile Include="FieldMaps\DeletedIndexItemsFieldMap.cs" />
     <Compile Include="FieldMaps\EMailAlternateInboundFieldMap.cs" />
+    <Compile Include="FieldMaps\EmailPostHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\EmailTemplateParametersFieldMap.cs" />
     <Compile Include="FieldMaps\EmailTemplatesFieldMap.cs" />
     <Compile Include="FieldMaps\EmailTemplateTablesFieldMap.cs" />
@@ -309,8 +382,10 @@
     <Compile Include="Generated\GeneratedCRMLinkTable.cs" />
     <Compile Include="Generated\GeneratedCustomFields.cs" />
     <Compile Include="Generated\GeneratedCustomValues.cs" />
+    <Compile Include="Generated\GeneratedDeletedIndexItems.cs" />
     <Compile Include="Generated\GeneratedEmailActions.cs" />
     <Compile Include="Generated\GeneratedEMailAlternateInbound.cs" />
+    <Compile Include="Generated\GeneratedEmailPostHistory.cs" />
     <Compile Include="Generated\GeneratedEmailPosts.cs" />
     <Compile Include="Generated\GeneratedEmails.cs" />
     <Compile Include="Generated\GeneratedEmailTemplateParameters.cs" />
@@ -413,8 +488,10 @@
     <Compile Include="Proxies\CRMLinkTableProxy.cs" />
     <Compile Include="Proxies\CustomFieldsProxy.cs" />
     <Compile Include="Proxies\CustomValuesProxy.cs" />
+    <Compile Include="Proxies\DeletedIndexItemsProxy.cs" />
     <Compile Include="Proxies\EmailActionsProxy.cs" />
     <Compile Include="Proxies\EMailAlternateInboundProxy.cs" />
+    <Compile Include="Proxies\EmailPostHistoryProxy.cs" />
     <Compile Include="Proxies\EmailPostsProxy.cs" />
     <Compile Include="Proxies\EmailsProxy.cs" />
     <Compile Include="Proxies\EmailTemplateParametersProxy.cs" />

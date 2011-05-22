@@ -12,6 +12,8 @@ using System.Data;
 using System.Data.Sql;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace TeamSupport.Data
 {
@@ -474,6 +476,38 @@ namespace TeamSupport.Data
       return result;*/
     }
 
+
+    /// <summary>
+    /// Converts a DataContract Object to Json
+    /// </summary>
+    /// <param name="o"></param>
+    /// <returns></returns>
+
+    public static string ObjectToJson(object o)
+    {
+      DataContractJsonSerializer serializer = new DataContractJsonSerializer(o.GetType());
+      MemoryStream stream = new MemoryStream();
+      serializer.WriteObject(stream, o);
+      string json = Encoding.Default.GetString(stream.ToArray());
+      stream.Dispose();
+      return json;
+    }
+
+    /// <summary>
+    /// THIS IS NOT TESTED
+    /// </summary>
+    /// <param name="o"></param>
+    /// <returns></returns>
+    public static T JsonToObject<T>(string s)
+    {
+      T result = Activator.CreateInstance<T>();
+      MemoryStream stream = new MemoryStream(Encoding.Unicode.GetBytes(s));
+      DataContractJsonSerializer serializer = new DataContractJsonSerializer(result.GetType());
+      result = (T)serializer.ReadObject(stream);
+      stream.Close();
+      stream.Dispose();
+      return result;
+    }
 
 
     public static string ObjectToString(object o)

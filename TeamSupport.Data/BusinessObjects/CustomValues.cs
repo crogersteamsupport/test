@@ -54,6 +54,105 @@ namespace TeamSupport.Data
         else return CustomFieldType.Text;
       }
     }
+    public string Name
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("Name") && Row["Name"] != DBNull.Value)
+        {
+          return (string)Row["Name"];
+        }
+        else return "";
+      }
+    }
+    public string Description
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("Description") && Row["Description"] != DBNull.Value)
+        {
+          return (string)Row["Description"];
+        }
+        else return "";
+      }
+    }
+    public ReferenceType RefType
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("RefType") && Row["RefType"] != DBNull.Value)
+        {
+          return (ReferenceType)Row["RefType"];
+        }
+        else return ReferenceType.None;
+      }
+    }
+    public int? AuxID
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("AuxID") && Row["AuxID"] != DBNull.Value)
+        {
+          return (int?)Row["AuxID"];
+        }
+        else return null;
+      }
+    }
+    public int Position
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("Position") && Row["Position"] != DBNull.Value)
+        {
+          return (int)Row["Position"];
+        }
+        else return -1;
+      }
+    }
+    public bool IsVisibleOnPortal
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("IsVisibleOnPortal") && Row["IsVisibleOnPortal"] != DBNull.Value)
+        {
+          return (bool)Row["IsVisibleOnPortal"];
+        }
+        else return false;
+      }
+    }
+    public bool IsFirstIndexSelect
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("IsFirstIndexSelect") && Row["IsFirstIndexSelect"] != DBNull.Value)
+        {
+          return (bool)Row["IsFirstIndexSelect"];
+        }
+        else return false;
+      }
+    }
+    public bool IsRequired
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("IsRequired") && Row["IsRequired"] != DBNull.Value)
+        {
+          return (bool)Row["IsRequired"];
+        }
+        else return false;
+      }
+    }
+    public int OrganizationID
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("OrganizationID") && Row["OrganizationID"] != DBNull.Value)
+        {
+          return (int)Row["OrganizationID"];
+        }
+        else return -1;
+      }
+    }
   }
 
   public partial class CustomValues 
@@ -70,9 +169,13 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByReferenceType(int organizationID, ReferenceType refType, int refID)
+    {
+      LoadByReferenceType(organizationID, refType, null, refID); 
+    }
+
     public void LoadByReferenceType(int organizationID, ReferenceType refType, int? auxID, int refID)
     {
-      if (auxID == null) auxID = -1;
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = @"
@@ -88,10 +191,13 @@ cf.Name,
 cf.ApiFieldName, 
 cf.FieldType, 
 cf.ListValues, 
+cf.Description, 
 cf.RefType, 
 cf.AuxID, 
 cf.Position, 
 cf.IsVisibleOnPortal, 
+cf.IsFirstIndexSelect,
+cf.IsRequired,
 cf.OrganizationID, 
 cf.CustomFieldID
 FROM CustomFields cf LEFT JOIN CustomValues cv on cv.CustomFieldID = cf.CustomFieldID AND cv.RefID=@RefID
@@ -103,17 +209,10 @@ ORDER BY cf.Position";
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@RefID", refID);
         command.Parameters.AddWithValue("@RefType", (int)refType);
-        command.Parameters.AddWithValue("@AuxID", auxID);
+        command.Parameters.AddWithValue("@AuxID", auxID ?? -1);
         Fill(command, "CustomFields, CustomValues");
       }
     }
-
-    public void LoadByReferenceType(int organizationID, ReferenceType refType, int refID)
-    {
-      LoadByReferenceType(organizationID, refType, -1, refID);
-
-    }
-
 
     partial void BeforeRowEdit(CustomValue newValue)
     {

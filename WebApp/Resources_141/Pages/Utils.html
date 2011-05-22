@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+  <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="Resources_141/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="Resources_141/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+
+  <style type="text/css">
+    .utils-content { border:none; padding: 2em 2em;}
+  </style>
+
+  <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+
+  <script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+      $('button').button();
+      $('.ts-loading').hide().next().show();
+      $('#btnCleanUpOrphanTicketStatus').click(function (e) {
+        e.preventDefault();
+        top.Ts.Services.Organizations.CleanUpOrphanTicketStatuses(function (result) { alert(result); });
+      });
+      $('#btnRefresh').click(function (e) {
+        e.preventDefault();
+        window.location = window.location;
+      });
+
+      $('#btnSearch').click(function (e) {
+        e.preventDefault();
+        $('#divSearch').empty();
+        top.Ts.Services.Tickets.SearchTickets($('#textSearch').val(), function (result) {
+          for (var i = 0; i < result.length; i++) {
+            var a = $('<a href="#" class="ts-link">')
+            .text(result[i].label)
+            .data('id', result[i].id)
+            .click(function (e) {
+              e.preventDefault();
+              top.Ts.MainPage.openTicketByID($(this).data('id'), true);
+            });
+
+            $('<div>').append(a).appendTo('#divSearch');
+          }
+        });
+      });
+
+      $('#btnGenKeys').click(function (e) {
+        e.preventDefault();
+        top.Ts.Services.System.GenerateKeys(function (result) {
+          $('.keys').html('');
+          for (var i = 0; i < result.length; i++) {
+            $('.keys').append('<p>' + result[i] + '</p>');
+
+          }
+
+        });
+      });
+
+      $('#btnDummyCreate').click(function (e) {
+        e.preventDefault();
+        $('.dummyCreate').html('...');
+        top.Ts.Services.Tickets.CreateDummyTickets(function (result) {
+          var output = $('.dummyCreate').html('');
+          for (var i = 0; i < result.length; i++) {
+            output.append('<p>' + result[i] + '</p>');
+
+          }
+
+        });
+      });
+      $('#btnDummyRead').click(function (e) {
+        e.preventDefault();
+        $('.dummyRead').html('...');
+        top.Ts.Services.Tickets.ReadDummyTickets(function (result) {
+          var output = $('.dummyRead').html('');
+          for (var i = 0; i < result.length; i++) {
+            output.append('<p>' + result[i] + '</p>');
+
+          }
+
+        });
+      });
+
+
+
+      var execGetTicket = null;
+      function getTickets(request, response) {
+        if (execGetTicket) { execGetTicket._executor.abort(); }
+        execGetTicket = top.Ts.Services.Tickets.SearchTickets(request.term, function (result) { response(result); });
+      }
+
+      $('#textQuick').autocomplete({
+        minLength: 2,
+        source: getTickets,
+        select: function (event, ui) {
+          $(this).data('itemID', ui.item.id);
+        }
+
+      });
+
+
+    });  
+  </script>
+
+
+</head>
+<body>
+  <div class="ts-loading"></div>
+  <div style="height:100%; overflow:auto;">
+  <div class="utils-content ui-widget ui-widget-content">
+    <button id="btnRefresh">Refresh</button>&nbsp
+    <button id="btnCleanUpOrphanTicketStatus">Clean Up Orphan Ticket Statuses</button>&nbsp
+    <button id="btnGenKeys">Generate Machine Keys</button>&nbsp
+    <button id="btnDummyCreate">Create Dummy Tickets</button>&nbsp
+    <button id="btnDummyRead">Read Dummy Tickets</button>&nbsp
+  </div>
+  <div class="utils-content ui-widget ui-widget-content">
+    
+    <div class="keys"></div>
+    <div class="dummyCreate"></div>
+    <div class="dummyRead"></div>
+  </div>
+  <div class="utils-content ui-widget ui-widget-content">
+    <input class="text ui-corner-all ui-widget-content" type="text" id="textSearch" style="width:300px;"/> <button id="btnSearch">Search</button>
+    <div id="divSearch"></div>
+  </div>
+  <div class="utils-content ui-widget ui-widget-content">
+    <input class="text ui-corner-all ui-widget-content" type="text" id="textQuick" style="width: 250px;" />
+  </div>
+
+  
+  </div>
+</body>
+</html>

@@ -41,6 +41,8 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? SlaWarningTimeClosed { get; set; }
     [DataMember] public DateTime? SlaWarningLastAction { get; set; }
     [DataMember] public DateTime? SlaWarningInitialResponse { get; set; }
+    [DataMember] public int? DocID { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
@@ -55,6 +57,8 @@ namespace TeamSupport.Data
       TicketProxy result = new TicketProxy();
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
+      result.NeedsIndexing = this.NeedsIndexing;
+      result.DocID = this.DocID;
       result.PortalEmail = this.PortalEmail;
       result.TicketSource = this.TicketSource;
       result.ImportID = this.ImportID;

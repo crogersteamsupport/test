@@ -1141,6 +1141,38 @@ AND u.OrganizationID = @OrganizationID
       }
     }
 
+    public void LoadForIndexing()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+@"SELECT t.*,
+(
+t.Name + ' ' +
+
+ISNULL(
+(
+  SELECT CAST(cv.CustomValue + ' ' AS VARCHAR(MAX)) FROM CustomValues cv LEFT JOIN CustomFields cf ON cf.CustomFieldID = cv.CustomFieldID 
+  WHERE cf.RefType=17 AND cv.RefID=t.TicketID    
+  FOR XML PATH('')
+), '') + ' ' +
+(
+  SELECT CAST(a.Description + ' ' + a.Name + ' ' AS VARCHAR(MAX))
+  FROM Actions a
+  WHERE a.TicketID = t.TicketID
+  FOR XML PATH('')
+)
+
+) AS Text
+FROM Tickets t
+WHERE t.NeedsIndexing = 1
+ORDER BY DateModified 
+";
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }
+
 
   }
 }

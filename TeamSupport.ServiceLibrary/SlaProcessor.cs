@@ -209,7 +209,8 @@ namespace TeamSupport.ServiceLibrary
       if (message.To.Count > 0)
       { 
         //_smtpClient.Send(message); 
-        Emails.AddEmail(_loginUser, organizationID, description, message);
+        
+        Emails.AddEmail(_loginUser, organizationID, null, description, message);
       }
     
     }

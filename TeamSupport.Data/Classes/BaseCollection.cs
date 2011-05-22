@@ -662,6 +662,13 @@ namespace TeamSupport.Data
       return builder.ToString();
     }
 
+    public void DeleteAll()
+    {
+      foreach (DataRow row in Table.Rows)
+      {
+        row.Delete();
+      }
+    }
 
     public void Delete(BaseItem baseItem)
     {
@@ -672,8 +679,51 @@ namespace TeamSupport.Data
       return GetXml(listName, elementName, includeCustomFields, null);
     }*/
 
+
+    public static XmlTextWriter BeginXmlWrite(string listName)
+    {
+      MemoryStream stream = new MemoryStream();
+      XmlTextWriter writer = new XmlTextWriter(stream, new UTF8Encoding(false));
+      writer.Formatting = Formatting.Indented;
+      writer.WriteStartDocument();
+      writer.WriteStartElement(listName);
+      return writer;
+    }
+
+    public void WriteXml(XmlTextWriter writer, BaseItem item, string elementName, bool includeCustomFields, NameValueCollection filters)
+    {
+      if (IsItemFiltered(item, filters)) return;
+      writer.WriteStartElement(elementName);
+      item.WriteToXml(writer, includeCustomFields);
+      writer.WriteEndElement();
+    }
+
+    public void WriteXml(XmlTextWriter writer, DataRow row, string elementName, bool includeCustomFields, NameValueCollection filters)
+    {
+      WriteXml(writer, new BaseItem(row, this), elementName, includeCustomFields, filters);
+    }
+
+    public static string EndXmlWrite(XmlTextWriter writer)
+    {
+      writer.WriteFullEndElement();
+      writer.WriteEndDocument();
+      writer.Flush();
+      writer.BaseStream.Position = 0;
+      StreamReader reader = new StreamReader(writer.BaseStream);
+      return reader.ReadToEnd();
+    }
+
+
     public string GetXml(string listName, string elementName, bool includeCustomFields, NameValueCollection filters) 
     {
+      XmlTextWriter writer = BeginXmlWrite(listName);
+      foreach (DataRow row in Table.Rows)
+      {
+        WriteXml(writer, row, elementName, includeCustomFields, filters);
+      }
+      return EndXmlWrite(writer);
+
+      /*
       MemoryStream stream = new MemoryStream();
       XmlTextWriter writer = new XmlTextWriter(stream, new UTF8Encoding(false));
       writer.Formatting = Formatting.Indented;
@@ -696,7 +746,7 @@ namespace TeamSupport.Data
       writer.Flush();
       stream.Position = 0;
       StreamReader reader = new StreamReader(stream);
-      return reader.ReadToEnd();
+      return reader.ReadToEnd();*/
     }
 
     private bool IsItemFiltered(BaseItem item, NameValueCollection filters)

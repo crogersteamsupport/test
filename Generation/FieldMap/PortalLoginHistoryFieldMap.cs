@@ -19,6 +19,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("OrganizationName", "OrganizationName", false, false, false);
       _fieldMap.AddMap("Success", "Success", false, false, false);
       _fieldMap.AddMap("LoginDateTime", "LoginDateTime", false, false, false);
+      _fieldMap.AddMap("IPAddress", "IPAddress", false, false, false);
             
     }
   }

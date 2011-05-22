@@ -455,8 +455,6 @@ namespace TeamSupport.Data
       AddTicketParameter("ProductID", filter.ProductID, true, builder, command);
       AddTicketParameter("ReportedVersionID", filter.ReportedID, true, builder, command);
       AddTicketParameter("SolvedVersionID", filter.ResolvedID, true, builder, command);
-      AddTicketParameter("UserID", filter.UserID, true, builder, command);
-      AddTicketParameter("GroupID", filter.GroupID, true, builder, command);
       AddTicketParameter("IsVisibleOnPortal", filter.IsVisibleOnPortal, false, builder, command);
       AddTicketParameter("IsKnowledgeBase", filter.IsVisibleOnPortal, false, builder, command);
       AddTicketParameter("DateCreated", "DateCreatedBegin", filter.DateCreatedBegin, ">=", builder, command);
@@ -464,6 +462,22 @@ namespace TeamSupport.Data
       AddTicketParameter("DateModified", "DateModifiedBegin", filter.DateModifiedBegin, ">=", builder, command);
       AddTicketParameter("DateModified", "DateModifiedEnd", filter.DateModifiedEnd, "<=", builder, command);
       AddTicketParameter("ViewerID", loginUser.UserID, false, builder, command);
+
+      if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -1)
+      {
+        builder.Append(" AND (tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
+        command.Parameters.AddWithValue("UserID", filter.UserID);
+      }
+      else if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -2)
+      {
+        builder.Append(" AND (tv.UserID IS NULL AND tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
+        command.Parameters.AddWithValue("UserID", filter.UserID);
+      }
+      else
+      {
+        AddTicketParameter("UserID", filter.UserID, true, builder, command);
+        AddTicketParameter("GroupID", filter.GroupID, true, builder, command);
+      }
 
       if (filter.CustomerID != null)
       {

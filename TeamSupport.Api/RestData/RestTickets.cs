@@ -26,17 +26,18 @@ namespace TeamSupport.Api
 
     public static string GetTickets(RestCommand command)
     {
-
-      TicketsView tickets = new TicketsView(command.LoginUser);
+      string xml = "";
 
       if (command.Filters["TicketTypeID"] != null)
       { 
         try 
 	      {	        
+          TicketsView tickets = new TicketsView(command.LoginUser);
           int ticketTypeID = int.Parse(command.Filters["TicketTypeID"]);
           TicketType ticketType = TicketTypes.GetTicketType(command.LoginUser, ticketTypeID);
           if (ticketType.OrganizationID != command.Organization.OrganizationID) throw new Exception();
           tickets.LoadByTicketTypeID(ticketTypeID);
+          xml = tickets.GetXml("Tickets", "Ticket", true, command.Filters);
 	      }
 	      catch (Exception ex)
 	      {
@@ -45,12 +46,30 @@ namespace TeamSupport.Api
       }
       else
 	    {
-        tickets.LoadByOrganizationID(command.Organization.OrganizationID);
+        TicketTypes ticketTypes = new TicketTypes(command.LoginUser);
+        ticketTypes.LoadByOrganizationID(command.Organization.OrganizationID);
+
+        TicketsView tickets = new TicketsView(command.LoginUser);
+        XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
+
+        foreach (TicketType ticketType in ticketTypes)
+        {
+          tickets.LoadByTicketTypeID(ticketType.TicketTypeID);
+          //writer.WriteStartElement(ticketType.Name);
+          foreach (DataRow row in tickets.Table.Rows)
+          {
+            tickets.WriteXml(writer, row, "Ticket", true, command.Filters);
+          }
+          //writer.WriteEndElement();
+        }
+        
+        xml = Tickets.EndXmlWrite(writer);
 	    }
 
       if (command.Format == RestFormat.XML)
       {
-        return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
+        //return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
+        return xml;
       }
       else
       {

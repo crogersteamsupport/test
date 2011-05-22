@@ -1,0 +1,3 @@
+﻿.tickets-tab-content { height:100%; }
+.tickets-panel-footer { border-bottom: none; border-left: none; border-right:none;}
+.ticket-grid-count { font-weight:bold;  padding: .25em .5em; float:right;}

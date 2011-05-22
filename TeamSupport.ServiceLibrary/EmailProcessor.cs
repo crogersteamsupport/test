@@ -55,6 +55,7 @@ namespace TeamSupport.ServiceLibrary
     private LoginUser _loginUser;
     private bool _isDebug = false;
     private MailAddressCollection _debugAddresses;
+    private int _currentEmailPostID;
 
     public EmailProcessor()
     {
@@ -142,6 +143,7 @@ namespace TeamSupport.ServiceLibrary
 
     public void ProcessEmail(EmailPost emailPost)
     {
+      _currentEmailPostID = emailPost.EmailPostID;
       switch (emailPost.EmailPostType)
       {
         case EmailPostType.TicketModified:
@@ -283,7 +285,7 @@ namespace TeamSupport.ServiceLibrary
       {
         message.To.Clear();
         message.To.Add(address);
-        Emails.AddEmail(_loginUser, organizationID, description, message, attachments);
+        Emails.AddEmail(_loginUser, organizationID, _currentEmailPostID, description, message, attachments);
       }
     }
 

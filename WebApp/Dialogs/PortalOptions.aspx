@@ -109,6 +109,14 @@
               <telerik:RadNumericTextBox ID="textWidth" runat="server" Width="225px"></telerik:RadNumericTextBox>
             </td>
           </tr>
+          <tr>
+            <td>
+              Basic Portal Header Message:
+            </td>
+            <td>
+              <telerik:RadTextBox ID="textBasicPortalDirections" runat="server" Width="225px"></telerik:RadTextBox>
+            </td>
+          </tr>
         </table>
       </div>
       <br />

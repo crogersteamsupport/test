@@ -1,0 +1,33 @@
+﻿.main-container { height: 100%; min-height: 500px; min-width: 1000px;}
+.main-tab-content, .main-tab-content-item, .main-nav-content-item { height: 100%; }
+.main-tabs { border-top:none; }
+.main-tab-content-item > iframe, iframe.pane  { height:100%; width:100%; overflow:hidden; margin-top:1px; border-width:0;}
+.main-header { height: 60px; border-left: none; border-right:none; border-top:none; }
+.main-header-left { padding: 4px 0 0 10px;  float:left;}
+.main-header-logo { background: transparent url('../Images/newlogo.png') no-repeat; height: 52px; width: 275px; float:left; }
+.main-header-status { float:left; padding: 18px 0 0 0px; font-weight:normal;}
+.main-header-status span { margin-left: 5px; display:block; float:left; }
+.main-header-status input.text { margin-left: 5px; float:left; margin-top: 0px; width: 250px; padding: .1em .1em; line-height: 1.2em; height: 1.2em;} 
+
+.main-header-status .main-header-status-text { line-height:16px; height:16px; top:50%; text-decoration:underline; font-weight:normal !important;}
+.main-header-status .ts-clickable { cursor: pointer !important;}
+
+.main-header-links { float:right; line-height:60px; padding-right: 15px; font-weight:normal; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);}
+.main-header-links a:hover { text-decoration: underline;}
+.main-status-left { font-weight:normal; line-height: 1.5em; height: 1.5em; float:left; margin-left: 1em;}
+.main-status-right { font-weight:normal; line-height: 1.5em; height: 1.5em; float:right; margin-right: 1em;}
+.main-status-right span { border-right: 1px solid; padding-right: 1em; margin-right: 1em; float:right;}
+.main-status-right span.status-last { border: none; padding:0; margin:0;}
+.main-content { }
+.main-quick-panel {  border-top:none; border-left: none; border-right:none; padding: 3px 0 7px 0; background-image: none; }
+.main-quick-panel a { line-height: 16px; padding: .25em .5em; float:left; margin: 0 0 5px 5px; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);}
+.main-quick-panel a:hover { text-decoration:none;}
+.main-quick-panel .ts-icon { float:left; display:block; margin-right: 5px;  }
+.main-quick-panel div { margin: 0 auto;  text-align:center; padding: 3px 0; }
+.main-quick-panel input.text {  width: 90%; }
+.main-info { overflow:auto;} 
+.main-info > div.ui-widget-header { padding: .4em .4em; text-align:right; border-left: none; border-top: none; border-right:none;}
+.main-info-content { padding: 10px 10px;}
+.main-quick-ticket-blur { font-style: italic;}
+.main-header-links a { padding: 3px 5px; font-weight:normal !important; margin-left: 5px; }
+.main-header-links a:hover { text-decoration:none;}

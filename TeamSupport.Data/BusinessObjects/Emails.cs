@@ -129,7 +129,7 @@ namespace TeamSupport.Data
       return builder.ToString();
     }
 
-    public void AddEmail(int organizationID, string description, MailMessage message, string[] attachmentFileNames)
+    public void AddEmail(int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
     {
       Email email = AddNewEmail();
 
@@ -147,6 +147,7 @@ namespace TeamSupport.Data
       email.IsSuccess = false;
       email.NextAttempt = DateTime.UtcNow;
       email.IsWaiting = true;
+      email.EmailPostID = emailPostID;
       email.Attempts = 0;
 
       List<string> attachments = new List<string>();
@@ -166,21 +167,21 @@ namespace TeamSupport.Data
       email.Size = size;
     }
 
-    public void AddEmail(int organizationID, string description, MailMessage message)
+    public void AddEmail(int organizationID, int? emailPostID, string description, MailMessage message)
     {
-      AddEmail(organizationID, description, message, null);
+      AddEmail(organizationID, emailPostID, description, message, null);
     }
 
-    public static void AddEmail(LoginUser loginUser, int organizationID, string description, MailMessage message, string[] attachmentFileNames)
+    public static void AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
     {
       Emails emails = new Emails(loginUser);
-      emails.AddEmail(organizationID, description, message, attachmentFileNames);
+      emails.AddEmail(organizationID, emailPostID, description, message, attachmentFileNames);
       emails.Save();
     }
 
-    public static void AddEmail(LoginUser loginUser, int organizationID, string description, MailMessage message)
+    public static void AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message)
     {
-      Emails.AddEmail(loginUser, organizationID, description, message, null);
+      Emails.AddEmail(loginUser, organizationID, emailPostID, description, message, null);
     }
 
   }

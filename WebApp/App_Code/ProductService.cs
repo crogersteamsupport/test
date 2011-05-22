@@ -30,12 +30,37 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void RenameTag(int tagID, string name)
+    public ProductVersionsViewItemProxy GetVersion(int versionID)
     {
-      if (!TSAuthentication.IsSystemAdmin) return;
-      Tag tag = Tags.GetTag(TSAuthentication.GetLoginUser(), tagID);
-      tag.Value = name;
-      tag.Collection.Save();
+      ProductVersionsViewItem version = ProductVersionsView.GetProductVersionsViewItem(TSAuthentication.GetLoginUser(), versionID);
+      if (version == null || version.OrganizationID != TSAuthentication.OrganizationID) return null;
+      return version.GetProxy();
+    }
+
+    [WebMethod]
+    public ProductProxy GetProduct(int productID)
+    {
+      Product product = Products.GetProduct(TSAuthentication.GetLoginUser(), productID);
+      if (product == null || product.OrganizationID != TSAuthentication.OrganizationID) return null;
+      return product.GetProxy();
+    }
+
+    [WebMethod]
+    public AttachmentProxy[] GetAttachments(int versionID)
+    {
+      Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
+      attachments.LoadByReference(ReferenceType.ProductVersions, versionID);
+      return attachments.GetAttachmentProxies();
+    }
+
+    [WebMethod]
+    public void DeleteAttachment(int attachmentID)
+    {
+      Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
+      ProductVersionsViewItem version = ProductVersionsView.GetProductVersionsViewItem(attachment.Collection.LoginUser, attachment.RefID);
+      if (version.OrganizationID != TSAuthentication.OrganizationID) return;
+      attachment.Delete();
+      attachment.Collection.Save();
     }
 
   }

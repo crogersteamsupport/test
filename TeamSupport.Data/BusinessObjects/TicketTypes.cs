@@ -14,6 +14,10 @@ namespace TeamSupport.Data
   public partial class TicketTypes 
   {
 
+    /// <summary>
+    /// Loads all the ticket types for an organzation.  Ordered by Position.
+    /// </summary>
+    /// <param name="organizationID"></param>
     public void LoadByOrganizationID(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())

@@ -23,7 +23,7 @@
            <telerik:RadTab runat="server" Text="Workflow" Value="AdminWorkflow.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Email" Value="AdminEmails.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Ticket Templates" Value="AdminTicketTemplates.aspx"></telerik:RadTab>
-           <telerik:RadTab runat="server" Text="Ticket Automation" Value="../Resources_140/Pages/Admin_Automation.html" Visible="false"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="Ticket Automation" Value="../Resources_141/Pages/Admin_Automation.html" Visible="false"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Integration" Value="AdminIntegration.aspx" Visible="false"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Chat" Value="AdminChat.aspx" Visible="false"></telerik:RadTab>
          </Tabs>

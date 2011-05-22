@@ -124,6 +124,18 @@ namespace TeamSupport.Data
       return result;
     }
 
+    public void LoadByOrganization(int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM CustomFields WHERE (OrganizationID = @OrganizationID) ORDER BY Position";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command, "CustomFields");
+      }
+    
+    }
+
     public void LoadByReferenceType(int organizationID, ReferenceType refType, int? auxID)
     {
       if (auxID == null) auxID = -1;

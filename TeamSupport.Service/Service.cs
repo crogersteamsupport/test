@@ -18,8 +18,7 @@ namespace TeamSupport.Service
     EmailProcessor _emailProcessor;
     EmailSender _emailSender;
     SlaProcessor _slaProcessor;
-    IisDbLogger _iisDbLogger;
-    MurocUpdater _murocUpdater;
+    Indexer _indexer;
 
     public Service()
     {
@@ -32,9 +31,7 @@ namespace TeamSupport.Service
       _emailProcessor = new EmailProcessor();
       _emailSender = new EmailSender();
       _slaProcessor = new SlaProcessor();
-      _iisDbLogger = new IisDbLogger();
-      _murocUpdater = new MurocUpdater();
-
+      _indexer = new Indexer();
       StartProcessing();
     }
 
@@ -53,8 +50,8 @@ namespace TeamSupport.Service
       _emailProcessor.Stop();
       _emailSender.Stop();
       _slaProcessor.Stop();
-      _iisDbLogger.Stop();
-      _murocUpdater.Stop();
+      _indexer.Stop();
+
     }
 
     private void StartProcessing()
@@ -62,8 +59,7 @@ namespace TeamSupport.Service
       _emailProcessor.Start("EmailEnabled", "EmailInterval", 10);
       _emailSender.Start("EmailEnabled", "EmailInterval", 10);
       _slaProcessor.Start("SlaProcessEnabled", "SlaProcessInterval", 300);
-      _iisDbLogger.Start("IisLogEnabled", "IisLogInterval", 300);
-      _murocUpdater.Start("MurocUpdateEnabled", "MurocUpdateInterval", 300);
+      _indexer.Start("IndexerEnabled", "IndexerInterval", 60);
     }
 
 

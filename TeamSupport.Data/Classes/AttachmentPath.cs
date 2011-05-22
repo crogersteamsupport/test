@@ -29,7 +29,7 @@ namespace TeamSupport.Data
     public string DefaultRoot { get { return _defaultRoot; } }
     */
 
-    public enum Folder { None, Images, Styles, ChatImages, ChatStyles, TicketTypeImages };
+    public enum Folder { None, Images, Styles, ChatImages, ChatStyles, TicketTypeImages, Products, Actions, Organizations };
 
     /// <summary>
     /// Gets the root path for attachments as specified in the SystemSettings table
@@ -98,10 +98,30 @@ namespace TeamSupport.Data
         case Folder.ChatImages: result = "Images\\Chat"; break;
         case Folder.ChatStyles: result = "Styles\\Chat"; break;
         case Folder.TicketTypeImages: result = "Images\\TicketTypes"; break;
+        case Folder.Organizations: result = "Organizations"; break;
+        case Folder.Products: result = "Products"; break;
+        case Folder.Actions: result = "Actions"; break;
         default: result = ""; break;
       }
       return result;
-    
+    }
+
+    /// <summary>
+    /// Gets the associated reference type of an associated folder. (None if there isn't one)
+    /// </summary>
+    /// <param name="folder"></param>
+    /// <returns></returns>
+    public static ReferenceType GetFolderReferenceType(Folder folder)
+    {
+      ReferenceType result;
+      switch (folder)
+      {
+        case Folder.Organizations: result = ReferenceType.Organizations; break;
+        case Folder.Products: result = ReferenceType.ProductVersions; break;
+        case Folder.Actions: result = ReferenceType.Actions; break;
+        default: result = ReferenceType.None; break;
+      }
+      return result;
     }
 
     public static Folder GetFolderByName(string folderName)

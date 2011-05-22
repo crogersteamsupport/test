@@ -15,14 +15,20 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_408D22697C3D3C5CDF2C62FBFB61119A"
+        "MsmKey" = "8:_40A3C26787ED52B77EF9A4BEA0618E6A"
         "OwnerKey" = "8:_5B358E80BCD848C18C71C12BD774E7C0"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_408D22697C3D3C5CDF2C62FBFB61119A"
+        "MsmKey" = "8:_40A3C26787ED52B77EF9A4BEA0618E6A"
         "OwnerKey" = "8:_85FB7F0EE91044C1815663F00B961AF8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_40A3C26787ED52B77EF9A4BEA0618E6A"
+        "OwnerKey" = "8:_C2DA9B9C2A3E609FE0D8F9BD774C3A15"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -33,44 +39,86 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_5DC0D3F9872ADCDFBCC5EA207219759B"
+        "OwnerKey" = "8:_5B358E80BCD848C18C71C12BD774E7C0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5DC0D3F9872ADCDFBCC5EA207219759B"
+        "OwnerKey" = "8:_85FB7F0EE91044C1815663F00B961AF8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5DC0D3F9872ADCDFBCC5EA207219759B"
+        "OwnerKey" = "8:_C2DA9B9C2A3E609FE0D8F9BD774C3A15"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_85FB7F0EE91044C1815663F00B961AF8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_AA9C959019B18745EE64F0D234B913AF"
+        "MsmKey" = "8:_C2DA9B9C2A3E609FE0D8F9BD774C3A15"
         "OwnerKey" = "8:_5B358E80BCD848C18C71C12BD774E7C0"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_AA9C959019B18745EE64F0D234B913AF"
+        "MsmKey" = "8:_C2DA9B9C2A3E609FE0D8F9BD774C3A15"
         "OwnerKey" = "8:_85FB7F0EE91044C1815663F00B961AF8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_AA9C959019B18745EE64F0D234B913AF"
-        "OwnerKey" = "8:_408D22697C3D3C5CDF2C62FBFB61119A"
+        "MsmKey" = "8:_D74BBF35255AC605067032244F3B8A97"
+        "OwnerKey" = "8:_5DC0D3F9872ADCDFBCC5EA207219759B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D74BBF35255AC605067032244F3B8A97"
+        "OwnerKey" = "8:_85FB7F0EE91044C1815663F00B961AF8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D74BBF35255AC605067032244F3B8A97"
+        "OwnerKey" = "8:_5B358E80BCD848C18C71C12BD774E7C0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_C2DA9B9C2A3E609FE0D8F9BD774C3A15"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_40A3C26787ED52B77EF9A4BEA0618E6A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D74BBF35255AC605067032244F3B8A97"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5DC0D3F9872ADCDFBCC5EA207219759B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_85FB7F0EE91044C1815663F00B961AF8"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_408D22697C3D3C5CDF2C62FBFB61119A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_AA9C959019B18745EE64F0D234B913AF"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -232,7 +280,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:3.5.21022"
+                "FrameworkVersion" = "8:3.5.21022 "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=76617"
                 }
@@ -240,14 +288,76 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_408D22697C3D3C5CDF2C62FBFB61119A"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_40A3C26787ED52B77EF9A4BEA0618E6A"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TeamSupport.ServiceLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:dtSearchNetApi3, Version=1.0.4148.37318, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
-                    "_408D22697C3D3C5CDF2C62FBFB61119A"
+                    "_40A3C26787ED52B77EF9A4BEA0618E6A"
+                    {
+                    "Name" = "8:dtSearchNetApi3.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:dtSearchNetApi3.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_D0F76EF58C7E44649AFCE9ADC5B2CAEC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5DC0D3F9872ADCDFBCC5EA207219759B"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:TeamSupport.Data, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64"
+                "ScatterAssemblies"
+                {
+                    "_5DC0D3F9872ADCDFBCC5EA207219759B"
+                    {
+                    "Name" = "8:TeamSupport.Data.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:TeamSupport.Data.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_D0F76EF58C7E44649AFCE9ADC5B2CAEC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C2DA9B9C2A3E609FE0D8F9BD774C3A15"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:TeamSupport.ServiceLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64"
+                "ScatterAssemblies"
+                {
+                    "_C2DA9B9C2A3E609FE0D8F9BD774C3A15"
                     {
                     "Name" = "8:TeamSupport.ServiceLibrary.dll"
                     "Attributes" = "3:512"
@@ -271,20 +381,20 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_AA9C959019B18745EE64F0D234B913AF"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D74BBF35255AC605067032244F3B8A97"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TeamSupport.Data, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:TidyNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
-                    "_AA9C959019B18745EE64F0D234B913AF"
+                    "_D74BBF35255AC605067032244F3B8A97"
                     {
-                    "Name" = "8:TeamSupport.Data.dll"
+                    "Name" = "8:TidyNet.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:TeamSupport.Data.dll"
+            "SourcePath" = "8:TidyNet.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_D0F76EF58C7E44649AFCE9ADC5B2CAEC"
@@ -359,7 +469,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TeamSupportService"
         "ProductCode" = "8:{E44C45B4-3830-4055-AA28-5A0BF8DD1105}"
-        "PackageCode" = "8:{B021AA35-2139-48FB-A08B-C5E6A282DAC8}"
+        "PackageCode" = "8:{4B627ECA-5870-4355-9944-83D1D05ACAEF}"
         "UpgradeCode" = "8:{F11F8CC2-DB44-458C-B13C-31D45FC2D611}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -922,7 +1032,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_85FB7F0EE91044C1815663F00B961AF8"
             {
-            "SourcePath" = "8:..\\TeamSupport.Service\\obj\\Debug\\TeamSupport.Service.exe"
+            "SourcePath" = "8:"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_D0F76EF58C7E44649AFCE9ADC5B2CAEC"

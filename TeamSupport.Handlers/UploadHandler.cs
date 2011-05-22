@@ -12,6 +12,7 @@ using System.Drawing;
 using TeamSupport.Data;
 using System.IO;
 using TeamSupport.WebUtils;
+using System.Runtime.Serialization;
 
 namespace TeamSupport.Handlers
 {
@@ -24,13 +25,22 @@ namespace TeamSupport.Handlers
       get { return false; }
     }
 
+    private int? _id = null;
+
     public void ProcessRequest(HttpContext context)
     {
       context.Response.ContentType = "text/html";
       try
       {
-        string[] segments = GetUrlSegments(context);
-        AttachmentPath.Folder folder = GetFolder(context, segments);
+        List<string> segments = GetUrlSegments(context);
+        int id;
+        if (int.TryParse(segments[segments.Count - 1], out id))
+        {
+          _id = id;
+          segments.RemoveAt(segments.Count - 1);
+        }
+
+        AttachmentPath.Folder folder = GetFolder(context, segments.ToArray());
         if (folder == AttachmentPath.Folder.None) throw new Exception("Invalid path.");
         SaveFiles(context, folder);
       }
@@ -42,7 +52,7 @@ namespace TeamSupport.Handlers
       context.Response.End();
     }
 
-    private string[] GetUrlSegments(HttpContext context)
+    private List<string> GetUrlSegments(HttpContext context)
     {
         List<string> segments = new List<string>();
         bool flag = false;
@@ -52,14 +62,60 @@ namespace TeamSupport.Handlers
           if (flag) segments.Add(s);
           if (s == "upload") flag = true;
         }
-       return segments.ToArray();
+       return segments;
     }
 
 
     private void SaveFiles(HttpContext context, AttachmentPath.Folder folder)
     {
+      ReferenceType refType = AttachmentPath.GetFolderReferenceType(folder);
+      if (refType == ReferenceType.None)
+      {
+        SaveFilesOld(context, folder);
+        return;
+      }
+
+      List<UploadResult> result = new List<UploadResult>();
+
+      string path = AttachmentPath.GetPath(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, folder);
+      if (_id != null) path = Path.Combine(path, _id.ToString());
+      if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+      HttpFileCollection files = context.Request.Files;
+      
+      for (int i = 0; i < files.Count; i++)
+      {
+        if (files[i].ContentLength > 0)
+        {
+          string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
+
+          files[i].SaveAs(Path.Combine(path, fileName));
+          if (refType != ReferenceType.None && _id != null)
+          {
+            Attachment attachment = (new Attachments(TSAuthentication.GetLoginUser())).AddNewAttachment();
+            attachment.RefType = refType;
+            attachment.RefID = (int)_id;
+            attachment.OrganizationID = TSAuthentication.OrganizationID;
+            attachment.FileName = fileName;
+            attachment.Path = Path.Combine(path, fileName);
+            attachment.FileType = files[i].ContentType;
+            attachment.FileSize = files[i].ContentLength;
+            result.Add(new UploadResult(fileName, attachment.FileType, attachment.FileSize));
+            attachment.Collection.Save();
+          }
+
+        }
+      }
+      context.Response.Clear();
+      context.Response.ContentType = "text/plain";
+      context.Response.Write(DataUtils.ObjectToJson(result.ToArray()));
+    }
+
+    private void SaveFilesOld(HttpContext context, AttachmentPath.Folder folder)
+    {
       StringBuilder builder = new StringBuilder();
-      string path = AttachmentPath.GetPath(UserSession.LoginUser, UserSession.LoginUser.OrganizationID, folder);
+      string path = AttachmentPath.GetPath(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, folder);
+      if (_id != null) path = Path.Combine(path, _id.ToString());
+      if (!Directory.Exists(path)) Directory.CreateDirectory(path);
       HttpFileCollection files = context.Request.Files;
       for (int i = 0; i < files.Count; i++)
 			{
@@ -99,5 +155,23 @@ namespace TeamSupport.Handlers
     }
 
     #endregion
+  }
+
+  [DataContract]
+  public class UploadResult
+  {
+    public UploadResult(string name, string type, long size)
+    {
+      this.name = name;
+      this.size = size;
+      this.type = type;
+    }
+
+    [DataMember]
+    public string name { get; set; }
+    [DataMember]
+    public long size { get; set; }
+    [DataMember]
+    public string type { get; set; }
   }
 }

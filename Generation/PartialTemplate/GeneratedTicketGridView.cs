@@ -1,0 +1,1099 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace TeamSupport.Data
+{
+  [Serializable]
+  public partial class TicketGridViewItem : BaseItem
+  {
+    private TicketGridView _ticketGridView;
+    
+    public TicketGridViewItem(DataRow row, TicketGridView ticketGridView): base(row, ticketGridView)
+    {
+      _ticketGridView = ticketGridView;
+    }
+	
+    #region Properties
+    
+    public TicketGridView Collection
+    {
+      get { return _ticketGridView; }
+    }
+        
+    
+    public string UserName
+    {
+      get { return Row["UserName"] != DBNull.Value ? (string)Row["UserName"] : null; }
+    }
+    
+    public string CloserName
+    {
+      get { return Row["CloserName"] != DBNull.Value ? (string)Row["CloserName"] : null; }
+    }
+    
+    public string CreatorName
+    {
+      get { return Row["CreatorName"] != DBNull.Value ? (string)Row["CreatorName"] : null; }
+    }
+    
+    public string ModifierName
+    {
+      get { return Row["ModifierName"] != DBNull.Value ? (string)Row["ModifierName"] : null; }
+    }
+    
+    public int? SlaViolationTime
+    {
+      get { return Row["SlaViolationTime"] != DBNull.Value ? (int?)Row["SlaViolationTime"] : null; }
+    }
+    
+    public int? SlaWarningTime
+    {
+      get { return Row["SlaWarningTime"] != DBNull.Value ? (int?)Row["SlaWarningTime"] : null; }
+    }
+    
+    public int? SlaViolationHours
+    {
+      get { return Row["SlaViolationHours"] != DBNull.Value ? (int?)Row["SlaViolationHours"] : null; }
+    }
+    
+    public int? SlaWarningHours
+    {
+      get { return Row["SlaWarningHours"] != DBNull.Value ? (int?)Row["SlaWarningHours"] : null; }
+    }
+    
+    
+    
+    public int DaysOpened
+    {
+      get { return (int)Row["DaysOpened"]; }
+    }
+    
+    public int DaysClosed
+    {
+      get { return (int)Row["DaysClosed"]; }
+    }
+    
+
+    
+    public string ProductName
+    {
+      get { return Row["ProductName"] != DBNull.Value ? (string)Row["ProductName"] : null; }
+      set { Row["ProductName"] = CheckNull(value); }
+    }
+    
+    public string ReportedVersion
+    {
+      get { return Row["ReportedVersion"] != DBNull.Value ? (string)Row["ReportedVersion"] : null; }
+      set { Row["ReportedVersion"] = CheckNull(value); }
+    }
+    
+    public string SolvedVersion
+    {
+      get { return Row["SolvedVersion"] != DBNull.Value ? (string)Row["SolvedVersion"] : null; }
+      set { Row["SolvedVersion"] = CheckNull(value); }
+    }
+    
+    public string GroupName
+    {
+      get { return Row["GroupName"] != DBNull.Value ? (string)Row["GroupName"] : null; }
+      set { Row["GroupName"] = CheckNull(value); }
+    }
+    
+    public string TicketTypeName
+    {
+      get { return Row["TicketTypeName"] != DBNull.Value ? (string)Row["TicketTypeName"] : null; }
+      set { Row["TicketTypeName"] = CheckNull(value); }
+    }
+    
+    public string Status
+    {
+      get { return Row["Status"] != DBNull.Value ? (string)Row["Status"] : null; }
+      set { Row["Status"] = CheckNull(value); }
+    }
+    
+    public int? StatusPosition
+    {
+      get { return Row["StatusPosition"] != DBNull.Value ? (int?)Row["StatusPosition"] : null; }
+      set { Row["StatusPosition"] = CheckNull(value); }
+    }
+    
+    public int? SeverityPosition
+    {
+      get { return Row["SeverityPosition"] != DBNull.Value ? (int?)Row["SeverityPosition"] : null; }
+      set { Row["SeverityPosition"] = CheckNull(value); }
+    }
+    
+    public string Severity
+    {
+      get { return Row["Severity"] != DBNull.Value ? (string)Row["Severity"] : null; }
+      set { Row["Severity"] = CheckNull(value); }
+    }
+    
+    public int? ReportedVersionID
+    {
+      get { return Row["ReportedVersionID"] != DBNull.Value ? (int?)Row["ReportedVersionID"] : null; }
+      set { Row["ReportedVersionID"] = CheckNull(value); }
+    }
+    
+    public int? SolvedVersionID
+    {
+      get { return Row["SolvedVersionID"] != DBNull.Value ? (int?)Row["SolvedVersionID"] : null; }
+      set { Row["SolvedVersionID"] = CheckNull(value); }
+    }
+    
+    public int? ProductID
+    {
+      get { return Row["ProductID"] != DBNull.Value ? (int?)Row["ProductID"] : null; }
+      set { Row["ProductID"] = CheckNull(value); }
+    }
+    
+    public int? GroupID
+    {
+      get { return Row["GroupID"] != DBNull.Value ? (int?)Row["GroupID"] : null; }
+      set { Row["GroupID"] = CheckNull(value); }
+    }
+    
+    public int? UserID
+    {
+      get { return Row["UserID"] != DBNull.Value ? (int?)Row["UserID"] : null; }
+      set { Row["UserID"] = CheckNull(value); }
+    }
+    
+    public int? ParentID
+    {
+      get { return Row["ParentID"] != DBNull.Value ? (int?)Row["ParentID"] : null; }
+      set { Row["ParentID"] = CheckNull(value); }
+    }
+    
+    public int? CloserID
+    {
+      get { return Row["CloserID"] != DBNull.Value ? (int?)Row["CloserID"] : null; }
+      set { Row["CloserID"] = CheckNull(value); }
+    }
+    
+
+    
+    public int CreatorID
+    {
+      get { return (int)Row["CreatorID"]; }
+      set { Row["CreatorID"] = CheckNull(value); }
+    }
+    
+    public int ModifierID
+    {
+      get { return (int)Row["ModifierID"]; }
+      set { Row["ModifierID"] = CheckNull(value); }
+    }
+    
+    public string Name
+    {
+      get { return (string)Row["Name"]; }
+      set { Row["Name"] = CheckNull(value); }
+    }
+    
+    public int OrganizationID
+    {
+      get { return (int)Row["OrganizationID"]; }
+      set { Row["OrganizationID"] = CheckNull(value); }
+    }
+    
+    public int TicketSeverityID
+    {
+      get { return (int)Row["TicketSeverityID"]; }
+      set { Row["TicketSeverityID"] = CheckNull(value); }
+    }
+    
+    public int TicketTypeID
+    {
+      get { return (int)Row["TicketTypeID"]; }
+      set { Row["TicketTypeID"] = CheckNull(value); }
+    }
+    
+    public int TicketStatusID
+    {
+      get { return (int)Row["TicketStatusID"]; }
+      set { Row["TicketStatusID"] = CheckNull(value); }
+    }
+    
+    public bool IsKnowledgeBase
+    {
+      get { return (bool)Row["IsKnowledgeBase"]; }
+      set { Row["IsKnowledgeBase"] = CheckNull(value); }
+    }
+    
+    public bool IsVisibleOnPortal
+    {
+      get { return (bool)Row["IsVisibleOnPortal"]; }
+      set { Row["IsVisibleOnPortal"] = CheckNull(value); }
+    }
+    
+    public int TicketNumber
+    {
+      get { return (int)Row["TicketNumber"]; }
+      set { Row["TicketNumber"] = CheckNull(value); }
+    }
+    
+    public bool IsClosed
+    {
+      get { return (bool)Row["IsClosed"]; }
+      set { Row["IsClosed"] = CheckNull(value); }
+    }
+    
+    public int TicketID
+    {
+      get { return (int)Row["TicketID"]; }
+      set { Row["TicketID"] = CheckNull(value); }
+    }
+    
+
+    /* DateTime */
+    
+    
+    
+
+    
+    public DateTime? DateClosed
+    {
+      get { return Row["DateClosed"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateClosed"]) : null; }
+      set { Row["DateClosed"] = CheckNull(value); }
+    }
+    
+
+    
+    public DateTime DateCreated
+    {
+      get { return DateToLocal((DateTime)Row["DateCreated"]); }
+      set { Row["DateCreated"] = CheckNull(value); }
+    }
+    
+    public DateTime DateModified
+    {
+      get { return DateToLocal((DateTime)Row["DateModified"]); }
+      set { Row["DateModified"] = CheckNull(value); }
+    }
+    
+
+    #endregion
+    
+    
+  }
+
+  public partial class TicketGridView : BaseCollection, IEnumerable<TicketGridViewItem>
+  {
+    public TicketGridView(LoginUser loginUser): base (loginUser)
+    {
+    }
+
+    #region Properties
+
+    public override string TableName
+    {
+      get { return "TicketGridView"; }
+    }
+    
+    public override string PrimaryKeyFieldName
+    {
+      get { return "TicketID"; }
+    }
+
+
+
+    public TicketGridViewItem this[int index]
+    {
+      get { return new TicketGridViewItem(Table.Rows[index], this); }
+    }
+    
+
+    #endregion
+
+    #region Protected Members
+    
+    partial void BeforeRowInsert(TicketGridViewItem ticketGridViewItem);
+    partial void AfterRowInsert(TicketGridViewItem ticketGridViewItem);
+    partial void BeforeRowEdit(TicketGridViewItem ticketGridViewItem);
+    partial void AfterRowEdit(TicketGridViewItem ticketGridViewItem);
+    partial void BeforeRowDelete(int ticketID);
+    partial void AfterRowDelete(int ticketID);    
+
+    partial void BeforeDBDelete(int ticketID);
+    partial void AfterDBDelete(int ticketID);    
+
+    #endregion
+
+    #region Public Methods
+
+    public TicketGridViewItemProxy[] GetTicketGridViewItemProxies()
+    {
+      List<TicketGridViewItemProxy> list = new List<TicketGridViewItemProxy>();
+
+      foreach (TicketGridViewItem item in this)
+      {
+        list.Add(item.GetProxy()); 
+      }
+
+      return list.ToArray();
+    }	
+	
+    public virtual void DeleteFromDB(int ticketID)
+    {
+      BeforeDBDelete(ticketID);
+      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
+      {
+        connection.Open();
+
+        SqlCommand deleteCommand = connection.CreateCommand();
+
+        deleteCommand.Connection = connection;
+        deleteCommand.CommandType = CommandType.StoredProcedure;
+        deleteCommand.CommandText = "uspGeneratedDeleteTicketGridViewItem";
+        deleteCommand.Parameters.Add("TicketID", SqlDbType.Int);
+        deleteCommand.Parameters["TicketID"].Value = ticketID;
+
+        BeforeRowDelete(ticketID);
+        deleteCommand.ExecuteNonQuery();
+		connection.Close();
+        if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+        AfterRowDelete(ticketID);
+      }
+      AfterDBDelete(ticketID);
+      
+    }
+
+    public override void Save(SqlConnection connection)    {
+		//SqlTransaction transaction = connection.BeginTransaction("TicketGridViewSave");
+		SqlParameter tempParameter;
+		SqlCommand updateCommand = connection.CreateCommand();
+		updateCommand.Connection = connection;
+		//updateCommand.Transaction = transaction;
+		updateCommand.CommandType = CommandType.StoredProcedure;
+		updateCommand.CommandText = "uspGeneratedUpdateTicketGridViewItem";
+
+		
+		tempParameter = updateCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ProductName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ReportedVersion", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("SolvedVersion", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("GroupName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("TicketTypeName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("UserName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Status", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("StatusPosition", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("SeverityPosition", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IsClosed", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Severity", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("TicketNumber", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IsVisibleOnPortal", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IsKnowledgeBase", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ReportedVersionID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("SolvedVersionID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("GroupID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("TicketStatusID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("TicketTypeID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("TicketSeverityID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Name", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ParentID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DateClosed", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("CloserID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DaysClosed", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DaysOpened", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("CloserName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("SlaViolationTime", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("SlaWarningTime", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("SlaViolationHours", SqlDbType.Decimal, 17);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 24;
+		  tempParameter.Scale = 24;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("SlaWarningHours", SqlDbType.Decimal, 17);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 24;
+		  tempParameter.Scale = 24;
+		}
+		
+
+		SqlCommand insertCommand = connection.CreateCommand();
+		insertCommand.Connection = connection;
+		//insertCommand.Transaction = transaction;
+		insertCommand.CommandType = CommandType.StoredProcedure;
+		insertCommand.CommandText = "uspGeneratedInsertTicketGridViewItem";
+
+		
+		tempParameter = insertCommand.Parameters.Add("SlaWarningHours", SqlDbType.Decimal, 17);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 24;
+		  tempParameter.Scale = 24;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("SlaViolationHours", SqlDbType.Decimal, 17);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 24;
+		  tempParameter.Scale = 24;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("SlaWarningTime", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("SlaViolationTime", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CloserName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DaysOpened", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DaysClosed", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CloserID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateClosed", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ParentID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TicketSeverityID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TicketTypeID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TicketStatusID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("GroupID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("SolvedVersionID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ReportedVersionID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsKnowledgeBase", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsVisibleOnPortal", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TicketNumber", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Severity", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsClosed", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("SeverityPosition", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("StatusPosition", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Status", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("UserName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TicketTypeName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("GroupName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("SolvedVersion", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ReportedVersion", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ProductName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+
+		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;
+		SqlCommand deleteCommand = connection.CreateCommand();
+		deleteCommand.Connection = connection;
+		//deleteCommand.Transaction = transaction;
+		deleteCommand.CommandType = CommandType.StoredProcedure;
+		deleteCommand.CommandText = "uspGeneratedDeleteTicketGridViewItem";
+		deleteCommand.Parameters.Add("TicketID", SqlDbType.Int);
+
+		try
+		{
+		  foreach (TicketGridViewItem ticketGridViewItem in this)
+		  {
+			if (ticketGridViewItem.Row.RowState == DataRowState.Added)
+			{
+			  BeforeRowInsert(ticketGridViewItem);
+			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
+			  {
+				SqlParameter parameter = insertCommand.Parameters[i];
+				if (parameter.Direction != ParameterDirection.Output)
+				{
+				  parameter.Value = ticketGridViewItem.Row[parameter.ParameterName];
+				}
+			  }
+
+			  if (insertCommand.Parameters.Contains("ModifierID")) insertCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
+			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
+
+			  insertCommand.ExecuteNonQuery();
+			  Table.Columns["TicketID"].AutoIncrement = false;
+			  Table.Columns["TicketID"].ReadOnly = false;
+			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
+				ticketGridViewItem.Row["TicketID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(ticketGridViewItem);
+			}
+			else if (ticketGridViewItem.Row.RowState == DataRowState.Modified)
+			{
+			  BeforeRowEdit(ticketGridViewItem);
+			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
+			  {
+				SqlParameter parameter = updateCommand.Parameters[i];
+				parameter.Value = ticketGridViewItem.Row[parameter.ParameterName];
+			  }
+			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
+			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
+
+			  updateCommand.ExecuteNonQuery();
+			  AfterRowEdit(ticketGridViewItem);
+			}
+			else if (ticketGridViewItem.Row.RowState == DataRowState.Deleted)
+			{
+			  int id = (int)ticketGridViewItem.Row["TicketID", DataRowVersion.Original];
+			  deleteCommand.Parameters["TicketID"].Value = id;
+			  BeforeRowDelete(id);
+			  deleteCommand.ExecuteNonQuery();
+			  AfterRowDelete(id);
+			}
+		  }
+		  //transaction.Commit();
+		}
+		catch (Exception)
+		{
+		  //transaction.Rollback();
+		  throw;
+		}
+		Table.AcceptChanges();
+      if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+    }
+
+    public void BulkSave()
+    {
+
+      foreach (TicketGridViewItem ticketGridViewItem in this)
+      {
+        if (ticketGridViewItem.Row.Table.Columns.Contains("CreatorID") && (int)ticketGridViewItem.Row["CreatorID"] == 0) ticketGridViewItem.Row["CreatorID"] = LoginUser.UserID;
+        if (ticketGridViewItem.Row.Table.Columns.Contains("ModifierID")) ticketGridViewItem.Row["ModifierID"] = LoginUser.UserID;
+      }
+    
+      SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
+      copy.BulkCopyTimeout = 0;
+      copy.DestinationTableName = TableName;
+      copy.WriteToServer(Table);
+
+      Table.AcceptChanges();
+     
+      if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
+    }
+
+    public TicketGridViewItem FindByTicketID(int ticketID)
+    {
+      foreach (TicketGridViewItem ticketGridViewItem in this)
+      {
+        if (ticketGridViewItem.TicketID == ticketID)
+        {
+          return ticketGridViewItem;
+        }
+      }
+      return null;
+    }
+
+    public virtual TicketGridViewItem AddNewTicketGridViewItem()
+    {
+      if (Table.Columns.Count < 1) LoadColumns("TicketGridView");
+      DataRow row = Table.NewRow();
+      Table.Rows.Add(row);
+      return new TicketGridViewItem(row, this);
+    }
+    
+    public virtual void LoadByTicketID(int ticketID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "uspGeneratedSelectTicketGridViewItem";
+        command.CommandType = CommandType.StoredProcedure;
+        command.Parameters.AddWithValue("TicketID", ticketID);
+        Fill(command);
+      }
+    }
+    
+    public static TicketGridViewItem GetTicketGridViewItem(LoginUser loginUser, int ticketID)
+    {
+      TicketGridView ticketGridView = new TicketGridView(loginUser);
+      ticketGridView.LoadByTicketID(ticketID);
+      if (ticketGridView.IsEmpty)
+        return null;
+      else
+        return ticketGridView[0];
+    }
+    
+    
+    
+
+    #endregion
+
+    #region IEnumerable<TicketGridViewItem> Members
+
+    public IEnumerator<TicketGridViewItem> GetEnumerator()
+    {
+      foreach (DataRow row in Table.Rows)
+      {
+        yield return new TicketGridViewItem(row, this);
+      }
+    }
+
+    #endregion
+
+    #region IEnumerable Members
+
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    {
+      return GetEnumerator();
+    }
+
+    #endregion
+  }
+}
