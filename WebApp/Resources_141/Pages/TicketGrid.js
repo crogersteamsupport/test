@@ -34,6 +34,33 @@ TicketGrid = function () {
   var j = 0;
   this._currentTicket = null;
   var loadingIndicator = null;
+
+  var tmrDelayIndicator = null;
+
+  this.showLoadingIndicator = function(delay) {
+    if (!delay) {
+      if (!loadingIndicator) {
+        loadingIndicator = $("<div class='grid-loading'><label></div>").appendTo(document.body);
+        loadingIndicator.position({ my: "center center", at: "center center", of: layout.panes.center, collision: "none" });
+      }
+
+      loadingIndicator.show();
+      //if (loadingTimer !== null) clearTimeout(loadingTimer);    loadingTimer = setTimeout(loadingIndicator.fadeOut(), 10000);
+    }
+    else {
+      if (tmrDelayIndicator) clearTimeout(tmrDelayIndicator);
+      tmrDelayIndicator = setTimeout("ticketGrid.showLoadingIndicator()", delay);
+    }
+  }
+
+  this.hideLoadingIndicator = function() {
+    //if (loadingTimer !== null) { clearTimeout(loadingTimer); loadingTimer = null; }
+    if (tmrDelayIndicator) clearTimeout(tmrDelayIndicator);
+    tmrDelayIndicator = null;
+    if (loadingIndicator) loadingIndicator.fadeOut();
+
+  }
+
   $('head').append(top.Ts.MainPage.getCalcStyle());
 
   this._layout = $('.grid-ticket-layout').layout({
@@ -62,7 +89,7 @@ TicketGrid = function () {
       var t = vp.top;
       loader.clear();
       loader.ensureData(vp.top, vp.bottom, function () {
-        if (t > 10) grid.scrollRowIntoView(t+10, false);
+        if (t > 10) grid.scrollRowIntoView(t + 10, false);
         grid.resizeCanvas();
       });
     } catch (e) {
@@ -235,7 +262,6 @@ TicketGrid = function () {
     }
   };
 
-  var loadingTimer = null;
 
   $(layout.panes.center).disableSelection();
   this._grid = new Slick.Grid(layout.panes.center, loader.data, columns, options);
@@ -404,15 +430,9 @@ TicketGrid = function () {
   }
 
 
+
   loader.onDataLoading.subscribe(function () {
-    if (!loadingIndicator) {
-      loadingIndicator = $("<div class='grid-loading'><label></div>").appendTo(document.body);
-      loadingIndicator.position({ my: "center center", at: "center center", of: layout.panes.center, collision: "none" });
-    }
-
-    loadingIndicator.show();
-
-    //if (loadingTimer !== null) clearTimeout(loadingTimer);    loadingTimer = setTimeout(loadingIndicator.fadeOut(), 10000);
+    self.showLoadingIndicator(250);
   });
 
   loader.onDataLoaded.subscribe(function (args) {
@@ -423,8 +443,7 @@ TicketGrid = function () {
     parent.setGridCount(loader.data.length);
     grid.setSortColumn(ticketLoadFilter.SortColumn, ticketLoadFilter.SortAsc);
     //$(element).parents('.tickets-layout').find('.tickets-panel-footer .ticket-grid-count').text();
-    //if (loadingTimer !== null) { clearTimeout(loadingTimer); loadingTimer = null; }
-    loadingIndicator.fadeOut();
+    self.hideLoadingIndicator();
     if (self._currentTicket == null) {
       self._currentTicket = getSelectedTicket();
       previewTicket(self._currentTicket);

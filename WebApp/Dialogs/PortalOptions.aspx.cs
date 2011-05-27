@@ -92,8 +92,10 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
     cbHideGroupAssignedTo.Checked = portalOption.HideGroupAssignedTo == null ? false : (bool)portalOption.HideGroupAssignedTo;
     cbHideUserAssignedTo.Checked = portalOption.HideUserAssignedTo == null ? false : (bool)portalOption.HideUserAssignedTo;
     cbRecaptcha.Checked = portalOption.UseRecaptcha == null ? true : (bool)portalOption.UseRecaptcha;
+    cbDeflection.Checked = portalOption.DeflectionEnabled == null ? false : (bool)portalOption.DeflectionEnabled;
     textPortalName.Text = portalOption.PortalName;
     cbProduct.Checked = portalOption.DisplayProducts == null ? false : (bool) portalOption.DisplayProducts;
+    cbArticles.Checked = organization.IsPublicArticles;
     cbKb.Checked = portalOption.KBAccess == null ? false : (bool)portalOption.KBAccess;
     cbGroup.Checked = portalOption.DisplayGroups == null ? false : (bool)portalOption.DisplayGroups;
     textWidth.Value = portalOption.BasicPortalColumnWidth;
@@ -135,6 +137,7 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
     portalOption.HideUserAssignedTo = cbHideUserAssignedTo.Checked;
     portalOption.HideGroupAssignedTo = cbHideGroupAssignedTo.Checked;
     portalOption.UseRecaptcha = cbRecaptcha.Checked;
+    portalOption.DeflectionEnabled = cbDeflection.Checked;
     portalOption.KBAccess = cbKb.Checked;
     portalOption.DisplayGroups = cbGroup.Checked;
     portalOption.DisplayProducts = cbProduct.Checked;
@@ -151,6 +154,7 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
 
     Organization organization = (Organization)Organizations.GetOrganization(UserSession.LoginUser, _organizatinID);
     int groupID = int.Parse(cmbGroups.SelectedValue);
+    organization.IsPublicArticles = cbArticles.Checked;
 
     if (groupID < 0) 
       organization.DefaultPortalGroupID = null;

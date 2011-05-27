@@ -32,7 +32,7 @@ $(document).ready(function () {
           $('<tr>').append('<td>Version:</td><td>' + version.VersionNumber + '</td>').appendTo(table);
           $('<tr>').append('<td>Status:</td><td>' + version.VersionStatus + '</td>').appendTo(table);
           $('<tr>').append('<td>Released:</td><td>' + (version.IsReleased === false ? 'No' : 'Yes') + '</td>').appendTo(table);
-          $('<tr>').append('<td>Date:</td><td>' + version.ReleaseDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern) + '</td>').appendTo(table);
+          if (version.ReleaseDate) $('<tr>').append('<td>Date:</td><td>' + version.ReleaseDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern) + '</td>').appendTo(table);
           for (var i = 0; i < values.length; i++) {
             $('<tr>').append('<td>' + values[i].Name + ':</td><td>' + values[i].Value + '</td>').appendTo(table);
           }

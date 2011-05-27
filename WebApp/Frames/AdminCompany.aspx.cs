@@ -237,6 +237,13 @@ public partial class Frames_AdminCompany : BaseFramePage
       table.Rows.Add(new string[] { "Tag which identifies customer:", item.TypeFieldMatch });
       table.Rows.Add(new string[] { "CRM synchronization active:", item.Active.ToString() });
     }
+    else if (item.CRMType.ToLower().Trim() == "batchbook")
+    {
+      table.Rows.Add(new string[] { "CRM Type:", "Batchbook" });
+      table.Rows.Add(new string[] { "Batchbook user name:", item.Username });
+      table.Rows.Add(new string[] { "Tag which identifies customer:", item.TypeFieldMatch });
+      table.Rows.Add(new string[] { "CRM synchronization active:", item.Active.ToString() });
+    }
     else if (item.CRMType.ToLower().Trim() == "salesforce")
     {
       table.Rows.Add(new string[] { "CRM Type:", "Salesforce.com" });

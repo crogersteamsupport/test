@@ -358,68 +358,80 @@ namespace TeamSupport.Data
     public static SqlCommand GetLoadRangeCommand(LoginUser loginUser, int from, int to, TicketLoadFilter filter)
     {
       SqlCommand command = new SqlCommand();
-      string sort = filter.SortColumn.Trim();
-      StringBuilder builder = new StringBuilder();
-      builder.Append("WITH TicketRows AS (SELECT ROW_NUMBER() OVER (ORDER BY tv.[");
-      builder.Append(sort);
-      if (filter.SortAsc) builder.Append("] ASC"); else builder.Append("] DESC");
 
-      builder.Append(
-            @") AS RowNumber
-            ,tv.[TicketID]
-            ,tv.[ProductName]
-            ,tv.[ReportedVersion]
-            ,tv.[SolvedVersion]
-            ,tv.[GroupName]
-            ,tv.[TicketTypeName]
-            ,tv.[UserName]
-            ,tv.[Status]
-            ,tv.[StatusPosition]
-            ,tv.[SeverityPosition]
-            ,tv.[IsClosed]
-            ,tv.[Severity]
-            ,tv.[TicketNumber]
-            ,tv.[IsVisibleOnPortal]
-            ,tv.[IsKnowledgeBase]
-            ,tv.[ReportedVersionID]
-            ,tv.[SolvedVersionID]
-            ,tv.[ProductID]
-            ,tv.[GroupID]
-            ,tv.[UserID]
-            ,tv.[TicketStatusID]
-            ,tv.[TicketTypeID]
-            ,tv.[TicketSeverityID]
-            ,tv.[OrganizationID]
-            ,tv.[Name]
-            ,tv.[ParentID]
-            ,tv.[ModifierID]
-            ,tv.[CreatorID]
-            ,tv.[DateModified]
-            ,tv.[DateCreated]
-            ,tv.[DateClosed]
-            ,tv.[CloserID]
-            ,tv.[DaysClosed]
-            ,tv.[DaysOpened]
-            ,tv.[CloserName]
-            ,tv.[CreatorName]
-            ,tv.[ModifierName]
-            ,tv.[HoursSpent]
-            ,tv.[Tags]
-            ,tv.[Customers]
-            ,tv.[Contacts]
-            ,tv.[SlaViolationTime]
-            ,tv.[SlaWarningTime]
-            ,CAST(0 AS dec(24,6)) AS [SlaViolationHours]
-            ,CAST(0 AS dec(24,6)) AS [SlaWarningHours]
-            ,tv.ViewerID
-            ,tv.IsSubscribed
-            ,tv.IsEnqueued
-            ,tv.IsRead
-            ,tv.IsFlagged
-");
-      GetFilterWhereClause(loginUser, filter, command, builder);
-      builder.Append(") SELECT * FROM TicketRows  WHERE RowNumber BETWEEN @FromIndex AND @ToIndex ORDER BY RowNumber ASC");
-      command.CommandText = builder.ToString().Replace(Environment.NewLine, " ");
+      string sort = string.Format("[{0}] {1}", filter.SortColumn.Trim(), (filter.SortAsc ? "ASC" : "DESC"));
+
+      string fields = 
+        @"
+          tv.[TicketID]
+        ,tv.[ProductName]
+        ,tv.[ReportedVersion]
+        ,tv.[SolvedVersion]
+        ,tv.[GroupName]
+        ,tv.[TicketTypeName]
+        ,tv.[UserName]
+        ,tv.[Status]
+        ,tv.[StatusPosition]
+        ,tv.[SeverityPosition]
+        ,tv.[IsClosed]
+        ,tv.[Severity]
+        ,tv.[TicketNumber]
+        ,tv.[IsVisibleOnPortal]
+        ,tv.[IsKnowledgeBase]
+        ,tv.[ReportedVersionID]
+        ,tv.[SolvedVersionID]
+        ,tv.[ProductID]
+        ,tv.[GroupID]
+        ,tv.[UserID]
+        ,tv.[TicketStatusID]
+        ,tv.[TicketTypeID]
+        ,tv.[TicketSeverityID]
+        ,tv.[OrganizationID]
+        ,tv.[Name]
+        ,tv.[ParentID]
+        ,tv.[ModifierID]
+        ,tv.[CreatorID]
+        ,tv.[DateModified]
+        ,tv.[DateCreated]
+        ,tv.[DateClosed]
+        ,tv.[CloserID]
+        ,tv.[DaysClosed]
+        ,tv.[DaysOpened]
+        ,tv.[CloserName]
+        ,tv.[CreatorName]
+        ,tv.[ModifierName]
+        ,tv.[HoursSpent]
+        ,tv.[Tags]
+        ,tv.[Customers]
+        ,tv.[Contacts]
+        ,tv.[SlaViolationTime]
+        ,tv.[SlaWarningTime]
+        ,CAST(0 AS dec(24,6)) AS [SlaViolationHours]
+        ,CAST(0 AS dec(24,6)) AS [SlaWarningHours]
+        ,tv.ViewerID
+        ,tv.IsSubscribed
+        ,tv.IsEnqueued
+        ,tv.IsRead
+        ,tv.IsFlagged";
+      StringBuilder where = new StringBuilder();
+      GetFilterWhereClause(loginUser, filter, command, where);
+
+      string query = @"
+        DECLARE @TempItems TABLE( ID int IDENTITY, TicketID int )
+
+        INSERT INTO @TempItems (TicketID)
+        SELECT tv.TicketID {0}
+        ORDER BY {1}
+
+        SELECT {2}
+        FROM @TempItems ti INNER JOIN UserTicketsView tv ON tv.TicketID = ti.TicketID
+        WHERE ID BETWEEN @FromIndex AND @toIndex
+        AND tv.ViewerID = @ViewerID
+
+        ORDER BY ti.ID
+        ";
+
+      command.CommandText = string.Format(query, where.ToString(), sort, fields);
       command.CommandType = CommandType.Text;
       command.Parameters.AddWithValue("@FromIndex", from+1);
       command.Parameters.AddWithValue("@ToIndex", to+1);
@@ -447,7 +459,7 @@ namespace TeamSupport.Data
 
     private static void GetFilterWhereClause(LoginUser loginUser, TicketLoadFilter filter, SqlCommand command, StringBuilder builder)
     {
-      builder.Append(" FROM UserTicketsView tv (NOLOCK) LEFT JOIN Tickets t (NOLOCK) ON tv.TicketID = t.TicketID WHERE (tv.OrganizationID = @OrganizationID)");
+      builder.Append(" FROM UserTicketsView tv WHERE (tv.OrganizationID = @OrganizationID)");
       AddTicketParameter("TicketTypeID", filter.TicketTypeID, false, builder, command);
       if (filter.TicketStatusID != null) AddTicketParameter("TicketStatusID", filter.TicketStatusID, false, builder, command);
       else AddTicketParameter("IsClosed", filter.IsClosed, false, builder, command);

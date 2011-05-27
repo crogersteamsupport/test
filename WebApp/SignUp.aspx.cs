@@ -118,6 +118,7 @@ public partial class SignUp : System.Web.UI.Page
     organization.ChangeStatusIfClosed = true;
     organization.AddAdditionalContacts = true;
     organization.MatchEmailSubject = false;
+    organization.IsPublicArticles = true;
     organizations.Save();
 
 

@@ -13,34 +13,16 @@ namespace TeamSupport.ServiceLibrary
   {
     enum NotificationType { InitialResponse, LastAction, TimeClosed }
 
-    private LoginUser _loginUser;
-    //private SmtpClient _smtpClient;
-    private bool _isDebug;
-    private MailAddressCollection _debugAddresses;
-
     public SlaProcessor()
     {
-      _debugAddresses = new MailAddressCollection();
     }
 
     public override void Run()
     {
-      _loginUser = Utils.GetLoginUser("SLA Processor");
       try
       {
-        _isDebug = Utils.GetSettingInt("EmailDebug") > 0;
-        _debugAddresses.Clear();
-        try
-        {
-          string[] addresses = Utils.GetSettingString("EmailDebugAddress").Split(';');
-          foreach (string item in addresses) { _debugAddresses.Add(new MailAddress(item.Trim())); }
-        }
-        catch (Exception)
-        {
-        }
 
-
-        TicketSlaView view = new TicketSlaView(_loginUser);
+        TicketSlaView view = new TicketSlaView(LoginUser);
         view.LoadAllUnnotifiedAndExpired();
 
         foreach (TicketSlaViewItem item in view)
@@ -52,15 +34,14 @@ namespace TeamSupport.ServiceLibrary
       }
       catch (Exception ex)
       {
-        Utils.LogException(_loginUser, ex, "SLA Processor", "Sync");
+        ExceptionLogs.LogException(LoginUser, ex, "SLA Processor", "Sync");
       }
-      _loginUser = null;
     }
 
 
     private void ProcessTicket(TicketSlaViewItem ticketSlaViewItem)
     {
-      SlaTriggersView triggers = new SlaTriggersView(_loginUser);
+      SlaTriggersView triggers = new SlaTriggersView(LoginUser);
       triggers.LoadByTicket(ticketSlaViewItem.TicketID);
 
       bool warnGroup = false;
@@ -76,10 +57,10 @@ namespace TeamSupport.ServiceLibrary
         vioUser = item.NotifyUserOnViolation || vioUser;
       }
 
-      SlaNotification notification = SlaNotifications.GetSlaNotification(_loginUser, ticketSlaViewItem.TicketID);
+      SlaNotification notification = SlaNotifications.GetSlaNotification(LoginUser, ticketSlaViewItem.TicketID);
       if (notification == null)
       {
-        notification = (new SlaNotifications(_loginUser)).AddNewSlaNotification();
+        notification = (new SlaNotifications(LoginUser)).AddNewSlaNotification();
         notification.TicketID = ticketSlaViewItem.TicketID;
       }
 
@@ -183,24 +164,6 @@ namespace TeamSupport.ServiceLibrary
       StringBuilder builder = new StringBuilder();
       builder.AppendLine("<span class=\"TeamSupportStart\">&nbsp</span>");
 
-      if (_isDebug)
-      {
-        builder.AppendLine("ORIGINAL TO LIST:");
-        builder.AppendLine();
-        foreach (MailAddress address in message.To)
-        {
-          builder.AppendLine(address.ToString());
-        }
-        builder.AppendLine();
-        builder.AppendLine();
-
-        message.To.Clear();
-        foreach (MailAddress address in _debugAddresses)
-        {
-          message.To.Add(address);
-        }
-        message.Subject = "TEST: " + message.Subject;
-      }
       builder.AppendLine(message.Body);
       builder.AppendLine("<span class=\"TeamSupportEnd\">&nbsp</span>");
 
@@ -210,7 +173,7 @@ namespace TeamSupport.ServiceLibrary
       { 
         //_smtpClient.Send(message); 
         
-        Emails.AddEmail(_loginUser, organizationID, null, description, message);
+        Emails.AddEmail(LoginUser, organizationID, null, description, message);
       }
     
     }
@@ -219,9 +182,9 @@ namespace TeamSupport.ServiceLibrary
     {
       MailMessage message = new MailMessage();
 
-      Users users = new Users(_loginUser);
+      Users users = new Users(LoginUser);
       User user = null;
-      Ticket ticket = Tickets.GetTicket(_loginUser, ticketID);
+      Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
       if (ticket == null) return;
 
       if (ticket.GroupID != null && useGroup)
@@ -231,10 +194,10 @@ namespace TeamSupport.ServiceLibrary
 
       if (ticket.UserID != null && useUser && users.FindByUserID((int)ticket.UserID) == null)
       {
-        user = Users.GetUser(_loginUser, (int)ticket.UserID);
+        user = Users.GetUser(LoginUser, (int)ticket.UserID);
       }
 
-      message.From = new MailAddress(Organizations.GetOrganization(_loginUser, ticket.OrganizationID).GetReplyToAddress());
+      message.From = new MailAddress(Organizations.GetOrganization(LoginUser, ticket.OrganizationID).GetReplyToAddress());
       foreach (User item in users)
       {
         message.To.Add(new MailAddress(item.Email, item.FirstLastName));

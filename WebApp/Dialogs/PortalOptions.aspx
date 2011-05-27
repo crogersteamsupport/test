@@ -12,9 +12,9 @@
   </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
-  <div class="dialogContentWrapperDiv">
-    <div class="dialogContentDiv">
-      <div style="position:relative;">
+  <div class="dialogContentWrapperDiv" style="position:relative;">
+    <div class="dialogContentDiv" >
+      <div>
         <table width="100%" cellpadding="5px" cellspacing="0" border="0">
           <tr>
             <td>
@@ -66,6 +66,12 @@
             <td>
               <asp:CheckBox ID="cbRecaptcha" runat="server" />
             </td>
+            <td>
+              Display Product Pulldown in Portals:
+            </td>
+            <td>
+              <asp:CheckBox ID="cbProduct" runat="server" />
+            </td>
           </tr>
           <tr>
             <td>
@@ -75,10 +81,10 @@
               <asp:CheckBox ID="cbKb" runat="server" />
             </td>
             <td>
-              Display Product Pulldown in Portals:
+              Allow Access to Public Articles:
             </td>
             <td>
-              <asp:CheckBox ID="cbProduct" runat="server" />
+              <asp:CheckBox ID="cbArticles" runat="server" />
             </td>
           </tr>
           <tr>
@@ -115,6 +121,12 @@
             </td>
             <td>
               <telerik:RadTextBox ID="textBasicPortalDirections" runat="server" Width="225px"></telerik:RadTextBox>
+            </td>
+            <td>
+              Ticket Deflection Enabled:
+            </td>
+            <td>
+              <asp:CheckBox ID="cbDeflection" runat="server" />
             </td>
           </tr>
         </table>

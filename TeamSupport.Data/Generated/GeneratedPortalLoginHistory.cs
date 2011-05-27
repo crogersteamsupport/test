@@ -58,6 +58,12 @@ namespace TeamSupport.Data
       set { Row["Success"] = CheckNull(value); }
     }
     
+    public string IPAddress
+    {
+      get { return Row["IPAddress"] != DBNull.Value ? (string)Row["IPAddress"] : null; }
+      set { Row["IPAddress"] = CheckNull(value); }
+    }
+    
 
     
 
@@ -214,6 +220,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IPAddress", SqlDbType.VarChar, 1000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
@@ -221,6 +234,13 @@ namespace TeamSupport.Data
 		insertCommand.CommandType = CommandType.StoredProcedure;
 		insertCommand.CommandText = "uspGeneratedInsertPortalLoginHistoryItem";
 
+		
+		tempParameter = insertCommand.Parameters.Add("IPAddress", SqlDbType.VarChar, 1000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("LoginDateTime", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)

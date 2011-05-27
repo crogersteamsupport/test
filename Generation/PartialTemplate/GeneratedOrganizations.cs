@@ -198,6 +198,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool IsPublicArticles
+    {
+      get { return (bool)Row["IsPublicArticles"]; }
+      set { Row["IsPublicArticles"] = CheckNull(value); }
+    }
+    
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
@@ -915,6 +921,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IsPublicArticles", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
@@ -922,6 +935,13 @@ namespace TeamSupport.Data
 		insertCommand.CommandType = CommandType.StoredProcedure;
 		insertCommand.CommandText = "uspGeneratedInsertOrganization";
 
+		
+		tempParameter = insertCommand.Parameters.Add("IsPublicArticles", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ChangeStatusIfClosed", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)

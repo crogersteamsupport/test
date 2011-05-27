@@ -462,7 +462,8 @@ Ts.Pages.Main.prototype =
               .appendTo(div)
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
-              .attr('src', 'frames/ticket.aspx?Embedded=1&TicketNumber=' + tab.getId());
+              .attr('src', 'Resources_141/Pages/Ticket.html?TicketNumber=' + tab.getId());
+              //.attr('src', 'frames/ticket.aspx?Embedded=1&TicketNumber=' + tab.getId());
           }
           else {
             div.show();
@@ -525,21 +526,25 @@ Ts.Pages.Main.prototype =
     function getTicketsByTerm(request, response) {
       if (execGetTicket) { execGetTicket._executor.abort(); }
       //execGetTicket = Ts.Services.Tickets.GetTicketsByTerm(request.term, function (result) { response(result); });
-      execGetTicket = Ts.Services.Tickets.SearchTickets(request.term, function (result) { response(result); });
+      execGetTicket = Ts.Services.Tickets.SearchTickets(request.term, function (result) {
+        $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
+         response(result); 
+      });
+      
     }
 
-    $('.main-quick-ticket').autocomplete({ minLength: 2, source: getTicketsByTerm,
+    $('.main-quick-ticket').autocomplete({ minLength: 2, source: getTicketsByTerm, delay: 300,
       select: function (event, ui) {
         if (ui.item) { self.openTicket(ui.item.id); }
         $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
       }
     });
 
-    $('.main-quick-ticket').focusin(function () {
-      $(this).val('').removeClass('main-quick-ticket-blur');
-    }).focusout(function () {
-      $(this).val('Search for a ticket...').addClass('main-quick-ticket-blur').removeClass('ui-autocomplete-loading');
-    }).val('Search for a ticket...');
+    $('.main-quick-ticket')
+    .focusin(function () { $(this).val('').removeClass('main-quick-ticket-blur'); })
+    .focusout(function () { $(this).val('Search for a ticket...').addClass('main-quick-ticket-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('main-quick-ticket-blur'); })
+    .val('Search for a ticket...');
 
   }, // end init
 

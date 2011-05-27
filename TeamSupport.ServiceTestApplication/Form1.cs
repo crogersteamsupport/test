@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using TeamSupport.Data;
 using TeamSupport.ServiceLibrary;
+using TeamSupport.CrmIntegration;
 using Microsoft.Win32;
 using System.Net.Mail;
 using System.IO;
@@ -20,7 +21,8 @@ namespace TeamSupport.ServiceTestApplication
     EmailSender _emailSender;
     SlaProcessor _slaProcessor;
     Indexer _indexer;
-
+    CrmProcessor _crmProcessor;
+    
     public Form1()
     {
       InitializeComponent();
@@ -30,6 +32,7 @@ namespace TeamSupport.ServiceTestApplication
       _emailSender = new EmailSender();
       _slaProcessor = new SlaProcessor();
       _indexer = new Indexer();
+      _crmProcessor = new CrmProcessor();
 
     }
 
@@ -66,10 +69,11 @@ namespace TeamSupport.ServiceTestApplication
       try
       {
         btnOnStart.Enabled = false;
-        //_emailProcessor.Start("EmailEnabled", "EmailInterval", 10);
-        //_emailSender.Start("EmailEnabled", "EmailInterval", 10);
-        //_slaProcessor.Start("SlaProcessEnabled", "SlaProcessInterval", 300);
-        _indexer.Start("IndexerEnabled", "IndexerInterval", 60);
+        _emailProcessor.Start("EmailProcessor");
+        _emailSender.Start("EmailSender");
+        _slaProcessor.Start("SlaProcessor");
+        _indexer.Start("Indexer");
+        _crmProcessor.Start("CrmProcessor");
       }
       finally
       {
@@ -87,6 +91,7 @@ namespace TeamSupport.ServiceTestApplication
         _emailSender.Stop();
         _slaProcessor.Stop();
         _indexer.Stop();
+        _crmProcessor.Stop();
       }
       finally
       {

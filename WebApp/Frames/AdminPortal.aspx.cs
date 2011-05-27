@@ -125,6 +125,10 @@ public partial class Frames_AdminPortal : BaseFramePage
       builder.Append(portalOption.KBAccess == null ? "True" : ((bool)portalOption.KBAccess).ToString());
       builder.Append("</td></tr>");
 
+      builder.Append("<tr><td><strong>Allow Access to Public Articles:</strong></td><td>");
+      builder.Append(organization.IsPublicArticles.ToString());
+      builder.Append("</td></tr>");
+
       builder.Append("<tr><td><strong>Display Product Pulldown in Portals:</strong></td><td>");
       builder.Append(portalOption.DisplayProducts == null ? "True" : ((bool)portalOption.DisplayProducts).ToString());
       builder.Append("</td></tr>");
@@ -147,6 +151,10 @@ public partial class Frames_AdminPortal : BaseFramePage
 
       builder.Append("<tr><td><strong>Theme:</strong></td><td>");
       builder.Append(string.IsNullOrEmpty(portalOption.Theme) ? "N/A" : (Enums.PortalThemeNames[portalOption.Theme]).ToString());
+      builder.Append("</td></tr>");
+
+      builder.Append("<tr><td><strong>Ticket Deflection Enabled:</strong></td><td>");
+      builder.Append(portalOption.DeflectionEnabled == null ? "False" : ((bool)portalOption.DeflectionEnabled).ToString());
       builder.Append("</td></tr>");
       /*
             builder.Append("<tr><td><strong>Portal Header HTML/CSS:</strong></td><td>");

@@ -127,9 +127,9 @@
     <Compile Include="MurocUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceThread.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SlaProcessor.cs" />
     <Compile Include="TicketIndexDataSource.cs" />
-    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">

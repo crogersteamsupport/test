@@ -141,39 +141,40 @@ namespace TSWebServices
       {
         term = term.Trim();
 
-        
-        
+
+
         int num = 0;
         if (int.TryParse(term, out num))
         {
-          job.Fuzziness = 1;
+          job.Fuzziness = 0;
         }
         else
         {
-          job.Fuzziness = 5;
+          job.Fuzziness = 3;
         }
 
         job.Request = term.Trim();
-        job.FieldWeights = "TicketNumber: 1000, Name: 100";
+        job.FieldWeights = "TicketNumber: 1000, Name: 5";
         job.BooleanConditions = "OrganizationID::" + TSAuthentication.OrganizationID.ToString();
         job.MaxFilesToRetrieve = 15;
         job.AutoStopLimit = 1000;
         job.TimeoutSeconds = 10;
-				job.SearchFlags =  
+        job.SearchFlags =
           //SearchFlags.dtsSearchAutoTermWeight |
-					SearchFlags.dtsSearchPositionalScoring | 
+          SearchFlags.dtsSearchPositionalScoring |
           SearchFlags.dtsSearchTypeAnyWords |
           SearchFlags.dtsSearchStemming |
           SearchFlags.dtsSearchFuzzy |
           SearchFlags.dtsSearchDelayDocInfo;
 
-        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", "") );
+        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
         job.Execute();
         SearchResults results = job.Results;
 
 
         List<AutocompleteItem> items = new List<AutocompleteItem>();
-        //items.Add(new AutocompleteItem(job.Request, job.Request));
+        //for (int i = 0; i < job.Errors.Count; i++) { items.Add(new AutocompleteItem(job.Errors.Message(i), "")); }
+
         for (int i = 0; i < results.Count; i++)
         {
           results.GetNthDoc(i);

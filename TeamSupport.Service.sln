@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.ServiceTestAppl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TidyNet", "TidyNet\TidyNet.csproj", "{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TeamSupport.CrmIntegration", "TeamSupport.CrmIntegration\TeamSupport.CrmIntegration.vbproj", "{8B896B49-B127-450F-93D5-B8546E39C217}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,14 @@ Global
 		{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}.Release|x64.Build.0 = Release|x64
 		{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}.Release|x86.ActiveCfg = Release|x86
 		{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}.Release|x86.Build.0 = Release|x86
+		{8B896B49-B127-450F-93D5-B8546E39C217}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B896B49-B127-450F-93D5-B8546E39C217}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B896B49-B127-450F-93D5-B8546E39C217}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8B896B49-B127-450F-93D5-B8546E39C217}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8B896B49-B127-450F-93D5-B8546E39C217}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B896B49-B127-450F-93D5-B8546E39C217}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B896B49-B127-450F-93D5-B8546E39C217}.Release|x64.ActiveCfg = Release|Any CPU
+		{8B896B49-B127-450F-93D5-B8546E39C217}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

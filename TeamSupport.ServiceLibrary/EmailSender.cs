@@ -22,7 +22,6 @@ namespace TeamSupport.ServiceLibrary
   {
     private static int[] _nextAttempts = new int[] { 10, 15, 20, 30, 60, 120, 360, 720, 1440 };
 
-    private LoginUser _loginUser;
     private bool _isDebug = false;
     private MailAddressCollection _debugAddresses;
 
@@ -33,12 +32,11 @@ namespace TeamSupport.ServiceLibrary
 
     public override void Run()
     {
-      _loginUser = Utils.GetLoginUser("Email Sender");
-      _isDebug = Utils.GetSettingInt("EmailDebug") > 0;
+      _isDebug = Settings.ReadBool("Debug", false);
       _debugAddresses.Clear();
       try
       {
-        string[] addresses = Utils.GetSettingString("EmailDebugAddress").Split(';');
+        string[] addresses = Settings.ReadString("Debug Email Address").Split(';');
         foreach (string item in addresses) { _debugAddresses.Add(new MailAddress(item.Trim())); }
       }
       catch (Exception)
@@ -52,20 +50,19 @@ namespace TeamSupport.ServiceLibrary
       }
       catch (Exception ex)
       {
-        Utils.LogException(_loginUser, ex, "Email", "Error sending emails");
+        ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending emails");
       }
-      _loginUser = null;
     }
 
     private void SendEmails()
     {
-      Emails emails = new Emails(_loginUser);
+      Emails emails = new Emails(LoginUser);
       emails.LoadTop100Waiting();
       if (emails.IsEmpty) return;
 
       SmtpClient client = new SmtpClient();
-      client = new SmtpClient(Utils.GetSettingString("SMTPHost"), Utils.GetSettingInt("SMTPPort"));
-      client.Credentials = new System.Net.NetworkCredential(Utils.GetSettingString("SMTPUserName"), Utils.GetSettingString("SMTPPassword"));
+      client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port"));
+      client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
 
       foreach (Email email in emails)
       {
@@ -102,14 +99,13 @@ namespace TeamSupport.ServiceLibrary
         }
       }
     }
-
+    /*
     private static void SmtpSendCompletedCallback(object sender, AsyncCompletedEventArgs e)
     {
       if (e.Cancelled) return;
 
       int emailID = (int)e.UserState;
-      LoginUser loginUser = Utils.GetLoginUser("Email Sender");
-      Email email = Emails.GetEmail(loginUser, emailID);
+      Email email = Emails.GetEmail(GetLoginUser(), emailID);
 
       if (e.Error != null)
       {
@@ -135,6 +131,6 @@ namespace TeamSupport.ServiceLibrary
 
       email.Collection.Save();
     }
-
+    */
   }
 }

@@ -56,10 +56,10 @@ namespace TeamSupport.Service
 
     private void StartProcessing()
     {
-      _emailProcessor.Start("EmailEnabled", "EmailInterval", 10);
-      _emailSender.Start("EmailEnabled", "EmailInterval", 10);
-      _slaProcessor.Start("SlaProcessEnabled", "SlaProcessInterval", 300);
-      _indexer.Start("IndexerEnabled", "IndexerInterval", 60);
+      _emailProcessor.Start("EmailProcessor");
+      _emailSender.Start("EmailSender");
+      _slaProcessor.Start("SlaProcessor");
+      _indexer.Start("Indexer");
     }
 
 

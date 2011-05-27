@@ -34,6 +34,7 @@ namespace TeamSupport.Data
     [DataMember] public string Theme { get; set; }
     [DataMember] public int? AdvPortalWidth { get; set; }
     [DataMember] public string BasicPortalDirections { get; set; }
+    [DataMember] public bool? DeflectionEnabled { get; set; }
           
   }
   
@@ -42,6 +43,7 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.DeflectionEnabled = this.DeflectionEnabled;
       result.BasicPortalDirections = this.BasicPortalDirections;
       result.AdvPortalWidth = this.AdvPortalWidth;
       result.Theme = this.Theme;

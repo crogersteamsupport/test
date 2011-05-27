@@ -175,6 +175,8 @@
     <Compile Include="BusinessObjects\ExceptionLogs.cs" />
     <Compile Include="BusinessObjects\ExceptionLogView.cs" />
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
+    <Compile Include="BusinessObjects\Services.cs" />
+    <Compile Include="BusinessObjects\ServiceSettings.cs" />
     <Compile Include="BusinessObjects\TagLinks.cs" />
     <Compile Include="BusinessObjects\Tags.cs" />
     <Compile Include="BusinessObjects\TicketAutomationActions.cs" />
@@ -208,6 +210,8 @@
     <Compile Include="FieldMaps\EmailTemplatesFieldMap.cs" />
     <Compile Include="FieldMaps\EmailTemplateTablesFieldMap.cs" />
     <Compile Include="FieldMaps\OrganizationEmailsFieldMap.cs" />
+    <Compile Include="FieldMaps\ServiceSettingsFieldMap.cs" />
+    <Compile Include="FieldMaps\ServicesFieldMap.cs" />
     <Compile Include="FieldMaps\TagLinksFieldMap.cs" />
     <Compile Include="FieldMaps\TagsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationActionsFieldMap.cs" />
@@ -420,6 +424,8 @@
     <Compile Include="Generated\GeneratedReportSubcategories.cs" />
     <Compile Include="Generated\GeneratedReportTableFields.cs" />
     <Compile Include="Generated\GeneratedReportTables.cs" />
+    <Compile Include="Generated\GeneratedServices.cs" />
+    <Compile Include="Generated\GeneratedServiceSettings.cs" />
     <Compile Include="Generated\GeneratedSlaLevels.cs" />
     <Compile Include="Generated\GeneratedSlaNotifications.cs" />
     <Compile Include="Generated\GeneratedSlaTriggers.cs" />
@@ -526,6 +532,8 @@
     <Compile Include="Proxies\ReportSubcategoriesProxy.cs" />
     <Compile Include="Proxies\ReportTableFieldsProxy.cs" />
     <Compile Include="Proxies\ReportTablesProxy.cs" />
+    <Compile Include="Proxies\ServiceSettingsProxy.cs" />
+    <Compile Include="Proxies\ServicesProxy.cs" />
     <Compile Include="Proxies\SlaLevelsProxy.cs" />
     <Compile Include="Proxies\SlaNotificationsProxy.cs" />
     <Compile Include="Proxies\SlaTriggersProxy.cs" />

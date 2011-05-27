@@ -713,6 +713,23 @@ namespace TeamSupport.Data
       return reader.ReadToEnd();
     }
 
+    public static string GetPageQuery(string IdField, string table, string where, string order, string fields)
+    { 
+      string query = @"
+DECLARE @TempItems TABLE( ID int IDENTITY, {0} int )
+
+INSERT INTO @TempItems ({0})
+SELECT {0} FROM {1} 
+{2}
+ORDER BY {3}
+
+SELECT {4}
+FROM @TempItems ti INNER JOIN {1} x ON x.{0} = ti.{0}
+WHERE ID BETWEEN @startRowIndex AND (@startRowIndex + @maximumRows) - 1
+ORDER BY {3}
+";
+      return string.Format(query, IdField, table, where, order, fields); 
+    }
 
     public string GetXml(string listName, string elementName, bool includeCustomFields, NameValueCollection filters) 
     {

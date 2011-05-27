@@ -39,6 +39,7 @@ public partial class Dialogs_CRMProperties : BaseDialogPage
     {
       cmbType.Items.Add(new RadComboBoxItem("Highrise", "Highrise"));
       cmbType.Items.Add(new RadComboBoxItem("Salesforce.com", "Salesforce"));
+      cmbType.Items.Add(new RadComboBoxItem("Batchbook", "Batchbook"));
       SetLabels(cmbType.SelectedValue);
       LoadData();
     }
@@ -79,7 +80,7 @@ public partial class Dialogs_CRMProperties : BaseDialogPage
       lblSecurityTokenConfirm.Text = "Confirm Authentication Token";
       lblTypeFieldMatch.Text = "Tag which identifies customer";
       divPassword.Visible = false;
-      textSecurityTokenConfirm.Visible = true;
+      textSecurityTokenConfirm.Visible = lblSecurityTokenConfirm.Visible = false;
       textSecurityToken.TextMode = InputMode.SingleLine;
     }
     else if (crmType == "salesforce")
@@ -94,6 +95,16 @@ public partial class Dialogs_CRMProperties : BaseDialogPage
       textSecurityTokenConfirm.Visible = true;
       divPassword.Visible = true;
     }
+    else if (crmType == "batchbook")
+    {
+      lblUserName.Text = "Batchbook Username";
+      lblSecurityToken.Text = "Security Token";
+      lblSecurityTokenConfirm.Text = "Confirm Security Token";
+      lblTypeFieldMatch.Text = "Tag which identifies customer";
+      divPassword.Visible = false;
+      textSecurityTokenConfirm.Visible = lblSecurityTokenConfirm.Visible = false;
+      textSecurityToken.TextMode = InputMode.SingleLine;
+    }
   
   }
 
@@ -105,7 +116,7 @@ public partial class Dialogs_CRMProperties : BaseDialogPage
       return false;
     }
 
-    if (textSecurityToken.Text != textSecurityTokenConfirm.Text)
+    if (textSecurityToken.Text != textSecurityTokenConfirm.Text && textSecurityTokenConfirm.Visible)
     {
       _manager.Alert("Security Tokens do not match.");
       return false;

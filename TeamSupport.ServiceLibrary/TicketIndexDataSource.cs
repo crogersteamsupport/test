@@ -14,6 +14,21 @@ namespace TeamSupport.ServiceLibrary
   {
     private int? _lastTicketID = null;
     private SqlDataReader _reader = null;
+    private int _count = 0;
+
+    private int _maxCount = 1000;
+    public int MaxCount
+    {
+      get { return _maxCount; }
+      set { _maxCount = value; }
+    }
+
+    private Dictionary<int, int> _updatedTickets = null;
+    public Dictionary<int, int> UpdatedTickets
+    {
+      get { return _updatedTickets; }
+      set { _updatedTickets = value; }
+    }
 
     private LoginUser _loginUser = null;
     public LoginUser LoginUser
@@ -31,6 +46,7 @@ namespace TeamSupport.ServiceLibrary
       DocText = "";
       DocFields = "";
       DocIsFile = false;
+      _updatedTickets = new Dictionary<int, int>();
     }
 
 
@@ -42,15 +58,10 @@ namespace TeamSupport.ServiceLibrary
 
         if (_lastTicketID != null)
         {
-          Ticket ticket = Tickets.GetTicket(LoginUser, (int)_lastTicketID);
-          if (ticket != null)
-          {
-            ticket.DocID = DocId;
-            ticket.NeedsIndexing = false;
-            ticket.Collection.Save();
-          }
+          _updatedTickets.Add((int)_lastTicketID, DocId);
         }
 
+        if (_count >= _maxCount) return false;
         if (!_reader.HasRows || !_reader.Read())
         {
           try
@@ -78,6 +89,7 @@ namespace TeamSupport.ServiceLibrary
           DocFields += _reader.GetName(i) + "\t" + s.Replace("\t", " ") + "\t";
         }
 
+        _count++;
         return true;
       }
       catch (Exception ex)
@@ -124,6 +136,7 @@ namespace TeamSupport.ServiceLibrary
       command.CommandType = CommandType.Text;
       _reader = command.ExecuteReader(CommandBehavior.CloseConnection);
       _lastTicketID = null;
+      _count = 0;
       return true;
     }
   }

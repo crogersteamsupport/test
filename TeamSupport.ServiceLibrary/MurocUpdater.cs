@@ -9,20 +9,16 @@ namespace TeamSupport.ServiceLibrary
 {
   public class MurocUpdater : ServiceThread
   {
-    private LoginUser _loginUser;
-
     public MurocUpdater() { }
 
     public override void Run()
     {
-      _loginUser = Utils.GetLoginUser("Muroc Updater");
-
       try
       {
-        Organizations murocCustomers = new Organizations(_loginUser);
-        Organizations tsCustomers = new Organizations(_loginUser);
-        Users murocContacts = new Users(_loginUser);
-        Users tsContacts = new Users(_loginUser);
+        Organizations murocCustomers = new Organizations(LoginUser);
+        Organizations tsCustomers = new Organizations(LoginUser);
+        Users murocContacts = new Users(LoginUser);
+        Users tsContacts = new Users(LoginUser);
 
         murocCustomers.LoadByParentID(1078, false);
         tsCustomers.LoadByParentID(1, false);
@@ -42,9 +38,8 @@ namespace TeamSupport.ServiceLibrary
       }
       catch (Exception ex)
       {
-        Utils.LogException(_loginUser, ex, "Muroc Updater", "Sync");
+        ExceptionLogs.LogException(LoginUser, ex, "Muroc Updater", "Sync");
       }
-      _loginUser = null;
     }
 
     private void SyncOrganizations(Organizations murocCustomers, Organizations tsCustomers, Users murocContacts, Users tsContacts)
@@ -121,7 +116,7 @@ namespace TeamSupport.ServiceLibrary
 
     private void InsertOrganization(Organization source, Organizations organizations, Users murocContacts)
     {
-      Organization organization = (new Organizations(_loginUser)).AddNewOrganization();
+      Organization organization = (new Organizations(LoginUser)).AddNewOrganization();
       organization.Description = source.Description;
       organization.ImportID = source.OrganizationID.ToString();
       organization.DateCreated = source.DateCreated;
@@ -150,7 +145,7 @@ namespace TeamSupport.ServiceLibrary
 
     private void AddProducts(int organizationID)
     {
-      Products products = new Products(_loginUser);
+      Products products = new Products(LoginUser);
       products.AddCustomer(organizationID, 219);
       products.AddCustomer(organizationID, 233);
       products.AddCustomer(organizationID, 234);
@@ -244,7 +239,7 @@ namespace TeamSupport.ServiceLibrary
       Organization organization = murocCustomers.FindByImportID(source.OrganizationID.ToString());
       if (organization == null) return;
 
-      User target = (new Users(_loginUser)).AddNewUser();
+      User target = (new Users(LoginUser)).AddNewUser();
       target.DateCreated = source.DateCreated;
       target.ImportID = source.UserID.ToString();
       target.Email = source.Email;

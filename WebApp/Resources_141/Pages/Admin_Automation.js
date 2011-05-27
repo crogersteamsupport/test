@@ -265,9 +265,9 @@ AdminAuto = function () {
 
   function loadComboFields(select) {
     select.html('');
-    $('<option>').attr('value', '-1').text('-- Select a Field --</option>').appendTo(select).attr('selected', 'selected');
+    $('<option>').attr('value', '-1').text('-- Select a Field --').appendTo(select).attr('selected', 'selected');
     for (var i = 0; i < _data.Fields.length; i++) {
-      $('<option>').attr('value', _data.Fields[i].ReportTableFieldID).text(_data.Fields[i].Alias).appendTo(select).data(_data.Fields[i]);
+      $('<option>').attr('value', _data.Fields[i].ReportTableFieldID).text(_data.Fields[i].Alias).appendTo(select).data('field', _data.Fields[i]);
     }
     return select;
   }
@@ -374,43 +374,66 @@ AdminAuto = function () {
 
 
   function addCondition(selector, fieldID, measure, value) {
-    //<div class="condition ts-section"><select></select><select></select><input type="text" class="text"/></div>
     var div = $('<div>').addClass('condition ts-section')
-    var input = $('<input>').addClass('text ui-corner-all ui-widget-content condition-value').attr('type', 'text').width('200px').keydown(function () { isModified(true); }).hide();
     var fields = $('<select>').addClass('condition-field').appendTo(div).width('150px');
-    loadComboFields(fields).combobox({ selected: conditionFieldChanged });
+    loadComboFields(fields).combobox({ selected: function (e, ui) {
+      isModified(true);
+      createConditionValue($(this).parents('.condition'), $(ui.item).data('field'));
+    }
+    });
 
 
     if (fieldID) { fields.combobox('setValue', fieldID); }
     var measures = $('<select>').addClass('condition-measure').appendTo(div).width('125px');
     loadComboMeasure(measures).combobox({ selected: function (e, ui) { isModified(true); } });
     if (measure) { measures.combobox('setValue', measure); }
-    input.appendTo(div).val((value ? value : ""));
-
-    var execGetFieldValues = null;
-    function getFieldValues(request, response) {
-      if (execGetFieldValues) { execGetFieldValues._executor.abort(); }
-      execGetFieldValues = top.Ts.Services.System.GetLookupValues(fields.val(), request.term, function (result) { response(result); });
-    }
-
-    input.autocomplete({ minLength: 2, source: getFieldValues,
-      select: function (event, ui) {
-        //if (ui.item) { alert(ui.item.id); }
-        $(this).removeClass('ui-autocomplete-loading');
-      }
-    });
-
+    $('<span>').addClass('condition-value-container').appendTo(div);
+    createConditionValue(div, fields.find('option:selected').data('field'), value);
     $('<span>').addClass('ts-icon ts-icon-remove').appendTo(div).click(function (e) { $(this).parent().remove(); isModified(true); });
     $('<div>').css('clear', 'both').appendTo(div);
     div.appendTo(selector);
   }
 
-  function conditionFieldChanged(e, ui) {
-    isModified(true);
-    var option = $(ui.item);
-    var field = option.data();
-    alert(field.ReportTableFieldID);
+  function createConditionValue(condition, field, value) {
+    var container = condition.find('.condition-value-container').empty();
+    if (!field) return;
 
+    var execGetFieldValues = null;
+    function getFieldValues(request, response) {
+      if (execGetFieldValues) { execGetFieldValues._executor.abort(); }
+      execGetFieldValues = top.Ts.Services.System.GetLookupValues(condition.find('.condition-field').val(), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
+    }
+
+    if (field.DataType == 'bit') {
+      var select = $('<select>')
+        .addClass('condition-value')
+        .width('125px')
+        .appendTo(container);
+      $('<option>').attr('value', 'true').text('True').appendTo(select);
+      $('<option>').attr('value', 'false').text('False').appendTo(select);
+
+      if (value && value == 'false') select.find('option:last').attr('selected', 'selected'); else select.find('option:first').attr('selected', 'selected');
+
+
+
+      select.combobox({ selected: function (e, ui) { isModified(true); } })
+
+    }
+    else {
+      var input = $('<input>')
+        .addClass('text ui-corner-all ui-widget-content condition-value')
+        .attr('type', 'text')
+        .width('200px')
+        .keydown(function () { isModified(true); })
+        .appendTo(container)
+        .val((value ? value : ""));
+      if (field.LookupTableID != null) {
+        input.autocomplete({ minLength: 2, source: getFieldValues, select: function (event, ui) { } });
+      }
+      else if (field.DataType == 'datetime') {
+        input.datetimepicker().change(function () { isModified(true); });
+      }
+    }
   }
 
   function getLogic() {

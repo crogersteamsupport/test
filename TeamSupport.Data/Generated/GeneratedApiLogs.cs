@@ -226,7 +226,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("RequestBody", SqlDbType.Text, 2147483647);
+		tempParameter = updateCommand.Parameters.Add("RequestBody", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -248,7 +248,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("RequestBody", SqlDbType.Text, 2147483647);
+		tempParameter = insertCommand.Parameters.Add("RequestBody", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

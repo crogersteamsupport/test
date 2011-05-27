@@ -5,6 +5,7 @@ using System.Text;
 using dtSearch.Engine;
 using TeamSupport.Data;
 using System.IO;
+using System.Data.SqlClient;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -18,7 +19,7 @@ namespace TeamSupport.ServiceLibrary
       }
       catch (Exception ex)
       {
-        ExceptionLogs.LogException(Utils.GetLoginUser("Indexer"), ex, "Indexer"); 
+        ExceptionLogs.LogException(LoginUser, ex, "Indexer"); 
       }
 
 
@@ -29,10 +30,11 @@ namespace TeamSupport.ServiceLibrary
       using (IndexJob job = new IndexJob())
       {
         TicketIndexDataSource dataSource = new TicketIndexDataSource();
-        dataSource.LoginUser = Utils.GetLoginUser("Ticket Indexer");
-        Utils.SetSettingValue("IndexerTicketsLastStart", DateTime.Now.ToString(), Microsoft.Win32.RegistryValueKind.String);
+        dataSource.LoginUser = LoginUser;
+        dataSource.MaxCount = Settings.ReadInt("Max Records", 1000);
         job.DataSourceToIndex = dataSource;
-        string path = Utils.GetSettingString("IndexerTicketsPath", "c:\\Indexes\\Tickets");
+        
+        string path = Settings.ReadString("Tickets Index Path", "c:\\Indexes\\Tickets");
         RemoveOldTicketIndexes(dataSource.LoginUser, path);
         bool isNew = !System.IO.Directory.Exists(path);
         job.IndexPath = path;
@@ -51,11 +53,27 @@ namespace TeamSupport.ServiceLibrary
             IndexingFlags.dtsIndexCacheTextWithoutFields;
 
         // Execute the index job
-        Utils.SetSettingValue("IndexerTicketsStatus", "Starting Job", Microsoft.Win32.RegistryValueKind.String);
         ExecuteJob(job, "IndexerTicketsStatus");
-
+        UpdateTickets(dataSource);
       }
-    
+    }
+
+    private void UpdateTickets(TicketIndexDataSource dataSource)
+    {
+      if (dataSource.UpdatedTickets.Count < 1) return;
+
+      StringBuilder builder = new StringBuilder();
+      foreach (KeyValuePair<int, int> item in dataSource.UpdatedTickets)
+      {
+        string sql = string.Format("UPDATE Tickets SET NeedsIndexing = 0, DocID = {1} WHERE TicketID = {0};", item.Key.ToString(), item.Value.ToString());
+        builder.AppendLine(sql);
+      }
+
+      SqlCommand command = new SqlCommand();
+      command.CommandText = builder.ToString();
+      command.CommandType = System.Data.CommandType.Text;
+
+      SqlExecutor.ExecuteNonQuery(dataSource.LoginUser, command);
     }
 
     private void RemoveOldTicketIndexes(LoginUser loginUser, string indexPath)
@@ -88,7 +106,6 @@ namespace TeamSupport.ServiceLibrary
         job.ActionRemoveListed = true;
         job.ToRemoveListName = fileName;
         job.CreateRelativePaths = false;
-        Utils.SetSettingValue("IndexerTicketsStatus", "Deleting Old Tickets", Microsoft.Win32.RegistryValueKind.String);
         job.Execute();
       }
 
@@ -151,7 +168,6 @@ namespace TeamSupport.ServiceLibrary
         if (IsStopped) { job.AbortThread(); }
       }
 
-      Utils.SetSettingValue("IndexerTicketsLastEnd", DateTime.Now.ToString(), Microsoft.Win32.RegistryValueKind.String);
     }
 
   }

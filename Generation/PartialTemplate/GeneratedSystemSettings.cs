@@ -36,18 +36,6 @@ namespace TeamSupport.Data
     
 
     
-    public int ModifierID
-    {
-      get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
-    }
-    
-    public int CreatorID
-    {
-      get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
-    }
-    
     public string SettingValue
     {
       get { return (string)Row["SettingValue"]; }
@@ -68,18 +56,6 @@ namespace TeamSupport.Data
 
     
 
-    
-    public DateTime DateModified
-    {
-      get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
-    }
-    
-    public DateTime DateCreated
-    {
-      get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
-    }
     
 
     #endregion
@@ -199,20 +175,6 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 23;
-		  tempParameter.Scale = 23;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
@@ -220,34 +182,6 @@ namespace TeamSupport.Data
 		insertCommand.CommandType = CommandType.StoredProcedure;
 		insertCommand.CommandText = "uspGeneratedInsertSystemSetting";
 
-		
-		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 23;
-		  tempParameter.Scale = 23;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 23;
-		  tempParameter.Scale = 23;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("SettingValue", SqlDbType.VarChar, 8000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)

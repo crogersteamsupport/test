@@ -149,6 +149,12 @@ namespace TeamSupport.Data
       set { Row["BasicPortalDirections"] = CheckNull(value); }
     }
     
+    public bool? DeflectionEnabled
+    {
+      get { return Row["DeflectionEnabled"] != DBNull.Value ? (bool?)Row["DeflectionEnabled"] : null; }
+      set { Row["DeflectionEnabled"] = CheckNull(value); }
+    }
+    
 
     
     public int OrganizationID
@@ -410,6 +416,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("DeflectionEnabled", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
@@ -417,6 +430,13 @@ namespace TeamSupport.Data
 		insertCommand.CommandType = CommandType.StoredProcedure;
 		insertCommand.CommandText = "uspGeneratedInsertPortalOption";
 
+		
+		tempParameter = insertCommand.Parameters.Add("DeflectionEnabled", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("BasicPortalDirections", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)

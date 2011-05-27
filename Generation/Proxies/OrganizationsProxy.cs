@@ -74,6 +74,7 @@ namespace TeamSupport.Data
     [DataMember] public string EvalProcess { get; set; }
     [DataMember] public bool? AddAdditionalContacts { get; set; }
     [DataMember] public bool? ChangeStatusIfClosed { get; set; }
+    [DataMember] public bool IsPublicArticles { get; set; }
           
   }
   
@@ -82,6 +83,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.IsPublicArticles = this.IsPublicArticles;
       result.ChangeStatusIfClosed = this.ChangeStatusIfClosed;
       result.AddAdditionalContacts = this.AddAdditionalContacts;
       result.EvalProcess = this.EvalProcess;

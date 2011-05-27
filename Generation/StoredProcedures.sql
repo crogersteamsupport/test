@@ -1688,11 +1688,7 @@ AS
   SELECT
     [SystemSettingID],
     [SettingKey],
-    [SettingValue],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
+    [SettingValue]
   FROM [dbo].[SystemSettings]
   WHERE ([SystemSettingID] = @SystemSettingID)
 GO
@@ -1705,10 +1701,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertSystemSetting
 (
   @SettingKey varchar(250),
   @SettingValue varchar(8000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
   @Identity int OUT
 )
 AS
@@ -1716,18 +1708,10 @@ AS
   INSERT INTO [dbo].[SystemSettings]
   (
     [SettingKey],
-    [SettingValue],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
+    [SettingValue])
   VALUES (
     @SettingKey,
-    @SettingValue,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
+    @SettingValue)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1740,18 +1724,14 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateSystemSetting
 (
   @SystemSettingID int,
   @SettingKey varchar(250),
-  @SettingValue varchar(8000),
-  @DateModified datetime,
-  @ModifierID int
+  @SettingValue varchar(8000)
 )
 AS
   SET NOCOUNT OFF;
   UPDATE [dbo].[SystemSettings]
   SET
     [SettingKey] = @SettingKey,
-    [SettingValue] = @SettingValue,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
+    [SettingValue] = @SettingValue
   WHERE ([SystemSettingID] = @SystemSettingID)
 GO
 
@@ -1841,7 +1821,8 @@ AS
     [PotentialSeats],
     [EvalProcess],
     [AddAdditionalContacts],
-    [ChangeStatusIfClosed]
+    [ChangeStatusIfClosed],
+    [IsPublicArticles]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -1912,6 +1893,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
+  @IsPublicArticles bit,
   @Identity int OUT
 )
 AS
@@ -1977,7 +1959,8 @@ AS
     [PotentialSeats],
     [EvalProcess],
     [AddAdditionalContacts],
-    [ChangeStatusIfClosed])
+    [ChangeStatusIfClosed],
+    [IsPublicArticles])
   VALUES (
     @Name,
     @Description,
@@ -2038,7 +2021,8 @@ AS
     @PotentialSeats,
     @EvalProcess,
     @AddAdditionalContacts,
-    @ChangeStatusIfClosed)
+    @ChangeStatusIfClosed,
+    @IsPublicArticles)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -2107,7 +2091,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @PotentialSeats varchar(100),
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
-  @ChangeStatusIfClosed bit
+  @ChangeStatusIfClosed bit,
+  @IsPublicArticles bit
 )
 AS
   SET NOCOUNT OFF;
@@ -2170,7 +2155,8 @@ AS
     [PotentialSeats] = @PotentialSeats,
     [EvalProcess] = @EvalProcess,
     [AddAdditionalContacts] = @AddAdditionalContacts,
-    [ChangeStatusIfClosed] = @ChangeStatusIfClosed
+    [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
+    [IsPublicArticles] = @IsPublicArticles
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -7095,6 +7081,135 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectService
+
+(
+  @ServiceID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ServiceID],
+    [Name],
+    [Enabled],
+    [Interval],
+    [LastStartTime],
+    [LastEndTime],
+    [LastResult],
+    [LastError],
+    [ErrorCount],
+    [RunCount],
+    [RunTimeAvg],
+    [RunTimeMax]
+  FROM [dbo].[Services]
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertService
+
+(
+  @Name varchar(250),
+  @Enabled bit,
+  @Interval int,
+  @LastStartTime datetime,
+  @LastEndTime datetime,
+  @LastResult varchar(8000),
+  @LastError varchar(8000),
+  @ErrorCount int,
+  @RunCount int,
+  @RunTimeAvg int,
+  @RunTimeMax int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Services]
+  (
+    [Name],
+    [Enabled],
+    [Interval],
+    [LastStartTime],
+    [LastEndTime],
+    [LastResult],
+    [LastError],
+    [ErrorCount],
+    [RunCount],
+    [RunTimeAvg],
+    [RunTimeMax])
+  VALUES (
+    @Name,
+    @Enabled,
+    @Interval,
+    @LastStartTime,
+    @LastEndTime,
+    @LastResult,
+    @LastError,
+    @ErrorCount,
+    @RunCount,
+    @RunTimeAvg,
+    @RunTimeMax)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateService
+
+(
+  @ServiceID int,
+  @Name varchar(250),
+  @Enabled bit,
+  @Interval int,
+  @LastStartTime datetime,
+  @LastEndTime datetime,
+  @LastResult varchar(8000),
+  @LastError varchar(8000),
+  @ErrorCount int,
+  @RunCount int,
+  @RunTimeAvg int,
+  @RunTimeMax int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Services]
+  SET
+    [Name] = @Name,
+    [Enabled] = @Enabled,
+    [Interval] = @Interval,
+    [LastStartTime] = @LastStartTime,
+    [LastEndTime] = @LastEndTime,
+    [LastResult] = @LastResult,
+    [LastError] = @LastError,
+    [ErrorCount] = @ErrorCount,
+    [RunCount] = @RunCount,
+    [RunTimeAvg] = @RunTimeAvg,
+    [RunTimeMax] = @RunTimeMax
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteService
+
+(
+  @ServiceID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Services]
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWikiHistory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWikiHistory
 GO
 
@@ -8205,6 +8320,87 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ChatUserSettings]
   WHERE ([UserID] = @UserID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectServiceSetting
+
+(
+  @ServiceSettingID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ServiceSettingID],
+    [ServiceID],
+    [SettingKey],
+    [SettingValue]
+  FROM [dbo].[ServiceSettings]
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertServiceSetting
+
+(
+  @ServiceID int,
+  @SettingKey varchar(1000),
+  @SettingValue varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ServiceSettings]
+  (
+    [ServiceID],
+    [SettingKey],
+    [SettingValue])
+  VALUES (
+    @ServiceID,
+    @SettingKey,
+    @SettingValue)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateServiceSetting
+
+(
+  @ServiceSettingID int,
+  @ServiceID int,
+  @SettingKey varchar(1000),
+  @SettingValue varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ServiceSettings]
+  SET
+    [ServiceID] = @ServiceID,
+    [SettingKey] = @SettingKey,
+    [SettingValue] = @SettingValue
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteServiceSetting
+
+(
+  @ServiceSettingID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ServiceSettings]
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
 GO
 
 
@@ -9436,7 +9632,8 @@ AS
     [HideCloseButton],
     [Theme],
     [AdvPortalWidth],
-    [BasicPortalDirections]
+    [BasicPortalDirections],
+    [DeflectionEnabled]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -9468,6 +9665,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @Theme varchar(250),
   @AdvPortalWidth int,
   @BasicPortalDirections varchar(1000),
+  @DeflectionEnabled bit,
   @Identity int OUT
 )
 AS
@@ -9494,7 +9692,8 @@ AS
     [HideCloseButton],
     [Theme],
     [AdvPortalWidth],
-    [BasicPortalDirections])
+    [BasicPortalDirections],
+    [DeflectionEnabled])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -9516,7 +9715,8 @@ AS
     @HideCloseButton,
     @Theme,
     @AdvPortalWidth,
-    @BasicPortalDirections)
+    @BasicPortalDirections,
+    @DeflectionEnabled)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -9547,7 +9747,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @HideCloseButton bit,
   @Theme varchar(250),
   @AdvPortalWidth int,
-  @BasicPortalDirections varchar(1000)
+  @BasicPortalDirections varchar(1000),
+  @DeflectionEnabled bit
 )
 AS
   SET NOCOUNT OFF;
@@ -9572,7 +9773,8 @@ AS
     [HideCloseButton] = @HideCloseButton,
     [Theme] = @Theme,
     [AdvPortalWidth] = @AdvPortalWidth,
-    [BasicPortalDirections] = @BasicPortalDirections
+    [BasicPortalDirections] = @BasicPortalDirections,
+    [DeflectionEnabled] = @DeflectionEnabled
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -12702,11 +12904,7 @@ AS
   SELECT
     [SystemSettingID],
     [SettingKey],
-    [SettingValue],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
+    [SettingValue]
   FROM [dbo].[SystemSettings]
   WHERE ([SystemSettingID] = @SystemSettingID)
 GO
@@ -12719,10 +12917,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertSystemSetting
 (
   @SettingKey varchar(250),
   @SettingValue varchar(8000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
   @Identity int OUT
 )
 AS
@@ -12730,18 +12924,10 @@ AS
   INSERT INTO [dbo].[SystemSettings]
   (
     [SettingKey],
-    [SettingValue],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
+    [SettingValue])
   VALUES (
     @SettingKey,
-    @SettingValue,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
+    @SettingValue)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -12754,18 +12940,14 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateSystemSetting
 (
   @SystemSettingID int,
   @SettingKey varchar(250),
-  @SettingValue varchar(8000),
-  @DateModified datetime,
-  @ModifierID int
+  @SettingValue varchar(8000)
 )
 AS
   SET NOCOUNT OFF;
   UPDATE [dbo].[SystemSettings]
   SET
     [SettingKey] = @SettingKey,
-    [SettingValue] = @SettingValue,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
+    [SettingValue] = @SettingValue
   WHERE ([SystemSettingID] = @SystemSettingID)
 GO
 
@@ -12855,7 +13037,8 @@ AS
     [PotentialSeats],
     [EvalProcess],
     [AddAdditionalContacts],
-    [ChangeStatusIfClosed]
+    [ChangeStatusIfClosed],
+    [IsPublicArticles]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -12926,6 +13109,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
+  @IsPublicArticles bit,
   @Identity int OUT
 )
 AS
@@ -12991,7 +13175,8 @@ AS
     [PotentialSeats],
     [EvalProcess],
     [AddAdditionalContacts],
-    [ChangeStatusIfClosed])
+    [ChangeStatusIfClosed],
+    [IsPublicArticles])
   VALUES (
     @Name,
     @Description,
@@ -13052,7 +13237,8 @@ AS
     @PotentialSeats,
     @EvalProcess,
     @AddAdditionalContacts,
-    @ChangeStatusIfClosed)
+    @ChangeStatusIfClosed,
+    @IsPublicArticles)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -13121,7 +13307,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @PotentialSeats varchar(100),
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
-  @ChangeStatusIfClosed bit
+  @ChangeStatusIfClosed bit,
+  @IsPublicArticles bit
 )
 AS
   SET NOCOUNT OFF;
@@ -13184,7 +13371,8 @@ AS
     [PotentialSeats] = @PotentialSeats,
     [EvalProcess] = @EvalProcess,
     [AddAdditionalContacts] = @AddAdditionalContacts,
-    [ChangeStatusIfClosed] = @ChangeStatusIfClosed
+    [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
+    [IsPublicArticles] = @IsPublicArticles
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -18109,6 +18297,135 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectService
+
+(
+  @ServiceID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ServiceID],
+    [Name],
+    [Enabled],
+    [Interval],
+    [LastStartTime],
+    [LastEndTime],
+    [LastResult],
+    [LastError],
+    [ErrorCount],
+    [RunCount],
+    [RunTimeAvg],
+    [RunTimeMax]
+  FROM [dbo].[Services]
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertService
+
+(
+  @Name varchar(250),
+  @Enabled bit,
+  @Interval int,
+  @LastStartTime datetime,
+  @LastEndTime datetime,
+  @LastResult varchar(8000),
+  @LastError varchar(8000),
+  @ErrorCount int,
+  @RunCount int,
+  @RunTimeAvg int,
+  @RunTimeMax int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Services]
+  (
+    [Name],
+    [Enabled],
+    [Interval],
+    [LastStartTime],
+    [LastEndTime],
+    [LastResult],
+    [LastError],
+    [ErrorCount],
+    [RunCount],
+    [RunTimeAvg],
+    [RunTimeMax])
+  VALUES (
+    @Name,
+    @Enabled,
+    @Interval,
+    @LastStartTime,
+    @LastEndTime,
+    @LastResult,
+    @LastError,
+    @ErrorCount,
+    @RunCount,
+    @RunTimeAvg,
+    @RunTimeMax)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateService
+
+(
+  @ServiceID int,
+  @Name varchar(250),
+  @Enabled bit,
+  @Interval int,
+  @LastStartTime datetime,
+  @LastEndTime datetime,
+  @LastResult varchar(8000),
+  @LastError varchar(8000),
+  @ErrorCount int,
+  @RunCount int,
+  @RunTimeAvg int,
+  @RunTimeMax int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Services]
+  SET
+    [Name] = @Name,
+    [Enabled] = @Enabled,
+    [Interval] = @Interval,
+    [LastStartTime] = @LastStartTime,
+    [LastEndTime] = @LastEndTime,
+    [LastResult] = @LastResult,
+    [LastError] = @LastError,
+    [ErrorCount] = @ErrorCount,
+    [RunCount] = @RunCount,
+    [RunTimeAvg] = @RunTimeAvg,
+    [RunTimeMax] = @RunTimeMax
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteService
+
+(
+  @ServiceID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Services]
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWikiHistory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWikiHistory
 GO
 
@@ -19219,6 +19536,87 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ChatUserSettings]
   WHERE ([UserID] = @UserID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectServiceSetting
+
+(
+  @ServiceSettingID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ServiceSettingID],
+    [ServiceID],
+    [SettingKey],
+    [SettingValue]
+  FROM [dbo].[ServiceSettings]
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertServiceSetting
+
+(
+  @ServiceID int,
+  @SettingKey varchar(1000),
+  @SettingValue varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ServiceSettings]
+  (
+    [ServiceID],
+    [SettingKey],
+    [SettingValue])
+  VALUES (
+    @ServiceID,
+    @SettingKey,
+    @SettingValue)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateServiceSetting
+
+(
+  @ServiceSettingID int,
+  @ServiceID int,
+  @SettingKey varchar(1000),
+  @SettingValue varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ServiceSettings]
+  SET
+    [ServiceID] = @ServiceID,
+    [SettingKey] = @SettingKey,
+    [SettingValue] = @SettingValue
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteServiceSetting
+
+(
+  @ServiceSettingID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ServiceSettings]
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
 GO
 
 
@@ -20450,7 +20848,8 @@ AS
     [HideCloseButton],
     [Theme],
     [AdvPortalWidth],
-    [BasicPortalDirections]
+    [BasicPortalDirections],
+    [DeflectionEnabled]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -20482,6 +20881,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @Theme varchar(250),
   @AdvPortalWidth int,
   @BasicPortalDirections varchar(1000),
+  @DeflectionEnabled bit,
   @Identity int OUT
 )
 AS
@@ -20508,7 +20908,8 @@ AS
     [HideCloseButton],
     [Theme],
     [AdvPortalWidth],
-    [BasicPortalDirections])
+    [BasicPortalDirections],
+    [DeflectionEnabled])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -20530,7 +20931,8 @@ AS
     @HideCloseButton,
     @Theme,
     @AdvPortalWidth,
-    @BasicPortalDirections)
+    @BasicPortalDirections,
+    @DeflectionEnabled)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -20561,7 +20963,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @HideCloseButton bit,
   @Theme varchar(250),
   @AdvPortalWidth int,
-  @BasicPortalDirections varchar(1000)
+  @BasicPortalDirections varchar(1000),
+  @DeflectionEnabled bit
 )
 AS
   SET NOCOUNT OFF;
@@ -20586,7 +20989,8 @@ AS
     [HideCloseButton] = @HideCloseButton,
     [Theme] = @Theme,
     [AdvPortalWidth] = @AdvPortalWidth,
-    [BasicPortalDirections] = @BasicPortalDirections
+    [BasicPortalDirections] = @BasicPortalDirections,
+    [DeflectionEnabled] = @DeflectionEnabled
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -23716,11 +24120,7 @@ AS
   SELECT
     [SystemSettingID],
     [SettingKey],
-    [SettingValue],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
+    [SettingValue]
   FROM [dbo].[SystemSettings]
   WHERE ([SystemSettingID] = @SystemSettingID)
 GO
@@ -23733,10 +24133,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertSystemSetting
 (
   @SettingKey varchar(250),
   @SettingValue varchar(8000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
   @Identity int OUT
 )
 AS
@@ -23744,18 +24140,10 @@ AS
   INSERT INTO [dbo].[SystemSettings]
   (
     [SettingKey],
-    [SettingValue],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
+    [SettingValue])
   VALUES (
     @SettingKey,
-    @SettingValue,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
+    @SettingValue)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -23768,18 +24156,14 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateSystemSetting
 (
   @SystemSettingID int,
   @SettingKey varchar(250),
-  @SettingValue varchar(8000),
-  @DateModified datetime,
-  @ModifierID int
+  @SettingValue varchar(8000)
 )
 AS
   SET NOCOUNT OFF;
   UPDATE [dbo].[SystemSettings]
   SET
     [SettingKey] = @SettingKey,
-    [SettingValue] = @SettingValue,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
+    [SettingValue] = @SettingValue
   WHERE ([SystemSettingID] = @SystemSettingID)
 GO
 
@@ -23869,7 +24253,8 @@ AS
     [PotentialSeats],
     [EvalProcess],
     [AddAdditionalContacts],
-    [ChangeStatusIfClosed]
+    [ChangeStatusIfClosed],
+    [IsPublicArticles]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -23940,6 +24325,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
+  @IsPublicArticles bit,
   @Identity int OUT
 )
 AS
@@ -24005,7 +24391,8 @@ AS
     [PotentialSeats],
     [EvalProcess],
     [AddAdditionalContacts],
-    [ChangeStatusIfClosed])
+    [ChangeStatusIfClosed],
+    [IsPublicArticles])
   VALUES (
     @Name,
     @Description,
@@ -24066,7 +24453,8 @@ AS
     @PotentialSeats,
     @EvalProcess,
     @AddAdditionalContacts,
-    @ChangeStatusIfClosed)
+    @ChangeStatusIfClosed,
+    @IsPublicArticles)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -24135,7 +24523,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @PotentialSeats varchar(100),
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
-  @ChangeStatusIfClosed bit
+  @ChangeStatusIfClosed bit,
+  @IsPublicArticles bit
 )
 AS
   SET NOCOUNT OFF;
@@ -24198,7 +24587,8 @@ AS
     [PotentialSeats] = @PotentialSeats,
     [EvalProcess] = @EvalProcess,
     [AddAdditionalContacts] = @AddAdditionalContacts,
-    [ChangeStatusIfClosed] = @ChangeStatusIfClosed
+    [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
+    [IsPublicArticles] = @IsPublicArticles
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -29123,6 +29513,135 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectService
+
+(
+  @ServiceID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ServiceID],
+    [Name],
+    [Enabled],
+    [Interval],
+    [LastStartTime],
+    [LastEndTime],
+    [LastResult],
+    [LastError],
+    [ErrorCount],
+    [RunCount],
+    [RunTimeAvg],
+    [RunTimeMax]
+  FROM [dbo].[Services]
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertService
+
+(
+  @Name varchar(250),
+  @Enabled bit,
+  @Interval int,
+  @LastStartTime datetime,
+  @LastEndTime datetime,
+  @LastResult varchar(8000),
+  @LastError varchar(8000),
+  @ErrorCount int,
+  @RunCount int,
+  @RunTimeAvg int,
+  @RunTimeMax int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Services]
+  (
+    [Name],
+    [Enabled],
+    [Interval],
+    [LastStartTime],
+    [LastEndTime],
+    [LastResult],
+    [LastError],
+    [ErrorCount],
+    [RunCount],
+    [RunTimeAvg],
+    [RunTimeMax])
+  VALUES (
+    @Name,
+    @Enabled,
+    @Interval,
+    @LastStartTime,
+    @LastEndTime,
+    @LastResult,
+    @LastError,
+    @ErrorCount,
+    @RunCount,
+    @RunTimeAvg,
+    @RunTimeMax)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateService
+
+(
+  @ServiceID int,
+  @Name varchar(250),
+  @Enabled bit,
+  @Interval int,
+  @LastStartTime datetime,
+  @LastEndTime datetime,
+  @LastResult varchar(8000),
+  @LastError varchar(8000),
+  @ErrorCount int,
+  @RunCount int,
+  @RunTimeAvg int,
+  @RunTimeMax int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Services]
+  SET
+    [Name] = @Name,
+    [Enabled] = @Enabled,
+    [Interval] = @Interval,
+    [LastStartTime] = @LastStartTime,
+    [LastEndTime] = @LastEndTime,
+    [LastResult] = @LastResult,
+    [LastError] = @LastError,
+    [ErrorCount] = @ErrorCount,
+    [RunCount] = @RunCount,
+    [RunTimeAvg] = @RunTimeAvg,
+    [RunTimeMax] = @RunTimeMax
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteService
+
+(
+  @ServiceID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Services]
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWikiHistory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWikiHistory
 GO
 
@@ -30233,6 +30752,87 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ChatUserSettings]
   WHERE ([UserID] = @UserID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectServiceSetting
+
+(
+  @ServiceSettingID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ServiceSettingID],
+    [ServiceID],
+    [SettingKey],
+    [SettingValue]
+  FROM [dbo].[ServiceSettings]
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertServiceSetting
+
+(
+  @ServiceID int,
+  @SettingKey varchar(1000),
+  @SettingValue varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ServiceSettings]
+  (
+    [ServiceID],
+    [SettingKey],
+    [SettingValue])
+  VALUES (
+    @ServiceID,
+    @SettingKey,
+    @SettingValue)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateServiceSetting
+
+(
+  @ServiceSettingID int,
+  @ServiceID int,
+  @SettingKey varchar(1000),
+  @SettingValue varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ServiceSettings]
+  SET
+    [ServiceID] = @ServiceID,
+    [SettingKey] = @SettingKey,
+    [SettingValue] = @SettingValue
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteServiceSetting
+
+(
+  @ServiceSettingID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ServiceSettings]
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
 GO
 
 
@@ -31464,7 +32064,8 @@ AS
     [HideCloseButton],
     [Theme],
     [AdvPortalWidth],
-    [BasicPortalDirections]
+    [BasicPortalDirections],
+    [DeflectionEnabled]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -31496,6 +32097,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @Theme varchar(250),
   @AdvPortalWidth int,
   @BasicPortalDirections varchar(1000),
+  @DeflectionEnabled bit,
   @Identity int OUT
 )
 AS
@@ -31522,7 +32124,8 @@ AS
     [HideCloseButton],
     [Theme],
     [AdvPortalWidth],
-    [BasicPortalDirections])
+    [BasicPortalDirections],
+    [DeflectionEnabled])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -31544,7 +32147,8 @@ AS
     @HideCloseButton,
     @Theme,
     @AdvPortalWidth,
-    @BasicPortalDirections)
+    @BasicPortalDirections,
+    @DeflectionEnabled)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -31575,7 +32179,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @HideCloseButton bit,
   @Theme varchar(250),
   @AdvPortalWidth int,
-  @BasicPortalDirections varchar(1000)
+  @BasicPortalDirections varchar(1000),
+  @DeflectionEnabled bit
 )
 AS
   SET NOCOUNT OFF;
@@ -31600,7 +32205,8 @@ AS
     [HideCloseButton] = @HideCloseButton,
     [Theme] = @Theme,
     [AdvPortalWidth] = @AdvPortalWidth,
-    [BasicPortalDirections] = @BasicPortalDirections
+    [BasicPortalDirections] = @BasicPortalDirections,
+    [DeflectionEnabled] = @DeflectionEnabled
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -34730,11 +35336,7 @@ AS
   SELECT
     [SystemSettingID],
     [SettingKey],
-    [SettingValue],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
+    [SettingValue]
   FROM [dbo].[SystemSettings]
   WHERE ([SystemSettingID] = @SystemSettingID)
 GO
@@ -34747,10 +35349,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertSystemSetting
 (
   @SettingKey varchar(250),
   @SettingValue varchar(8000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
   @Identity int OUT
 )
 AS
@@ -34758,18 +35356,10 @@ AS
   INSERT INTO [dbo].[SystemSettings]
   (
     [SettingKey],
-    [SettingValue],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
+    [SettingValue])
   VALUES (
     @SettingKey,
-    @SettingValue,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
+    @SettingValue)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -34782,18 +35372,14 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateSystemSetting
 (
   @SystemSettingID int,
   @SettingKey varchar(250),
-  @SettingValue varchar(8000),
-  @DateModified datetime,
-  @ModifierID int
+  @SettingValue varchar(8000)
 )
 AS
   SET NOCOUNT OFF;
   UPDATE [dbo].[SystemSettings]
   SET
     [SettingKey] = @SettingKey,
-    [SettingValue] = @SettingValue,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
+    [SettingValue] = @SettingValue
   WHERE ([SystemSettingID] = @SystemSettingID)
 GO
 
@@ -34883,7 +35469,8 @@ AS
     [PotentialSeats],
     [EvalProcess],
     [AddAdditionalContacts],
-    [ChangeStatusIfClosed]
+    [ChangeStatusIfClosed],
+    [IsPublicArticles]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -34954,6 +35541,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
+  @IsPublicArticles bit,
   @Identity int OUT
 )
 AS
@@ -35019,7 +35607,8 @@ AS
     [PotentialSeats],
     [EvalProcess],
     [AddAdditionalContacts],
-    [ChangeStatusIfClosed])
+    [ChangeStatusIfClosed],
+    [IsPublicArticles])
   VALUES (
     @Name,
     @Description,
@@ -35080,7 +35669,8 @@ AS
     @PotentialSeats,
     @EvalProcess,
     @AddAdditionalContacts,
-    @ChangeStatusIfClosed)
+    @ChangeStatusIfClosed,
+    @IsPublicArticles)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -35149,7 +35739,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @PotentialSeats varchar(100),
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
-  @ChangeStatusIfClosed bit
+  @ChangeStatusIfClosed bit,
+  @IsPublicArticles bit
 )
 AS
   SET NOCOUNT OFF;
@@ -35212,7 +35803,8 @@ AS
     [PotentialSeats] = @PotentialSeats,
     [EvalProcess] = @EvalProcess,
     [AddAdditionalContacts] = @AddAdditionalContacts,
-    [ChangeStatusIfClosed] = @ChangeStatusIfClosed
+    [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
+    [IsPublicArticles] = @IsPublicArticles
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -40137,6 +40729,135 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectService
+
+(
+  @ServiceID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ServiceID],
+    [Name],
+    [Enabled],
+    [Interval],
+    [LastStartTime],
+    [LastEndTime],
+    [LastResult],
+    [LastError],
+    [ErrorCount],
+    [RunCount],
+    [RunTimeAvg],
+    [RunTimeMax]
+  FROM [dbo].[Services]
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertService
+
+(
+  @Name varchar(250),
+  @Enabled bit,
+  @Interval int,
+  @LastStartTime datetime,
+  @LastEndTime datetime,
+  @LastResult varchar(8000),
+  @LastError varchar(8000),
+  @ErrorCount int,
+  @RunCount int,
+  @RunTimeAvg int,
+  @RunTimeMax int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Services]
+  (
+    [Name],
+    [Enabled],
+    [Interval],
+    [LastStartTime],
+    [LastEndTime],
+    [LastResult],
+    [LastError],
+    [ErrorCount],
+    [RunCount],
+    [RunTimeAvg],
+    [RunTimeMax])
+  VALUES (
+    @Name,
+    @Enabled,
+    @Interval,
+    @LastStartTime,
+    @LastEndTime,
+    @LastResult,
+    @LastError,
+    @ErrorCount,
+    @RunCount,
+    @RunTimeAvg,
+    @RunTimeMax)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateService
+
+(
+  @ServiceID int,
+  @Name varchar(250),
+  @Enabled bit,
+  @Interval int,
+  @LastStartTime datetime,
+  @LastEndTime datetime,
+  @LastResult varchar(8000),
+  @LastError varchar(8000),
+  @ErrorCount int,
+  @RunCount int,
+  @RunTimeAvg int,
+  @RunTimeMax int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Services]
+  SET
+    [Name] = @Name,
+    [Enabled] = @Enabled,
+    [Interval] = @Interval,
+    [LastStartTime] = @LastStartTime,
+    [LastEndTime] = @LastEndTime,
+    [LastResult] = @LastResult,
+    [LastError] = @LastError,
+    [ErrorCount] = @ErrorCount,
+    [RunCount] = @RunCount,
+    [RunTimeAvg] = @RunTimeAvg,
+    [RunTimeMax] = @RunTimeMax
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteService
+
+(
+  @ServiceID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Services]
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWikiHistory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWikiHistory
 GO
 
@@ -41247,6 +41968,87 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ChatUserSettings]
   WHERE ([UserID] = @UserID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectServiceSetting
+
+(
+  @ServiceSettingID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ServiceSettingID],
+    [ServiceID],
+    [SettingKey],
+    [SettingValue]
+  FROM [dbo].[ServiceSettings]
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertServiceSetting
+
+(
+  @ServiceID int,
+  @SettingKey varchar(1000),
+  @SettingValue varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ServiceSettings]
+  (
+    [ServiceID],
+    [SettingKey],
+    [SettingValue])
+  VALUES (
+    @ServiceID,
+    @SettingKey,
+    @SettingValue)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateServiceSetting
+
+(
+  @ServiceSettingID int,
+  @ServiceID int,
+  @SettingKey varchar(1000),
+  @SettingValue varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ServiceSettings]
+  SET
+    [ServiceID] = @ServiceID,
+    [SettingKey] = @SettingKey,
+    [SettingValue] = @SettingValue
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteServiceSetting
+
+(
+  @ServiceSettingID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ServiceSettings]
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
 GO
 
 
@@ -42478,7 +43280,8 @@ AS
     [HideCloseButton],
     [Theme],
     [AdvPortalWidth],
-    [BasicPortalDirections]
+    [BasicPortalDirections],
+    [DeflectionEnabled]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -42510,6 +43313,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @Theme varchar(250),
   @AdvPortalWidth int,
   @BasicPortalDirections varchar(1000),
+  @DeflectionEnabled bit,
   @Identity int OUT
 )
 AS
@@ -42536,7 +43340,8 @@ AS
     [HideCloseButton],
     [Theme],
     [AdvPortalWidth],
-    [BasicPortalDirections])
+    [BasicPortalDirections],
+    [DeflectionEnabled])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -42558,7 +43363,8 @@ AS
     @HideCloseButton,
     @Theme,
     @AdvPortalWidth,
-    @BasicPortalDirections)
+    @BasicPortalDirections,
+    @DeflectionEnabled)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -42589,7 +43395,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @HideCloseButton bit,
   @Theme varchar(250),
   @AdvPortalWidth int,
-  @BasicPortalDirections varchar(1000)
+  @BasicPortalDirections varchar(1000),
+  @DeflectionEnabled bit
 )
 AS
   SET NOCOUNT OFF;
@@ -42614,7 +43421,8 @@ AS
     [HideCloseButton] = @HideCloseButton,
     [Theme] = @Theme,
     [AdvPortalWidth] = @AdvPortalWidth,
-    [BasicPortalDirections] = @BasicPortalDirections
+    [BasicPortalDirections] = @BasicPortalDirections,
+    [DeflectionEnabled] = @DeflectionEnabled
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -45744,11 +46552,7 @@ AS
   SELECT
     [SystemSettingID],
     [SettingKey],
-    [SettingValue],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
+    [SettingValue]
   FROM [dbo].[SystemSettings]
   WHERE ([SystemSettingID] = @SystemSettingID)
 GO
@@ -45761,10 +46565,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertSystemSetting
 (
   @SettingKey varchar(250),
   @SettingValue varchar(8000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
   @Identity int OUT
 )
 AS
@@ -45772,18 +46572,10 @@ AS
   INSERT INTO [dbo].[SystemSettings]
   (
     [SettingKey],
-    [SettingValue],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
+    [SettingValue])
   VALUES (
     @SettingKey,
-    @SettingValue,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
+    @SettingValue)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -45796,18 +46588,14 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateSystemSetting
 (
   @SystemSettingID int,
   @SettingKey varchar(250),
-  @SettingValue varchar(8000),
-  @DateModified datetime,
-  @ModifierID int
+  @SettingValue varchar(8000)
 )
 AS
   SET NOCOUNT OFF;
   UPDATE [dbo].[SystemSettings]
   SET
     [SettingKey] = @SettingKey,
-    [SettingValue] = @SettingValue,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
+    [SettingValue] = @SettingValue
   WHERE ([SystemSettingID] = @SystemSettingID)
 GO
 
@@ -45897,7 +46685,8 @@ AS
     [PotentialSeats],
     [EvalProcess],
     [AddAdditionalContacts],
-    [ChangeStatusIfClosed]
+    [ChangeStatusIfClosed],
+    [IsPublicArticles]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -45968,6 +46757,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
+  @IsPublicArticles bit,
   @Identity int OUT
 )
 AS
@@ -46033,7 +46823,8 @@ AS
     [PotentialSeats],
     [EvalProcess],
     [AddAdditionalContacts],
-    [ChangeStatusIfClosed])
+    [ChangeStatusIfClosed],
+    [IsPublicArticles])
   VALUES (
     @Name,
     @Description,
@@ -46094,7 +46885,8 @@ AS
     @PotentialSeats,
     @EvalProcess,
     @AddAdditionalContacts,
-    @ChangeStatusIfClosed)
+    @ChangeStatusIfClosed,
+    @IsPublicArticles)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -46163,7 +46955,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @PotentialSeats varchar(100),
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
-  @ChangeStatusIfClosed bit
+  @ChangeStatusIfClosed bit,
+  @IsPublicArticles bit
 )
 AS
   SET NOCOUNT OFF;
@@ -46226,7 +47019,8 @@ AS
     [PotentialSeats] = @PotentialSeats,
     [EvalProcess] = @EvalProcess,
     [AddAdditionalContacts] = @AddAdditionalContacts,
-    [ChangeStatusIfClosed] = @ChangeStatusIfClosed
+    [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
+    [IsPublicArticles] = @IsPublicArticles
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -51151,6 +51945,135 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectService
+
+(
+  @ServiceID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ServiceID],
+    [Name],
+    [Enabled],
+    [Interval],
+    [LastStartTime],
+    [LastEndTime],
+    [LastResult],
+    [LastError],
+    [ErrorCount],
+    [RunCount],
+    [RunTimeAvg],
+    [RunTimeMax]
+  FROM [dbo].[Services]
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertService
+
+(
+  @Name varchar(250),
+  @Enabled bit,
+  @Interval int,
+  @LastStartTime datetime,
+  @LastEndTime datetime,
+  @LastResult varchar(8000),
+  @LastError varchar(8000),
+  @ErrorCount int,
+  @RunCount int,
+  @RunTimeAvg int,
+  @RunTimeMax int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Services]
+  (
+    [Name],
+    [Enabled],
+    [Interval],
+    [LastStartTime],
+    [LastEndTime],
+    [LastResult],
+    [LastError],
+    [ErrorCount],
+    [RunCount],
+    [RunTimeAvg],
+    [RunTimeMax])
+  VALUES (
+    @Name,
+    @Enabled,
+    @Interval,
+    @LastStartTime,
+    @LastEndTime,
+    @LastResult,
+    @LastError,
+    @ErrorCount,
+    @RunCount,
+    @RunTimeAvg,
+    @RunTimeMax)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateService
+
+(
+  @ServiceID int,
+  @Name varchar(250),
+  @Enabled bit,
+  @Interval int,
+  @LastStartTime datetime,
+  @LastEndTime datetime,
+  @LastResult varchar(8000),
+  @LastError varchar(8000),
+  @ErrorCount int,
+  @RunCount int,
+  @RunTimeAvg int,
+  @RunTimeMax int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Services]
+  SET
+    [Name] = @Name,
+    [Enabled] = @Enabled,
+    [Interval] = @Interval,
+    [LastStartTime] = @LastStartTime,
+    [LastEndTime] = @LastEndTime,
+    [LastResult] = @LastResult,
+    [LastError] = @LastError,
+    [ErrorCount] = @ErrorCount,
+    [RunCount] = @RunCount,
+    [RunTimeAvg] = @RunTimeAvg,
+    [RunTimeMax] = @RunTimeMax
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteService
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteService
+
+(
+  @ServiceID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Services]
+  WHERE ([ServiceID] = @ServiceID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWikiHistory' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWikiHistory
 GO
 
@@ -52261,6 +53184,87 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ChatUserSettings]
   WHERE ([UserID] = @UserID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectServiceSetting
+
+(
+  @ServiceSettingID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ServiceSettingID],
+    [ServiceID],
+    [SettingKey],
+    [SettingValue]
+  FROM [dbo].[ServiceSettings]
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertServiceSetting
+
+(
+  @ServiceID int,
+  @SettingKey varchar(1000),
+  @SettingValue varchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ServiceSettings]
+  (
+    [ServiceID],
+    [SettingKey],
+    [SettingValue])
+  VALUES (
+    @ServiceID,
+    @SettingKey,
+    @SettingValue)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateServiceSetting
+
+(
+  @ServiceSettingID int,
+  @ServiceID int,
+  @SettingKey varchar(1000),
+  @SettingValue varchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ServiceSettings]
+  SET
+    [ServiceID] = @ServiceID,
+    [SettingKey] = @SettingKey,
+    [SettingValue] = @SettingValue
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteServiceSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteServiceSetting
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteServiceSetting
+
+(
+  @ServiceSettingID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ServiceSettings]
+  WHERE ([ServiceSettingID] = @ServiceSettingID)
 GO
 
 
@@ -53492,7 +54496,8 @@ AS
     [HideCloseButton],
     [Theme],
     [AdvPortalWidth],
-    [BasicPortalDirections]
+    [BasicPortalDirections],
+    [DeflectionEnabled]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -53524,6 +54529,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @Theme varchar(250),
   @AdvPortalWidth int,
   @BasicPortalDirections varchar(1000),
+  @DeflectionEnabled bit,
   @Identity int OUT
 )
 AS
@@ -53550,7 +54556,8 @@ AS
     [HideCloseButton],
     [Theme],
     [AdvPortalWidth],
-    [BasicPortalDirections])
+    [BasicPortalDirections],
+    [DeflectionEnabled])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -53572,7 +54579,8 @@ AS
     @HideCloseButton,
     @Theme,
     @AdvPortalWidth,
-    @BasicPortalDirections)
+    @BasicPortalDirections,
+    @DeflectionEnabled)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -53603,7 +54611,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @HideCloseButton bit,
   @Theme varchar(250),
   @AdvPortalWidth int,
-  @BasicPortalDirections varchar(1000)
+  @BasicPortalDirections varchar(1000),
+  @DeflectionEnabled bit
 )
 AS
   SET NOCOUNT OFF;
@@ -53628,7 +54637,8 @@ AS
     [HideCloseButton] = @HideCloseButton,
     [Theme] = @Theme,
     [AdvPortalWidth] = @AdvPortalWidth,
-    [BasicPortalDirections] = @BasicPortalDirections
+    [BasicPortalDirections] = @BasicPortalDirections,
+    [DeflectionEnabled] = @DeflectionEnabled
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 

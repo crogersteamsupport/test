@@ -34,6 +34,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Theme", "Theme", false, false, false);
       _fieldMap.AddMap("AdvPortalWidth", "AdvPortalWidth", false, false, false);
       _fieldMap.AddMap("BasicPortalDirections", "BasicPortalDirections", false, false, false);
+      _fieldMap.AddMap("DeflectionEnabled", "DeflectionEnabled", false, false, false);
             
     }
   }
