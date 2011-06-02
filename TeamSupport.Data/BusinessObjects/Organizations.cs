@@ -1046,6 +1046,15 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByCRMLinkID(int crmlinkID) {
+        using (SqlCommand command = new SqlCommand()) {
+            command.CommandText = "SELECT * FROM Organizations WHERE CRMLinkID = @CrmlinkID";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@CrmlinkID", crmlinkID);
+            Fill(command);
+        }
+    }
+
     public void LoadNotTicketCustomers(int parentID, int ticketID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -1057,7 +1066,7 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
-
+      
     public void LoadByMostActive(int parentID, DateTime beginDate, int top)
     {
       using (SqlCommand command = new SqlCommand())
