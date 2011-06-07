@@ -39,13 +39,20 @@ Namespace TeamSupport
                         thisCompany.CRMLinkID = company.AccountID
 
                     Else
-                        'if still not, add new
+                        'if still not found, add new
                         
                         thisCompany = (New Organizations(User)).AddNewOrganization()
                         thisCompany.ParentID = ParentOrgID
                         thisCompany.Name = company.AccountName
                         thisCompany.CRMLinkID = company.AccountID
                         thisCompany.IsActive = True
+
+                        With New Organizations(User)
+                            .LoadByOrganizationID(ParentOrgID)
+                            thisCompany.SlaLevelID = .Item(0).SlaLevelID
+                        End With
+
+                        thisCompany.HasPortalAccess = ParentOrgID = "305383" 'This is hack for now for Axceler.  Need to change to an option - 3/9/11
                         thisCompany.Collection.Save()
 
                         Log.Write("Added a new account.")
@@ -63,6 +70,8 @@ Namespace TeamSupport
                     Log.Write("Address information updated.")
                 Else
                     thisAddress = (New Addresses(User)).AddNewAddress()
+                    thisAddress.RefID = thisCompany.OrganizationID
+                    thisAddress.RefType = ReferenceType.Organizations
                     thisAddress.Collection.Save()
 
                     Log.Write("Address information added.")
@@ -75,66 +84,115 @@ Namespace TeamSupport
                     .State = company.State
                     .Zip = company.Zip
                     .Country = company.Country
+                    .Collection.Save()
                 End With
-
-                findAddress.Save()
 
                 If company.Phone <> "" Then
                     Log.Write("Adding/updating account phone numbers.")
-                    Log.Write("AccountID=" & company.AccountID & ", OrgID=" & thisCompany.OrganizationID)
-                    Dim thisPhone As New PhoneNumbers(User)
-                    thisPhone.LoadByOrganizationID(thisCompany.OrganizationID)
+                    Log.Write(String.Format("AccountID={0}, OrgID={1}", company.AccountID, thisCompany.OrganizationID))
 
-                    If thisPhone.Count > 0 Then
+                    Dim findPhone As New PhoneNumbers(User)
+                    Dim thisPhone As PhoneNumber
+                    findPhone.LoadByID(thisCompany.OrganizationID, ReferenceType.Organizations)
+
+                    If findPhone.Count > 0 Then
                         Log.Write("Found a phone record, updating...")
-                        thisPhone(0).Number = company.Phone
-                        Log.Write("Organization phone number updated.")
+                        thisPhone = findPhone(0)
                     Else
                         Log.Write("No phone record found--adding a new record.")
 
-                        Dim newPhone As PhoneNumber = (New PhoneNumbers(User)).AddNewPhoneNumber()
-                        newPhone.Number = company.Phone
-                        newPhone.Collection.Save()
+                        thisPhone = (New PhoneNumbers(User)).AddNewPhoneNumber()
+                        thisPhone.RefID = thisCompany.OrganizationID
+                        thisPhone.RefType = ReferenceType.Organizations
+                        thisPhone.Collection.Save()
                     End If
 
-
+                    With thisPhone
+                        .Number = company.Phone
+                        .Collection.Save()
+                        Log.Write("Organization phone number updated.")
+                    End With
                 Else
                     Log.Write("There is no phone number to add.")
                 End If
 
-                Log.Write("Updated w/ Address:  " + company.AccountName)
+                Log.Write("Updated w/ Address:" & company.AccountName)
             End Sub
 
             Protected Sub UpdateContactInfo(ByVal person As EmployeeData, ByVal companyID As String, ByVal ParentOrgID As String)
                 If person.Email = "" Then
+                    'we don't add contacts with no email address
                     Return
                 End If
 
+                Log.Write(String.Format("Adding/updating contact information for {0} ({1},{2}).", person.Email, person.LastName, person.FirstName))
+
                 Dim findCompany As New Organizations(User)
 
-                'search for the crmlinkid = accountid in db to see if it already exists
+                'make sure the company already exists
                 findCompany.LoadByCRMLinkID(companyID)
                 If findCompany.Count > 0 Then
                     Dim thisCompany As Organization = findCompany(0)
 
+                    Dim findUser As New Users(User)
+                    Dim thisUser As User
 
-                    'If Not MatchContactEmail(OrgID, Email) Then
-                    '    'add the contact
-                    '    AddContact(OrgID, Email, FirstName, LastName, Phone, title, isdeleted)
-                    '    'Now that we've created the contact, we need to add the phone information
-                    '    UpdatePhoneIfNeeded(OrgID, Email, Phone, "Work", ParentOrganizationID)
-                    '    UpdatePhoneIfNeeded(OrgID, Email, mobilephone, "Mobile", ParentOrganizationID)
-                    '    UpdatePhoneIfNeeded(OrgID, Email, fax, "Fax", ParentOrganizationID)
+                    findUser.LoadByOrganizationID(thisCompany.OrganizationID, False)
+                    If findUser.FindByEmail(person.Email) IsNot Nothing Then
+                        thisUser = findUser.FindByEmail(person.Email)
 
-                    'Else
-                    '    'we've found the contact - Let's update the data
-                    '    UpdateContactInfoIfNeeded(OrgID, Email, FirstName, LastName, title, isdeleted)
-                    '    UpdatePhoneIfNeeded(OrgID, Email, Phone, "Work", ParentOrganizationID)
-                    '    UpdatePhoneIfNeeded(OrgID, Email, mobilephone, "Mobile", ParentOrganizationID)
-                    '    UpdatePhoneIfNeeded(OrgID, Email, fax, "Fax", ParentOrganizationID)
+                     Else
+                        'add the contact
+                        thisUser = (New Users(User)).AddNewUser()
+                        thisUser.OrganizationID = thisCompany.OrganizationID
+                        thisUser.Collection.Save()
+                    End If
 
+                    With thisUser
+                        .Email = person.Email
+                        .FirstName = person.FirstName
+                        .LastName = person.LastName
+                        .Title = person.Title
+                        .IsActive = True
+                        .MarkDeleted = False
+                        .CryptedPassword = "cfsdfewwgewff" 'not sure why this is done this way but keep as is for now
+                        .Collection.Save()
+                    End With
 
-                    'End If
+                    Log.Write("Updating phone information.")
+                    Dim findPhone As New PhoneNumbers(User)
+
+                    Dim thesePhoneTypes As New PhoneTypes(User)
+                    thesePhoneTypes.LoadAllPositions(thisCompany.OrganizationID)
+
+                    findPhone.LoadByID(thisUser.UserID, ReferenceType.Users)
+
+                    Dim workPhone, mobilePhone, faxPhone As PhoneNumber
+
+                    workPhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Work").PhoneTypeID)
+                    mobilePhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Mobile").PhoneTypeID)
+                    faxPhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Fax").PhoneTypeID)
+
+                    If workPhone Is Nothing Then
+                        workPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                    End If
+
+                    If mobilePhone Is Nothing Then
+                        mobilePhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                    End If
+
+                    If faxPhone Is Nothing Then
+                        faxPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                    End If
+
+                    workPhone.Number = person.Phone
+                    workPhone.Collection.Save()
+                    mobilePhone.Number = person.Cell
+                    mobilePhone.Collection.Save()
+                    faxPhone.Number = person.Fax
+                    faxPhone.Collection.Save()
+
+                    Log.Write("Phone information updated.")
                 End If
 
             End Sub

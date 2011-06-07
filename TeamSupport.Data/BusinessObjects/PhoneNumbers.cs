@@ -83,7 +83,19 @@ namespace TeamSupport.Data
       }
     }
 
-    
+
+    public PhoneNumber FindByPhoneTypeID(int typeID)
+    {
+        foreach (PhoneNumber number in this)
+        {
+            if (number.PhoneTypeID == typeID)
+            {
+                
+                return number;
+            }
+        }
+        return null;
+    }
 
   }
 }
