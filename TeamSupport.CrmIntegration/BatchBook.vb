@@ -93,36 +93,32 @@ Namespace TeamSupport
             End Function
 
             Public Overrides Function SendTicketData() As Boolean
-
-            Dim ParentOrgID As String = CRMLinkRow.OrganizationID
+                Dim ParentOrgID As String = CRMLinkRow.OrganizationID
 
                 If CRMLinkRow.SendBackTicketData Then
-            'Dim tickets As DataTable 
-
-            'get tickets created after the last link date
-
-
-            Dim tickets As New TicketsView(User)
-                    tickets.LoadByOrganizationID(ParentOrgID)
-
-            'TODO: parse out the tickets that aren't new as of last sync
+                    'get tickets created after the last link date
+                    Dim tickets As New Tickets(User)
+                    tickets.LoadByCRMLinkItem(CRMLinkRow)
 
                     If tickets IsNot Nothing Then
-                        For Each thisTicket As TicketsViewItem In tickets
-            Dim description As Action = Actions.GetTicketDescription(LoginUser.Anonymous, thisTicket.TicketID)
-            Dim customers As New OrganizationsView(User)
+                        For Each thisTicket As Ticket In tickets
+                            Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
+                            Dim customers As New OrganizationsView(User)
                             customers.LoadByTicketID(thisTicket.TicketID)
 
-
-            Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
-                                                   thisTicket.Name, thisTicket.TicketID.ToString(), Utilities.StripHTML(description.Description), Environment.NewLine)
+                            Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
+                                                                   thisTicket.Name, thisTicket.TicketID.ToString(), Utilities.StripHTML(description.Description), Environment.NewLine)
 
                             For Each customer As OrganizationsViewItem In customers
-                                Log.Write("Creating a comment...")
-                                CreateComment(CRMLinkRow.SecurityToken, CRMLinkRow.Username, customer.CRMLinkID, NoteBody)
-                                Log.Write("Comment created successfully.")
+                                If customer.CRMLinkID <> "" Then
+                                    Log.Write("Creating a comment...")
+                                    CreateComment(CRMLinkRow.SecurityToken, CRMLinkRow.Username, customer.CRMLinkID, NoteBody)
+                                    Log.Write("Comment created successfully.")
+                                End If
                             Next
                         Next
+                    Else
+                        Log.Write("No new tickets to sync.")
                     End If
                 Else
                     Log.Write("Ticket data not sent since SendBackTicketData is set to FALSE for this organization.")

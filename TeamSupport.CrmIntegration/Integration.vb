@@ -163,15 +163,17 @@ Namespace TeamSupport
                     Dim findPhone As New PhoneNumbers(User)
 
                     Dim thesePhoneTypes As New PhoneTypes(User)
-                    thesePhoneTypes.LoadAllPositions(thisCompany.OrganizationID)
+                    thesePhoneTypes.LoadAllPositions(ParentOrgID)
 
                     findPhone.LoadByID(thisUser.UserID, ReferenceType.Users)
 
                     Dim workPhone, mobilePhone, faxPhone As PhoneNumber
 
-                    workPhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Work").PhoneTypeID)
-                    mobilePhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Mobile").PhoneTypeID)
-                    faxPhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Fax").PhoneTypeID)
+                    If findPhone.Count > 0 Then
+                        workPhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Work").PhoneTypeID)
+                        mobilePhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Mobile").PhoneTypeID)
+                        faxPhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Fax").PhoneTypeID)
+                    End If
 
                     If workPhone Is Nothing Then
                         workPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
@@ -186,11 +188,23 @@ Namespace TeamSupport
                     End If
 
                     workPhone.Number = person.Phone
+                    workPhone.PhoneTypeID = thesePhoneTypes.FindByName("Work").PhoneTypeID
+                    workPhone.RefType = ReferenceType.Users
+                    workPhone.RefID = thisUser.UserID
                     workPhone.Collection.Save()
+
                     mobilePhone.Number = person.Cell
+                    mobilePhone.PhoneTypeID = thesePhoneTypes.FindByName("Mobile").PhoneTypeID
+                    mobilePhone.RefType = ReferenceType.Users
+                    mobilePhone.RefID = thisUser.UserID
                     mobilePhone.Collection.Save()
+
                     faxPhone.Number = person.Fax
+                    faxPhone.PhoneTypeID = thesePhoneTypes.FindByName("Fax").PhoneTypeID
+                    faxPhone.RefType = ReferenceType.Users
+                    faxPhone.RefID = thisUser.UserID
                     faxPhone.Collection.Save()
+
 
                     Log.Write("Phone information updated.")
                 End If
@@ -234,5 +248,11 @@ Namespace TeamSupport
             Property Cell As String
             Property Fax As String
         End Class
+
+        Enum PhoneType
+            Work
+            Mobile
+            Fax
+        End Enum
     End Namespace
 End Namespace

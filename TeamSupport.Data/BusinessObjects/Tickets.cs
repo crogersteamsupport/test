@@ -341,6 +341,19 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByCRMLinkItem(CRMLinkTableItem item) {
+        using (SqlCommand command = new SqlCommand()) {
+            command.CommandText = @"SELECT * FROM Tickets t 
+                    INNER JOIN OrganizationTickets ot ON t.TicketID = ot.TicketID
+                    INNER JOIN Organizations o ON o.OrganizationID = ot.OrganizationID
+                    WHERE (t.OrganizationID = @OrgID AND t.DateCreated > @LastLinkDate AND ISNULL(o.CRMLinkID,'') <> '')";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
+            command.Parameters.AddWithValue("@LastLinkDate", item.LastLink != null ? item.LastLink : DateTime.MinValue);
+            Fill(command, "Tickets");
+        }
+    }
+
     public void AddOrganization(int organizationID, int ticketID)
     {
       if (GetAssociatedOrganizationCount(LoginUser, organizationID, ticketID) > 0) return;

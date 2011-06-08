@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="BatchBook.vb" />
     <Compile Include="CrmProcessor.vb" />
+    <Compile Include="Highrise.vb" />
     <Compile Include="Integration.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
