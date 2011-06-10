@@ -1,4 +1,8 @@
 ﻿Imports TeamSupport.Data
+Imports System.Xml
+Imports System.IO
+Imports System.Net
+Imports System.Text
 
 Namespace TeamSupport
     Namespace CrmIntegration
@@ -7,6 +11,7 @@ Namespace TeamSupport
             Protected Log As SyncLog
             Protected User As LoginUser
             Protected ReadOnly Type As IntegrationType
+            Protected Const Client As String = "Muroc Client"
 
             Protected Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisType As IntegrationType)
                 CRMLinkRow = crmLinkOrg
@@ -104,6 +109,7 @@ Namespace TeamSupport
                         thisPhone = (New PhoneNumbers(User)).AddNewPhoneNumber()
                         thisPhone.RefID = thisCompany.OrganizationID
                         thisPhone.RefType = ReferenceType.Organizations
+                        'TODO: update to handle fax numbers
                         thisPhone.Collection.Save()
                     End If
 
@@ -211,6 +217,60 @@ Namespace TeamSupport
 
             End Sub
 
+            Protected Function GetXML(ByVal Key As NetworkCredential, ByVal Address As Uri) As XmlDocument
+                Dim returnXML As XmlDocument = Nothing
+
+                If Address IsNot Nothing Then
+                    Dim request As HttpWebRequest = WebRequest.Create(Address)
+                    request.Credentials = Key
+                    request.Method = "GET"
+                    request.KeepAlive = False
+                    request.UserAgent = Client
+                    request.Timeout = 7000
+
+                    Using response As HttpWebResponse = request.GetResponse()
+
+                        If request.HaveResponse AndAlso response IsNot Nothing Then
+                            Using reader As New StreamReader(response.GetResponseStream())
+
+                                returnXML = New XmlDocument()
+                                returnXML.LoadXml(reader.ReadToEnd())
+                            End Using
+                        End If
+
+                    End Using
+
+                End If
+                Return returnXML
+            End Function
+
+            Protected Function PostXML(ByVal Key As NetworkCredential, ByVal Address As Uri, ByVal Content As String) As HttpStatusCode
+                Dim returnStatus As HttpStatusCode = Nothing
+
+                If Address IsNot Nothing And Content <> "" Then
+                    Dim byteData = UTF8Encoding.UTF8.GetBytes(Content)
+
+                    Dim request As HttpWebRequest = WebRequest.Create(Address)
+                    request.Credentials = Key
+                    request.Method = "POST"
+                    request.ContentType = "application/xml"
+                    request.UserAgent = Client
+                    request.ContentLength = byteData.Length
+
+                    Using postStream As Stream = request.GetRequestStream()
+                        postStream.Write(byteData, 0, byteData.Length)
+                    End Using
+
+                    Using response As HttpWebResponse = request.GetResponse()
+                        If request.HaveResponse AndAlso response IsNot Nothing Then
+                            returnStatus = response.StatusCode
+                        End If
+                    End Using
+
+                End If
+
+                Return returnStatus
+            End Function
         End Class
 
         Public Class CompanyData
@@ -221,8 +281,10 @@ Namespace TeamSupport
             Property Street2 As String
             Property Zip As String
             Property Phone As String
+            Property Fax As String
             Property AccountID As String
             Property AccountName As String
+            Property LastModified As Date
 
             Public Overrides Function Equals(ByVal obj As Object) As Boolean
                 If Not TypeOf (obj) Is CompanyData Then

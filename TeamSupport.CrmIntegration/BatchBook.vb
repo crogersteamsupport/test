@@ -127,7 +127,7 @@ Namespace TeamSupport
                 Return True
             End Function
 
-            Private Shared Function ParseCompanyXML(ByRef CompaniesToSync As XmlDocument, ByVal LastSync As Date?) As List(Of CompanyData)
+            Private Function ParseCompanyXML(ByRef CompaniesToSync As XmlDocument, ByVal LastSync As Date?) As List(Of CompanyData)
                 Dim CompanySyncData As List(Of CompanyData) = Nothing
 
                 'parse the xml doc to get information about each customer
@@ -164,7 +164,7 @@ Namespace TeamSupport
                 Return CompanySyncData
             End Function
 
-            Private Shared Function ParsePeopleXML(ByRef PeopleToSync As XmlDocument) As List(Of EmployeeData)
+            Private Function ParsePeopleXML(ByRef PeopleToSync As XmlDocument) As List(Of EmployeeData)
                 Dim EmployeeSyncData As List(Of EmployeeData) = Nothing
 
                 Dim allpeople As XElement = XElement.Load(New XmlNodeReader(PeopleToSync))
@@ -196,18 +196,18 @@ Namespace TeamSupport
                 Return EmployeeSyncData
             End Function
 
-            Private Shared Function GetBatchBookXML(ByVal Key As String, ByVal CompanyName As String, ByVal PathAndQuery As String) As XmlDocument
+            Private Function GetBatchBookXML(ByVal Key As String, ByVal CompanyName As String, ByVal PathAndQuery As String) As XmlDocument
                 Dim BBUri As New Uri("https://" & CompanyName & ".batchbook.com/service/" & PathAndQuery)
                 Dim returnXML As XmlDocument = Nothing
 
                 If CompanyName <> "" Then
-                    returnXML = Utilities.GetXML(New NetworkCredential(Key, "X"), BBUri)
+                    returnXML = GetXML(New NetworkCredential(Key, "X"), BBUri)
                 End If
                 Return returnXML
             End Function
 
             'returns a boolean value to indicate whether or not comment was created successfully
-            Private Shared Function CreateComment(ByVal Key As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal NoteBody As String) As Boolean
+            Private Function CreateComment(ByVal Key As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal NoteBody As String) As Boolean
                 Dim success As Boolean = False
                 Dim statusCode As HttpStatusCode
 
@@ -215,13 +215,14 @@ Namespace TeamSupport
                 Dim postData As String = "<comment><comment><![CDATA[" & NoteBody & "]]></comment></comment>"
 
                 If CompanyName <> "" Then
-                    statusCode = Utilities.PostXML(New NetworkCredential(Key, "X"), BBUri, postData)
+                    statusCode = PostXML(New NetworkCredential(Key, "X"), BBUri, postData)
                 End If
 
                 success = statusCode = HttpStatusCode.Created
 
                 Return success
             End Function
+
         End Class
 
     End Namespace

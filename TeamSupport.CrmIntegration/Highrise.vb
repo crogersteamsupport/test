@@ -1,16 +1,8 @@
-﻿' 7/14/09 - Adding address information
-' 8/20/09 - Fixed two issues with the SendTicketData query (1284/1285)
-' 11/18/09 - Users no longer have to have an e-mail
-' 1/29/10- Modification to fix requirement for SSL on Highrise
-' 5/7/10 - Org phone numbers should be working now.
-' 5/20/10 - Bug fix for occasional syncing problem with phone numbers
-' 10/5/10 - Should be getting phone numbers from contacts now 
+﻿'changelog info at teamsupport.beanstalkapp.com/main
 
 Imports System.Net
 Imports System.IO
 Imports System.Xml
-Imports System.Xml.Serialization
-Imports System.Text
 Imports TeamSupport.Data
 
 Namespace TeamSupport
@@ -32,19 +24,8 @@ Namespace TeamSupport
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
                 Dim TagsToMatch As String = CRMLinkRow.TypeFieldMatch
 
-                Dim CountAccounts As Integer = 0
-                Dim AccountName() As String
-                Dim AccountID() As String
-                Dim LastUpdated() As Date
-
                 SyncError = False
                 UseSSL = True
-
-                Dim City(20, 1), Country(20, 1), State(20, 1), Street(20, 1), Zip(20, 1), Phone(20, 1) As String 'rightmost is the company
-                'Note:  Redim can only adjust the right side, so we're making that the account # since it could be large.  The left side is only
-                ' for multiple addresses, and it's unlikely we will have more than 10 addresses per company.
-
-                'Interesting - Found one company with 15 addresses per company!  Changed left side from 10 to 20.  12/11/09
 
                 Dim LastUpdate As DateTime
 
@@ -70,27 +51,17 @@ Namespace TeamSupport
 
                     If TagIDs.Count > 0 Then
                         For Each TagID As String In TagIDs
-
-                            Dim AddressCount() As Integer
-                            Dim WorkPhone(), FaxPhone() As String
-                            Dim LastLocation As String
-
-                            'Dim Phone(3000) As Integer
-
-                            ReDim AccountName(0 To 1) 'just set it up
+                            Dim CompanySyncData As New List(Of CompanyData)
 
                             Dim XMLReader As XmlNodeReader
-
                             Dim XMLLoopCount As Integer = 0 'counts the number of records that we got in this loop
                             Dim NeedToGetMore As Boolean = True
 
                             Log.Write("Starting GetXML")
-                            MyXML = GetXML(Key, CompanyName, "companies.xml?tag_id=" + TagID, ParentOrgID)  'note that capitalization DOES matter
+                            MyXML = GetHighriseXML(Key, CompanyName, "companies.xml?tag_id=" + TagID)  'note that capitalization DOES matter
                             Log.Write("Finished GetXML")
 
-
                             If MyXML IsNot Nothing Then
-
                                 While NeedToGetMore
                                     XMLReader = New XmlNodeReader(MyXML)
 
@@ -98,83 +69,65 @@ Namespace TeamSupport
 
                                     Log.Write("Processing company information...")
                                     While XMLReader.Read
+                                        Dim thisCustomer As New CompanyData()
+                                        Dim LastLocation As String
+
                                         If (XMLReader.NodeType = XmlNodeType.Element) Then
                                             If (XMLReader.Name = "id") And (XMLReader.Depth = 2) Then 'the main ID is on depth 2 - This prevents us from updating this on an Address or e-mail id
-                                                CountAccounts = CountAccounts + 1
                                                 XMLLoopCount = XMLLoopCount + 1 'tracks the number we've gotten in this loop
 
-                                                ReDim Preserve AddressCount(0 To CountAccounts)
-                                                AddressCount(CountAccounts) = 0
-
-                                                ReDim Preserve AccountID(0 To CountAccounts)
-                                                AccountID(CountAccounts) = XMLReader.ReadString
+                                                thisCustomer.AccountID = XMLReader.ReadString
 
                                             ElseIf (XMLReader.Name = "name") And (XMLReader.Depth = 2) Then 'company name '1/7/11 - Looks like HR added NAME to the tags section - We need to add depth (2) here
-                                                ReDim Preserve AccountName(0 To CountAccounts)
-                                                AccountName(CountAccounts) = XMLReader.ReadString
-                                            ElseIf (XMLReader.Name = "address") And (XMLReader.Depth = 4) Then ' I think this is righ
-                                                ReDim Preserve AddressCount(0 To CountAccounts)
-                                                AddressCount(CountAccounts) = AddressCount(CountAccounts) + 1
+                                                thisCustomer.AccountName = XMLReader.ReadString()
 
-                                            ElseIf XMLReader.Name = "city" Then
-                                                ReDim Preserve City(20, CountAccounts)
-                                                City(AddressCount(CountAccounts), CountAccounts) = XMLReader.ReadString
-                                            ElseIf XMLReader.Name = "country" Then
-                                                ReDim Preserve Country(20, CountAccounts)
-                                                Country(AddressCount(CountAccounts), CountAccounts) = XMLReader.ReadString
-                                                'ElseIf XMLreader.Name = "location" Then 'hmm - There are multiple locations.
-                                                'Location(CountAccounts, AddressCount) = XMLreader.ReadString
-                                            ElseIf XMLReader.Name = "state" Then
-                                                ReDim Preserve State(20, CountAccounts)
-                                                State(AddressCount(CountAccounts), CountAccounts) = XMLReader.ReadString
-                                            ElseIf XMLReader.Name = "street" Then
-                                                ReDim Preserve Street(20, CountAccounts)
-                                                Street(AddressCount(CountAccounts), CountAccounts) = XMLReader.ReadString
-                                            ElseIf XMLReader.Name = "zip" Then
-                                                ReDim Preserve Zip(20, CountAccounts)
-                                                Zip(AddressCount(CountAccounts), CountAccounts) = XMLReader.ReadString
+                                            ElseIf XMLReader.Name = "city" And thisCustomer.City = "" Then 'only update city the first time
+                                                thisCustomer.City = XMLReader.ReadString()
+
+                                            ElseIf XMLReader.Name = "country" And thisCustomer.Country = "" Then 'only update the first time
+                                                thisCustomer.Country = XMLReader.ReadString()
+
+                                            ElseIf XMLReader.Name = "state" And thisCustomer.State = "" Then 'only update the first time
+                                                thisCustomer.State = XMLReader.ReadString()
+
+                                            ElseIf XMLReader.Name = "street" And thisCustomer.Street = "" Then
+                                                thisCustomer.Street = XMLReader.ReadString()
+
+                                            ElseIf XMLReader.Name = "zip" And thisCustomer.Zip = "" Then
+                                                thisCustomer.Zip = XMLReader.ReadString()
+
                                             ElseIf XMLReader.Name = "location" Then
                                                 LastLocation = XMLReader.ReadString 'this will store the last location field.  Used to identify the phone number
 
                                             ElseIf XMLReader.Name = "number" Then
                                                 'we've found a number, hopefully a phone number.  Based on the last value of the Location field, we will now assign it to the correct phone type
                                                 If LastLocation = "Work" Then
-                                                    ReDim Preserve WorkPhone(CountAccounts)
-                                                    If WorkPhone(CountAccounts) = "" Then
-                                                        'we only want the first work number - Don't replace if we already have one there.
-                                                        WorkPhone(CountAccounts) = XMLReader.ReadString
+                                                    If thisCustomer.Phone = "" Then
+                                                        thisCustomer.Phone = XMLReader.ReadString()
+
                                                     End If
 
-
                                                 ElseIf LastLocation = "Fax" Then
-                                                    ReDim Preserve FaxPhone(CountAccounts)
-                                                    FaxPhone(CountAccounts) = XMLReader.ReadString
+                                                    thisCustomer.Fax = ""
                                                 End If
 
 
                                             ElseIf XMLReader.Name = "updated-at" Then
-                                                ReDim Preserve LastUpdated(0 To CountAccounts)
-                                                LastUpdated(CountAccounts) = Date.Parse(XMLReader.ReadString) 'gets date from XML  Should (?) remain in Zulu time
+                                                thisCustomer.LastModified = Date.Parse(XMLReader.ReadString) 'gets date from XML  Should (?) remain in Zulu time
 
                                             End If
                                         End If
 
+                                        CompanySyncData.Add(thisCustomer)
                                     End While
 
-                                    'Need to do a redmin here just to make sure we create the entire array.
-                                    '  If there was not a phone and/or fax number on the final account, then this would not get updated and we 
-                                    '  would have an error later on.
-                                    ReDim Preserve WorkPhone(CountAccounts)
-                                    ReDim Preserve FaxPhone(CountAccounts)
-
                                     XMLReader.Close()
-
 
                                     If XMLLoopCount = 500 Then
 
                                         'get the next 500 records
-                                        Log.Write("Getting next set of records..." + CountAccounts.ToString)
-                                        MyXML = GetXML(Key, CompanyName, "companies.xml?tag_id=" + TagID + "&n=" + CountAccounts.ToString, ParentOrgID)  'note that capitalization DOES matter
+                                        Log.Write("Getting next set of records..." + CompanySyncData.Count.ToString())
+                                        MyXML = GetHighriseXML(Key, CompanyName, "companies.xml?tag_id=" + TagID + "&n=" + CompanySyncData.Count.ToString())  'note that capitalization DOES matter
 
                                         If MyXML IsNot Nothing Then
 
@@ -193,61 +146,34 @@ Namespace TeamSupport
 
                                 End While
 
+                                Log.Write("Processed " + CompanySyncData.Count.ToString() + " accounts.")
 
-
-                                Log.Write("Processed " + CountAccounts.ToString + " accounts.")
-
-
-                                'LastUpdate = TS.ConvertDateTimeToHR(TS.GetLastCRMUpdate(ParentOrgID)) 'returns last update time formatted correctly for HR
                                 LastUpdate = Date.Parse(CRMLinkRow.LastLink).ToLocalTime() 'returns the last update, in local time
 
-
                                 Log.Write("Updating account information...")
-                                For accounts As Integer = 1 To CountAccounts
 
+                                For Each company As CompanyData In CompanySyncData
                                     'Go through all accounts we just processed and add to the TS database
-
-                                    If AddressCount(accounts) > 0 Then
-
-                                        'TS.PublicAddText("Adding/Updating Account Information (y) (" + accounts.ToString + ")", FormName)
-                                        'Grab the first address as the one we use in TS
-                                        If LastUpdated(accounts).AddMinutes(30) > LastUpdate Then
-                                            'Only update if the data is new
-                                            'TODO:   TS.AddOrUpdateAccountInformation(AccountID(accounts), AccountName(accounts), Street(1, accounts), "", City(1, accounts), State(1, accounts), Zip(1, accounts), Country(1, accounts), WorkPhone(accounts), ParentOrgID)
-                                            Log.Write("Updated w/ Address:  " + AccountName(accounts))
-                                        End If
-
-                                    Else
-                                        'TS.PublicAddText("Adding/Updating Account Information (n) (" + accounts.ToString + ")", FormName)
-                                        If LastUpdated(accounts).AddMinutes(30) > LastUpdate Then
-                                            'Only update if the data is new
-                                            '     TODO:         TS.AddOrUpdateAccountInformation(AccountID(accounts), AccountName(accounts), "", "", "", "", "", "", "", ParentOrgID)
-                                            Log.Write("Updated w/out Address:  " + AccountName(accounts))
-                                        End If
-
+                                    If company.LastModified.AddMinutes(30) > LastUpdate Then
+                                        UpdateOrgInfo(company, ParentOrgID)
+                                        Log.Write("Updated w/ Address: " & company.AccountName)
                                     End If
-
                                 Next
-
 
                                 Log.Write("Finished updating account information.")
                                 Log.Write("Updating people information...")
 
-                                For x As Integer = 1 To CountAccounts
+                                For Each company As CompanyData In CompanySyncData
                                     Try
-                                        'Now get the individuals from the company
-                                        'TS.PublicAddText("Getting People, CountAccounts=" + x.ToString, FormName)
-                                        If LastUpdated(x).AddMinutes(30) > LastUpdate Then
-                                            'Only update if the data is new
-                                            GetPeople(Key, CompanyName, AccountID(x), ParentOrgID)
-                                            Log.Write("Updated people information for " + AccountID(x).ToString())
+                                        If company.LastModified.AddMinutes(30) > LastUpdate Then
+                                            GetPeople(Key, CompanyName, company.AccountID, ParentOrgID)
+                                            Log.Write("Updated people information for " & company.AccountName)
                                         End If
-
                                     Catch ex As Exception
-                                        'SyncError = True
                                         Log.Write("Error in Updating People loop:" + ex.Message)
                                     End Try
                                 Next
+
                                 Log.Write("Finished updating people information")
 
                             End If
@@ -256,9 +182,6 @@ Namespace TeamSupport
                     Else 'no tags so we can't query any customers
                         Return True
                     End If
-
-                    'Clear out the dynamic arrays we've been using
-                    Erase AccountName, AccountID, LastUpdated, City, Country, State, Street, Zip
 
                 Catch ex As Exception
                     SyncError = True
@@ -312,7 +235,7 @@ Namespace TeamSupport
             End Function
 
 
-            Public Function GetXML(ByVal Token As String, ByVal CompanyName As String, ByVal URL As String, ByVal ParentOrgID As String) As XmlDocument
+            Private Function GetHighriseXML(ByVal Token As String, ByVal CompanyName As String, ByVal URL As String) As XmlDocument
                 Dim request As HttpWebRequest
                 Dim response As HttpWebResponse = Nothing
                 Dim reader As StreamReader
@@ -377,7 +300,7 @@ Namespace TeamSupport
                             'Don't need to raise the rror flag the first time through.
 
                             Log.Write("Error in GetXML: " + wex.ToString)
-                            
+
                             SyncError = True
 
                         End If
@@ -388,8 +311,6 @@ Namespace TeamSupport
                     'Probably should throw exception here
                     Return Nothing
                 End If
-
-
             End Function
 
             Public Sub CreateNote(ByVal SecurityToken As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal NoteBody As String)
@@ -406,8 +327,7 @@ Namespace TeamSupport
 
                     'Dim postData As String = "<note><body>Hello world</body><subject-id type=""integer"">4</subject-id><subject-type>Party</subject-type></note>"
                     Dim postData As String = "<note><body><![CDATA[" + NoteBody + "]]></body></note>"
-                    Dim encoding As New UTF8Encoding()
-
+        
                     Dim PostStream As Stream = Nothing
 
                     'Dim Response As HttpWebResponse = Nothing
@@ -419,8 +339,7 @@ Namespace TeamSupport
 
 
 
-                    'Dim byteData As Byte() = encoding.GetBytes(postData)
-                    Dim ByteData = UTF8Encoding.UTF8.GetBytes(postData)
+                    Dim ByteData = Text.UTF8Encoding.UTF8.GetBytes(postData)
 
 
                     'System.Threading.Thread.Sleep(1000) '1 second sleep to see if there are issues with the API and throttling
@@ -512,7 +431,7 @@ Namespace TeamSupport
                 Dim TagName As String
 
 
-                MyXML = GetXML(token, companyname, "tags.xml", parentorgid)  'note that capitalization DOES matter
+                MyXML = GetHighriseXML(token, companyname, "tags.xml")  'note that capitalization DOES matter
 
 
                 If MyXML IsNot Nothing Then
@@ -553,78 +472,54 @@ Namespace TeamSupport
             End Function
 
             Public Sub GetPeople(ByVal token As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal ParentOrgID As String)
-
                 Dim MyXML As XmlDocument
 
-
-                Dim CountPeople As Integer = 0
-
-                Dim FirstName() As String
-                Dim LastName() As String
-                Dim email() As String 'hmmm - Need to explore this
-                Dim Title() As String
-                Dim WorkPhone() As String
-                Dim MobilePhone() As String
-                Dim FaxPhone() As String
-
-                Dim ContactEMail() As String
+                Dim PeopleSyncData As New List(Of EmployeeData)()
 
                 Dim TestAddress As String
-
                 Dim FoundEMail As Boolean = False
-
                 Dim LastLocation As String = "nothing"
 
-
-
-                MyXML = GetXML(token, CompanyName, "companies/" + AccountID + "/people.xml", ParentOrgID)  'List of people in this company
+                MyXML = GetHighriseXML(token, CompanyName, "companies/" + AccountID + "/people.xml")  'List of people in this company
 
                 If MyXML IsNot Nothing Then
 
                     Dim XMLreader As XmlNodeReader = New XmlNodeReader(MyXML)
 
                     While XMLreader.Read
+                        Dim thisPerson As New EmployeeData()
+
                         If (XMLreader.NodeType = XmlNodeType.Element) Then
                             If XMLreader.Name = "person" Then
-                                CountPeople = CountPeople + 1
-
                                 FoundEMail = False 'reset found e-mail counter
 
-                                'AccountID(CountAccounts) = XMLreader.ReadString
                             ElseIf XMLreader.Name = "first-name" Then
-                                ReDim Preserve FirstName(CountPeople)
-                                FirstName(CountPeople) = XMLreader.ReadString
+                                thisPerson.FirstName = XMLreader.ReadString()
 
                             ElseIf XMLreader.Name = "last-name" Then
-                                ReDim Preserve LastName(CountPeople)
-                                LastName(CountPeople) = XMLreader.ReadString
+                                thisPerson.LastName = XMLreader.ReadString()
+
                             ElseIf XMLreader.Name = "title" Then
-                                ReDim Preserve Title(CountPeople)
-                                Title(CountPeople) = XMLreader.ReadString
+                                thisPerson.Title = XMLreader.ReadString()
+
                             ElseIf XMLreader.Name = "location" Then
-                                LastLocation = XMLreader.ReadString 'this will store the last location field.  Used to identify the phone number
+                                LastLocation = XMLreader.ReadString() 'this will store the last location field.  Used to identify the phone number
 
                             ElseIf XMLreader.Name = "number" Then
                                 'we've found a number, hopefully a phone number.  Based on the last value of the Location field, we will now assign it to the correct phone type
                                 If LastLocation = "Work" Then
-                                    ReDim Preserve WorkPhone(CountPeople)
-                                    If WorkPhone(CountPeople) = "" Then
+                                    If thisPerson.Title = "" Then
                                         'we only want the first work number - Don't replace if we already have one there.
-                                        WorkPhone(CountPeople) = XMLreader.ReadString
+                                        thisPerson.Phone = XMLreader.ReadString()
                                     End If
 
-
                                 ElseIf LastLocation = "Fax" Then
-                                    ReDim Preserve FaxPhone(CountPeople)
-                                    FaxPhone(CountPeople) = XMLreader.ReadString
-
+                                    thisPerson.Fax = XMLreader.ReadString()
 
                                 ElseIf LastLocation = "Mobile" Then
-                                    ReDim Preserve MobilePhone(CountPeople)
-                                    MobilePhone(CountPeople) = XMLreader.ReadString
+                                    thisPerson.Cell = XMLreader.ReadString()
+
                                 End If
-
-
 
                             ElseIf XMLreader.Name = "address" Then
                                 'do something
@@ -634,12 +529,11 @@ Namespace TeamSupport
                                 'Found e-mail should make sure we only grab the first e-mail (hopefully work)
 
                                 If Not FoundEMail Then
-                                    TestAddress = XMLreader.ReadString
-                                    If TestAddress.Contains("@") Then
-                                        ReDim Preserve email(CountPeople)
-                                        email(CountPeople) = TestAddress
-                                        FoundEMail = True
+                                    TestAddress = XMLreader.ReadString()
 
+                                    If TestAddress.Contains("@") Then
+                                        thisPerson.Email = TestAddress
+                                        FoundEMail = True
 
                                     End If
                                 End If
@@ -648,78 +542,16 @@ Namespace TeamSupport
 
                         End If
 
+                        PeopleSyncData.Add(thisPerson)
                     End While
 
                     XMLreader.Close()
 
-                    Dim TempEMail, TempFirstName, TempLastName, TempWorkPhone, TempFaxPhone, TempMobilePhone, TempTitle As String
-
-
-                    For x As Integer = 1 To CountPeople
-
-                        'Since we are using dynamic arrays, it's possible the array values may not exist.  If this is the case, we will get an exception and set the temp value to nothing
-
-
-
-                        Try
-                            TempFirstName = FirstName(x)
-                        Catch ex As Exception
-                            TempFirstName = "None"
-                        End Try
-
-                        Try
-                            TempLastName = LastName(x)
-                        Catch ex As Exception
-                            TempLastName = "None"
-                        End Try
-
-
-                        Try
-                            TempEMail = email(x)
-                        Catch ex As Exception
-                            Try
-                                TempEMail = LastName(x) + "." + FirstName(x) 'added 11/18/09
-                            Catch ex2 As Exception
-                                TempEMail = ""
-                            End Try
-
-                        End Try
-
-                        Try
-                            TempWorkPhone = WorkPhone(x)
-                        Catch ex As Exception
-                            TempWorkPhone = "None"
-                        End Try
-
-
-                        Try
-                            TempFaxPhone = FaxPhone(x)
-                        Catch ex As Exception
-                            TempFaxPhone = "None"
-                        End Try
-
-
-                        Try
-                            TempMobilePhone = MobilePhone(x)
-                        Catch ex As Exception
-                            TempMobilePhone = "None"
-                        End Try
-
-
-                        Try
-                            TempTitle = Title(x)
-                        Catch ex As Exception
-                            TempTitle = "None"
-                        End Try
-
-                        'TODO:   TS.AddOrUpdateContactInformation(AccountID, TempEMail, TempFirstName, TempLastName, TempWorkPhone, TempFaxPhone, TempMobilePhone, TempTitle, 0, ParentOrgID)
+                    For Each person As EmployeeData In PeopleSyncData
+                        UpdateContactInfo(person, AccountID, ParentOrgID)
                     Next
+
                 End If
-
-
-                Erase FirstName, LastName, email, Title, WorkPhone, MobilePhone, FaxPhone, ContactEMail
-
-
             End Sub
 
         End Class
