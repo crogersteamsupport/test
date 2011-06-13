@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Web;
 
 namespace TeamSupport.Data
 {
@@ -38,17 +39,45 @@ namespace TeamSupport.Data
     }
 
 
-    public static void AddAttempt(LoginUser loginUser, int userID, bool success)
+    public static void AddAttempt(LoginUser loginUser, int userID, bool success, string ipAddress, HttpBrowserCapabilities browser, string userAgent)
     {
       LoginAttempts loginAttempts = new LoginAttempts(loginUser);
 
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "INSERT INTO LoginAttempts (UserID, DateCreated, Successful) VALUES (@UserID, @DateCreated, @Success)";
+        command.CommandText = 
+        @"INSERT INTO [LoginAttempts]
+           ([UserID]
+           ,[Successful]
+           ,[IPAddress]
+           ,[Browser]
+           ,[Version]
+           ,[MajorVersion]
+           ,[CookiesEnabled]
+           ,[Platform]
+           ,[UserAgent]
+           ,[DateCreated])
+     VALUES
+           (@UserID
+           ,@Success
+           ,@IPAddress
+           ,@Browser
+           ,@Version
+           ,@MajorVersion
+           ,@Cookies
+           ,@Platform
+           ,@UserAgent
+           ,GETUTCDATE())";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@UserID", userID);
         command.Parameters.AddWithValue("@Success", success);
-        command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+        command.Parameters.AddWithValue("@IPAddress", ipAddress);
+        command.Parameters.AddWithValue("@Browser", DataUtils.GetBrowserName(userAgent));
+        command.Parameters.AddWithValue("@Version", browser.Version);
+        command.Parameters.AddWithValue("@MajorVersion", browser.MajorVersion.ToString());
+        command.Parameters.AddWithValue("@Cookies", browser.Cookies);
+        command.Parameters.AddWithValue("@Platform", browser.Platform);
+        command.Parameters.AddWithValue("@UserAgent", userAgent);
         loginAttempts.ExecuteNonQuery(command, "LoginAttempts");
       }
     }

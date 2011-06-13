@@ -154,8 +154,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteSlaNotification";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaNotifications] WHERE ([TicketID] = @TicketID);";
         deleteCommand.Parameters.Add("TicketID", SqlDbType.Int);
         deleteCommand.Parameters["TicketID"].Value = ticketID;
 
@@ -175,8 +175,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateSlaNotification";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaNotifications] SET     [TimeClosedViolationDate] = @TimeClosedViolationDate,    [LastActionViolationDate] = @LastActionViolationDate,    [InitialResponseViolationDate] = @InitialResponseViolationDate,    [TimeClosedWarningDate] = @TimeClosedWarningDate,    [LastActionWarningDate] = @LastActionWarningDate,    [InitialResponseWarningDate] = @InitialResponseWarningDate  WHERE ([TicketID] = @TicketID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
@@ -232,8 +232,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertSlaNotification";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SlaNotifications] (    [TicketID],    [TimeClosedViolationDate],    [LastActionViolationDate],    [InitialResponseViolationDate],    [TimeClosedWarningDate],    [LastActionWarningDate],    [InitialResponseWarningDate]) VALUES ( @TicketID, @TimeClosedViolationDate, @LastActionViolationDate, @InitialResponseViolationDate, @TimeClosedWarningDate, @LastActionWarningDate, @InitialResponseWarningDate); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("InitialResponseWarningDate", SqlDbType.DateTime, 8);
@@ -290,8 +290,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteSlaNotification";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaNotifications] WHERE ([TicketID] = @TicketID);";
 		deleteCommand.Parameters.Add("TicketID", SqlDbType.Int);
 
 		try
@@ -397,8 +397,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectSlaNotification";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketID], [TimeClosedViolationDate], [LastActionViolationDate], [InitialResponseViolationDate], [TimeClosedWarningDate], [LastActionWarningDate], [InitialResponseWarningDate] FROM [dbo].[SlaNotifications] WHERE ([TicketID] = @TicketID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketID", ticketID);
         Fill(command);
       }

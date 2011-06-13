@@ -177,8 +177,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteEmailAction";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[EMailActionTable] WHERE ([EMailActionID] = @EMailActionID);";
         deleteCommand.Parameters.Add("EMailActionID", SqlDbType.Int);
         deleteCommand.Parameters["EMailActionID"].Value = eMailActionID;
 
@@ -198,8 +198,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateEmailAction";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[EMailActionTable] SET     [DateTime] = @DateTime,    [EMailFrom] = @EMailFrom,    [EMailTo] = @EMailTo,    [EMailSubject] = @EMailSubject,    [EMailBody] = @EMailBody,    [OrganizationGUID] = @OrganizationGUID,    [ActionAdded] = @ActionAdded,    [Status] = @Status,    [TicketID] = @TicketID,    [OrganizationID] = @OrganizationID  WHERE ([EMailActionID] = @EMailActionID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("EMailActionID", SqlDbType.Int, 4);
@@ -283,8 +283,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertEmailAction";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[EMailActionTable] (    [DateTime],    [EMailFrom],    [EMailTo],    [EMailSubject],    [EMailBody],    [OrganizationGUID],    [ActionAdded],    [Status],    [TicketID],    [OrganizationID]) VALUES ( @DateTime, @EMailFrom, @EMailTo, @EMailSubject, @EMailBody, @OrganizationGUID, @ActionAdded, @Status, @TicketID, @OrganizationID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -362,8 +362,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteEmailAction";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[EMailActionTable] WHERE ([EMailActionID] = @EMailActionID);";
 		deleteCommand.Parameters.Add("EMailActionID", SqlDbType.Int);
 
 		try
@@ -469,8 +469,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectEmailAction";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [EMailActionID], [DateTime], [EMailFrom], [EMailTo], [EMailSubject], [EMailBody], [OrganizationGUID], [ActionAdded], [Status], [TicketID], [OrganizationID] FROM [dbo].[EMailActionTable] WHERE ([EMailActionID] = @EMailActionID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("EMailActionID", eMailActionID);
         Fill(command);
       }

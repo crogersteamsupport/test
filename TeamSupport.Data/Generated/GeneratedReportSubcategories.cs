@@ -136,8 +136,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteReportSubcategory";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ReportSubcategories] WHERE ([ReportSubcategoryID] = @ReportSubcategoryID);";
         deleteCommand.Parameters.Add("ReportSubcategoryID", SqlDbType.Int);
         deleteCommand.Parameters["ReportSubcategoryID"].Value = reportSubcategoryID;
 
@@ -157,8 +157,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateReportSubcategory";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportSubcategories] SET     [ReportCategoryTableID] = @ReportCategoryTableID,    [ReportTableID] = @ReportTableID,    [BaseQuery] = @BaseQuery  WHERE ([ReportSubcategoryID] = @ReportSubcategoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportSubcategoryID", SqlDbType.Int, 4);
@@ -193,8 +193,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertReportSubcategory";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportSubcategories] (    [ReportSubcategoryID],    [ReportCategoryTableID],    [ReportTableID],    [BaseQuery]) VALUES ( @ReportSubcategoryID, @ReportCategoryTableID, @ReportTableID, @BaseQuery); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("BaseQuery", SqlDbType.VarChar, 3000);
@@ -230,8 +230,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteReportSubcategory";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ReportSubcategories] WHERE ([ReportSubcategoryID] = @ReportSubcategoryID);";
 		deleteCommand.Parameters.Add("ReportSubcategoryID", SqlDbType.Int);
 
 		try
@@ -337,8 +337,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectReportSubcategory";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportSubcategoryID], [ReportCategoryTableID], [ReportTableID], [BaseQuery] FROM [dbo].[ReportSubcategories] WHERE ([ReportSubcategoryID] = @ReportSubcategoryID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportSubcategoryID", reportSubcategoryID);
         Fill(command);
       }

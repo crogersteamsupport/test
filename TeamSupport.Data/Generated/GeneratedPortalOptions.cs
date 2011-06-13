@@ -244,8 +244,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeletePortalOption";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[PortalOptions] WHERE ([OrganizationID] = @OrganizationID);";
         deleteCommand.Parameters.Add("OrganizationID", SqlDbType.Int);
         deleteCommand.Parameters["OrganizationID"].Value = organizationID;
 
@@ -265,8 +265,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdatePortalOption";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[PortalOptions] SET     [PortalHTMLHeader] = @PortalHTMLHeader,    [PortalHTMLFooter] = @PortalHTMLFooter,    [UseRecaptcha] = @UseRecaptcha,    [FontFamily] = @FontFamily,    [FontColor] = @FontColor,    [PageBackgroundColor] = @PageBackgroundColor,    [UseCompanyInBasic] = @UseCompanyInBasic,    [CompanyRequiredInBasic] = @CompanyRequiredInBasic,    [HideUserAssignedTo] = @HideUserAssignedTo,    [HideGroupAssignedTo] = @HideGroupAssignedTo,    [BasicPortalColumnWidth] = @BasicPortalColumnWidth,    [DisplayGroups] = @DisplayGroups,    [PortalName] = @PortalName,    [KBAccess] = @KBAccess,    [DisplayProducts] = @DisplayProducts,    [HonorSupportExpiration] = @HonorSupportExpiration,    [HideCloseButton] = @HideCloseButton,    [Theme] = @Theme,    [AdvPortalWidth] = @AdvPortalWidth,    [BasicPortalDirections] = @BasicPortalDirections,    [DeflectionEnabled] = @DeflectionEnabled  WHERE ([OrganizationID] = @OrganizationID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -427,8 +427,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertPortalOption";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[PortalOptions] (    [OrganizationID],    [PortalHTMLHeader],    [PortalHTMLFooter],    [UseRecaptcha],    [FontFamily],    [FontColor],    [PageBackgroundColor],    [UseCompanyInBasic],    [CompanyRequiredInBasic],    [HideUserAssignedTo],    [HideGroupAssignedTo],    [BasicPortalColumnWidth],    [DisplayGroups],    [PortalName],    [KBAccess],    [DisplayProducts],    [HonorSupportExpiration],    [HideCloseButton],    [Theme],    [AdvPortalWidth],    [BasicPortalDirections],    [DeflectionEnabled]) VALUES ( @OrganizationID, @PortalHTMLHeader, @PortalHTMLFooter, @UseRecaptcha, @FontFamily, @FontColor, @PageBackgroundColor, @UseCompanyInBasic, @CompanyRequiredInBasic, @HideUserAssignedTo, @HideGroupAssignedTo, @BasicPortalColumnWidth, @DisplayGroups, @PortalName, @KBAccess, @DisplayProducts, @HonorSupportExpiration, @HideCloseButton, @Theme, @AdvPortalWidth, @BasicPortalDirections, @DeflectionEnabled); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DeflectionEnabled", SqlDbType.Bit, 1);
@@ -590,8 +590,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeletePortalOption";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[PortalOptions] WHERE ([OrganizationID] = @OrganizationID);";
 		deleteCommand.Parameters.Add("OrganizationID", SqlDbType.Int);
 
 		try
@@ -697,8 +697,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectPortalOption";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [PortalHTMLHeader], [PortalHTMLFooter], [UseRecaptcha], [FontFamily], [FontColor], [PageBackgroundColor], [UseCompanyInBasic], [CompanyRequiredInBasic], [HideUserAssignedTo], [HideGroupAssignedTo], [BasicPortalColumnWidth], [DisplayGroups], [PortalName], [KBAccess], [DisplayProducts], [HonorSupportExpiration], [HideCloseButton], [Theme], [AdvPortalWidth], [BasicPortalDirections], [DeflectionEnabled] FROM [dbo].[PortalOptions] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);
       }

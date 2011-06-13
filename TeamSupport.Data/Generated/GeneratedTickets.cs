@@ -315,8 +315,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteTicket";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Tickets] WHERE ([TicketID] = @TicketID);";
         deleteCommand.Parameters.Add("TicketID", SqlDbType.Int);
         deleteCommand.Parameters["TicketID"].Value = ticketID;
 
@@ -336,8 +336,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateTicket";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Tickets] SET     [ReportedVersionID] = @ReportedVersionID,    [SolvedVersionID] = @SolvedVersionID,    [ProductID] = @ProductID,    [GroupID] = @GroupID,    [UserID] = @UserID,    [TicketStatusID] = @TicketStatusID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [OrganizationID] = @OrganizationID,    [Name] = @Name,    [ParentID] = @ParentID,    [TicketNumber] = @TicketNumber,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [DateClosed] = @DateClosed,    [CloserID] = @CloserID,    [ImportID] = @ImportID,    [LastViolationTime] = @LastViolationTime,    [LastWarningTime] = @LastWarningTime,    [TicketSource] = @TicketSource,    [PortalEmail] = @PortalEmail,    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,    [SlaViolationLastAction] = @SlaViolationLastAction,    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,    [SlaWarningLastAction] = @SlaWarningLastAction,    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,    [DocID] = @DocID,    [NeedsIndexing] = @NeedsIndexing,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([TicketID] = @TicketID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
@@ -568,8 +568,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertTicket";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Tickets] (    [ReportedVersionID],    [SolvedVersionID],    [ProductID],    [GroupID],    [UserID],    [TicketStatusID],    [TicketTypeID],    [TicketSeverityID],    [OrganizationID],    [Name],    [ParentID],    [TicketNumber],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [DateClosed],    [CloserID],    [ImportID],    [LastViolationTime],    [LastWarningTime],    [TicketSource],    [PortalEmail],    [SlaViolationTimeClosed],    [SlaViolationLastAction],    [SlaViolationInitialResponse],    [SlaWarningTimeClosed],    [SlaWarningLastAction],    [SlaWarningInitialResponse],    [DocID],    [NeedsIndexing],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @ReportedVersionID, @SolvedVersionID, @ProductID, @GroupID, @UserID, @TicketStatusID, @TicketTypeID, @TicketSeverityID, @OrganizationID, @Name, @ParentID, @TicketNumber, @IsVisibleOnPortal, @IsKnowledgeBase, @DateClosed, @CloserID, @ImportID, @LastViolationTime, @LastWarningTime, @TicketSource, @PortalEmail, @SlaViolationTimeClosed, @SlaViolationLastAction, @SlaViolationInitialResponse, @SlaWarningTimeClosed, @SlaWarningLastAction, @SlaWarningInitialResponse, @DocID, @NeedsIndexing, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -808,8 +808,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteTicket";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Tickets] WHERE ([TicketID] = @TicketID);";
 		deleteCommand.Parameters.Add("TicketID", SqlDbType.Int);
 
 		try
@@ -915,8 +915,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectTicket";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketID], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [Name], [ParentID], [TicketNumber], [IsVisibleOnPortal], [IsKnowledgeBase], [DateClosed], [CloserID], [ImportID], [LastViolationTime], [LastWarningTime], [TicketSource], [PortalEmail], [SlaViolationTimeClosed], [SlaViolationLastAction], [SlaViolationInitialResponse], [SlaWarningTimeClosed], [SlaWarningLastAction], [SlaWarningInitialResponse], [DocID], [NeedsIndexing], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[Tickets] WHERE ([TicketID] = @TicketID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketID", ticketID);
         Fill(command);
       }

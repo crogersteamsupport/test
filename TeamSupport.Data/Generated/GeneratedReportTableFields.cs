@@ -165,8 +165,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteReportTableField";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ReportTableFields] WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
         deleteCommand.Parameters.Add("ReportTableFieldID", SqlDbType.Int);
         deleteCommand.Parameters["ReportTableFieldID"].Value = reportTableFieldID;
 
@@ -186,8 +186,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateReportTableField";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportTableFields] SET     [ReportTableID] = @ReportTableID,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [Description] = @Description,    [LookupTableID] = @LookupTableID  WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportTableFieldID", SqlDbType.Int, 4);
@@ -257,8 +257,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertReportTableField";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportTableFields] (    [ReportTableID],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [Description],    [LookupTableID]) VALUES ( @ReportTableID, @FieldName, @Alias, @DataType, @Size, @IsVisible, @Description, @LookupTableID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("LookupTableID", SqlDbType.Int, 4);
@@ -322,8 +322,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteReportTableField";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ReportTableFields] WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
 		deleteCommand.Parameters.Add("ReportTableFieldID", SqlDbType.Int);
 
 		try
@@ -429,8 +429,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectReportTableField";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportTableFieldID], [ReportTableID], [FieldName], [Alias], [DataType], [Size], [IsVisible], [Description], [LookupTableID] FROM [dbo].[ReportTableFields] WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportTableFieldID", reportTableFieldID);
         Fill(command);
       }

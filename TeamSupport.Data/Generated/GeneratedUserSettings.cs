@@ -159,8 +159,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteUserSetting";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[UserSettings] WHERE ([UserSettingID] = @UserSettingID);";
         deleteCommand.Parameters.Add("UserSettingID", SqlDbType.Int);
         deleteCommand.Parameters["UserSettingID"].Value = userSettingID;
 
@@ -180,8 +180,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateUserSetting";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[UserSettings] SET     [UserID] = @UserID,    [SettingKey] = @SettingKey,    [SettingValue] = @SettingValue,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([UserSettingID] = @UserSettingID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("UserSettingID", SqlDbType.Int, 4);
@@ -230,8 +230,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertUserSetting";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[UserSettings] (    [UserID],    [SettingKey],    [SettingValue],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @UserID, @SettingKey, @SettingValue, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -288,8 +288,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteUserSetting";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[UserSettings] WHERE ([UserSettingID] = @UserSettingID);";
 		deleteCommand.Parameters.Add("UserSettingID", SqlDbType.Int);
 
 		try
@@ -395,8 +395,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectUserSetting";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [UserSettingID], [UserID], [SettingKey], [SettingValue], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[UserSettings] WHERE ([UserSettingID] = @UserSettingID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("UserSettingID", userSettingID);
         Fill(command);
       }

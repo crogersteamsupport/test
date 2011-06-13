@@ -28,16 +28,9 @@ namespace TeamSupport.Data
     public SystemSettingProxy GetProxy()
     {
       SystemSettingProxy result = new SystemSettingProxy();
-      result.ModifierID = this.ModifierID;
-      result.CreatorID = this.CreatorID;
       result.SettingValue = this.SettingValue;
       result.SettingKey = this.SettingKey;
       result.SystemSettingID = this.SystemSettingID;
-       
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
-       
-       
       return result;
     }	
   }

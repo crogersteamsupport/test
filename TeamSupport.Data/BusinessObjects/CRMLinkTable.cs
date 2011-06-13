@@ -29,14 +29,14 @@ namespace TeamSupport.Data
     }
 
     /// <summary>
-    /// I need to start putting this mark up for the queries so we can see what they do in intellsense
+    /// Loads all the active CRM Link Table Items and sorts them by LastProcessed date
     /// </summary>
     public void LoadActive()
     {
       //This Query loads all the active CRMLinkTable items
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM CRMLinkTable WHERE Active = 1";
+        command.CommandText = "SELECT * FROM CRMLinkTable WHERE Active = 1 ORDER BY LastProcessed ASC";
         command.CommandType = CommandType.Text;
         Fill(command);
       }

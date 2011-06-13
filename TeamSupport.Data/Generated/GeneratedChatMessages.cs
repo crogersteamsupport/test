@@ -153,8 +153,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteChatMessage";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ChatMessages] WHERE ([ChatMessageID] = @ChatMessageID);";
         deleteCommand.Parameters.Add("ChatMessageID", SqlDbType.Int);
         deleteCommand.Parameters["ChatMessageID"].Value = chatMessageID;
 
@@ -174,8 +174,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateChatMessage";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ChatMessages] SET     [ChatID] = @ChatID,    [IsNotification] = @IsNotification,    [Message] = @Message,    [PosterID] = @PosterID,    [PosterType] = @PosterType  WHERE ([ChatMessageID] = @ChatMessageID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ChatMessageID", SqlDbType.Int, 4);
@@ -224,8 +224,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertChatMessage";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ChatMessages] (    [ChatID],    [IsNotification],    [Message],    [PosterID],    [PosterType],    [DateCreated]) VALUES ( @ChatID, @IsNotification, @Message, @PosterID, @PosterType, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
@@ -275,8 +275,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteChatMessage";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ChatMessages] WHERE ([ChatMessageID] = @ChatMessageID);";
 		deleteCommand.Parameters.Add("ChatMessageID", SqlDbType.Int);
 
 		try
@@ -382,8 +382,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectChatMessage";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ChatMessageID], [ChatID], [IsNotification], [Message], [PosterID], [PosterType], [DateCreated] FROM [dbo].[ChatMessages] WHERE ([ChatMessageID] = @ChatMessageID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ChatMessageID", chatMessageID);
         Fill(command);
       }

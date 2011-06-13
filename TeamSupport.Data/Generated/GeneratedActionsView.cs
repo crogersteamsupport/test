@@ -373,8 +373,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteActionsViewItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ActionsView] WHERE ([ActionID] = @ActionID);";
         deleteCommand.Parameters.Add("ActionID", SqlDbType.Int);
         deleteCommand.Parameters["ActionID"].Value = actionID;
 
@@ -394,8 +394,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateActionsViewItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ActionsView] SET     [ActionTypeID] = @ActionTypeID,    [SystemActionTypeID] = @SystemActionTypeID,    [Name] = @Name,    [Description] = @Description,    [TimeSpent] = @TimeSpent,    [DateStarted] = @DateStarted,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [TicketID] = @TicketID,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName,    [ActionType] = @ActionType,    [ProductName] = @ProductName,    [ReportedVersion] = @ReportedVersion,    [SolvedVersion] = @SolvedVersion,    [GroupName] = @GroupName,    [TicketType] = @TicketType,    [UserName] = @UserName,    [Status] = @Status,    [StatusPosition] = @StatusPosition,    [SeverityPosition] = @SeverityPosition,    [IsClosed] = @IsClosed,    [Severity] = @Severity,    [TicketNumber] = @TicketNumber,    [ReportedVersionID] = @ReportedVersionID,    [SolvedVersionID] = @SolvedVersionID,    [ProductID] = @ProductID,    [GroupID] = @GroupID,    [UserID] = @UserID,    [TicketStatusID] = @TicketStatusID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [OrganizationID] = @OrganizationID,    [TicketName] = @TicketName,    [DateClosed] = @DateClosed,    [CloserID] = @CloserID,    [DaysClosed] = @DaysClosed,    [DaysOpened] = @DaysOpened,    [CloserName] = @CloserName,    [HoursSpent] = @HoursSpent  WHERE ([ActionID] = @ActionID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ActionID", SqlDbType.Int, 4);
@@ -703,8 +703,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertActionsViewItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ActionsView] (    [ActionID],    [ActionTypeID],    [SystemActionTypeID],    [Name],    [Description],    [TimeSpent],    [DateStarted],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [TicketID],    [CreatorName],    [ModifierName],    [ActionType],    [ProductName],    [ReportedVersion],    [SolvedVersion],    [GroupName],    [TicketType],    [UserName],    [Status],    [StatusPosition],    [SeverityPosition],    [IsClosed],    [Severity],    [TicketNumber],    [ReportedVersionID],    [SolvedVersionID],    [ProductID],    [GroupID],    [UserID],    [TicketStatusID],    [TicketTypeID],    [TicketSeverityID],    [OrganizationID],    [TicketName],    [DateClosed],    [CloserID],    [DaysClosed],    [DaysOpened],    [CloserName],    [HoursSpent]) VALUES ( @ActionID, @ActionTypeID, @SystemActionTypeID, @Name, @Description, @TimeSpent, @DateStarted, @IsVisibleOnPortal, @IsKnowledgeBase, @DateCreated, @DateModified, @CreatorID, @ModifierID, @TicketID, @CreatorName, @ModifierName, @ActionType, @ProductName, @ReportedVersion, @SolvedVersion, @GroupName, @TicketType, @UserName, @Status, @StatusPosition, @SeverityPosition, @IsClosed, @Severity, @TicketNumber, @ReportedVersionID, @SolvedVersionID, @ProductID, @GroupID, @UserID, @TicketStatusID, @TicketTypeID, @TicketSeverityID, @OrganizationID, @TicketName, @DateClosed, @CloserID, @DaysClosed, @DaysOpened, @CloserName, @HoursSpent); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("HoursSpent", SqlDbType.Decimal, 17);
@@ -1027,8 +1027,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteActionsViewItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ActionsView] WHERE ([ActionID] = @ActionID);";
 		deleteCommand.Parameters.Add("ActionID", SqlDbType.Int);
 
 		try
@@ -1134,8 +1134,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectActionsViewItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ActionID], [ActionTypeID], [SystemActionTypeID], [Name], [Description], [TimeSpent], [DateStarted], [IsVisibleOnPortal], [IsKnowledgeBase], [DateCreated], [DateModified], [CreatorID], [ModifierID], [TicketID], [CreatorName], [ModifierName], [ActionType], [ProductName], [ReportedVersion], [SolvedVersion], [GroupName], [TicketType], [UserName], [Status], [StatusPosition], [SeverityPosition], [IsClosed], [Severity], [TicketNumber], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [TicketName], [DateClosed], [CloserID], [DaysClosed], [DaysOpened], [CloserName], [HoursSpent] FROM [dbo].[ActionsView] WHERE ([ActionID] = @ActionID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ActionID", actionID);
         Fill(command);
       }

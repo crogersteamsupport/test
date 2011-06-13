@@ -34,6 +34,48 @@ namespace TeamSupport.Data
     
 
     
+    public string IPAddress
+    {
+      get { return Row["IPAddress"] != DBNull.Value ? (string)Row["IPAddress"] : null; }
+      set { Row["IPAddress"] = CheckNull(value); }
+    }
+    
+    public string Browser
+    {
+      get { return Row["Browser"] != DBNull.Value ? (string)Row["Browser"] : null; }
+      set { Row["Browser"] = CheckNull(value); }
+    }
+    
+    public string Version
+    {
+      get { return Row["Version"] != DBNull.Value ? (string)Row["Version"] : null; }
+      set { Row["Version"] = CheckNull(value); }
+    }
+    
+    public string MajorVersion
+    {
+      get { return Row["MajorVersion"] != DBNull.Value ? (string)Row["MajorVersion"] : null; }
+      set { Row["MajorVersion"] = CheckNull(value); }
+    }
+    
+    public bool? CookiesEnabled
+    {
+      get { return Row["CookiesEnabled"] != DBNull.Value ? (bool?)Row["CookiesEnabled"] : null; }
+      set { Row["CookiesEnabled"] = CheckNull(value); }
+    }
+    
+    public string Platform
+    {
+      get { return Row["Platform"] != DBNull.Value ? (string)Row["Platform"] : null; }
+      set { Row["Platform"] = CheckNull(value); }
+    }
+    
+    public string UserAgent
+    {
+      get { return Row["UserAgent"] != DBNull.Value ? (string)Row["UserAgent"] : null; }
+      set { Row["UserAgent"] = CheckNull(value); }
+    }
+    
 
     
     public bool Successful
@@ -135,8 +177,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteLoginAttempt";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[LoginAttempts] WHERE ([LoginAttemptID] = @LoginAttemptID);";
         deleteCommand.Parameters.Add("LoginAttemptID", SqlDbType.Int);
         deleteCommand.Parameters["LoginAttemptID"].Value = loginAttemptID;
 
@@ -156,8 +198,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateLoginAttempt";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[LoginAttempts] SET     [UserID] = @UserID,    [Successful] = @Successful,    [IPAddress] = @IPAddress,    [Browser] = @Browser,    [Version] = @Version,    [MajorVersion] = @MajorVersion,    [CookiesEnabled] = @CookiesEnabled,    [Platform] = @Platform,    [UserAgent] = @UserAgent  WHERE ([LoginAttemptID] = @LoginAttemptID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("LoginAttemptID", SqlDbType.Int, 4);
@@ -181,12 +223,61 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IPAddress", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Browser", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Version", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("MajorVersion", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("CookiesEnabled", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Platform", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("UserAgent", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertLoginAttempt";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[LoginAttempts] (    [UserID],    [Successful],    [IPAddress],    [Browser],    [Version],    [MajorVersion],    [CookiesEnabled],    [Platform],    [UserAgent],    [DateCreated]) VALUES ( @UserID, @Successful, @IPAddress, @Browser, @Version, @MajorVersion, @CookiesEnabled, @Platform, @UserAgent, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
@@ -194,6 +285,55 @@ namespace TeamSupport.Data
 		{
 		  tempParameter.Precision = 23;
 		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("UserAgent", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Platform", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CookiesEnabled", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("MajorVersion", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Version", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Browser", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IPAddress", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("Successful", SqlDbType.Bit, 1);
@@ -215,8 +355,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteLoginAttempt";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[LoginAttempts] WHERE ([LoginAttemptID] = @LoginAttemptID);";
 		deleteCommand.Parameters.Add("LoginAttemptID", SqlDbType.Int);
 
 		try
@@ -322,8 +462,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectLoginAttempt";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [LoginAttemptID], [UserID], [Successful], [IPAddress], [Browser], [Version], [MajorVersion], [CookiesEnabled], [Platform], [UserAgent], [DateCreated] FROM [dbo].[LoginAttempts] WHERE ([LoginAttemptID] = @LoginAttemptID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("LoginAttemptID", loginAttemptID);
         Fill(command);
       }

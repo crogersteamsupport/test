@@ -476,6 +476,28 @@ namespace TeamSupport.Data
       return result;*/
     }
 
+    public static string GetBrowserName(string userAgent)
+    {
+      string browser = "Unknown";
+      userAgent = userAgent.ToLower();
+
+      if (userAgent.IndexOf("opera") > -1)
+        browser = "Opera";
+      else if (userAgent.IndexOf("konqueror") > -1)
+        browser = "Konqueror";
+      else if (userAgent.IndexOf("firefox") > -1)
+        browser = "Firefox";
+      else if (userAgent.IndexOf("netscape") > -1)
+        browser = "Netscape";
+      else if (userAgent.IndexOf("msie") > -1)
+        browser = "Internet Explorer";
+      else if (userAgent.IndexOf("chrome") > -1)
+        browser = "Chrome";
+      else if (userAgent.IndexOf("safari") > -1)
+        browser = "Safari";
+
+      return browser;
+    }
 
     /// <summary>
     /// Converts a DataContract Object to Json
@@ -997,19 +1019,27 @@ namespace TeamSupport.Data
 
     public static string CreateLinks(string text, string caption, string href, string cssClass, string target)
     {
-      MatchCollection matches = Regex.Matches(text, "\\b" + caption + "\\b", RegexOptions.IgnoreCase);
-      string link = "<a href=\"{0}\" class=\"{1}\" target=\"{2}\">{3}</a>";
-      for (int i = matches.Count - 1; i >= 0; i--)
+      try
       {
-        Match match = matches[i];
-
-        string tag = GetParentHtmlTag(text, match.Index);
-        if (tag != null && (tag == "top" || tag == "p" || tag == "div" || tag == "span"))
+        string result = text;
+        MatchCollection matches = Regex.Matches(result, "\\b" + caption + "\\b", RegexOptions.IgnoreCase);
+        string link = "<a href=\"{0}\" class=\"{1}\" target=\"{2}\">{3}</a>";
+        for (int i = matches.Count - 1; i >= 0; i--)
         {
-          text = text.Remove(match.Index, match.Length).Insert(match.Index, string.Format(link, href, cssClass, target, match.Value));
+          Match match = matches[i];
+
+          string tag = GetParentHtmlTag(result, match.Index);
+          if (tag != null && (tag == "top" || tag == "p" || tag == "div" || tag == "span"))
+          {
+            result = result.Remove(match.Index, match.Length).Insert(match.Index, string.Format(link, href, cssClass, target, match.Value));
+          }
         }
+        return result;
       }
-      return text;
+      catch (Exception)
+      {
+        return text;
+      }
     }
 
     public static string GetParentHtmlTag(string html, int startIndex)

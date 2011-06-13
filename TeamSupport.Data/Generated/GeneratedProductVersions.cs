@@ -183,8 +183,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteProductVersion";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ProductVersions] WHERE ([ProductVersionID] = @ProductVersionID);";
         deleteCommand.Parameters.Add("ProductVersionID", SqlDbType.Int);
         deleteCommand.Parameters["ProductVersionID"].Value = productVersionID;
 
@@ -204,8 +204,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateProductVersion";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ProductVersions] SET     [ProductID] = @ProductID,    [ProductVersionStatusID] = @ProductVersionStatusID,    [VersionNumber] = @VersionNumber,    [ReleaseDate] = @ReleaseDate,    [IsReleased] = @IsReleased,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([ProductVersionID] = @ProductVersionID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ProductVersionID", SqlDbType.Int, 4);
@@ -282,8 +282,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertProductVersion";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ProductVersions] (    [ProductID],    [ProductVersionStatusID],    [VersionNumber],    [ReleaseDate],    [IsReleased],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @ProductID, @ProductVersionStatusID, @VersionNumber, @ReleaseDate, @IsReleased, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -368,8 +368,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteProductVersion";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ProductVersions] WHERE ([ProductVersionID] = @ProductVersionID);";
 		deleteCommand.Parameters.Add("ProductVersionID", SqlDbType.Int);
 
 		try
@@ -475,8 +475,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectProductVersion";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductVersionID], [ProductID], [ProductVersionStatusID], [VersionNumber], [ReleaseDate], [IsReleased], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[ProductVersions] WHERE ([ProductVersionID] = @ProductVersionID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ProductVersionID", productVersionID);
         Fill(command);
       }

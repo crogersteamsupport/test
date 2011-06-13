@@ -147,8 +147,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteTagLink";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TagLinks] WHERE ([TagLinkID] = @TagLinkID);";
         deleteCommand.Parameters.Add("TagLinkID", SqlDbType.Int);
         deleteCommand.Parameters["TagLinkID"].Value = tagLinkID;
 
@@ -168,8 +168,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateTagLink";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TagLinks] SET     [TagID] = @TagID,    [RefType] = @RefType,    [RefID] = @RefID  WHERE ([TagLinkID] = @TagLinkID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TagLinkID", SqlDbType.Int, 4);
@@ -204,8 +204,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertTagLink";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TagLinks] (    [TagID],    [RefType],    [RefID],    [DateCreated],    [CreatorID]) VALUES ( @TagID, @RefType, @RefID, @DateCreated, @CreatorID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
@@ -248,8 +248,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteTagLink";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TagLinks] WHERE ([TagLinkID] = @TagLinkID);";
 		deleteCommand.Parameters.Add("TagLinkID", SqlDbType.Int);
 
 		try
@@ -355,8 +355,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectTagLink";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TagLinkID], [TagID], [RefType], [RefID], [DateCreated], [CreatorID] FROM [dbo].[TagLinks] WHERE ([TagLinkID] = @TagLinkID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TagLinkID", tagLinkID);
         Fill(command);
       }

@@ -171,8 +171,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteWikiHistory";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WikiHistory] WHERE ([HistoryID] = @HistoryID);";
         deleteCommand.Parameters.Add("HistoryID", SqlDbType.Int);
         deleteCommand.Parameters["HistoryID"].Value = historyID;
 
@@ -192,8 +192,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateWikiHistory";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WikiHistory] SET     [ArticleID] = @ArticleID,    [OrganizationID] = @OrganizationID,    [ArticleName] = @ArticleName,    [Body] = @Body,    [Version] = @Version,    [CreatedBy] = @CreatedBy,    [CreatedDate] = @CreatedDate,    [ModifiedBy] = @ModifiedBy,    [ModifiedDate] = @ModifiedDate  WHERE ([HistoryID] = @HistoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("HistoryID", SqlDbType.Int, 4);
@@ -270,8 +270,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertWikiHistory";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WikiHistory] (    [ArticleID],    [OrganizationID],    [ArticleName],    [Body],    [Version],    [CreatedBy],    [CreatedDate],    [ModifiedBy],    [ModifiedDate]) VALUES ( @ArticleID, @OrganizationID, @ArticleName, @Body, @Version, @CreatedBy, @CreatedDate, @ModifiedBy, @ModifiedDate); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifiedDate", SqlDbType.DateTime, 8);
@@ -342,8 +342,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteWikiHistory";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WikiHistory] WHERE ([HistoryID] = @HistoryID);";
 		deleteCommand.Parameters.Add("HistoryID", SqlDbType.Int);
 
 		try
@@ -449,8 +449,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectWikiHistory";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [ArticleID], [OrganizationID], [ArticleName], [Body], [Version], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate] FROM [dbo].[WikiHistory] WHERE ([HistoryID] = @HistoryID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("HistoryID", historyID);
         Fill(command);
       }

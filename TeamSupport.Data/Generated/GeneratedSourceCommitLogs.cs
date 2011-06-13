@@ -177,8 +177,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteSourceCommitLog";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SourceCommitLog] WHERE ([CommitID] = @CommitID);";
         deleteCommand.Parameters.Add("CommitID", SqlDbType.Int);
         deleteCommand.Parameters["CommitID"].Value = commitID;
 
@@ -198,8 +198,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateSourceCommitLog";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SourceCommitLog] SET     [CommitDateTime] = @CommitDateTime,    [OrganizationID] = @OrganizationID,    [ProductID] = @ProductID,    [VersionID] = @VersionID,    [UserName] = @UserName,    [Description] = @Description,    [Revision] = @Revision,    [Tickets] = @Tickets,    [RawCommitText] = @RawCommitText,    [Status] = @Status  WHERE ([CommitID] = @CommitID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CommitID", SqlDbType.Int, 4);
@@ -283,8 +283,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertSourceCommitLog";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SourceCommitLog] (    [CommitDateTime],    [OrganizationID],    [ProductID],    [VersionID],    [UserName],    [Description],    [Revision],    [Tickets],    [RawCommitText],    [Status]) VALUES ( @CommitDateTime, @OrganizationID, @ProductID, @VersionID, @UserName, @Description, @Revision, @Tickets, @RawCommitText, @Status); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("Status", SqlDbType.VarChar, 200);
@@ -362,8 +362,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteSourceCommitLog";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SourceCommitLog] WHERE ([CommitID] = @CommitID);";
 		deleteCommand.Parameters.Add("CommitID", SqlDbType.Int);
 
 		try
@@ -469,8 +469,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectSourceCommitLog";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CommitID], [CommitDateTime], [OrganizationID], [ProductID], [VersionID], [UserName], [Description], [Revision], [Tickets], [RawCommitText], [Status] FROM [dbo].[SourceCommitLog] WHERE ([CommitID] = @CommitID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CommitID", commitID);
         Fill(command);
       }

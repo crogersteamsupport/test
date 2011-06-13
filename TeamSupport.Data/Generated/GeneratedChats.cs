@@ -147,8 +147,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteChat";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Chats] WHERE ([ChatID] = @ChatID);";
         deleteCommand.Parameters.Add("ChatID", SqlDbType.Int);
         deleteCommand.Parameters["ChatID"].Value = chatID;
 
@@ -168,8 +168,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateChat";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Chats] SET     [OrganizationID] = @OrganizationID,    [InitiatorID] = @InitiatorID,    [InitiatorType] = @InitiatorType,    [ActionID] = @ActionID  WHERE ([ChatID] = @ChatID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ChatID", SqlDbType.Int, 4);
@@ -211,8 +211,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertChat";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Chats] (    [OrganizationID],    [InitiatorID],    [InitiatorType],    [ActionID],    [DateCreated]) VALUES ( @OrganizationID, @InitiatorID, @InitiatorType, @ActionID, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
@@ -255,8 +255,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteChat";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Chats] WHERE ([ChatID] = @ChatID);";
 		deleteCommand.Parameters.Add("ChatID", SqlDbType.Int);
 
 		try
@@ -362,8 +362,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectChat";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ChatID], [OrganizationID], [InitiatorID], [InitiatorType], [ActionID], [DateCreated] FROM [dbo].[Chats] WHERE ([ChatID] = @ChatID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ChatID", chatID);
         Fill(command);
       }

@@ -183,8 +183,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteService";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Services] WHERE ([ServiceID] = @ServiceID);";
         deleteCommand.Parameters.Add("ServiceID", SqlDbType.Int);
         deleteCommand.Parameters["ServiceID"].Value = serviceID;
 
@@ -204,8 +204,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateService";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Services] SET     [Name] = @Name,    [Enabled] = @Enabled,    [Interval] = @Interval,    [LastStartTime] = @LastStartTime,    [LastEndTime] = @LastEndTime,    [LastResult] = @LastResult,    [LastError] = @LastError,    [ErrorCount] = @ErrorCount,    [RunCount] = @RunCount,    [RunTimeAvg] = @RunTimeAvg,    [RunTimeMax] = @RunTimeMax  WHERE ([ServiceID] = @ServiceID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ServiceID", SqlDbType.Int, 4);
@@ -296,8 +296,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertService";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Services] (    [Name],    [Enabled],    [Interval],    [LastStartTime],    [LastEndTime],    [LastResult],    [LastError],    [ErrorCount],    [RunCount],    [RunTimeAvg],    [RunTimeMax]) VALUES ( @Name, @Enabled, @Interval, @LastStartTime, @LastEndTime, @LastResult, @LastError, @ErrorCount, @RunCount, @RunTimeAvg, @RunTimeMax); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("RunTimeMax", SqlDbType.Int, 4);
@@ -382,8 +382,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteService";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Services] WHERE ([ServiceID] = @ServiceID);";
 		deleteCommand.Parameters.Add("ServiceID", SqlDbType.Int);
 
 		try
@@ -489,8 +489,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectService";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ServiceID], [Name], [Enabled], [Interval], [LastStartTime], [LastEndTime], [LastResult], [LastError], [ErrorCount], [RunCount], [RunTimeAvg], [RunTimeMax] FROM [dbo].[Services] WHERE ([ServiceID] = @ServiceID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ServiceID", serviceID);
         Fill(command);
       }

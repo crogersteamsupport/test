@@ -483,8 +483,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteOrganization";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Organizations] WHERE ([OrganizationID] = @OrganizationID);";
         deleteCommand.Parameters.Add("OrganizationID", SqlDbType.Int);
         deleteCommand.Parameters["OrganizationID"].Value = organizationID;
 
@@ -504,8 +504,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateOrganization";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Organizations] SET     [Name] = @Name,    [Description] = @Description,    [Website] = @Website,    [WhereHeard] = @WhereHeard,    [PromoCode] = @PromoCode,    [IsCustomerFree] = @IsCustomerFree,    [UserSeats] = @UserSeats,    [PortalSeats] = @PortalSeats,    [ChatSeats] = @ChatSeats,    [ExtraStorageUnits] = @ExtraStorageUnits,    [ImportID] = @ImportID,    [IsActive] = @IsActive,    [IsApiActive] = @IsApiActive,    [IsApiEnabled] = @IsApiEnabled,    [IsInventoryEnabled] = @IsInventoryEnabled,    [TimeZoneID] = @TimeZoneID,    [InActiveReason] = @InActiveReason,    [HasPortalAccess] = @HasPortalAccess,    [IsAdvancedPortal] = @IsAdvancedPortal,    [IsBasicPortal] = @IsBasicPortal,    [PrimaryUserID] = @PrimaryUserID,    [DefaultPortalGroupID] = @DefaultPortalGroupID,    [DefaultSupportGroupID] = @DefaultSupportGroupID,    [DefaultSupportUserID] = @DefaultSupportUserID,    [ProductType] = @ProductType,    [ParentID] = @ParentID,    [WebServiceID] = @WebServiceID,    [SystemEmailID] = @SystemEmailID,    [ChatID] = @ChatID,    [PortalGuid] = @PortalGuid,    [CRMLinkID] = @CRMLinkID,    [SAExpirationDate] = @SAExpirationDate,    [APIRequestLimit] = @APIRequestLimit,    [DateModified] = @DateModified,    [RequireNewKeyword] = @RequireNewKeyword,    [RequireKnownUserForNewEmail] = @RequireKnownUserForNewEmail,    [EmailDelimiter] = @EmailDelimiter,    [OrganizationReplyToAddress] = @OrganizationReplyToAddress,    [CompanyDomains] = @CompanyDomains,    [AdminOnlyCustomers] = @AdminOnlyCustomers,    [AdminOnlyReports] = @AdminOnlyReports,    [ShowWiki] = @ShowWiki,    [DefaultWikiArticleID] = @DefaultWikiArticleID,    [SlaLevelID] = @SlaLevelID,    [InternalSlaLevelID] = @InternalSlaLevelID,    [BusinessDays] = @BusinessDays,    [BusinessDayStart] = @BusinessDayStart,    [BusinessDayEnd] = @BusinessDayEnd,    [UseEuropeDate] = @UseEuropeDate,    [CultureName] = @CultureName,    [TimedActionsRequired] = @TimedActionsRequired,    [MatchEmailSubject] = @MatchEmailSubject,    [ModifierID] = @ModifierID,    [PrimaryInterest] = @PrimaryInterest,    [PotentialSeats] = @PotentialSeats,    [EvalProcess] = @EvalProcess,    [AddAdditionalContacts] = @AddAdditionalContacts,    [ChangeStatusIfClosed] = @ChangeStatusIfClosed,    [IsPublicArticles] = @IsPublicArticles  WHERE ([OrganizationID] = @OrganizationID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -932,8 +932,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertOrganization";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Organizations] (    [Name],    [Description],    [Website],    [WhereHeard],    [PromoCode],    [IsCustomerFree],    [UserSeats],    [PortalSeats],    [ChatSeats],    [ExtraStorageUnits],    [ImportID],    [IsActive],    [IsApiActive],    [IsApiEnabled],    [IsInventoryEnabled],    [TimeZoneID],    [InActiveReason],    [HasPortalAccess],    [IsAdvancedPortal],    [IsBasicPortal],    [PrimaryUserID],    [DefaultPortalGroupID],    [DefaultSupportGroupID],    [DefaultSupportUserID],    [ProductType],    [ParentID],    [WebServiceID],    [SystemEmailID],    [ChatID],    [PortalGuid],    [CRMLinkID],    [SAExpirationDate],    [APIRequestLimit],    [DateCreated],    [DateModified],    [RequireNewKeyword],    [RequireKnownUserForNewEmail],    [EmailDelimiter],    [OrganizationReplyToAddress],    [CompanyDomains],    [AdminOnlyCustomers],    [AdminOnlyReports],    [ShowWiki],    [DefaultWikiArticleID],    [SlaLevelID],    [InternalSlaLevelID],    [BusinessDays],    [BusinessDayStart],    [BusinessDayEnd],    [UseEuropeDate],    [CultureName],    [TimedActionsRequired],    [MatchEmailSubject],    [CreatorID],    [ModifierID],    [PrimaryInterest],    [PotentialSeats],    [EvalProcess],    [AddAdditionalContacts],    [ChangeStatusIfClosed],    [IsPublicArticles]) VALUES ( @Name, @Description, @Website, @WhereHeard, @PromoCode, @IsCustomerFree, @UserSeats, @PortalSeats, @ChatSeats, @ExtraStorageUnits, @ImportID, @IsActive, @IsApiActive, @IsApiEnabled, @IsInventoryEnabled, @TimeZoneID, @InActiveReason, @HasPortalAccess, @IsAdvancedPortal, @IsBasicPortal, @PrimaryUserID, @DefaultPortalGroupID, @DefaultSupportGroupID, @DefaultSupportUserID, @ProductType, @ParentID, @WebServiceID, @SystemEmailID, @ChatID, @PortalGuid, @CRMLinkID, @SAExpirationDate, @APIRequestLimit, @DateCreated, @DateModified, @RequireNewKeyword, @RequireKnownUserForNewEmail, @EmailDelimiter, @OrganizationReplyToAddress, @CompanyDomains, @AdminOnlyCustomers, @AdminOnlyReports, @ShowWiki, @DefaultWikiArticleID, @SlaLevelID, @InternalSlaLevelID, @BusinessDays, @BusinessDayStart, @BusinessDayEnd, @UseEuropeDate, @CultureName, @TimedActionsRequired, @MatchEmailSubject, @CreatorID, @ModifierID, @PrimaryInterest, @PotentialSeats, @EvalProcess, @AddAdditionalContacts, @ChangeStatusIfClosed, @IsPublicArticles); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("IsPublicArticles", SqlDbType.Bit, 1);
@@ -1368,8 +1368,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteOrganization";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Organizations] WHERE ([OrganizationID] = @OrganizationID);";
 		deleteCommand.Parameters.Add("OrganizationID", SqlDbType.Int);
 
 		try
@@ -1475,8 +1475,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectOrganization";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [Name], [Description], [Website], [WhereHeard], [PromoCode], [IsCustomerFree], [UserSeats], [PortalSeats], [ChatSeats], [ExtraStorageUnits], [ImportID], [IsActive], [IsApiActive], [IsApiEnabled], [IsInventoryEnabled], [TimeZoneID], [InActiveReason], [HasPortalAccess], [IsAdvancedPortal], [IsBasicPortal], [PrimaryUserID], [DefaultPortalGroupID], [DefaultSupportGroupID], [DefaultSupportUserID], [ProductType], [ParentID], [WebServiceID], [SystemEmailID], [ChatID], [PortalGuid], [CRMLinkID], [SAExpirationDate], [APIRequestLimit], [DateCreated], [DateModified], [RequireNewKeyword], [RequireKnownUserForNewEmail], [EmailDelimiter], [OrganizationReplyToAddress], [CompanyDomains], [AdminOnlyCustomers], [AdminOnlyReports], [ShowWiki], [DefaultWikiArticleID], [SlaLevelID], [InternalSlaLevelID], [BusinessDays], [BusinessDayStart], [BusinessDayEnd], [UseEuropeDate], [CultureName], [TimedActionsRequired], [MatchEmailSubject], [CreatorID], [ModifierID], [PrimaryInterest], [PotentialSeats], [EvalProcess], [AddAdditionalContacts], [ChangeStatusIfClosed], [IsPublicArticles] FROM [dbo].[Organizations] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);
       }

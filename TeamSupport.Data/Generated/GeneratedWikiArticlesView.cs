@@ -224,8 +224,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteWikiArticlesViewItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WikiArticlesView] WHERE ([ArticleID] = @ArticleID);";
         deleteCommand.Parameters.Add("ArticleID", SqlDbType.Int);
         deleteCommand.Parameters["ArticleID"].Value = articleID;
 
@@ -245,8 +245,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateWikiArticlesViewItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WikiArticlesView] SET     [ParentID] = @ParentID,    [OrganizationID] = @OrganizationID,    [ArticleName] = @ArticleName,    [Body] = @Body,    [Version] = @Version,    [PublicView] = @PublicView,    [PublicEdit] = @PublicEdit,    [PortalView] = @PortalView,    [PortalEdit] = @PortalEdit,    [Private] = @Private,    [IsDeleted] = @IsDeleted,    [CreatedBy] = @CreatedBy,    [CreatedDate] = @CreatedDate,    [ModifiedBy] = @ModifiedBy,    [ModifiedDate] = @ModifiedDate,    [Creator] = @Creator,    [Modifier] = @Modifier,    [Organization] = @Organization  WHERE ([ArticleID] = @ArticleID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ArticleID", SqlDbType.Int, 4);
@@ -386,8 +386,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertWikiArticlesViewItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WikiArticlesView] (    [ArticleID],    [ParentID],    [OrganizationID],    [ArticleName],    [Body],    [Version],    [PublicView],    [PublicEdit],    [PortalView],    [PortalEdit],    [Private],    [IsDeleted],    [CreatedBy],    [CreatedDate],    [ModifiedBy],    [ModifiedDate],    [Creator],    [Modifier],    [Organization]) VALUES ( @ArticleID, @ParentID, @OrganizationID, @ArticleName, @Body, @Version, @PublicView, @PublicEdit, @PortalView, @PortalEdit, @Private, @IsDeleted, @CreatedBy, @CreatedDate, @ModifiedBy, @ModifiedDate, @Creator, @Modifier, @Organization); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("Organization", SqlDbType.VarChar, 255);
@@ -528,8 +528,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteWikiArticlesViewItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WikiArticlesView] WHERE ([ArticleID] = @ArticleID);";
 		deleteCommand.Parameters.Add("ArticleID", SqlDbType.Int);
 
 		try
@@ -635,8 +635,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectWikiArticlesViewItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ArticleID], [ParentID], [OrganizationID], [ArticleName], [Body], [Version], [PublicView], [PublicEdit], [PortalView], [PortalEdit], [Private], [IsDeleted], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [Creator], [Modifier], [Organization] FROM [dbo].[WikiArticlesView] WHERE ([ArticleID] = @ArticleID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ArticleID", articleID);
         Fill(command);
       }

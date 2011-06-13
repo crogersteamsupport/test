@@ -137,6 +137,17 @@ namespace TeamSupport.Data
       {"Hay","Green"},
       {"Sunset","Orange"}
     };
+
+    public static Dictionary<SystemActionType, string> SystemActionNames = new Dictionary<SystemActionType, string>
+    {
+      {SystemActionType.Custom, null},
+      {SystemActionType.Description,"Description"},
+      {SystemActionType.Resolution,"Resolution"},
+      {SystemActionType.Email,"Email"},
+      {SystemActionType.PingUpdate,"Ping Update"},
+      {SystemActionType.Chat,"Chat"}
+    };
+
   }
 
 

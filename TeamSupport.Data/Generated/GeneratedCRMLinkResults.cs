@@ -135,8 +135,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteCRMLinkResult";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CRMLinkResults] WHERE ([CRMResultsID] = @CRMResultsID);";
         deleteCommand.Parameters.Add("CRMResultsID", SqlDbType.Int);
         deleteCommand.Parameters["CRMResultsID"].Value = cRMResultsID;
 
@@ -156,8 +156,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateCRMLinkResult";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkResults] SET     [OrganizationID] = @OrganizationID,    [AttemptDateTime] = @AttemptDateTime,    [AttemptResult] = @AttemptResult  WHERE ([CRMResultsID] = @CRMResultsID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CRMResultsID", SqlDbType.Int, 4);
@@ -192,8 +192,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertCRMLinkResult";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkResults] (    [OrganizationID],    [AttemptDateTime],    [AttemptResult]) VALUES ( @OrganizationID, @AttemptDateTime, @AttemptResult); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("AttemptResult", SqlDbType.Text, 2147483647);
@@ -222,8 +222,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteCRMLinkResult";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CRMLinkResults] WHERE ([CRMResultsID] = @CRMResultsID);";
 		deleteCommand.Parameters.Add("CRMResultsID", SqlDbType.Int);
 
 		try
@@ -329,8 +329,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectCRMLinkResult";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMResultsID], [OrganizationID], [AttemptDateTime], [AttemptResult] FROM [dbo].[CRMLinkResults] WHERE ([CRMResultsID] = @CRMResultsID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CRMResultsID", cRMResultsID);
         Fill(command);
       }

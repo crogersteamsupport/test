@@ -201,8 +201,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteAction";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Actions] WHERE ([ActionID] = @ActionID);";
         deleteCommand.Parameters.Add("ActionID", SqlDbType.Int);
         deleteCommand.Parameters["ActionID"].Value = actionID;
 
@@ -222,8 +222,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateAction";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Actions] SET     [ActionTypeID] = @ActionTypeID,    [SystemActionTypeID] = @SystemActionTypeID,    [Name] = @Name,    [Description] = @Description,    [TimeSpent] = @TimeSpent,    [DateStarted] = @DateStarted,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [TicketID] = @TicketID  WHERE ([ActionID] = @ActionID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ActionID", SqlDbType.Int, 4);
@@ -321,8 +321,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertAction";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Actions] (    [ActionTypeID],    [SystemActionTypeID],    [Name],    [Description],    [TimeSpent],    [DateStarted],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [TicketID]) VALUES ( @ActionTypeID, @SystemActionTypeID, @Name, @Description, @TimeSpent, @DateStarted, @IsVisibleOnPortal, @IsKnowledgeBase, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @TicketID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
@@ -428,8 +428,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteAction";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Actions] WHERE ([ActionID] = @ActionID);";
 		deleteCommand.Parameters.Add("ActionID", SqlDbType.Int);
 
 		try
@@ -535,8 +535,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectAction";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ActionID], [ActionTypeID], [SystemActionTypeID], [Name], [Description], [TimeSpent], [DateStarted], [IsVisibleOnPortal], [IsKnowledgeBase], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [TicketID] FROM [dbo].[Actions] WHERE ([ActionID] = @ActionID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ActionID", actionID);
         Fill(command);
       }

@@ -21,6 +21,43 @@ namespace TeamSupport.Data
     {
       return ActionsView.GetActionsViewItem(BaseCollection.LoginUser, ActionID);
     }
+
+    public string ActionTypeName 
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("ActionTypeName") && Row["ActionTypeName"] != DBNull.Value)
+        {
+          return (string)Row["ActionTypeName"];
+        }
+        else return "";
+      }
+    
+    }
+
+    public string ActionTitle
+    {
+      get
+      {
+        string title = "";
+        
+        switch (SystemActionTypeID)
+        {
+          case SystemActionType.Description: title = "Description"; break;
+          case SystemActionType.Resolution: title = "Resolution"; break;
+          case SystemActionType.Email: title = "Email: " + Name; break;
+          case SystemActionType.PingUpdate: title = "Ping Updated"; break;
+          case SystemActionType.Chat: title = "Chat"; break;
+          default:
+            title = ActionTypeName == "" ? "[No Action Type]" : ActionTypeName;
+            if (!string.IsNullOrEmpty(Name)) title += ": " + Name;
+            break;
+        }
+        return title;
+      }
+    
+    }
+
   }
 
   public partial class Actions
@@ -71,6 +108,10 @@ namespace TeamSupport.Data
 
     }
 
+    /// <summary>
+    /// Loads actions for a ticket and orders them by the latest date created first
+    /// </summary>
+    /// <param name="ticketID"></param>
     public void LoadByTicketID(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())

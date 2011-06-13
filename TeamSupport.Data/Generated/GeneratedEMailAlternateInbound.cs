@@ -148,8 +148,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteEMailAlternateInboundItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[EMailAlternateInbound] WHERE ([SystemEMailID] = @SystemEMailID);";
         deleteCommand.Parameters.Add("SystemEMailID", SqlDbType.Int);
         deleteCommand.Parameters["SystemEMailID"].Value = systemEMailID;
 
@@ -169,8 +169,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateEMailAlternateInboundItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[EMailAlternateInbound] SET     [OrganizationID] = @OrganizationID,    [Description] = @Description,    [GroupToAssign] = @GroupToAssign,    [DefaultTicketType] = @DefaultTicketType,    [ProductID] = @ProductID  WHERE ([SystemEMailID] = @SystemEMailID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("SystemEMailID", SqlDbType.UniqueIdentifier, 16);
@@ -219,8 +219,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertEMailAlternateInboundItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[EMailAlternateInbound] (    [SystemEMailID],    [OrganizationID],    [Description],    [GroupToAssign],    [DefaultTicketType],    [ProductID]) VALUES ( @SystemEMailID, @OrganizationID, @Description, @GroupToAssign, @DefaultTicketType, @ProductID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
@@ -270,8 +270,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteEMailAlternateInboundItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[EMailAlternateInbound] WHERE ([SystemEMailID] = @SystemEMailID);";
 		deleteCommand.Parameters.Add("SystemEMailID", SqlDbType.Int);
 
 		try
@@ -354,7 +354,6 @@ namespace TeamSupport.Data
     }
 
 
-
     public virtual EMailAlternateInboundItem AddNewEMailAlternateInboundItem()
     {
       if (Table.Columns.Count < 1) LoadColumns("EMailAlternateInbound");
@@ -367,8 +366,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectEMailAlternateInboundItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [SystemEMailID], [OrganizationID], [Description], [GroupToAssign], [DefaultTicketType], [ProductID] FROM [dbo].[EMailAlternateInbound] WHERE ([SystemEMailID] = @SystemEMailID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("SystemEMailID", systemEMailID);
         Fill(command);
       }

@@ -177,8 +177,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeletePhoneNumber";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[PhoneNumbers] WHERE ([PhoneID] = @PhoneID);";
         deleteCommand.Parameters.Add("PhoneID", SqlDbType.Int);
         deleteCommand.Parameters["PhoneID"].Value = phoneID;
 
@@ -198,8 +198,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdatePhoneNumber";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[PhoneNumbers] SET     [PhoneTypeID] = @PhoneTypeID,    [RefID] = @RefID,    [RefType] = @RefType,    [PhoneNumber] = @PhoneNumber,    [Extension] = @Extension,    [OtherTypeName] = @OtherTypeName,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([PhoneID] = @PhoneID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("PhoneID", SqlDbType.Int, 4);
@@ -269,8 +269,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertPhoneNumber";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[PhoneNumbers] (    [PhoneTypeID],    [RefID],    [RefType],    [PhoneNumber],    [Extension],    [OtherTypeName],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @PhoneTypeID, @RefID, @RefType, @PhoneNumber, @Extension, @OtherTypeName, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -348,8 +348,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeletePhoneNumber";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[PhoneNumbers] WHERE ([PhoneID] = @PhoneID);";
 		deleteCommand.Parameters.Add("PhoneID", SqlDbType.Int);
 
 		try
@@ -455,8 +455,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectPhoneNumber";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [PhoneID], [PhoneTypeID], [RefID], [RefType], [PhoneNumber], [Extension], [OtherTypeName], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[PhoneNumbers] WHERE ([PhoneID] = @PhoneID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("PhoneID", phoneID);
         Fill(command);
       }

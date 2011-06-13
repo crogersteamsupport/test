@@ -178,8 +178,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteExceptionLogViewItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ExceptionLogView] WHERE ([ExceptionLogID] = @ExceptionLogID);";
         deleteCommand.Parameters.Add("ExceptionLogID", SqlDbType.Int);
         deleteCommand.Parameters["ExceptionLogID"].Value = exceptionLogID;
 
@@ -199,8 +199,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateExceptionLogViewItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ExceptionLogView] SET     [URL] = @URL,    [PageInfo] = @PageInfo,    [ExceptionName] = @ExceptionName,    [Message] = @Message,    [StackTrace] = @StackTrace,    [FirstName] = @FirstName,    [LastName] = @LastName,    [Name] = @Name  WHERE ([ExceptionLogID] = @ExceptionLogID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ExceptionLogID", SqlDbType.Int, 4);
@@ -270,8 +270,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertExceptionLogViewItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ExceptionLogView] (    [ExceptionLogID],    [URL],    [PageInfo],    [ExceptionName],    [Message],    [StackTrace],    [CreatorID],    [DateCreated],    [FirstName],    [LastName],    [Name]) VALUES ( @ExceptionLogID, @URL, @PageInfo, @ExceptionName, @Message, @StackTrace, @CreatorID, @DateCreated, @FirstName, @LastName, @Name); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.VarChar, 255);
@@ -356,8 +356,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteExceptionLogViewItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ExceptionLogView] WHERE ([ExceptionLogID] = @ExceptionLogID);";
 		deleteCommand.Parameters.Add("ExceptionLogID", SqlDbType.Int);
 
 		try
@@ -463,8 +463,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectExceptionLogViewItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ExceptionLogID], [URL], [PageInfo], [ExceptionName], [Message], [StackTrace], [CreatorID], [DateCreated], [FirstName], [LastName], [Name] FROM [dbo].[ExceptionLogView] WHERE ([ExceptionLogID] = @ExceptionLogID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ExceptionLogID", exceptionLogID);
         Fill(command);
       }

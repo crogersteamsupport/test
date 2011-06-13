@@ -174,6 +174,28 @@ namespace TeamSupport.Data
       }
     }
 
+    public static TicketsViewItem GetTicketsViewItemByNumber(LoginUser loginUser, int ticketNumber)
+    {
+      TicketsView ticketsView = new TicketsView(loginUser);
+      ticketsView.LoadByTicketNumber(ticketNumber, loginUser.OrganizationID);
+      if (ticketsView.IsEmpty)
+        return null;
+      else
+        return ticketsView[0];
+    }
+
+    public void LoadByTicketNumber(int ticketNumber, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT TOP 1 * FROM TicketsView WHERE OrganizationID = @OrganizationID AND TicketNumber= @TicketNumber";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@TicketNumber", ticketNumber);
+        Fill(command);
+      }
+    }
+
 
     /// <summary>
     /// Loads tickets that are associated with a customer's organizationid

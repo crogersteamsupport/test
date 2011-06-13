@@ -159,8 +159,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteApiLog";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ApiLogs] WHERE ([ApiLogID] = @ApiLogID);";
         deleteCommand.Parameters.Add("ApiLogID", SqlDbType.Int);
         deleteCommand.Parameters["ApiLogID"].Value = apiLogID;
 
@@ -180,8 +180,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateApiLog";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ApiLogs] SET     [OrganizationID] = @OrganizationID,    [IPAddress] = @IPAddress,    [Url] = @Url,    [Verb] = @Verb,    [StatusCode] = @StatusCode,    [RequestBody] = @RequestBody  WHERE ([ApiLogID] = @ApiLogID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ApiLogID", SqlDbType.Int, 4);
@@ -237,8 +237,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertApiLog";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ApiLogs] (    [OrganizationID],    [IPAddress],    [Url],    [Verb],    [StatusCode],    [RequestBody],    [DateCreated]) VALUES ( @OrganizationID, @IPAddress, @Url, @Verb, @StatusCode, @RequestBody, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
@@ -295,8 +295,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteApiLog";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ApiLogs] WHERE ([ApiLogID] = @ApiLogID);";
 		deleteCommand.Parameters.Add("ApiLogID", SqlDbType.Int);
 
 		try
@@ -402,8 +402,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectApiLog";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ApiLogID], [OrganizationID], [IPAddress], [Url], [Verb], [StatusCode], [RequestBody], [DateCreated] FROM [dbo].[ApiLogs] WHERE ([ApiLogID] = @ApiLogID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ApiLogID", apiLogID);
         Fill(command);
       }

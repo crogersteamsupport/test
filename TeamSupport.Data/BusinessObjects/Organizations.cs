@@ -1090,6 +1090,11 @@ namespace TeamSupport.Data
       }
     }
 
+    /// <summary>
+    /// Loads ALL the organizations associated with a ticket
+    /// </summary>
+    /// <param name="ticketID"></param>
+
     public void LoadByTicketID(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -1101,6 +1106,10 @@ namespace TeamSupport.Data
       }
     }
 
+    /// <summary>
+    /// Loads ONLY the organizations associated with a ticket, but not already associated with a specific contact
+    /// </summary>
+    /// <param name="ticketID"></param>
     public void LoadByNotContactTicketID(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())

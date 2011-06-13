@@ -111,7 +111,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="dtSearchNetApi3">
-      <HintPath>..\dtSearch\dtSearchNetApi3.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\dtSearch Developer\bin64\dtSearchNetApi3.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -185,6 +185,7 @@
     <Compile Include="BusinessObjects\TicketAutomationTriggerLogic.cs" />
     <Compile Include="BusinessObjects\TicketAutomationTriggers.cs" />
     <Compile Include="BusinessObjects\TicketRelationships.cs" />
+    <Compile Include="BusinessObjects\TicketsView.cs" />
     <Compile Include="BusinessObjects\TicketTemplates.cs" />
     <Compile Include="BusinessObjects\Translate.cs" />
     <Compile Include="BusinessObjects\UserTicketStatuses.cs" />
@@ -270,7 +271,6 @@
     <Compile Include="BusinessObjects\TicketSeverities.cs" />
     <Compile Include="BusinessObjects\TicketSlaView.cs" />
     <Compile Include="BusinessObjects\TicketStatuses.cs" />
-    <Compile Include="BusinessObjects\TicketsView.cs" />
     <Compile Include="BusinessObjects\TicketTypes.cs" />
     <Compile Include="BusinessObjects\TSEMailIgnoreList.cs" />
     <Compile Include="BusinessObjects\Users.cs" />
