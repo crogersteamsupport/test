@@ -197,7 +197,7 @@
 
       function getRememberMe() {
         var cookie = Ts.Utils.getCookie('rememberme', 'sessionid');
-        if (cookie.length > 0) {
+        if (cookie != null && cookie.length > 0) {
           PageMethods.GetEmail(cookie, function (result) {
             $('#email').val(result);
             $('#password').val('rememberme');

@@ -98,6 +98,17 @@ namespace TSWebServices
        return organization.GetProxy();
     }
 
+    [WebMethod]
+    public CRMLinkTableItemProxy GetCrmLink(int organizationID)
+    {
+      CRMLinkTable table = new CRMLinkTable(TSAuthentication.GetLoginUser());
+      table.LoadByOrganizationID(organizationID);
+      if (table.IsEmpty) return null;
+      if (TSAuthentication.OrganizationID != 1078) return null;
+      return table[0].GetProxy();
+    }
+    
+
     // need to move to users service
     [WebMethod]
     public bool IsUserContact(int userID)
@@ -123,7 +134,7 @@ namespace TSWebServices
       organizations.LoadByLikeOrganizationName(1, name, false, 20);
       foreach (Organization organization in organizations)
       {
-        result.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString()));
+        result.Add(new AutocompleteItem(organization.Name + " (" + organization.OrganizationID.ToString() + ")", organization.OrganizationID.ToString()));
       }
 
       return result.ToArray();

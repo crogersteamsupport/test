@@ -196,11 +196,13 @@ namespace TeamSupport.Handlers
         return;
       }
 
+      /*
       AttachmentDownload download = (new AttachmentDownloads(attachment.Collection.LoginUser)).AddNewAttachmentDownload();
       download.AttachmentID = attachment.AttachmentID;
       download.UserID = user.UserID;
       download.DateDownloaded = DateTime.UtcNow;
       download.Collection.Save();
+       */
       
 
 

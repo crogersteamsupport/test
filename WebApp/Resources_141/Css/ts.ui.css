@@ -82,9 +82,9 @@ a:hover { text-decoration: underline; }
 */
 .ui-widget-content a.ts-link { border: none; background:none;}
 .ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent { background-color:#EDF4FC; background-image: none;}
+.ui-widget-content.ts-separator { height: 1px; border-bottom: none; border-left:none; border-right:none; margin-bottom: .5em; }
 
 /* Old, but used in automation admin */
-.ts-separator { height: 1px; background-color:#D7E6F9;}
 .ts-section { margin: .5em .5em; padding: 0 .5em .5em .5em; border: none; clear:both;}
 .ts-side-widget { background-color: #fff; }
 .ts-content { background-image:none; border:none; overflow:auto; background-color: #fff;} 

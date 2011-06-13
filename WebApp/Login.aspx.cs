@@ -133,13 +133,13 @@ public partial class Login : System.Web.UI.Page
       result[0] = IsUserValid(loginUser, user, password);
       if (result[0] != null)
       {
-        if (user != null) LoginAttempts.AddAttempt(loginUser, user.UserID, false);
+        if (user != null) LoginAttempts.AddAttempt(loginUser, user.UserID, false, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent);
         return result;
       }
 
       result[1] = AuthenticateUser(user.UserID, user.OrganizationID, storeInfo, IsPasswordBackdoor(password));
 
-
+      /*
       LoginHistoryItem history = (new LoginHistory(loginUser)).AddNewLoginHistoryItem();
       history.UserID = user.UserID;
       history.Browser = browserName;
@@ -155,10 +155,11 @@ public partial class Login : System.Web.UI.Page
       history.ScreenHeight = height;
       history.ScreenWidth = width;
       history.URL = "BACKDOOR - " + HttpContext.Current.Request.Url.OriginalString;
-      history.Collection.Save();
+      history.Collection.Save();*/
     }
     catch (Exception ex)
     {
+      ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Login.aspx");
       result[0] = "There was an error connecting to TeamSupport.com";
       
     }
@@ -247,7 +248,7 @@ public partial class Login : System.Web.UI.Page
       User user = Users.GetUser(loginUser, userID);
       if (IsUserValid(loginUser, user, password) != null)
       {
-        if (user != null) LoginAttempts.AddAttempt(loginUser, user.UserID, false);
+        if (user != null) LoginAttempts.AddAttempt(loginUser, user.UserID, false, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent);
         return;
       }
 
@@ -270,7 +271,7 @@ public partial class Login : System.Web.UI.Page
     User user = Users.GetUser(loginUser, userID);
     user.LastLogin = DateTime.UtcNow;
     user.Collection.Save();
-    LoginAttempts.AddAttempt(loginUser, userID, true);
+    LoginAttempts.AddAttempt(loginUser, userID, true, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent);
     TSAuthentication.Authenticate(user, isBackdoor);
     
     System.Web.HttpBrowserCapabilities browser = HttpContext.Current.Request.Browser;

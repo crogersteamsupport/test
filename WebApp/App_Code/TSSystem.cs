@@ -141,7 +141,7 @@ namespace TSWebServices
           items.Add(new TsMenuItem("reports", "mniReports", "Reports", "images/nav/16/reports.png", string.Format(data, "Frames/Reports.aspx", "Resources_141/PaneInfo/Reports.html")));
         if (user.IsSystemAdmin)
           items.Add(new TsMenuItem("admin", "mniAdmin", "Admin", "images/nav/16/admin.png", string.Format(data, "Frames/Admin.aspx", "Resources_141/PaneInfo/Admin.html")));
-        if (TSAuthentication.IsTSSuperAdmin)
+        if (TSAuthentication.OrganizationID == 1078)
         {
           TsMenuItem utils = new TsMenuItem("utils", "mniUtils", "Utilities", "images/nav/16/iis.png", string.Format(data, "Resources_141/Pages/Utils.html", "Resources_141/PaneInfo/Admin.html"));
           items.Add(utils);
@@ -318,6 +318,31 @@ namespace TSWebServices
       return result.ToArray();
     }
 
+    [WebMethod]
+    public AutocompleteItem[] GetLookupDisplayNames(int reportTableFieldID, string term)
+    {
+      List<AutocompleteItem> result = new List<AutocompleteItem>();
+      Dictionary<int, string> values = LookupField.GetValues(TSAuthentication.GetLoginUser(), reportTableFieldID, term, 10);
+      result.Add(new AutocompleteItem("Unassigned", "-1"));
+      if (values != null)
+      {
+        foreach (KeyValuePair<int, string> pair in values)
+        {
+          bool found = false;
+          foreach (AutocompleteItem item in result)
+          {
+            if (item.label.ToLower().Trim() == pair.Value.ToLower().Trim())
+            {
+              found = true;
+              break;
+            }
+          }
+
+          if (!found) result.Add(new AutocompleteItem(pair.Value, pair.Key.ToString()));
+        }
+      }
+      return result.ToArray();
+    }
 
     [WebMethod]
     public string[] GenerateKeys()

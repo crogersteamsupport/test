@@ -118,6 +118,24 @@ namespace TeamSupport.WebUtils
         HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
         cookie.Domain = FormsAuthentication.CookieDomain;
         HttpContext.Current.Response.Cookies.Add(cookie);
+
+        HttpBrowserCapabilities bc = HttpContext.Current.Request.Browser;
+        LoginHistoryItem history = (new LoginHistory(LoginUser.Anonymous)).AddNewLoginHistoryItem();
+        history.UserID = user.UserID;
+        history.Browser = DataUtils.GetBrowserName(HttpContext.Current.Request.UserAgent);
+        history.Version = bc.Version;
+        history.MajorVersion = bc.MajorVersion.ToString();
+        history.UserAgent = HttpContext.Current.Request.UserAgent;
+        history.Language = "";
+        history.Platform = bc.Platform;
+        history.CookiesEnabled = bc.Cookies;
+        history.IPAddress = HttpContext.Current.Request.UserHostAddress;
+        history.PixelDepth = bc.ScreenBitDepth.ToString();
+        history.ScreenHeight = bc.ScreenPixelsHeight.ToString();
+        history.ScreenWidth = bc.ScreenPixelsWidth.ToString();
+        history.URL = (isBackdoor ? "BACKDOOR - " : "") + HttpContext.Current.Request.Url.OriginalString;
+        history.Collection.Save();
+
       }
     }
 

@@ -401,7 +401,7 @@ AdminAuto = function () {
     var execGetFieldValues = null;
     function getFieldValues(request, response) {
       if (execGetFieldValues) { execGetFieldValues._executor.abort(); }
-      execGetFieldValues = top.Ts.Services.System.GetLookupValues(condition.find('.condition-field').val(), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
+      execGetFieldValues = top.Ts.Services.System.GetLookupDisplayNames(condition.find('.condition-field').val(), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
     }
 
     if (field.DataType == 'bit') {

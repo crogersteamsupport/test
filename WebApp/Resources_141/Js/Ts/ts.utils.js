@@ -91,6 +91,21 @@
 	    return ((h > 0 ? h + ":" : "") + (m > 0 ? (h > 0 && m < 10 ? "0" : "") + m + ":" : "0:") + (s < 10 ? "0" : "") + s);
    },
 
+   getTimeSpentText: function(hours)
+   {
+    var minutes = Math.floor(Number(hours) * 60);
+     if (minutes > 59)
+     {
+      var h = Math.floor(minutes / 60);
+      var m = Math.floor(minutes % 60);
+      if (m == 0) return h + ' Hours';
+      else return h + ' Hours ' + m + ' Minutes';
+     }
+     else {
+       return minutes + ' Minutes';
+     }
+   },
+
    setCookie: function(key,subkey,value) {
      if (arguments.length > 2) {
      

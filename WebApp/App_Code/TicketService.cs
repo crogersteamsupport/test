@@ -150,10 +150,10 @@ namespace TSWebServices
         }
         else
         {
-          job.Fuzziness = 3;
+          job.Fuzziness = 1;
         }
 
-        job.Request = term.Trim();
+        job.Request = term.Trim() + "*";
         job.FieldWeights = "TicketNumber: 1000, Name: 5";
         job.BooleanConditions = "OrganizationID::" + TSAuthentication.OrganizationID.ToString();
         job.MaxFilesToRetrieve = 15;
@@ -161,8 +161,8 @@ namespace TSWebServices
         job.TimeoutSeconds = 10;
         job.SearchFlags =
           //SearchFlags.dtsSearchAutoTermWeight |
-          SearchFlags.dtsSearchPositionalScoring |
-          SearchFlags.dtsSearchTypeAnyWords |
+          //SearchFlags.dtsSearchPositionalScoring |
+          SearchFlags.dtsSearchTypeAllWords |
           SearchFlags.dtsSearchStemming |
           SearchFlags.dtsSearchFuzzy |
           SearchFlags.dtsSearchDelayDocInfo;
@@ -436,6 +436,117 @@ namespace TSWebServices
       result.Add(time.ToString());
       return result.ToArray();
     }
+
+
+    [WebMethod]
+    public TicketInfo GetTicketInfo(int ticketNumber)
+    {
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
+      if (ticket == null) return null;
+
+      TicketInfo info = new TicketInfo();
+      info.Ticket = ticket.GetProxy();
+
+      List<TicketCustomer> customers = new List<TicketCustomer>();
+
+      ContactsView contacts = new ContactsView(ticket.Collection.LoginUser);
+      contacts.LoadByTicketID(ticket.TicketID);
+      foreach (ContactsViewItem contact in contacts)
+      {
+        TicketCustomer customer = new TicketCustomer();
+        customer.Company = contact.Organization;
+        customer.OrganizationID = contact.OrganizationID;
+        customer.Contact = contact.FirstName + " " + contact.LastName;
+        customer.UserID = contact.UserID;
+        customers.Add(customer);
+      }
+
+      Organizations organizations = new Organizations(ticket.Collection.LoginUser);
+      organizations.LoadByNotContactTicketID(ticket.TicketID);
+      foreach (Organization organization in organizations)
+      {
+        TicketCustomer customer = new TicketCustomer();
+        customer.Company = organization.Name;
+        customer.OrganizationID = organization.OrganizationID;
+        customer.UserID = null;
+        customers.Add(customer);
+      }
+      info.Customers = customers.ToArray();
+
+      List<RelatedTicket> relatedTickets = new List<RelatedTicket>();
+
+      if (ticket.ParentID != null)
+      {
+        TicketsViewItem parent = TicketsView.GetTicketsViewItem(ticket.Collection.LoginUser, (int)ticket.ParentID);
+        if (parent != null)
+        {
+          RelatedTicket relatedTicket = new RelatedTicket();
+          relatedTicket.TicketID = parent.TicketID;
+          relatedTicket.TicketNumber = parent.TicketNumber;
+          relatedTicket.Name = parent.Name;
+          relatedTicket.Severity = parent.Severity;
+          relatedTicket.Status = parent.Status;
+          relatedTicket.Type = parent.TicketTypeName;
+          relatedTicket.IsParent = false;
+          relatedTickets.Add(relatedTicket);
+        }
+      }
+
+
+      TicketsView tickets = new TicketsView(ticket.Collection.LoginUser);
+      tickets.LoadChildren(ticket.TicketID);
+      foreach (TicketsViewItem item in tickets)
+      {
+        RelatedTicket relatedTicket = new RelatedTicket();
+        relatedTicket.TicketID = item.TicketID;
+        relatedTicket.TicketNumber = item.TicketNumber;
+        relatedTicket.Name = item.Name;
+        relatedTicket.Severity = item.Severity;
+        relatedTicket.Status = item.Status;
+        relatedTicket.Type = item.TicketTypeName;
+        relatedTicket.IsParent = false;
+        relatedTickets.Add(relatedTicket);
+      }
+
+      tickets = new TicketsView(ticket.Collection.LoginUser);
+      tickets.LoadRelated(ticket.TicketID);
+      foreach (TicketsViewItem item in tickets)
+      {
+        RelatedTicket relatedTicket = new RelatedTicket();
+        relatedTicket.TicketID = item.TicketID;
+        relatedTicket.TicketNumber = item.TicketNumber;
+        relatedTicket.Name = item.Name;
+        relatedTicket.Severity = item.Severity;
+        relatedTicket.Status = item.Status;
+        relatedTicket.Type = item.TicketTypeName;
+        relatedTicket.IsParent = null;
+        relatedTickets.Add(relatedTicket);
+      }
+
+
+      info.Related = relatedTickets.ToArray();
+
+      Tags tags = new Tags(ticket.Collection.LoginUser);
+      tags.LoadByReference(ReferenceType.Tickets, ticket.TicketID);
+
+      info.Tags = tags.GetTagProxies();
+
+      Actions actions = new Actions(ticket.Collection.LoginUser);
+      actions.LoadByTicketID(ticket.TicketID);
+      info.Actions = actions.GetActionProxies();
+
+      for (int i = 0; i < info.Actions.Length; i++)
+      {
+        info.Actions[i].Name = actions[i].ActionTitle;
+        if (i > 0 && info.Actions[i].SystemActionTypeID != SystemActionType.Description)
+        {
+          info.Actions[i].Description = null;
+        }
+      }
+
+      return info;
+    
+    }
   }
 
   [DataContract]
@@ -489,5 +600,54 @@ namespace TSWebServices
     public TicketLoadFilter Filter { get; set; }
 
   }
+
+  [DataContract]
+  public class TicketInfo
+  {
+    [DataMember]
+    public TicketsViewItemProxy Ticket { get; set; }
+    [DataMember]
+    public ActionProxy[] Actions { get; set; }
+    [DataMember]
+    public TicketCustomer[] Customers { get; set; }
+    [DataMember]
+    public RelatedTicket[] Related { get; set; }
+    [DataMember]
+    public TagProxy[] Tags { get; set; }
+  }
+
+  [DataContract]
+  public class TicketCustomer
+  {
+    [DataMember]
+    public string Company { get; set; }
+    [DataMember]
+    public string Contact { get; set; }
+    [DataMember]
+    public int OrganizationID { get; set; }
+    [DataMember]
+    public int? UserID { get; set; }
+  }
+
+  [DataContract]
+  public class RelatedTicket
+  {
+    [DataMember]
+    public int TicketNumber { get; set; }
+    [DataMember]
+    public int TicketID { get; set; }
+    [DataMember]
+    public string Name { get; set; }
+    [DataMember]
+    public string Status { get; set; }
+    [DataMember]
+    public string Severity { get; set; }
+    [DataMember]
+    public string Type { get; set; }
+    [DataMember]
+    public bool? IsParent { get; set; }
+  }
+
+
 
 }
