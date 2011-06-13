@@ -137,6 +137,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TeamSupport.CrmIntegration\TeamSupport.CrmIntegration.vbproj">
+      <Project>{8B896B49-B127-450F-93D5-B8546E39C217}</Project>
+      <Name>TeamSupport.CrmIntegration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
       <Project>{1943AC11-1F2D-4B85-9F0F-4D67284814BE}</Project>
       <Name>TeamSupport.Data</Name>

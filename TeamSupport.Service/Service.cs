@@ -9,12 +9,14 @@ using System.Text;
 using System.Threading;
 using TeamSupport.Data;
 using TeamSupport.ServiceLibrary;
+using TeamSupport.CrmIntegration;
 using Microsoft.Win32;
 
 namespace TeamSupport.Service
 {
   public partial class Service : ServiceBase
   {
+    List<ServiceThread> _threads;
     EmailProcessor _emailProcessor;
     EmailSender _emailSender;
     SlaProcessor _slaProcessor;
@@ -23,15 +25,17 @@ namespace TeamSupport.Service
     public Service()
     {
       InitializeComponent();
+      _threads = new List<ServiceThread>();
+      _threads.Add(new EmailProcessor());
+      _threads.Add(new EmailSender());
+      _threads.Add(new SlaProcessor());
+      _threads.Add(new Indexer());
+      _threads.Add(new CrmPool());
     }
 
     protected override void OnStart(string[] args)
     {
       System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.Idle;
-      _emailProcessor = new EmailProcessor();
-      _emailSender = new EmailSender();
-      _slaProcessor = new SlaProcessor();
-      _indexer = new Indexer();
       StartProcessing();
     }
 
@@ -47,19 +51,18 @@ namespace TeamSupport.Service
 
     private void StopProcessing()
     {
-      _emailProcessor.Stop();
-      _emailSender.Stop();
-      _slaProcessor.Stop();
-      _indexer.Stop();
-
+      foreach (ServiceThread thread in _threads)
+      {
+        thread.Stop();
+      }
     }
 
     private void StartProcessing()
     {
-      _emailProcessor.Start("EmailProcessor");
-      _emailSender.Start("EmailSender");
-      _slaProcessor.Start("SlaProcessor");
-      _indexer.Start("Indexer");
+      foreach (ServiceThread thread in _threads)
+      {
+        thread.Start();
+      }
     }
 
 
