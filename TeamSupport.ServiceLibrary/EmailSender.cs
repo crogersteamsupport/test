@@ -30,6 +30,11 @@ namespace TeamSupport.ServiceLibrary
       _debugAddresses = new MailAddressCollection();
     }
 
+    public override string ServiceName
+    {
+      get { return "EmailSender"; }
+    }
+
     public override void Run()
     {
       _isDebug = Settings.ReadBool("Debug", false);

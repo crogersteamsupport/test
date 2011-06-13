@@ -21,6 +21,25 @@ namespace TeamSupport.ServiceLibrary
       set { _thread = value; }
     }
 
+    private bool _isLoop = true;
+    public bool IsLoop
+    {
+      get { lock (this) { return _isLoop; } }
+      set { lock (this) { _isLoop = value; } }
+    }
+
+    private bool _isComplete = false;
+    public bool IsComplete
+    {
+      get
+      {
+        lock (this)
+        {
+          return _isComplete;
+        } 
+      }
+    }  
+
     private bool _isStopped = true;
     public bool IsStopped
     {
@@ -30,19 +49,15 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
-    private string _serviceName;
-    public string ServiceName
-    {
-      get { lock (this) { return _serviceName; } }
-    }
+    public abstract string ServiceName { get; }
 
-    private Settings _settings;
+    protected Settings _settings;
     protected Settings Settings
     {
       get { return _settings; }
     }
 
-    private LoginUser _loginUser;
+    protected LoginUser _loginUser;
     protected LoginUser LoginUser
     {
       get { return _loginUser; }
@@ -51,33 +66,31 @@ namespace TeamSupport.ServiceLibrary
     /// <summary>
     /// Stops the thread
     /// </summary>
-    public void Stop()
+    public virtual void Stop()
     {
       if (IsStopped) return;
       lock (this) { _isStopped = true; }
       _thread.Join(30000);
     }
 
+
+
     /// <summary>
     /// Starts the thread
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="defaultInterval"></param>
-    public void Start(string name)
+    public virtual void Start()
     {
       if (!IsStopped) return;
-      _serviceName = name;
+      _loginUser = GetLoginUser(ServiceName);
+      _settings = new Settings(_loginUser, ServiceName);
       lock (this) { _isStopped = false; }
       _thread = new Thread(new ThreadStart(Process));
       _thread.Priority = ThreadPriority.Lowest;
       _thread.Start();
     }
 
-    private void Process()
+    protected virtual void Process()
     {
-      _loginUser = GetLoginUser(ServiceName);
-      _settings = new Settings(_loginUser, ServiceName);
-
       DateTime lastTime = DateTime.Now;
 
       while (true)
@@ -86,7 +99,7 @@ namespace TeamSupport.ServiceLibrary
         try
         {
           if (IsStopped) return;
-          if (service.Enabled && lastTime.AddSeconds(service.Interval) < DateTime.Now)
+          if (service.Enabled && (lastTime.AddSeconds(service.Interval) < DateTime.Now || !IsLoop))
           {
             service.LastStartTime = DateTime.Now;
             service.Collection.Save();
@@ -110,6 +123,11 @@ namespace TeamSupport.ServiceLibrary
           service.ErrorCount = service.ErrorCount + 1;
           service.Collection.Save();
         }
+        if (!IsLoop)
+        {
+          lock (this) { _isComplete = true; }
+          return;
+        }
       }
     }
     
@@ -118,24 +136,25 @@ namespace TeamSupport.ServiceLibrary
     public abstract void Run();
 
 
-    private static LoginUser GetLoginUser(string appName)
+    protected static LoginUser GetLoginUser(string appName)
     {
-      string constring = GetSettingString("ConnectionString", "Application Name=TeamSupport Service: APPNAME" + appName + ";Data Source=localhost;Initial Catalog=TeamSupport;Persist Security Info=True;User ID=sa;Password=muroc").Replace("APPNAME", appName);
+      string defaultConString = "Application Name=TeamSupport Service: APPNAME;Data Source=localhost;Initial Catalog=TeamSupport;Persist Security Info=True;User ID=sa;Password=muroc";
+      string constring = GetSettingString("ConnectionString", defaultConString).Replace("APPNAME", appName);
       return new LoginUser(constring, -1, -1, null);
     }
 
-    private static string GetSettingString(string keyName) { return GetSettingString(keyName, ""); }
-    private static string GetSettingString(string keyName, string defaultValue) { return (string)GetSetting(keyName, defaultValue, RegistryValueKind.String); }
-    private static int GetSettingInt(string keyName, int defaultValue) { return (int)GetSetting(keyName, defaultValue, RegistryValueKind.DWord); }
-    private static int GetSettingInt(string keyName) { return (int)GetSetting(keyName, -1, RegistryValueKind.DWord); }
+    protected static string GetSettingString(string keyName) { return GetSettingString(keyName, ""); }
+    protected static string GetSettingString(string keyName, string defaultValue) { return (string)GetSetting(keyName, defaultValue, RegistryValueKind.String); }
+    protected static int GetSettingInt(string keyName, int defaultValue) { return (int)GetSetting(keyName, defaultValue, RegistryValueKind.DWord); }
+    protected static int GetSettingInt(string keyName) { return (int)GetSetting(keyName, -1, RegistryValueKind.DWord); }
 
-    private static void SetSettingValue(string keyName, object value, RegistryValueKind kind)
+    protected static void SetSettingValue(string keyName, object value, RegistryValueKind kind)
     {
       RegistryKey key = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\TeamSupport\Service");
       key.SetValue(keyName, value, kind);
     }
 
-    private static object GetSetting(string keyName, object defaultValue, RegistryValueKind kind)
+    protected static object GetSetting(string keyName, object defaultValue, RegistryValueKind kind)
     {
       RegistryKey key = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\TeamSupport\Service");
       object o = key.GetValue(keyName);

@@ -25,6 +25,11 @@ namespace TeamSupport.ServiceLibrary
 
     }
 
+    public override string ServiceName
+    {
+      get { return "Indexer"; }
+    }
+
     private void ProcessTicketIndex()
     {
       using (IndexJob job = new IndexJob())

@@ -30,6 +30,11 @@ namespace TeamSupport.ServiceLibrary
     */
     public IisDbLogger() { }
 
+    public override string ServiceName
+    {
+      get { return "iis"; }
+    }
+
     public override void Run()
     {
       //ProcessLogs();

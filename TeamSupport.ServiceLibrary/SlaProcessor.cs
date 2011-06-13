@@ -17,6 +17,12 @@ namespace TeamSupport.ServiceLibrary
     {
     }
 
+    public override string ServiceName
+    {
+      get { return "SlaProcessor"; }
+    }
+
+
     public override void Run()
     {
       try

@@ -59,6 +59,10 @@ namespace TeamSupport.ServiceLibrary
     {
     }
 
+    public override string ServiceName
+    {
+      get { return "EmailProcessor"; }
+    }
 
     public override void Run()
     {

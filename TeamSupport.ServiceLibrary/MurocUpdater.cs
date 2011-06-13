@@ -11,6 +11,11 @@ namespace TeamSupport.ServiceLibrary
   {
     public MurocUpdater() { }
 
+    public override string ServiceName
+    {
+      get { return "muroc"; }
+    }
+
     public override void Run()
     {
       try
