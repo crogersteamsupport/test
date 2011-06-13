@@ -21,84 +21,83 @@ namespace TeamSupport.ServiceTestApplication
     EmailSender _emailSender;
     SlaProcessor _slaProcessor;
     Indexer _indexer;
-    CrmProcessor _crmProcessor;
+    CrmPool _crmPool;
     
     public Form1()
     {
       InitializeComponent();
       System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.BelowNormal;
-
-      _emailProcessor = new EmailProcessor();
-      _emailSender = new EmailSender();
-      _slaProcessor = new SlaProcessor();
-      _indexer = new Indexer();
-      _crmProcessor = new CrmProcessor();
-
     }
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
       Properties.Settings.Default.Save();
-      Stop();
+      StopAll();
     }
 
-    private void Form1_Load(object sender, EventArgs e)
+    private void StopAll()
     {
+      _emailProcessor.Stop();
+      _emailSender.Stop();
+      _slaProcessor.Stop();
+      _indexer.Stop();
+      _crmPool.Stop();
     }
 
-
-
-    private void btnOnStart_Click(object sender, EventArgs e)
+    private void StartProcess(ServiceThread thread, Button button)
     {
-
-      if (btnOnStart.Text == "Start")
-      {
-        Start();
-      }
-      else
-      {
-        Stop();
-      }
-
-    }
-
-    private void Start()
-    {
-      btnOnStart.Text = "Stop";
-      btnOnStart.ForeColor = Color.Red;
+      button.Text = button.Text.Replace("Start ", "Stop ");
+      button.ForeColor = Color.Red;
       try
       {
-        btnOnStart.Enabled = false;
-        _emailProcessor.Start("EmailProcessor");
-        _emailSender.Start("EmailSender");
-        _slaProcessor.Start("SlaProcessor");
-        _indexer.Start("Indexer");
-        _crmProcessor.Start("CrmProcessor");
+        button.Enabled = false;
+        thread.Start();
       }
       finally
       {
-
-        btnOnStart.Enabled = true;
+        button.Enabled = true;
       }
+    
     }
 
-    private void Stop()
+    private void StopProcess(ServiceThread thread, Button button)
     {
       try
       {
-        btnOnStart.Enabled = false;
-        _emailProcessor.Stop();
-        _emailSender.Stop();
-        _slaProcessor.Stop();
-        _indexer.Stop();
-        _crmProcessor.Stop();
+        button.Enabled = false;
+        thread.Stop();
       }
       finally
       {
-        btnOnStart.Enabled = true;
-        btnOnStart.Text = "Start";
-        btnOnStart.ForeColor = Color.Green;
+        button.Enabled = true;
+        button.Text = button.Text.Replace("Stop ", "Start ");
+        button.ForeColor = Color.Green;
       }
+    }
+
+    private void btnEmailProcessor_Click(object sender, EventArgs e)
+    {
+      if (_emailProcessor == null) StartProcess(_emailProcessor = new EmailProcessor(), sender as Button); else StopProcess(_emailProcessor, sender as Button);
+    }
+
+    private void btnEmailSender_Click(object sender, EventArgs e)
+    {
+      if (_emailSender == null) StartProcess(_emailSender = new EmailSender(), sender as Button); else StopProcess(_emailSender, sender as Button);
+    }
+
+    private void btnSlaProcessor_Click(object sender, EventArgs e)
+    {
+      if (_slaProcessor == null) StartProcess(_slaProcessor = new SlaProcessor(), sender as Button); else StopProcess(_slaProcessor, sender as Button);
+    }
+
+    private void btnIndexer_Click(object sender, EventArgs e)
+    {
+      if (_indexer == null) StartProcess(_indexer = new Indexer(), sender as Button); else StopProcess(_indexer, sender as Button);
+    }
+
+    private void btnCrmPool_Click(object sender, EventArgs e)
+    {
+      if (_crmPool == null) StartProcess(_crmPool = new CrmPool(), sender as Button); else StopProcess(_crmPool, sender as Button);
     }
 
 

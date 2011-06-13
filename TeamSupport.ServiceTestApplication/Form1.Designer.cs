@@ -30,34 +30,86 @@
     {
       this.components = new System.ComponentModel.Container();
       this.timerEmails = new System.Windows.Forms.Timer(this.components);
-      this.btnOnStart = new System.Windows.Forms.Button();
+      this.btnEmailProcessor = new System.Windows.Forms.Button();
+      this.btnSlaProcessor = new System.Windows.Forms.Button();
+      this.btnEmailSender = new System.Windows.Forms.Button();
+      this.btnCrmPool = new System.Windows.Forms.Button();
+      this.btnIndexer = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
-      // btnOnStart
+      // btnEmailProcessor
       // 
-      this.btnOnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                  | System.Windows.Forms.AnchorStyles.Left)
-                  | System.Windows.Forms.AnchorStyles.Right)));
-      this.btnOnStart.Font = new System.Drawing.Font("Trebuchet MS", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btnOnStart.ForeColor = System.Drawing.Color.Green;
-      this.btnOnStart.Location = new System.Drawing.Point(12, 12);
-      this.btnOnStart.Name = "btnOnStart";
-      this.btnOnStart.Size = new System.Drawing.Size(264, 208);
-      this.btnOnStart.TabIndex = 21;
-      this.btnOnStart.Text = "Start";
-      this.btnOnStart.UseVisualStyleBackColor = true;
-      this.btnOnStart.Click += new System.EventHandler(this.btnOnStart_Click);
+      this.btnEmailProcessor.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btnEmailProcessor.ForeColor = System.Drawing.Color.Green;
+      this.btnEmailProcessor.Location = new System.Drawing.Point(12, 12);
+      this.btnEmailProcessor.Name = "btnEmailProcessor";
+      this.btnEmailProcessor.Size = new System.Drawing.Size(221, 31);
+      this.btnEmailProcessor.TabIndex = 21;
+      this.btnEmailProcessor.Text = "Start Email Processor";
+      this.btnEmailProcessor.UseVisualStyleBackColor = true;
+      this.btnEmailProcessor.Click += new System.EventHandler(this.btnEmailProcessor_Click);
+      // 
+      // btnSlaProcessor
+      // 
+      this.btnSlaProcessor.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btnSlaProcessor.ForeColor = System.Drawing.Color.Green;
+      this.btnSlaProcessor.Location = new System.Drawing.Point(12, 123);
+      this.btnSlaProcessor.Name = "btnSlaProcessor";
+      this.btnSlaProcessor.Size = new System.Drawing.Size(221, 31);
+      this.btnSlaProcessor.TabIndex = 22;
+      this.btnSlaProcessor.Text = "Start SLA Processor";
+      this.btnSlaProcessor.UseVisualStyleBackColor = true;
+      this.btnSlaProcessor.Click += new System.EventHandler(this.btnSlaProcessor_Click);
+      // 
+      // btnEmailSender
+      // 
+      this.btnEmailSender.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btnEmailSender.ForeColor = System.Drawing.Color.Green;
+      this.btnEmailSender.Location = new System.Drawing.Point(12, 49);
+      this.btnEmailSender.Name = "btnEmailSender";
+      this.btnEmailSender.Size = new System.Drawing.Size(221, 31);
+      this.btnEmailSender.TabIndex = 23;
+      this.btnEmailSender.Text = "Start Email Sender";
+      this.btnEmailSender.UseVisualStyleBackColor = true;
+      this.btnEmailSender.Click += new System.EventHandler(this.btnEmailSender_Click);
+      // 
+      // btnCrmPool
+      // 
+      this.btnCrmPool.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btnCrmPool.ForeColor = System.Drawing.Color.Green;
+      this.btnCrmPool.Location = new System.Drawing.Point(12, 160);
+      this.btnCrmPool.Name = "btnCrmPool";
+      this.btnCrmPool.Size = new System.Drawing.Size(221, 31);
+      this.btnCrmPool.TabIndex = 24;
+      this.btnCrmPool.Text = "Start CRM Pool";
+      this.btnCrmPool.UseVisualStyleBackColor = true;
+      this.btnCrmPool.Click += new System.EventHandler(this.btnCrmPool_Click);
+      // 
+      // btnIndexer
+      // 
+      this.btnIndexer.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btnIndexer.ForeColor = System.Drawing.Color.Green;
+      this.btnIndexer.Location = new System.Drawing.Point(12, 86);
+      this.btnIndexer.Name = "btnIndexer";
+      this.btnIndexer.Size = new System.Drawing.Size(221, 31);
+      this.btnIndexer.TabIndex = 25;
+      this.btnIndexer.Text = "Start Indexer";
+      this.btnIndexer.UseVisualStyleBackColor = true;
+      this.btnIndexer.Click += new System.EventHandler(this.btnIndexer_Click);
       // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(288, 232);
-      this.Controls.Add(this.btnOnStart);
+      this.ClientSize = new System.Drawing.Size(248, 202);
+      this.Controls.Add(this.btnIndexer);
+      this.Controls.Add(this.btnCrmPool);
+      this.Controls.Add(this.btnEmailSender);
+      this.Controls.Add(this.btnSlaProcessor);
+      this.Controls.Add(this.btnEmailProcessor);
       this.Name = "Form1";
       this.Text = "Email Test";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
-      this.Load += new System.EventHandler(this.Form1_Load);
       this.ResumeLayout(false);
 
     }
@@ -65,7 +117,11 @@
     #endregion
 
     private System.Windows.Forms.Timer timerEmails;
-    private System.Windows.Forms.Button btnOnStart;
+    private System.Windows.Forms.Button btnEmailProcessor;
+    private System.Windows.Forms.Button btnSlaProcessor;
+    private System.Windows.Forms.Button btnEmailSender;
+    private System.Windows.Forms.Button btnCrmPool;
+    private System.Windows.Forms.Button btnIndexer;
   }
 }
 
