@@ -189,8 +189,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteAttachment";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Attachments] WHERE ([AttachmentID] = @AttachmentID);";
         deleteCommand.Parameters.Add("AttachmentID", SqlDbType.Int);
         deleteCommand.Parameters["AttachmentID"].Value = attachmentID;
 
@@ -210,8 +210,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateAttachment";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Attachments] SET     [OrganizationID] = @OrganizationID,    [FileName] = @FileName,    [FileType] = @FileType,    [FileSize] = @FileSize,    [Path] = @Path,    [Description] = @Description,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [RefType] = @RefType,    [RefID] = @RefID  WHERE ([AttachmentID] = @AttachmentID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("AttachmentID", SqlDbType.Int, 4);
@@ -295,8 +295,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertAttachment";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Attachments] (    [OrganizationID],    [FileName],    [FileType],    [FileSize],    [Path],    [Description],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [RefType],    [RefID]) VALUES ( @OrganizationID, @FileName, @FileType, @FileSize, @Path, @Description, @DateCreated, @DateModified, @CreatorID, @ModifierID, @RefType, @RefID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("RefID", SqlDbType.Int, 4);
@@ -388,8 +388,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteAttachment";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Attachments] WHERE ([AttachmentID] = @AttachmentID);";
 		deleteCommand.Parameters.Add("AttachmentID", SqlDbType.Int);
 
 		try
@@ -495,8 +495,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectAttachment";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [AttachmentID], [OrganizationID], [FileName], [FileType], [FileSize], [Path], [Description], [DateCreated], [DateModified], [CreatorID], [ModifierID], [RefType], [RefID] FROM [dbo].[Attachments] WHERE ([AttachmentID] = @AttachmentID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("AttachmentID", attachmentID);
         Fill(command);
       }

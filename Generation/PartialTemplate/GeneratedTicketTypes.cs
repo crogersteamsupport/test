@@ -177,8 +177,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteTicketType";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketTypes] WHERE ([TicketTypeID] = @TicketTypeID);";
         deleteCommand.Parameters.Add("TicketTypeID", SqlDbType.Int);
         deleteCommand.Parameters["TicketTypeID"].Value = ticketTypeID;
 
@@ -198,8 +198,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateTicketType";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketTypes] SET     [Name] = @Name,    [Description] = @Description,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [IconUrl] = @IconUrl,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([TicketTypeID] = @TicketTypeID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketTypeID", SqlDbType.Int, 4);
@@ -269,8 +269,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertTicketType";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketTypes] (    [Name],    [Description],    [Position],    [OrganizationID],    [IconUrl],    [IsVisibleOnPortal],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @Name, @Description, @Position, @OrganizationID, @IconUrl, @IsVisibleOnPortal, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -348,8 +348,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteTicketType";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketTypes] WHERE ([TicketTypeID] = @TicketTypeID);";
 		deleteCommand.Parameters.Add("TicketTypeID", SqlDbType.Int);
 
 		try
@@ -455,8 +455,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectTicketType";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketTypeID], [Name], [Description], [Position], [OrganizationID], [IconUrl], [IsVisibleOnPortal], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[TicketTypes] WHERE ([TicketTypeID] = @TicketTypeID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketTypeID", ticketTypeID);
         Fill(command);
       }

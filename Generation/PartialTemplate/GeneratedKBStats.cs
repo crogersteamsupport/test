@@ -147,8 +147,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteKBStat";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[KBStats] WHERE ([KBViewID] = @KBViewID);";
         deleteCommand.Parameters.Add("KBViewID", SqlDbType.Int);
         deleteCommand.Parameters["KBViewID"].Value = kBViewID;
 
@@ -168,8 +168,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateKBStat";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[KBStats] SET     [OrganizationID] = @OrganizationID,    [KBArticleID] = @KBArticleID,    [ViewDateTime] = @ViewDateTime,    [ViewIP] = @ViewIP,    [SearchTerm] = @SearchTerm  WHERE ([KBViewID] = @KBViewID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("KBViewID", SqlDbType.Int, 4);
@@ -218,8 +218,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertKBStat";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[KBStats] (    [OrganizationID],    [KBArticleID],    [ViewDateTime],    [ViewIP],    [SearchTerm]) VALUES ( @OrganizationID, @KBArticleID, @ViewDateTime, @ViewIP, @SearchTerm); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("SearchTerm", SqlDbType.VarChar, 500);
@@ -262,8 +262,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteKBStat";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[KBStats] WHERE ([KBViewID] = @KBViewID);";
 		deleteCommand.Parameters.Add("KBViewID", SqlDbType.Int);
 
 		try
@@ -369,8 +369,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectKBStat";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [KBViewID], [OrganizationID], [KBArticleID], [ViewDateTime], [ViewIP], [SearchTerm] FROM [dbo].[KBStats] WHERE ([KBViewID] = @KBViewID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("KBViewID", kBViewID);
         Fill(command);
       }

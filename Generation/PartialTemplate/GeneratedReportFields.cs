@@ -135,8 +135,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteReportField";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ReportFields] WHERE ([ReportFieldID] = @ReportFieldID);";
         deleteCommand.Parameters.Add("ReportFieldID", SqlDbType.Int);
         deleteCommand.Parameters["ReportFieldID"].Value = reportFieldID;
 
@@ -156,8 +156,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateReportField";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportFields] SET     [ReportID] = @ReportID,    [LinkedFieldID] = @LinkedFieldID,    [IsCustomField] = @IsCustomField  WHERE ([ReportFieldID] = @ReportFieldID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportFieldID", SqlDbType.Int, 4);
@@ -192,8 +192,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertReportField";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportFields] (    [ReportID],    [LinkedFieldID],    [IsCustomField]) VALUES ( @ReportID, @LinkedFieldID, @IsCustomField); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("IsCustomField", SqlDbType.Bit, 1);
@@ -222,8 +222,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteReportField";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ReportFields] WHERE ([ReportFieldID] = @ReportFieldID);";
 		deleteCommand.Parameters.Add("ReportFieldID", SqlDbType.Int);
 
 		try
@@ -329,8 +329,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectReportField";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportFieldID], [ReportID], [LinkedFieldID], [IsCustomField] FROM [dbo].[ReportFields] WHERE ([ReportFieldID] = @ReportFieldID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportFieldID", reportFieldID);
         Fill(command);
       }

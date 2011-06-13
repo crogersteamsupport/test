@@ -165,8 +165,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteGroup";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Groups] WHERE ([GroupID] = @GroupID);";
         deleteCommand.Parameters.Add("GroupID", SqlDbType.Int);
         deleteCommand.Parameters["GroupID"].Value = groupID;
 
@@ -186,8 +186,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateGroup";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Groups] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([GroupID] = @GroupID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("GroupID", SqlDbType.Int, 4);
@@ -243,8 +243,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertGroup";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Groups] (    [OrganizationID],    [Name],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @OrganizationID, @Name, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -308,8 +308,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteGroup";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Groups] WHERE ([GroupID] = @GroupID);";
 		deleteCommand.Parameters.Add("GroupID", SqlDbType.Int);
 
 		try
@@ -415,8 +415,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectGroup";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [GroupID], [OrganizationID], [Name], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[Groups] WHERE ([GroupID] = @GroupID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("GroupID", groupID);
         Fill(command);
       }

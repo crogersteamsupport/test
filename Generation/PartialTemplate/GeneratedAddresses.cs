@@ -207,8 +207,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteAddress";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Addresses] WHERE ([AddressID] = @AddressID);";
         deleteCommand.Parameters.Add("AddressID", SqlDbType.Int);
         deleteCommand.Parameters["AddressID"].Value = addressID;
 
@@ -228,8 +228,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateAddress";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Addresses] SET     [RefID] = @RefID,    [RefType] = @RefType,    [Description] = @Description,    [Addr1] = @Addr1,    [Addr2] = @Addr2,    [Addr3] = @Addr3,    [City] = @City,    [State] = @State,    [Zip] = @Zip,    [Country] = @Country,    [Comment] = @Comment,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([AddressID] = @AddressID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("AddressID", SqlDbType.Int, 4);
@@ -334,8 +334,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertAddress";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Addresses] (    [RefID],    [RefType],    [Description],    [Addr1],    [Addr2],    [Addr3],    [City],    [State],    [Zip],    [Country],    [Comment],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @RefID, @RefType, @Description, @Addr1, @Addr2, @Addr3, @City, @State, @Zip, @Country, @Comment, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -448,8 +448,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteAddress";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Addresses] WHERE ([AddressID] = @AddressID);";
 		deleteCommand.Parameters.Add("AddressID", SqlDbType.Int);
 
 		try
@@ -555,8 +555,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectAddress";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [AddressID], [RefID], [RefType], [Description], [Addr1], [Addr2], [Addr3], [City], [State], [Zip], [Country], [Comment], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[Addresses] WHERE ([AddressID] = @AddressID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("AddressID", addressID);
         Fill(command);
       }

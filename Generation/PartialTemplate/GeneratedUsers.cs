@@ -339,8 +339,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteUser";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
         deleteCommand.Parameters.Add("UserID", SqlDbType.Int);
         deleteCommand.Parameters["UserID"].Value = userID;
 
@@ -360,8 +360,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateUser";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe  WHERE ([UserID] = @UserID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
@@ -620,8 +620,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertUser";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Users] (    [Email],    [FirstName],    [MiddleName],    [LastName],    [Title],    [CryptedPassword],    [IsActive],    [MarkDeleted],    [TimeZoneID],    [CultureName],    [LastLogin],    [LastActivity],    [LastPing],    [LastWaterCoolerID],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [IsChatUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ReceiveTicketNotifications],    [ReceiveAllGroupNotifications],    [SubscribeToNewTickets],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [LastVersion],    [SessionID],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrgsUserCanSeeOnPortal],    [DoNotAutoSubscribe]) VALUES ( @Email, @FirstName, @MiddleName, @LastName, @Title, @CryptedPassword, @IsActive, @MarkDeleted, @TimeZoneID, @CultureName, @LastLogin, @LastActivity, @LastPing, @LastWaterCoolerID, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @IsChatUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ReceiveTicketNotifications, @ReceiveAllGroupNotifications, @SubscribeToNewTickets, @ActivatedOn, @DeactivatedOn, @OrganizationID, @LastVersion, @SessionID, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrgsUserCanSeeOnPortal, @DoNotAutoSubscribe); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DoNotAutoSubscribe", SqlDbType.Bit, 1);
@@ -888,8 +888,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteUser";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
 		deleteCommand.Parameters.Add("UserID", SqlDbType.Int);
 
 		try
@@ -995,8 +995,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectUser";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [UserID], [Email], [FirstName], [MiddleName], [LastName], [Title], [CryptedPassword], [IsActive], [MarkDeleted], [TimeZoneID], [CultureName], [LastLogin], [LastActivity], [LastPing], [LastWaterCoolerID], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [IsChatUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ReceiveTicketNotifications], [ReceiveAllGroupNotifications], [SubscribeToNewTickets], [ActivatedOn], [DeactivatedOn], [OrganizationID], [LastVersion], [SessionID], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrgsUserCanSeeOnPortal], [DoNotAutoSubscribe] FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("UserID", userID);
         Fill(command);
       }

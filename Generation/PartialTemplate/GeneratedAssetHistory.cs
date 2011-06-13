@@ -189,8 +189,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteAssetHistoryItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AssetHistory] WHERE ([HistoryID] = @HistoryID);";
         deleteCommand.Parameters.Add("HistoryID", SqlDbType.Int);
         deleteCommand.Parameters["HistoryID"].Value = historyID;
 
@@ -210,8 +210,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateAssetHistoryItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AssetHistory] SET     [AssetID] = @AssetID,    [OrganizationID] = @OrganizationID,    [ActionTime] = @ActionTime,    [ActionDescription] = @ActionDescription,    [ShippedFrom] = @ShippedFrom,    [ShippedTo] = @ShippedTo,    [TrackingNumber] = @TrackingNumber,    [ShippingMethod] = @ShippingMethod,    [ReferenceNum] = @ReferenceNum,    [Comments] = @Comments,    [Actor] = @Actor  WHERE ([HistoryID] = @HistoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("HistoryID", SqlDbType.Int, 4);
@@ -302,8 +302,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertAssetHistoryItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AssetHistory] (    [AssetID],    [OrganizationID],    [ActionTime],    [ActionDescription],    [ShippedFrom],    [ShippedTo],    [TrackingNumber],    [ShippingMethod],    [ReferenceNum],    [Comments],    [DateCreated],    [Actor]) VALUES ( @AssetID, @OrganizationID, @ActionTime, @ActionDescription, @ShippedFrom, @ShippedTo, @TrackingNumber, @ShippingMethod, @ReferenceNum, @Comments, @DateCreated, @Actor); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("Actor", SqlDbType.Int, 4);
@@ -395,8 +395,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteAssetHistoryItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AssetHistory] WHERE ([HistoryID] = @HistoryID);";
 		deleteCommand.Parameters.Add("HistoryID", SqlDbType.Int);
 
 		try
@@ -502,8 +502,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectAssetHistoryItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [AssetID], [OrganizationID], [ActionTime], [ActionDescription], [ShippedFrom], [ShippedTo], [TrackingNumber], [ShippingMethod], [ReferenceNum], [Comments], [DateCreated], [Actor] FROM [dbo].[AssetHistory] WHERE ([HistoryID] = @HistoryID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("HistoryID", historyID);
         Fill(command);
       }

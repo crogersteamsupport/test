@@ -220,8 +220,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteSlaTriggersViewItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaTriggersView] WHERE ([SlaTriggerID] = @SlaTriggerID);";
         deleteCommand.Parameters.Add("SlaTriggerID", SqlDbType.Int);
         deleteCommand.Parameters["SlaTriggerID"].Value = slaTriggerID;
 
@@ -241,8 +241,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateSlaTriggersViewItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaTriggersView] SET     [SlaLevelID] = @SlaLevelID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [TimeInitialResponse] = @TimeInitialResponse,    [TimeLastAction] = @TimeLastAction,    [TimeToClose] = @TimeToClose,    [NotifyUserOnWarning] = @NotifyUserOnWarning,    [NotifyGroupOnWarning] = @NotifyGroupOnWarning,    [NotifyUserOnViolation] = @NotifyUserOnViolation,    [NotifyGroupOnViolation] = @NotifyGroupOnViolation,    [WarningTime] = @WarningTime,    [UseBusinessHours] = @UseBusinessHours,    [LevelName] = @LevelName,    [Severity] = @Severity,    [TicketType] = @TicketType,    [Position] = @Position,    [OrganizationID] = @OrganizationID  WHERE ([SlaTriggerID] = @SlaTriggerID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("SlaTriggerID", SqlDbType.Int, 4);
@@ -375,8 +375,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertSlaTriggersViewItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SlaTriggersView] (    [SlaTriggerID],    [SlaLevelID],    [TicketTypeID],    [TicketSeverityID],    [TimeInitialResponse],    [TimeLastAction],    [TimeToClose],    [NotifyUserOnWarning],    [NotifyGroupOnWarning],    [NotifyUserOnViolation],    [NotifyGroupOnViolation],    [WarningTime],    [UseBusinessHours],    [LevelName],    [Severity],    [TicketType],    [Position],    [OrganizationID]) VALUES ( @SlaTriggerID, @SlaLevelID, @TicketTypeID, @TicketSeverityID, @TimeInitialResponse, @TimeLastAction, @TimeToClose, @NotifyUserOnWarning, @NotifyGroupOnWarning, @NotifyUserOnViolation, @NotifyGroupOnViolation, @WarningTime, @UseBusinessHours, @LevelName, @Severity, @TicketType, @Position, @OrganizationID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -510,8 +510,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteSlaTriggersViewItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaTriggersView] WHERE ([SlaTriggerID] = @SlaTriggerID);";
 		deleteCommand.Parameters.Add("SlaTriggerID", SqlDbType.Int);
 
 		try
@@ -617,8 +617,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectSlaTriggersViewItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [SlaTriggerID], [SlaLevelID], [TicketTypeID], [TicketSeverityID], [TimeInitialResponse], [TimeLastAction], [TimeToClose], [NotifyUserOnWarning], [NotifyGroupOnWarning], [NotifyUserOnViolation], [NotifyGroupOnViolation], [WarningTime], [UseBusinessHours], [LevelName], [Severity], [TicketType], [Position], [OrganizationID] FROM [dbo].[SlaTriggersView] WHERE ([SlaTriggerID] = @SlaTriggerID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("SlaTriggerID", slaTriggerID);
         Fill(command);
       }

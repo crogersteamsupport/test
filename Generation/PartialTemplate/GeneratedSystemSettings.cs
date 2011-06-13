@@ -129,8 +129,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteSystemSetting";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SystemSettings] WHERE ([SystemSettingID] = @SystemSettingID);";
         deleteCommand.Parameters.Add("SystemSettingID", SqlDbType.Int);
         deleteCommand.Parameters["SystemSettingID"].Value = systemSettingID;
 
@@ -150,8 +150,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateSystemSetting";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SystemSettings] SET     [SettingKey] = @SettingKey,    [SettingValue] = @SettingValue  WHERE ([SystemSettingID] = @SystemSettingID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("SystemSettingID", SqlDbType.Int, 4);
@@ -179,8 +179,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertSystemSetting";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SystemSettings] (    [SettingKey],    [SettingValue]) VALUES ( @SettingKey, @SettingValue); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("SettingValue", SqlDbType.VarChar, 8000);
@@ -202,8 +202,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteSystemSetting";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SystemSettings] WHERE ([SystemSettingID] = @SystemSettingID);";
 		deleteCommand.Parameters.Add("SystemSettingID", SqlDbType.Int);
 
 		try
@@ -309,8 +309,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectSystemSetting";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [SystemSettingID], [SettingKey], [SettingValue] FROM [dbo].[SystemSettings] WHERE ([SystemSettingID] = @SystemSettingID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("SystemSettingID", systemSettingID);
         Fill(command);
       }

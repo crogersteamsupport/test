@@ -202,8 +202,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteProductVersionsViewItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ProductVersionsView] WHERE ([ProductVersionID] = @ProductVersionID);";
         deleteCommand.Parameters.Add("ProductVersionID", SqlDbType.Int);
         deleteCommand.Parameters["ProductVersionID"].Value = productVersionID;
 
@@ -223,8 +223,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateProductVersionsViewItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ProductVersionsView] SET     [ProductID] = @ProductID,    [ProductVersionStatusID] = @ProductVersionStatusID,    [VersionNumber] = @VersionNumber,    [ReleaseDate] = @ReleaseDate,    [IsReleased] = @IsReleased,    [Description] = @Description,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [VersionStatus] = @VersionStatus,    [ProductName] = @ProductName,    [OrganizationID] = @OrganizationID  WHERE ([ProductVersionID] = @ProductVersionID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ProductVersionID", SqlDbType.Int, 4);
@@ -322,8 +322,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertProductVersionsViewItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ProductVersionsView] (    [ProductVersionID],    [ProductID],    [ProductVersionStatusID],    [VersionNumber],    [ReleaseDate],    [IsReleased],    [Description],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [VersionStatus],    [ProductName],    [OrganizationID]) VALUES ( @ProductVersionID, @ProductID, @ProductVersionStatusID, @VersionNumber, @ReleaseDate, @IsReleased, @Description, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @VersionStatus, @ProductName, @OrganizationID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -436,8 +436,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteProductVersionsViewItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ProductVersionsView] WHERE ([ProductVersionID] = @ProductVersionID);";
 		deleteCommand.Parameters.Add("ProductVersionID", SqlDbType.Int);
 
 		try
@@ -543,8 +543,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectProductVersionsViewItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ProductVersionID], [ProductID], [ProductVersionStatusID], [VersionNumber], [ReleaseDate], [IsReleased], [Description], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [VersionStatus], [ProductName], [OrganizationID] FROM [dbo].[ProductVersionsView] WHERE ([ProductVersionID] = @ProductVersionID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ProductVersionID", productVersionID);
         Fill(command);
       }

@@ -129,8 +129,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteSlaLevel";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaLevels] WHERE ([SlaLevelID] = @SlaLevelID);";
         deleteCommand.Parameters.Add("SlaLevelID", SqlDbType.Int);
         deleteCommand.Parameters["SlaLevelID"].Value = slaLevelID;
 
@@ -150,8 +150,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateSlaLevel";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaLevels] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name  WHERE ([SlaLevelID] = @SlaLevelID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("SlaLevelID", SqlDbType.Int, 4);
@@ -179,8 +179,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertSlaLevel";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SlaLevels] (    [OrganizationID],    [Name]) VALUES ( @OrganizationID, @Name); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.VarChar, 150);
@@ -202,8 +202,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteSlaLevel";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaLevels] WHERE ([SlaLevelID] = @SlaLevelID);";
 		deleteCommand.Parameters.Add("SlaLevelID", SqlDbType.Int);
 
 		try
@@ -309,8 +309,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectSlaLevel";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [SlaLevelID], [OrganizationID], [Name] FROM [dbo].[SlaLevels] WHERE ([SlaLevelID] = @SlaLevelID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("SlaLevelID", slaLevelID);
         Fill(command);
       }

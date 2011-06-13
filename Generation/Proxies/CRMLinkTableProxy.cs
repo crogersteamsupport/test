@@ -23,6 +23,7 @@ namespace TeamSupport.Data
     [DataMember] public string TypeFieldMatch { get; set; }
     [DataMember] public DateTime? LastLink { get; set; }
     [DataMember] public bool SendBackTicketData { get; set; }
+    [DataMember] public DateTime LastProcessed { get; set; }
           
   }
   
@@ -41,6 +42,7 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
        
+      result.LastProcessed = DateTime.SpecifyKind(this.LastProcessed, DateTimeKind.Local);
        
       result.LastLink = this.LastLink == null ? this.LastLink : DateTime.SpecifyKind((DateTime)this.LastLink, DateTimeKind.Local); 
        

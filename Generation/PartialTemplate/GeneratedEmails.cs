@@ -231,8 +231,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteEmail";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Emails] WHERE ([EmailID] = @EmailID);";
         deleteCommand.Parameters.Add("EmailID", SqlDbType.Int);
         deleteCommand.Parameters["EmailID"].Value = emailID;
 
@@ -252,8 +252,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateEmail";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Emails] SET     [OrganizationID] = @OrganizationID,    [Description] = @Description,    [FromAddress] = @FromAddress,    [ToAddress] = @ToAddress,    [CCAddress] = @CCAddress,    [BCCAddress] = @BCCAddress,    [Subject] = @Subject,    [Body] = @Body,    [Attachments] = @Attachments,    [Size] = @Size,    [IsSuccess] = @IsSuccess,    [IsWaiting] = @IsWaiting,    [IsHtml] = @IsHtml,    [Attempts] = @Attempts,    [NextAttempt] = @NextAttempt,    [DateSent] = @DateSent,    [LastFailedReason] = @LastFailedReason,    [EmailPostID] = @EmailPostID  WHERE ([EmailID] = @EmailID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("EmailID", SqlDbType.Int, 4);
@@ -393,8 +393,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertEmail";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Emails] (    [OrganizationID],    [Description],    [FromAddress],    [ToAddress],    [CCAddress],    [BCCAddress],    [Subject],    [Body],    [Attachments],    [Size],    [IsSuccess],    [IsWaiting],    [IsHtml],    [Attempts],    [NextAttempt],    [DateSent],    [LastFailedReason],    [EmailPostID],    [DateCreated]) VALUES ( @OrganizationID, @Description, @FromAddress, @ToAddress, @CCAddress, @BCCAddress, @Subject, @Body, @Attachments, @Size, @IsSuccess, @IsWaiting, @IsHtml, @Attempts, @NextAttempt, @DateSent, @LastFailedReason, @EmailPostID, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
@@ -535,8 +535,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteEmail";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Emails] WHERE ([EmailID] = @EmailID);";
 		deleteCommand.Parameters.Add("EmailID", SqlDbType.Int);
 
 		try
@@ -642,8 +642,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectEmail";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [EmailID], [OrganizationID], [Description], [FromAddress], [ToAddress], [CCAddress], [BCCAddress], [Subject], [Body], [Attachments], [Size], [IsSuccess], [IsWaiting], [IsHtml], [Attempts], [NextAttempt], [DateSent], [LastFailedReason], [EmailPostID], [DateCreated] FROM [dbo].[Emails] WHERE ([EmailID] = @EmailID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("EmailID", emailID);
         Fill(command);
       }

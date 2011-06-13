@@ -213,8 +213,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteCustomField";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CustomFields] WHERE ([CustomFieldID] = @CustomFieldID);";
         deleteCommand.Parameters.Add("CustomFieldID", SqlDbType.Int);
         deleteCommand.Parameters["CustomFieldID"].Value = customFieldID;
 
@@ -234,8 +234,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateCustomField";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomFields] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [ApiFieldName] = @ApiFieldName,    [RefType] = @RefType,    [FieldType] = @FieldType,    [AuxID] = @AuxID,    [Position] = @Position,    [ListValues] = @ListValues,    [Description] = @Description,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsFirstIndexSelect] = @IsFirstIndexSelect,    [IsRequired] = @IsRequired,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([CustomFieldID] = @CustomFieldID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomFieldID", SqlDbType.Int, 4);
@@ -347,8 +347,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertCustomField";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomFields] (    [OrganizationID],    [Name],    [ApiFieldName],    [RefType],    [FieldType],    [AuxID],    [Position],    [ListValues],    [Description],    [IsVisibleOnPortal],    [IsFirstIndexSelect],    [IsRequired],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @OrganizationID, @Name, @ApiFieldName, @RefType, @FieldType, @AuxID, @Position, @ListValues, @Description, @IsVisibleOnPortal, @IsFirstIndexSelect, @IsRequired, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -468,8 +468,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteCustomField";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CustomFields] WHERE ([CustomFieldID] = @CustomFieldID);";
 		deleteCommand.Parameters.Add("CustomFieldID", SqlDbType.Int);
 
 		try
@@ -575,8 +575,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectCustomField";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomFieldID], [OrganizationID], [Name], [ApiFieldName], [RefType], [FieldType], [AuxID], [Position], [ListValues], [Description], [IsVisibleOnPortal], [IsFirstIndexSelect], [IsRequired], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[CustomFields] WHERE ([CustomFieldID] = @CustomFieldID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomFieldID", customFieldID);
         Fill(command);
       }

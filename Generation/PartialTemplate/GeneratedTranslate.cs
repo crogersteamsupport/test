@@ -153,8 +153,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteTranslateItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Translate] WHERE ([PhraseID] = @PhraseID);";
         deleteCommand.Parameters.Add("PhraseID", SqlDbType.Int);
         deleteCommand.Parameters["PhraseID"].Value = phraseID;
 
@@ -174,8 +174,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateTranslateItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Translate] SET     [English] = @English,    [French] = @French,    [Italian] = @Italian,    [German] = @German,    [Spanish] = @Spanish,    [Portugese] = @Portugese  WHERE ([PhraseID] = @PhraseID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("PhraseID", SqlDbType.Int, 4);
@@ -231,8 +231,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertTranslateItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Translate] (    [English],    [French],    [Italian],    [German],    [Spanish],    [Portugese]) VALUES ( @English, @French, @Italian, @German, @Spanish, @Portugese); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("Portugese", SqlDbType.VarChar, 500);
@@ -282,8 +282,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteTranslateItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Translate] WHERE ([PhraseID] = @PhraseID);";
 		deleteCommand.Parameters.Add("PhraseID", SqlDbType.Int);
 
 		try
@@ -389,8 +389,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectTranslateItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [PhraseID], [English], [French], [Italian], [German], [Spanish], [Portugese] FROM [dbo].[Translate] WHERE ([PhraseID] = @PhraseID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("PhraseID", phraseID);
         Fill(command);
       }

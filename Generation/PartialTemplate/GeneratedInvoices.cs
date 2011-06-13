@@ -279,8 +279,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteInvoice";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Invoices] WHERE ([InvoiceID] = @InvoiceID);";
         deleteCommand.Parameters.Add("InvoiceID", SqlDbType.Int);
         deleteCommand.Parameters["InvoiceID"].Value = invoiceID;
 
@@ -300,8 +300,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateInvoice";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Invoices] SET     [OrganizationID] = @OrganizationID,    [CreditCardID] = @CreditCardID,    [UserSeats] = @UserSeats,    [PortalSeats] = @PortalSeats,    [ExtraStorageUnits] = @ExtraStorageUnits,    [UserPrice] = @UserPrice,    [PortalPrice] = @PortalPrice,    [StoragePrice] = @StoragePrice,    [IsPortalBilled] = @IsPortalBilled,    [TaxRate] = @TaxRate,    [TotalUserPrice] = @TotalUserPrice,    [TotalPortalPrice] = @TotalPortalPrice,    [TotalStoragePrice] = @TotalStoragePrice,    [TotalTaxPrice] = @TotalTaxPrice,    [TotalAmount] = @TotalAmount,    [DateStart] = @DateStart,    [DateEnd] = @DateEnd,    [DateBilled] = @DateBilled,    [DateDue] = @DateDue,    [IsPaid] = @IsPaid,    [IsPaymentFailed] = @IsPaymentFailed,    [PaymentMethod] = @PaymentMethod,    [PaymentFailedReason] = @PaymentFailedReason,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([InvoiceID] = @InvoiceID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("InvoiceID", SqlDbType.Int, 4);
@@ -490,8 +490,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertInvoice";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Invoices] (    [OrganizationID],    [CreditCardID],    [UserSeats],    [PortalSeats],    [ExtraStorageUnits],    [UserPrice],    [PortalPrice],    [StoragePrice],    [IsPortalBilled],    [TaxRate],    [TotalUserPrice],    [TotalPortalPrice],    [TotalStoragePrice],    [TotalTaxPrice],    [TotalAmount],    [DateStart],    [DateEnd],    [DateBilled],    [DateDue],    [IsPaid],    [IsPaymentFailed],    [PaymentMethod],    [PaymentFailedReason],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @OrganizationID, @CreditCardID, @UserSeats, @PortalSeats, @ExtraStorageUnits, @UserPrice, @PortalPrice, @StoragePrice, @IsPortalBilled, @TaxRate, @TotalUserPrice, @TotalPortalPrice, @TotalStoragePrice, @TotalTaxPrice, @TotalAmount, @DateStart, @DateEnd, @DateBilled, @DateDue, @IsPaid, @IsPaymentFailed, @PaymentMethod, @PaymentFailedReason, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -688,8 +688,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteInvoice";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Invoices] WHERE ([InvoiceID] = @InvoiceID);";
 		deleteCommand.Parameters.Add("InvoiceID", SqlDbType.Int);
 
 		try
@@ -795,8 +795,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectInvoice";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [InvoiceID], [OrganizationID], [CreditCardID], [UserSeats], [PortalSeats], [ExtraStorageUnits], [UserPrice], [PortalPrice], [StoragePrice], [IsPortalBilled], [TaxRate], [TotalUserPrice], [TotalPortalPrice], [TotalStoragePrice], [TotalTaxPrice], [TotalAmount], [DateStart], [DateEnd], [DateBilled], [DateDue], [IsPaid], [IsPaymentFailed], [PaymentMethod], [PaymentFailedReason], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[Invoices] WHERE ([InvoiceID] = @InvoiceID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("InvoiceID", invoiceID);
         Fill(command);
       }

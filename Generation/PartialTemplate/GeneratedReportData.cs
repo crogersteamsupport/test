@@ -165,8 +165,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteReportDataItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ReportData] WHERE ([ReportDataID] = @ReportDataID);";
         deleteCommand.Parameters.Add("ReportDataID", SqlDbType.Int);
         deleteCommand.Parameters["ReportDataID"].Value = reportDataID;
 
@@ -186,8 +186,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateReportDataItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportData] SET     [UserID] = @UserID,    [ReportID] = @ReportID,    [ReportData] = @ReportData,    [QueryObject] = @QueryObject,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified  WHERE ([ReportDataID] = @ReportDataID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportDataID", SqlDbType.Int, 4);
@@ -243,8 +243,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertReportDataItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportData] (    [UserID],    [ReportID],    [ReportData],    [QueryObject],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified]) VALUES ( @UserID, @ReportID, @ReportData, @QueryObject, @CreatorID, @ModifierID, @DateCreated, @DateModified); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
@@ -308,8 +308,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteReportDataItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ReportData] WHERE ([ReportDataID] = @ReportDataID);";
 		deleteCommand.Parameters.Add("ReportDataID", SqlDbType.Int);
 
 		try
@@ -415,8 +415,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectReportDataItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportDataID], [UserID], [ReportID], [ReportData], [QueryObject], [CreatorID], [ModifierID], [DateCreated], [DateModified] FROM [dbo].[ReportData] WHERE ([ReportDataID] = @ReportDataID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportDataID", reportDataID);
         Fill(command);
       }

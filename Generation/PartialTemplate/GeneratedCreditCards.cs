@@ -183,8 +183,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteCreditCard";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CreditCards] WHERE ([CreditCardID] = @CreditCardID);";
         deleteCommand.Parameters.Add("CreditCardID", SqlDbType.Int);
         deleteCommand.Parameters["CreditCardID"].Value = creditCardID;
 
@@ -204,8 +204,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateCreditCard";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CreditCards] SET     [OrganizationID] = @OrganizationID,    [DisplayNumber] = @DisplayNumber,    [CreditCardType] = @CreditCardType,    [CardNumber] = @CardNumber,    [SecurityCode] = @SecurityCode,    [ExpirationDate] = @ExpirationDate,    [NameOnCard] = @NameOnCard,    [DateModfied] = @DateModfied,    [ModifierID] = @ModifierID  WHERE ([CreditCardID] = @CreditCardID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CreditCardID", SqlDbType.Int, 4);
@@ -282,8 +282,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertCreditCard";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CreditCards] (    [OrganizationID],    [DisplayNumber],    [CreditCardType],    [CardNumber],    [SecurityCode],    [ExpirationDate],    [NameOnCard],    [DateCreated],    [DateModfied],    [CreatorID],    [ModifierID]) VALUES ( @OrganizationID, @DisplayNumber, @CreditCardType, @CardNumber, @SecurityCode, @ExpirationDate, @NameOnCard, @DateCreated, @DateModfied, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -368,8 +368,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteCreditCard";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CreditCards] WHERE ([CreditCardID] = @CreditCardID);";
 		deleteCommand.Parameters.Add("CreditCardID", SqlDbType.Int);
 
 		try
@@ -475,8 +475,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectCreditCard";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CreditCardID], [OrganizationID], [DisplayNumber], [CreditCardType], [CardNumber], [SecurityCode], [ExpirationDate], [NameOnCard], [DateCreated], [DateModfied], [CreatorID], [ModifierID] FROM [dbo].[CreditCards] WHERE ([CreditCardID] = @CreditCardID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CreditCardID", creditCardID);
         Fill(command);
       }

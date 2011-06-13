@@ -177,8 +177,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteTicketAutomationTrigger";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketAutomationTriggers] WHERE ([TriggerID] = @TriggerID);";
         deleteCommand.Parameters.Add("TriggerID", SqlDbType.Int);
         deleteCommand.Parameters["TriggerID"].Value = triggerID;
 
@@ -198,8 +198,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateTicketAutomationTrigger";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketAutomationTriggers] SET     [Name] = @Name,    [Active] = @Active,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [UseCustomSQL] = @UseCustomSQL,    [CustomSQL] = @CustomSQL,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([TriggerID] = @TriggerID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TriggerID", SqlDbType.Int, 4);
@@ -269,8 +269,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertTicketAutomationTrigger";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketAutomationTriggers] (    [Name],    [Active],    [Position],    [OrganizationID],    [UseCustomSQL],    [CustomSQL],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @Name, @Active, @Position, @OrganizationID, @UseCustomSQL, @CustomSQL, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -348,8 +348,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteTicketAutomationTrigger";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TicketAutomationTriggers] WHERE ([TriggerID] = @TriggerID);";
 		deleteCommand.Parameters.Add("TriggerID", SqlDbType.Int);
 
 		try
@@ -455,8 +455,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectTicketAutomationTrigger";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TriggerID], [Name], [Active], [Position], [OrganizationID], [UseCustomSQL], [CustomSQL], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[TicketAutomationTriggers] WHERE ([TriggerID] = @TriggerID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TriggerID", triggerID);
         Fill(command);
       }

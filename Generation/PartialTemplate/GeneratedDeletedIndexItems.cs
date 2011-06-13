@@ -135,8 +135,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteDeletedIndexItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[DeletedIndexItems] WHERE ([DeletedIndexID] = @DeletedIndexID);";
         deleteCommand.Parameters.Add("DeletedIndexID", SqlDbType.Int);
         deleteCommand.Parameters["DeletedIndexID"].Value = deletedIndexID;
 
@@ -156,8 +156,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateDeletedIndexItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[DeletedIndexItems] SET     [RefID] = @RefID,    [RefType] = @RefType,    [DateDeleted] = @DateDeleted  WHERE ([DeletedIndexID] = @DeletedIndexID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("DeletedIndexID", SqlDbType.Int, 4);
@@ -192,8 +192,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertDeletedIndexItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[DeletedIndexItems] (    [RefID],    [RefType],    [DateDeleted]) VALUES ( @RefID, @RefType, @DateDeleted); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateDeleted", SqlDbType.DateTime, 8);
@@ -222,8 +222,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteDeletedIndexItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[DeletedIndexItems] WHERE ([DeletedIndexID] = @DeletedIndexID);";
 		deleteCommand.Parameters.Add("DeletedIndexID", SqlDbType.Int);
 
 		try
@@ -329,8 +329,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectDeletedIndexItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [DeletedIndexID], [RefID], [RefType], [DateDeleted] FROM [dbo].[DeletedIndexItems] WHERE ([DeletedIndexID] = @DeletedIndexID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("DeletedIndexID", deletedIndexID);
         Fill(command);
       }

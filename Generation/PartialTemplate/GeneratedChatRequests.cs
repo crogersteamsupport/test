@@ -177,8 +177,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteChatRequest";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ChatRequests] WHERE ([ChatRequestID] = @ChatRequestID);";
         deleteCommand.Parameters.Add("ChatRequestID", SqlDbType.Int);
         deleteCommand.Parameters["ChatRequestID"].Value = chatRequestID;
 
@@ -198,8 +198,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateChatRequest";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ChatRequests] SET     [OrganizationID] = @OrganizationID,    [ChatID] = @ChatID,    [RequestorID] = @RequestorID,    [RequestorType] = @RequestorType,    [TargetUserID] = @TargetUserID,    [Message] = @Message,    [GroupID] = @GroupID,    [RequestType] = @RequestType,    [IsAccepted] = @IsAccepted  WHERE ([ChatRequestID] = @ChatRequestID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ChatRequestID", SqlDbType.Int, 4);
@@ -276,8 +276,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertChatRequest";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ChatRequests] (    [OrganizationID],    [ChatID],    [RequestorID],    [RequestorType],    [TargetUserID],    [Message],    [GroupID],    [RequestType],    [IsAccepted],    [DateCreated]) VALUES ( @OrganizationID, @ChatID, @RequestorID, @RequestorType, @TargetUserID, @Message, @GroupID, @RequestType, @IsAccepted, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
@@ -355,8 +355,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteChatRequest";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[ChatRequests] WHERE ([ChatRequestID] = @ChatRequestID);";
 		deleteCommand.Parameters.Add("ChatRequestID", SqlDbType.Int);
 
 		try
@@ -462,8 +462,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectChatRequest";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ChatRequestID], [OrganizationID], [ChatID], [RequestorID], [RequestorType], [TargetUserID], [Message], [GroupID], [RequestType], [IsAccepted], [DateCreated] FROM [dbo].[ChatRequests] WHERE ([ChatRequestID] = @ChatRequestID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ChatRequestID", chatRequestID);
         Fill(command);
       }

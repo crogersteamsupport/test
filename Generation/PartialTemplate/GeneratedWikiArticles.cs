@@ -207,8 +207,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteWikiArticle";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID);";
         deleteCommand.Parameters.Add("ArticleID", SqlDbType.Int);
         deleteCommand.Parameters["ArticleID"].Value = articleID;
 
@@ -228,8 +228,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateWikiArticle";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WikiArticles] SET     [ParentID] = @ParentID,    [OrganizationID] = @OrganizationID,    [ArticleName] = @ArticleName,    [Body] = @Body,    [Version] = @Version,    [PublicView] = @PublicView,    [PublicEdit] = @PublicEdit,    [PortalView] = @PortalView,    [PortalEdit] = @PortalEdit,    [Private] = @Private,    [IsDeleted] = @IsDeleted,    [CreatedBy] = @CreatedBy,    [CreatedDate] = @CreatedDate,    [ModifiedBy] = @ModifiedBy,    [ModifiedDate] = @ModifiedDate  WHERE ([ArticleID] = @ArticleID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ArticleID", SqlDbType.Int, 4);
@@ -348,8 +348,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertWikiArticle";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WikiArticles] (    [ParentID],    [OrganizationID],    [ArticleName],    [Body],    [Version],    [PublicView],    [PublicEdit],    [PortalView],    [PortalEdit],    [Private],    [IsDeleted],    [CreatedBy],    [CreatedDate],    [ModifiedBy],    [ModifiedDate]) VALUES ( @ParentID, @OrganizationID, @ArticleName, @Body, @Version, @PublicView, @PublicEdit, @PortalView, @PortalEdit, @Private, @IsDeleted, @CreatedBy, @CreatedDate, @ModifiedBy, @ModifiedDate); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifiedDate", SqlDbType.DateTime, 8);
@@ -462,8 +462,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteWikiArticle";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID);";
 		deleteCommand.Parameters.Add("ArticleID", SqlDbType.Int);
 
 		try
@@ -569,8 +569,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectWikiArticle";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ArticleID], [ParentID], [OrganizationID], [ArticleName], [Body], [Version], [PublicView], [PublicEdit], [PortalView], [PortalEdit], [Private], [IsDeleted], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate] FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ArticleID", articleID);
         Fill(command);
       }

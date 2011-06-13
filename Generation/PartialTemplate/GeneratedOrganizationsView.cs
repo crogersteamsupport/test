@@ -253,8 +253,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteOrganizationsViewItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[OrganizationsView] WHERE ([OrganizationID] = @OrganizationID);";
         deleteCommand.Parameters.Add("OrganizationID", SqlDbType.Int);
         deleteCommand.Parameters["OrganizationID"].Value = organizationID;
 
@@ -274,8 +274,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateOrganizationsViewItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationsView] SET     [Name] = @Name,    [Description] = @Description,    [Website] = @Website,    [IsActive] = @IsActive,    [InActiveReason] = @InActiveReason,    [PrimaryUserID] = @PrimaryUserID,    [PrimaryContact] = @PrimaryContact,    [ParentID] = @ParentID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [HasPortalAccess] = @HasPortalAccess,    [CreatedBy] = @CreatedBy,    [LastModifiedBy] = @LastModifiedBy,    [SAExpirationDate] = @SAExpirationDate,    [SlaName] = @SlaName,    [CRMLinkID] = @CRMLinkID,    [PortalGuid] = @PortalGuid,    [SlaLevelID] = @SlaLevelID,    [DefaultWikiArticleID] = @DefaultWikiArticleID,    [DefaultSupportGroupID] = @DefaultSupportGroupID,    [DefaultSupportUserID] = @DefaultSupportUserID  WHERE ([OrganizationID] = @OrganizationID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -436,8 +436,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertOrganizationsViewItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationsView] (    [OrganizationID],    [Name],    [Description],    [Website],    [IsActive],    [InActiveReason],    [PrimaryUserID],    [PrimaryContact],    [ParentID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [HasPortalAccess],    [CreatedBy],    [LastModifiedBy],    [SAExpirationDate],    [SlaName],    [CRMLinkID],    [PortalGuid],    [SlaLevelID],    [DefaultWikiArticleID],    [DefaultSupportGroupID],    [DefaultSupportUserID]) VALUES ( @OrganizationID, @Name, @Description, @Website, @IsActive, @InActiveReason, @PrimaryUserID, @PrimaryContact, @ParentID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @HasPortalAccess, @CreatedBy, @LastModifiedBy, @SAExpirationDate, @SlaName, @CRMLinkID, @PortalGuid, @SlaLevelID, @DefaultWikiArticleID, @DefaultSupportGroupID, @DefaultSupportUserID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DefaultSupportUserID", SqlDbType.Int, 4);
@@ -613,8 +613,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteOrganizationsViewItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[OrganizationsView] WHERE ([OrganizationID] = @OrganizationID);";
 		deleteCommand.Parameters.Add("OrganizationID", SqlDbType.Int);
 
 		try
@@ -720,8 +720,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectOrganizationsViewItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [Name], [Description], [Website], [IsActive], [InActiveReason], [PrimaryUserID], [PrimaryContact], [ParentID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [HasPortalAccess], [CreatedBy], [LastModifiedBy], [SAExpirationDate], [SlaName], [CRMLinkID], [PortalGuid], [SlaLevelID], [DefaultWikiArticleID], [DefaultSupportGroupID], [DefaultSupportUserID] FROM [dbo].[OrganizationsView] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);
       }

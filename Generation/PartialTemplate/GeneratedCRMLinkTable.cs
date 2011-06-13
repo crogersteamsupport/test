@@ -99,6 +99,12 @@ namespace TeamSupport.Data
     
 
     
+    public DateTime LastProcessed
+    {
+      get { return DateToLocal((DateTime)Row["LastProcessed"]); }
+      set { Row["LastProcessed"] = CheckNull(value); }
+    }
+    
 
     #endregion
     
@@ -171,8 +177,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteCRMLinkTableItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
         deleteCommand.Parameters.Add("CRMLinkID", SqlDbType.Int);
         deleteCommand.Parameters["CRMLinkID"].Value = cRMLinkID;
 
@@ -192,8 +198,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateCRMLinkTableItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed  WHERE ([CRMLinkID] = @CRMLinkID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CRMLinkID", SqlDbType.Int, 4);
@@ -266,13 +272,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("LastProcessed", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertCRMLinkTableItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkTable] (    [OrganizationID],    [Active],    [CRMType],    [Username],    [Password],    [SecurityToken],    [TypeFieldMatch],    [LastLink],    [SendBackTicketData],    [LastProcessed]) VALUES ( @OrganizationID, @Active, @CRMType, @Username, @Password, @SecurityToken, @TypeFieldMatch, @LastLink, @SendBackTicketData, @LastProcessed); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("LastProcessed", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("SendBackTicketData", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -342,8 +362,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteCRMLinkTableItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
 		deleteCommand.Parameters.Add("CRMLinkID", SqlDbType.Int);
 
 		try
@@ -449,8 +469,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectCRMLinkTableItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkID], [OrganizationID], [Active], [CRMType], [Username], [Password], [SecurityToken], [TypeFieldMatch], [LastLink], [SendBackTicketData], [LastProcessed] FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CRMLinkID", cRMLinkID);
         Fill(command);
       }

@@ -207,8 +207,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteReport";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Reports] WHERE ([ReportID] = @ReportID);";
         deleteCommand.Parameters.Add("ReportID", SqlDbType.Int);
         deleteCommand.Parameters["ReportID"].Value = reportID;
 
@@ -228,8 +228,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateReport";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Reports] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [Query] = @Query,    [CustomFieldKeyName] = @CustomFieldKeyName,    [CustomRefType] = @CustomRefType,    [CustomAuxID] = @CustomAuxID,    [ReportSubcategoryID] = @ReportSubcategoryID,    [QueryObject] = @QueryObject,    [ExternalURL] = @ExternalURL,    [LastSqlExecuted] = @LastSqlExecuted,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([ReportID] = @ReportID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportID", SqlDbType.Int, 4);
@@ -334,8 +334,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertReport";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Reports] (    [OrganizationID],    [Name],    [Description],    [Query],    [CustomFieldKeyName],    [CustomRefType],    [CustomAuxID],    [ReportSubcategoryID],    [QueryObject],    [ExternalURL],    [LastSqlExecuted],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @OrganizationID, @Name, @Description, @Query, @CustomFieldKeyName, @CustomRefType, @CustomAuxID, @ReportSubcategoryID, @QueryObject, @ExternalURL, @LastSqlExecuted, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -448,8 +448,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteReport";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Reports] WHERE ([ReportID] = @ReportID);";
 		deleteCommand.Parameters.Add("ReportID", SqlDbType.Int);
 
 		try
@@ -555,8 +555,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectReport";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportID], [OrganizationID], [Name], [Description], [Query], [CustomFieldKeyName], [CustomRefType], [CustomAuxID], [ReportSubcategoryID], [QueryObject], [ExternalURL], [LastSqlExecuted], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[Reports] WHERE ([ReportID] = @ReportID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportID", reportID);
         Fill(command);
       }

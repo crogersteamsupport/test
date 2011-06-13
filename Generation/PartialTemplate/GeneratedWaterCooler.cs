@@ -159,8 +159,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteWaterCoolerItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WaterCooler] WHERE ([MessageID] = @MessageID);";
         deleteCommand.Parameters.Add("MessageID", SqlDbType.Int);
         deleteCommand.Parameters["MessageID"].Value = messageID;
 
@@ -180,8 +180,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateWaterCoolerItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WaterCooler] SET     [UserID] = @UserID,    [OrganizationID] = @OrganizationID,    [TimeStamp] = @TimeStamp,    [GroupFor] = @GroupFor,    [ReplyTo] = @ReplyTo,    [Message] = @Message,    [MessageType] = @MessageType  WHERE ([MessageID] = @MessageID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("MessageID", SqlDbType.Int, 4);
@@ -244,8 +244,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertWaterCoolerItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WaterCooler] (    [UserID],    [OrganizationID],    [TimeStamp],    [GroupFor],    [ReplyTo],    [Message],    [MessageType]) VALUES ( @UserID, @OrganizationID, @TimeStamp, @GroupFor, @ReplyTo, @Message, @MessageType); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("MessageType", SqlDbType.VarChar, 50);
@@ -302,8 +302,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteWaterCoolerItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WaterCooler] WHERE ([MessageID] = @MessageID);";
 		deleteCommand.Parameters.Add("MessageID", SqlDbType.Int);
 
 		try
@@ -409,8 +409,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectWaterCoolerItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [MessageID], [UserID], [OrganizationID], [TimeStamp], [GroupFor], [ReplyTo], [Message], [MessageType] FROM [dbo].[WaterCooler] WHERE ([MessageID] = @MessageID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("MessageID", messageID);
         Fill(command);
       }

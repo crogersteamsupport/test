@@ -196,8 +196,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteBillingInfoItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[BillingInfo] WHERE ([OrganizationID] = @OrganizationID);";
         deleteCommand.Parameters.Add("OrganizationID", SqlDbType.Int);
         deleteCommand.Parameters["OrganizationID"].Value = organizationID;
 
@@ -217,8 +217,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateBillingInfoItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[BillingInfo] SET     [CreditCardID] = @CreditCardID,    [AddressID] = @AddressID,    [IsAutomatic] = @IsAutomatic,    [UserPrice] = @UserPrice,    [PortalPrice] = @PortalPrice,    [BasicPortalPrice] = @BasicPortalPrice,    [ChatPrice] = @ChatPrice,    [StoragePrice] = @StoragePrice,    [NextInvoiceDate] = @NextInvoiceDate,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([OrganizationID] = @OrganizationID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -309,8 +309,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertBillingInfoItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[BillingInfo] (    [OrganizationID],    [CreditCardID],    [AddressID],    [IsAutomatic],    [UserPrice],    [PortalPrice],    [BasicPortalPrice],    [ChatPrice],    [StoragePrice],    [NextInvoiceDate],    [DateModified],    [DateCreated],    [CreatorID],    [ModifierID]) VALUES ( @OrganizationID, @CreditCardID, @AddressID, @IsAutomatic, @UserPrice, @PortalPrice, @BasicPortalPrice, @ChatPrice, @StoragePrice, @NextInvoiceDate, @DateModified, @DateCreated, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
@@ -416,8 +416,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteBillingInfoItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[BillingInfo] WHERE ([OrganizationID] = @OrganizationID);";
 		deleteCommand.Parameters.Add("OrganizationID", SqlDbType.Int);
 
 		try
@@ -523,8 +523,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectBillingInfoItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [CreditCardID], [AddressID], [IsAutomatic], [UserPrice], [PortalPrice], [BasicPortalPrice], [ChatPrice], [StoragePrice], [NextInvoiceDate], [DateModified], [DateCreated], [CreatorID], [ModifierID] FROM [dbo].[BillingInfo] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);
       }

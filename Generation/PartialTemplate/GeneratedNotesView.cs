@@ -176,8 +176,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteNotesViewItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[NotesView] WHERE ([NoteID] = @NoteID);";
         deleteCommand.Parameters.Add("NoteID", SqlDbType.Int);
         deleteCommand.Parameters["NoteID"].Value = noteID;
 
@@ -197,8 +197,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateNotesViewItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[NotesView] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName  WHERE ([NoteID] = @NoteID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("NoteID", SqlDbType.Int, 4);
@@ -268,8 +268,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertNotesViewItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[NotesView] (    [NoteID],    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateModified],    [DateCreated],    [CreatorName],    [ModifierName]) VALUES ( @NoteID, @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateModified, @DateCreated, @CreatorName, @ModifierName); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
@@ -354,8 +354,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteNotesViewItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[NotesView] WHERE ([NoteID] = @NoteID);";
 		deleteCommand.Parameters.Add("NoteID", SqlDbType.Int);
 
 		try
@@ -461,8 +461,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectNotesViewItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateModified], [DateCreated], [CreatorName], [ModifierName] FROM [dbo].[NotesView] WHERE ([NoteID] = @NoteID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("NoteID", noteID);
         Fill(command);
       }

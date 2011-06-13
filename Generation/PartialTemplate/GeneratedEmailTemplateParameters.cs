@@ -135,8 +135,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteEmailTemplateParameter";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[EmailTemplateParameters] WHERE ([EmailTemplateParameterID] = @EmailTemplateParameterID);";
         deleteCommand.Parameters.Add("EmailTemplateParameterID", SqlDbType.Int);
         deleteCommand.Parameters["EmailTemplateParameterID"].Value = emailTemplateParameterID;
 
@@ -156,8 +156,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateEmailTemplateParameter";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[EmailTemplateParameters] SET     [EmailTemplateID] = @EmailTemplateID,    [Name] = @Name,    [Description] = @Description  WHERE ([EmailTemplateParameterID] = @EmailTemplateParameterID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("EmailTemplateParameterID", SqlDbType.Int, 4);
@@ -192,8 +192,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertEmailTemplateParameter";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[EmailTemplateParameters] (    [EmailTemplateID],    [Name],    [Description]) VALUES ( @EmailTemplateID, @Name, @Description); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("Description", SqlDbType.VarChar, 1000);
@@ -222,8 +222,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteEmailTemplateParameter";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[EmailTemplateParameters] WHERE ([EmailTemplateParameterID] = @EmailTemplateParameterID);";
 		deleteCommand.Parameters.Add("EmailTemplateParameterID", SqlDbType.Int);
 
 		try
@@ -329,8 +329,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectEmailTemplateParameter";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [EmailTemplateParameterID], [EmailTemplateID], [Name], [Description] FROM [dbo].[EmailTemplateParameters] WHERE ([EmailTemplateParameterID] = @EmailTemplateParameterID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("EmailTemplateParameterID", emailTemplateParameterID);
         Fill(command);
       }

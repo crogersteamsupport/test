@@ -153,8 +153,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeletePortalLoginHistoryItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[PortalLoginHistory] WHERE ([PortalLoginID] = @PortalLoginID);";
         deleteCommand.Parameters.Add("PortalLoginID", SqlDbType.Int);
         deleteCommand.Parameters["PortalLoginID"].Value = portalLoginID;
 
@@ -174,8 +174,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdatePortalLoginHistoryItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[PortalLoginHistory] SET     [UserName] = @UserName,    [OrganizationID] = @OrganizationID,    [OrganizationName] = @OrganizationName,    [Success] = @Success,    [LoginDateTime] = @LoginDateTime,    [IPAddress] = @IPAddress  WHERE ([PortalLoginID] = @PortalLoginID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("PortalLoginID", SqlDbType.Int, 4);
@@ -231,8 +231,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertPortalLoginHistoryItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[PortalLoginHistory] (    [UserName],    [OrganizationID],    [OrganizationName],    [Success],    [LoginDateTime],    [IPAddress]) VALUES ( @UserName, @OrganizationID, @OrganizationName, @Success, @LoginDateTime, @IPAddress); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("IPAddress", SqlDbType.VarChar, 1000);
@@ -282,8 +282,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeletePortalLoginHistoryItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[PortalLoginHistory] WHERE ([PortalLoginID] = @PortalLoginID);";
 		deleteCommand.Parameters.Add("PortalLoginID", SqlDbType.Int);
 
 		try
@@ -389,8 +389,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectPortalLoginHistoryItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [PortalLoginID], [UserName], [OrganizationID], [OrganizationName], [Success], [LoginDateTime], [IPAddress] FROM [dbo].[PortalLoginHistory] WHERE ([PortalLoginID] = @PortalLoginID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("PortalLoginID", portalLoginID);
         Fill(command);
       }

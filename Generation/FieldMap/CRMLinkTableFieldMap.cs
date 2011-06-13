@@ -23,6 +23,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("TypeFieldMatch", "TypeFieldMatch", false, false, false);
       _fieldMap.AddMap("LastLink", "LastLink", false, false, false);
       _fieldMap.AddMap("SendBackTicketData", "SendBackTicketData", false, false, false);
+      _fieldMap.AddMap("LastProcessed", "LastProcessed", false, false, false);
             
     }
   }

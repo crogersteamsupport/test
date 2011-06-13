@@ -129,8 +129,8 @@ namespace TeamSupport.Data
         SqlCommand deleteCommand = connection.CreateCommand();
 
         deleteCommand.Connection = connection;
-        deleteCommand.CommandType = CommandType.StoredProcedure;
-        deleteCommand.CommandText = "uspGeneratedDeleteTSEMailIgnoreListItem";
+        deleteCommand.CommandType = CommandType.Text;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TSEMailIgnoreList] WHERE ([IgnoreID] = @IgnoreID);";
         deleteCommand.Parameters.Add("IgnoreID", SqlDbType.Int);
         deleteCommand.Parameters["IgnoreID"].Value = ignoreID;
 
@@ -150,8 +150,8 @@ namespace TeamSupport.Data
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
-		updateCommand.CommandType = CommandType.StoredProcedure;
-		updateCommand.CommandText = "uspGeneratedUpdateTSEMailIgnoreListItem";
+		updateCommand.CommandType = CommandType.Text;
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TSEMailIgnoreList] SET     [FromAddress] = @FromAddress,    [ToAddress] = @ToAddress  WHERE ([IgnoreID] = @IgnoreID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("IgnoreID", SqlDbType.Int, 4);
@@ -179,8 +179,8 @@ namespace TeamSupport.Data
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
-		insertCommand.CommandType = CommandType.StoredProcedure;
-		insertCommand.CommandText = "uspGeneratedInsertTSEMailIgnoreListItem";
+		insertCommand.CommandType = CommandType.Text;
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TSEMailIgnoreList] (    [FromAddress],    [ToAddress]) VALUES ( @FromAddress, @ToAddress); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("ToAddress", SqlDbType.VarChar, 500);
@@ -202,8 +202,8 @@ namespace TeamSupport.Data
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
-		deleteCommand.CommandType = CommandType.StoredProcedure;
-		deleteCommand.CommandText = "uspGeneratedDeleteTSEMailIgnoreListItem";
+		deleteCommand.CommandType = CommandType.Text;
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[TSEMailIgnoreList] WHERE ([IgnoreID] = @IgnoreID);";
 		deleteCommand.Parameters.Add("IgnoreID", SqlDbType.Int);
 
 		try
@@ -309,8 +309,8 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "uspGeneratedSelectTSEMailIgnoreListItem";
-        command.CommandType = CommandType.StoredProcedure;
+        command.CommandText = "SET NOCOUNT OFF; SELECT [IgnoreID], [FromAddress], [ToAddress] FROM [dbo].[TSEMailIgnoreList] WHERE ([IgnoreID] = @IgnoreID);";
+        command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("IgnoreID", ignoreID);
         Fill(command);
       }
