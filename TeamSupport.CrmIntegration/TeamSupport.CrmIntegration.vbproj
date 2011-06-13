@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BatchBook.vb" />
+    <Compile Include="CrmPool.vb" />
     <Compile Include="CrmProcessor.vb" />
     <Compile Include="Highrise.vb" />
     <Compile Include="Integration.vb" />
