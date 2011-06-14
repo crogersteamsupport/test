@@ -51,32 +51,42 @@ Namespace TeamSupport
       End Sub
 
 
-      Public Sub ProcessOrganization(ByVal crmLinkTableItem As CRMLinkTableItem)
-        Dim CRMType As IntegrationType = [Enum].Parse(GetType(IntegrationType), crmLinkTableItem.CRMType)
+            Public Sub ProcessOrganization(ByVal crmLinkTableItem As CRMLinkTableItem)
+                Dim Success As Boolean = True
 
-        'set up log per organization
-        Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), crmLinkTableItem.OrganizationID.ToString()))
-        Dim CRM As Integration
+                If IsStopped Then
+                    Return
+                End If
 
-        Select Case CRMType
-          Case IntegrationType.Batchbook
-            CRM = New BatchBook(crmLinkTableItem, Log, LoginUser)
-            CRM.PerformSync()
-            CRM.SendTicketData()
-          Case IntegrationType.Highrise
-          Case IntegrationType.SalesForce
-        End Select
-      End Sub
+                Dim CRMType As IntegrationType = [Enum].Parse(GetType(IntegrationType), crmLinkTableItem.CRMType)
 
-    End Class
+                'set up log per organization
+                Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), crmLinkTableItem.OrganizationID.ToString()))
+                Dim CRM As Integration
 
-    'TODO: maybe we move this into teamsupport.data?
-    Public Enum IntegrationType
-      SalesForce
-      Highrise
-      Batchbook
-      FreshBooks
-    End Enum
+                'only process bb right now (6/13/2011)
+                Select Case CRMType
+                    Case IntegrationType.Batchbook
+                        CRM = New BatchBook(crmLinkTableItem, Log, LoginUser)
+                        Success = CRM.PerformSync()
+
+                        If Success Then
+                            Success = CRM.SendTicketData()
+                        End If
+
+                        If Success Then
+                            crmLinkTableItem.LastLink = DateTime.UtcNow
+                            crmLinkTableItem.Collection.Save()
+                        Else
+                            Log.Write("Error reported in BatchBook sync. Last link date/time not updated.")
+                        End If
+                    Case IntegrationType.Highrise
+                    Case IntegrationType.SalesForce
+                End Select
+            End Sub
+
+        End Class
+
   End Namespace
 End Namespace
 

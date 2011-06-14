@@ -128,6 +128,14 @@ namespace TeamSupport.Data
     Delete
   }
 
+  public enum IntegrationType
+  {
+      SalesForce,
+      Highrise,
+      Batchbook,
+      FreshBooks
+  }
+
   public class Enums
 	{
     public static Dictionary<string, string> PortalThemeNames = new Dictionary<string, string>

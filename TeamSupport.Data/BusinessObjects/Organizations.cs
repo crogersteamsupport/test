@@ -1046,7 +1046,7 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByCRMLinkID(int crmlinkID) {
+    public void LoadByCRMLinkID(string crmlinkID) {
         using (SqlCommand command = new SqlCommand()) {
             command.CommandText = "SELECT * FROM Organizations WHERE CRMLinkID = @CrmlinkID";
             command.CommandType = CommandType.Text;

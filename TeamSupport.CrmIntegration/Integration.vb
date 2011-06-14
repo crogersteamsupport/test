@@ -316,5 +316,25 @@ Namespace TeamSupport
             Mobile
             Fax
         End Enum
+
+
+
+        Public Class SyncLog
+            Private LogPath As String
+            Private FileName As String
+
+            Public Sub New(ByVal Path As String)
+                LogPath = Path
+                FileName = "CRM Sync Debug File - " & Today.Month.ToString() & Today.Day.ToString() & Today.Year.ToString() & ".txt"
+
+                If (Not Directory.Exists(LogPath)) Then
+                    Directory.CreateDirectory(LogPath)
+                End If
+            End Sub
+
+            Public Sub Write(ByVal Text As String)
+                File.AppendAllText(LogPath & "\" & FileName, Now.ToString + ": " + Text + Environment.NewLine)
+            End Sub
+        End Class
     End Namespace
 End Namespace
