@@ -8,6 +8,8 @@ Namespace TeamSupport
     Public Class CrmPool
       Inherits ServiceThread
 
+      Private _threads As New List(Of CrmProcessor)()
+
 
       Public Overrides ReadOnly Property ServiceName As String
         Get
@@ -17,11 +19,10 @@ Namespace TeamSupport
 
       Public Overrides Sub Run()
         Dim maxThreads As Integer = Settings.ReadInt("Max Worker Processes", 1)
-        Dim threads As New List(Of CrmProcessor)()
 
         'Check if stopped, if so spread the word
         If IsStopped Then
-          For Each thread As CrmProcessor In threads
+          For Each thread As CrmProcessor In _threads
             If Not thread.IsStopped Then
               thread.Stop()
             End If
@@ -31,14 +32,20 @@ Namespace TeamSupport
 
 
         'Remove completed threads
-        For Each thread As CrmProcessor In threads
-          If thread.IsComplete Then
-            threads.Remove(thread)
-          End If
-        Next
+
+
+
+        If _threads.Count > 0 Then
+          For index = _threads.Count - 1 To 0
+            If _threads(index).IsComplete Then
+              _threads.RemoveAt(index)
+            End If
+          Next
+        End If
+
 
         'See if we have reached our max thread coutn
-        If threads.Count >= maxThreads Then
+        If _threads.Count >= maxThreads Then
           Return
         End If
 
@@ -47,18 +54,18 @@ Namespace TeamSupport
         links.LoadActive()
 
         For Each link As CRMLinkTableItem In links
-          If Not IsAlreadyProcessing(threads, link.OrganizationID) Then
+          If Not IsAlreadyProcessing(link.OrganizationID) Then
             Dim crmProcessor As New CrmProcessor(link.OrganizationID)
             crmProcessor.Start()
-            threads.Add(crmProcessor)
+            _threads.Add(crmProcessor)
             Return
           End If
         Next
       End Sub
 
 
-      Private Function IsAlreadyProcessing(ByRef threads As List(Of CrmProcessor), ByVal organizationID As Integer) As Boolean
-        For Each thread As CrmProcessor In threads
+      Private Function IsAlreadyProcessing(ByVal organizationID As Integer) As Boolean
+        For Each thread As CrmProcessor In _threads
           If thread.OrganizationID = organizationID Then
             Return True
           End If
