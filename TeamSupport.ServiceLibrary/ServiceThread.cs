@@ -28,18 +28,6 @@ namespace TeamSupport.ServiceLibrary
       set { lock (this) { _isLoop = value; } }
     }
 
-    private bool _isComplete = false;
-    public bool IsComplete
-    {
-      get
-      {
-        lock (this)
-        {
-          return _isComplete;
-        } 
-      }
-    }  
-
     private bool _isStopped = true;
     public bool IsStopped
     {
@@ -47,6 +35,13 @@ namespace TeamSupport.ServiceLibrary
       { 
         lock (this) { return _isStopped; } 
       }
+    }
+
+    private bool _runHandlesStop = false;
+    protected bool RunHandlesStop
+    {
+      get { lock (this) { return _runHandlesStop; } }
+      set { lock (this) { _runHandlesStop = value; } }
     }
 
     public abstract string ServiceName { get; }
@@ -70,7 +65,7 @@ namespace TeamSupport.ServiceLibrary
     {
       if (IsStopped) return;
       lock (this) { _isStopped = true; }
-      _thread.Join(30000);
+      //if (_thread.IsAlive) _thread.Join(30000);
     }
 
 
@@ -98,7 +93,7 @@ namespace TeamSupport.ServiceLibrary
         Service service = Services.GetService(_loginUser, ServiceName);
         try
         {
-          if (IsStopped) return;
+          if (IsStopped && !_runHandlesStop) return;
           if (service.Enabled && (lastTime.AddSeconds(service.Interval) < DateTime.Now || !IsLoop))
           {
             service.LastStartTime = DateTime.Now;
@@ -113,7 +108,6 @@ namespace TeamSupport.ServiceLibrary
             service.RunTimeAvg = (int)((((service.RunCount -1) * service.RunTimeAvg) + total) / service.RunCount);
             service.Collection.Save();
           }
-          if (IsStopped) return;
           Thread.Sleep(1000);
         }
         catch (Exception ex)
@@ -125,7 +119,7 @@ namespace TeamSupport.ServiceLibrary
         }
         if (!IsLoop)
         {
-          lock (this) { _isComplete = true; }
+          Stop();
           return;
         }
       }

@@ -37,11 +37,11 @@ namespace TeamSupport.ServiceTestApplication
 
     private void StopAll()
     {
-      _emailProcessor.Stop();
-      _emailSender.Stop();
-      _slaProcessor.Stop();
-      _indexer.Stop();
-      _crmPool.Stop();
+      if (_emailProcessor != null) _emailProcessor.Stop();
+      if (_emailSender != null) _emailSender.Stop();
+      if (_slaProcessor != null) _slaProcessor.Stop();
+      if (_indexer != null) _indexer.Stop();
+      if (_crmPool != null) _crmPool.Stop();
     }
 
     private void StartProcess(ServiceThread thread, Button button)
@@ -66,6 +66,7 @@ namespace TeamSupport.ServiceTestApplication
       {
         button.Enabled = false;
         thread.Stop();
+        thread = null;
       }
       finally
       {
@@ -77,27 +78,27 @@ namespace TeamSupport.ServiceTestApplication
 
     private void btnEmailProcessor_Click(object sender, EventArgs e)
     {
-      if (_emailProcessor == null) StartProcess(_emailProcessor = new EmailProcessor(), sender as Button); else StopProcess(_emailProcessor, sender as Button);
+      if (_emailProcessor == null || _emailProcessor.IsStopped) StartProcess(_emailProcessor = new EmailProcessor(), sender as Button); else StopProcess(_emailProcessor, sender as Button);
     }
 
     private void btnEmailSender_Click(object sender, EventArgs e)
     {
-      if (_emailSender == null) StartProcess(_emailSender = new EmailSender(), sender as Button); else StopProcess(_emailSender, sender as Button);
+      if (_emailSender == null || _emailSender.IsStopped) StartProcess(_emailSender = new EmailSender(), sender as Button); else StopProcess(_emailSender, sender as Button);
     }
 
     private void btnSlaProcessor_Click(object sender, EventArgs e)
     {
-      if (_slaProcessor == null) StartProcess(_slaProcessor = new SlaProcessor(), sender as Button); else StopProcess(_slaProcessor, sender as Button);
+      if (_slaProcessor == null || _slaProcessor.IsStopped) StartProcess(_slaProcessor = new SlaProcessor(), sender as Button); else StopProcess(_slaProcessor, sender as Button);
     }
 
     private void btnIndexer_Click(object sender, EventArgs e)
     {
-      if (_indexer == null) StartProcess(_indexer = new Indexer(), sender as Button); else StopProcess(_indexer, sender as Button);
+      if (_indexer == null || _indexer.IsStopped) StartProcess(_indexer = new Indexer(), sender as Button); else StopProcess(_indexer, sender as Button);
     }
 
     private void btnCrmPool_Click(object sender, EventArgs e)
     {
-      if (_crmPool == null) StartProcess(_crmPool = new CrmPool(), sender as Button); else StopProcess(_crmPool, sender as Button);
+      if (_crmPool == null || _crmPool.IsStopped) StartProcess(_crmPool = new CrmPool(), sender as Button); else StopProcess(_crmPool, sender as Button);
     }
 
 

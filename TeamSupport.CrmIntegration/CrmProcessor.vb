@@ -36,7 +36,8 @@ Namespace TeamSupport
         If Not crmLinkTable.IsEmpty Then
 
           Try
-            ProcessOrganization(crmLinkTable(0))
+            'ProcessOrganization(crmLinkTable(0))
+            System.Threading.Thread.Sleep(5000)
 
           Catch ex As Exception
             ex.Data("OrganizationID") = OrganizationID
