@@ -14,6 +14,14 @@ Namespace TeamSupport
         End Get
       End Property
 
+      Public Overridable ReadOnly Property IsStopped() As Boolean
+        Get
+          SyncLock Me
+            Return _isStopped Or ServiceStopped Or CrmPool.CrmPoolStopped
+          End SyncLock
+        End Get
+      End Property
+
       Private _organizationID As Integer
       Public ReadOnly Property OrganizationID() As Integer
         Get
@@ -52,41 +60,41 @@ Namespace TeamSupport
       End Sub
 
 
-            Public Sub ProcessOrganization(ByVal crmLinkTableItem As CRMLinkTableItem)
-                Dim Success As Boolean = True
+      Public Sub ProcessOrganization(ByVal crmLinkTableItem As CRMLinkTableItem)
+        Dim Success As Boolean = True
 
-                If IsStopped Then
-                    Return
-                End If
+        If IsStopped Then
+          Return
+        End If
 
-                Dim CRMType As IntegrationType = [Enum].Parse(GetType(IntegrationType), crmLinkTableItem.CRMType)
+        Dim CRMType As IntegrationType = [Enum].Parse(GetType(IntegrationType), crmLinkTableItem.CRMType)
 
-                'set up log per organization
-                Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), crmLinkTableItem.OrganizationID.ToString()))
-                Dim CRM As Integration
+        'set up log per organization
+        Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), crmLinkTableItem.OrganizationID.ToString()))
+        Dim CRM As Integration
 
-                'only process bb right now (6/13/2011)
-                Select Case CRMType
-                    Case IntegrationType.Batchbook
-                        CRM = New BatchBook(crmLinkTableItem, Log, LoginUser)
-                        Success = CRM.PerformSync()
+        'only process bb right now (6/13/2011)
+        Select Case CRMType
+          Case IntegrationType.Batchbook
+            CRM = New BatchBook(crmLinkTableItem, Log, LoginUser)
+            Success = CRM.PerformSync()
 
-                        If Success Then
-                            Success = CRM.SendTicketData()
-                        End If
+            If Success Then
+              Success = CRM.SendTicketData()
+            End If
 
-                        If Success Then
-                            crmLinkTableItem.LastLink = DateTime.UtcNow
-                            crmLinkTableItem.Collection.Save()
-                        Else
-                            Log.Write("Error reported in BatchBook sync. Last link date/time not updated.")
-                        End If
-                    Case IntegrationType.Highrise
-                    Case IntegrationType.SalesForce
-                End Select
-            End Sub
+            If Success Then
+              crmLinkTableItem.LastLink = DateTime.UtcNow
+              crmLinkTableItem.Collection.Save()
+            Else
+              Log.Write("Error reported in BatchBook sync. Last link date/time not updated.")
+            End If
+          Case IntegrationType.Highrise
+          Case IntegrationType.SalesForce
+        End Select
+      End Sub
 
-        End Class
+    End Class
 
   End Namespace
 End Namespace

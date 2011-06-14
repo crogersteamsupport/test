@@ -41,6 +41,7 @@ namespace TeamSupport.Service
 
     protected override void OnStop()
     {
+      ServiceThread.ServiceStopped = true;
       StopProcessing();
     }
 

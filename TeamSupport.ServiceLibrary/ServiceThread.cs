@@ -14,6 +14,13 @@ namespace TeamSupport.ServiceLibrary
     {
     }
 
+    private static bool _serviceStopped = false;
+    public static bool ServiceStopped
+    {
+      get { lock (typeof(ServiceThread)) { return ServiceThread._serviceStopped; } }
+      set { lock (typeof(ServiceThread)) { ServiceThread._serviceStopped = value; } }
+    }
+
     private Thread _thread;
     public Thread Thread
     {
@@ -28,12 +35,12 @@ namespace TeamSupport.ServiceLibrary
       set { lock (this) { _isLoop = value; } }
     }
 
-    private bool _isStopped = true;
-    public bool IsStopped
+    protected bool _isStopped = true;
+    public virtual  bool IsStopped
     {
       get 
       { 
-        lock (this) { return _isStopped; } 
+        lock (this) { return _isStopped || ServiceStopped; } 
       }
     }
 
@@ -63,9 +70,15 @@ namespace TeamSupport.ServiceLibrary
     /// </summary>
     public virtual void Stop()
     {
-      if (IsStopped) return;
       lock (this) { _isStopped = true; }
-      //if (_thread.IsAlive) _thread.Join(30000);
+
+      if (_thread.IsAlive)
+      {
+        if (!_thread.Join(10000))
+        {
+          if (_thread.IsAlive) _thread.Abort();
+        }
+      }
     }
 
 
@@ -113,7 +126,7 @@ namespace TeamSupport.ServiceLibrary
         catch (Exception ex)
         {
           ExceptionLog log = ExceptionLogs.LogException(_loginUser, ex, "Service - " + ServiceName);
-          service.LastError = string.Format("[{0}} {1}", log.ExceptionLogID.ToString(), ex.Message);
+          service.LastError = string.Format("[{0} {1}", log.ExceptionLogID.ToString(), ex.Message);
           service.ErrorCount = service.ErrorCount + 1;
           service.Collection.Save();
         }

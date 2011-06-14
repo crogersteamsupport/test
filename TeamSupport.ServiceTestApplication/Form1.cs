@@ -37,6 +37,7 @@ namespace TeamSupport.ServiceTestApplication
 
     private void StopAll()
     {
+      ServiceThread.ServiceStopped = true;
       if (_emailProcessor != null) _emailProcessor.Stop();
       if (_emailSender != null) _emailSender.Stop();
       if (_slaProcessor != null) _slaProcessor.Stop();
