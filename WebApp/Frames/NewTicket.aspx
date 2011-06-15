@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Frames/Frame.master" AutoEventWireup="true"
-  CodeFile="NewTicket.aspx.cs" Inherits="Frames_NewTicket" %>
+  CodeFile="NewTicket.aspx.cs" Inherits="Frames_NewTicket"  %>
 
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
@@ -78,7 +78,7 @@
 
 
       function SaveNewTicket() {
-
+      
         var textName = $find("<%=textName.ClientID %>");
         if (textName == null) return;
         var name = textName.get_value().trim();

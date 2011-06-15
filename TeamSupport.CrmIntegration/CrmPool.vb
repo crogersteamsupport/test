@@ -67,11 +67,15 @@ Namespace TeamSupport
         links.LoadActive()
 
         For Each link As CRMLinkTableItem In links
+          If _threads.Count >= maxThreads Then
+            Return
+          End If
+
           If Not IsAlreadyProcessing(link.OrganizationID) Then
+
             Dim crmProcessor As New CrmProcessor(link.OrganizationID)
             crmProcessor.Start()
             _threads.Add(crmProcessor)
-            Return
           End If
         Next
       End Sub

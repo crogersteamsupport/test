@@ -329,6 +329,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     crmLinkTable.LoadByOrganizationID(UserSession.LoginUser.OrganizationID);
     if (!crmLinkTable.IsEmpty)
     {
+      crmLinkTable[0].LastProcessed = new DateTime(1900, 1, 1);
       crmLinkTable[0].LastLink = new DateTime(1980, 1, 1);
       crmLinkTable.Save();
     }
