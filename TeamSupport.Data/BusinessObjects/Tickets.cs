@@ -349,7 +349,7 @@ namespace TeamSupport.Data
                     WHERE (t.OrganizationID = @OrgID AND t.DateCreated > @LastLinkDate AND ISNULL(o.CRMLinkID,'') <> '')";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
-            command.Parameters.AddWithValue("@LastLinkDate", item.Row["LastLink"] != null ? item.Row["LastLink"] : new DateTime(1900,1,1));
+            command.Parameters.AddWithValue("@LastLinkDate", item.Row["LastLink"] != DBNull.Value ? item.Row["LastLink"] : new DateTime(1900,1,1));
             
             
             Fill(command, "Tickets");
