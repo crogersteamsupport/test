@@ -162,7 +162,8 @@ Namespace TeamSupport
                 Catch ex As Exception
                     SyncError = True
 
-                    Log.Write("Error in Perform Highrise Sync: " + ex.StackTrace)
+                    Log.Write("Error in Perform Highrise Sync: " + ex.Message)
+                    LogSyncResult("Error in Perform Highrise Sync: " & ex.Message)
 
                     ex.Data("OrganizationID") = ParentOrgID
                     ExceptionLogs.LogException(User, ex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
@@ -277,7 +278,7 @@ Namespace TeamSupport
                             'Don't need to raise the rror flag the first time through.
 
                             Log.Write("Error in GetHighriseXML: " + wex.ToString)
-
+                            LogSyncResult("Error in GetHighriseXML: " & wex.ToString())
 
                             wex.Data("OrganizationID") = CRMLinkRow.OrganizationID
                             ExceptionLogs.LogException(User, wex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
@@ -386,6 +387,7 @@ Namespace TeamSupport
                         'SyncError = True
 
                         Log.Write("Error in create Note 2: " + wex.Message.ToString)
+                        LogSyncResult("Error in create Note 2: " + wex.Message.ToString())
                     End Try
 
                     'Response.Close()
@@ -483,7 +485,7 @@ Namespace TeamSupport
                         PeopleSyncData.Add(thisPerson)
                     Next
 
-          If PeopleSyncData IsNot Nothing AndAlso PeopleSyncData.Count > 0 Then
+                    If PeopleSyncData IsNot Nothing AndAlso PeopleSyncData.Count > 0 Then
 
                         Log.Write(String.Format("{0} people found. Updating...", PeopleSyncData.Count.ToString()))
                     Else

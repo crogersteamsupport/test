@@ -69,6 +69,7 @@ Namespace TeamSupport
                         thisCompany.CRMLinkID = company.AccountID
                         thisCompany.IsActive = True
 
+
                         With New Organizations(User)
                             .LoadByOrganizationID(ParentOrgID)
                             thisCompany.SlaLevelID = .Item(0).SlaLevelID
@@ -296,6 +297,15 @@ Namespace TeamSupport
 
                 Return returnStatus
             End Function
+
+            Protected Sub LogSyncResult(ByVal ResultText As String)
+                Dim result As CRMLinkResult
+                result = (New CRMLinkResults(User)).AddNewCRMLinkResult()
+                result.AttemptResult = ResultText
+                result.OrganizationID = CRMLinkRow.OrganizationID
+                result.AttemptDateTime = Now.ToUniversalTime()
+                result.Collection.Save()
+            End Sub
         End Class
 
         Public Class CompanyData
