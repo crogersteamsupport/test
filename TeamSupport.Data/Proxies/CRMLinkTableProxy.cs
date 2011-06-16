@@ -22,6 +22,8 @@ namespace TeamSupport.Data
     [DataMember] public string SecurityToken { get; set; }
     [DataMember] public string TypeFieldMatch { get; set; }
     [DataMember] public DateTime? LastLink { get; set; }
+    [DataMember] public bool SendBackTicketData { get; set; }
+    [DataMember] public DateTime LastProcessed { get; set; }
           
   }
   
@@ -30,6 +32,7 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.SendBackTicketData = this.SendBackTicketData;
       result.TypeFieldMatch = this.TypeFieldMatch;
       result.SecurityToken = this.SecurityToken;
       result.Password = this.Password;
@@ -39,6 +42,7 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
        
+      result.LastProcessed = DateTime.SpecifyKind(this.LastProcessed, DateTimeKind.Local);
        
       result.LastLink = this.LastLink == null ? this.LastLink : DateTime.SpecifyKind((DateTime)this.LastLink, DateTimeKind.Local); 
        
