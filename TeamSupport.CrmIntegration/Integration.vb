@@ -220,17 +220,21 @@ Namespace TeamSupport
                     workPhone.RefID = thisUser.UserID
                     workPhone.Collection.Save()
 
-                    mobilePhone.Number = person.Cell
-                    mobilePhone.PhoneTypeID = thesePhoneTypes.FindByName("Mobile").PhoneTypeID
-                    mobilePhone.RefType = ReferenceType.Users
-                    mobilePhone.RefID = thisUser.UserID
-                    mobilePhone.Collection.Save()
+                    If person.Cell IsNot Nothing Then
+                        mobilePhone.Number = person.Cell
+                        mobilePhone.PhoneTypeID = thesePhoneTypes.FindByName("Mobile").PhoneTypeID
+                        mobilePhone.RefType = ReferenceType.Users
+                        mobilePhone.RefID = thisUser.UserID
+                        mobilePhone.Collection.Save()
+                    End If
 
-                    faxPhone.Number = person.Fax
-                    faxPhone.PhoneTypeID = thesePhoneTypes.FindByName("Fax").PhoneTypeID
-                    faxPhone.RefType = ReferenceType.Users
-                    faxPhone.RefID = thisUser.UserID
-                    faxPhone.Collection.Save()
+                    If person.Fax IsNot Nothing Then
+                        faxPhone.Number = person.Fax
+                        faxPhone.PhoneTypeID = thesePhoneTypes.FindByName("Fax").PhoneTypeID
+                        faxPhone.RefType = ReferenceType.Users
+                        faxPhone.RefID = thisUser.UserID
+                        faxPhone.Collection.Save()
+                    End If
 
 
                     Log.Write("Phone information updated.")
