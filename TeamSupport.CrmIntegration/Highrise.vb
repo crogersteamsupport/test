@@ -205,6 +205,9 @@ Namespace TeamSupport
                                         Log.Write("Creating a note...")
                                         CreateNote(CRMLinkRow.SecurityToken, CRMLinkRow.Username, customer.CRMLinkID, NoteBody)
                                         Log.Write("Note created successfully.")
+
+                                        CRMLinkRow.LastTicketID = thisTicket.TicketID
+                                        CRMLinkRow.Collection.Save()
                                     End If
                                 Next
                             Next

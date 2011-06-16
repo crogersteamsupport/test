@@ -122,6 +122,9 @@ Namespace TeamSupport
                                     Log.Write("Creating a comment...")
                                     CreateComment(CRMLinkRow.SecurityToken, CRMLinkRow.Username, customer.CRMLinkID, NoteBody)
                                     Log.Write("Comment created successfully.")
+
+                                    CRMLinkRow.LastTicketID = thisTicket.TicketID
+                                    CRMLinkRow.Collection.Save()
                                 End If
                             Next
                         Next
