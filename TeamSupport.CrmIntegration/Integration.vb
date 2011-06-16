@@ -215,11 +215,13 @@ Namespace TeamSupport
                         faxPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
                     End If
 
-                    workPhone.Number = person.Phone
-                    workPhone.PhoneTypeID = thesePhoneTypes.FindByName("Work").PhoneTypeID
-                    workPhone.RefType = ReferenceType.Users
-                    workPhone.RefID = thisUser.UserID
-                    workPhone.Collection.Save()
+                    If person.Phone IsNot Nothing Then
+                        workPhone.Number = person.Phone
+                        workPhone.PhoneTypeID = thesePhoneTypes.FindByName("Work").PhoneTypeID
+                        workPhone.RefType = ReferenceType.Users
+                        workPhone.RefID = thisUser.UserID
+                        workPhone.Collection.Save()
+                    End If
 
                     If person.Cell IsNot Nothing Then
                         mobilePhone.Number = person.Cell
@@ -306,6 +308,7 @@ Namespace TeamSupport
                 result.AttemptDateTime = Now.ToUniversalTime()
                 result.Collection.Save()
             End Sub
+
         End Class
 
         Public Class CompanyData
