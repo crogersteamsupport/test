@@ -22,31 +22,31 @@ Namespace TeamSupport
                 End Get
             End Property
 
-      Private _crmLinkID As Integer
-      Public ReadOnly Property CrmLinkID() As Integer
+            Private _crmLinkID As Integer
+            Public ReadOnly Property CrmLinkID() As Integer
                 Get
                     Dim result As Integer
                     SyncLock Me
-            result = _crmLinkID
+                        result = _crmLinkID
                     End SyncLock
                     Return result
                 End Get
             End Property
 
-      Public Sub New(ByVal cmrLinkId As Integer)
-        _crmLinkID = cmrLinkId
+            Public Sub New(ByVal cmrLinkId As Integer)
+                _crmLinkID = cmrLinkId
                 IsLoop = False
             End Sub
 
             Public Overrides Sub Run()
-        Dim CrmLinkRow As CRMLinkTableItem = CRMLinkTable.GetCRMLinkTableItem(LoginUser, _crmLinkID)
+                Dim CrmLinkRow As CRMLinkTableItem = CRMLinkTable.GetCRMLinkTableItem(LoginUser, _crmLinkID)
 
                 Try
-          ProcessCrmLink(CrmLinkRow)
+                    ProcessCrmLink(CrmLinkRow)
                     'System.Threading.Thread.Sleep(5000)
 
                 Catch ex As Exception
-          ex.Data("CRMLinkID") = _crmLinkID
+                    ex.Data("CRMLinkID") = _crmLinkID
                     ExceptionLogs.LogException(LoginUser, ex, "Service - " & ServiceName, CrmLinkRow.Row)
                 End Try
 
@@ -56,24 +56,24 @@ Namespace TeamSupport
             End Sub
 
 
-      Public Sub ProcessCrmLink(ByVal CRMLinkTableItem As CRMLinkTableItem)
+            Public Sub ProcessCrmLink(ByVal CRMLinkTableItem As CRMLinkTableItem)
                 Dim Success As Boolean = True
 
                 If IsStopped Then
                     Return
                 End If
 
-        Dim CRMType As IntegrationType = [Enum].Parse(GetType(IntegrationType), CRMLinkTableItem.CRMType, True)
+                Dim CRMType As IntegrationType = [Enum].Parse(GetType(IntegrationType), CRMLinkTableItem.CRMType, True)
 
-        'set up log per crm link item
-        Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()))
+                'set up log per crm link item
+                Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()))
                 Dim CRM As Integration
 
                 Select Case CRMType
                     Case IntegrationType.Batchbook
-            CRM = New BatchBook(CRMLinkTableItem, Log, LoginUser, Me)
+                        CRM = New BatchBook(CRMLinkTableItem, Log, LoginUser, Me)
                     Case IntegrationType.Highrise
-            CRM = New Highrise(CRMLinkTableItem, Log, LoginUser, Me)
+                        CRM = New Highrise(CRMLinkTableItem, Log, LoginUser, Me)
                     Case IntegrationType.SalesForce
                 End Select
 
@@ -88,14 +88,14 @@ Namespace TeamSupport
                     End If
 
                     If Success Then
-            CRMLinkTableItem.LastLink = DateTime.UtcNow
-            CRMLinkTableItem.Collection.Save()
+                        CRMLinkTableItem.LastLink = DateTime.UtcNow
+                        CRMLinkTableItem.Collection.Save()
                         Log.Write("Finished processing successfully.")
 
                         Dim result As CRMLinkResult
                         result = (New CRMLinkResults(LoginUser)).AddNewCRMLinkResult()
                         result.AttemptResult = "Completed"
-                        result.OrganizationID = CrmLinkRow.OrganizationID
+                        result.OrganizationID = CRMLinkTableItem.OrganizationID
                         result.AttemptDateTime = Now.ToUniversalTime()
                         result.Collection.Save()
 
