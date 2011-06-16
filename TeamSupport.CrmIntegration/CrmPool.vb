@@ -71,9 +71,9 @@ Namespace TeamSupport
             Return
           End If
 
-          If Not IsAlreadyProcessing(link.OrganizationID) Then
+          If Not IsAlreadyProcessing(link.CRMLinkID) Then
 
-                        Dim crmProcessor As New CrmProcessor(link)
+            Dim crmProcessor As New CrmProcessor(link.CRMLinkID)
             crmProcessor.Start()
             _threads.Add(crmProcessor)
           End If
@@ -81,9 +81,9 @@ Namespace TeamSupport
       End Sub
 
 
-      Private Function IsAlreadyProcessing(ByVal organizationID As Integer) As Boolean
+      Private Function IsAlreadyProcessing(ByVal crmLinkID As Integer) As Boolean
         For Each thread As CrmProcessor In _threads
-          If thread.OrganizationID = organizationID Then
+          If thread.CrmLinkID = crmLinkID Then
             Return True
           End If
         Next
