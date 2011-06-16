@@ -24,6 +24,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("LastLink", "LastLink", false, false, false);
       _fieldMap.AddMap("SendBackTicketData", "SendBackTicketData", false, false, false);
       _fieldMap.AddMap("LastProcessed", "LastProcessed", false, false, false);
+      _fieldMap.AddMap("LastTicketID", "LastTicketID", false, false, false);
             
     }
   }

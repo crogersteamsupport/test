@@ -72,6 +72,12 @@ namespace TeamSupport.Data
     
 
     
+    public int LastTicketID
+    {
+      get { return (int)Row["LastTicketID"]; }
+      set { Row["LastTicketID"] = CheckNull(value); }
+    }
+    
     public bool SendBackTicketData
     {
       get { return (bool)Row["SendBackTicketData"]; }
@@ -199,7 +205,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed  WHERE ([CRMLinkID] = @CRMLinkID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed,    [LastTicketID] = @LastTicketID  WHERE ([CRMLinkID] = @CRMLinkID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CRMLinkID", SqlDbType.Int, 4);
@@ -279,13 +285,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("LastTicketID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkTable] (    [OrganizationID],    [Active],    [CRMType],    [Username],    [Password],    [SecurityToken],    [TypeFieldMatch],    [LastLink],    [SendBackTicketData],    [LastProcessed]) VALUES ( @OrganizationID, @Active, @CRMType, @Username, @Password, @SecurityToken, @TypeFieldMatch, @LastLink, @SendBackTicketData, @LastProcessed); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkTable] (    [OrganizationID],    [Active],    [CRMType],    [Username],    [Password],    [SecurityToken],    [TypeFieldMatch],    [LastLink],    [SendBackTicketData],    [LastProcessed],    [LastTicketID]) VALUES ( @OrganizationID, @Active, @CRMType, @Username, @Password, @SecurityToken, @TypeFieldMatch, @LastLink, @SendBackTicketData, @LastProcessed, @LastTicketID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("LastTicketID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("LastProcessed", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -469,7 +489,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkID], [OrganizationID], [Active], [CRMType], [Username], [Password], [SecurityToken], [TypeFieldMatch], [LastLink], [SendBackTicketData], [LastProcessed] FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkID], [OrganizationID], [Active], [CRMType], [Username], [Password], [SecurityToken], [TypeFieldMatch], [LastLink], [SendBackTicketData], [LastProcessed], [LastTicketID] FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CRMLinkID", cRMLinkID);
         Fill(command);

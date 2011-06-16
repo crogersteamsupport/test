@@ -1315,263 +1315,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DocID,
-    @NeedsIndexing,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DocID] = @DocID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -3514,87 +3257,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CreditCards]
   WHERE ([CreditCardID] = @CreditCardID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentDownloadID],
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded]
-  FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-
-(
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AttachmentDownloads]
-  (
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded])
-  VALUES (
-    @AttachmentID,
-    @UserID,
-    @DateDownloaded)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-
-(
-  @AttachmentDownloadID int,
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[AttachmentDownloads]
-  SET
-    [AttachmentID] = @AttachmentID,
-    [UserID] = @UserID,
-    [DateDownloaded] = @DateDownloaded
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
 GO
 
 
@@ -7534,6 +7196,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentDownloadID],
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded]
+  FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+
+(
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[AttachmentDownloads]
+  (
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded])
+  VALUES (
+    @AttachmentOrganizationID,
+    @AttachmentID,
+    @UserID,
+    @DateDownloaded)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+
+(
+  @AttachmentDownloadID int,
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[AttachmentDownloads]
+  SET
+    [AttachmentOrganizationID] = @AttachmentOrganizationID,
+    [AttachmentID] = @AttachmentID,
+    [UserID] = @UserID,
+    [DateDownloaded] = @DateDownloaded
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
@@ -7555,7 +7304,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed]
+    [LastProcessed],
+    [LastTicketID]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -7576,6 +7326,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @LastLink datetime,
   @SendBackTicketData bit,
   @LastProcessed datetime,
+  @LastTicketID int,
   @Identity int OUT
 )
 AS
@@ -7591,7 +7342,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed])
+    [LastProcessed],
+    [LastTicketID])
   VALUES (
     @OrganizationID,
     @Active,
@@ -7602,7 +7354,8 @@ AS
     @TypeFieldMatch,
     @LastLink,
     @SendBackTicketData,
-    @LastProcessed)
+    @LastProcessed,
+    @LastTicketID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -7623,7 +7376,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @TypeFieldMatch varchar(500),
   @LastLink datetime,
   @SendBackTicketData bit,
-  @LastProcessed datetime
+  @LastProcessed datetime,
+  @LastTicketID int
 )
 AS
   SET NOCOUNT OFF;
@@ -7638,7 +7392,8 @@ AS
     [TypeFieldMatch] = @TypeFieldMatch,
     [LastLink] = @LastLink,
     [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -7654,6 +7409,263 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @NeedsIndexing,
+    @DocID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DocID] = @DocID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
 GO
 
 
@@ -12579,263 +12591,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DocID,
-    @NeedsIndexing,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DocID] = @DocID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -14778,87 +14533,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CreditCards]
   WHERE ([CreditCardID] = @CreditCardID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentDownloadID],
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded]
-  FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-
-(
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AttachmentDownloads]
-  (
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded])
-  VALUES (
-    @AttachmentID,
-    @UserID,
-    @DateDownloaded)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-
-(
-  @AttachmentDownloadID int,
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[AttachmentDownloads]
-  SET
-    [AttachmentID] = @AttachmentID,
-    [UserID] = @UserID,
-    [DateDownloaded] = @DateDownloaded
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
 GO
 
 
@@ -18798,6 +18472,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentDownloadID],
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded]
+  FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+
+(
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[AttachmentDownloads]
+  (
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded])
+  VALUES (
+    @AttachmentOrganizationID,
+    @AttachmentID,
+    @UserID,
+    @DateDownloaded)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+
+(
+  @AttachmentDownloadID int,
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[AttachmentDownloads]
+  SET
+    [AttachmentOrganizationID] = @AttachmentOrganizationID,
+    [AttachmentID] = @AttachmentID,
+    [UserID] = @UserID,
+    [DateDownloaded] = @DateDownloaded
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
@@ -18819,7 +18580,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed]
+    [LastProcessed],
+    [LastTicketID]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -18840,6 +18602,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @LastLink datetime,
   @SendBackTicketData bit,
   @LastProcessed datetime,
+  @LastTicketID int,
   @Identity int OUT
 )
 AS
@@ -18855,7 +18618,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed])
+    [LastProcessed],
+    [LastTicketID])
   VALUES (
     @OrganizationID,
     @Active,
@@ -18866,7 +18630,8 @@ AS
     @TypeFieldMatch,
     @LastLink,
     @SendBackTicketData,
-    @LastProcessed)
+    @LastProcessed,
+    @LastTicketID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -18887,7 +18652,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @TypeFieldMatch varchar(500),
   @LastLink datetime,
   @SendBackTicketData bit,
-  @LastProcessed datetime
+  @LastProcessed datetime,
+  @LastTicketID int
 )
 AS
   SET NOCOUNT OFF;
@@ -18902,7 +18668,8 @@ AS
     [TypeFieldMatch] = @TypeFieldMatch,
     [LastLink] = @LastLink,
     [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -18918,6 +18685,263 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @NeedsIndexing,
+    @DocID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DocID] = @DocID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
 GO
 
 
@@ -23843,263 +23867,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DocID,
-    @NeedsIndexing,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DocID] = @DocID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -26042,87 +25809,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CreditCards]
   WHERE ([CreditCardID] = @CreditCardID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentDownloadID],
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded]
-  FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-
-(
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AttachmentDownloads]
-  (
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded])
-  VALUES (
-    @AttachmentID,
-    @UserID,
-    @DateDownloaded)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-
-(
-  @AttachmentDownloadID int,
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[AttachmentDownloads]
-  SET
-    [AttachmentID] = @AttachmentID,
-    [UserID] = @UserID,
-    [DateDownloaded] = @DateDownloaded
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
 GO
 
 
@@ -30062,6 +29748,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentDownloadID],
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded]
+  FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+
+(
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[AttachmentDownloads]
+  (
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded])
+  VALUES (
+    @AttachmentOrganizationID,
+    @AttachmentID,
+    @UserID,
+    @DateDownloaded)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+
+(
+  @AttachmentDownloadID int,
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[AttachmentDownloads]
+  SET
+    [AttachmentOrganizationID] = @AttachmentOrganizationID,
+    [AttachmentID] = @AttachmentID,
+    [UserID] = @UserID,
+    [DateDownloaded] = @DateDownloaded
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
@@ -30083,7 +29856,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed]
+    [LastProcessed],
+    [LastTicketID]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -30104,6 +29878,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @LastLink datetime,
   @SendBackTicketData bit,
   @LastProcessed datetime,
+  @LastTicketID int,
   @Identity int OUT
 )
 AS
@@ -30119,7 +29894,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed])
+    [LastProcessed],
+    [LastTicketID])
   VALUES (
     @OrganizationID,
     @Active,
@@ -30130,7 +29906,8 @@ AS
     @TypeFieldMatch,
     @LastLink,
     @SendBackTicketData,
-    @LastProcessed)
+    @LastProcessed,
+    @LastTicketID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -30151,7 +29928,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @TypeFieldMatch varchar(500),
   @LastLink datetime,
   @SendBackTicketData bit,
-  @LastProcessed datetime
+  @LastProcessed datetime,
+  @LastTicketID int
 )
 AS
   SET NOCOUNT OFF;
@@ -30166,7 +29944,8 @@ AS
     [TypeFieldMatch] = @TypeFieldMatch,
     [LastLink] = @LastLink,
     [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -30182,6 +29961,263 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @NeedsIndexing,
+    @DocID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DocID] = @DocID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
 GO
 
 
@@ -35107,263 +35143,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DocID,
-    @NeedsIndexing,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DocID] = @DocID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -37306,87 +37085,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CreditCards]
   WHERE ([CreditCardID] = @CreditCardID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentDownloadID],
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded]
-  FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-
-(
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AttachmentDownloads]
-  (
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded])
-  VALUES (
-    @AttachmentID,
-    @UserID,
-    @DateDownloaded)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-
-(
-  @AttachmentDownloadID int,
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[AttachmentDownloads]
-  SET
-    [AttachmentID] = @AttachmentID,
-    [UserID] = @UserID,
-    [DateDownloaded] = @DateDownloaded
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
 GO
 
 
@@ -41326,6 +41024,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentDownloadID],
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded]
+  FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+
+(
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[AttachmentDownloads]
+  (
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded])
+  VALUES (
+    @AttachmentOrganizationID,
+    @AttachmentID,
+    @UserID,
+    @DateDownloaded)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+
+(
+  @AttachmentDownloadID int,
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[AttachmentDownloads]
+  SET
+    [AttachmentOrganizationID] = @AttachmentOrganizationID,
+    [AttachmentID] = @AttachmentID,
+    [UserID] = @UserID,
+    [DateDownloaded] = @DateDownloaded
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
@@ -41347,7 +41132,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed]
+    [LastProcessed],
+    [LastTicketID]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -41368,6 +41154,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @LastLink datetime,
   @SendBackTicketData bit,
   @LastProcessed datetime,
+  @LastTicketID int,
   @Identity int OUT
 )
 AS
@@ -41383,7 +41170,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed])
+    [LastProcessed],
+    [LastTicketID])
   VALUES (
     @OrganizationID,
     @Active,
@@ -41394,7 +41182,8 @@ AS
     @TypeFieldMatch,
     @LastLink,
     @SendBackTicketData,
-    @LastProcessed)
+    @LastProcessed,
+    @LastTicketID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -41415,7 +41204,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @TypeFieldMatch varchar(500),
   @LastLink datetime,
   @SendBackTicketData bit,
-  @LastProcessed datetime
+  @LastProcessed datetime,
+  @LastTicketID int
 )
 AS
   SET NOCOUNT OFF;
@@ -41430,7 +41220,8 @@ AS
     [TypeFieldMatch] = @TypeFieldMatch,
     [LastLink] = @LastLink,
     [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -41446,6 +41237,263 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @NeedsIndexing,
+    @DocID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DocID] = @DocID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
 GO
 
 
@@ -46371,263 +46419,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DocID,
-    @NeedsIndexing,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DocID] = @DocID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -48570,87 +48361,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CreditCards]
   WHERE ([CreditCardID] = @CreditCardID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentDownloadID],
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded]
-  FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-
-(
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AttachmentDownloads]
-  (
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded])
-  VALUES (
-    @AttachmentID,
-    @UserID,
-    @DateDownloaded)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-
-(
-  @AttachmentDownloadID int,
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[AttachmentDownloads]
-  SET
-    [AttachmentID] = @AttachmentID,
-    [UserID] = @UserID,
-    [DateDownloaded] = @DateDownloaded
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
 GO
 
 
@@ -52590,6 +52300,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentDownloadID],
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded]
+  FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+
+(
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[AttachmentDownloads]
+  (
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded])
+  VALUES (
+    @AttachmentOrganizationID,
+    @AttachmentID,
+    @UserID,
+    @DateDownloaded)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+
+(
+  @AttachmentDownloadID int,
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[AttachmentDownloads]
+  SET
+    [AttachmentOrganizationID] = @AttachmentOrganizationID,
+    [AttachmentID] = @AttachmentID,
+    [UserID] = @UserID,
+    [DateDownloaded] = @DateDownloaded
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
@@ -52611,7 +52408,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed]
+    [LastProcessed],
+    [LastTicketID]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -52632,6 +52430,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @LastLink datetime,
   @SendBackTicketData bit,
   @LastProcessed datetime,
+  @LastTicketID int,
   @Identity int OUT
 )
 AS
@@ -52647,7 +52446,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed])
+    [LastProcessed],
+    [LastTicketID])
   VALUES (
     @OrganizationID,
     @Active,
@@ -52658,7 +52458,8 @@ AS
     @TypeFieldMatch,
     @LastLink,
     @SendBackTicketData,
-    @LastProcessed)
+    @LastProcessed,
+    @LastTicketID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -52679,7 +52480,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @TypeFieldMatch varchar(500),
   @LastLink datetime,
   @SendBackTicketData bit,
-  @LastProcessed datetime
+  @LastProcessed datetime,
+  @LastTicketID int
 )
 AS
   SET NOCOUNT OFF;
@@ -52694,7 +52496,8 @@ AS
     [TypeFieldMatch] = @TypeFieldMatch,
     [LastLink] = @LastLink,
     [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -52710,6 +52513,263 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @NeedsIndexing,
+    @DocID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DocID] = @DocID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
 GO
 
 
@@ -57635,263 +57695,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketID],
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicket
-
-(
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Tickets]
-  (
-    [ReportedVersionID],
-    [SolvedVersionID],
-    [ProductID],
-    [GroupID],
-    [UserID],
-    [TicketStatusID],
-    [TicketTypeID],
-    [TicketSeverityID],
-    [OrganizationID],
-    [Name],
-    [ParentID],
-    [TicketNumber],
-    [IsVisibleOnPortal],
-    [IsKnowledgeBase],
-    [DateClosed],
-    [CloserID],
-    [ImportID],
-    [LastViolationTime],
-    [LastWarningTime],
-    [TicketSource],
-    [PortalEmail],
-    [SlaViolationTimeClosed],
-    [SlaViolationLastAction],
-    [SlaViolationInitialResponse],
-    [SlaWarningTimeClosed],
-    [SlaWarningLastAction],
-    [SlaWarningInitialResponse],
-    [DocID],
-    [NeedsIndexing],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @ReportedVersionID,
-    @SolvedVersionID,
-    @ProductID,
-    @GroupID,
-    @UserID,
-    @TicketStatusID,
-    @TicketTypeID,
-    @TicketSeverityID,
-    @OrganizationID,
-    @Name,
-    @ParentID,
-    @TicketNumber,
-    @IsVisibleOnPortal,
-    @IsKnowledgeBase,
-    @DateClosed,
-    @CloserID,
-    @ImportID,
-    @LastViolationTime,
-    @LastWarningTime,
-    @TicketSource,
-    @PortalEmail,
-    @SlaViolationTimeClosed,
-    @SlaViolationLastAction,
-    @SlaViolationInitialResponse,
-    @SlaWarningTimeClosed,
-    @SlaWarningLastAction,
-    @SlaWarningInitialResponse,
-    @DocID,
-    @NeedsIndexing,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
-
-(
-  @TicketID int,
-  @ReportedVersionID int,
-  @SolvedVersionID int,
-  @ProductID int,
-  @GroupID int,
-  @UserID int,
-  @TicketStatusID int,
-  @TicketTypeID int,
-  @TicketSeverityID int,
-  @OrganizationID int,
-  @Name varchar(255),
-  @ParentID int,
-  @TicketNumber int,
-  @IsVisibleOnPortal bit,
-  @IsKnowledgeBase bit,
-  @DateClosed datetime,
-  @CloserID int,
-  @ImportID varchar(50),
-  @LastViolationTime datetime,
-  @LastWarningTime datetime,
-  @TicketSource varchar(50),
-  @PortalEmail varchar(500),
-  @SlaViolationTimeClosed datetime,
-  @SlaViolationLastAction datetime,
-  @SlaViolationInitialResponse datetime,
-  @SlaWarningTimeClosed datetime,
-  @SlaWarningLastAction datetime,
-  @SlaWarningInitialResponse datetime,
-  @DocID int,
-  @NeedsIndexing bit,
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Tickets]
-  SET
-    [ReportedVersionID] = @ReportedVersionID,
-    [SolvedVersionID] = @SolvedVersionID,
-    [ProductID] = @ProductID,
-    [GroupID] = @GroupID,
-    [UserID] = @UserID,
-    [TicketStatusID] = @TicketStatusID,
-    [TicketTypeID] = @TicketTypeID,
-    [TicketSeverityID] = @TicketSeverityID,
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ParentID] = @ParentID,
-    [TicketNumber] = @TicketNumber,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsKnowledgeBase] = @IsKnowledgeBase,
-    [DateClosed] = @DateClosed,
-    [CloserID] = @CloserID,
-    [ImportID] = @ImportID,
-    [LastViolationTime] = @LastViolationTime,
-    [LastWarningTime] = @LastWarningTime,
-    [TicketSource] = @TicketSource,
-    [PortalEmail] = @PortalEmail,
-    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
-    [SlaViolationLastAction] = @SlaViolationLastAction,
-    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
-    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
-    [SlaWarningLastAction] = @SlaWarningLastAction,
-    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
-    [DocID] = @DocID,
-    [NeedsIndexing] = @NeedsIndexing,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketID] = @TicketID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
-
-(
-  @TicketID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Tickets]
-  WHERE ([TicketID] = @TicketID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectApiLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectApiLog
 GO
 
@@ -59834,87 +59637,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CreditCards]
   WHERE ([CreditCardID] = @CreditCardID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [AttachmentDownloadID],
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded]
-  FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
-
-(
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AttachmentDownloads]
-  (
-    [AttachmentID],
-    [UserID],
-    [DateDownloaded])
-  VALUES (
-    @AttachmentID,
-    @UserID,
-    @DateDownloaded)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
-
-(
-  @AttachmentDownloadID int,
-  @AttachmentID int,
-  @UserID int,
-  @DateDownloaded datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[AttachmentDownloads]
-  SET
-    [AttachmentID] = @AttachmentID,
-    [UserID] = @UserID,
-    [DateDownloaded] = @DateDownloaded
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
-
-(
-  @AttachmentDownloadID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AttachmentDownloads]
-  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
 GO
 
 
@@ -63854,6 +63576,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [AttachmentDownloadID],
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded]
+  FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertAttachmentDownload
+
+(
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[AttachmentDownloads]
+  (
+    [AttachmentOrganizationID],
+    [AttachmentID],
+    [UserID],
+    [DateDownloaded])
+  VALUES (
+    @AttachmentOrganizationID,
+    @AttachmentID,
+    @UserID,
+    @DateDownloaded)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateAttachmentDownload
+
+(
+  @AttachmentDownloadID int,
+  @AttachmentOrganizationID int,
+  @AttachmentID int,
+  @UserID int,
+  @DateDownloaded datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[AttachmentDownloads]
+  SET
+    [AttachmentOrganizationID] = @AttachmentOrganizationID,
+    [AttachmentID] = @AttachmentID,
+    [UserID] = @UserID,
+    [DateDownloaded] = @DateDownloaded
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachmentDownload' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteAttachmentDownload
+
+(
+  @AttachmentDownloadID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[AttachmentDownloads]
+  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
 GO
 
@@ -63875,7 +63684,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed]
+    [LastProcessed],
+    [LastTicketID]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -63896,6 +63706,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @LastLink datetime,
   @SendBackTicketData bit,
   @LastProcessed datetime,
+  @LastTicketID int,
   @Identity int OUT
 )
 AS
@@ -63911,7 +63722,8 @@ AS
     [TypeFieldMatch],
     [LastLink],
     [SendBackTicketData],
-    [LastProcessed])
+    [LastProcessed],
+    [LastTicketID])
   VALUES (
     @OrganizationID,
     @Active,
@@ -63922,7 +63734,8 @@ AS
     @TypeFieldMatch,
     @LastLink,
     @SendBackTicketData,
-    @LastProcessed)
+    @LastProcessed,
+    @LastTicketID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -63943,7 +63756,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @TypeFieldMatch varchar(500),
   @LastLink datetime,
   @SendBackTicketData bit,
-  @LastProcessed datetime
+  @LastProcessed datetime,
+  @LastTicketID int
 )
 AS
   SET NOCOUNT OFF;
@@ -63958,7 +63772,8 @@ AS
     [TypeFieldMatch] = @TypeFieldMatch,
     [LastLink] = @LastLink,
     [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -63974,6 +63789,263 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketID],
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicket
+
+(
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Tickets]
+  (
+    [ReportedVersionID],
+    [SolvedVersionID],
+    [ProductID],
+    [GroupID],
+    [UserID],
+    [TicketStatusID],
+    [TicketTypeID],
+    [TicketSeverityID],
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [TicketNumber],
+    [IsVisibleOnPortal],
+    [IsKnowledgeBase],
+    [DateClosed],
+    [CloserID],
+    [ImportID],
+    [LastViolationTime],
+    [LastWarningTime],
+    [TicketSource],
+    [PortalEmail],
+    [SlaViolationTimeClosed],
+    [SlaViolationLastAction],
+    [SlaViolationInitialResponse],
+    [SlaWarningTimeClosed],
+    [SlaWarningLastAction],
+    [SlaWarningInitialResponse],
+    [NeedsIndexing],
+    [DocID],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @ReportedVersionID,
+    @SolvedVersionID,
+    @ProductID,
+    @GroupID,
+    @UserID,
+    @TicketStatusID,
+    @TicketTypeID,
+    @TicketSeverityID,
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @TicketNumber,
+    @IsVisibleOnPortal,
+    @IsKnowledgeBase,
+    @DateClosed,
+    @CloserID,
+    @ImportID,
+    @LastViolationTime,
+    @LastWarningTime,
+    @TicketSource,
+    @PortalEmail,
+    @SlaViolationTimeClosed,
+    @SlaViolationLastAction,
+    @SlaViolationInitialResponse,
+    @SlaWarningTimeClosed,
+    @SlaWarningLastAction,
+    @SlaWarningInitialResponse,
+    @NeedsIndexing,
+    @DocID,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicket
+
+(
+  @TicketID int,
+  @ReportedVersionID int,
+  @SolvedVersionID int,
+  @ProductID int,
+  @GroupID int,
+  @UserID int,
+  @TicketStatusID int,
+  @TicketTypeID int,
+  @TicketSeverityID int,
+  @OrganizationID int,
+  @Name varchar(255),
+  @ParentID int,
+  @TicketNumber int,
+  @IsVisibleOnPortal bit,
+  @IsKnowledgeBase bit,
+  @DateClosed datetime,
+  @CloserID int,
+  @ImportID varchar(50),
+  @LastViolationTime datetime,
+  @LastWarningTime datetime,
+  @TicketSource varchar(50),
+  @PortalEmail varchar(500),
+  @SlaViolationTimeClosed datetime,
+  @SlaViolationLastAction datetime,
+  @SlaViolationInitialResponse datetime,
+  @SlaWarningTimeClosed datetime,
+  @SlaWarningLastAction datetime,
+  @SlaWarningInitialResponse datetime,
+  @NeedsIndexing bit,
+  @DocID int,
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Tickets]
+  SET
+    [ReportedVersionID] = @ReportedVersionID,
+    [SolvedVersionID] = @SolvedVersionID,
+    [ProductID] = @ProductID,
+    [GroupID] = @GroupID,
+    [UserID] = @UserID,
+    [TicketStatusID] = @TicketStatusID,
+    [TicketTypeID] = @TicketTypeID,
+    [TicketSeverityID] = @TicketSeverityID,
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID,
+    [TicketNumber] = @TicketNumber,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsKnowledgeBase] = @IsKnowledgeBase,
+    [DateClosed] = @DateClosed,
+    [CloserID] = @CloserID,
+    [ImportID] = @ImportID,
+    [LastViolationTime] = @LastViolationTime,
+    [LastWarningTime] = @LastWarningTime,
+    [TicketSource] = @TicketSource,
+    [PortalEmail] = @PortalEmail,
+    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,
+    [SlaViolationLastAction] = @SlaViolationLastAction,
+    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,
+    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,
+    [SlaWarningLastAction] = @SlaWarningLastAction,
+    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,
+    [NeedsIndexing] = @NeedsIndexing,
+    [DocID] = @DocID,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketID] = @TicketID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicket' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicket
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicket
+
+(
+  @TicketID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Tickets]
+  WHERE ([TicketID] = @TicketID)
 GO
 
 

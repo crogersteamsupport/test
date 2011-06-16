@@ -24,6 +24,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? LastLink { get; set; }
     [DataMember] public bool SendBackTicketData { get; set; }
     [DataMember] public DateTime LastProcessed { get; set; }
+    [DataMember] public int LastTicketID { get; set; }
           
   }
   
@@ -32,6 +33,7 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.LastTicketID = this.LastTicketID;
       result.SendBackTicketData = this.SendBackTicketData;
       result.TypeFieldMatch = this.TypeFieldMatch;
       result.SecurityToken = this.SecurityToken;

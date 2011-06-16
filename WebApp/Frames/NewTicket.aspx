@@ -81,6 +81,7 @@
       
         var textName = $find("<%=textName.ClientID %>");
         if (textName == null) return;
+        
         var name = textName.get_value().trim();
         if (name == '') {
           alert('Please enter a ticket name.');
@@ -250,7 +251,7 @@
                   </td>
                   <td colspan="3">
                     <div style="padding-left: 12px;">
-                      <telerik:RadTextBox ID="textName" runat="server" Width="580px" MaxLength="255" CssClass="validateX(required)">
+                      <telerik:RadTextBox ID="textName" runat="server" Width="580px" MaxLength="255" CssClass="validateX(required)" >
                       </telerik:RadTextBox></div>
                   </td>
                 </tr>

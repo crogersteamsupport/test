@@ -41,8 +41,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SlaWarningTimeClosed", "SlaWarningTimeClosed", false, false, false);
       _fieldMap.AddMap("SlaWarningLastAction", "SlaWarningLastAction", false, false, false);
       _fieldMap.AddMap("SlaWarningInitialResponse", "SlaWarningInitialResponse", false, false, false);
-      _fieldMap.AddMap("DocID", "DocID", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
+      _fieldMap.AddMap("DocID", "DocID", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
       _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);

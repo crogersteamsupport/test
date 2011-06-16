@@ -14,6 +14,7 @@ namespace TeamSupport.Data
   {
     public AttachmentDownloadProxy() {}
     [DataMember] public int AttachmentDownloadID { get; set; }
+    [DataMember] public int? AttachmentOrganizationID { get; set; }
     [DataMember] public int AttachmentID { get; set; }
     [DataMember] public int UserID { get; set; }
     [DataMember] public DateTime DateDownloaded { get; set; }
@@ -27,6 +28,7 @@ namespace TeamSupport.Data
       AttachmentDownloadProxy result = new AttachmentDownloadProxy();
       result.UserID = this.UserID;
       result.AttachmentID = this.AttachmentID;
+      result.AttachmentOrganizationID = this.AttachmentOrganizationID;
       result.AttachmentDownloadID = this.AttachmentDownloadID;
        
       result.DateDownloaded = DateTime.SpecifyKind(this.DateDownloaded, DateTimeKind.Local);
