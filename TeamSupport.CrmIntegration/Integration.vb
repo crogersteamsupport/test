@@ -10,20 +10,37 @@ Namespace TeamSupport
             Protected CRMLinkRow As CRMLinkTableItem
             Protected Log As SyncLog
             Protected User As LoginUser
+            Protected Processor As CrmProcessor
             Protected ReadOnly Type As IntegrationType
             Protected Const Client As String = "Muroc Client"
 
-            Protected Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisType As IntegrationType)
+            'tracks global errors so we can not update the sync date if there's a problem
+            Private _syncError As Boolean = False
+            Public Property SyncError As Boolean
+                Get
+                    Return _syncError
+                End Get
+                Protected Set(ByVal value As Boolean)
+                    _syncError = value
+                End Set
+            End Property
+
+            Protected Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor, ByVal thisType As IntegrationType)
                 CRMLinkRow = crmLinkOrg
                 Log = crmLog
                 User = thisUser
                 Type = thisType
+                Processor = thisProcessor
             End Sub
 
             Public MustOverride Function PerformSync() As Boolean
             Public MustOverride Function SendTicketData() As Boolean
 
             Protected Sub UpdateOrgInfo(ByVal company As CompanyData, ByVal ParentOrgID As String)
+                If Processor.IsStopped Then
+                    Return
+                End If
+
                 Dim findCompany As New Organizations(User)
                 Dim thisCompany As Organization
 
@@ -45,7 +62,7 @@ Namespace TeamSupport
 
                     Else
                         'if still not found, add new
-                        
+
                         thisCompany = (New Organizations(User)).AddNewOrganization()
                         thisCompany.ParentID = ParentOrgID
                         thisCompany.Name = company.AccountName
@@ -58,12 +75,12 @@ Namespace TeamSupport
                         End With
 
                         thisCompany.HasPortalAccess = ParentOrgID = "305383" 'This is hack for now for Axceler.  Need to change to an option - 3/9/11
-                        thisCompany.Collection.Save()
 
                         Log.Write("Added a new account.")
                     End If
-
                 End If
+
+                thisCompany.Collection.Save()
 
                 Dim findAddress As New Addresses(User)
                 Dim thisAddress As Address
@@ -126,6 +143,10 @@ Namespace TeamSupport
             End Sub
 
             Protected Sub UpdateContactInfo(ByVal person As EmployeeData, ByVal companyID As String, ByVal ParentOrgID As String)
+                If Processor.IsStopped Then
+                    Return
+                End If
+
                 If person.Email = "" Then
                     'we don't add contacts with no email address
                     Return
@@ -147,7 +168,7 @@ Namespace TeamSupport
                     If findUser.FindByEmail(person.Email) IsNot Nothing Then
                         thisUser = findUser.FindByEmail(person.Email)
 
-                     Else
+                    Else
                         'add the contact
                         thisUser = (New Users(User)).AddNewUser()
                         thisUser.OrganizationID = thisCompany.OrganizationID
@@ -281,10 +302,8 @@ Namespace TeamSupport
             Property Street2 As String
             Property Zip As String
             Property Phone As String
-            Property Fax As String
             Property AccountID As String
             Property AccountName As String
-            Property LastModified As Date
 
             Public Overrides Function Equals(ByVal obj As Object) As Boolean
                 If Not TypeOf (obj) Is CompanyData Then
@@ -317,9 +336,8 @@ Namespace TeamSupport
             Fax
         End Enum
 
-
-
         Public Class SyncLog
+
             Private LogPath As String
             Private FileName As String
 
@@ -335,6 +353,7 @@ Namespace TeamSupport
             Public Sub Write(ByVal Text As String)
                 File.AppendAllText(LogPath & "\" & FileName, Now.ToString + ": " + Text + Environment.NewLine)
             End Sub
+
         End Class
     End Namespace
 End Namespace

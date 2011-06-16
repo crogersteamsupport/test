@@ -9,8 +9,8 @@ Namespace TeamSupport
         Public Class BatchBook
             Inherits Integration
 
-            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser)
-                MyBase.New(crmLinkOrg, crmLog, thisUser, IntegrationType.Batchbook)
+            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
+                MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Batchbook)
             End Sub
 
             Public Overrides Function PerformSync() As Boolean
@@ -26,6 +26,10 @@ Namespace TeamSupport
                 If TagsToMatch.Contains(",") Then
                     'process multiple tags where present
                     For Each TagToMatch As String In TagsToMatch.Split(",")
+                        If Processor.IsStopped Then
+                            Return False
+                        End If
+
                         CompaniesToSync = GetBatchBookXML(Key, CompanyName, "companies.xml?tag=" & Trim(TagToMatch))
 
                         If CompaniesToSync IsNot Nothing Then
@@ -102,6 +106,10 @@ Namespace TeamSupport
 
                     If tickets IsNot Nothing Then
                         For Each thisTicket As Ticket In tickets
+                            If Processor.IsStopped Then
+                                Return False
+                            End If
+
                             Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
                             Dim customers As New OrganizationsView(User)
                             customers.LoadByTicketID(thisTicket.TicketID)
@@ -149,6 +157,7 @@ Namespace TeamSupport
                             If address IsNot Nothing Then
                                 .City = address.Element("city").Value
                                 .Country = address.Element("country").Value
+                                .State = address.Element("state").Value
                                 .Street = address.Element("street_1").Value
                                 .Zip = address.Element("postal_code").Value
                                 .Phone = address.Element("phone").Value

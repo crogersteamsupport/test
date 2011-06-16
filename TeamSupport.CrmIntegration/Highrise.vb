@@ -10,11 +10,10 @@ Namespace TeamSupport
         Public Class Highrise
             Inherits Integration
 
-            Dim SyncError As Boolean = False 'tracks global errors so we can not update the sync date if there's a problem
             Dim UseSSL As Boolean = True
 
-            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser)
-                MyBase.New(crmLinkOrg, crmLog, thisUser, IntegrationType.Highrise)
+            Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
+                MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.Highrise)
             End Sub
 
             Public Overrides Function PerformSync() As Boolean
@@ -27,14 +26,16 @@ Namespace TeamSupport
                 SyncError = False
                 UseSSL = True
 
-                Dim LastUpdate As DateTime
-
                 Try
                     Dim TagIDs As New List(Of String)()
 
                     If TagsToMatch.Contains(",") Then
                         'process multiple tags where present
                         For Each TagToMatch As String In TagsToMatch.Split(",")
+                            If Processor.IsStopped Then
+                                Return False
+                            End If
+
                             Dim TagID As String = GetTagID(Key, CompanyName, TagToMatch, ParentOrgID)
 
                             If TagID IsNot Nothing Then
@@ -51,113 +52,88 @@ Namespace TeamSupport
 
                     If TagIDs.Count > 0 Then
                         For Each TagID As String In TagIDs
-                            Dim CompanySyncData As New List(Of CompanyData)
+                            If Processor.IsStopped Then
+                                Return False
+                            End If
 
-                            Dim XMLReader As XmlNodeReader
-                            Dim XMLLoopCount As Integer = 0 'counts the number of records that we got in this loop
-                            Dim NeedToGetMore As Boolean = True
+                            Dim CompanySyncData As New List(Of CompanyData)()
+                            Dim NeedtoGetMore As Boolean = True
+                            Dim XMLLoopCount As Integer = 0
+                            Dim TotalLoopCount As Integer = 0
 
                             Log.Write("Starting GetXML")
                             MyXML = GetHighriseXML(Key, CompanyName, "companies.xml?tag_id=" + TagID)  'note that capitalization DOES matter
                             Log.Write("Finished GetXML")
 
                             If MyXML IsNot Nothing Then
-                                While NeedToGetMore
-                                    XMLReader = New XmlNodeReader(MyXML)
 
-                                    XMLReader.MoveToContent()
+                                While NeedtoGetMore
+                                    Dim allcust As XElement = XElement.Load(New XmlNodeReader(MyXML))
 
-                                    Log.Write("Processing company information...")
-                                    While XMLReader.Read
-                                        Dim thisCustomer As New CompanyData()
-                                        Dim LastLocation As String
-
-                                        If (XMLReader.NodeType = XmlNodeType.Element) Then
-                                            If (XMLReader.Name = "id") And (XMLReader.Depth = 2) Then 'the main ID is on depth 2 - This prevents us from updating this on an Address or e-mail id
-                                                XMLLoopCount = XMLLoopCount + 1 'tracks the number we've gotten in this loop
-
-                                                thisCustomer.AccountID = XMLReader.ReadString
-
-                                            ElseIf (XMLReader.Name = "name") And (XMLReader.Depth = 2) Then 'company name '1/7/11 - Looks like HR added NAME to the tags section - We need to add depth (2) here
-                                                thisCustomer.AccountName = XMLReader.ReadString()
-
-                                            ElseIf XMLReader.Name = "city" And thisCustomer.City = "" Then 'only update city the first time
-                                                thisCustomer.City = XMLReader.ReadString()
-
-                                            ElseIf XMLReader.Name = "country" And thisCustomer.Country = "" Then 'only update the first time
-                                                thisCustomer.Country = XMLReader.ReadString()
-
-                                            ElseIf XMLReader.Name = "state" And thisCustomer.State = "" Then 'only update the first time
-                                                thisCustomer.State = XMLReader.ReadString()
-
-                                            ElseIf XMLReader.Name = "street" And thisCustomer.Street = "" Then
-                                                thisCustomer.Street = XMLReader.ReadString()
-
-                                            ElseIf XMLReader.Name = "zip" And thisCustomer.Zip = "" Then
-                                                thisCustomer.Zip = XMLReader.ReadString()
-
-                                            ElseIf XMLReader.Name = "location" Then
-                                                LastLocation = XMLReader.ReadString 'this will store the last location field.  Used to identify the phone number
-
-                                            ElseIf XMLReader.Name = "number" Then
-                                                'we've found a number, hopefully a phone number.  Based on the last value of the Location field, we will now assign it to the correct phone type
-                                                If LastLocation = "Work" Then
-                                                    If thisCustomer.Phone = "" Then
-                                                        thisCustomer.Phone = XMLReader.ReadString()
-
-                                                    End If
-
-                                                ElseIf LastLocation = "Fax" Then
-                                                    thisCustomer.Fax = ""
-                                                End If
-
-
-                                            ElseIf XMLReader.Name = "updated-at" Then
-                                                thisCustomer.LastModified = Date.Parse(XMLReader.ReadString) 'gets date from XML  Should (?) remain in Zulu time
-
-                                            End If
+                                    For Each company As XElement In allcust.Descendants("company")
+                                        If Processor.IsStopped Then
+                                            Return False
                                         End If
 
-                                        CompanySyncData.Add(thisCustomer)
-                                    End While
+                                        If CRMLinkRow.LastLink Is Nothing Or Date.Parse(company.Element("updated-at").Value).AddMinutes(30) > CRMLinkRow.LastLink Then
+                                            Dim thisCustomer As New CompanyData()
+                                            Dim address As XElement = company.Element("contact-data").Element("addresses").Element("address")
+                                            Dim phone As XElement = Nothing
+                                            If company.Element("phone-numbers") IsNot Nothing Then
+                                                phone = company.Element("phone-numbers").Element("phone-number")
+                                            End If
 
-                                    XMLReader.Close()
+                                            With thisCustomer
+                                                .AccountID = company.Element("id").Value
+                                                .AccountName = company.Element("name").Value
+
+                                                If address IsNot Nothing Then
+                                                    .City = address.Element("city").Value
+                                                    .Country = address.Element("country").Value
+                                                    .Street = address.Element("street").Value
+                                                    .State = address.Element("state").Value
+                                                    .Zip = address.Element("zip").Value
+                                                End If
+                                                If phone IsNot Nothing Then
+                                                    If phone.Element("location").Value = "Work" Then
+                                                        .Phone = phone.Element("number").Value
+                                                    End If
+                                                End If
+                                            End With
+
+                                            CompanySyncData.Add(thisCustomer)
+                                        End If
+
+                                        XMLLoopCount += 1
+                                        TotalLoopCount += 1
+                                    Next
 
                                     If XMLLoopCount = 500 Then
+                                        Log.Write("Getting next set of records..." & TotalLoopCount.ToString())
+                                        Try
+                                            MyXML = GetHighriseXML(Key, CompanyName, "companies.xml?tag_id=" + TagID + "&n=" + TotalLoopCount.ToString())  'note that capitalization DOES matter
+                                        Catch e As Exception
+                                            Log.Write("Error getting next records: " & e.Message)
 
-                                        'get the next 500 records
-                                        Log.Write("Getting next set of records..." + CompanySyncData.Count.ToString())
-                                        MyXML = GetHighriseXML(Key, CompanyName, "companies.xml?tag_id=" + TagID + "&n=" + CompanySyncData.Count.ToString())  'note that capitalization DOES matter
+                                            e.Data("OrganizationID") = ParentOrgID
+                                            ExceptionLogs.LogException(User, e, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
+                                        End Try
 
                                         If MyXML IsNot Nothing Then
-
-
-                                            XMLReader = New XmlNodeReader(MyXML)
-
-                                            XMLReader.MoveToContent()
-
                                             XMLLoopCount = 0
-                                            NeedToGetMore = True
                                         End If
                                     Else
-                                        NeedToGetMore = False 'don't get any more!
-
+                                        NeedtoGetMore = False
                                     End If
-
                                 End While
 
                                 Log.Write("Processed " + CompanySyncData.Count.ToString() + " accounts.")
-
-                                LastUpdate = Date.Parse(CRMLinkRow.LastLink).ToLocalTime() 'returns the last update, in local time
-
                                 Log.Write("Updating account information...")
 
                                 For Each company As CompanyData In CompanySyncData
                                     'Go through all accounts we just processed and add to the TS database
-                                    If company.LastModified.AddMinutes(30) > LastUpdate Then
-                                        UpdateOrgInfo(company, ParentOrgID)
-                                        Log.Write("Updated w/ Address: " & company.AccountName)
-                                    End If
+                                    UpdateOrgInfo(company, ParentOrgID)
+                                    Log.Write("Updated w/ Address: " & company.AccountName)
                                 Next
 
                                 Log.Write("Finished updating account information.")
@@ -165,17 +141,17 @@ Namespace TeamSupport
 
                                 For Each company As CompanyData In CompanySyncData
                                     Try
-                                        If company.LastModified.AddMinutes(30) > LastUpdate Then
-                                            GetPeople(Key, CompanyName, company.AccountID, ParentOrgID)
-                                            Log.Write("Updated people information for " & company.AccountName)
-                                        End If
+                                        GetPeople(Key, CompanyName, company.AccountID, ParentOrgID)
+                                        Log.Write("Updated people information for " & company.AccountName)
                                     Catch ex As Exception
                                         Log.Write("Error in Updating People loop:" + ex.Message)
+
+                                        ex.Data("OrganizationID") = ParentOrgID
+                                        ExceptionLogs.LogException(User, ex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
                                     End Try
                                 Next
 
                                 Log.Write("Finished updating people information")
-
                             End If
 
                         Next
@@ -186,7 +162,10 @@ Namespace TeamSupport
                 Catch ex As Exception
                     SyncError = True
 
-                    Log.Write("Error in Perform Highrise Sync: " + ex.Message)
+                    Log.Write("Error in Perform Highrise Sync: " + ex.StackTrace)
+
+                    ex.Data("OrganizationID") = ParentOrgID
+                    ExceptionLogs.LogException(User, ex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
 
                 End Try
 
@@ -205,6 +184,10 @@ Namespace TeamSupport
 
                         If tickets IsNot Nothing Then
                             For Each thisTicket As Ticket In tickets
+                                If Processor.IsStopped Then
+                                    Return False
+                                End If
+
                                 'highrise strips out html but not comments from notes
                                 Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
                                 Dim customers As New OrganizationsView(User)
@@ -229,6 +212,9 @@ Namespace TeamSupport
                     End If
                 Catch ex As Exception
                     Log.Write("Error in Send Ticket Data.  Message=" + ex.Message)
+
+                    ex.Data("OrganizationID") = CRMLinkRow.OrganizationID
+                    ExceptionLogs.LogException(User, ex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
                 End Try
 
                 Return True
@@ -249,11 +235,8 @@ Namespace TeamSupport
                     WebString = "http://" + CompanyName + ".highrisehq.com/" + URL
                 End If
 
-
                 If CompanyName <> "" Then
                     Try
-
-
                         System.Threading.Thread.Sleep(100) '1 ms sleep to see if there are issues with the API and throttling
 
                         ' Create the web request  
@@ -262,18 +245,13 @@ Namespace TeamSupport
                         request.Credentials = New NetworkCredential(Token, "x")
                         request.Timeout = 7000 'was 5, changed to 7 11/18/09
                         request.Method = "GET" 'not sure on this one?
-                        'request.Proxy = GlobalProxySelection.GetEmptyWebProxy
                         request.KeepAlive = False
-
-                        request.UserAgent = "Muroc Client"
-
+                        request.UserAgent = Client
 
                         ' Get response  
                         response = DirectCast(request.GetResponse(), HttpWebResponse)
 
-                        If request.HaveResponse = True AndAlso Not (response Is Nothing) Then
-
-
+                        If request.HaveResponse AndAlso Not (response Is Nothing) Then
                             ' Get the response stream into a reader  
                             reader = New StreamReader(response.GetResponseStream())
 
@@ -288,29 +266,27 @@ Namespace TeamSupport
 
                         response.Close()
 
-
                     Catch wex As WebException
-
                         If UseSSL Then
                             '' If UseSSL is true then it means this is probably the first time we've called this.  Set to false then
                             ''  have the calling routine try again.
                             UseSSL = False
-
                         Else
                             'Don't need to raise the rror flag the first time through.
 
                             Log.Write("Error in GetXML: " + wex.ToString)
 
-                            SyncError = True
+                            wex.Data("OrganizationID") = CRMLinkRow.OrganizationID
+                            ExceptionLogs.LogException(User, wex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
 
+                            SyncError = True
                         End If
 
                         Return Nothing
                     End Try
-                Else
-                    'Probably should throw exception here
-                    Return Nothing
                 End If
+
+                Return Nothing
             End Function
 
             Public Sub CreateNote(ByVal SecurityToken As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal NoteBody As String)
@@ -414,6 +390,9 @@ Namespace TeamSupport
 
                 Catch ex As Exception
                     Log.Write("Error in Create Note (Main routine).  Error = " + ex.Message)
+
+                    ex.Data("OrganizationID") = CRMLinkRow.OrganizationID
+                    ExceptionLogs.LogException(User, ex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
                 End Try
 
             End Sub
@@ -424,20 +403,14 @@ Namespace TeamSupport
                 '  This tag shows up as a string in HR, and we need to figure out what the ID of that tag is.
                 '  This routine takes a text tag name and returns the (integer) id.
 
-
                 Dim MyXML As XmlDocument
-
-                Dim TagID As String
+                Dim TagID As String = Nothing
                 Dim TagName As String
-
 
                 MyXML = GetHighriseXML(token, companyname, "tags.xml")  'note that capitalization DOES matter
 
-
                 If MyXML IsNot Nothing Then
-
                     Dim XMLreader As XmlNodeReader = New XmlNodeReader(MyXML)
-
                     Dim FoundTag As Boolean = False
 
                     While XMLreader.Read And (Not FoundTag)
@@ -447,105 +420,71 @@ Namespace TeamSupport
                             ElseIf XMLreader.Name = "name" Then
                                 TagName = XMLreader.ReadString
 
-                                If TagName = TagString Then
+                                If TagName.ToLower() = TagString.ToLower() Then
                                     FoundTag = True 'exit if we've found the tag
                                 End If
-
                             End If
                         End If
 
-
                     End While
-
 
                     If FoundTag Then
                         Return TagID
-                    Else
-                        Return Nothing
                     End If
-
-
-                Else
-                    Return Nothing
                 End If
 
+                Return Nothing
             End Function
 
             Public Sub GetPeople(ByVal token As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal ParentOrgID As String)
                 Dim MyXML As XmlDocument
 
-                Dim PeopleSyncData As New List(Of EmployeeData)()
-
-                Dim TestAddress As String
-                Dim FoundEMail As Boolean = False
-                Dim LastLocation As String = "nothing"
+                Dim PeopleSyncData As List(Of EmployeeData) = Nothing
 
                 MyXML = GetHighriseXML(token, CompanyName, "companies/" + AccountID + "/people.xml")  'List of people in this company
 
                 If MyXML IsNot Nothing Then
+                    Dim allpeople As XElement = XElement.Load(New XmlNodeReader(MyXML))
 
-                    Dim XMLreader As XmlNodeReader = New XmlNodeReader(MyXML)
+                    If allpeople.Descendants("person").Count > 0 Then
+                        PeopleSyncData = New List(Of EmployeeData)()
+                    End If
 
-                    While XMLreader.Read
+                    For Each person As XElement In allpeople.Descendants("person")
                         Dim thisPerson As New EmployeeData()
+                        Dim phones As XElement = person.Element("contact-data").Element("phone-numbers")
 
-                        If (XMLreader.NodeType = XmlNodeType.Element) Then
-                            If XMLreader.Name = "person" Then
-                                FoundEMail = False 'reset found e-mail counter
+                        With thisPerson
+                            .FirstName = person.Element("first-name").Value
+                            .LastName = person.Element("last-name").Value
+                            .Title = person.Element("title").Value
 
-                            ElseIf XMLreader.Name = "first-name" Then
-                                thisPerson.FirstName = XMLreader.ReadString()
-
-                            ElseIf XMLreader.Name = "last-name" Then
-                                thisPerson.LastName = XMLreader.ReadString()
-
-                            ElseIf XMLreader.Name = "title" Then
-                                thisPerson.Title = XMLreader.ReadString()
-
-                            ElseIf XMLreader.Name = "location" Then
-                                LastLocation = XMLreader.ReadString() 'this will store the last location field.  Used to identify the phone number
-
-                            ElseIf XMLreader.Name = "number" Then
-                                'we've found a number, hopefully a phone number.  Based on the last value of the Location field, we will now assign it to the correct phone type
-                                If LastLocation = "Work" Then
-                                    If thisPerson.Title = "" Then
-                                        'we only want the first work number - Don't replace if we already have one there.
-                                        thisPerson.Phone = XMLreader.ReadString()
-                                    End If
-
-                                ElseIf LastLocation = "Fax" Then
-                                    thisPerson.Fax = XMLreader.ReadString()
-
-                                ElseIf LastLocation = "Mobile" Then
-                                    thisPerson.Cell = XMLreader.ReadString()
-
-                                End If
-
-                            ElseIf XMLreader.Name = "address" Then
-                                'do something
-                                'Problem is that there are 2 address attributes, and both are at the same depth
-                                'How about we search for an @??
-
-                                'Found e-mail should make sure we only grab the first e-mail (hopefully work)
-
-                                If Not FoundEMail Then
-                                    TestAddress = XMLreader.ReadString()
-
-                                    If TestAddress.Contains("@") Then
-                                        thisPerson.Email = TestAddress
-                                        FoundEMail = True
-
-                                    End If
-                                End If
-
+                            If phones.HasElements Then
+                                For Each phone As XElement In phones.Descendants("phone-number")
+                                    Select Case phone.Element("location").Value
+                                        Case "Work"
+                                            .Phone = phone.Element("number").Value
+                                        Case "Mobile"
+                                            .Cell = phone.Element("number").Value
+                                        Case "Fax"
+                                            .Fax = phone.Element("number").Value
+                                    End Select
+                                Next
                             End If
 
-                        End If
+                            If person.Element("contact-data").Element("email-addresses").HasElements Then
+                                .Email = person.Element("contact-data").Element("email-addresses").Element("email-address").Element("address").Value
+                            End If
+                        End With
 
                         PeopleSyncData.Add(thisPerson)
-                    End While
+                    Next
 
-                    XMLreader.Close()
+                    If PeopleSyncData.Count > 0 Then
+                        Log.Write(String.Format("{0} people found. Updating...", PeopleSyncData.Count.ToString()))
+                    Else
+                        Log.Write("No people to update.")
+                    End If
 
                     For Each person As EmployeeData In PeopleSyncData
                         UpdateContactInfo(person, AccountID, ParentOrgID)

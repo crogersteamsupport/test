@@ -73,7 +73,7 @@ Namespace TeamSupport
 
           If Not IsAlreadyProcessing(link.OrganizationID) Then
 
-            Dim crmProcessor As New CrmProcessor(link.OrganizationID)
+                        Dim crmProcessor As New CrmProcessor(link)
             crmProcessor.Start()
             _threads.Add(crmProcessor)
           End If
