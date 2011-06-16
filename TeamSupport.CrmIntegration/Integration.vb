@@ -203,19 +203,11 @@ Namespace TeamSupport
                         faxPhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Fax").PhoneTypeID)
                     End If
 
-                    If workPhone Is Nothing Then
-                        workPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
-                    End If
-
-                    If mobilePhone Is Nothing Then
-                        mobilePhone = (New PhoneNumbers(User).AddNewPhoneNumber())
-                    End If
-
-                    If faxPhone Is Nothing Then
-                        faxPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
-                    End If
-
                     If person.Phone IsNot Nothing Then
+                        If workPhone Is Nothing Then
+                            workPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                        End If
+
                         workPhone.Number = person.Phone
                         workPhone.PhoneTypeID = thesePhoneTypes.FindByName("Work").PhoneTypeID
                         workPhone.RefType = ReferenceType.Users
@@ -224,6 +216,10 @@ Namespace TeamSupport
                     End If
 
                     If person.Cell IsNot Nothing Then
+                        If mobilePhone Is Nothing Then
+                            mobilePhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                        End If
+
                         mobilePhone.Number = person.Cell
                         mobilePhone.PhoneTypeID = thesePhoneTypes.FindByName("Mobile").PhoneTypeID
                         mobilePhone.RefType = ReferenceType.Users
@@ -232,6 +228,10 @@ Namespace TeamSupport
                     End If
 
                     If person.Fax IsNot Nothing Then
+                        If faxPhone Is Nothing Then
+                            faxPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                        End If
+
                         faxPhone.Number = person.Fax
                         faxPhone.PhoneTypeID = thesePhoneTypes.FindByName("Fax").PhoneTypeID
                         faxPhone.RefType = ReferenceType.Users

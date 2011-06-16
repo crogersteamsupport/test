@@ -280,9 +280,6 @@ Namespace TeamSupport
                             Log.Write("Error in GetHighriseXML: " + wex.ToString)
                             LogSyncResult("Error in GetHighriseXML: " & wex.ToString())
 
-                            wex.Data("OrganizationID") = CRMLinkRow.OrganizationID
-                            ExceptionLogs.LogException(User, wex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
-
                             SyncError = True
                         End If
 
