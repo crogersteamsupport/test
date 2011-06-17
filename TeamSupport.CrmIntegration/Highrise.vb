@@ -274,8 +274,7 @@ Namespace TeamSupport
 
                     Catch wex As WebException
                         If UseSSL Then
-                            '' If UseSSL is true then it means this is probably the first time we've called this.  Set to false then
-                            ''  have the calling routine try again.
+                            'If UseSSL is true then it means this is probably the first time we've called this.  Set to false then try again
                             UseSSL = False
                         Else
                             'Don't need to raise the rror flag the first time through.
@@ -486,15 +485,15 @@ Namespace TeamSupport
                     Next
 
                     If PeopleSyncData IsNot Nothing AndAlso PeopleSyncData.Count > 0 Then
-
                         Log.Write(String.Format("{0} people found. Updating...", PeopleSyncData.Count.ToString()))
+
+                        For Each person As EmployeeData In PeopleSyncData
+                            UpdateContactInfo(person, AccountID, ParentOrgID)
+                        Next
                     Else
                         Log.Write("No people to update.")
                     End If
 
-                    For Each person As EmployeeData In PeopleSyncData
-                        UpdateContactInfo(person, AccountID, ParentOrgID)
-                    Next
 
                 End If
             End Sub

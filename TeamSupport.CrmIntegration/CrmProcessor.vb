@@ -63,47 +63,46 @@ Namespace TeamSupport
                     Return
                 End If
 
-                Dim CRMType As IntegrationType = [Enum].Parse(GetType(IntegrationType), CRMLinkTableItem.CRMType, True)
+                Try
+                    Dim CRMType As IntegrationType = [Enum].Parse(GetType(IntegrationType), CRMLinkTableItem.CRMType, True)
 
-                'set up log per crm link item
-                Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()))
-                Dim CRM As Integration
+                    'set up log per crm link item
+                    Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()))
+                    Dim CRM As Integration
 
-                Select Case CRMType
-                    Case IntegrationType.Batchbook
-                        CRM = New BatchBook(CRMLinkTableItem, Log, LoginUser, Me)
-                    Case IntegrationType.Highrise
-                        CRM = New Highrise(CRMLinkTableItem, Log, LoginUser, Me)
-                    Case IntegrationType.SalesForce
-                End Select
+                    Select Case CRMType
+                        Case IntegrationType.Batchbook
+                            CRM = New BatchBook(CRMLinkTableItem, Log, LoginUser, Me)
+                        Case IntegrationType.Highrise
+                            CRM = New Highrise(CRMLinkTableItem, Log, LoginUser, Me)
+                        Case IntegrationType.SalesForce
+                    End Select
 
-                'only process bb and hr
-                If CRMType = IntegrationType.Batchbook Or CRMType = IntegrationType.Highrise Then
-                    Log.Write(String.Format("Begin processing {0} sync.", CRMType.ToString()))
+                    'only process bb and hr
+                    If CRMType = IntegrationType.Batchbook Or CRMType = IntegrationType.Highrise Then
+                        Log.Write(String.Format("Begin processing {0} sync.", CRMType.ToString()))
 
-                    Success = CRM.PerformSync()
+                        Success = CRM.PerformSync()
 
-                    If Success Then
-                        Success = CRM.SendTicketData()
+                        If Success Then
+                            Success = CRM.SendTicketData()
+                        End If
+
+                        If Success Then
+                            CRMLinkTableItem.LastLink = DateTime.UtcNow
+                            CRMLinkTableItem.Collection.Save()
+                            Log.Write("Finished processing successfully.")
+
+                            Integration.LogSyncResult("Completed", CRMLinkTableItem.OrganizationID, LoginUser)
+                        Else
+                            Integration.LogSyncResult(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
+                            Log.Write(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()))
+                        End If
+
                     End If
-
-                    If Success Then
-                        CRMLinkTableItem.LastLink = DateTime.UtcNow
-                        CRMLinkTableItem.Collection.Save()
-                        Log.Write("Finished processing successfully.")
-
-                        Dim result As CRMLinkResult
-                        result = (New CRMLinkResults(LoginUser)).AddNewCRMLinkResult()
-                        result.AttemptResult = "Completed"
-                        result.OrganizationID = CRMLinkTableItem.OrganizationID
-                        result.AttemptDateTime = Now.ToUniversalTime()
-                        result.Collection.Save()
-
-                    Else
-                        Log.Write(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()))
-                    End If
-
-                End If
+                Catch ex As Exception
+                    Integration.LogSyncResult(String.Format("Sync Error: {0}", ex.Message), CRMLinkTableItem.OrganizationID, LoginUser)
+                End Try
             End Sub
 
         End Class

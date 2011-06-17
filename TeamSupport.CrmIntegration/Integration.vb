@@ -301,14 +301,17 @@ Namespace TeamSupport
             End Function
 
             Protected Sub LogSyncResult(ByVal ResultText As String)
+                LogSyncResult(ResultText, CRMLinkRow.OrganizationID, User)
+            End Sub
+
+            Public Shared Sub LogSyncResult(ByVal ResultText As String, ByVal OrgID As String, ByVal User As LoginUser)
                 Dim result As CRMLinkResult
                 result = (New CRMLinkResults(User)).AddNewCRMLinkResult()
                 result.AttemptResult = ResultText
-                result.OrganizationID = CRMLinkRow.OrganizationID
+                result.OrganizationID = OrgID
                 result.AttemptDateTime = Now.ToUniversalTime()
                 result.Collection.Save()
             End Sub
-
         End Class
 
         Public Class CompanyData
