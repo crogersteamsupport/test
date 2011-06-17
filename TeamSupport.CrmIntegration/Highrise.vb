@@ -272,15 +272,15 @@ Namespace TeamSupport
 
                         response.Close()
 
-                    Catch wex As WebException
+                    Catch ex As Exception
                         If UseSSL Then
                             'If UseSSL is true then it means this is probably the first time we've called this.  Set to false then try again
                             UseSSL = False
                         Else
                             'Don't need to raise the rror flag the first time through.
 
-                            Log.Write("Error in GetHighriseXML: " + wex.ToString)
-                            LogSyncResult("Error in GetHighriseXML: " & wex.ToString())
+                            Log.Write("Error in GetHighriseXML: " + ex.ToString)
+                            LogSyncResult("Error in GetHighriseXML: " & ex.ToString())
 
                             SyncError = True
                         End If
