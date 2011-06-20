@@ -115,12 +115,12 @@ Namespace TeamSupport
                                         Catch e As Exception
                                             Log.Write("Error getting next records: " & e.Message)
 
-                                            e.Data("OrganizationID") = ParentOrgID
-                                            ExceptionLogs.LogException(User, e, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
                                         End Try
 
                                         If MyXML IsNot Nothing Then
                                             XMLLoopCount = 0
+                                        Else
+                                            NeedtoGetMore = False
                                         End If
                                     Else
                                         NeedtoGetMore = False
@@ -146,8 +146,6 @@ Namespace TeamSupport
                                     Catch ex As Exception
                                         Log.Write("Error in Updating People loop:" + ex.Message)
 
-                                        ex.Data("OrganizationID") = ParentOrgID
-                                        ExceptionLogs.LogException(User, ex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
                                     End Try
                                 Next
 
@@ -164,10 +162,6 @@ Namespace TeamSupport
 
                     Log.Write("Error in Perform Highrise Sync: " + ex.Message)
                     LogSyncResult("Error in Perform Highrise Sync: " & ex.Message)
-
-                    ex.Data("OrganizationID") = ParentOrgID
-                    ExceptionLogs.LogException(User, ex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
-
                 End Try
 
                 Return Not SyncError
@@ -218,9 +212,6 @@ Namespace TeamSupport
                     End If
                 Catch ex As Exception
                     Log.Write("Error in Send Ticket Data.  Message=" + ex.Message)
-
-                    ex.Data("OrganizationID") = CRMLinkRow.OrganizationID
-                    ExceptionLogs.LogException(User, ex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
                 End Try
 
                 Return True
@@ -395,8 +386,6 @@ Namespace TeamSupport
                 Catch ex As Exception
                     Log.Write("Error in Create Note (Main routine).  Error = " + ex.Message)
 
-                    ex.Data("OrganizationID") = CRMLinkRow.OrganizationID
-                    ExceptionLogs.LogException(User, ex, "Service - " & Processor.ServiceName, CRMLinkRow.Row)
                 End Try
 
             End Sub
