@@ -209,6 +209,14 @@ namespace TeamSupport.Data
       return null;
     }
 
+    public Product FindByName(string name) {
+        foreach (Product product in this) {
+            if (product.Name != null && product.Name.ToLower().Trim() == name.ToLower().Trim()) {
+                return product;
+            }
+        }
+        return null;
+    }
 
     public static void DeleteProduct(LoginUser loginUser, int productID)
     {

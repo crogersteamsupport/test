@@ -42,7 +42,17 @@ namespace TeamSupport.Data
       }
     }
 
-    public OrganizationProduct FindByImportID(string importID)
+    public void LoadByOrganizationAndProductID(int orgId, int productID) {
+        using (SqlCommand command = new SqlCommand()) {
+            command.CommandText = "select * from OrganizationProducts where Organizationid = @ClientOrgID and productid=@ProductID";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ClientOrgID", orgId);
+            command.Parameters.AddWithValue("@ProductID", productID);
+            Fill(command);
+        }
+    }
+
+          public OrganizationProduct FindByImportID(string importID)
     {
       foreach (OrganizationProduct organizationProduct in this)
       {
