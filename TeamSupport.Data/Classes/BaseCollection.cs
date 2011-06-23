@@ -602,7 +602,7 @@ namespace TeamSupport.Data
       CustomFields = new CustomFields(LoginUser);
       int orgID = LoginUser.OrganizationID;
       Organization organization = Organizations.GetOrganization(LoginUser, LoginUser.OrganizationID);
-      if (organization.ParentID != 1) { orgID = (int)organization.ParentID; }
+      if ( organization != null && organization.ParentID != 1) { orgID = (int)organization.ParentID; }
       _customFields.LoadByReferenceType(orgID, refType, auxID);
       return GetCustomFieldsSelect(CustomFields, refIDFieldName);
     }
