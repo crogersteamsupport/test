@@ -49,7 +49,7 @@ Namespace TeamSupport
                     Dim LastUpdateSFFormat As String 'format for SF query for time is 2011-01-26T16:57:00.000Z  ('yyyy'-'MM'-'dd'T'HH': 'mm': 'ss.fffffff'Z' )
                     Dim TempTime As DateTime
                     TempTime = Date.Parse(CRMLinkRow.LastLink)
-                    TempTime = DateAdd(DateInterval.Hour, -3, TempTime) 'push last update time back three hours to make sure we catch every change
+                    TempTime = DateAdd(DateInterval.Hour, -1, TempTime) 'push last update time back three hours to make sure we catch every change
                     LastUpdateSFFormat = TempTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")
 
 
@@ -221,57 +221,57 @@ Namespace TeamSupport
 
             Public Overrides Function SendTicketData() As Boolean
                 If CRMLinkRow.SendBackTicketData Then
-                    
-                        If login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken)) = "OK" Then
 
-                            'get tickets created since last ticket synced
-                            Dim tickets As New Tickets(User)
-                            tickets.LoadByCRMLinkItem(CRMLinkRow)
+                    If login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken)) = "OK" Then
 
-                            If tickets IsNot Nothing Then
-                                Log.Write(String.Format("Found {0} tickets to sync.", tickets.Count.ToString()))
+                        'get tickets created since last ticket synced
+                        Dim tickets As New Tickets(User)
+                        tickets.LoadByCRMLinkItem(CRMLinkRow)
 
-                                For Each thisTicket As Ticket In tickets
-                                    If Processor.IsStopped Then
-                                        Return False
-                                    End If
+                        If tickets IsNot Nothing Then
+                            Log.Write(String.Format("Found {0} tickets to sync.", tickets.Count.ToString()))
 
-                                    Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
-                                    Dim customers As New OrganizationsView(User)
-                                    customers.LoadByTicketID(thisTicket.TicketID)
+                            For Each thisTicket As Ticket In tickets
+                                If Processor.IsStopped Then
+                                    Return False
+                                End If
 
-                                    'Add the new tickets to the company record
-                                    Dim NoteBody As String = String.Format("A new support ticket has been created for this account entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
-                                                                     thisTicket.Name, thisTicket.TicketID.ToString(), Utilities.StripHTML(description.Description), Environment.NewLine)
+                                Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
+                                Dim customers As New OrganizationsView(User)
+                                customers.LoadByTicketID(thisTicket.TicketID)
+
+                                'Add the new tickets to the company record
+                                Dim NoteBody As String = String.Format("A new support ticket has been created for this account entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
+                                                                 thisTicket.Name, thisTicket.TicketID.ToString(), Utilities.StripHTML(description.Description), Environment.NewLine)
 
 
-                                    For Each customer As OrganizationsViewItem In customers
-                                        If customer.CRMLinkID <> "" Then
-                                            Log.Write("Creating a note...")
+                                For Each customer As OrganizationsViewItem In customers
+                                    If customer.CRMLinkID <> "" Then
+                                        Log.Write("Creating a note...")
 
-                                            If CreateNote(customer.CRMLinkID, "Support Issue: " & thisTicket.Name, NoteBody, CRMLinkRow.OrganizationID) Then
-                                                Log.Write("Note created successfully.")
+                                        If CreateNote(customer.CRMLinkID, "Support Issue: " & thisTicket.Name, NoteBody, CRMLinkRow.OrganizationID) Then
+                                            Log.Write("Note created successfully.")
 
-                                                CRMLinkRow.LastTicketID = thisTicket.TicketID
-                                                CRMLinkRow.Collection.Save()
-                                            End If
+                                            CRMLinkRow.LastTicketID = thisTicket.TicketID
+                                            CRMLinkRow.Collection.Save()
                                         End If
-                                    Next
-
+                                    End If
                                 Next
-                            Else
-                                Log.Write("No new tickets to sync.")
-                            End If
 
-                            Binding.logout()
-                            Binding.logoutAsync()
+                            Next
+                        Else
+                            Log.Write("No new tickets to sync.")
                         End If
-                    
-                    Else
-                        Log.Write("SendBackTicketData set to FALSE for this organization.")
+
+                        Binding.logout()
+                        Binding.logoutAsync()
                     End If
 
-                    Return True
+                Else
+                    Log.Write("SendBackTicketData set to FALSE for this organization.")
+                End If
+
+                Return True
             End Function
 
 
