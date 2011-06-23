@@ -68,7 +68,7 @@ Namespace TeamSupport
 
                     'set up log per crm link item
                     Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()))
-                    Dim CRM As Integration
+                    Dim CRM As Integration = Nothing
 
                     Select Case CRMType
                         Case IntegrationType.Batchbook
@@ -76,10 +76,10 @@ Namespace TeamSupport
                         Case IntegrationType.Highrise
                             CRM = New Highrise(CRMLinkTableItem, Log, LoginUser, Me)
                         Case IntegrationType.SalesForce
+                            CRM = New SalesForce(CRMLinkTableItem, Log, LoginUser, Me)
                     End Select
 
-                    'only process bb and hr
-                    If CRMType = IntegrationType.Batchbook Or CRMType = IntegrationType.Highrise Then
+                    If CRM IsNot Nothing Then
                         Log.Write(String.Format("Begin processing {0} sync.", CRMType.ToString()))
 
                         Success = CRM.PerformSync()
@@ -98,7 +98,6 @@ Namespace TeamSupport
                             Integration.LogSyncResult(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
                             Log.Write(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()))
                         End If
-
                     End If
                 Catch ex As Exception
                     Integration.LogSyncResult(String.Format("Sync Error: {0}", ex.Message), CRMLinkTableItem.OrganizationID, LoginUser)

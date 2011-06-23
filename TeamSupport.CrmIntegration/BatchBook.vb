@@ -120,11 +120,12 @@ Namespace TeamSupport
                             For Each customer As OrganizationsViewItem In customers
                                 If customer.CRMLinkID <> "" Then
                                     Log.Write("Creating a comment...")
-                                    CreateComment(CRMLinkRow.SecurityToken, CRMLinkRow.Username, customer.CRMLinkID, NoteBody)
-                                    Log.Write("Comment created successfully.")
+                                    If CreateComment(CRMLinkRow.SecurityToken, CRMLinkRow.Username, customer.CRMLinkID, NoteBody) Then
+                                        Log.Write("Comment created successfully.")
 
-                                    CRMLinkRow.LastTicketID = thisTicket.TicketID
-                                    CRMLinkRow.Collection.Save()
+                                        CRMLinkRow.LastTicketID = thisTicket.TicketID
+                                        CRMLinkRow.Collection.Save()
+                                    End If
                                 End If
                             Next
                         Next

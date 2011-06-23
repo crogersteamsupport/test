@@ -47,7 +47,6 @@ Namespace TeamSupport
                 'search for the crmlinkid = accountid in db to see if it already exists
                 findCompany.LoadByCRMLinkID(company.AccountID)
                 If findCompany.Count > 0 Then
-                    'TODO: ask Kevin is this the right way to get an item from a group?
                     thisCompany = findCompany(0)
                     'it exists, so update the name on the account if it has changed.
                     thisCompany.Name = company.AccountName
@@ -127,7 +126,7 @@ Namespace TeamSupport
                         thisPhone = (New PhoneNumbers(User)).AddNewPhoneNumber()
                         thisPhone.RefID = thisCompany.OrganizationID
                         thisPhone.RefType = ReferenceType.Organizations
-                        'TODO: update to handle fax numbers
+
                         thisPhone.Collection.Save()
                     End If
 
@@ -195,7 +194,9 @@ Namespace TeamSupport
 
                     findPhone.LoadByID(thisUser.UserID, ReferenceType.Users)
 
-                    Dim workPhone, mobilePhone, faxPhone As PhoneNumber
+                    Dim workPhone As PhoneNumber = Nothing
+                    Dim mobilePhone As PhoneNumber = Nothing
+                    Dim faxPhone As PhoneNumber = Nothing
 
                     If findPhone.Count > 0 Then
                         workPhone = findPhone.FindByPhoneTypeID(thesePhoneTypes.FindByName("Work").PhoneTypeID)

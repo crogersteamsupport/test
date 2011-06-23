@@ -85,7 +85,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -122,7 +124,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="SalesForce.vb" />
     <Compile Include="Utilities.vb" />
+    <Compile Include="Web References\sForce\Reference.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -133,6 +141,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -141,6 +150,111 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\sForce\DeleteResult.datasource" />
+    <None Include="Web References\sForce\DeleteResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\DescribeGlobalResult.datasource" />
+    <None Include="Web References\sForce\DescribeGlobalResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\DescribeLayoutResult.datasource" />
+    <None Include="Web References\sForce\DescribeLayoutResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\DescribeSObjectResult.datasource" />
+    <None Include="Web References\sForce\DescribeSObjectResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\DescribeSoftphoneLayoutResult.datasource" />
+    <None Include="Web References\sForce\DescribeSoftphoneLayoutResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\DescribeTabSetResult.datasource" />
+    <None Include="Web References\sForce\DescribeTabSetResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\EmptyRecycleBinResult.datasource" />
+    <None Include="Web References\sForce\EmptyRecycleBinResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\GetDeletedResult.datasource" />
+    <None Include="Web References\sForce\GetDeletedResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\GetServerTimestampResult.datasource" />
+    <None Include="Web References\sForce\GetServerTimestampResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\GetUpdatedResult.datasource" />
+    <None Include="Web References\sForce\GetUpdatedResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\GetUserInfoResult.datasource" />
+    <None Include="Web References\sForce\GetUserInfoResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\InvalidateSessionsResult.datasource" />
+    <None Include="Web References\sForce\InvalidateSessionsResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\LeadConvertResult.datasource" />
+    <None Include="Web References\sForce\LeadConvertResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\LoginResult.datasource" />
+    <None Include="Web References\sForce\LoginResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\MergeResult.datasource" />
+    <None Include="Web References\sForce\MergeResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\partner.wsdl" />
+    <None Include="Web References\sForce\ProcessResult.datasource" />
+    <None Include="Web References\sForce\ProcessResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\QueryResult.datasource" />
+    <None Include="Web References\sForce\QueryResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\sForce\ResetPasswordResult.datasource" />
+    <None Include="Web References\sForce\ResetPasswordResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\SaveResult.datasource" />
+    <None Include="Web References\sForce\SaveResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\SearchResult.datasource" />
+    <None Include="Web References\sForce\SearchResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\SendEmailResult.datasource" />
+    <None Include="Web References\sForce\SendEmailResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\SetPasswordResult.datasource" />
+    <None Include="Web References\sForce\SetPasswordResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\sObject.datasource" />
+    <None Include="Web References\sForce\sObject1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\UndeleteResult.datasource" />
+    <None Include="Web References\sForce\UndeleteResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\sForce\UpsertResult.datasource" />
+    <None Include="Web References\sForce\UpsertResult1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +266,25 @@
       <Project>{6AD9D48C-DDBA-4045-BFAA-362A1FCB0AA0}</Project>
       <Name>TeamSupport.ServiceLibrary</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="C:\Documents and Settings\Robert\My Documents\Muroc\SalesForce Partner WSDL\partner.wsdl">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\sForce\</RelPath>
+      <UpdateFromURL>C:\Documents and Settings\Robert\My Documents\Muroc\SalesForce Partner WSDL\partner.wsdl</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>MySettings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>SF_Text_App_2_sForce_SforceService</CachedSettingsPropName>
+    </WebReferenceUrl>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
