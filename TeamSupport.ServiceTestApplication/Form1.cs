@@ -27,6 +27,11 @@ namespace TeamSupport.ServiceTestApplication
     {
       InitializeComponent();
       System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.BelowNormal;
+      Settings settings = new Settings(ServiceThread.GetLoginUser("Service Test App"), "EmailSender");
+      settings.WriteBool("Debug", true);
+      settings = new Settings(ServiceThread.GetLoginUser("Service Test App"), "EmailProcessor");
+      settings.WriteBool("Debug", true);
+
     }
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
