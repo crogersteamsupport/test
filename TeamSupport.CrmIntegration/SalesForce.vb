@@ -213,6 +213,7 @@ Namespace TeamSupport
 
                     Return True
                 Else
+                    Log.Write("Login failed: " & LoginReturn)
                     Return False
                 End If
 
