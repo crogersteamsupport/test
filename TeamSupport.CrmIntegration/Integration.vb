@@ -373,14 +373,13 @@ Namespace TeamSupport
 
             Public Sub Write(ByVal Text As String)
                 ' the very first time we write to this file, prune old files
-                'If Not File.Exists(LogPath & "\" & FileName) Then
-                '    'TODO: prune logs more than a week old
-                '    For Each oldFileName As String In Directory.GetFiles(LogPath)
-                '        If File.GetLastWriteTime(LogPath & oldFileName).AddDays(7) < Today Then
-                '            File.Delete(LogPath & oldFileName)
-                '        End If
-                '    Next
-                'End If
+                If Not File.Exists(LogPath & "\" & FileName) Then
+                    For Each oldFileName As String In Directory.GetFiles(LogPath)
+                        If File.GetLastWriteTime(oldFileName).AddDays(7) < Today Then
+                            File.Delete(oldFileName)
+                        End If
+                    Next
+                End If
 
                 File.AppendAllText(LogPath & "\" & FileName, Now.ToString + ": " & Text & Environment.NewLine)
             End Sub
