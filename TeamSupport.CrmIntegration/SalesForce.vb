@@ -83,8 +83,8 @@ Namespace TeamSupport
                                 AccountTypeString = AccountTypeString + " or "
                             End If
 
-                            TypeString = TypeString + " type like '%" + Trim(MatchArray(z)) + "%'"
-                            AccountTypeString = AccountTypeString + " Account.Type like '%" + Trim(MatchArray(z)) + "%'"
+                            TypeString = TypeString + " type = '" + Trim(MatchArray(z)) + "'"
+                            AccountTypeString = AccountTypeString + " Account.Type = '" + Trim(MatchArray(z)) + "'"
                         Next
 
                         Log.Write("TypeString = " + TypeString)
