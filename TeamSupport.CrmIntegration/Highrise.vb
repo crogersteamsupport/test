@@ -17,6 +17,18 @@ Namespace TeamSupport
             End Sub
 
             Public Overrides Function PerformSync() As Boolean
+                Dim Success As Boolean = True
+
+                Success = SyncAccounts()
+
+                If Success Then
+                    Success = SendTicketData()
+                End If
+
+                Return Success
+            End Function
+
+            Private Function SyncAccounts() As Boolean
                 Dim MyXML As XmlDocument
                 Dim Key As String = CRMLinkRow.SecurityToken
                 Dim CompanyName As String = CRMLinkRow.Username
@@ -168,7 +180,7 @@ Namespace TeamSupport
 
             End Function
 
-            Public Overrides Function SendTicketData() As Boolean
+            Private Function SendTicketData() As Boolean
                 '8/8/09 - CHanged this so that we only make one call to our database then update tickets based on that one call.  
                 Try
 
@@ -185,14 +197,13 @@ Namespace TeamSupport
                                     Return False
                                 End If
 
-                                'highrise strips out html but not comments from notes
                                 Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
                                 Dim customers As New OrganizationsView(User)
                                 customers.LoadByTicketID(thisTicket.TicketID)
 
                                 'Add the new tickets to the company record
                                 Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
-                                                                       thisTicket.Name, thisTicket.TicketID, Utilities.StripComments(description.Description), Environment.NewLine)
+                                                                       thisTicket.Name, thisTicket.TicketID, Utilities.StripHTML(description.Description), Environment.NewLine)
 
                                 For Each customer As OrganizationsViewItem In customers
                                     If customer.CRMLinkID <> "" Then
@@ -283,7 +294,7 @@ Namespace TeamSupport
                 Return Nothing
             End Function
 
-            Public Sub CreateNote(ByVal SecurityToken As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal NoteBody As String)
+            Private Sub CreateNote(ByVal SecurityToken As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal NoteBody As String)
                 Try
 
 
@@ -391,7 +402,7 @@ Namespace TeamSupport
             End Sub
 
 
-            Public Function GetTagID(ByVal token As String, ByVal companyname As String, ByVal TagString As String, ByVal parentorgid As String) As String
+            Private Function GetTagID(ByVal token As String, ByVal companyname As String, ByVal TagString As String, ByVal parentorgid As String) As String
                 'We use Tags in Highrise to identify the companies we want synced from HR to TS.
                 '  This tag shows up as a string in HR, and we need to figure out what the ID of that tag is.
                 '  This routine takes a text tag name and returns the (integer) id.
@@ -429,7 +440,7 @@ Namespace TeamSupport
                 Return Nothing
             End Function
 
-            Public Sub GetPeople(ByVal token As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal ParentOrgID As String)
+            Private Sub GetPeople(ByVal token As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal ParentOrgID As String)
                 Dim MyXML As XmlDocument
 
                 Dim PeopleSyncData As List(Of EmployeeData) = Nothing

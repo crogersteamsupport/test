@@ -22,6 +22,18 @@ Namespace TeamSupport
             End Sub
 
             Public Overrides Function PerformSync() As Boolean
+                Dim Success As Boolean = True
+
+                Success = SyncAccounts()
+
+                If Success Then
+                    Success = SendTicketData()
+                End If
+
+                Return Success
+            End Function
+
+            Private Function SyncAccounts() As Boolean
                 Dim SecurityToken As String = CRMLinkRow.SecurityToken
                 Dim CompanyName As String = CRMLinkRow.Username
                 Dim Password As String = CRMLinkRow.Password
@@ -49,7 +61,7 @@ Namespace TeamSupport
                     Dim LastUpdateSFFormat As String 'format for SF query for time is 2011-01-26T16:57:00.000Z  ('yyyy'-'MM'-'dd'T'HH': 'mm': 'ss.fffffff'Z' )
                     Dim TempTime As DateTime
                     TempTime = Date.Parse(CRMLinkRow.LastLink)
-                    TempTime = DateAdd(DateInterval.Hour, -1, TempTime) 'push last update time back three hours to make sure we catch every change
+                    TempTime = DateAdd(DateInterval.Hour, -1, TempTime) 'push last update time back 1 hour to make sure we catch every change
                     LastUpdateSFFormat = TempTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")
 
 
@@ -220,7 +232,7 @@ Namespace TeamSupport
             End Function
 
 
-            Public Overrides Function SendTicketData() As Boolean
+            Private Function SendTicketData() As Boolean
                 If CRMLinkRow.SendBackTicketData Then
 
                     If login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken)) = "OK" Then
@@ -277,7 +289,7 @@ Namespace TeamSupport
 
 
 
-            Public Function login(ByVal username As String, ByVal password As String, ByVal securitytoken As String) As String
+            Private Function login(ByVal username As String, ByVal password As String, ByVal securitytoken As String) As String
                 'Set the partner WSDL
 
                 Dim co As New CallOptions()
@@ -285,12 +297,12 @@ Namespace TeamSupport
                 Binding.CallOptionsValue = co
 
                 ' Timeout after a minute
-                binding.Timeout = 60000
+                Binding.Timeout = 60000
 
                 ' Try logging in
                 Dim lr As LoginResult
                 Try
-                    lr = binding.login(username, password + securitytoken)
+                    lr = Binding.login(username, password + securitytoken)
                 Catch e As SoapException
                     Return e.Message
 
@@ -308,7 +320,7 @@ Namespace TeamSupport
                 '             * to the virtual server instance that is servicing your organization
                 '             
 
-                binding.Url = lr.serverUrl
+                Binding.Url = lr.serverUrl
 
                 '* The sample client application now has an instance of the SforceService
                 '             * that is pointing to the correct endpoint. Next, the sample client
@@ -320,8 +332,8 @@ Namespace TeamSupport
                 '             * session header
                 '             
 
-                binding.SessionHeaderValue = New SessionHeader()
-                binding.SessionHeaderValue.sessionId = lr.sessionId
+                Binding.SessionHeaderValue = New SessionHeader()
+                Binding.SessionHeaderValue.sessionId = lr.sessionId
 
                 ' Return true to indicate that we are logged in, pointed
                 ' at the right URL and have our security token in place.
@@ -329,7 +341,7 @@ Namespace TeamSupport
             End Function
 
 
-            Public Sub GetContactInformation(ByVal ParentOrgID As String, ByVal LastUpdate As String, ByVal TypeString As String, ByVal AccountIDToUpdate As String, ByVal ForceUpdate As Boolean)
+            Private Sub GetContactInformation(ByVal ParentOrgID As String, ByVal LastUpdate As String, ByVal TypeString As String, ByVal AccountIDToUpdate As String, ByVal ForceUpdate As Boolean)
                 'This will get the contact information from SalesForce for a given account ID
                 'If ForceUpdate is set them we will change the query so that we grab all contact information from the AccountID company (otherwise AccountID is not used)
 
@@ -341,9 +353,9 @@ Namespace TeamSupport
                 'We are going to increase our return batch size to 250 items
                 'Setting is a recommendation only, different batch sizes may
                 'be returned depending on data, to keep performance optimized.
-                binding.QueryOptionsValue = New QueryOptions()
-                binding.QueryOptionsValue.batchSize = 250
-                binding.QueryOptionsValue.batchSizeSpecified = True
+                Binding.QueryOptionsValue = New QueryOptions()
+                Binding.QueryOptionsValue.batchSize = 250
+                Binding.QueryOptionsValue.batchSizeSpecified = True
 
                 Dim LastModifiedDateTime As DateTime
 
@@ -444,7 +456,7 @@ Namespace TeamSupport
                 End Try
             End Sub
 
-            Public Function CreateNote(ByVal accountid As String, ByVal Title As String, ByVal Body As String, ByVal ParentOrgID As String) As Boolean
+            Private Function CreateNote(ByVal accountid As String, ByVal Title As String, ByVal Body As String, ByVal ParentOrgID As String) As Boolean
                 Dim Success As Boolean = True
 
                 Try
@@ -476,7 +488,7 @@ Namespace TeamSupport
                 Return xmlel
             End Function
 
-            Public Sub GetProductAndLicenseInfo(ByVal SFLastUpdateTime As String)
+            Private Sub GetProductAndLicenseInfo(ByVal SFLastUpdateTime As String)
                 'This is *** CUSTOM CODE *** for Axceler to see if we can get their license and product information
 
                 Log.Write("In GetProductAndLicenseInfo routine.")

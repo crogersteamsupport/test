@@ -14,6 +14,18 @@ Namespace TeamSupport
             End Sub
 
             Public Overrides Function PerformSync() As Boolean
+                Dim Success As Boolean = True
+
+                Success = SyncAccounts()
+
+                If Success Then
+                    Success = SendTicketData()
+                End If
+
+                Return Success
+            End Function
+
+            Private Function SyncAccounts() As Boolean
                 Dim Key As String = CRMLinkRow.SecurityToken
                 Dim CompanyName As String = CRMLinkRow.Username
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
@@ -96,7 +108,7 @@ Namespace TeamSupport
                 Return True
             End Function
 
-            Public Overrides Function SendTicketData() As Boolean
+            Private Function SendTicketData() As Boolean
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
 
                 If CRMLinkRow.SendBackTicketData Then

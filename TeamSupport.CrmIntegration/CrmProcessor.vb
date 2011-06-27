@@ -57,8 +57,6 @@ Namespace TeamSupport
 
 
             Public Sub ProcessCrmLink(ByVal CRMLinkTableItem As CRMLinkTableItem)
-                Dim Success As Boolean = True
-
                 If IsStopped Then
                     Return
                 End If
@@ -82,13 +80,7 @@ Namespace TeamSupport
                     If CRM IsNot Nothing Then
                         Log.Write(String.Format("Begin processing {0} sync.", CRMType.ToString()))
 
-                        Success = CRM.PerformSync()
-
-                        If Success Then
-                            Success = CRM.SendTicketData()
-                        End If
-
-                        If Success Then
+                        If CRM.PerformSync() Then
                             CRMLinkTableItem.LastLink = DateTime.UtcNow
                             CRMLinkTableItem.Collection.Save()
                             Log.Write("Finished processing successfully.")

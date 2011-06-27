@@ -34,7 +34,8 @@ Namespace TeamSupport
             End Sub
 
             Public MustOverride Function PerformSync() As Boolean
-            Public MustOverride Function SendTicketData() As Boolean
+
+            '           Private Delegate Function CreateNote(ByVal accountid As String, ByVal Title As String, ByVal Body As String, ByVal ParentOrgID As String) As Boolean
 
             Protected Sub UpdateOrgInfo(ByVal company As CompanyData, ByVal ParentOrgID As String)
                 If Processor.IsStopped Then
@@ -358,7 +359,6 @@ Namespace TeamSupport
         End Enum
 
         Public Class SyncLog
-
             Private LogPath As String
             Private FileName As String
 
@@ -366,13 +366,23 @@ Namespace TeamSupport
                 LogPath = Path
                 FileName = "CRM Sync Debug File - " & Today.Month.ToString() & Today.Day.ToString() & Today.Year.ToString() & ".txt"
 
-                If (Not Directory.Exists(LogPath)) Then
+                If Not Directory.Exists(LogPath) Then
                     Directory.CreateDirectory(LogPath)
                 End If
             End Sub
 
             Public Sub Write(ByVal Text As String)
-                File.AppendAllText(LogPath & "\" & FileName, Now.ToString + ": " + Text + Environment.NewLine)
+                ' the very first time we write to this file, prune old files
+                'If Not File.Exists(LogPath & "\" & FileName) Then
+                '    'TODO: prune logs more than a week old
+                '    For Each oldFileName As String In Directory.GetFiles(LogPath)
+                '        If File.GetLastWriteTime(LogPath & oldFileName).AddDays(7) < Today Then
+                '            File.Delete(LogPath & oldFileName)
+                '        End If
+                '    Next
+                'End If
+
+                File.AppendAllText(LogPath & "\" & FileName, Now.ToString + ": " & Text & Environment.NewLine)
             End Sub
 
         End Class
