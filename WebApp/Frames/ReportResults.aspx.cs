@@ -278,17 +278,21 @@ public partial class Frames_ReportResults : BaseFramePage
       report.LastSqlExecuted = _query;
       report.Collection.Save();
       SqlCommand command = new SqlCommand(_query, connection);
+
       Report.CreateParameters(UserSession.LoginUser, command, UserSession.LoginUser.UserID);
       SqlDataAdapter adapter = new SqlDataAdapter(command);
       DataTable table = new DataTable();
       connection.Open();
+      SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+      command.Transaction = transaction;
       try
       {
         adapter.Fill(table);
-
+        transaction.Commit();
       }
       catch (Exception ex)
       {
+        transaction.Rollback();
         DataUtils.LogException(UserSession.LoginUser, ex);
       }
 

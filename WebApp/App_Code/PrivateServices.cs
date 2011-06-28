@@ -14,6 +14,7 @@ using System.Data.SqlClient;
 using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
+using dtSearch.Engine;
 
 namespace TeamSupport.Services
 {
@@ -116,47 +117,191 @@ namespace TeamSupport.Services
     }
 
     [WebMethod(true)]
+    public RadComboBoxItemData[] GetQuickTicket(RadComboBoxContext context)
+    {
+
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+
+      using (SearchJob job = new SearchJob())
+      {
+        string searchTerm = context["FilterString"].ToString().Trim();
+        job.Request = searchTerm;
+        job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+        job.BooleanConditions = "OrganizationID::" + TSAuthentication.OrganizationID.ToString();
+        job.MaxFilesToRetrieve = 25;
+        job.AutoStopLimit = 100000;
+        job.TimeoutSeconds = 10;
+        job.SearchFlags =
+          SearchFlags.dtsSearchSelectMostRecent |
+          SearchFlags.dtsSearchStemming |
+          SearchFlags.dtsSearchDelayDocInfo;
+
+        int num = 0;
+        if (!int.TryParse(searchTerm, out num))
+        {
+          job.Fuzziness = 1;
+          job.Request = job.Request + "*";
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
+        }
+
+        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
+        job.Execute();
+        SearchResults results = job.Results;
+
+
+        IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
+        List<RadComboBoxItemData> list = new List<RadComboBoxItemData>();
+        try
+        {
+          for (int i = 0; i < results.Count; i++)
+          {
+            results.GetNthDoc(i);
+            RadComboBoxItemData itemData = new RadComboBoxItemData();
+            itemData.Text = results.CurrentItem.DisplayName;
+            itemData.Value = results.CurrentItem.Filename;
+            list.Add(itemData);
+          }
+        }
+        catch (Exception)
+        {
+        }
+        if (list.Count < 1)
+        {
+          RadComboBoxItemData noData = new RadComboBoxItemData();
+          noData.Text = "[No tickets to display.]";
+          noData.Value = "-1";
+          list.Add(noData);
+        }
+
+        return list.ToArray();
+      }
+    }
+
+
+    [WebMethod(true)]
     public RadComboBoxItemData[] GetTicketByDescription(RadComboBoxContext context)
     {
-      IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
 
-      Tickets tickets = new Tickets(UserSession.LoginUser);
-      string search = context["FilterString"].ToString();
-    search = DataUtils.BuildSearchString(search, true);
-      tickets.LoadByDescription(UserSession.LoginUser.OrganizationID, search);
-
-      List<RadComboBoxItemData> list = new List<RadComboBoxItemData>();
-      foreach (Ticket ticket in tickets)
+      using (SearchJob job = new SearchJob())
       {
-        RadComboBoxItemData itemData = new RadComboBoxItemData();
-        itemData.Text = ticket.Row[0].ToString();
-        itemData.Value = ticket.TicketID.ToString() + "," + ticket.TicketNumber.ToString();
-        list.Add(itemData);
-      }
+        string searchTerm = context["FilterString"].ToString().Trim();
+        job.Request = searchTerm;
+        job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+        job.BooleanConditions = "OrganizationID::" + TSAuthentication.OrganizationID.ToString();
+        job.MaxFilesToRetrieve = 25;
+        job.AutoStopLimit = 100000;
+        job.TimeoutSeconds = 10;
+        job.SearchFlags =
+          SearchFlags.dtsSearchSelectMostRecent |
+          SearchFlags.dtsSearchStemming |
+          SearchFlags.dtsSearchDelayDocInfo;
 
-      return list.ToArray();
+        int num = 0;
+        if (!int.TryParse(searchTerm, out num))
+        {
+          job.Fuzziness = 1;
+          job.Request = job.Request + "*";
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
+        }
+
+        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
+        job.Execute();
+        SearchResults results = job.Results;
+
+
+        IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
+        List<RadComboBoxItemData> list = new List<RadComboBoxItemData>();
+        try
+        {
+          for (int i = 0; i < results.Count; i++)
+          {
+            results.GetNthDoc(i);
+            RadComboBoxItemData itemData = new RadComboBoxItemData();
+            itemData.Text = results.CurrentItem.DisplayName;
+            itemData.Value = results.CurrentItem.Filename + "," + results.CurrentItem.UserFields["TicketNumber"].ToString();
+            list.Add(itemData);
+          }
+        }
+        catch (Exception)
+        {
+        }
+        if (list.Count < 1)
+        {
+          RadComboBoxItemData noData = new RadComboBoxItemData();
+          noData.Text = "[No tickets to display.]";
+          noData.Value = "-1";
+          list.Add(noData);
+        }
+
+        return list.ToArray();
+      }
     }
 
     [WebMethod(true)]
     public RadComboBoxItemData[] GetKBTicketByDescription(RadComboBoxContext context)
     {
-      IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
 
-      Tickets tickets = new Tickets(UserSession.LoginUser);
-      string search = context["FilterString"].ToString();
-      search = DataUtils.BuildSearchString(search, true);
-      tickets.LoadKBByDescription(UserSession.LoginUser.OrganizationID, search, 0);
-
-      List<RadComboBoxItemData> list = new List<RadComboBoxItemData>();
-      foreach (Ticket ticket in tickets)
+      using (SearchJob job = new SearchJob())
       {
-        RadComboBoxItemData itemData = new RadComboBoxItemData();
-        itemData.Text = ticket.Row[0].ToString();
-        itemData.Value = ticket.TicketID.ToString() + "," + ticket.TicketNumber.ToString();
-        list.Add(itemData);
-      }
+        string searchTerm = context["FilterString"].ToString().Trim();
+        job.Request = searchTerm;
+        job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+        job.BooleanConditions = "(OrganizationID::" + TSAuthentication.OrganizationID.ToString() + ") AND (IsKnowledgeBase::True)";
+        job.MaxFilesToRetrieve = 25;
+        job.AutoStopLimit = 100000;
+        job.TimeoutSeconds = 10;
+        job.SearchFlags =
+          SearchFlags.dtsSearchSelectMostRecent |
+          SearchFlags.dtsSearchStemming |
+          SearchFlags.dtsSearchDelayDocInfo;
 
-      return list.ToArray();
+        int num = 0;
+        if (!int.TryParse(searchTerm, out num))
+        {
+          job.Fuzziness = 1;
+          job.Request = job.Request + "*";
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
+        }
+
+        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
+        job.Execute();
+        SearchResults results = job.Results;
+
+
+        IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
+        List<RadComboBoxItemData> list = new List<RadComboBoxItemData>();
+        try
+        {
+          for (int i = 0; i < results.Count; i++)
+          {
+            results.GetNthDoc(i);
+            RadComboBoxItemData itemData = new RadComboBoxItemData();
+            itemData.Text = results.CurrentItem.DisplayName;
+            itemData.Value = results.CurrentItem.Filename + "," + results.CurrentItem.UserFields["TicketNumber"].ToString();
+            list.Add(itemData);
+          }
+        }
+        catch (Exception)
+        {
+        }
+        if (list.Count < 1)
+        {
+          RadComboBoxItemData noData = new RadComboBoxItemData();
+          noData.Text = "[No tickets to display.]";
+          noData.Value = "-1";
+          list.Add(noData);
+        }
+
+        return list.ToArray();
+      }
     }
 
 

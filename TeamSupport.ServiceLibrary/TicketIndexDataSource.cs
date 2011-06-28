@@ -15,6 +15,7 @@ namespace TeamSupport.ServiceLibrary
     private int? _lastTicketID = null;
     private SqlDataReader _reader = null;
     private int _count = 0;
+    private Dictionary<string, string> _fieldAliases;
 
     private int _maxCount = 1000;
     public int MaxCount
@@ -47,6 +48,7 @@ namespace TeamSupport.ServiceLibrary
       DocFields = "";
       DocIsFile = false;
       _updatedTickets = new Dictionary<int, int>();
+      _fieldAliases = new Dictionary<string, string>();
     }
 
 
@@ -74,19 +76,27 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        DocModifiedDate = System.DateTime.UtcNow;
-        DocCreatedDate = System.DateTime.UtcNow;
+        //DocModifiedDate = (DateTime)_reader["DateModified"];
+        DocModifiedDate = DateTime.UtcNow;
+        DocCreatedDate = (DateTime)_reader["DateCreated"];
         DocIsFile = false;
-        DocText = _reader.GetString(4);
+        DocText = string.Format("<html>{0}</html>", _reader["IndexText"].ToString());
+        //Logs.Log(_loginUser, "Indexer", "Index Text", DocText, null, ReferenceType.Tickets, (int)_reader["TicketID"]);
         DocFields = "";
-        DocName = _reader.GetInt32(0).ToString();
-        DocDisplayName = string.Format("{0}: {1}", _reader.GetInt32(1).ToString(), _reader.GetString(2));
-        _lastTicketID = _reader.GetInt32(0);
-        for (int i = 0; i < 4; i++)
+        DocName = _reader["TicketID"].ToString();
+        DocDisplayName = string.Format("{0}: {1}", _reader["TicketNumber"].ToString(), _reader["Name"].ToString());
+        _lastTicketID = (int)_reader["TicketID"];
+        for (int i = 0; i < _reader.FieldCount; i++)
         {
+          string name = _reader.GetName(i);
+          /*if (_fieldAliases.ContainsKey(name))
+          {
+            name = _fieldAliases[name];
+          }*/
+          if (name.ToLower() == "indextext") continue;
           object value = _reader.GetValue(i);
           string s = value == null || value == DBNull.Value ? "" : value.ToString();
-          DocFields += _reader.GetName(i) + "\t" + s.Replace("\t", " ") + "\t";
+          DocFields += name + "\t" + s.Replace("\t", " ") + "\t";
         }
 
         _count++;
@@ -101,32 +111,35 @@ namespace TeamSupport.ServiceLibrary
 
     override public bool Rewind()
     {
+      _fieldAliases.Clear();
+      ReportTableFields fields = new ReportTableFields(LoginUser);
+      fields.LoadByReportTableID(10);
+      foreach (ReportTableField field in fields)
+      {
+        _fieldAliases.Add(field.FieldName, field.Alias);
+      }
+
       string sql =
       @"SELECT 
-      t.TicketID,
-      t.TicketNumber,
-      t.Name,
-      t.OrganizationID,
       ISNULL(
       (
-      t.Name + ' ' +
-
       ISNULL(
       (
         SELECT CAST(cv.CustomValue + ' ' AS VARCHAR(MAX)) FROM CustomValues cv LEFT JOIN CustomFields cf ON cf.CustomFieldID = cv.CustomFieldID 
-        WHERE cf.RefType=17 AND cv.RefID=t.TicketID    
+        WHERE cf.RefType=17 AND cv.RefID=tv.TicketID    
         FOR XML PATH('')
       ), '') + ' ' +
       (
-        SELECT CAST(a.Description + ' ' + a.Name + ' ' AS VARCHAR(MAX))
-        FROM Actions a
-        WHERE a.TicketID = t.TicketID
+        SELECT CAST(ISNULL(a.Description, '') + ' ' + ISNULL(a.Name, '') + ' ' + ISNULL(a.CreatorName, '') + ' ' AS VARCHAR(MAX))
+        FROM ActionsView a
+        WHERE a.TicketID = tv.TicketID
         FOR XML PATH('')
       )
 
-      ), '') AS IndexText
-      FROM Tickets t WITH(NOLOCK)
-      WHERE t.NeedsIndexing = 1
+      ), '') AS IndexText,
+      tv.*
+      FROM TicketsView tv WITH(NOLOCK)
+      WHERE tv.NeedsIndexing = 1
       ORDER BY DateModified 
       ";
       SqlConnection connection = new SqlConnection(LoginUser.ConnectionString);

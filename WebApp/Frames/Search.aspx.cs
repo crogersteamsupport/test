@@ -44,7 +44,7 @@ public partial class Frames_Search : BaseFramePage
         return;
       }
       lblResults.Text = "";
-      _filters.SearchText = DataUtils.BuildSearchString(text, matchAll);
+      _filters.SearchText = text;// DataUtils.BuildSearchString(text, matchAll);
 
       if (tsMain.SelectedIndex == 0)
       {

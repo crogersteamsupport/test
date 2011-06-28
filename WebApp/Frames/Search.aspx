@@ -22,7 +22,7 @@
                 <asp:Button ID="btnSearch" runat="server" Text="Search" OnClick="btnSearch_Click" />
               </td>
               <td>
-                <asp:CheckBox ID="cbMatchAll" runat="server" Text="Match all of these words" CssClass="" />
+                <asp:CheckBox ID="cbMatchAll" runat="server" Text="Match all of these words" CssClass="" Visible="False"/>
               </td>
             </tr>
           </table>

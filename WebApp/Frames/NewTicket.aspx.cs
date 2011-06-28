@@ -211,7 +211,7 @@ public partial class Frames_NewTicket : BaseFramePage
       Tickets tickets = new Tickets(UserSession.LoginUser);
       Ticket ticket = tickets.AddNewTicket();
       ticket.OrganizationID = UserSession.LoginUser.OrganizationID;
-      ticket.Name = "kj";// textName.Text;
+      ticket.Name = textName.Text;
       ticket.TicketTypeID = int.Parse(cmbTicketType.SelectedValue);
       ticket.TicketStatusID = int.Parse(cmbStatus.SelectedValue);
       ticket.TicketSeverityID = int.Parse(cmbSeverity.SelectedValue);

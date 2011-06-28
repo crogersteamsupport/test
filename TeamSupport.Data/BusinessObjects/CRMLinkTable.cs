@@ -36,7 +36,14 @@ namespace TeamSupport.Data
       //This Query loads all the active CRMLinkTable items
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM CRMLinkTable WHERE Active = 1 ORDER BY LastProcessed ASC";
+        command.CommandText = 
+@"SELECT clt.* 
+FROM CRMLinkTable clt 
+INNER JOIN Organizations o 
+ON clt.OrganizationID = o.OrganizationID 
+WHERE clt.Active = 1 AND o.IsActive=1
+ORDER BY clt.LastProcessed ASC
+";
         command.CommandType = CommandType.Text;
         Fill(command);
       }

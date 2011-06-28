@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Web.Services;
 using System.Text;
 using System.Net.Mail;
+using dtSearch.Engine;
 
 public partial class _Default : System.Web.UI.Page
 {
@@ -50,40 +51,6 @@ public partial class _Default : System.Web.UI.Page
     setting.CurrentChatID = -1;
     setting.Collection.Save();
 
-  }
-
-  [WebMethod(true)]
-  public static RadComboBoxItemData[] GetQuickTicket(RadComboBoxContext context)
-  {
-    IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
-    List<RadComboBoxItemData> list = new List<RadComboBoxItemData>();
-    try
-    {
-      Tickets tickets = new Tickets(UserSession.LoginUser);
-      string search = context["FilterString"].ToString();
-      search = DataUtils.BuildSearchString(search, false);
-      tickets.LoadByDescription(UserSession.LoginUser.OrganizationID, search);
-
-      foreach (Ticket ticket in tickets)
-      {
-        RadComboBoxItemData itemData = new RadComboBoxItemData();
-        itemData.Text = ticket.Row[0].ToString();
-        itemData.Value = ticket.TicketID.ToString();
-        list.Add(itemData);
-      }
-    }
-    catch (Exception)
-    {
-    }
-    if (list.Count < 1)
-    {
-      RadComboBoxItemData noData = new RadComboBoxItemData();
-      noData.Text = "[No tickets to display.]";
-      noData.Value = "-1";
-      list.Add(noData);
-    }
-
-    return list.ToArray();
   }
 
   [WebMethod(true)]

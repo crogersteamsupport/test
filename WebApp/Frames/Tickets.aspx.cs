@@ -113,8 +113,8 @@ public partial class Frames_Tickets : BaseFramePage
       organizationID = UserSession.LoginUser.OrganizationID;
     }
 
-    
-    Tickets tickets = new Tickets(UserSession.LoginUser);
+
+    TicketsView tickets = new TicketsView(UserSession.LoginUser);
 
     //gridTickets.VirtualItemCount = tickets.LoadForGridCount(organizationID, _ticketFilters.TicketTypeID, _ticketFilters.TicketStatusID, _ticketFilters.TicketSeverityID, _ticketFilters.UserID, _ticketFilters.GroupID, _ticketFilters.ProductID, _ticketFilters.ReportedVersionID, _ticketFilters.ResolvedVersionID, _ticketFilters.CustomerID, _ticketFilters.IsPortal, _ticketFilters.IsKnowledgeBase, _ticketFilters.DateCreateBegin, _ticketFilters.DateCreateEnd, _ticketFilters.DateModifiedBegin, _ticketFilters.DateModifiedEnd, _ticketFilters.SearchText);
     //if (gridTickets.VirtualItemCount < gridTickets.PageSize * gridTickets.CurrentPageIndex) gridTickets.CurrentPageIndex = 0;
@@ -124,16 +124,19 @@ public partial class Frames_Tickets : BaseFramePage
       tickets.LoadForTags(_ticketFilters.Tags);
     
     }
-    /*else if (_ticketFilters.SearchText.Trim() != "")
+    else if (_ticketFilters.SearchText.Trim() != "")
     {
-      tickets.LoadForSearch(organizationID, _ticketFilters.SearchText);
-    }*/
+      TicketLoadFilter filter = new TicketLoadFilter();
+      filter.SearchText = _ticketFilters.SearchText;
+      tickets.LoadByRange(0, 10000, filter);
+    }
     else
     {
       if (gridTickets.MasterTableView.SortExpressions.Count > 0)
       {
         GridSortExpression expression = gridTickets.MasterTableView.SortExpressions[0];
         tickets.LoadForGrid(0, pageSize, organizationID, _ticketFilters.TicketTypeID, _ticketFilters.TicketStatusID, _ticketFilters.TicketSeverityID, _ticketFilters.UserID, _ticketFilters.GroupID, _ticketFilters.ProductID, _ticketFilters.ReportedVersionID, _ticketFilters.ResolvedVersionID, _ticketFilters.CustomerID, _ticketFilters.IsPortal, _ticketFilters.IsKnowledgeBase, _ticketFilters.DateCreateBegin, _ticketFilters.DateCreateEnd, _ticketFilters.DateModifiedBegin, _ticketFilters.DateModifiedEnd, _ticketFilters.SearchText, expression.FieldName, expression.SortOrder == GridSortOrder.Ascending);
+        
       }
       else
       {

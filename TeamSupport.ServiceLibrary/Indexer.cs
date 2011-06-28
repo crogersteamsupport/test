@@ -32,6 +32,9 @@ namespace TeamSupport.ServiceLibrary
 
     private void ProcessTicketIndex()
     {
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+
       using (IndexJob job = new IndexJob())
       {
         TicketIndexDataSource dataSource = new TicketIndexDataSource();
@@ -47,17 +50,10 @@ namespace TeamSupport.ServiceLibrary
         job.ActionAdd = true;
         job.CreateRelativePaths = false;
         job.StoredFields = Server.Tokenize("TicketID OrganizationID TicketNumber Name");
-        //job.StoredFields = Server.Tokenize(StoredFields.Text);
         job.IndexingFlags =
-          // Compress and store the documents in the index (for highlighting hits)
             IndexingFlags.dtsIndexCacheOriginalFile |
-          // Compress and store document text in the index (for generating hits-in-context 
-          // snippets to include in search results)
             IndexingFlags.dtsIndexCacheText |
-          // Prevents fields added with DataSource.DocFields from being included in cached text
             IndexingFlags.dtsIndexCacheTextWithoutFields;
-
-        // Execute the index job
         ExecuteJob(job, "IndexerTicketsStatus");
         UpdateTickets(dataSource);
       }

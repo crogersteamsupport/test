@@ -54,6 +54,7 @@ namespace TeamSupport.ServiceLibrary
 
     private bool _isDebug = false;
     private int _currentEmailPostID;
+    private Logs _logs;
 
     public EmailProcessor()
     {
@@ -69,6 +70,7 @@ namespace TeamSupport.ServiceLibrary
       try
       {
         _isDebug = Settings.ReadBool("Debug", false);
+        _logs = new Logs(LoginUser, "Service", "EmailProcessor");
 
         EmailPosts emailPosts = new EmailPosts(LoginUser);
         emailPosts.LoadAll();
@@ -80,12 +82,16 @@ namespace TeamSupport.ServiceLibrary
             try
             {
               SetTimeZone(emailPost);
+              _logs.Log("Process Email Post", ReferenceType.EmailPost, emailPost.EmailPostID);
+              _logs.Log("Data: " + DataUtils.DataRowToString(emailPost.Row), ReferenceType.EmailPost, emailPost.EmailPostID);
               ProcessEmail(emailPost);
             }
             catch (Exception ex)
             {
+              _logs.Log("Email Post Exception: " + ex.ToString(), ReferenceType.EmailPost, emailPost.EmailPostID);
               ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
             }
+            _logs.Log("Delete Email Post", ReferenceType.EmailPost, emailPost.EmailPostID);
             emailPost.Collection.DeleteFromDB(emailPost.EmailPostID);
           }
           System.Threading.Thread.Sleep(0);
@@ -137,8 +143,10 @@ namespace TeamSupport.ServiceLibrary
       switch (emailPost.EmailPostType)
       {
         case EmailPostType.TicketModified:
-          //PARAMS: 1:TicketID, 2:OldUserID, 3:OldGroupID, 4:OldTicketStatusID, 5:OldTicketSeverityID, 6:LastActionModified
-          //        7: IsNew 8: UserTickets[] 9:OrganizationTickets[]
+          _logs.Log("Processing Ticket Email", ReferenceType.Tickets, GetIntParam(emailPost.Param1));
+          _logs.Log("Email Post Data: " + DataUtils.DataRowToString(emailPost.Row), ReferenceType.Tickets, GetIntParam(emailPost.Param1));
+          _logs.Log("Params: 1:TicketID, 2:OldUserID, 3:OldGroupID, 4:OldTicketStatusID, 5:OldTicketSeverityID, 6:LastActionModified 7: IsNew 8: UserTickets[] 9:OrganizationTickets[]", ReferenceType.Tickets, GetIntParam(emailPost.Param1));
+          
           List<int> actionList = new List<int>();
 
           if (!string.IsNullOrEmpty(emailPost.Param6))
@@ -263,11 +271,14 @@ namespace TeamSupport.ServiceLibrary
 
     public void ProcessTicketModified(int ticketID, int? oldUserID, int? oldGroupID, int? oldTicketStatusID, int? oldTicketSeverityID, int[] modifiedActions, int[] users, int modifierID, bool isNew)
     {
+
       Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
       if (ticket == null) return;
+      _logs.Log("Ticket: " + DataUtils.DataRowToString(ticket.Row), ReferenceType.Tickets, ticketID);
 
       User modifier = Users.GetUser(LoginUser, modifierID);
       string modifierName = modifier == null ? "Anonymous User" : modifier.FirstLastName;
+      _logs.Log("Modifier: " + modifierName, ReferenceType.Tickets, ticketID);
 
       Organization ticketOrganization = Organizations.GetOrganization(LoginUser, ticket.OrganizationID);
 
@@ -275,6 +286,7 @@ namespace TeamSupport.ServiceLibrary
       
       if (bool.Parse(OrganizationSettings.ReadString(LoginUser, ticket.OrganizationID, "DisableStatusNotification", "False")))
       {
+        _logs.Log("DisableStatusNotification: True", ReferenceType.Tickets, ticketID);
         oldTicketStatusID = null;
       }
 
@@ -286,13 +298,14 @@ namespace TeamSupport.ServiceLibrary
       {
         if (action.IsVisibleOnPortal) publicActionCount++;
       }
+      _logs.Log("Public Action Count: " + publicActionCount.ToString(), ReferenceType.Tickets, ticketID);
 
       AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
-      AddMessagePortalTicketModified(ticket, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
+      AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
+      AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, true);
+      AddMessageInternalTicketModified(ticket, oldUserID, oldGroupID, isNew, oldTicketStatusID, oldTicketSeverityID, !actions.IsEmpty, modifierName, modifier == null ? -1 : modifier.UserID, ticketOrganization);
       if (!isNew)
       {
-        AddMessageInternalTicketModified(ticket, oldUserID, oldGroupID, isNew, oldTicketStatusID, oldTicketSeverityID, !actions.IsEmpty, modifierName, modifier == null ? -1 : modifier.UserID, ticketOrganization);
-        AddMessagePortalTicketModified(ticket, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, true);
       }
       else
       {
@@ -397,34 +410,76 @@ namespace TeamSupport.ServiceLibrary
       AddMessage(ticketOrganization.OrganizationID, "Internal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, fileNames.ToArray());
     }
 
-    private void AddMessagePortalTicketModified(Ticket ticket, int? oldTicketStatusID, bool includeActions, int[] users, string modifierName, int modifierID, Organization ticketOrganization, bool isBasic)
+    private bool IsModifierTSUser(int modifierID)
     {
-      if (!ticket.IsVisibleOnPortal) return;
-      if (oldTicketStatusID == null && !includeActions && users.Length < 1) return;
+      bool result = false;
+      User modifier = Users.GetUser(LoginUser, modifierID);
+      if (modifier != null)
+      {
+        Organization organization = Organizations.GetOrganization(LoginUser, modifier.OrganizationID);
+        result = organization != null && organization.ParentID == 1;
+      }
+
+      return result;
+    }
+
+    private void AddMessagePortalTicketModified(Ticket ticket, bool isNew, int? oldTicketStatusID, bool includeActions, int[] users, string modifierName, int modifierID, Organization ticketOrganization, bool isBasic)
+    {
+      _logs.Log("Starting Portal Ticket Processing", ReferenceType.Tickets, ticket.TicketID);
+      _logs.Log("IsBasic: " + isBasic.ToString(), ReferenceType.Tickets, ticket.TicketID);
+
+      if (!ticket.IsVisibleOnPortal)
+      {
+        _logs.Log("Rejecting: !ticket.IsVisibleOnPortal", ReferenceType.Tickets, ticket.TicketID);
+        return;
+      }
+      
+      if (oldTicketStatusID == null && !includeActions && users.Length < 1)
+      {
+        _logs.Log("Rejecting: oldTicketStatusID == null && !includeActions && users.Length < 1", ReferenceType.Tickets, ticket.TicketID);
+        return;
+      }
+
       TicketStatus status = TicketStatuses.GetTicketStatus(LoginUser, ticket.TicketStatusID);
-      if (status.IsEmailResponse == true && oldTicketStatusID != null) return;
+      if (status.IsEmailResponse == true && oldTicketStatusID != null && !IsModifierTSUser(modifierID))
+      {
+        _logs.Log("Rejecting: status.IsEmailResponse == true && oldTicketStatusID != null", ReferenceType.Tickets, ticket.TicketID);
+        return;
+      }
 
       List<UserEmail> userList;
       List<UserEmail> advUsers = new List<UserEmail>();
       AddAdvancedPortalUsers(advUsers, ticket);
+      _logs.Log("Advance User Count: " + advUsers.Count.ToString(), ReferenceType.Tickets, ticket.TicketID);
+
       if (isBasic)
       {
         userList = new List<UserEmail>();
         AddBasicPortalUsers(userList, ticket);
+        _logs.Log("Basic User Count: " + userList.Count.ToString(), ReferenceType.Tickets, ticket.TicketID);
         if (!string.IsNullOrEmpty(ticket.PortalEmail))
         {
           UserEmail email = FindByUserEmail(ticket.PortalEmail, userList);
-          if (email == null) userList.Add(new UserEmail(-2, "", ticket.PortalEmail));
+          if (email == null)
+          {
+            _logs.Log("Added Portal Email: " + ticket.PortalEmail, ReferenceType.Tickets, ticket.TicketID);
+            userList.Add(new UserEmail(-2, "", ticket.PortalEmail));
+          }
         }
 
         foreach (UserEmail item in advUsers)
         {
           UserEmail email = FindByUserEmail(item.Address, userList);
-          if (email != null) userList.Remove(email);
+          if (email != null)
+          {
+            _logs.Log("Removed Advanced User: " + email.UserID.ToString(), ReferenceType.Tickets, ticket.TicketID);
+            userList.Remove(email);
+          }
         }
       }
       else
       {
+        _logs.Log("Using Advanced User List", ReferenceType.Tickets, ticket.TicketID);
         userList = advUsers;
       }
 
@@ -435,14 +490,27 @@ namespace TeamSupport.ServiceLibrary
         {
           if (users.Contains(email.UserID))
           {
+            _logs.Log("Adding User: " + email.UserID, ReferenceType.Tickets, ticket.TicketID);
             newList.Add(email);
           }
         }
+        _logs.Log("Replacing user list (oldTicketStatusID == null && !includeActions), Count: " + newList.Count.ToString(), ReferenceType.Tickets, ticket.TicketID);
         userList = newList;
       }
 
 
-      if (userList.Count < 1) return;
+      if (isNew) // new already sent
+      {
+        _logs.Log("New Ticket, removing modifier " + modifierID.ToString(), ReferenceType.Tickets, ticket.TicketID);
+        RemoveUser(userList, modifierID);
+      }
+
+
+      if (userList.Count < 1)
+      {
+        _logs.Log("Rejecting: User list is less than one.", ReferenceType.Tickets, ticket.TicketID);
+        return;
+      }
 
       List<string> fileNames = new List<string>();
       if (includeActions)
@@ -454,6 +522,7 @@ namespace TeamSupport.ServiceLibrary
           Attachments attachments = actions[0].GetAttachments();
           foreach (TeamSupport.Data.Attachment attachment in attachments)
           {
+            _logs.Log("Adding Attachment: " + attachment.Path, ReferenceType.Tickets, ticket.TicketID);
             fileNames.Add(attachment.Path);
           }
 
@@ -464,6 +533,7 @@ namespace TeamSupport.ServiceLibrary
 
       if (status.IsClosedEmail)
       {
+        _logs.Log("Using closed template", ReferenceType.Tickets, ticket.TicketID);
         message = EmailTemplates.GetTicketClosed(LoginUser, modifierName, ticket.GetTicketView(), includeActions);
       
       }
@@ -475,6 +545,7 @@ namespace TeamSupport.ServiceLibrary
 
       AddUsersToAddresses(message.To, userList, modifierID);
       AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, fileNames.ToArray());
+      _logs.Log("Emailed Queued", ReferenceType.Tickets, ticket.TicketID);
     }
 
     private void ProcessTicketUpdateRequest(int ticketID, int modifierID)

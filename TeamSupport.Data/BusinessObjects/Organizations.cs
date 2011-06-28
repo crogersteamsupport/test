@@ -909,6 +909,17 @@ namespace TeamSupport.Data
       groups.AddGroupUser(loginUser.UserID, group.GroupID);
       organization.DefaultPortalGroupID = group.GroupID;
       organization.Collection.Save();
+
+      WaterCoolerItem wc = (new WaterCooler(loginUser)).AddNewWaterCoolerItem();
+      wc.UserID = -1;
+      wc.OrganizationID = loginUser.OrganizationID;
+      wc.TimeStamp = DateTime.UtcNow;
+      wc.GroupFor = null;
+      wc.ReplyTo = null;
+      wc.Message = "Welcome to the Water Cooler!  This is a place to share group updates, interesting articles, team member statuses, and other items of interest to the rest of your team.";
+      wc.MessageType = "Comment";
+      wc.Collection.Save();
+
       
     
     }

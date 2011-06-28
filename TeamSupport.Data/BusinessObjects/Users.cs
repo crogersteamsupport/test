@@ -458,13 +458,17 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT u.* FROM Users u 
-                                LEFT JOIN Subscriptions s ON u.UserID = s.UserID 
-                                WHERE (s.RefType = @RefType) 
-                                AND (u.IsActive = 1) 
-                                AND (u.MarkDeleted = 0)
-                                AND (s.RefID IN (SELECT ot.OrganizationID FROM OrganizationTickets ot WHERE (ot.TicketID = @TicketID)))";
-
+        command.CommandText =
+@"SELECT u.* FROM Users u 
+WHERE(u.IsActive = 1) 
+AND (u.MarkDeleted = 0)
+AND u.UserID IN
+(
+  SELECT s.UserID FROM Subscriptions s 
+  WHERE s.RefType= @RefType
+  AND s.RefID IN (SELECT ot.OrganizationID FROM OrganizationTickets ot WHERE (ot.TicketID = @TicketID))
+)
+";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@TicketID", ticketID);
         command.Parameters.AddWithValue("@RefType", (int)ReferenceType.Organizations);

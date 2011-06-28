@@ -32,18 +32,14 @@
       $('#btnSearch').click(function (e) {
         e.preventDefault();
         $('#divSearch').empty();
-        top.Ts.Services.Tickets.SearchTickets($('#textSearch').val(), function (result) {
+        top.Ts.Services.Tickets.SearchTicketsTest($('#textSearch').val(), function (result) {
+          $('<div>').html(result.length + ' tickets found.').appendTo('#divSearch');
           for (var i = 0; i < result.length; i++) {
-            var a = $('<a href="#" class="ts-link">')
-            .text(result[i].label)
-            .data('id', result[i].id)
-            .click(function (e) {
-              e.preventDefault();
-              top.Ts.MainPage.openTicketByID($(this).data('id'), true);
-            });
-
-            $('<div>').append(a).appendTo('#divSearch');
+            $('<div>').html(result[i]).appendTo('#divSearch');
           }
+          $('#divSearch h1').click(function (e) {
+            $(this).toggle();
+          });
         });
       });
 

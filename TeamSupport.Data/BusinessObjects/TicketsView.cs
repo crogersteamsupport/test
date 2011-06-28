@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using dtSearch.Engine;
 
 namespace TeamSupport.Data
 {
@@ -521,7 +522,14 @@ namespace TeamSupport.Data
 
       if (!String.IsNullOrEmpty(filter.SearchText.Trim()))
       {
-        string search = filter.SearchText.Trim();
+        int[] list = GetTicketIDs(filter.SearchText, loginUser);
+        if (list.Length > 0)
+        {
+          string ids = string.Join(",", Array.ConvertAll<int, string>(list, Convert.ToString));
+          builder.Append(string.Format(" AND (tv.TicketID IN ({0})) ", ids));
+        }
+        //command.Parameters.AddWithValue("@TicketIDs", ids);
+        /*
         command.Parameters.AddWithValue("@Search", DataUtils.BuildSearchString(search, filter.MatchAllTerms));
         command.Parameters.AddWithValue("@SearchClean", search.Replace("*", "").Replace("%", "").Replace("\"", ""));
         builder.Append(
@@ -532,6 +540,7 @@ namespace TeamSupport.Data
                           )");
         //--OR EXISTS (SELECT * FROM Tickets t WHERE (t.TicketID = tv.TicketID) AND CONTAINS((t.[Name]), @Search))
         //--OR EXISTS (SELECT * FROM CustomValues cv LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID WHERE (cf.RefType = 17) AND (cv.RefID = tv.TicketID) AND CONTAINS((cv.[CustomValue]), @Search))
+         */
       }
 
       if (filter.Tags != null && filter.Tags.Length > 0)
@@ -543,6 +552,50 @@ namespace TeamSupport.Data
         }
       }
 
+    }
+
+    public static int[] GetTicketIDs(string searchTerm, LoginUser loginUser)
+    {
+      using (SearchJob job = new SearchJob())
+      {
+        Options options = new Options();
+        options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+
+        searchTerm = searchTerm.Trim();
+        job.Request = searchTerm;
+        job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+        job.BooleanConditions = "OrganizationID::" + loginUser.OrganizationID.ToString();
+        job.MaxFilesToRetrieve = 1000;
+        job.AutoStopLimit = 1000000;
+        job.TimeoutSeconds = 30;
+        job.SearchFlags =
+          SearchFlags.dtsSearchSelectMostRecent |
+          SearchFlags.dtsSearchStemming |
+          SearchFlags.dtsSearchDelayDocInfo;
+
+        int num = 0;
+        if (!int.TryParse(searchTerm, out num))
+        {
+          job.Fuzziness = 1;
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
+        }
+
+        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+
+        job.IndexesToSearch.Add(SystemSettings.ReadString(loginUser, "IndexerPathTickets", ""));
+        job.Execute();
+        SearchResults results = job.Results;
+
+        List<int> items = new List<int>();
+        for (int i = 0; i < results.Count; i++)
+        {
+          results.GetNthDoc(i);
+          items.Add(int.Parse(results.CurrentItem.Filename));
+        }
+        return items.ToArray();
+      }
+
+    
     }
 
     private static void AddTicketParameter(string name, object value, bool isUnassignableInt, StringBuilder builder, SqlCommand command)
@@ -570,6 +623,259 @@ namespace TeamSupport.Data
           command.Parameters.AddWithValue(paramName, value);
         }
     
+    }
+
+    public void LoadForTags(string tags)
+    {
+      string[] tagArray = tags.Split(',');
+
+      StringBuilder builder = new StringBuilder(
+@"SELECT tgv.[TicketID]
+      ,tgv.[ProductName]
+      ,tgv.[ReportedVersion]
+      ,tgv.[SolvedVersion]
+      ,tgv.[GroupName]
+      ,tgv.[TicketTypeName]
+      ,tgv.[UserName]
+      ,tgv.[Status]
+      ,tgv.[StatusPosition]
+      ,tgv.[SeverityPosition]
+      ,tgv.[IsClosed]
+      ,tgv.[Severity]
+      ,tgv.[TicketNumber]
+      ,tgv.[IsVisibleOnPortal]
+      ,tgv.[IsKnowledgeBase]
+      ,tgv.[ReportedVersionID]
+      ,tgv.[SolvedVersionID]
+      ,tgv.[ProductID]
+      ,tgv.[GroupID]
+      ,tgv.[UserID]
+      ,tgv.[TicketStatusID]
+      ,tgv.[TicketTypeID]
+      ,tgv.[TicketSeverityID]
+      ,tgv.[OrganizationID]
+      ,tgv.[Name]
+      ,tgv.[ParentID]
+      ,tgv.[ModifierID]
+      ,tgv.[CreatorID]
+      ,tgv.[DateModified]
+      ,tgv.[DateCreated]
+      ,tgv.[DateClosed]
+      ,tgv.[CloserID]
+      ,tgv.[DaysClosed]
+      ,tgv.[DaysOpened]
+      ,tgv.[CloserName]
+      ,tgv.[CreatorName]
+      ,tgv.[ModifierName]
+      ,tgv.[SlaViolationTime]
+      ,tgv.[SlaWarningTime]
+      ,tgv.[SlaViolationHours]
+      ,tgv.[SlaWarningHours]
+FROM TicketGridView tgv 
+WHERE tgv.OrganizationID = @OrganizationID"
+);
+      for (int i = 0; i < tagArray.Length; i++)
+      {
+        builder.Append(" AND EXISTS (SELECT * FROM TagLinksView WHERE TagLinksView.RefID=tgv.TicketID AND TagLinksView.RefType=17 AND TagLinksView.Value = @Value" + i.ToString() + ")");
+      }
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = builder.ToString();
+        UseCache = false;
+        CacheExpirationSeconds = 300;
+
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
+        for (int i = 0; i < tagArray.Length; i++)
+        {
+          command.Parameters.AddWithValue("@Value" + i.ToString(), tagArray[i]);
+        }
+
+        Fill(command, "TicketTags");
+      }
+
+
+    }
+
+    public int LoadForGridCount(int organizationID, int ticketTypeID, int ticketStatusID, int ticketSeverityID,
+      int userID, int groupID, int productID, int reportedVersionID, int resolvedVersionID,
+      int customerID, bool? onlyPortal, bool? onlyKnowledgeBase,
+      DateTime? dateCreatedBegin, DateTime? dateCreatedEnd, DateTime? dateModifiedBegin, DateTime? dateModifiedEnd,
+      string search)
+    {
+      if (search.Trim() == "") search = "\"\"";
+      using (SqlCommand command = new SqlCommand())
+      {
+        StringBuilder builder = new StringBuilder();
+        builder.Append(@" SELECT COUNT(*)
+                          FROM dbo.TicketGridView tgv LEFT JOIN Tickets t ON tgv.TicketID = t.TicketID
+                          WHERE (tgv.OrganizationID = @OrganizationID)
+                          AND ((tgv.TicketTypeID = @TicketTypeID) OR (@TicketTypeID = -1))
+                          AND ((tgv.TicketSeverityID = @TicketSeverityID) OR (@TicketSeverityID = -1))
+                          AND ((tgv.ProductID = @ProductID) OR (@ProductID = -1))
+                          AND ((tgv.ReportedVersionID = @ReportedVersionID) OR (@ReportedVersionID = -1))
+                          AND ((tgv.SolvedVersionID = @ResolvedVersionID) OR (@ResolvedVersionID = -1))
+                          AND (((@UserID = -2) AND (tgv.UserID IS NULL)) OR (@UserID = tgv.UserID) OR (@UserID = -1))
+                          AND (((@GroupID = -2) AND (tgv.GroupID IS NULL)) OR (@GroupID = tgv.GroupID) OR (@GroupID = -1))
+                          AND ((tgv.TicketStatusID = @TicketStatusID) OR (@TicketStatusID = -1) OR ((@TicketStatusID = -3) AND (tgv.IsClosed = 0)) OR ((@TicketStatusID = -4) AND (tgv.IsClosed = 1)))
+                          AND ((@CustomerID = -1) OR (EXISTS(SELECT * FROM OrganizationTickets ot WHERE (ot.OrganizationID = @CustomerID) AND (ot.TicketID = tgv.TicketID))))
+                          AND ((@IsPortal is null) OR (tgv.IsVisibleOnPortal = @IsPortal))
+                          AND ((@IsKnowledgeBase is null) OR (tgv.IsKnowledgeBase = @IsKnowledgeBase))
+                          AND ((@DateCreatedBegin is null) OR (tgv.DateCreated >= @DateCreatedBegin))
+                          AND ((@DateCreatedEnd is null) OR (tgv.DateCreated <= @DateCreatedEnd))
+                          AND ((@DateModifiedBegin is null) OR (tgv.DateModified >= @DateModifiedBegin))
+                          AND ((@DateModifiedEnd is null) OR (tgv.DateModified <= @DateModifiedEnd))
+                          AND ((@Search = '""""') 
+                                OR (CONTAINS((t.[Name]), @Search))
+                                OR EXISTS (SELECT * FROM Actions a WHERE (a.TicketID = tgv.TicketID) AND CONTAINS((a.[Description], a.[Name]), @Search))
+                                OR EXISTS (SELECT * FROM CustomValues cv 
+                                        LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID 
+                                        WHERE (cf.RefType = 17)
+                                        AND (cv.RefID = tgv.TicketID)
+                                        AND CONTAINS((cv.[CustomValue]), @Search))
+                                OR (tgv.TicketNumber LIKE '%'+@SearchClean+'%'))
+                        ");
+
+        command.CommandText = builder.ToString();
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+        command.Parameters.AddWithValue("@TicketStatusID", ticketStatusID);
+        command.Parameters.AddWithValue("@TicketSeverityID", ticketSeverityID);
+        command.Parameters.AddWithValue("@UserID", userID);
+        command.Parameters.AddWithValue("@GroupID", groupID);
+        command.Parameters.AddWithValue("@ProductID", productID);
+        command.Parameters.AddWithValue("@ReportedVersionID", reportedVersionID);
+        command.Parameters.AddWithValue("@ResolvedVersionID", resolvedVersionID);
+        command.Parameters.AddWithValue("@CustomerID", customerID);
+        command.Parameters.AddWithValue("@IsPortal", onlyPortal == null ? (object)DBNull.Value : onlyPortal);
+        command.Parameters.AddWithValue("@IsKnowledgeBase", onlyKnowledgeBase == null ? (object)DBNull.Value : onlyKnowledgeBase);
+        command.Parameters.AddWithValue("@DateCreatedBegin", dateCreatedBegin == null ? (object)DBNull.Value : dateCreatedBegin);
+        command.Parameters.AddWithValue("@DateCreatedEnd", dateCreatedEnd == null ? (object)DBNull.Value : dateCreatedEnd);
+        command.Parameters.AddWithValue("@DateModifiedBegin", dateModifiedBegin == null ? (object)DBNull.Value : dateModifiedBegin);
+        command.Parameters.AddWithValue("@DateModifiedEnd", dateModifiedEnd == null ? (object)DBNull.Value : dateModifiedEnd);
+        command.Parameters.AddWithValue("@Search", search);
+        command.Parameters.AddWithValue("@SearchClean", search.Replace("*", "").Replace("%", "").Replace("\"", ""));
+
+        return (int)ExecuteScalar(command, "TicketGridView,Actions");
+      }
+    }
+
+
+    public void LoadForGrid(int pageIndex, int pageSize, int organizationID, int ticketTypeID, int ticketStatusID, int ticketSeverityID,
+      int userID, int groupID, int productID, int reportedVersionID, int resolvedVersionID,
+      int customerID, bool? onlyPortal, bool? onlyKnowledgeBase,
+      DateTime? dateCreatedBegin, DateTime? dateCreatedEnd, DateTime? dateModifiedBegin, DateTime? dateModifiedEnd,
+      string search, string sortColumn, bool sortAsc)
+    {
+      if (search.Trim() == "") search = @"""""";
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        string sort = sortColumn;
+        switch (sortColumn)
+        {
+          case "Severity": sort = "SeverityPosition"; break;
+          case "Status": sort = "StatusPosition"; break;
+          default: break;
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.Append("WITH TicketRows AS (SELECT ROW_NUMBER() OVER (ORDER BY tgv.");
+        builder.Append(sort);
+        if (sortAsc) builder.Append(" ASC");
+        else builder.Append(" DESC");
+        builder.Append(") AS RowNumber, tgv.*");
+        builder.Append(@" 
+                              	  
+                                  
+                                  FROM TicketGridView tgv LEFT JOIN Tickets t ON tgv.TicketID = t.TicketID
+                                  WHERE (tgv.OrganizationID = @OrganizationID)
+                                  AND ((tgv.TicketTypeID = @TicketTypeID) OR (@TicketTypeID = -1))
+                                  AND ((tgv.TicketSeverityID = @TicketSeverityID) OR (@TicketSeverityID = -1))
+                                  AND ((tgv.ProductID = @ProductID) OR (@ProductID = -1))
+                                  AND ((tgv.ReportedVersionID = @ReportedVersionID) OR (@ReportedVersionID = -1))
+                                  AND ((tgv.SolvedVersionID = @ResolvedVersionID) OR (@ResolvedVersionID = -1))
+                                  AND (((@UserID = -2) AND (tgv.UserID IS NULL)) OR (@UserID = tgv.UserID) OR (@UserID = -1))
+                                  AND (((@GroupID = -2) AND (tgv.GroupID IS NULL)) OR (@GroupID = tgv.GroupID) OR (@GroupID = -1))
+                                  AND ((tgv.TicketStatusID = @TicketStatusID) OR (@TicketStatusID = -1) OR ((@TicketStatusID = -3) AND (tgv.IsClosed = 0)) OR ((@TicketStatusID = -4) AND (tgv.IsClosed = 1)))
+                                  AND ((@CustomerID = -1) OR (EXISTS(SELECT * FROM OrganizationTickets ot WHERE (ot.OrganizationID = @CustomerID) AND (ot.TicketID = tgv.TicketID))))
+                                  AND ((@IsPortal is null) OR (tgv.IsVisibleOnPortal = @IsPortal))
+                                  AND ((@IsKnowledgeBase is null) OR (tgv.IsKnowledgeBase = @IsKnowledgeBase))
+                                  AND ((@DateCreatedBegin is null) OR (tgv.DateCreated >= @DateCreatedBegin))
+                                  AND ((@DateCreatedEnd is null) OR (tgv.DateCreated <= @DateCreatedEnd))
+                                  AND ((@DateModifiedBegin is null) OR (tgv.DateModified >= @DateModifiedBegin))
+                                  AND ((@DateModifiedEnd is null) OR (tgv.DateModified <= @DateModifiedEnd))
+                                  AND ((@Search = '""""') OR (tgv.TicketNumber LIKE '%'+@SearchClean+'%') 
+                                        OR (CONTAINS((t.[Name]), @Search))
+                                        OR EXISTS (SELECT * FROM Actions a WHERE (a.TicketID = tgv.TicketID) AND CONTAINS((a.[Description], a.[Name]), @Search))
+                                        --OR EXISTS (SELECT * FROM CustomValues cv 
+                                          --      LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID 
+                                            --    WHERE (cf.RefType = 17)
+                                              --  AND (cv.RefID = tgv.TicketID)
+                                                --AND CONTAINS((cv.[CustomValue]), @Search))
+                                        )
+                                )
+                              	  
+                                  SELECT * FROM TicketRows 
+                                  WHERE RowNumber BETWEEN @PageIndex*@PageSize+1 AND @PageIndex*@PageSize+@PageSize
+                                  ORDER BY RowNumber ASC");
+
+        command.CommandText = builder.ToString();
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@PageIndex", pageIndex);
+        command.Parameters.AddWithValue("@PageSize", pageSize);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+        command.Parameters.AddWithValue("@TicketStatusID", ticketStatusID);
+        command.Parameters.AddWithValue("@TicketSeverityID", ticketSeverityID);
+        command.Parameters.AddWithValue("@UserID", userID);
+        command.Parameters.AddWithValue("@GroupID", groupID);
+        command.Parameters.AddWithValue("@ProductID", productID);
+        command.Parameters.AddWithValue("@ReportedVersionID", reportedVersionID);
+        command.Parameters.AddWithValue("@ResolvedVersionID", resolvedVersionID);
+        command.Parameters.AddWithValue("@CustomerID", customerID);
+        command.Parameters.AddWithValue("@IsPortal", onlyPortal == null ? (object)DBNull.Value : onlyPortal);
+        command.Parameters.AddWithValue("@IsKnowledgeBase", onlyKnowledgeBase == null ? (object)DBNull.Value : onlyKnowledgeBase);
+        command.Parameters.AddWithValue("@DateCreatedBegin", dateCreatedBegin == null ? (object)DBNull.Value : dateCreatedBegin);
+        command.Parameters.AddWithValue("@DateCreatedEnd", dateCreatedEnd == null ? (object)DBNull.Value : dateCreatedEnd);
+        command.Parameters.AddWithValue("@DateModifiedBegin", dateModifiedBegin == null ? (object)DBNull.Value : dateModifiedBegin);
+        command.Parameters.AddWithValue("@DateModifiedEnd", dateModifiedEnd == null ? (object)DBNull.Value : dateModifiedEnd);
+        command.Parameters.AddWithValue("@Search", search);
+        command.Parameters.AddWithValue("@SearchClean", search.Replace("*", "").Replace("%", "").Replace("\"", ""));
+
+
+        Fill(command, "TicketGridView,Actions");
+      }
+
+      /* using (SqlCommand command = new SqlCommand())
+       {
+         command.CommandText = "uspSelectTicketPage";
+         command.CommandType = CommandType.StoredProcedure;
+         command.Parameters.AddWithValue("@PageIndex", pageIndex);
+         command.Parameters.AddWithValue("@PageSize", pageSize);
+         command.Parameters.AddWithValue("@OrganizationID", organizationID);
+         command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+         command.Parameters.AddWithValue("@TicketStatusID", ticketStatusID);
+         command.Parameters.AddWithValue("@TicketSeverityID", ticketSeverityID);
+         command.Parameters.AddWithValue("@UserID", userID);
+         command.Parameters.AddWithValue("@GroupID", groupID);
+         command.Parameters.AddWithValue("@ProductID", productID);
+         command.Parameters.AddWithValue("@ReportedVersionID", reportedVersionID);
+         command.Parameters.AddWithValue("@ResolvedVersionID", resolvedVersionID);
+         command.Parameters.AddWithValue("@CustomerID", customerID);
+         command.Parameters.AddWithValue("@IsPortal", onlyPortal == null ? (object)DBNull.Value : onlyPortal);
+         command.Parameters.AddWithValue("@IsKnowledgeBase", onlyKnowledgeBase == null ? (object)DBNull.Value : onlyKnowledgeBase);
+         command.Parameters.AddWithValue("@DateCreatedBegin", dateCreatedBegin == null ? (object)DBNull.Value : dateCreatedBegin);
+         command.Parameters.AddWithValue("@DateCreatedEnd", dateCreatedEnd == null ? (object)DBNull.Value : dateCreatedEnd);
+         command.Parameters.AddWithValue("@DateModifiedBegin", dateModifiedBegin == null ? (object)DBNull.Value : dateModifiedBegin);
+         command.Parameters.AddWithValue("@DateModifiedEnd", dateModifiedEnd == null ? (object)DBNull.Value : dateModifiedEnd);
+         command.Parameters.AddWithValue("@Search", search);
+         command.Parameters.AddWithValue("@SortColumn", "Name");
+         command.Parameters.AddWithValue("@SortAsc", false);
+
+         Fill(command, "TicketGridView,Actions");
+       }*/
     }
 
   }

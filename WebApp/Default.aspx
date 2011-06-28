@@ -272,7 +272,7 @@
             ShowDropDownOnTextboxClick="False" CausesValidation="False" ChangeTextOnKeyBoardNavigation="False"
             ShowMoreResultsBox="False">
             <ExpandAnimation Type="None" />
-            <WebServiceSettings Path="Default.aspx" Method="GetQuickTicket" />
+            <WebServiceSettings Path="Services/PrivateServices.asmx" Method="GetQuickTicket" />
             <CollapseAnimation Duration="200" Type="None" />
           </telerik:RadComboBox>
         </div>

@@ -196,6 +196,7 @@
     <Compile Include="Classes\HtmlCleaner.cs" />
     <Compile Include="Classes\Importer.cs" />
     <Compile Include="Classes\ImportLog.cs" />
+    <Compile Include="Classes\Logs.cs" />
     <Compile Include="Classes\LookupField.cs" />
     <Compile Include="Classes\NamedGZipStream.cs" />
     <Compile Include="Classes\SqlExecutor.cs" />

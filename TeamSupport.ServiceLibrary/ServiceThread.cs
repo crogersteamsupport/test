@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using Microsoft.Win32;
 using TeamSupport.Data;
+using System.Configuration;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -14,18 +15,19 @@ namespace TeamSupport.ServiceLibrary
     {
     }
 
+    private static object _staticLock = new object();
+
     private static bool _serviceStopped = false;
     public static bool ServiceStopped
     {
-      get { lock (typeof(ServiceThread)) { return ServiceThread._serviceStopped; } }
-      set { lock (typeof(ServiceThread)) { ServiceThread._serviceStopped = value; } }
+      get { lock (_staticLock) { return ServiceThread._serviceStopped; } }
+      set { lock (_staticLock) { ServiceThread._serviceStopped = value; } }
     }
 
     private Thread _thread;
     public Thread Thread
     {
-      get { return _thread; }
-      set { _thread = value; }
+      get { lock (this) { return _thread; } }
     }
 
     private bool _isLoop = true;
@@ -65,33 +67,25 @@ namespace TeamSupport.ServiceLibrary
       get { return _loginUser; }
     }
 
-    /// <summary>
-    /// Stops the thread
-    /// </summary>
     public virtual void Stop()
     {
       lock (this) { _isStopped = true; }
 
-      if (_thread.IsAlive)
+      if (Thread.IsAlive)
       {
-        if (!_thread.Join(10000))
+        if (!Thread.Join(10000))
         {
-          if (_thread.IsAlive) _thread.Abort();
+          if (Thread.IsAlive) _thread.Abort();
         }
       }
     }
 
-
-
-    /// <summary>
-    /// Starts the thread
-    /// </summary>
     public virtual void Start()
     {
       if (!IsStopped) return;
       _loginUser = GetLoginUser(ServiceName);
       _settings = new Settings(_loginUser, ServiceName);
-      lock (this) { _isStopped = false; }
+      _isStopped = false;
       _thread = new Thread(new ThreadStart(Process));
       _thread.Priority = ThreadPriority.Lowest;
       _thread.Start();
@@ -99,42 +93,53 @@ namespace TeamSupport.ServiceLibrary
 
     protected virtual void Process()
     {
-      DateTime lastTime = DateTime.Now;
-
-      while (true)
+      try
       {
-        Service service = Services.GetService(_loginUser, ServiceName);
-        try
+        DateTime lastTime = DateTime.Now;
+
+        while (true)
         {
-          if (IsStopped && !_runHandlesStop) return;
-          if (service.Enabled && (lastTime.AddSeconds(service.Interval) < DateTime.Now || !IsLoop))
+          Service service = Services.GetService(_loginUser, ServiceName);
+          try
           {
-            service.LastStartTime = DateTime.Now;
-            service.Collection.Save();
-            Run();
-            lastTime = DateTime.Now;
-            service.RunCount = service.RunCount + 1;
-            service.LastEndTime = DateTime.Now;
-            service.LastResult = "Success";
-            int total = (int)service.LastStartTime.Subtract(service.LastEndTime).TotalSeconds;
-            service.RunTimeMax = service.RunTimeMax < total ? total : service.RunTimeMax;
-            service.RunTimeAvg = (int)((((service.RunCount -1) * service.RunTimeAvg) + total) / service.RunCount);
+            if (IsStopped && !_runHandlesStop) return;
+            if (service.Enabled && (lastTime.AddSeconds(service.Interval) < DateTime.Now || !IsLoop))
+            {
+              service.LastStartTime = DateTime.Now;
+              service.Collection.Save();
+              Run();
+              lastTime = DateTime.Now;
+              service.RunCount = service.RunCount + 1;
+              service.LastEndTime = DateTime.Now;
+              service.LastResult = "Success";
+              int total = (int)service.LastStartTime.Subtract(service.LastEndTime).TotalSeconds;
+              service.RunTimeMax = service.RunTimeMax < total ? total : service.RunTimeMax;
+              service.RunTimeAvg = (int)((((service.RunCount - 1) * service.RunTimeAvg) + total) / service.RunCount);
+              service.Collection.Save();
+            }
+            Thread.Sleep(1000);
+          }
+          catch (ThreadAbortException)
+          { 
+          
+          }
+          catch (Exception ex)
+          {
+            ExceptionLog log = ExceptionLogs.LogException(_loginUser, ex, "Service - " + ServiceName);
+            service.LastError = string.Format("[{0} {1}", log.ExceptionLogID.ToString(), ex.Message);
+            service.ErrorCount = service.ErrorCount + 1;
             service.Collection.Save();
           }
-          Thread.Sleep(1000);
+          if (!IsLoop)
+          {
+            Stop();
+            return;
+          }
         }
-        catch (Exception ex)
-        {
-          ExceptionLog log = ExceptionLogs.LogException(_loginUser, ex, "Service - " + ServiceName);
-          service.LastError = string.Format("[{0} {1}", log.ExceptionLogID.ToString(), ex.Message);
-          service.ErrorCount = service.ErrorCount + 1;
-          service.Collection.Save();
-        }
-        if (!IsLoop)
-        {
-          Stop();
-          return;
-        }
+      }
+      catch (Exception)
+      {
+
       }
     }
     
@@ -143,13 +148,12 @@ namespace TeamSupport.ServiceLibrary
     public abstract void Run();
 
 
-    protected static LoginUser GetLoginUser(string appName)
+    public static LoginUser GetLoginUser(string appName)
     {
-      string defaultConString = "Application Name=TeamSupport Service: APPNAME;Data Source=localhost;Initial Catalog=TeamSupport;Persist Security Info=True;User ID=sa;Password=muroc";
-      string constring = GetSettingString("ConnectionString", defaultConString).Replace("APPNAME", appName);
+      string constring = "Application Name=TeamSupport Service: " + appName + "; " + ConfigurationManager.AppSettings["ConnectionString"];
       return new LoginUser(constring, -1, -1, null);
     }
-
+    /*
     protected static string GetSettingString(string keyName) { return GetSettingString(keyName, ""); }
     protected static string GetSettingString(string keyName, string defaultValue) { return (string)GetSetting(keyName, defaultValue, RegistryValueKind.String); }
     protected static int GetSettingInt(string keyName, int defaultValue) { return (int)GetSetting(keyName, defaultValue, RegistryValueKind.DWord); }
@@ -175,7 +179,7 @@ namespace TeamSupport.ServiceLibrary
         return defaultValue;
       }
     }
-
+*/
 
   }
 

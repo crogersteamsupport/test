@@ -45,7 +45,8 @@ namespace TeamSupport.Data
      CreditCards = 31,
      Contacts = 32,
      Chat = 33,
-     Assets = 34
+     Assets = 34,
+     EmailPost = 35
   };
 
   public enum SystemUser

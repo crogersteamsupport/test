@@ -135,38 +135,34 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public AutocompleteItem[] SearchTickets(string term)
+    public AutocompleteItem[] SearchTickets(string searchTerm)
     {
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+
       using (SearchJob job = new SearchJob())
       {
-        term = term.Trim();
-
-
-
-        int num = 0;
-        if (int.TryParse(term, out num))
-        {
-          job.Fuzziness = 0;
-        }
-        else
-        {
-          job.Fuzziness = 1;
-        }
-
-        job.Request = term.Trim() + "*";
-        job.FieldWeights = "TicketNumber: 1000, Name: 5";
+        searchTerm = searchTerm.Trim();
+        job.Request = searchTerm;
+        job.FieldWeights = "TicketNumber: 5000, Name: 1000";
         job.BooleanConditions = "OrganizationID::" + TSAuthentication.OrganizationID.ToString();
-        job.MaxFilesToRetrieve = 15;
-        job.AutoStopLimit = 1000;
+        job.MaxFilesToRetrieve = 25;
+        job.AutoStopLimit = 100000;
         job.TimeoutSeconds = 10;
         job.SearchFlags =
-          //SearchFlags.dtsSearchAutoTermWeight |
-          //SearchFlags.dtsSearchPositionalScoring |
-          SearchFlags.dtsSearchTypeAllWords |
+          SearchFlags.dtsSearchSelectMostRecent |
           SearchFlags.dtsSearchStemming |
-          SearchFlags.dtsSearchFuzzy |
           SearchFlags.dtsSearchDelayDocInfo;
 
+        int num = 0;
+        if (!int.TryParse(searchTerm, out num))
+        {
+          job.Fuzziness = 1;
+          job.Request = job.Request + "*";
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
+        }
+
+        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
         job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
         job.Execute();
         SearchResults results = job.Results;
@@ -185,6 +181,69 @@ namespace TSWebServices
       }
     }
 
+    [WebMethod]
+    public string[] SearchTicketsTest(string searchTerm)
+    {
+      if (TSAuthentication.OrganizationID != 1078) return null;
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+
+      using (SearchJob job = new SearchJob())
+      {
+        searchTerm = searchTerm.Trim();
+        job.Request = searchTerm;
+        job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+        job.BooleanConditions = "OrganizationID::1078";// + TSAuthentication.OrganizationID.ToString();
+        job.MaxFilesToRetrieve = 25;
+        job.AutoStopLimit = 100000;
+        job.TimeoutSeconds = 10;
+        job.SearchFlags =
+          SearchFlags.dtsSearchSelectMostRecent |
+          SearchFlags.dtsSearchStemming |
+          SearchFlags.dtsSearchDelayDocInfo;
+
+        int num = 0;
+        if (!int.TryParse(searchTerm, out num))
+        {
+          job.Fuzziness = 1;
+          job.Request = job.Request + "*";
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
+        }
+
+        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+
+
+        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
+        job.Execute();
+        SearchResults results = job.Results;
+
+        SearchReportJob report = results.NewSearchReportJob();
+        report.SelectAll();
+        report.Flags = ReportFlags.dtsReportStoreInResults | ReportFlags.dtsReportWholeFile | ReportFlags.dtsReportGetFromCache | ReportFlags.dtsReportIncludeAll;
+        report.OutputFormat = OutputFormats.itHTML;
+        //report.MaxContextBlocks = 3;
+        //report.MaxWordsToRead = 50000;
+        //report.OutputStringMaxSize = 500;
+        //report.WordsOfContext = 10;
+        report.BeforeHit = "<strong style=\"color:red;\">";
+        report.AfterHit = "</strong>";
+        report.OutputToString = true;
+        report.Execute();
+
+        List<string> result = new List<string>();
+
+
+        for (int i = 0; i < results.Count; i++)
+        {
+          results.GetNthDoc(i);
+          StringBuilder builder = new StringBuilder();
+          builder.Append("<h1>" + results.CurrentItem.DisplayName + "</h1>");
+          builder.Append("<p class=\"ui-helper-hidden\">" + results.CurrentItem.Synopsis + "</p>");
+          result.Add(builder.ToString());
+        }
+        return result.ToArray();
+      }
+    }
     [WebMethod]
     public AutocompleteItem[] GetTicketsByTerm(string term)
     {
@@ -545,7 +604,7 @@ namespace TSWebServices
       }
 
       return info;
-    
+
     }
   }
 
