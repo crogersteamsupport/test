@@ -111,45 +111,55 @@ namespace TeamSupport.ServiceLibrary
 
     override public bool Rewind()
     {
-      _fieldAliases.Clear();
-      ReportTableFields fields = new ReportTableFields(LoginUser);
-      fields.LoadByReportTableID(10);
-      foreach (ReportTableField field in fields)
+      try
       {
-        _fieldAliases.Add(field.FieldName, field.Alias);
+
+        _fieldAliases.Clear();
+        ReportTableFields fields = new ReportTableFields(LoginUser);
+        fields.LoadByReportTableID(10);
+        foreach (ReportTableField field in fields)
+        {
+          _fieldAliases.Add(field.FieldName, field.Alias);
+        }
+
+        string sql =
+        @"SELECT 
+        ISNULL(
+        (
+        ISNULL(
+        (
+          SELECT CAST(cv.CustomValue + ' ' AS VARCHAR(MAX)) FROM CustomValues cv LEFT JOIN CustomFields cf ON cf.CustomFieldID = cv.CustomFieldID 
+          WHERE cf.RefType=17 AND cv.RefID=tv.TicketID    
+          FOR XML PATH('')
+        ), '') + ' ' +
+        (
+          SELECT CAST(ISNULL(a.Description, '') + ' ' + ISNULL(a.Name, '') + ' ' + ISNULL(a.CreatorName, '') + ' ' AS VARCHAR(MAX))
+          FROM ActionsView a
+          WHERE a.TicketID = tv.TicketID
+          FOR XML PATH('')
+        )
+
+        ), '') AS IndexText,
+        tv.*
+        FROM TicketsView tv WITH(NOLOCK)
+        WHERE tv.NeedsIndexing = 1
+        ORDER BY DateModified 
+        ";
+        SqlConnection connection = new SqlConnection(LoginUser.ConnectionString);
+        connection.Open();
+        SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+        SqlCommand command = new SqlCommand(sql, connection, transaction);
+        command.CommandType = CommandType.Text;
+        _reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+        _lastTicketID = null;
+        _count = 0;
+
       }
-
-      string sql =
-      @"SELECT 
-      ISNULL(
-      (
-      ISNULL(
-      (
-        SELECT CAST(cv.CustomValue + ' ' AS VARCHAR(MAX)) FROM CustomValues cv LEFT JOIN CustomFields cf ON cf.CustomFieldID = cv.CustomFieldID 
-        WHERE cf.RefType=17 AND cv.RefID=tv.TicketID    
-        FOR XML PATH('')
-      ), '') + ' ' +
-      (
-        SELECT CAST(ISNULL(a.Description, '') + ' ' + ISNULL(a.Name, '') + ' ' + ISNULL(a.CreatorName, '') + ' ' AS VARCHAR(MAX))
-        FROM ActionsView a
-        WHERE a.TicketID = tv.TicketID
-        FOR XML PATH('')
-      )
-
-      ), '') AS IndexText,
-      tv.*
-      FROM TicketsView tv WITH(NOLOCK)
-      WHERE tv.NeedsIndexing = 1
-      ORDER BY DateModified 
-      ";
-      SqlConnection connection = new SqlConnection(LoginUser.ConnectionString);
-      connection.Open();
-      SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
-      SqlCommand command = new SqlCommand(sql, connection, transaction);
-      command.CommandType = CommandType.Text;
-      _reader = command.ExecuteReader(CommandBehavior.CloseConnection);
-      _lastTicketID = null;
-      _count = 0;
+      catch (Exception ex)
+      {
+        ExceptionLogs.LogException(LoginUser, ex, "TicketIndexDataSource Rewind");
+        throw;
+      }
       return true;
     }
   }

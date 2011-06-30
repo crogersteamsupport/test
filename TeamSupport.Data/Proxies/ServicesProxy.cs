@@ -44,8 +44,8 @@ namespace TeamSupport.Data
       result.Name = this.Name;
       result.ServiceID = this.ServiceID;
        
-      result.LastStartTime = DateTime.SpecifyKind(this.LastStartTime, DateTimeKind.Local);
-      result.LastEndTime = DateTime.SpecifyKind(this.LastEndTime, DateTimeKind.Local);
+      result.LastStartTime = DateTime.SpecifyKind((DateTime)this.Row["LastStartTime"], DateTimeKind.Local);
+      result.LastEndTime = DateTime.SpecifyKind((DateTime)this.Row["LastEndTime"], DateTimeKind.Local);
        
        
       return result;

@@ -88,6 +88,19 @@ namespace TeamSupport.ServiceLibrary
       _isStopped = false;
       _thread = new Thread(new ThreadStart(Process));
       _thread.Priority = ThreadPriority.Lowest;
+
+      if (IsLoop)
+      {
+        Service service = Services.GetService(_loginUser, ServiceName);
+        service.RunCount = 0;
+        service.RunTimeAvg = 0;
+        service.RunTimeMax = 0;
+        service.ErrorCount = 0;
+        service.LastError = "";
+        service.LastResult = "";
+        service.Collection.Save();
+      }
+
       _thread.Start();
     }
 
@@ -112,9 +125,10 @@ namespace TeamSupport.ServiceLibrary
               service.RunCount = service.RunCount + 1;
               service.LastEndTime = DateTime.Now;
               service.LastResult = "Success";
-              int total = (int)service.LastStartTime.Subtract(service.LastEndTime).TotalSeconds;
+              int total = (int)service.LastEndTime.Subtract(service.LastStartTime).TotalSeconds;
               service.RunTimeMax = service.RunTimeMax < total ? total : service.RunTimeMax;
-              service.RunTimeAvg = (int)((((service.RunCount - 1) * service.RunTimeAvg) + total) / service.RunCount);
+              
+              service.RunTimeAvg = service.RunCount > 1 ? (int)((((service.RunCount - 1) * service.RunTimeAvg) + total) / service.RunCount) : total;
               service.Collection.Save();
             }
             Thread.Sleep(1000);

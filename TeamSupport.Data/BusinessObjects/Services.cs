@@ -25,6 +25,16 @@ namespace TeamSupport.Data
       }
     }
 
+    public virtual void LoadAll()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Services";
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }
+
     public static Service GetService(LoginUser loginUser, string name)
     {
       Services services = new Services(loginUser);

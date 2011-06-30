@@ -11,8 +11,11 @@ namespace TeamSupport.ServiceLibrary
 {
   public class Indexer : ServiceThread
   {
+    private Logs logs;
+
     public override void Run()
     {
+      logs = new Logs(LoginUser, ServiceName, "Tickets");
       try
       {
         ProcessTicketIndex();
@@ -32,6 +35,7 @@ namespace TeamSupport.ServiceLibrary
 
     private void ProcessTicketIndex()
     {
+      logs.Log("Starting Ticket Index");
       Options options = new Options();
       options.TextFlags = TextFlags.dtsoTfRecognizeDates;
 
@@ -61,6 +65,8 @@ namespace TeamSupport.ServiceLibrary
 
     private void UpdateTickets(TicketIndexDataSource dataSource)
     {
+      logs.Log("Started Updating Ticket Indexes Statuses");
+
       if (dataSource.UpdatedTickets.Count < 1) return;
 
       StringBuilder builder = new StringBuilder();
@@ -75,10 +81,12 @@ namespace TeamSupport.ServiceLibrary
       command.CommandType = System.Data.CommandType.Text;
 
       SqlExecutor.ExecuteNonQuery(dataSource.LoginUser, command);
+      logs.Log("Finished Updating Ticket Indexes Statuses");
     }
 
     private void RemoveOldTicketIndexes(LoginUser loginUser, string indexPath)
     {
+      logs.Log("Started Removing Old Ticket Indexes");
       if (!Directory.Exists(indexPath)) return;
       DeletedIndexItems items = new DeletedIndexItems(loginUser);
       items.LoadByReferenceType(ReferenceType.Tickets);
@@ -112,6 +120,7 @@ namespace TeamSupport.ServiceLibrary
 
       items.DeleteAll();
       items.Save();
+      logs.Log("Finished Removing Old Ticket Indexes");
     }
 
     private void ExecuteJob(IndexJob job, string statusKey)
@@ -120,54 +129,11 @@ namespace TeamSupport.ServiceLibrary
       
       // Monitor the job execution thread as it progresses
       IndexProgressInfo status = new IndexProgressInfo();
-      while (job.IsThreadDone(50, status) == false)
+      while (job.IsThreadDone(500, status) == false)
       {
-        string statusText = "";
-        // Set the status text based on the current indexing step
-        switch (status.Step)
-        {
-          case IndexingStep.ixStepBegin:
-            statusText = "Opening index";
-            break;
-
-          case IndexingStep.ixStepCheckingFiles:
-            statusText = "Checking files";
-            break;
-
-          case IndexingStep.ixStepCompressing:
-            statusText = "Compressing index";
-            break;
-
-          case IndexingStep.ixStepCreatingIndex:
-            statusText = "Creating index";
-            break;
-
-          case IndexingStep.ixStepDone:
-            statusText = "Indexing Complete";
-            break;
-          case IndexingStep.ixStepMerging:
-            statusText = "Merging words into index";
-            break;
-
-          case IndexingStep.ixStepNone:
-            statusText = "";
-            break;
-
-          case IndexingStep.ixStepReadingFiles:
-            statusText = status.File.Name;
-            break;
-
-          case IndexingStep.ixStepStoringWords:
-            statusText = status.File.Name + " (storing words)";
-            break;
-
-          default:
-            statusText = "";
-            break;
-        }
-
         if (IsStopped) { job.AbortThread(); }
       }
+      logs.Log("Finished Ticket Index");
 
     }
 

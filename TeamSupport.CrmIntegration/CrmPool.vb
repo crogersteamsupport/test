@@ -39,6 +39,19 @@ Namespace TeamSupport
         MyBase.[Stop]()
       End Sub
 
+      Public Overrides Sub Start()
+        Dim service As Service = Services.GetService(LoginUser, "CrmProcessor")
+        service.RunCount = 0
+        service.RunTimeAvg = 0
+        service.RunTimeMax = 0
+        service.ErrorCount = 0
+        service.LastError = ""
+        service.LastResult = ""
+        service.Collection.Save()
+        MyBase.Start()
+      End Sub
+
+
       Public Overrides Sub Run()
         Dim maxThreads As Integer = Settings.ReadInt("Max Worker Processes", 1)
 

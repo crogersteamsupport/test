@@ -148,6 +148,7 @@ namespace TSWebServices
           utils.AddItem(new TsMenuItem("utils", "utils-tickets", "Tickets", "images/nav/16/Tickets.png", string.Format(data, "Resources_141/Pages/Utils_Tickets.html", "Resources_141/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-organizations", "Organizations", "images/nav/16/Customers.png", string.Format(data, "Resources_141/Pages/Utils_Organizations.html", "Resources_141/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-exceptions", "Exceptions", "images/nav/16/close_2.png", string.Format(data, "Resources_141/Pages/Utils_Exceptions.html", "Resources_141/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-services", "Services", "images/nav/16/close_2.png", string.Format(data, "Resources_141/Pages/Utils_Services.html", "Resources_141/PaneInfo/Admin.html")));
         }
       }
       else
@@ -164,6 +165,15 @@ namespace TSWebServices
       List<TsTabDataItem> list = Settings.UserDB.ReadJson<List<TsTabDataItem>>("main-tabs");
       if (list == null) return null;
       return list.ToArray();
+    }
+
+    [WebMethod]
+    public ServiceProxy[] GetServices()
+    {
+      if (TSAuthentication.OrganizationID != 1078) return null;
+      Services services = new Services(TSAuthentication.GetLoginUser());
+      services.LoadAll();
+      return services.GetServiceProxies();
     }
 
     [WebMethod]
