@@ -25,6 +25,8 @@ namespace TeamSupport.Data
     [DataMember] public bool SendBackTicketData { get; set; }
     [DataMember] public DateTime LastProcessed { get; set; }
     [DataMember] public int LastTicketID { get; set; }
+    [DataMember] public bool AllowPortalAccess { get; set; }
+    [DataMember] public bool SendWelcomeEmail { get; set; }
           
   }
   
@@ -33,6 +35,8 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.SendWelcomeEmail = this.SendWelcomeEmail;
+      result.AllowPortalAccess = this.AllowPortalAccess;
       result.LastTicketID = this.LastTicketID;
       result.SendBackTicketData = this.SendBackTicketData;
       result.TypeFieldMatch = this.TypeFieldMatch;

@@ -68,6 +68,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SlaWarningTimeClosed", "SlaWarningTimeClosed", false, false, false);
       _fieldMap.AddMap("SlaWarningLastAction", "SlaWarningLastAction", false, false, false);
       _fieldMap.AddMap("SlaWarningInitialResponse", "SlaWarningInitialResponse", false, false, false);
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
             
     }
   }

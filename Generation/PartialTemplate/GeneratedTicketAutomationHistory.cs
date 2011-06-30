@@ -34,6 +34,12 @@ namespace TeamSupport.Data
     
 
     
+    public string ActionType
+    {
+      get { return Row["ActionType"] != DBNull.Value ? (string)Row["ActionType"] : null; }
+      set { Row["ActionType"] = CheckNull(value); }
+    }
+    
 
     
     public int OrganizationID
@@ -60,6 +66,12 @@ namespace TeamSupport.Data
     
     
 
+    
+    public DateTime? TriggerDateTime
+    {
+      get { return Row["TriggerDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["TriggerDateTime"]) : null; }
+      set { Row["TriggerDateTime"] = CheckNull(value); }
+    }
     
 
     
@@ -157,7 +169,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketAutomationHistory] SET     [TicketID] = @TicketID,    [TriggerID] = @TriggerID,    [OrganizationID] = @OrganizationID  WHERE ([HistoryID] = @HistoryID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketAutomationHistory] SET     [TicketID] = @TicketID,    [TriggerID] = @TriggerID,    [OrganizationID] = @OrganizationID,    [TriggerDateTime] = @TriggerDateTime,    [ActionType] = @ActionType  WHERE ([HistoryID] = @HistoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("HistoryID", SqlDbType.Int, 4);
@@ -188,13 +200,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("TriggerDateTime", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ActionType", SqlDbType.VarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketAutomationHistory] (    [TicketID],    [TriggerID],    [OrganizationID]) VALUES ( @TicketID, @TriggerID, @OrganizationID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketAutomationHistory] (    [TicketID],    [TriggerID],    [OrganizationID],    [TriggerDateTime],    [ActionType]) VALUES ( @TicketID, @TriggerID, @OrganizationID, @TriggerDateTime, @ActionType); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ActionType", SqlDbType.VarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TriggerDateTime", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -329,7 +369,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [TicketID], [TriggerID], [OrganizationID] FROM [dbo].[TicketAutomationHistory] WHERE ([HistoryID] = @HistoryID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [TicketID], [TriggerID], [OrganizationID], [TriggerDateTime], [ActionType] FROM [dbo].[TicketAutomationHistory] WHERE ([HistoryID] = @HistoryID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("HistoryID", historyID);
         Fill(command);

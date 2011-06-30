@@ -36,6 +36,18 @@ namespace TeamSupport.Data
     
 
     
+    public int ModifierID
+    {
+      get { return (int)Row["ModifierID"]; }
+      set { Row["ModifierID"] = CheckNull(value); }
+    }
+    
+    public int CreatorID
+    {
+      get { return (int)Row["CreatorID"]; }
+      set { Row["CreatorID"] = CheckNull(value); }
+    }
+    
     public string SettingValue
     {
       get { return (string)Row["SettingValue"]; }
@@ -56,6 +68,18 @@ namespace TeamSupport.Data
 
     
 
+    
+    public DateTime DateModified
+    {
+      get { return DateToLocal((DateTime)Row["DateModified"]); }
+      set { Row["DateModified"] = CheckNull(value); }
+    }
+    
+    public DateTime DateCreated
+    {
+      get { return DateToLocal((DateTime)Row["DateCreated"]); }
+      set { Row["DateCreated"] = CheckNull(value); }
+    }
     
 
     #endregion
@@ -151,7 +175,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SystemSettings] SET     [SettingKey] = @SettingKey,    [SettingValue] = @SettingValue  WHERE ([SystemSettingID] = @SystemSettingID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SystemSettings] SET     [SettingKey] = @SettingKey,    [SettingValue] = @SettingValue,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([SystemSettingID] = @SystemSettingID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("SystemSettingID", SqlDbType.Int, 4);
@@ -175,13 +199,55 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SystemSettings] (    [SettingKey],    [SettingValue]) VALUES ( @SettingKey, @SettingValue); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SystemSettings] (    [SettingKey],    [SettingValue],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @SettingKey, @SettingValue, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("SettingValue", SqlDbType.VarChar, 8000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -309,7 +375,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [SystemSettingID], [SettingKey], [SettingValue] FROM [dbo].[SystemSettings] WHERE ([SystemSettingID] = @SystemSettingID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [SystemSettingID], [SettingKey], [SettingValue], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[SystemSettings] WHERE ([SystemSettingID] = @SystemSettingID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("SystemSettingID", systemSettingID);
         Fill(command);
