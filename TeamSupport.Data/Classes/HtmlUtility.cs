@@ -212,5 +212,23 @@ namespace TeamSupport.Data
 
             return Regex.Replace(text, "[\r\n\t]*", string.Empty);
         }
+
+        public static string StripHTML(string Content) {
+            Content = System.Web.HttpUtility.HtmlDecode(Content);
+            Content = StripComments(Content);
+
+            //regex based on http://stackoverflow.com/questions/787932/using-c-regular-expressions-to-remove-html-tags/787949#787949
+            Content = Regex.Replace(Content, @"</?\w+((\s+\w+(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)/?>", "", RegexOptions.Singleline);
+
+            return Content;
+        }
+
+        public static string StripComments(string Content) { 
+            Content = Regex.Replace(Content, "", " ");
+            return Content;
+        }
+
     }
+
+    
 }
