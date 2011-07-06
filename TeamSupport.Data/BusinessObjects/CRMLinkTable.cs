@@ -42,7 +42,7 @@ FROM CRMLinkTable clt
 INNER JOIN Organizations o 
 ON clt.OrganizationID = o.OrganizationID 
 WHERE clt.Active = 1 AND o.IsActive=1
-	AND clt.LastProcessed < DATEADD(MINUTE, -15, GETDATE())
+	AND clt.LastProcessed < DATEADD(MINUTE, -15, GETUTCDATE())
 ORDER BY clt.LastProcessed ASC
 ";
         command.CommandType = CommandType.Text;
