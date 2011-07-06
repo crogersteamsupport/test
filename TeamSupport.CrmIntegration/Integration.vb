@@ -15,15 +15,7 @@ Namespace TeamSupport
             Protected Const Client As String = "Muroc Client"
 
             'tracks global errors so we can not update the sync date if there's a problem
-            Private _syncError As Boolean = False
             Public Property SyncError As Boolean
-                Get
-                    Return _syncError
-                End Get
-                Protected Set(ByVal value As Boolean)
-                    _syncError = value
-                End Set
-            End Property
 
             Protected Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor, ByVal thisType As IntegrationType)
                 CRMLinkRow = crmLinkOrg
@@ -75,7 +67,7 @@ Namespace TeamSupport
                             thisCompany.SlaLevelID = .Item(0).SlaLevelID
                         End With
 
-                        thisCompany.HasPortalAccess = ParentOrgID = "305383" 'This is hack for now for Axceler.  Need to change to an option - 3/9/11
+                        thisCompany.HasPortalAccess = CRMLinkRow.AllowPortalAccess
 
                         Log.Write("Added a new account.")
                     End If
@@ -164,6 +156,7 @@ Namespace TeamSupport
 
                     Dim findUser As New Users(User)
                     Dim thisUser As User
+                    Dim userIsNew As Boolean = False
 
                     findUser.LoadByOrganizationID(thisCompany.OrganizationID, False)
                     If findUser.FindByEmail(person.Email) IsNot Nothing Then
@@ -171,8 +164,10 @@ Namespace TeamSupport
 
                     Else
                         'add the contact
+                        userIsNew = True
                         thisUser = (New Users(User)).AddNewUser()
                         thisUser.OrganizationID = thisCompany.OrganizationID
+                        thisUser.CryptedPassword = "cfsdfewwgewff" 'not sure why this is done this way but keep as is for now
                         thisUser.Collection.Save()
                     End If
 
@@ -183,10 +178,14 @@ Namespace TeamSupport
                         .Title = person.Title
                         .IsActive = True
                         .MarkDeleted = False
-                        .CryptedPassword = "cfsdfewwgewff" 'not sure why this is done this way but keep as is for now
+
                         .Collection.Save()
                     End With
 
+                    If userIsNew AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
+                        'send the email
+                        DataUtils.ResetPassword(User, thisUser, True)
+                    End If
                     Log.Write("Updating phone information.")
                     Dim findPhone As New PhoneNumbers(User)
 
