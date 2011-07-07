@@ -178,6 +178,7 @@ Namespace TeamSupport
                         .Title = person.Title
                         .IsActive = True
                         .MarkDeleted = False
+                        .IsPortalUser = CRMLinkRow.AllowPortalAccess
 
                         .Collection.Save()
                     End With
