@@ -70,13 +70,29 @@ Namespace TeamSupport
 
                     Select Case CRMType
                         Case IntegrationType.Batchbook
-                            CRM = New BatchBook(CRMLinkTableItem, Log, LoginUser, Me)
+                            If Settings.ReadBool("BatchBook Enabled", True) Then
+                                CRM = New BatchBook(CRMLinkTableItem, Log, LoginUser, Me)
+                            Else
+                                Return
+                            End If
                         Case IntegrationType.Highrise
-                            CRM = New Highrise(CRMLinkTableItem, Log, LoginUser, Me)
+                            If Settings.ReadBool("Highrise Enabled", True) Then
+                                CRM = New Highrise(CRMLinkTableItem, Log, LoginUser, Me)
+                            Else
+                                Return
+                            End If
                         Case IntegrationType.SalesForce
-                            CRM = New SalesForce(CRMLinkTableItem, Log, LoginUser, Me)
+                            If Settings.ReadBool("SalesForce Enabled", True) Then
+                                CRM = New SalesForce(CRMLinkTableItem, Log, LoginUser, Me)
+                            Else
+                                Return
+                            End If
                         Case IntegrationType.MailChimp
-                            CRM = New MailChimp(CRMLinkTableItem, Log, LoginUser, Me)
+                            If Settings.ReadBool("MailChimpEnabled", True) Then
+                                CRM = New MailChimp(CRMLinkTableItem, Log, LoginUser, Me)
+                            Else
+                                Return
+                            End If
                     End Select
 
                     If CRM IsNot Nothing Then
