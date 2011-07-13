@@ -13,6 +13,8 @@ namespace TeamSupport.ServiceLibrary
   {
     public ServiceThread()
     {
+      _loginUser = GetLoginUser(ServiceName);
+      _settings = new Settings(_loginUser, ServiceName);
     }
 
     private static object _staticLock = new object();
@@ -83,8 +85,6 @@ namespace TeamSupport.ServiceLibrary
     public virtual void Start()
     {
       if (!IsStopped) return;
-      _loginUser = GetLoginUser(ServiceName);
-      _settings = new Settings(_loginUser, ServiceName);
       _isStopped = false;
       _thread = new Thread(new ThreadStart(Process));
       _thread.Priority = ThreadPriority.Lowest;
@@ -125,7 +125,7 @@ namespace TeamSupport.ServiceLibrary
               service.RunCount = service.RunCount + 1;
               service.LastEndTime = DateTime.Now;
               service.LastResult = "Success";
-              int total = (int)service.LastEndTime.Subtract(service.LastStartTime).TotalSeconds;
+              int total = (int)((DateTime)service.LastEndTime).Subtract((DateTime)service.LastStartTime).TotalSeconds;
               service.RunTimeMax = service.RunTimeMax < total ? total : service.RunTimeMax;
               
               service.RunTimeAvg = service.RunCount > 1 ? (int)((((service.RunCount - 1) * service.RunTimeAvg) + total) / service.RunCount) : total;
