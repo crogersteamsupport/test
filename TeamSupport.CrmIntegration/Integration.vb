@@ -301,6 +301,10 @@ Namespace TeamSupport
             End Function
 
             Protected Function PostQueryString(ByVal key As NetworkCredential, ByVal Address As Uri, ByVal Content As String) As HttpStatusCode
+                If Processor.IsStopped Then
+                    Return Nothing
+                End If
+
                 Dim returnStatus As HttpStatusCode = Nothing
 
                 If Address IsNot Nothing And Content <> "" Then

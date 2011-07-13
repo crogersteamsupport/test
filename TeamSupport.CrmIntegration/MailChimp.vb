@@ -23,6 +23,10 @@ Namespace TeamSupport
                 'get the mailchimp list to sync to
                 Dim listID As String = GetImportListID()
 
+                If Processor.IsStopped Then
+                    Return False
+                End If
+
                 If listID IsNot Nothing Then
                     Log.Write("list id: " & listID)
                     'get customer email addresses for this account
@@ -38,6 +42,10 @@ Namespace TeamSupport
                         theseContacts.LoadByOrganizationID(customer.OrganizationID, True)
 
                         For Each contact As User In theseContacts
+                            If Processor.IsStopped Then
+                                Return False
+                            End If
+
                             If CRMLinkRow.LastLink Is Nothing Or contact.DateModified.AddMinutes(30) > CRMLinkRow.LastLink Then
                                 If emailBatch Is Nothing Then
                                     emailBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken _
