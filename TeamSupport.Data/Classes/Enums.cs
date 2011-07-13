@@ -134,7 +134,8 @@ namespace TeamSupport.Data
       SalesForce,
       Highrise,
       Batchbook,
-      FreshBooks
+      FreshBooks,
+      MailChimp
   }
 
   public class Enums

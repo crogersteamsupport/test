@@ -67,8 +67,6 @@ Namespace TeamSupport
                             thisCompany.SlaLevelID = .Item(0).SlaLevelID
                         End With
 
-                        thisCompany.HasPortalAccess = CRMLinkRow.AllowPortalAccess
-
                         Log.Write("Added a new account.")
                     End If
                 End If
@@ -286,6 +284,38 @@ Namespace TeamSupport
                     request.ContentType = "application/xml"
                     request.UserAgent = Client
                     request.ContentLength = byteData.Length
+
+                    Using postStream As Stream = request.GetRequestStream()
+                        postStream.Write(byteData, 0, byteData.Length)
+                    End Using
+
+                    Using response As HttpWebResponse = request.GetResponse()
+                        If request.HaveResponse AndAlso response IsNot Nothing Then
+                            returnStatus = response.StatusCode
+                        End If
+                    End Using
+
+                End If
+
+                Return returnStatus
+            End Function
+
+            Protected Function PostQueryString(ByVal key As NetworkCredential, ByVal Address As Uri, ByVal Content As String) As HttpStatusCode
+                Dim returnStatus As HttpStatusCode = Nothing
+
+                If Address IsNot Nothing And Content <> "" Then
+                    Dim byteData = UTF8Encoding.UTF8.GetBytes(Content)
+
+                    Dim request As HttpWebRequest = WebRequest.Create(Address)
+
+                    If key IsNot Nothing Then
+                        request.Credentials = key
+                    End If
+
+                    request.Method = "POST"
+                    request.ContentType = "application/x-www-form-urlencoded"
+                    request.UserAgent = Client
+                    request.ContentLength = Content.Length
 
                     Using postStream As Stream = request.GetRequestStream()
                         postStream.Write(byteData, 0, byteData.Length)

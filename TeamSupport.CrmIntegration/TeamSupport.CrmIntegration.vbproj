@@ -109,6 +109,7 @@
     <Compile Include="CrmProcessor.vb" />
     <Compile Include="Highrise.vb" />
     <Compile Include="Integration.vb" />
+    <Compile Include="MailChimp.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
