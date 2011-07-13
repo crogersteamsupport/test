@@ -74,6 +74,21 @@ namespace TeamSupport.Data
   public partial class CustomFields 
   {
 
+    public static string GenerateApiFieldName(string fieldName)
+    {
+      string name = fieldName.Trim();
+      StringBuilder builder = new StringBuilder();
+      foreach (char c in fieldName.Trim())
+      {
+        if (char.IsLetterOrDigit(c))
+        {
+          builder.Append(c);
+        }
+      }
+      name = builder.ToString();
+      return Char.IsDigit(name[0]) ? "_" + name : name;    
+    }
+
     public CustomField FindByName(string name)
     {
       foreach (CustomField customField in this)

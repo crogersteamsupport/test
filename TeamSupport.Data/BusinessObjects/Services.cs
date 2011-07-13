@@ -35,12 +35,13 @@ namespace TeamSupport.Data
       }
     }
 
-    public static Service GetService(LoginUser loginUser, string name)
+    public static Service GetService(LoginUser loginUser, string name, bool createIfNotFound)
     {
       Services services = new Services(loginUser);
       services.LoadByName(name);
       if (services.IsEmpty)
       {
+        if (!createIfNotFound) return null;
         Service service = (new Services(loginUser)).AddNewService();
         service.Name = name;
         service.Collection.Save();
@@ -50,6 +51,11 @@ namespace TeamSupport.Data
       {
         return services[0];
       }
+    }
+
+    public static Service GetService(LoginUser loginUser, string name)
+    {
+      return GetService(loginUser, name, true);
     }
   }
   

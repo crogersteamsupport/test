@@ -14,14 +14,14 @@ namespace TeamSupport.Data
   {
     public GroupProxy() {}
     [DataMember] public int GroupID { get; set; }
-    [DataMember] public int OrganizationID { get; set; }
+    //[DataMember] public int OrganizationID { get; set; }
     [DataMember] public string Name { get; set; }
     [DataMember] public string Description { get; set; }
-    [DataMember] public string ImportID { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
+    //[DataMember] public string ImportID { get; set; }
+    //[DataMember] public DateTime DateCreated { get; set; }
+    //[DataMember] public DateTime DateModified { get; set; }
+    //[DataMember] public int CreatorID { get; set; }
+    //[DataMember] public int ModifierID { get; set; }
           
   }
   
@@ -30,16 +30,16 @@ namespace TeamSupport.Data
     public GroupProxy GetProxy()
     {
       GroupProxy result = new GroupProxy();
-      result.ModifierID = this.ModifierID;
-      result.CreatorID = this.CreatorID;
-      result.ImportID = this.ImportID;
+      //result.ModifierID = this.ModifierID;
+      //result.CreatorID = this.CreatorID;
+      //result.ImportID = this.ImportID;
       result.Description = this.Description;
       result.Name = this.Name;
-      result.OrganizationID = this.OrganizationID;
+      //result.OrganizationID = this.OrganizationID;
       result.GroupID = this.GroupID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      //result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      //result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
        
        
       return result;

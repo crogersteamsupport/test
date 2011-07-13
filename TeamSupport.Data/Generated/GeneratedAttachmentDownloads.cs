@@ -34,6 +34,12 @@ namespace TeamSupport.Data
     
 
     
+    public int? AttachmentOrganizationID
+    {
+      get { return Row["AttachmentOrganizationID"] != DBNull.Value ? (int?)Row["AttachmentOrganizationID"] : null; }
+      set { Row["AttachmentOrganizationID"] = CheckNull(value); }
+    }
+    
 
     
     public int UserID
@@ -157,10 +163,17 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AttachmentDownloads] SET     [AttachmentID] = @AttachmentID,    [UserID] = @UserID,    [DateDownloaded] = @DateDownloaded  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AttachmentDownloads] SET     [AttachmentOrganizationID] = @AttachmentOrganizationID,    [AttachmentID] = @AttachmentID,    [UserID] = @UserID,    [DateDownloaded] = @DateDownloaded  WHERE ([AttachmentDownloadID] = @AttachmentDownloadID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("AttachmentDownloadID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("AttachmentOrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -193,7 +206,7 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AttachmentDownloads] (    [AttachmentID],    [UserID],    [DateDownloaded]) VALUES ( @AttachmentID, @UserID, @DateDownloaded); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AttachmentDownloads] (    [AttachmentOrganizationID],    [AttachmentID],    [UserID],    [DateDownloaded]) VALUES ( @AttachmentOrganizationID, @AttachmentID, @UserID, @DateDownloaded); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateDownloaded", SqlDbType.DateTime, 8);
@@ -211,6 +224,13 @@ namespace TeamSupport.Data
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("AttachmentID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("AttachmentOrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -329,7 +349,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [AttachmentDownloadID], [AttachmentID], [UserID], [DateDownloaded] FROM [dbo].[AttachmentDownloads] WHERE ([AttachmentDownloadID] = @AttachmentDownloadID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [AttachmentDownloadID], [AttachmentOrganizationID], [AttachmentID], [UserID], [DateDownloaded] FROM [dbo].[AttachmentDownloads] WHERE ([AttachmentDownloadID] = @AttachmentDownloadID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("AttachmentDownloadID", attachmentDownloadID);
         Fill(command);

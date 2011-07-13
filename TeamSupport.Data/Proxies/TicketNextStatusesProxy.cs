@@ -17,10 +17,10 @@ namespace TeamSupport.Data
     [DataMember] public int CurrentStatusID { get; set; }
     [DataMember] public int NextStatusID { get; set; }
     [DataMember] public int Position { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
+    //[DataMember] public DateTime DateCreated { get; set; }
+    //[DataMember] public DateTime DateModified { get; set; }
+    //[DataMember] public int CreatorID { get; set; }
+    //[DataMember] public int ModifierID { get; set; }
           
   }
   
@@ -29,15 +29,15 @@ namespace TeamSupport.Data
     public TicketNextStatusProxy GetProxy()
     {
       TicketNextStatusProxy result = new TicketNextStatusProxy();
-      result.ModifierID = this.ModifierID;
-      result.CreatorID = this.CreatorID;
+      //result.ModifierID = this.ModifierID;
+      //result.CreatorID = this.CreatorID;
       result.Position = this.Position;
       result.NextStatusID = this.NextStatusID;
       result.CurrentStatusID = this.CurrentStatusID;
       result.TicketNextStatusID = this.TicketNextStatusID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      //result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      //result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
        
        
       return result;

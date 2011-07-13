@@ -21,11 +21,11 @@ namespace TeamSupport.Data
     [DataMember] public bool IsClosed { get; set; }
     [DataMember] public bool IsClosedEmail { get; set; }
     [DataMember] public bool IsEmailResponse { get; set; }
-    [DataMember] public int OrganizationID { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
+    //[DataMember] public int OrganizationID { get; set; }
+    //[DataMember] public DateTime DateCreated { get; set; }
+    //[DataMember] public DateTime DateModified { get; set; }
+    //[DataMember] public int CreatorID { get; set; }
+    //[DataMember] public int ModifierID { get; set; }
           
   }
   
@@ -34,9 +34,9 @@ namespace TeamSupport.Data
     public TicketStatusProxy GetProxy()
     {
       TicketStatusProxy result = new TicketStatusProxy();
-      result.ModifierID = this.ModifierID;
-      result.CreatorID = this.CreatorID;
-      result.OrganizationID = this.OrganizationID;
+      //result.ModifierID = this.ModifierID;
+      //result.CreatorID = this.CreatorID;
+      //result.OrganizationID = this.OrganizationID;
       result.IsEmailResponse = this.IsEmailResponse;
       result.IsClosedEmail = this.IsClosedEmail;
       result.IsClosed = this.IsClosed;
@@ -46,8 +46,8 @@ namespace TeamSupport.Data
       result.Name = this.Name;
       result.TicketStatusID = this.TicketStatusID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      //result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      //result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
        
        
       return result;

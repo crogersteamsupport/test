@@ -57,6 +57,11 @@ namespace TeamSupport.Data
       }
     }
 
+    /// <summary>
+    /// Loads the products for the TS accounts organizationid and orders by name.
+    /// </summary>
+    /// <param name="organizationID"></param>
+
     public void LoadByOrganizationID(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())

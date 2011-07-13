@@ -17,11 +17,11 @@ namespace TeamSupport.Data
     [DataMember] public string Name { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int Position { get; set; }
-    [DataMember] public int OrganizationID { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
+    //[DataMember] public int OrganizationID { get; set; }
+    //[DataMember] public DateTime DateCreated { get; set; }
+    //[DataMember] public DateTime DateModified { get; set; }
+    //[DataMember] public int CreatorID { get; set; }
+    //[DataMember] public int ModifierID { get; set; }
     [DataMember] public string IconUrl { get; set; }
           
   }
@@ -32,16 +32,16 @@ namespace TeamSupport.Data
     {
       TicketTypeProxy result = new TicketTypeProxy();
       result.IconUrl = this.IconUrl;
-      result.ModifierID = this.ModifierID;
-      result.CreatorID = this.CreatorID;
-      result.OrganizationID = this.OrganizationID;
+      //result.ModifierID = this.ModifierID;
+      //result.CreatorID = this.CreatorID;
+      //result.OrganizationID = this.OrganizationID;
       result.Position = this.Position;
       result.Description = this.Description;
       result.Name = this.Name;
       result.TicketTypeID = this.TicketTypeID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      //result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      //result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
        
        
       return result;

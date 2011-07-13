@@ -174,6 +174,10 @@
     <Compile Include="BusinessObjects\EmailTemplateTables.cs" />
     <Compile Include="BusinessObjects\ExceptionLogs.cs" />
     <Compile Include="BusinessObjects\ExceptionLogView.cs" />
+    <Compile Include="BusinessObjects\FacebookOptions.cs" />
+    <Compile Include="BusinessObjects\ForumCategories.cs" />
+    <Compile Include="BusinessObjects\ForumPermissions.cs" />
+    <Compile Include="BusinessObjects\ForumTickets.cs" />
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
     <Compile Include="BusinessObjects\Services.cs" />
     <Compile Include="BusinessObjects\ServiceSettings.cs" />
@@ -190,6 +194,7 @@
     <Compile Include="BusinessObjects\Translate.cs" />
     <Compile Include="BusinessObjects\UserTicketStatuses.cs" />
     <Compile Include="Classes\AttachmentPath.cs" />
+    <Compile Include="Classes\CheckSums.cs" />
     <Compile Include="Classes\HtmlUtility.cs" />
     <Compile Include="Classes\IndexSearch.cs" />
     <Compile Include="Classes\LogFile.cs" />
@@ -211,6 +216,10 @@
     <Compile Include="FieldMaps\EmailTemplateParametersFieldMap.cs" />
     <Compile Include="FieldMaps\EmailTemplatesFieldMap.cs" />
     <Compile Include="FieldMaps\EmailTemplateTablesFieldMap.cs" />
+    <Compile Include="FieldMaps\FacebookOptionsFieldMap.cs" />
+    <Compile Include="FieldMaps\ForumCategoriesFieldMap.cs" />
+    <Compile Include="FieldMaps\ForumPermissionsFieldMap.cs" />
+    <Compile Include="FieldMaps\ForumTicketsFieldMap.cs" />
     <Compile Include="FieldMaps\OrganizationEmailsFieldMap.cs" />
     <Compile Include="FieldMaps\ServiceSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ServicesFieldMap.cs" />
@@ -398,6 +407,10 @@
     <Compile Include="Generated\GeneratedEmailTemplateTables.cs" />
     <Compile Include="Generated\GeneratedExceptionLogs.cs" />
     <Compile Include="Generated\GeneratedExceptionLogView.cs" />
+    <Compile Include="Generated\GeneratedFacebookOptions.cs" />
+    <Compile Include="Generated\GeneratedForumCategories.cs" />
+    <Compile Include="Generated\GeneratedForumPermissions.cs" />
+    <Compile Include="Generated\GeneratedForumTickets.cs" />
     <Compile Include="Generated\GeneratedGroups.cs" />
     <Compile Include="Generated\GeneratedInvoices.cs" />
     <Compile Include="Generated\GeneratedKBStats.cs" />
@@ -506,6 +519,10 @@
     <Compile Include="Proxies\EmailTemplateTablesProxy.cs" />
     <Compile Include="Proxies\ExceptionLogsProxy.cs" />
     <Compile Include="Proxies\ExceptionLogViewProxy.cs" />
+    <Compile Include="Proxies\FacebookOptionsProxy.cs" />
+    <Compile Include="Proxies\ForumCategoriesProxy.cs" />
+    <Compile Include="Proxies\ForumPermissionsProxy.cs" />
+    <Compile Include="Proxies\ForumTicketsProxy.cs" />
     <Compile Include="Proxies\GroupsProxy.cs" />
     <Compile Include="Proxies\InvoicesProxy.cs" />
     <Compile Include="Proxies\KBStatsProxy.cs" />

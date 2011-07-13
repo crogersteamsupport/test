@@ -22,11 +22,24 @@ namespace TeamSupport.Data
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
       {
         connection.Open();
+        SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
         command.Connection = connection;
-        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+        command.Transaction = transaction;
+        try
         {
-          adapter.FillSchema(result, SchemaType.Source);
-          adapter.Fill(result);
+          transaction.Commit();
+          using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+          {
+            adapter.FillSchema(result, SchemaType.Source);
+            adapter.Fill(result);
+          }
+        }
+        catch (Exception e)
+        {
+          transaction.Rollback();
+          e.Data["CommandText"] = command.CommandText;
+          ExceptionLogs.LogException(loginUser, e, "SqlExecutor.Fill");
+          throw;
         }
         connection.Close();
       }
@@ -40,8 +53,22 @@ namespace TeamSupport.Data
       {
         object o;
         connection.Open();
+        SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
         command.Connection = connection;
-        o = command.ExecuteScalar();
+        command.Transaction = transaction;
+        try
+        {
+          o = command.ExecuteScalar();
+          transaction.Commit();
+        }
+        catch (Exception e)
+        {
+          transaction.Rollback();
+          e.Data["CommandText"] = command.CommandText;
+          ExceptionLogs.LogException(loginUser, e, "SqlExecutor.ExecuteScalar");
+          throw;
+        }
+
         connection.Close();
         return o;
       }

@@ -65,6 +65,23 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadAll(int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+@"
+SELECT * FROM TicketNextStatuses tns
+LEFT JOIN TicketStatuses ts ON ts.TicketStatusID = tns.CurrentStatusID
+WHERE (ts.OrganizationID = @OrganizationID) 
+ORDER BY tns.CurrentStatusID
+";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
     public void ValidatePositions(int currentStatusID)
     {
       TicketNextStatuses ticketNextStatuses = new TicketNextStatuses(LoginUser);

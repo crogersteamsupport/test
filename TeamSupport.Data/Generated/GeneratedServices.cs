@@ -97,19 +97,19 @@ namespace TeamSupport.Data
     
 
     
-
-    
-    public DateTime LastEndTime
+    public DateTime? LastStartTime
     {
-      get { return DateToLocal((DateTime)Row["LastEndTime"]); }
+      get { return Row["LastStartTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastStartTime"]) : null; }
+      set { Row["LastStartTime"] = CheckNull(value); }
+    }
+    
+    public DateTime? LastEndTime
+    {
+      get { return Row["LastEndTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastEndTime"]) : null; }
       set { Row["LastEndTime"] = CheckNull(value); }
     }
     
-    public DateTime LastStartTime
-    {
-      get { return DateToLocal((DateTime)Row["LastStartTime"]); }
-      set { Row["LastStartTime"] = CheckNull(value); }
-    }
+
     
 
     #endregion

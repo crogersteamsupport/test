@@ -528,6 +528,10 @@ namespace TeamSupport.Data
           string ids = string.Join(",", Array.ConvertAll<int, string>(list, Convert.ToString));
           builder.Append(string.Format(" AND (tv.TicketID IN ({0})) ", ids));
         }
+        else
+        {
+          builder.Append(" AND (tv.TicketID IN (-1)) ");
+        }
         //command.Parameters.AddWithValue("@TicketIDs", ids);
         /*
         command.Parameters.AddWithValue("@Search", DataUtils.BuildSearchString(search, filter.MatchAllTerms));
@@ -581,9 +585,9 @@ namespace TeamSupport.Data
         }
 
         if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
-
         job.IndexesToSearch.Add(SystemSettings.ReadString(loginUser, "IndexerPathTickets", ""));
         job.Execute();
+
         SearchResults results = job.Results;
 
         List<int> items = new List<int>();

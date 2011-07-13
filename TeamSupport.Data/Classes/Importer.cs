@@ -435,11 +435,12 @@ namespace TeamSupport.Data
           field.Name = name.Trim();
           field.ApiFieldName = tableName + "_" + field.Name;
           if (auxID > -1) field.ApiFieldName = field.ApiFieldName + "_" + auxID.ToString();
+          field.ApiFieldName = CustomFields.GenerateApiFieldName(field.ApiFieldName);
           field.Position = customFields.GetMaxPosition(_organizationID, referenceType, auxID);
           field.AuxID = auxID;
           field.RefType = referenceType;
           field.Description = "";
-          ImportCustomInfo info = GetCustomInfo(table, name);
+          ImportCustomInfo info = GetCustomInfo(table, table.Columns[i].ColumnName);
           field.FieldType = info.FieldType;
           field.ListValues = info.ListValues;
           field.Collection.Save();
@@ -479,8 +480,8 @@ namespace TeamSupport.Data
         result.OrganizationID = _organizationID;
         result.Position = phoneTypes.GetMaxPosition(_organizationID) + 1;
         result.Collection.Save();
+        phoneTypes.LoadAllPositions(_organizationID);
       }
-      phoneTypes.LoadAllPositions(_organizationID);
       return result;
     }
 

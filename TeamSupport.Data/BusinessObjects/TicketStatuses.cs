@@ -93,6 +93,28 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadAvailableTicketStatuses(int ticketTypeID, int? currentStatusID)
+    {
+      if (currentStatusID != null)
+      {
+        LoadNextStatuses((int)currentStatusID);
+        if (!IsEmpty) return;
+      }
+
+      LoadByTicketTypeID(ticketTypeID);
+    }
+
+    public void LoadNextStatuses(int currentStatusID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM TicketStatuses ts WHERE ts.TicketStatusID IN (SELECT NextStatusID FROM TicketNextStatuses WHERE (CurrentStatusID = @CurrentStatusID)) OR ts.TicketStatusID = @CurrentStatusID ORDER BY ts.Position";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("CurrentStatusID", currentStatusID);
+        Fill(command);
+      }
+    }
+
     public void LoadNotNextStatuses(int currentStatusID)
     {
       TicketStatuses statuses = new TicketStatuses(LoginUser);
