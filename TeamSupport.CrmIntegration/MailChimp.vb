@@ -46,7 +46,7 @@ Namespace TeamSupport
                                 Return False
                             End If
 
-                            If CRMLinkRow.LastLink Is Nothing Or contact.DateModified.AddMinutes(30) > CRMLinkRow.LastLink Then
+                            If (CRMLinkRow.LastLink Is Nothing Or contact.DateModified.AddMinutes(30) > CRMLinkRow.LastLink) And Not contact.MarkDeleted Then
                                 If emailBatch Is Nothing Then
                                     emailBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken _
                                                                    & "&id=" & listID _
