@@ -16,6 +16,7 @@ Namespace TeamSupport
 
             'tracks global errors so we can not update the sync date if there's a problem
             Public Property SyncError As Boolean
+            Public Property ErrorCode As IntegrationError
 
             Protected Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor, ByVal thisType As IntegrationType)
                 CRMLinkRow = crmLinkOrg
@@ -350,6 +351,11 @@ Namespace TeamSupport
             End Sub
         End Class
 
+        Public Enum IntegrationError
+            Unknown
+            InvalidLogin
+        End Enum
+
         Public Class CompanyData
             Property City As String
             Property Country As String
@@ -386,19 +392,13 @@ Namespace TeamSupport
             Property Fax As String
         End Class
 
-        Enum PhoneType
-            Work
-            Mobile
-            Fax
-        End Enum
-
         Public Class SyncLog
             Private LogPath As String
             Private FileName As String
 
-            Public Sub New(ByVal Path As String)
+            Public Sub New(ByVal Path As String, ByVal thisType As IntegrationType)
                 LogPath = Path
-                FileName = "CRM Sync Debug File - " & Today.Month.ToString() & Today.Day.ToString() & Today.Year.ToString() & ".txt"
+                FileName = thisType.ToString() & " Debug File - " & Today.Month.ToString() & Today.Day.ToString() & Today.Year.ToString() & ".txt"
 
                 If Not Directory.Exists(LogPath) Then
                     Directory.CreateDirectory(LogPath)

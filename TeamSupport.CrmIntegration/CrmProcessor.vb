@@ -65,7 +65,7 @@ Namespace TeamSupport
                     Dim CRMType As IntegrationType = [Enum].Parse(GetType(IntegrationType), CRMLinkTableItem.CRMType, True)
 
                     'set up log per crm link item
-                    Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()))
+                    Dim Log As New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()), CRMType)
                     Dim CRM As Integration = Nothing
 
                     Select Case CRMType
