@@ -146,6 +146,10 @@ Namespace TeamSupport
 
                 Log.Write(String.Format("Adding/updating contact information for {0} ({1},{2}).", person.Email, person.LastName, person.FirstName))
 
+                Dim parentCompany As New Organizations(User)
+                parentCompany.LoadByOrganizationID(ParentOrgID)
+                Dim allowPortalAccess As Boolean = parentCompany(0).HasPortalAccess
+
                 Dim findCompany As New Organizations(User)
 
                 'make sure the company already exists
@@ -177,12 +181,12 @@ Namespace TeamSupport
                         .Title = person.Title
                         .IsActive = True
                         .MarkDeleted = False
-                        .IsPortalUser = CRMLinkRow.AllowPortalAccess
+                        .IsPortalUser = allowPortalAccess AndAlso CRMLinkRow.AllowPortalAccess
 
                         .Collection.Save()
                     End With
 
-                    If userIsNew AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
+                    If allowPortalAccess AndAlso userIsNew AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
                         'send the email
                         DataUtils.ResetPassword(User, thisUser, True)
                     End If
