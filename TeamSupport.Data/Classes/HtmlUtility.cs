@@ -223,8 +223,8 @@ namespace TeamSupport.Data
             return Content;
         }
 
-        public static string StripComments(string Content) { 
-            Content = Regex.Replace(Content, "", " ");
+        public static string StripComments(string Content) {
+            Content = Regex.Replace(Content, @"<!--.*?-->", " ");
             return Content;
         }
 

@@ -19,7 +19,7 @@ Namespace TeamSupport
                 Success = SyncAccounts()
 
                 If Success Then
-                    Success = SendTicketData()
+                    Success = SendTicketData(AddressOf CreateComment)
                 End If
 
                 Return Success
@@ -108,49 +108,6 @@ Namespace TeamSupport
                 Return True
             End Function
 
-            Private Function SendTicketData() As Boolean
-                Dim ParentOrgID As String = CRMLinkRow.OrganizationID
-
-                If CRMLinkRow.SendBackTicketData Then
-                    'get tickets created after the last link date
-                    Dim tickets As New Tickets(User)
-                    tickets.LoadByCRMLinkItem(CRMLinkRow)
-
-                    If tickets IsNot Nothing Then
-                        For Each thisTicket As Ticket In tickets
-                            If Processor.IsStopped Then
-                                Return False
-                            End If
-
-                            Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
-                            Dim customers As New OrganizationsView(User)
-                            customers.LoadByTicketID(thisTicket.TicketID)
-
-                            Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
-                                                                   thisTicket.Name, thisTicket.TicketID.ToString(), Utilities.StripHTML(description.Description), Environment.NewLine)
-
-                            For Each customer As OrganizationsViewItem In customers
-                                If customer.CRMLinkID <> "" Then
-                                    Log.Write("Creating a comment...")
-                                    If CreateComment(CRMLinkRow.SecurityToken, CRMLinkRow.Username, customer.CRMLinkID, NoteBody) Then
-                                        Log.Write("Comment created successfully.")
-
-                                        CRMLinkRow.LastTicketID = thisTicket.TicketID
-                                        CRMLinkRow.Collection.Save()
-                                    End If
-                                End If
-                            Next
-                        Next
-                    Else
-                        Log.Write("No new tickets to sync.")
-                    End If
-                Else
-                    Log.Write("Ticket data not sent since SendBackTicketData is set to FALSE for this organization.")
-                End If
-
-                Return True
-            End Function
-
             Private Function ParseCompanyXML(ByRef CompaniesToSync As XmlDocument, ByVal LastSync As Date?) As List(Of CompanyData)
                 Dim CompanySyncData As List(Of CompanyData) = Nothing
 
@@ -232,7 +189,12 @@ Namespace TeamSupport
             End Function
 
             'returns a boolean value to indicate whether or not comment was created successfully
-            Private Function CreateComment(ByVal Key As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal NoteBody As String) As Boolean
+            Private Function CreateComment(ByVal AccountID As String, ByVal thisTicket As Ticket, ByVal Key As String, ByVal CompanyName As String) As Boolean
+
+                Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
+                Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
+                                                                             thisTicket.Name, thisTicket.TicketID.ToString(), HtmlUtility.StripHTML(description.Description), Environment.NewLine)
+
                 Dim success As Boolean = False
                 Dim statusCode As HttpStatusCode
 

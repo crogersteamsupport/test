@@ -1057,11 +1057,12 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByCRMLinkID(string crmlinkID) {
+    public void LoadByCRMLinkID(string crmlinkID, int parentID) {
         using (SqlCommand command = new SqlCommand()) {
-            command.CommandText = "SELECT * FROM Organizations WHERE CRMLinkID = @CrmlinkID";
+            command.CommandText = "SELECT * FROM Organizations WHERE CRMLinkID = @CrmlinkID AND ParentID = @ParentID";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@CrmlinkID", crmlinkID);
+            command.Parameters.AddWithValue("@ParentID", parentID);
             Fill(command);
         }
     }

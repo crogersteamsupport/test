@@ -22,7 +22,7 @@ Namespace TeamSupport
                 Success = SyncAccounts()
 
                 If Success Then
-                    Success = SendTicketData()
+                    Success = SendTicketData(AddressOf CreateNote)
                 End If
 
                 Return Success
@@ -180,55 +180,6 @@ Namespace TeamSupport
 
             End Function
 
-            Private Function SendTicketData() As Boolean
-                '8/8/09 - CHanged this so that we only make one call to our database then update tickets based on that one call.  
-                Try
-
-                    If CRMLinkRow.SendBackTicketData Then
-                        'get tickets created after the last link date
-                        Dim tickets As New Tickets(User)
-                        tickets.LoadByCRMLinkItem(CRMLinkRow)
-
-                        If tickets IsNot Nothing Then
-                            Log.Write(String.Format("Found {0} tickets to sync.", tickets.Count.ToString()))
-
-                            For Each thisTicket As Ticket In tickets
-                                If Processor.IsStopped Then
-                                    Return False
-                                End If
-
-                                Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
-                                Dim customers As New OrganizationsView(User)
-                                customers.LoadByTicketID(thisTicket.TicketID)
-
-                                'Add the new tickets to the company record
-                                Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
-                                                                       thisTicket.Name, thisTicket.TicketID, Utilities.StripHTML(description.Description), Environment.NewLine)
-
-                                For Each customer As OrganizationsViewItem In customers
-                                    If customer.CRMLinkID <> "" Then
-                                        Log.Write("Creating a note...")
-                                        CreateNote(CRMLinkRow.SecurityToken, CRMLinkRow.Username, customer.CRMLinkID, NoteBody)
-                                        Log.Write("Note created successfully.")
-
-                                        CRMLinkRow.LastTicketID = thisTicket.TicketID
-                                        CRMLinkRow.Collection.Save()
-                                    End If
-                                Next
-                            Next
-                        End If
-
-                    Else
-                        Log.Write("Ticket data not sent since SendBackTicketData is set to FALSE for this organization.")
-                    End If
-                Catch ex As Exception
-                    Log.Write("Error in Send Ticket Data.  Message=" + ex.Message)
-                End Try
-
-                Return True
-            End Function
-
-
             Private Function GetHighriseXML(ByVal Token As String, ByVal CompanyName As String, ByVal URL As String) As XmlDocument
                 Dim request As HttpWebRequest
                 Dim response As HttpWebResponse = Nothing
@@ -294,10 +245,12 @@ Namespace TeamSupport
                 Return Nothing
             End Function
 
-            Private Sub CreateNote(ByVal SecurityToken As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal NoteBody As String)
+            Private Function CreateNote(ByVal AccountID As String, ByVal thisTicket As Ticket, ByVal SecurityToken As String, ByVal CompanyName As String) As Boolean
+                Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
+                Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
+                                                                    thisTicket.Name, thisTicket.TicketID, HtmlUtility.StripHTML(description.Description), Environment.NewLine)
+
                 Try
-
-
                     Dim urlPost As String
 
                     If UseSSL Then
@@ -306,16 +259,12 @@ Namespace TeamSupport
                         urlPost = "http://" + CompanyName + ".highrisehq.com/companies/" + AccountID + "/notes.xml"
                     End If
 
-                    'Dim postData As String = "<note><body>Hello world</body><subject-id type=""integer"">4</subject-id><subject-type>Party</subject-type></note>"
                     Dim postData As String = "<note><body><![CDATA[" + NoteBody + "]]></body></note>"
 
                     Dim PostStream As Stream = Nothing
 
-                    'Dim Response As HttpWebResponse = Nothing
 
                     Dim Reader As StreamReader
-
-
                     Dim Request As HttpWebRequest
 
 
@@ -396,10 +345,12 @@ Namespace TeamSupport
 
                 Catch ex As Exception
                     Log.Write("Error in Create Note (Main routine).  Error = " + ex.Message)
-
+                    Return False
                 End Try
 
-            End Sub
+                Return True
+
+            End Function
 
 
             Private Function GetTagID(ByVal token As String, ByVal companyname As String, ByVal TagString As String, ByVal parentorgid As String) As String

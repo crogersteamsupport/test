@@ -27,7 +27,7 @@ Namespace TeamSupport
                 Success = SyncAccounts()
 
                 If Success Then
-                    Success = SendTicketData()
+                    Success = SendSFTicketData()
                 End If
 
                 Return Success
@@ -232,61 +232,18 @@ Namespace TeamSupport
             End Function
 
 
-            Private Function SendTicketData() As Boolean
-                If CRMLinkRow.SendBackTicketData Then
+            Private Function SendSFTicketData() As Boolean
+                Dim Success As Boolean = True
 
-                    If login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken)) = "OK" Then
+                If login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken)) = "OK" Then
+                    Success = SendTicketData(AddressOf CreateNote)
 
-                        'get tickets created since last ticket synced
-                        Dim tickets As New Tickets(User)
-                        tickets.LoadByCRMLinkItem(CRMLinkRow)
-
-                        If tickets IsNot Nothing Then
-                            Log.Write(String.Format("Found {0} tickets to sync.", tickets.Count.ToString()))
-
-                            For Each thisTicket As Ticket In tickets
-                                If Processor.IsStopped Then
-                                    Return False
-                                End If
-
-                                Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
-                                Dim customers As New OrganizationsView(User)
-                                customers.LoadByTicketID(thisTicket.TicketID)
-
-                                'Add the new tickets to the company record
-                                Dim NoteBody As String = String.Format("A new support ticket has been created for this account entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
-                                                                 thisTicket.Name, thisTicket.TicketID.ToString(), Utilities.StripHTML(description.Description), Environment.NewLine)
-
-
-                                For Each customer As OrganizationsViewItem In customers
-                                    If customer.CRMLinkID <> "" Then
-                                        Log.Write("Creating a note...")
-
-                                        If CreateNote(customer.CRMLinkID, "Support Issue: " & thisTicket.Name, NoteBody, CRMLinkRow.OrganizationID) Then
-                                            Log.Write("Note created successfully.")
-
-                                            CRMLinkRow.LastTicketID = thisTicket.TicketID
-                                            CRMLinkRow.Collection.Save()
-                                        End If
-                                    End If
-                                Next
-
-                            Next
-                        Else
-                            Log.Write("No new tickets to sync.")
-                        End If
-
-                        Binding.logout()
-                        Binding.logoutAsync()
-                    End If
-
-                Else
-                    Log.Write("SendBackTicketData set to FALSE for this organization.")
+                    Binding.logout()
+                    Binding.logoutAsync()
                 End If
 
-                Return True
+                Return Success
             End Function
-
 
 
             Private Function login(ByVal username As String, ByVal password As String, ByVal securitytoken As String) As String
@@ -456,8 +413,14 @@ Namespace TeamSupport
                 End Try
             End Sub
 
-            Private Function CreateNote(ByVal accountid As String, ByVal Title As String, ByVal Body As String, ByVal ParentOrgID As String) As Boolean
+
+            Private Function CreateNote(ByVal accountid As String, ByVal thisTicket As Ticket, ByVal Token As String, ByVal Username As String) As Boolean
                 Dim Success As Boolean = True
+
+                Dim Title = "Support Issue: " & thisTicket.Name
+                Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
+                Dim NoteBody As String = String.Format("A new support ticket has been created for this account entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
+                                                    thisTicket.Name, thisTicket.TicketID.ToString(), HtmlUtility.StripHTML(description.Description), Environment.NewLine)
 
                 Try
 
@@ -465,7 +428,7 @@ Namespace TeamSupport
                     Dim note As sForce.sObject = New sObject()
                     note.type = "Note"
                     note.Any = New System.Xml.XmlElement() {GetNewXmlElement("ParentId", accountid), _
-                        GetNewXmlElement("Body", Body), _
+                        GetNewXmlElement("Body", NoteBody), _
                         GetNewXmlElement("Title", Title)}
 
                     Dim noteSave As SaveResult = Binding.create(New sObject() {note})(0)
@@ -561,7 +524,7 @@ Namespace TeamSupport
                                     Dim thisCompany As Organization
 
                                     'make sure the company already exists
-                                    findCompany.LoadByCRMLinkID(AccountID)
+                                    findCompany.LoadByCRMLinkID(AccountID, CRMLinkRow.OrganizationID)
 
                                     If findCompany.Count > 0 Then
                                         thisCompany = findCompany(0)

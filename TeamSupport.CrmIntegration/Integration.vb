@@ -28,7 +28,55 @@ Namespace TeamSupport
 
             Public MustOverride Function PerformSync() As Boolean
 
-            '           Private Delegate Function CreateNote(ByVal accountid As String, ByVal Title As String, ByVal Body As String, ByVal ParentOrgID As String) As Boolean
+            Protected Delegate Function CreateCRMNote(ByVal accountid As String, ByVal thisTicket As Ticket, ByVal Key As String, ByVal CompanyName As String) As Boolean
+
+            Protected Function SendTicketData(ByVal CreateCRMNote As CreateCRMNote) As Boolean
+                Dim ParentOrgID As String = CRMLinkRow.OrganizationID
+
+                Try
+                    If CRMLinkRow.SendBackTicketData Then
+                        'get tickets created after the last link date
+                        Dim tickets As New Tickets(User)
+                        tickets.LoadByCRMLinkItem(CRMLinkRow)
+
+                        If tickets IsNot Nothing Then
+                            Log.Write(String.Format("Found {0} tickets to sync.", tickets.Count.ToString()))
+
+                            For Each thisTicket As Ticket In tickets
+                                If Processor.IsStopped Then
+                                    Return False
+                                End If
+
+                                Dim customers As New OrganizationsView(User)
+                                customers.LoadByTicketID(thisTicket.TicketID)
+
+                                For Each customer As OrganizationsViewItem In customers
+                                    If customer.CRMLinkID <> "" Then
+                                        Log.Write("Creating a comment...")
+
+                                        If CreateCRMNote(customer.CRMLinkID, thisTicket, CRMLinkRow.SecurityToken, CRMLinkRow.Username) Then
+                                            Log.Write("Comment created successfully.")
+
+                                            CRMLinkRow.LastTicketID = thisTicket.TicketID
+                                            CRMLinkRow.Collection.Save()
+                                        End If
+                                    End If
+                                Next
+                            Next
+                        Else
+                            Log.Write("No new tickets to sync.")
+                        End If
+                    Else
+                        Log.Write("Ticket data not sent since SendBackTicketData is set to FALSE for this organization.")
+                    End If
+
+                Catch ex As Exception
+                    Log.Write("Error in Send Ticket Data.  Message=" + ex.Message)
+                End Try
+
+                Return True
+
+            End Function
 
             Protected Sub UpdateOrgInfo(ByVal company As CompanyData, ByVal ParentOrgID As String)
                 If Processor.IsStopped Then
@@ -39,7 +87,8 @@ Namespace TeamSupport
                 Dim thisCompany As Organization
 
                 'search for the crmlinkid = accountid in db to see if it already exists
-                findCompany.LoadByCRMLinkID(company.AccountID)
+                findCompany.LoadByCRMLinkID(company.AccountID, ParentOrgID)
+
                 If findCompany.Count > 0 Then
                     thisCompany = findCompany(0)
                     'it exists, so update the name on the account if it has changed.
@@ -153,7 +202,7 @@ Namespace TeamSupport
                 Dim findCompany As New Organizations(User)
 
                 'make sure the company already exists
-                findCompany.LoadByCRMLinkID(companyID)
+                findCompany.LoadByCRMLinkID(companyID, ParentOrgID)
                 If findCompany.Count > 0 Then
                     Dim thisCompany As Organization = findCompany(0)
 

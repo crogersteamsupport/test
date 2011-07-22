@@ -104,12 +104,13 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BatchBook.vb" />
     <Compile Include="CrmPool.vb" />
     <Compile Include="CrmProcessor.vb" />
-    <Compile Include="Highrise.vb" />
     <Compile Include="Integration.vb" />
-    <Compile Include="MailChimp.vb" />
+    <Compile Include="Integrations\BatchBook.vb" />
+    <Compile Include="Integrations\Highrise.vb" />
+    <Compile Include="Integrations\MailChimp.vb" />
+    <Compile Include="Integrations\SalesForce.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -125,8 +126,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="SalesForce.vb" />
-    <Compile Include="Utilities.vb" />
     <Compile Include="Web References\sForce\Reference.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
