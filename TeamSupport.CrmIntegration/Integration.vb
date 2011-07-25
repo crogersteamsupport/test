@@ -219,6 +219,7 @@ Namespace TeamSupport
                         userIsNew = True
                         thisUser = (New Users(User)).AddNewUser()
                         thisUser.OrganizationID = thisCompany.OrganizationID
+                        thisUser.IsPortalUser = allowPortalAccess AndAlso CRMLinkRow.AllowPortalAccess
                         thisUser.CryptedPassword = "cfsdfewwgewff" 'not sure why this is done this way but keep as is for now
                         thisUser.Collection.Save()
                     End If
@@ -230,7 +231,6 @@ Namespace TeamSupport
                         .Title = person.Title
                         .IsActive = True
                         .MarkDeleted = False
-                        .IsPortalUser = allowPortalAccess AndAlso CRMLinkRow.AllowPortalAccess
 
                         .Collection.Save()
                     End With
