@@ -377,11 +377,16 @@ Namespace TeamSupport
 
                     Using postStream As Stream = request.GetRequestStream()
                         postStream.Write(byteData, 0, byteData.Length)
+                        postStream.Flush()
                     End Using
 
                     Using response As HttpWebResponse = request.GetResponse()
                         If request.HaveResponse AndAlso response IsNot Nothing Then
                             returnStatus = response.StatusCode
+
+                            If returnStatus <> HttpStatusCode.OK Then
+                                Log.Write("Error posting query string: " & response.StatusDescription)
+                            End If
                         End If
                     End Using
 
