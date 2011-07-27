@@ -98,16 +98,21 @@ Namespace TeamSupport
                     If CRM IsNot Nothing Then
                         Log.Write(String.Format("Begin processing {0} sync.", CRMType.ToString()))
 
-                        If CRM.PerformSync() Then
-                            CRMLinkTableItem.LastLink = DateTime.UtcNow
-                            CRMLinkTableItem.Collection.Save()
-                            Log.Write("Finished processing successfully.")
+                        Try
+                            If CRM.PerformSync() Then
+                                CRMLinkTableItem.LastLink = DateTime.UtcNow
+                                CRMLinkTableItem.Collection.Save()
+                                Log.Write("Finished processing successfully.")
 
-                            Integration.LogSyncResult("Completed", CRMLinkTableItem.OrganizationID, LoginUser)
-                        Else
-                            Integration.LogSyncResult(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
-                            Log.Write(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()))
-                        End If
+                                Integration.LogSyncResult("Completed", CRMLinkTableItem.OrganizationID, LoginUser)
+                            Else
+                                Integration.LogSyncResult(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
+                                Log.Write(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()))
+                            End If
+                        Catch ex As Exception
+                            Log.Write(String.Format("Sync Error: {0}", ex.StackTrace))
+                            Throw ex
+                        End Try
                     End If
                 Catch ex As Exception
                     Integration.LogSyncResult(String.Format("Sync Error: {0}", ex.Message), CRMLinkTableItem.OrganizationID, LoginUser)
