@@ -9,6 +9,7 @@ Namespace TeamSupport
         Public Class MailChimp
             Inherits Integration
 
+            Private Const BatchSize As Integer = 4000
             Private datacenter As String
 
             Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
@@ -33,6 +34,7 @@ Namespace TeamSupport
                     Dim theseCustomers As New Organizations(User)
                     theseCustomers.LoadByParentID(CRMLinkRow.OrganizationID, True)
 
+                    Dim emailBatches As New List(Of StringBuilder)()
                     Dim emailBatch As StringBuilder = Nothing
                     Dim emailIndex As Integer = 0
 
@@ -59,17 +61,30 @@ Namespace TeamSupport
                                 emailBatch.Append("&batch[" & emailIndex & "][LNAME]=" & contact.LastName)
                                 emailIndex += 1
                             End If
+
+                            If emailIndex = BatchSize Then
+                                emailBatches.Add(emailBatch)
+
+                                emailIndex = 0
+                                emailBatch = Nothing
+                            End If
                         Next
                     Next
 
                     If emailBatch IsNot Nothing Then
-                        'send the list to mailchimp
-                        If BatchSubscribe(emailBatch.ToString()) Then
-                            Log.Write(emailIndex.ToString() & " email addresses sent to Mailchimp.")
-                        Else
-                            Log.Write("Error in BatchSubscribe.")
-                            Return False
-                        End If
+                        emailBatches.Add(emailBatch)
+                    End If
+
+                    If emailBatches.Count > 0 Then
+                        'send the lists to mailchimp
+                        For Each mailList As StringBuilder In emailBatches
+                            If Not BatchSubscribe(mailList.ToString()) Then
+                                Log.Write("Error in BatchSubscribe.")
+                                Return False
+                            End If
+                        Next
+
+                        Log.Write("Addresses sent to Mailchimp in " & emailBatches.Count.ToString() & " batches.")
                     Else
                         Log.Write("No new email addresses to sync.")
                     End If
