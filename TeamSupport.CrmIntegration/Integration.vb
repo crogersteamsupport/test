@@ -374,21 +374,28 @@ Namespace TeamSupport
                     request.ContentType = "application/x-www-form-urlencoded"
                     request.UserAgent = Client
                     request.ContentLength = Content.Length
+                    request.KeepAlive = False
+                    request.ReadWriteTimeout = 20000
 
-                    Using postStream As Stream = request.GetRequestStream()
-                        postStream.Write(byteData, 0, byteData.Length)
-                        postStream.Flush()
-                    End Using
+                    Try
+                        Using postStream As Stream = request.GetRequestStream()
+                            postStream.Write(byteData, 0, byteData.Length)
+                            postStream.Flush()
+                        End Using
 
-                    Using response As HttpWebResponse = request.GetResponse()
-                        If request.HaveResponse AndAlso response IsNot Nothing Then
-                            returnStatus = response.StatusCode
+                        Using response As HttpWebResponse = request.GetResponse()
+                            If request.HaveResponse AndAlso response IsNot Nothing Then
+                                returnStatus = response.StatusCode
 
-                            If returnStatus <> HttpStatusCode.OK Then
-                                Log.Write("Error posting query string: " & response.StatusDescription)
+                                If returnStatus <> HttpStatusCode.OK Then
+                                    Log.Write("Error posting query string: " & response.StatusDescription)
+                                End If
                             End If
-                        End If
-                    End Using
+                        End Using
+                    Catch ex As WebException
+                        Log.Write("Error contacting " & Address.ToString() & ": " & ex.Message)
+                        Return Nothing
+                    End Try
 
                 End If
 
@@ -473,7 +480,7 @@ Namespace TeamSupport
                     Next
                 End If
 
-                File.AppendAllText(LogPath & "\" & FileName, Now.ToString + ": " & Text & Environment.NewLine)
+                File.AppendAllText(LogPath & "\" & FileName, Now.ToLongTimeString() + ": " & Text & Environment.NewLine)
             End Sub
 
         End Class
