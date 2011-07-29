@@ -374,6 +374,7 @@ Namespace TeamSupport
                     request.ContentType = "application/x-www-form-urlencoded"
                     request.UserAgent = Client
                     request.ContentLength = byteData.Length
+                    request.ReadWriteTimeout = 20000
 
                     Try
                         Using postStream As Stream = request.GetRequestStream()
