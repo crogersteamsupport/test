@@ -414,7 +414,7 @@ Namespace TeamSupport
             End Sub
 
 
-            Private Function CreateNote(ByVal accountid As String, ByVal thisTicket As Ticket, ByVal Token As String, ByVal Username As String) As Boolean
+            Private Function CreateNote(ByVal accountid As String, ByVal thisTicket As Ticket, ByVal key As String, ByVal username As String) As Boolean
                 Dim Success As Boolean = True
 
                 Dim Title = "Support Issue: " & thisTicket.Name
@@ -466,16 +466,12 @@ Namespace TeamSupport
                 Binding.QueryOptionsValue.batchSize = 250
                 Binding.QueryOptionsValue.batchSizeSpecified = True
 
-                Dim ProductName, LicenseType, LicenseStatus, AccountID As String
-                Dim ExpirationDate As Date
-
                 Try
                     Dim done As Boolean = False
 
                     Try
                         qr = Binding.query("select Product__c, Expiration_Date__c, License_type__c, Status__c, Account__c from License__c where SystemModStamp >= " + SFLastUpdateTime + " ORDER BY Product__c") 'added order by 3/25/11
 
-                        'and SystemModStamp >= 2011-01-22T20:50:18.000Z" '"
                         done = False
 
                         Log.Write("Found " + qr.size.ToString + " license records.")
@@ -486,12 +482,11 @@ Namespace TeamSupport
                         Log.Write("Error in GetProductAndLicenseInfo. " + ex.Message)
                     End Try
 
-                    Dim LastExpirationDate As Date = DateTime.Parse("Jan 01, 1970 12:00:00 PM") 'set to default date way back
-                    Dim LastProduct As String = ""
-
                     If qr.size > 0 Then
                         While Not done
                             For i As Integer = 0 To qr.records.Length - 1
+                                Dim ProductName, LicenseType, LicenseStatus, AccountID As String
+                                Dim ExpirationDate As Date
 
                                 Log.Write("In GetProductAndLicenseInfo routine - i=" + i.ToString)
 
@@ -504,10 +499,7 @@ Namespace TeamSupport
                                 LicenseStatus = records(i).Any(3).InnerText
                                 AccountID = records(i).Any(4).InnerText
 
-                                'OK, what do we do now?
                                 ' 1) See if we can match a product in TS with the product name
-                                '     select ProductID from products where name = {ProductName} and organizationid=305383
-
                                 Dim thisProduct As Product
                                 Dim findProduct As New Products(User)
                                 findProduct.LoadByOrganizationID(CRMLinkRow.OrganizationID)
@@ -515,11 +507,10 @@ Namespace TeamSupport
                                 thisProduct = findProduct.FindByName(ProductName)
 
                                 If thisProduct IsNot Nothing Then
-                                    Log.Write("ProductName = " + ProductName + ", ExpirationDate=" + ExpirationDate.ToString() + ", ProductID=" + thisProduct.ProductID.ToString())
+                                    Log.Write(String.Format("ProductName = {0}, ExpirationDate = {1}, ProductID = {2}, AccountID = {3}", _
+                                                            ProductName, ExpirationDate.ToString(), thisProduct.ProductID.ToString(), AccountID))
 
                                     ' 2) If we can, lets see if the product ID is assigned to this customer
-                                    '   select OrganizationProductID from OrganizationProducts where Organizationid = {clientorgid} and productid={productid from above}
-
                                     Dim findCompany As New Organizations(User)
                                     Dim thisCompany As Organization
 
@@ -531,6 +522,8 @@ Namespace TeamSupport
                                         Dim findOrgProd As New OrganizationProducts(User)
                                         Dim thisOrgProd As OrganizationProduct
 
+                                        Log.Write("Found product for " & thisCompany.Name)
+
                                         findOrgProd.LoadByOrganizationAndProductID(thisCompany.OrganizationID, thisProduct.ProductID)
 
                                         If findOrgProd.Count > 0 Then
@@ -541,7 +534,7 @@ Namespace TeamSupport
                                             '      3) Update the waranty expiration date (this should be a custom field on product)
                                             '         Update CustomValue set CustomValue={ExpirationDate} where CustomFieldID = 3761 and RefID={OrganizationProductID}
 
-                                            If (ProductName <> LastProduct) Or ExpirationDate > LastExpirationDate Then 'test to see if we are using the most up to date expiration date (only use product/expiration date that is the most recent)
+                                            If ExpirationDate > thisOrgProd.SupportExpiration Then 'test to see if we are using the most up to date expiration date (only use product/expiration date that is the most recent)
                                                 thisOrgProd.SupportExpiration = ExpirationDate
                                                 thisOrgProd.Collection.Save()
 
@@ -551,14 +544,11 @@ Namespace TeamSupport
                                                 'License Status - CustomFieldID is 3771 (test value 102)
                                                 UpdateCustomValue(3771, thisOrgProd.OrganizationProductID, LicenseStatus)
 
-                                                LastProduct = ProductName
-
                                                 Log.Write("Product updated.")
                                             Else
                                                 Log.Write("Date information not updated since there is a later expiration date.")
                                             End If
 
-                                            LastExpirationDate = ExpirationDate 'changed from just expirationdate to date.parse(expirationdate) 4/4/11
                                         Else
                                             'We need to add the product to this company
                                             thisOrgProd = (New OrganizationProducts(User)).AddNewOrganizationProduct()
@@ -574,8 +564,10 @@ Namespace TeamSupport
 
                                             'License Status - CustomFieldID is 3771 (test value 102)
                                             UpdateCustomValue(3771, thisOrgProd.OrganizationProductID, LicenseStatus)
-                                            Log.Write("Product updated.")
+                                            Log.Write("Product added.")
                                         End If
+
+                                        Log.Write("Product not updated because company does not exist")
                                     End If
 
                                 End If
