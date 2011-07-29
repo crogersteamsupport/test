@@ -16,7 +16,7 @@ Namespace TeamSupport
 
             'tracks global errors so we can not update the sync date if there's a problem
             Public Property SyncError As Boolean
-            Public Property ErrorCode As IntegrationError
+            Public Property ErrorCode As IntegrationError = IntegrationError.None
 
             Protected Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor, ByVal thisType As IntegrationType)
                 CRMLinkRow = crmLinkOrg
@@ -373,9 +373,7 @@ Namespace TeamSupport
                     request.Method = "POST"
                     request.ContentType = "application/x-www-form-urlencoded"
                     request.UserAgent = Client
-                    request.ContentLength = Content.Length
-                    request.KeepAlive = False
-                    request.ReadWriteTimeout = 20000
+                    request.ContentLength = byteData.Length
 
                     Try
                         Using postStream As Stream = request.GetRequestStream()
@@ -417,6 +415,7 @@ Namespace TeamSupport
         End Class
 
         Public Enum IntegrationError
+            None
             Unknown
             InvalidLogin
         End Enum
