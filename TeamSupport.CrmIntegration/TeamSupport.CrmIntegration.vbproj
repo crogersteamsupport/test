@@ -111,6 +111,7 @@
     <Compile Include="Integrations\Highrise.vb" />
     <Compile Include="Integrations\MailChimp.vb" />
     <Compile Include="Integrations\SalesForce.vb" />
+    <Compile Include="Integrations\Zoho.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>

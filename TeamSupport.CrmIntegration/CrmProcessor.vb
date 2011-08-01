@@ -93,6 +93,12 @@ Namespace TeamSupport
                             Else
                                 Return
                             End If
+                        Case IntegrationType.Zoho
+                            If Settings.ReadBool("ZohoEnabled", True) Then
+                                CRM = New Zoho(CRMLinkTableItem, Log, LoginUser, Me)
+                            Else
+                                Return
+                            End If
                     End Select
 
                     If CRM IsNot Nothing Then
@@ -104,10 +110,15 @@ Namespace TeamSupport
                                 CRMLinkTableItem.Collection.Save()
                                 Log.Write("Finished processing successfully.")
 
-                                Integration.LogSyncResult("Completed", CRMLinkTableItem.OrganizationID, LoginUser)
+                                Integration.LogSyncResult(CRMType.ToString() & " Sync Completed", CRMLinkTableItem.OrganizationID, LoginUser)
                             Else
-                                Integration.LogSyncResult(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
-                                Log.Write(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()))
+                                If CRM.ErrorCode <> IntegrationError.None Then
+                                    Integration.LogSyncResult(String.Format("Error reported in {0} sync: {1}", CRMType.ToString(), CRM.ErrorCode.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
+                                    Log.Write(String.Format("Error reported in {0} sync: {1}", CRMType.ToString(), CRM.ErrorCode.ToString()))
+                                Else
+                                    Integration.LogSyncResult(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()), CRMLinkTableItem.OrganizationID, LoginUser)
+                                    Log.Write(String.Format("Error reported in {0} sync. Last link date/time not updated.", CRMType.ToString()))
+                                End If
                             End If
                         Catch ex As Exception
                             Log.Write(String.Format("Sync Error: {0}", ex.StackTrace))
@@ -115,7 +126,7 @@ Namespace TeamSupport
                         End Try
                     End If
                 Catch ex As Exception
-                    Integration.LogSyncResult(String.Format("Sync Error: {0}", ex.Message), CRMLinkTableItem.OrganizationID, LoginUser)
+                    Integration.LogSyncResult(String.Format("Sync Error Reported."), CRMLinkTableItem.OrganizationID, LoginUser)
                 End Try
             End Sub
 

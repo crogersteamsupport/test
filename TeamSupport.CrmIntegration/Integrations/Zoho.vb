@@ -27,8 +27,9 @@ Namespace TeamSupport
                                                   AddressOf GetZohoPeopleXML, _
                                                   AddressOf ParseZohoPeopleXML)
 
-                        'send ticket data
-                        Success = SendTicketData(AddressOf CreateNote)
+                        If Success Then 'send ticket data
+                            Success = SendTicketData(AddressOf CreateNote)
+                        End If
                     Catch ex As Exception
                         Log.Write("exception: " & ex.Message & ": " & ex.StackTrace)
                         Success = False
