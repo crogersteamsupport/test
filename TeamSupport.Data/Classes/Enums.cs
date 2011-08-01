@@ -135,7 +135,8 @@ namespace TeamSupport.Data
       Highrise,
       Batchbook,
       FreshBooks,
-      MailChimp
+      MailChimp,
+      Zoho
   }
 
   public class Enums
