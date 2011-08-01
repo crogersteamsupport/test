@@ -49,7 +49,7 @@ Namespace TeamSupport
                                 CompanySyncData = New List(Of CompanyData)()
                             End If
 
-                            Dim thisCompanyData As List(Of CompanyData) = ParseCompanyXML(CompaniesToSync, CRMLinkRow.LastLink)
+                            Dim thisCompanyData As List(Of CompanyData) = ParseBBCompanyXML(CompaniesToSync, CRMLinkRow.LastLink)
 
                             'avoid duplicates by only adding companies that aren't already in the list
                             For Each newData As CompanyData In thisCompanyData
@@ -72,7 +72,7 @@ Namespace TeamSupport
 
                     If CompaniesToSync IsNot Nothing Then
                         CompanySyncData = New List(Of CompanyData)()
-                        CompanySyncData = ParseCompanyXML(CompaniesToSync, CRMLinkRow.LastLink)
+                        CompanySyncData = ParseBBCompanyXML(CompaniesToSync, CRMLinkRow.LastLink)
                     End If
                 End If
 
@@ -90,7 +90,7 @@ Namespace TeamSupport
                     For Each company As CompanyData In CompanySyncData
                         Dim PeopleToSync As XmlDocument = GetBatchBookXML(Key, CompanyName, "companies/" & company.AccountID & "/people.xml")
                         If PeopleToSync IsNot Nothing Then
-                            Dim PeopleSyncData As List(Of EmployeeData) = ParsePeopleXML(PeopleToSync)
+                            Dim PeopleSyncData As List(Of EmployeeData) = ParseBBPeopleXML(PeopleToSync)
 
                             If PeopleSyncData IsNot Nothing Then
                                 For Each person As EmployeeData In PeopleSyncData
@@ -108,7 +108,7 @@ Namespace TeamSupport
                 Return True
             End Function
 
-            Private Function ParseCompanyXML(ByRef CompaniesToSync As XmlDocument, ByVal LastSync As Date?) As List(Of CompanyData)
+            Private Function ParseBBCompanyXML(ByRef CompaniesToSync As XmlDocument, ByVal LastSync As Date?) As List(Of CompanyData)
                 Dim CompanySyncData As List(Of CompanyData) = Nothing
 
                 'parse the xml doc to get information about each customer
@@ -140,13 +140,12 @@ Namespace TeamSupport
                         CompanySyncData.Add(thisCustomer)
 
                     End If
-                    'TODO: handle large numbers of customers?
                 Next
 
                 Return CompanySyncData
             End Function
 
-            Private Function ParsePeopleXML(ByRef PeopleToSync As XmlDocument) As List(Of EmployeeData)
+            Private Function ParseBBPeopleXML(ByRef PeopleToSync As XmlDocument) As List(Of EmployeeData)
                 Dim EmployeeSyncData As List(Of EmployeeData) = Nothing
 
                 Dim allpeople As XElement = XElement.Load(New XmlNodeReader(PeopleToSync))
@@ -189,7 +188,7 @@ Namespace TeamSupport
             End Function
 
             'returns a boolean value to indicate whether or not comment was created successfully
-            Private Function CreateComment(ByVal AccountID As String, ByVal thisTicket As Ticket, ByVal Key As String, ByVal CompanyName As String) As Boolean
+            Private Function CreateComment(ByVal AccountID As String, ByVal thisTicket As Ticket) As Boolean
 
                 Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
                 Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
@@ -198,11 +197,11 @@ Namespace TeamSupport
                 Dim success As Boolean = False
                 Dim statusCode As HttpStatusCode
 
-                Dim BBUri As New Uri("https://" & CompanyName & ".batchbook.com/service/companies/" & AccountID & "/comments.xml")
-                Dim postData As String = "<comment><comment><![CDATA[" & NoteBody & "]]></comment></comment>"
+                If CRMLinkRow.Username <> "" Then
+                    Dim BBUri As New Uri("https://" & CRMLinkRow.Username & ".batchbook.com/service/companies/" & AccountID & "/comments.xml")
+                    Dim postData As String = "<comment><comment><![CDATA[" & NoteBody & "]]></comment></comment>"
 
-                If CompanyName <> "" Then
-                    statusCode = PostXML(New NetworkCredential(Key, "X"), BBUri, postData)
+                    statusCode = PostXML(New NetworkCredential(CRMLinkRow.SecurityToken, "X"), BBUri, postData)
                 End If
 
                 success = statusCode = HttpStatusCode.Created

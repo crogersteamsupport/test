@@ -414,7 +414,7 @@ Namespace TeamSupport
             End Sub
 
 
-            Private Function CreateNote(ByVal accountid As String, ByVal thisTicket As Ticket, ByVal key As String, ByVal username As String) As Boolean
+            Private Function CreateNote(ByVal accountid As String, ByVal thisTicket As Ticket) As Boolean
                 Dim Success As Boolean = True
 
                 Dim Title = "Support Issue: " & thisTicket.Name

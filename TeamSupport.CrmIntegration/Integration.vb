@@ -28,7 +28,65 @@ Namespace TeamSupport
 
             Public MustOverride Function PerformSync() As Boolean
 
-            Protected Delegate Function CreateCRMNote(ByVal accountid As String, ByVal thisTicket As Ticket, ByVal Key As String, ByVal CompanyName As String) As Boolean
+            Protected Delegate Function GetCompanyXML(ByVal Tag As String) As XmlDocument
+            Protected Delegate Function ParseCompanyXML(ByVal CompaniesToSync As XmlDocument) As List(Of CompanyData)
+            Protected Delegate Function GetPeopleXML(ByVal AccountID As String) As XmlDocument
+            Protected Delegate Function ParsePeopleXML(ByVal PeopleToSync As XmlDocument) As List(Of EmployeeData)
+
+            Protected Function NewSyncAccounts(ByVal GetCompanyXML As GetCompanyXML, ByVal ParseCompanyXML As ParseCompanyXML, ByVal GetPeopleXML As GetPeopleXML, ByVal ParsePeopleXML As ParsePeopleXML) As Boolean
+                Dim CompaniesToSync As XmlDocument
+                Dim CompanySyncData As List(Of CompanyData) = Nothing
+
+                'retrieve company data
+                If CRMLinkRow.TypeFieldMatch.Contains(",") Then
+                    For Each TagToMatch As String In CRMLinkRow.TypeFieldMatch.Split(",")
+                        If Processor.IsStopped Then
+                            Return False
+                        End If
+                        CompaniesToSync = GetCompanyXML(Trim(TagToMatch))
+
+                    Next
+
+                Else
+                    CompaniesToSync = GetCompanyXML(CRMLinkRow.TypeFieldMatch)
+
+                    If CompaniesToSync IsNot Nothing Then
+                        CompanySyncData = ParseCompanyXML(CompaniesToSync)
+                    End If
+                End If
+
+                If CompanySyncData IsNot Nothing Then
+                    Log.Write(String.Format("Processed {0} accounts.", CompanySyncData.Count))
+
+                    For Each company As CompanyData In CompanySyncData
+                        UpdateOrgInfo(company, CRMLinkRow.OrganizationID)
+                    Next
+
+                    Log.Write("Finished updating account information.")
+                    Log.Write("Updating people information...")
+
+                    For Each company As CompanyData In CompanySyncData
+                        Dim PeopleToSync As XmlDocument = GetPeopleXML(company.AccountID)
+
+                        If PeopleToSync IsNot Nothing Then
+                            Dim PeopleSyncData As List(Of EmployeeData) = ParsePeopleXML(PeopleToSync)
+
+                            If PeopleSyncData IsNot Nothing Then
+                                For Each person As EmployeeData In PeopleSyncData
+                                    UpdateContactInfo(person, company.AccountID, CRMLinkRow.OrganizationID)
+                                Next
+
+                                Log.Write("Updated people information for " & company.AccountName)
+                            End If
+                        End If
+                    Next
+                    Log.Write("Finished updating people information")
+                End If
+
+                Return True
+            End Function
+
+            Protected Delegate Function CreateCRMNote(ByVal accountid As String, ByVal thisTicket As Ticket) As Boolean
 
             Protected Function SendTicketData(ByVal CreateCRMNote As CreateCRMNote) As Boolean
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
@@ -54,11 +112,13 @@ Namespace TeamSupport
                                     If customer.CRMLinkID <> "" Then
                                         Log.Write("Creating a comment...")
 
-                                        If CreateCRMNote(customer.CRMLinkID, thisTicket, CRMLinkRow.SecurityToken, CRMLinkRow.Username) Then
+                                        If CreateCRMNote(customer.CRMLinkID, thisTicket) Then
                                             Log.Write("Comment created successfully.")
 
                                             CRMLinkRow.LastTicketID = thisTicket.TicketID
                                             CRMLinkRow.Collection.Save()
+                                        Else
+                                            Log.Write("Error creating comment.")
                                         End If
                                     End If
                                 Next
@@ -121,6 +181,7 @@ Namespace TeamSupport
                     End If
                 End If
 
+                'thisCompany.TimeZoneID = 
                 thisCompany.Collection.Save()
 
                 Dim findAddress As New Addresses(User)
@@ -310,20 +371,55 @@ Namespace TeamSupport
                     request.UserAgent = Client
                     request.Timeout = 7000
 
-                    Using response As HttpWebResponse = request.GetResponse()
+                    Try
+                        Using response As HttpWebResponse = request.GetResponse()
 
-                        If request.HaveResponse AndAlso response IsNot Nothing Then
-                            Using reader As New StreamReader(response.GetResponseStream())
+                            If request.HaveResponse AndAlso response IsNot Nothing Then
+                                Using reader As New StreamReader(response.GetResponseStream())
 
-                                returnXML = New XmlDocument()
-                                returnXML.LoadXml(reader.ReadToEnd())
-                            End Using
-                        End If
+                                    returnXML = New XmlDocument()
+                                    returnXML.LoadXml(reader.ReadToEnd())
+                                End Using
+                            End If
 
-                    End Using
+                        End Using
+                    Catch ex As WebException
+                        Log.Write("Error contacting " & Address.ToString() & ": " & ex.Message)
+                    End Try
 
                 End If
                 Return returnXML
+            End Function
+
+            Protected Function GetHTTPData(ByVal key As NetworkCredential, ByVal address As Uri) As String
+                If address IsNot Nothing Then
+                    Dim request As HttpWebRequest = WebRequest.Create(address)
+                    If key IsNot Nothing Then
+                        request.Credentials = key
+                    End If
+
+                    request.Method = "POST"
+                    request.KeepAlive = False
+                    request.UserAgent = Client
+                    request.Timeout = 7000
+                    request.ContentLength = 0
+
+                    Try
+                        Using response As HttpWebResponse = request.GetResponse()
+                            If request.HaveResponse AndAlso response IsNot Nothing Then
+                                Using reader As New StreamReader(response.GetResponseStream())
+                                    Return reader.ReadToEnd()
+                                End Using
+                            End If
+
+                        End Using
+                    Catch ex As WebException
+                        Log.Write("Error contacting " & address.ToString() & ": " & ex.Message)
+                    End Try
+
+                End If
+
+                Return Nothing
             End Function
 
             Protected Function PostXML(ByVal Key As NetworkCredential, ByVal Address As Uri, ByVal Content As String) As HttpStatusCode
@@ -374,7 +470,7 @@ Namespace TeamSupport
                     request.ContentType = "application/x-www-form-urlencoded"
                     request.UserAgent = Client
                     request.ContentLength = byteData.Length
-                    request.ReadWriteTimeout = 20000
+                    request.ReadWriteTimeout = 60 * 1000 'mailchimp sync may take awhile, give it a minute
 
                     Try
                         Using postStream As Stream = request.GetRequestStream()
@@ -389,10 +485,12 @@ Namespace TeamSupport
                                 If returnStatus <> HttpStatusCode.OK Then
                                     Log.Write("Error posting query string: " & response.StatusDescription)
                                 End If
+
                             End If
                         End Using
                     Catch ex As WebException
                         Log.Write("Error contacting " & Address.ToString() & ": " & ex.Message)
+                        Log.Write(New StreamReader(ex.Response.GetResponseStream()).ReadToEnd())
                         Return Nothing
                     End Try
 

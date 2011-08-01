@@ -245,7 +245,7 @@ Namespace TeamSupport
                 Return Nothing
             End Function
 
-            Private Function CreateNote(ByVal AccountID As String, ByVal thisTicket As Ticket, ByVal SecurityToken As String, ByVal CompanyName As String) As Boolean
+            Private Function CreateNote(ByVal AccountID As String, ByVal thisTicket As Ticket) As Boolean
                 Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
                 Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
                                                                     thisTicket.Name, thisTicket.TicketID, HtmlUtility.StripHTML(description.Description), Environment.NewLine)
@@ -254,9 +254,9 @@ Namespace TeamSupport
                     Dim urlPost As String
 
                     If UseSSL Then
-                        urlPost = "https://" + CompanyName + ".highrisehq.com/companies/" + AccountID + "/notes.xml"
+                        urlPost = "https://" + CRMLinkRow.Username + ".highrisehq.com/companies/" + AccountID + "/notes.xml"
                     Else
-                        urlPost = "http://" + CompanyName + ".highrisehq.com/companies/" + AccountID + "/notes.xml"
+                        urlPost = "http://" + CRMLinkRow.Username + ".highrisehq.com/companies/" + AccountID + "/notes.xml"
                     End If
 
                     Dim postData As String = "<note><body><![CDATA[" + NoteBody + "]]></body></note>"
@@ -291,7 +291,7 @@ Namespace TeamSupport
 
                     'Dim cred As NetworkCredential = New NetworkCredential(SecurityToken, "x")
 
-                    Request.Credentials = New NetworkCredential(SecurityToken, "xx") ' cred.GetCredential(Request.RequestUri, "Basic") '
+                    Request.Credentials = New NetworkCredential(CRMLinkRow.SecurityToken, "xx") ' cred.GetCredential(Request.RequestUri, "Basic") '
 
 
 
