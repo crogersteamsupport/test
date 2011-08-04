@@ -172,8 +172,8 @@ Namespace TeamSupport
                 Catch ex As Exception
                     SyncError = True
 
+                    ErrorCode = IntegrationError.Unknown
                     Log.Write("Error in Perform Highrise Sync: " + ex.Message)
-                    LogSyncResult("Error in Perform Highrise Sync: " & ex.Message)
                 End Try
 
                 Return Not SyncError
@@ -229,13 +229,13 @@ Namespace TeamSupport
                         If UseSSL Then
                             'If UseSSL is true then it means this is probably the first time we've called this.  Set to false then try again
                             UseSSL = False
+
                         Else
                             'Don't need to raise the rror flag the first time through.
-
+                            ErrorCode = IntegrationError.Unknown
                             Log.Write("Error in GetHighriseXML: " + ex.ToString)
-                            LogSyncResult("Error in GetHighriseXML: " & ex.ToString())
-
                             SyncError = True
+
                         End If
 
                         Return Nothing
@@ -246,9 +246,23 @@ Namespace TeamSupport
             End Function
 
             Private Function CreateNote(ByVal AccountID As String, ByVal thisTicket As Ticket) As Boolean
+                Dim authorName As String
+                Using findAuthor As New Users(User)
+                    findAuthor.LoadByUserID(thisTicket.CreatorID)
+
+                    If findAuthor.Count > 0 Then
+                        Dim author As User
+                        author = findAuthor(0)
+
+                        If author IsNot Nothing Then
+                            authorName = author.FirstLastName
+                        End If
+                    End If
+                End Using
+
                 Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
-                Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
-                                                                    thisTicket.Name, thisTicket.TicketID, HtmlUtility.StripHTML(description.Description), Environment.NewLine)
+                Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}{3}{4}", _
+                                                                    thisTicket.Name, thisTicket.TicketID, HtmlUtility.StripHTML(description.Description), Environment.NewLine, IIf(authorName IsNot Nothing, "Created by " & authorName, ""))
 
                 Try
                     Dim urlPost As String
@@ -271,29 +285,13 @@ Namespace TeamSupport
 
                     Dim ByteData = Text.UTF8Encoding.UTF8.GetBytes(postData)
 
-
-                    'System.Threading.Thread.Sleep(1000) '1 second sleep to see if there are issues with the API and throttling
-
-
-                    'Dim request As HttpWebRequest = DirectCast(WebRequest.Create(urlPost), HttpWebRequest)
-
-                    'request = DirectCast(WebRequest.Create(urlPost), HttpWebRequest)
-
                     Request = WebRequest.Create(urlPost)
-
                     Request.Method = "POST"
-
                     Request.ContentType = "application/xml"
-
                     Request.ContentLength = ByteData.Length
-
                     Request.PreAuthenticate = True
 
-                    'Dim cred As NetworkCredential = New NetworkCredential(SecurityToken, "x")
-
-                    Request.Credentials = New NetworkCredential(CRMLinkRow.SecurityToken, "xx") ' cred.GetCredential(Request.RequestUri, "Basic") '
-
-
+                    Request.Credentials = New NetworkCredential(CRMLinkRow.SecurityToken, "xx")
 
 
                     'OK, let's write the data
@@ -303,11 +301,7 @@ Namespace TeamSupport
                     Catch ex As Exception
                         If Not PostStream Is Nothing Then PostStream.Close()
 
-                        'Removing sync error from creating notes
-                        'SyncError = True
-
                         Log.Write("Create Note: " + ex.Message.ToString)
-
                     End Try
 
                     Try
@@ -315,32 +309,20 @@ Namespace TeamSupport
                         Log.Write("Create Note URI: " + urlPost)
                         Log.Write("Create Note Post Data: " + postData)
 
-                        'Dim response As HttpWebResponse
-                        'Using response As HttpWebResponse = Request.GetResponse
-                        'End Using
                         Dim response As HttpWebResponse
                         response = Request.GetResponse
 
-
-
-                        'Response = DirectCast(request.GetResponse(), HttpWebRequest)
-
-                        'Dim response2 As HttpWebResponse = request.GetResponse 'I think this forces the message to be sent
                         Reader = New StreamReader(response.GetResponseStream())
 
 
-                        'ts.PublicAddText(response.StatusCode.ToString, formname)
                         response.Close()
 
                     Catch wex As WebException
-                        'removing Sync error from creating notes.
-                        'SyncError = True
-
                         Log.Write("Error in create Note 2: " + wex.Message.ToString)
-                        LogSyncResult("Error in create Note 2: " + wex.Message.ToString())
+                        ErrorCode = IntegrationError.Unknown
+
                     End Try
 
-                    'Response.Close()
                     PostStream.Close()
 
                 Catch ex As Exception
