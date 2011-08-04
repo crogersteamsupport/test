@@ -225,6 +225,10 @@ Namespace TeamSupport
 
                     Return True
                 Else
+                    If LoginReturn.ToLower() = "password expired" Or LoginReturn.ToLower().Contains("invalid_login") Then
+                        ErrorCode = IntegrationError.InvalidLogin
+                    End If
+
                     Log.Write("Login failed: " & LoginReturn)
                     Return False
                 End If
