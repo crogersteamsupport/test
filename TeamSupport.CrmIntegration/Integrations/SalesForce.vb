@@ -490,7 +490,8 @@ Namespace TeamSupport
                         While Not done
                             For i As Integer = 0 To qr.records.Length - 1
                                 Dim ProductName, LicenseType, LicenseStatus, AccountID As String
-                                Dim ExpirationDate As Date
+                                Dim ExpirationDate As Date? = Nothing
+                                Dim tempExpiration As Date
 
                                 Log.Write("In GetProductAndLicenseInfo routine - i=" + i.ToString)
 
@@ -498,7 +499,14 @@ Namespace TeamSupport
                                 Dim Products As sObject = records(i)
 
                                 ProductName = records(i).Any(0).InnerText
-                                ExpirationDate = Date.Parse(records(i).Any(1).InnerText)
+
+                                If Date.TryParse(records(i).Any(1).InnerText, tempExpiration) Then
+                                    ExpirationDate = tempExpiration
+                                Else
+                                    ExpirationDate = Nothing
+                                    Log.Write("failed to parse expiration date value: " & records(i).Any(1).InnerText)
+                                End If
+
                                 LicenseType = records(i).Any(2).InnerText
                                 LicenseStatus = records(i).Any(3).InnerText
                                 AccountID = records(i).Any(4).InnerText
@@ -512,7 +520,7 @@ Namespace TeamSupport
 
                                 If thisProduct IsNot Nothing Then
                                     Log.Write(String.Format("ProductName = {0}, ExpirationDate = {1}, ProductID = {2}, AccountID = {3}", _
-                                                            ProductName, ExpirationDate.ToString(), thisProduct.ProductID.ToString(), AccountID))
+                                                            ProductName, IIf(ExpirationDate IsNot Nothing, ExpirationDate.ToString(), ""), thisProduct.ProductID.ToString(), AccountID))
 
                                     ' 2) If we can, lets see if the product ID is assigned to this customer
                                     Dim findCompany As New Organizations(User)
@@ -538,7 +546,7 @@ Namespace TeamSupport
                                             '      3) Update the waranty expiration date (this should be a custom field on product)
                                             '         Update CustomValue set CustomValue={ExpirationDate} where CustomFieldID = 3761 and RefID={OrganizationProductID}
 
-                                            If ExpirationDate > thisOrgProd.SupportExpiration Then 'test to see if we are using the most up to date expiration date (only use product/expiration date that is the most recent)
+                                            If ExpirationDate IsNot Nothing AndAlso ExpirationDate > thisOrgProd.SupportExpiration Then 'test to see if we are using the most up to date expiration date (only use product/expiration date that is the most recent)
                                                 thisOrgProd.SupportExpiration = ExpirationDate
                                                 thisOrgProd.Collection.Save()
 
