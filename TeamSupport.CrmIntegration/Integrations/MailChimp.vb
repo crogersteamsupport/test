@@ -32,7 +32,7 @@ Namespace TeamSupport
                     Log.Write("list id: " & listID)
                     'get customer email addresses for this account
                     Dim theseCustomers As New Organizations(User)
-                    theseCustomers.LoadByParentID(CRMLinkRow.OrganizationID, True)
+                    theseCustomers.LoadByParentID(CRMLinkRow.OrganizationID, False)
 
                     Dim emailBatches As New List(Of StringBuilder)()
                     Dim emailBatch As StringBuilder = Nothing
