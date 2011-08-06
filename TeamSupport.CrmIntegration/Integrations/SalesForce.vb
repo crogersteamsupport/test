@@ -579,7 +579,8 @@ Namespace TeamSupport
                                             Log.Write("Product added.")
                                         End If
 
-                                        Log.Write("Product not updated because company does not exist")
+                                    Else
+                                        Log.Write("Product not updated because company does not exist.")
                                     End If
 
                                 End If
