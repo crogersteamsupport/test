@@ -499,6 +499,7 @@ Namespace TeamSupport
 
                     If qr.size > 0 Then
                         While Not done
+
                             For i As Integer = 0 To qr.records.Length - 1
                                 Dim ProductName, LicenseType, LicenseStatus, AccountID As String
                                 Dim ExpirationDate As Date? = Nothing
@@ -597,7 +598,12 @@ Namespace TeamSupport
                                 End If
 
                             Next
-                            done = True
+
+                            done = qr.done
+
+                            If Not done Then
+                                qr = Binding.queryMore(qr.queryLocator)
+                            End If
 
                         End While
                     Else
