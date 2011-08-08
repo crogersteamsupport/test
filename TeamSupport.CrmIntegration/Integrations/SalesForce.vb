@@ -213,7 +213,7 @@ Namespace TeamSupport
                             End If
                         End If
                     Catch ex As Exception
-                        LogSyncResult("Error in ProcessSalesForceAccountInformation: " + ex.ToString)
+                        ErrorCode = IntegrationError.Unknown
                         Log.Write("**Error:  " + ex.Message)
                         Return False
                     End Try
@@ -412,7 +412,7 @@ Namespace TeamSupport
 
                 Catch ex As Exception
                     Log.Write("Failed to execute query succesfully, error message was: " & ex.Message)
-                    LogSyncResult("Error in GetContactInformation: " + ex.ToString)
+                    ErrorCode = IntegrationError.Unknown
 
                 End Try
             End Sub
@@ -440,7 +440,7 @@ Namespace TeamSupport
                     Success = noteSave.success
                 Catch ex As Exception
                     Log.Write("Error in CreateNote: " & ex.Message)
-                    LogSyncResult("Error in CreateNote: " & ex.Message)
+                    ErrorCode = IntegrationError.Unknown
 
                     Success = False
                 End Try
