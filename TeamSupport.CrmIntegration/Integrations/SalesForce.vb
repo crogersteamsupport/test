@@ -458,6 +458,7 @@ Namespace TeamSupport
             Private Sub GetProductAndLicenseInfo(ByVal SFLastUpdateTime As String)
                 'This is *** CUSTOM CODE *** for Axceler to see if we can get their license and product information
 
+       
                 Log.Write("In GetProductAndLicenseInfo routine.")
 
                 'The results will be placed in qr
@@ -473,8 +474,18 @@ Namespace TeamSupport
                 Try
                     Dim done As Boolean = False
 
+                    Dim thisSettings As New ServiceLibrary.Settings(User, Processor.ServiceName)
+
                     Try
-                        qr = Binding.query("select Product__c, Expiration_Date__c, License_type__c, Status__c, Account__c from License__c where SystemModStamp >= " + SFLastUpdateTime + " ORDER BY Product__c") 'added order by 3/25/11
+                        Dim queryString As String
+                        If thisSettings.ReadBool("ResyncAllAxcelerLicenses", True) Then
+                            queryString = "select Product__c, Expiration_Date__c, License_type__c, Status__c, Account__c from License__c ORDER BY Product__c"
+                            Log.Write("Resyncing all products.")
+                        Else
+                            queryString = "select Product__c, Expiration_Date__c, License_type__c, Status__c, Account__c from License__c where SystemModStamp >= " + SFLastUpdateTime + " ORDER BY Product__c" 'added order by 3/25/11
+                        End If
+
+                        qr = Binding.query(queryString)
 
                         done = False
 
