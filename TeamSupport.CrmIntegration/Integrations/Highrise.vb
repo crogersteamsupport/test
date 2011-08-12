@@ -246,7 +246,7 @@ Namespace TeamSupport
             End Function
 
             Private Function CreateNote(ByVal AccountID As String, ByVal thisTicket As Ticket) As Boolean
-                Dim authorName As String
+                Dim authorName As String = Nothing
                 Using findAuthor As New Users(User)
                     findAuthor.LoadByUserID(thisTicket.CreatorID)
 

@@ -171,7 +171,6 @@ Namespace TeamSupport
                         thisCompany.CRMLinkID = company.AccountID
                         thisCompany.IsActive = True
 
-
                         With New Organizations(User)
                             .LoadByOrganizationID(ParentOrgID)
                             thisCompany.SlaLevelID = .Item(0).SlaLevelID
@@ -269,20 +268,26 @@ Namespace TeamSupport
 
                     Dim findUser As New Users(User)
                     Dim thisUser As User
-                    Dim userIsNew As Boolean = False
 
                     findUser.LoadByOrganizationID(thisCompany.OrganizationID, False)
                     If findUser.FindByEmail(person.Email) IsNot Nothing Then
                         thisUser = findUser.FindByEmail(person.Email)
 
                     Else
+                        Dim pw = DataUtils.GenerateRandomPassword()
+
                         'add the contact
-                        userIsNew = True
                         thisUser = (New Users(User)).AddNewUser()
                         thisUser.OrganizationID = thisCompany.OrganizationID
+                        thisUser.IsActive = True
+                        thisUser.IsPasswordExpired = True
                         thisUser.IsPortalUser = allowPortalAccess AndAlso CRMLinkRow.AllowPortalAccess
-                        thisUser.CryptedPassword = "cfsdfewwgewff" 'not sure why this is done this way but keep as is for now
+                        thisUser.CryptedPassword = Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(pw, "MD5")
                         thisUser.Collection.Save()
+
+                        If allowPortalAccess AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
+                            EmailPosts.SendWelcomePortalUser(User, thisUser.UserID, pw)
+                        End If
                     End If
 
                     With thisUser
@@ -290,16 +295,11 @@ Namespace TeamSupport
                         .FirstName = person.FirstName
                         .LastName = person.LastName
                         .Title = person.Title
-                        .IsActive = True
                         .MarkDeleted = False
 
                         .Collection.Save()
                     End With
 
-                    If allowPortalAccess AndAlso userIsNew AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
-                        'send the email
-                        DataUtils.ResetPassword(User, thisUser, True)
-                    End If
                     Log.Write("Updating phone information.")
                     Dim findPhone As New PhoneNumbers(User)
 

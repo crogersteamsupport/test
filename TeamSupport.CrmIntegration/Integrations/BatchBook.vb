@@ -26,8 +26,6 @@ Namespace TeamSupport
             End Function
 
             Private Function SyncAccounts() As Boolean
-                Dim Key As String = CRMLinkRow.SecurityToken
-                Dim CompanyName As String = CRMLinkRow.Username
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
                 Dim TagsToMatch As String = CRMLinkRow.TypeFieldMatch
 
@@ -42,14 +40,14 @@ Namespace TeamSupport
                             Return False
                         End If
 
-                        CompaniesToSync = GetBatchBookXML(Key, CompanyName, "companies.xml?tag=" & Trim(TagToMatch))
+                        CompaniesToSync = GetBatchBookXML("companies.xml?tag=" & Trim(TagToMatch))
 
                         If CompaniesToSync IsNot Nothing Then
                             If CompanySyncData Is Nothing Then
                                 CompanySyncData = New List(Of CompanyData)()
                             End If
 
-                            Dim thisCompanyData As List(Of CompanyData) = ParseBBCompanyXML(CompaniesToSync, CRMLinkRow.LastLink)
+                            Dim thisCompanyData As List(Of CompanyData) = ParseBBCompanyXML(CompaniesToSync)
 
                             'avoid duplicates by only adding companies that aren't already in the list
                             For Each newData As CompanyData In thisCompanyData
@@ -68,11 +66,11 @@ Namespace TeamSupport
                     Next
                 Else
                     'only one tag, don't need to loop
-                    CompaniesToSync = GetBatchBookXML(Key, CompanyName, "companies.xml?tag=" & TagsToMatch)
+                    CompaniesToSync = GetBatchBookXML("companies.xml?tag=" & TagsToMatch)
 
                     If CompaniesToSync IsNot Nothing Then
                         CompanySyncData = New List(Of CompanyData)()
-                        CompanySyncData = ParseBBCompanyXML(CompaniesToSync, CRMLinkRow.LastLink)
+                        CompanySyncData = ParseBBCompanyXML(CompaniesToSync)
                     End If
                 End If
 
@@ -88,7 +86,7 @@ Namespace TeamSupport
                     Log.Write("Updating people information...")
 
                     For Each company As CompanyData In CompanySyncData
-                        Dim PeopleToSync As XmlDocument = GetBatchBookXML(Key, CompanyName, "companies/" & company.AccountID & "/people.xml")
+                        Dim PeopleToSync As XmlDocument = GetBatchBookXML("companies/" & company.AccountID & "/people.xml")
                         If PeopleToSync IsNot Nothing Then
                             Dim PeopleSyncData As List(Of EmployeeData) = ParseBBPeopleXML(PeopleToSync)
 
@@ -108,7 +106,7 @@ Namespace TeamSupport
                 Return True
             End Function
 
-            Private Function ParseBBCompanyXML(ByRef CompaniesToSync As XmlDocument, ByVal LastSync As Date?) As List(Of CompanyData)
+            Private Function ParseBBCompanyXML(ByRef CompaniesToSync As XmlDocument) As List(Of CompanyData)
                 Dim CompanySyncData As List(Of CompanyData) = Nothing
 
                 'parse the xml doc to get information about each customer
@@ -119,7 +117,7 @@ Namespace TeamSupport
                 End If
 
                 For Each company As XElement In allcust.Descendants("company")
-                    If LastSync Is Nothing Or Date.ParseExact(company.Element("updated_at").Value, "ddd MMM dd HH:mm:ss 'UTC' yyyy", Nothing).AddMinutes(30) > LastSync Then
+                    If CRMLinkRow.LastLink Is Nothing Or Date.ParseExact(company.Element("updated_at").Value, "ddd MMM dd HH:mm:ss 'UTC' yyyy", Nothing).AddMinutes(30) > CRMLinkRow.LastLink Then
                         Dim thisCustomer As New CompanyData()
                         Dim address As XElement = company.Element("locations").Element("location")
 
@@ -177,12 +175,12 @@ Namespace TeamSupport
                 Return EmployeeSyncData
             End Function
 
-            Private Function GetBatchBookXML(ByVal Key As String, ByVal CompanyName As String, ByVal PathAndQuery As String) As XmlDocument
-                Dim BBUri As New Uri("https://" & CompanyName & ".batchbook.com/service/" & PathAndQuery)
+            Private Function GetBatchBookXML(ByVal PathAndQuery As String) As XmlDocument
+                Dim BBUri As New Uri("https://" & CRMLinkRow.Username & ".batchbook.com/service/" & PathAndQuery)
                 Dim returnXML As XmlDocument = Nothing
 
-                If CompanyName <> "" Then
-                    returnXML = GetXML(New NetworkCredential(Key, "X"), BBUri)
+                If CRMLinkRow.Username <> "" Then
+                    returnXML = GetXML(New NetworkCredential(CRMLinkRow.SecurityToken, "X"), BBUri)
                 End If
                 Return returnXML
             End Function
