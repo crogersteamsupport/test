@@ -40,38 +40,29 @@ namespace TeamSupport.Handlers
       string path = request.RawUrl.ToLower().Trim();
       if (path.IndexOf("services/") > -1 && !(path.EndsWith("/js") || path.EndsWith("/jsdebug")))
       {
+        app.Context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
         //check for old webservice privateservices
         if (path.IndexOf("privateservices.asmx") > -1) return;
+        if (path.IndexOf("getmainpageupdate") > -1) return;
+        if (path.IndexOf("signout") > -1) return;
+        
 
         var bytes = new byte[request.InputStream.Length];
         request.InputStream.Read(bytes, 0, bytes.Length);
         request.InputStream.Position = 0;
         string content = Encoding.ASCII.GetString(bytes);
-        if (content.ToLower().IndexOf(TSAuthentication.SessionID.ToLower() ) < 0)
+
+        if (TSAuthentication.Ticket == null || TSAuthentication.Ticket.Expired || content.ToLower().IndexOf(TSAuthentication.SessionID.ToLower() ) < 0)
         {
-          /*
-          try
-          {
-            TeamSupport.Data.ExceptionLogs.AddLog(TSAuthentication.GetLoginUser(), "CSFR Service Detected", "There was a CSFR detected for " + TSAuthentication.UserID, "SessionModule", path, "SessionID: " + TSAuthentication.SessionID + "  Content: " + content, app.Context.Request.Browser.Browser + " " + app.Context.Request.Browser.Version);
-          }
-          catch (Exception)
-          {
-            
-          }*/
-          AccessDenied(app);
+          app.Response.StatusCode = (int)HttpStatusCode.NoContent;
+          app.Response.End();
+          app.CompleteRequest();
         }
-        app.Context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
       }
     }
 
-    private void AccessDenied(HttpApplication app)
-    {
-      app.Response.StatusCode = (int)HttpStatusCode.NoContent;
-      app.Response.StatusDescription = "No Response";
-      app.Response.Write("No Response");
-      app.CompleteRequest();
-    }
 
 
   }
 }
+

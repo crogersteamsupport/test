@@ -11,7 +11,7 @@
 
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
 
-  <script src="../js_5/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js" type="text/javascript"></script>
 
   <style type="text/css">
     .buttons { padding: 10px 0; }

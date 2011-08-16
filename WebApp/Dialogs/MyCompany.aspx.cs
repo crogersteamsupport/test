@@ -124,7 +124,6 @@ public partial class Dialogs_Organization : BaseDialogPage
     textWebSite.Text = organization.Website;
     textDomains.Text = organization.CompanyDomains;
     textDescription.Text = organization.Description;
-    cbApiEnabled.Checked = organization.IsApiEnabled;
     cbDisableStatusNotifications.Checked = Settings.OrganizationDB.ReadBool("DisableStatusNotification", false);
     cbRequireCustomer.Checked = Settings.OrganizationDB.ReadBool("RequireNewTicketCustomer", false);
     cbAdminCustomers.Checked = organization.AdminOnlyCustomers;
@@ -155,11 +154,6 @@ public partial class Dialogs_Organization : BaseDialogPage
 
     if (organization.InternalSlaLevelID != null) cmbSla.SelectedValue = organization.InternalSlaLevelID.ToString();
 
-    if (organization.IsApiActive == null || organization.IsApiActive == false)
-    {
-      btnResetAPI.Visible = false;
-      cbApiEnabled.Visible = false;
-    }
   }
 
   public override bool Save()
@@ -186,7 +180,6 @@ public partial class Dialogs_Organization : BaseDialogPage
       organization.InternalSlaLevelID = null;
     else
       organization.InternalSlaLevelID = int.Parse(cmbSla.SelectedValue);
-    organization.IsApiEnabled = cbApiEnabled.Checked;
     Settings.OrganizationDB.WriteBool("DisableStatusNotification", cbDisableStatusNotifications.Checked);
     Settings.OrganizationDB.WriteBool("RequireNewTicketCustomer", cbRequireCustomer.Checked);
     organization.AdminOnlyCustomers = cbAdminCustomers.Checked;
@@ -226,14 +219,6 @@ public partial class Dialogs_Organization : BaseDialogPage
   }
 
 
-
-
-  protected void btnResetAPI_Click(object sender, EventArgs e)
-  {
-    Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
-    organization.WebServiceID = Guid.NewGuid();
-    organization.Collection.Save();
-  }
   protected void btnResetEmail_Click(object sender, EventArgs e)
   {
     Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);

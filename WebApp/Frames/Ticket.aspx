@@ -537,7 +537,7 @@
         $('#divNameBox').show();
         $('#divNameLabel').hide();
         var textBox = $find("<%=textName.ClientID %>");
-        var name = $("#" + "<%=lblTicketName.ClientID %>").html();
+        var name = $("#" + "<%=lblTicketName.ClientID %>").text();
         textBox.set_value(name);
         textBox.focus();
       }
@@ -551,8 +551,8 @@
 
 
       function SaveTicketName() {
-        var name = $find("<%=textName.ClientID %>").get_value();
-        $("#" + "<%=lblTicketName.ClientID %>").html(name);
+        var name = $find("<%=textName.ClientID %>").get_value(); 
+        $("#" + "<%=lblTicketName.ClientID %>").text(name);
         PageMethods.UpdateTicketName(GetTicketID(), name);
         $('#divNameBox').hide();
         $('#divNameLabel').show();

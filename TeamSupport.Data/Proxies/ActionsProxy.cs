@@ -22,12 +22,13 @@ namespace TeamSupport.Data
     [DataMember] public bool IsVisibleOnPortal { get; set; }
     [DataMember] public bool IsKnowledgeBase { get; set; }
     [DataMember] public string ImportID { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
+    [DataMember] public DateTime? DateCreated { get; set; }
+    [DataMember] public DateTime? DateModified { get; set; }
+    [DataMember] public int? CreatorID { get; set; }
+    [DataMember] public int? ModifierID { get; set; }
     [DataMember] public int TicketID { get; set; }
     [DataMember] public string Description { get; set; }
+    [DataMember] public string DisplayName { get; set; }
           
   }
   
@@ -48,6 +49,7 @@ namespace TeamSupport.Data
       result.SystemActionTypeID = this.SystemActionTypeID;
       result.ActionTypeID = this.ActionTypeID;
       result.ActionID = this.ActionID;
+      result.DisplayName = this.DisplayName;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
       result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);

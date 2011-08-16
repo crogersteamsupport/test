@@ -11,12 +11,11 @@ namespace TeamSupport.WebUtils
 {
   public class TSAuthentication
   {
-    const int TimeOut = 480; // 8 hours
-
     public static FormsAuthenticationTicket Ticket
     {
       get 
       {
+        if (HttpContext.Current.User == null) return null;
         if (HttpContext.Current.User.Identity is FormsIdentity)
         {
           return (HttpContext.Current.User.Identity as FormsIdentity).Ticket;
@@ -73,7 +72,6 @@ namespace TeamSupport.WebUtils
       }
     }
 
-
     public static string SessionID
     {
       get
@@ -94,11 +92,19 @@ namespace TeamSupport.WebUtils
       }
     }
 
+    public static int TimeOut 
+    {
+      get 
+      {
+        return int.Parse(System.Web.Configuration.WebConfigurationManager.AppSettings["SessionTimeOut"]);
+      }
+    }
+
     public static void SlideExpiration()
     {
       FormsAuthenticationTicket ticket = (HttpContext.Current.User.Identity as FormsIdentity).Ticket;
       if (ticket == null) return;
-      ticket = new FormsAuthenticationTicket(1, ticket.Name, DateTime.UtcNow, DateTime.UtcNow.AddMinutes(TimeOut), false, ticket.UserData, FormsAuthentication.FormsCookiePath);
+      ticket = new FormsAuthenticationTicket(1, ticket.Name, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(TimeOut), false, ticket.UserData, FormsAuthentication.FormsCookiePath);
       HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket));
       cookie.Domain = FormsAuthentication.CookieDomain;
       HttpContext.Current.Response.Cookies.Add(cookie);
@@ -113,7 +119,7 @@ namespace TeamSupport.WebUtils
       else
       {
         string userData = GetUserDataString(user.UserID, user.OrganizationID, isBackdoor, Guid.NewGuid().ToString(), user.IsSystemAdmin);
-        FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, user.DisplayName, DateTime.UtcNow, DateTime.UtcNow.AddMinutes(TimeOut), false, userData, FormsAuthentication.FormsCookiePath);
+        FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, user.DisplayName, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(TimeOut), false, userData, FormsAuthentication.FormsCookiePath);
         string encTicket = FormsAuthentication.Encrypt(ticket);
         HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
         cookie.Domain = FormsAuthentication.CookieDomain;

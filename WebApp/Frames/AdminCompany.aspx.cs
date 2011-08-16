@@ -33,26 +33,18 @@ public partial class Frames_AdminCompany : BaseFramePage
     btnChat.Visible = UserSession.CurrentUser.IsSystemAdmin;
     btnNewPhone.Visible = UserSession.CurrentUser.IsSystemAdmin;
     btnNewAddress.Visible = UserSession.CurrentUser.IsSystemAdmin;
-    btnCrm.Visible = UserSession.CurrentUser.IsSystemAdmin;
 
     if (UserSession.CurrentUser.IsSystemAdmin)
     {
       pnlProperties.Attributes.Add("class", "");
       pnlPhone.Attributes.Add("class", "");
       pnlAddress.Attributes.Add("class", "");
-      pnlCrm.Attributes.Add("class", "");
     }
     else
     {
       pnlProperties.Attributes.Add("class", "adminDiv");
       pnlPhone.Attributes.Add("class", "adminDiv");
       pnlAddress.Attributes.Add("class", "adminDiv");
-      pnlCrm.Attributes.Add("class", "adminDiv");
-    }
-
-    if (UserSession.CurrentUser.ProductType == ProductType.Express)
-    {
-      divCrm.Visible = false;
     }
 
     divChat.Visible = UserSession.CurrentUser.HasChatRights;
@@ -60,7 +52,6 @@ public partial class Frames_AdminCompany : BaseFramePage
     if (btnNewAddress.Visible) btnNewAddress.OnClientClick = "ShowDialog(top.GetAddressDialog(" + _organizationID.ToString() + ", 9)); return false;";
     if (btnNewPhone.Visible) btnNewPhone.OnClientClick = "ShowDialog(top.GetPhoneDialog(" + _organizationID.ToString() + ", 9)); return false;";
     if (btnEditProperties.Visible) btnEditProperties.OnClientClick = "ShowDialog(top.GetMyCompanyDialog(" + _organizationID.ToString() + ")); return false;";
-    if (btnCrm.Visible) btnCrm.OnClientClick = "ShowDialog(top.GetCRMPropertiesDialog(" + _organizationID.ToString() + ")); return false;";
     if (btnChat.Visible) btnChat.OnClientClick = "ShowDialog(top.GetChatPropertiesDialog(" + _organizationID.ToString() + ")); return false;";
 
   }
@@ -69,7 +60,6 @@ public partial class Frames_AdminCompany : BaseFramePage
   public void Refresh()
   {
     LoadProperties(_organizationID);
-    LoadCrm(_organizationID);
     LoadChat(_organizationID);
     LoadNumbers(_organizationID);
     LoadAddresses(_organizationID);
@@ -176,89 +166,8 @@ public partial class Frames_AdminCompany : BaseFramePage
 
 
     
-    //table.Rows.Add(new string[] { "Web Services ID:", organization.WebServiceID.ToString() });
-    if (UserSession.CurrentUser.IsSystemAdmin)
-    {
-
-      if (organization.ProductType != ProductType.Express)
-      {
-        if (organization.IsApiActive != null && organization.IsApiActive == true)
-        {
-          //table.Rows.Add(new string[] { "API is Activated.", "" });
-          if (organization.IsApiEnabled)
-            table.Rows.Add(new string[] { "API is Enabled.", "" });
-          else
-            table.Rows.Add(new string[] { "API is Disabled.", "" });
-
-          table.Rows.Add(new string[] { "API Authentication Token:", "<span class=\"apiToken\" style=\"display:none;\"></span><a class=\"showApiToken\" href=\"#\" onclick=\"GetApiToken();\">Show Me</a>" });
-
-        }
-        else
-        {
-          table.Rows.Add(new string[] { "API is Not Activated.", "Please contact us at 800.596.2820 x806 or send an email to <a href=\"mailto:support@teamsupport.com\">sales@teamsupport.com</a>" });
-        }
-      }
-      
-    }
     rptProperties.DataSource = table;
     rptProperties.DataBind();
-  }
-
-  private void LoadCrm(int organizationID)
-  {
-    //lblCrm.Visible = true;
-    //lblCrm.Text = "Coming Soon.";
-    //return;
-
-    lblCrm.Visible = false;
-
-    CRMLinkTable crmLinkTable = new CRMLinkTable(UserSession.LoginUser);
-    crmLinkTable.LoadByOrganizationID(organizationID);
-
-    if (crmLinkTable.IsEmpty)
-    {
-      lblCrm.Visible = true;
-      btnCRMResync.Visible = false;
-      return;
-    
-    }
-    
-
-    DataTable table = new DataTable();
-    table.Columns.Add("Name");
-    table.Columns.Add("Value");
-
-    CRMLinkTableItem item = crmLinkTable[0];
-    if (item.CRMType.ToLower().Trim() == "highrise")
-    {
-      string link = @"{0} <a href=""http://{0}.highrisehq.com"" target=""_blank"">Test</a>";
-      table.Rows.Add(new string[] { "CRM Type:", "Highrise" });
-      table.Rows.Add(new string[] { "Highrise company name:", string.Format(link, item.Username) });
-      table.Rows.Add(new string[] { "Tag which identifies customer:", item.TypeFieldMatch });
-      table.Rows.Add(new string[] { "CRM synchronization active:", item.Active.ToString() });
-    }
-    else if (item.CRMType.ToLower().Trim() == "batchbook")
-    {
-      table.Rows.Add(new string[] { "CRM Type:", "Batchbook" });
-      table.Rows.Add(new string[] { "Batchbook user name:", item.Username });
-      table.Rows.Add(new string[] { "Tag which identifies customer:", item.TypeFieldMatch });
-      table.Rows.Add(new string[] { "CRM synchronization active:", item.Active.ToString() });
-    }
-    else if (item.CRMType.ToLower().Trim() == "salesforce")
-    {
-      table.Rows.Add(new string[] { "CRM Type:", "Salesforce.com" });
-      table.Rows.Add(new string[] { "Salesforce user name:", item.Username });
-      table.Rows.Add(new string[] { "Account type to link to TeamSupport:", item.TypeFieldMatch });
-      table.Rows.Add(new string[] { "CRM synchronization active:", item.Active.ToString() });
-    }
-    else
-    {
-      lblCrm.Visible = true;
-      return;
-    }
-
-    rptCrm.DataSource = table;
-    rptCrm.DataBind();
   }
 
   private void LoadChat(int organzationID)
@@ -272,9 +181,9 @@ public partial class Frames_AdminCompany : BaseFramePage
     //builder.Append("<td>Available Image:</td>");
     builder.Append("<div><strong>Customer Chat Link:</strong></div>");
     builder.Append("<div>");
-    string script = string.Format("window.open('https://app.teamsupport.com/Chat/ChatInit.aspx?uid={0}', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'); return false;", organization.ChatID.ToString());
-    
-    string link = string.Format("<a href=\"#\" onclick=\"{0}\"><img src=\"https://app.teamsupport.com/dc/{1}/chat/image\" border=\"0\" /></a>", script, organization.OrganizationID);
+    string script = string.Format("window.open('{1}/Chat/ChatInit.aspx?uid={0}', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'); return false;", organization.ChatID.ToString(), Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com"));
+
+    string link = string.Format("<a href=\"#\" onclick=\"{0}\"><img src=\"{2}/dc/{1}/chat/image\" border=\"0\" /></a>", script, organization.OrganizationID, Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com"));
     textChatCode.Text = link;
     builder.Append(string.Format("<a href=\"#\" onclick=\"{0}\">Test</a>", script));
     builder.Append("</div>");
@@ -301,14 +210,6 @@ public partial class Frames_AdminCompany : BaseFramePage
 
     rptPhone.DataSource = table;
     rptPhone.DataBind();
-  }
-
-  [WebMethod(true)]
-  public static string GetApiToken()
-  {
-    if (!UserSession.CurrentUser.IsSystemAdmin) return "";
-    Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
-    return organization.WebServiceID.ToString();
   }
 
   private void LoadAddresses(int organizationID)

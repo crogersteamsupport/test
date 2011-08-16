@@ -35,7 +35,7 @@ namespace TeamSupport.Data
     
     }
 
-    public string ActionTitle
+    public string DisplayName
     {
       get
       {
@@ -218,5 +218,20 @@ namespace TeamSupport.Data
       }
     }
 
+    public static Action GetActionByID(LoginUser loginUser, int actionID)
+    {
+      Actions actions = new Actions(loginUser);
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT a.*, u.FirstName + ' ' + u.LastName AS UserName, at.Name AS ActionTypeName FROM Actions a LEFT JOIN Users u ON a.CreatorID = u.UserID LEFT JOIN ActionTypes at ON a.ActionTypeID = at.ActionTypeID WHERE a.ActionID = @ActionID ORDER BY a.DateCreated DESC";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ActionID", actionID);
+        actions.Fill(command);
+      }
+      if (actions.IsEmpty)
+        return null;
+      else
+        return actions[0];
+    }
   }
 }

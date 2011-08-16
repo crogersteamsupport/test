@@ -294,7 +294,8 @@ public partial class Login : System.Web.UI.Page
     if (user.IsPasswordExpired)
       return "ChangePassword.aspx?reason=expired";
     else
-      return ".";// FormsAuthentication.GetRedirectUrl(user.DisplayName, storeInfo);
+      return ".";
+      //return FormsAuthentication.GetRedirectUrl(user.DisplayName, storeInfo);
   }
 
   private static void ConfirmBaseData(LoginUser loginUser)

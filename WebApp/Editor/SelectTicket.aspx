@@ -109,7 +109,8 @@
         var num = values[1];
         
         //create an object and set some custom properties to it      
-        workLink.href = 'https://app.teamsupport.com/Ticket.aspx?ticketid=' + id;
+        workLink.href = 'https://app.teamsupport.com?TicketNumber=' + num;
+        workLink.onclick = 'top.Ts.MainPage.openTicket(' + num + ',true); return false;'
         workLink.target = '_blank';
         workLink.className = '';
         workLink.name = 'Ticket ' + GetSelectedText();

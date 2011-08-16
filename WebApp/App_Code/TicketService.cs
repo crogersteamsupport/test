@@ -57,12 +57,70 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public TicketSeverityProxy[] GetTicketSeverities()
+    {
+      TicketSeverities severities = new TicketSeverities(TSAuthentication.GetLoginUser());
+      severities.LoadAllPositions(TSAuthentication.OrganizationID);
+      return severities.GetTicketSeverityProxies();
+    }
+
+    [WebMethod]
+    public TicketStatusProxy[] GetTicketStatuses()
+    {
+      TicketStatuses statuses = new TicketStatuses(TSAuthentication.GetLoginUser());
+      statuses.LoadByOrganizationID(TSAuthentication.OrganizationID);
+      return statuses.GetTicketStatusProxies();
+    }
+
+    [WebMethod]
+    public TicketNextStatusProxy[] GetNextTicketStatuses()
+    {
+      TicketNextStatuses statuses = new TicketNextStatuses(TSAuthentication.GetLoginUser());
+      statuses.LoadAll(TSAuthentication.OrganizationID);
+      return statuses.GetTicketNextStatusProxies();
+    }
+
+    [WebMethod]
+    public TicketStatusProxy[] GetAvailableTicketStatuses(int statusID)
+    {
+      TicketStatuses statuses = new TicketStatuses(TSAuthentication.GetLoginUser());
+      statuses.LoadNextStatuses(statusID);
+      return statuses.GetTicketStatusProxies();
+    }
+
+    [WebMethod]
+    public ActionTypeProxy[] GetActionTypes()
+    {
+      ActionTypes types = new ActionTypes(TSAuthentication.GetLoginUser());
+      types.LoadAllPositions(TSAuthentication.OrganizationID);
+      return types.GetActionTypeProxies();
+    }
+
+    [WebMethod]
     public TicketTypeProxy GetTicketType(int ticketTypeID)
     {
       TicketType type = TicketTypes.GetTicketType(TSAuthentication.GetLoginUser(), ticketTypeID);
       if (type.OrganizationID != TSAuthentication.OrganizationID) return null;
       return type.GetProxy();
     }
+    /*
+    [WebMethod]
+    public TicketsViewItemProxy SetTicketType(int ticketID, int ticketTypeID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (CanEditTicket(ticket))
+      {
+        TicketStatuses statuses = new TicketStatuses(ticket.Collection.LoginUser);
+        statuses.LoadAvailableTicketStatuses(ticket.TicketTypeID, null);
+        if (statuses.IsEmpty) return null;
+
+        ticket.TicketTypeID = ticketTypeID;
+        ticket.TicketStatusID = statuses[0].TicketStatusID;
+        ticket.Collection.Save();
+        return ticket.GetTicketView().GetProxy();
+      }
+      return null;
+    }*/
 
     [WebMethod]
     public TagProxy[] GetTags()
@@ -71,6 +129,7 @@ namespace TSWebServices
       tags.LoadByOrganization(TSAuthentication.OrganizationID);
       return tags.GetTagProxies();
     }
+
 
     [WebMethod]
     public string[] GetContactsAndCustomers(int ticketID)
@@ -99,6 +158,30 @@ namespace TSWebServices
       ActionsView view = new ActionsView(TSAuthentication.GetLoginUser());
       view.LoadByTicketID(ticketID);
       return view.GetActionsViewItemProxies();
+    }
+
+    [WebMethod]
+    public object[] GetKBTicketAndActions(int ticketID)
+    {
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+      ActionsView view = new ActionsView(TSAuthentication.GetLoginUser());
+      view.LoadKBByTicketID(ticketID);
+
+      List<object> result = new List<object>();
+      result.Add(ticket.GetProxy());
+      result.Add(view.GetActionsViewItemProxies());
+      return result.ToArray();
+    }
+
+    [WebMethod]
+    public ActionsViewItemProxy GetAction(int actionID)
+    {
+      ActionsViewItem action = ActionsView.GetActionsViewItem(TSAuthentication.GetLoginUser(), actionID);
+      Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+      //action.Name = action.ActionTitle;
+      return action.GetProxy();
     }
 
     [WebMethod]
@@ -135,7 +218,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public AutocompleteItem[] SearchTickets(string searchTerm)
+    public AutocompleteItem[] SearchTickets(string searchTerm, TicketLoadFilter filter)
     {
       Options options = new Options();
       options.TextFlags = TextFlags.dtsoTfRecognizeDates;
@@ -145,12 +228,22 @@ namespace TSWebServices
         searchTerm = searchTerm.Trim();
         job.Request = searchTerm;
         job.FieldWeights = "TicketNumber: 5000, Name: 1000";
-        job.BooleanConditions = "OrganizationID::" + TSAuthentication.OrganizationID.ToString();
+
+        StringBuilder conditions = new StringBuilder();
+        conditions.Append("(OrganizationID::" + TSAuthentication.OrganizationID.ToString() + ")");
+        if (filter != null)
+        {
+          conditions.Append(" AND (");
+          if (filter.IsKnowledgeBase != null)
+          conditions.Append("IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString());
+          conditions.Append(")");
+        }
+
+        job.BooleanConditions = conditions.ToString();
         job.MaxFilesToRetrieve = 25;
         job.AutoStopLimit = 100000;
         job.TimeoutSeconds = 10;
         job.SearchFlags =
-          SearchFlags.dtsSearchSelectMostRecent |
           SearchFlags.dtsSearchStemming |
           SearchFlags.dtsSearchDelayDocInfo;
 
@@ -159,7 +252,7 @@ namespace TSWebServices
         {
           job.Fuzziness = 1;
           job.Request = job.Request + "*";
-          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
         }
 
         if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
@@ -175,11 +268,23 @@ namespace TSWebServices
         {
           results.GetNthDoc(i);
 
-          items.Add(new AutocompleteItem(results.CurrentItem.DisplayName, results.CurrentItem.UserFields["TicketNumber"].ToString()));
+          items.Add(new AutocompleteItem(results.CurrentItem.DisplayName, results.CurrentItem.UserFields["TicketNumber"].ToString(), results.CurrentItem.UserFields["TicketID"].ToString()));
         }
         return items.ToArray();
       }
     }
+
+    /*
+    public AutocompleteItem[] SearchTickets(string searchTerm)
+    {
+      return GetSearchTickets(searchTerm, false);
+    }
+
+    [WebMethod]
+    public AutocompleteItem[] SearchKBTickets(string searchTerm)
+    {
+      return GetSearchTickets(searchTerm, true);
+    }*/
 
     [WebMethod]
     public string[] SearchTicketsTest(string searchTerm)
@@ -193,7 +298,7 @@ namespace TSWebServices
         searchTerm = searchTerm.Trim();
         job.Request = searchTerm;
         job.FieldWeights = "TicketNumber: 5000, Name: 1000";
-        job.BooleanConditions = "OrganizationID::1078";// + TSAuthentication.OrganizationID.ToString();
+        job.BooleanConditions = "OrganizationID::5070";// + TSAuthentication.OrganizationID.ToString();
         job.MaxFilesToRetrieve = 25;
         job.AutoStopLimit = 100000;
         job.TimeoutSeconds = 10;
@@ -206,7 +311,7 @@ namespace TSWebServices
         if (!int.TryParse(searchTerm, out num))
         {
           job.Fuzziness = 1;
-          job.Request = job.Request + "*";
+          job.Request = job.Request;
           job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
         }
 
@@ -238,12 +343,13 @@ namespace TSWebServices
           results.GetNthDoc(i);
           StringBuilder builder = new StringBuilder();
           builder.Append("<h1>" + results.CurrentItem.DisplayName + "</h1>");
-          builder.Append("<p class=\"ui-helper-hidden\">" + results.CurrentItem.Synopsis + "</p>");
+          builder.Append("<p class=\"ui-helper-hiddenx\">" + results.CurrentItem.Synopsis + "</p>");
           result.Add(builder.ToString());
         }
         return result.ToArray();
       }
     }
+
     [WebMethod]
     public AutocompleteItem[] GetTicketsByTerm(string term)
     {
@@ -263,6 +369,14 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public TicketsViewItemProxy GetTicket(int ticketID)
+    {
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+      return ticket.GetProxy();
+    }
+
+    [WebMethod]
     public void DeleteTicket(int ticketID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -273,6 +387,286 @@ namespace TSWebServices
       }
     }
 
+    [WebMethod]
+    public void DeleteAction(int actionID)
+    {
+      TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+      if (!CanDeleteAction(action)) return;
+      action.Delete();
+      action.Collection.Save();
+    }
+
+    [WebMethod]
+    public ActionInfo UpdateAction(ActionProxy proxy)
+    {
+      TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
+
+      if (action == null)
+      { 
+        action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
+        action.TicketID = proxy.TicketID;
+        action.CreatorID = TSAuthentication.UserID;
+      }
+      
+      if (!CanEditAction(action)) return null;
+      action.Description = proxy.Description;
+      action.ActionTypeID = proxy.ActionTypeID;
+      action.DateStarted = proxy.DateStarted;
+      action.TimeSpent = proxy.TimeSpent;
+      action.IsKnowledgeBase = proxy.IsKnowledgeBase;
+      action.IsVisibleOnPortal = proxy.IsVisibleOnPortal;
+      action.Collection.Save();
+
+      return GetActionInfo(action.ActionID);
+    }
+
+    [WebMethod]
+    public bool SetIsVisibleOnPortal(int ticketID, bool value)
+    { 
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return value;
+      ticket.IsVisibleOnPortal = value;
+      ticket.Collection.Save();
+      return ticket.IsVisibleOnPortal;
+    }
+
+    private void Delay(int seconds)
+    {
+      System.Threading.Thread.Sleep(seconds * 1000);
+    }
+
+    [WebMethod]
+    public bool SetIsKB(int ticketID, bool value)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return value;
+      ticket.IsKnowledgeBase = value;
+      ticket.Collection.Save();
+      return ticket.IsKnowledgeBase;
+    }
+
+    [WebMethod]
+    public string SetTicketName(int ticketID, string name)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return name;
+      ticket.Name = HttpUtility.HtmlEncode(name);
+      ticket.Collection.Save();
+      return ticket.Name;
+    }
+
+    [WebMethod]
+    public TicketStatusProxy SetTicketType(int ticketID, int ticketTypeID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticketTypeID == ticket.TicketTypeID) return null;
+      if (!CanEditTicket(ticket)) return null;
+      TicketType ticketType = TicketTypes.GetTicketType(ticket.Collection.LoginUser, ticketTypeID);
+      if (ticketType.OrganizationID != TSAuthentication.OrganizationID) return null;
+      ticket.TicketTypeID = ticketTypeID;
+
+      TicketStatuses statuses = new TicketStatuses(ticket.Collection.LoginUser);
+      statuses.LoadAvailableTicketStatuses(ticketTypeID, null);
+      ticket.TicketStatusID = statuses[0].TicketStatusID;
+      ticket.Collection.Save();
+      return statuses[0].GetProxy();
+    }
+
+    [WebMethod]
+    public TicketStatusProxy SetTicketStatus(int ticketID, int ticketStatusID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticketStatusID == ticket.TicketStatusID) return null;
+      if (!CanEditTicket(ticket)) return null;
+      TicketStatus status = TicketStatuses.GetTicketStatus(ticket.Collection.LoginUser, ticketStatusID);
+      if (status.OrganizationID != TSAuthentication.OrganizationID) return null;
+      ticket.TicketStatusID = ticketStatusID;
+      ticket.Collection.Save();
+      return status.GetProxy();
+    }
+
+    [WebMethod]
+    public TicketSeverityProxy SetTicketSeverity(int ticketID, int ticketSeverityID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticketSeverityID == ticket.TicketSeverityID) return null;
+      if (!CanEditTicket(ticket)) return null;
+      TicketSeverity severity = TicketSeverities.GetTicketSeverity(ticket.Collection.LoginUser, ticketSeverityID);
+      if (severity.OrganizationID != TSAuthentication.OrganizationID) return null;
+      ticket.TicketSeverityID = ticketSeverityID;
+      ticket.Collection.Save();
+      return severity.GetProxy();
+    }
+
+    [WebMethod]
+    public string SetTicketUser(int ticketID, int? userID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+
+      User user = userID != null ? Users.GetUser(TSAuthentication.GetLoginUser(), (int)userID) : null; 
+      if (userID == ticket.UserID) return null;
+      if (user != null && user.OrganizationID != TSAuthentication.OrganizationID) return null;
+      ticket.UserID = userID;
+      ticket.Collection.Save();
+      return user == null ? "" : user.FirstLastName;
+    }
+
+    [WebMethod]
+    public string SetTicketGroup(int ticketID, int? groupID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+
+      Group group = groupID != null ? Groups.GetGroup(TSAuthentication.GetLoginUser(), (int)groupID) : null;
+      if (groupID == ticket.GroupID) return null;
+      if (group != null && group.OrganizationID != TSAuthentication.OrganizationID) return null;
+      ticket.GroupID = groupID;
+      ticket.Collection.Save();
+      return group == null ? "" : group.Name;
+    }
+
+    [WebMethod]
+    public AutocompleteItem SetProduct(int ticketID, int? productID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+
+      Product product = productID != null ? Products.GetProduct(TSAuthentication.GetLoginUser(), (int)productID) : null;
+      if (productID == ticket.ProductID) return null;
+      if (product != null && product.OrganizationID != TSAuthentication.OrganizationID) return null;
+      ticket.ProductID = productID;
+      ticket.ReportedVersionID = null;
+      ticket.SolvedVersionID = null;
+      ticket.Collection.Save();
+      if (product != null) return new AutocompleteItem(product.Name, product.ProductID.ToString());
+      return new AutocompleteItem(null, null);
+    }
+
+    [WebMethod]
+    public AutocompleteItem SetReportedVersion(int ticketID, int? versionID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+
+      ProductVersion version = versionID != null ? ProductVersions.GetProductVersion(ticket.Collection.LoginUser, (int)versionID) : null;
+      if (version != null)
+      {
+        Product product = Products.GetProduct(TSAuthentication.GetLoginUser(), version.ProductID);
+        if (product.OrganizationID != TSAuthentication.OrganizationID) return null;
+      }
+
+      if (versionID == ticket.ReportedVersionID) return null;
+      ticket.ReportedVersionID = versionID;
+      ticket.Collection.Save();
+      return version == null ? new AutocompleteItem(null, null) : new AutocompleteItem(version.VersionNumber, version.ProductVersionID.ToString());
+    }
+
+    [WebMethod]
+    public AutocompleteItem SetSolvedVersion(int ticketID, int? versionID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+
+      ProductVersion version = versionID != null ? ProductVersions.GetProductVersion(ticket.Collection.LoginUser, (int)versionID) : null;
+      if (version != null)
+      {
+        Product product = Products.GetProduct(TSAuthentication.GetLoginUser(), version.ProductID);
+        if (product.OrganizationID != TSAuthentication.OrganizationID) return null;
+      }
+
+      if (versionID == ticket.SolvedVersionID) return null;
+      ticket.SolvedVersionID = versionID;
+      ticket.Collection.Save();
+      return version == null ? new AutocompleteItem(null, null) : new AutocompleteItem(version.VersionNumber, version.ProductVersionID.ToString());
+    }
+
+    [WebMethod]
+    public string AssignUser(int ticketID, int? userID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+
+      User user = userID != null ? Users.GetUser(ticket.Collection.LoginUser, (int)userID) : null;
+      if (user != null)
+      {
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
+      }
+      if (ticket.UserID == userID) return null;
+      ticket.UserID = userID;
+      ticket.Collection.Save();
+      return user == null ? "" : user.FirstLastName;
+    }
+
+   
+    private void TransferCustomFields(int ticketID, int oldTicketTypeID, int newTicketTypeID)
+    {
+      CustomFields oldFields = new CustomFields(TSAuthentication.GetLoginUser());
+      oldFields.LoadByTicketTypeID(TSAuthentication.OrganizationID, oldTicketTypeID);
+
+      CustomFields newFields = new CustomFields(oldFields.LoginUser);
+      newFields.LoadByTicketTypeID(TSAuthentication.OrganizationID, newTicketTypeID);
+
+
+      foreach (CustomField oldField in oldFields)
+      {
+        CustomField newField = newFields.FindByName(oldField.Name);
+        if (newField != null)
+        {
+          CustomValue newValue = CustomValues.GetValue(oldFields.LoginUser, newField.CustomFieldID, ticketID);
+          CustomValue oldValue = CustomValues.GetValue(oldFields.LoginUser, oldField.CustomFieldID, ticketID);
+
+          if (newValue != null && oldValue != null)
+          {
+            newValue.Value = oldValue.Value;
+            newValue.Collection.Save();
+          }
+        }
+
+      }
+    }
+
+    private bool CanEditTicket(Ticket ticket)
+    {
+      return true;
+    }
+
+    private bool CanEditAction(TeamSupport.Data.Action action)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), action.TicketID);
+      return (ticket.OrganizationID == TSAuthentication.OrganizationID && (action.CreatorID == TSAuthentication.UserID || TSAuthentication.IsSystemAdmin));
+    }
+
+    private bool CanDeleteAction(TeamSupport.Data.Action action)
+    {
+      return CanEditAction(action) && action.SystemActionTypeID != SystemActionType.Description;
+    }
+
+    [WebMethod]
+    public bool SetActionKb(int actionID, bool isKb)
+    {
+      TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+      if (CanEditAction(action))
+      {
+        action.IsKnowledgeBase = isKb;
+        action.Collection.Save();
+      }
+      return action.IsKnowledgeBase;
+    }
+
+    [WebMethod]
+    public bool SetActionPortal(int actionID, bool isVisibleOnPortal)
+    {
+      TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+      if (CanEditAction(action))
+      {
+        action.IsVisibleOnPortal = isVisibleOnPortal;
+        action.Collection.Save();
+      }
+      return action.IsVisibleOnPortal;
+    }
+
+    
     [WebMethod]
     public bool Subscribe(int ticketID)
     {
@@ -287,6 +681,14 @@ namespace TSWebServices
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (ticket.OrganizationID != TSAuthentication.OrganizationID) return;
       TicketQueue.Enqueue(TSAuthentication.GetLoginUser(), ticketID, TSAuthentication.UserID);
+    }
+
+    [WebMethod]
+    public void Dequeue(int ticketID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return;
+      TicketQueue.Dequeue(TSAuthentication.GetLoginUser(), ticketID, TSAuthentication.UserID);
     }
 
     [WebMethod]
@@ -323,6 +725,44 @@ namespace TSWebServices
       return ticket.TicketNumber;
     }
 
+    [WebMethod]
+    public TicketCustomer[] AddTicketCustomer(int ticketID, string type, int id)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+      if (type == "u")
+      {
+        ContactsViewItem contact = ContactsView.GetContactsViewItem(TSAuthentication.GetLoginUser(), id);
+        if (contact.OrganizationParentID != TSAuthentication.OrganizationID) return null;
+        ticket.Collection.AddContact(id, ticketID);
+      }
+      else
+      {
+        Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), id);
+        if (organization.ParentID != TSAuthentication.OrganizationID) return null;
+        ticket.Collection.AddOrganization(id, ticketID);
+      }
+
+      return GetTicketCustomers(ticketID);
+    }
+
+    [WebMethod]
+    public TicketCustomer[] RemoveTicketContact(int ticketID, int userID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+      ticket.Collection.RemoveContact(userID, ticketID);
+      return GetTicketCustomers(ticketID);
+    }
+
+    [WebMethod]
+    public TicketCustomer[] RemoveTicketCompany(int ticketID, int organizationID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+      ticket.Collection.RemoveOrganization(organizationID, ticketID);
+      return GetTicketCustomers(ticketID);
+    }
 
     [WebMethod]
     public TicketsViewItemProxy AdminGetTicketByNumber(int orgID, int number)
@@ -427,6 +867,21 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void EmailTicket(int ticketID, string addresses)
+    {
+      EmailPosts posts = new EmailPosts(TSAuthentication.GetLoginUser());
+      EmailPost post = posts.AddNewEmailPost();
+      post.EmailPostType = EmailPostType.TicketSendEmail;
+      post.HoldTime = 0;
+
+      post.Param1 = TSAuthentication.UserID.ToString();
+      post.Param2 = ticketID.ToString();
+      post.Param3 = addresses;
+      posts.Save();
+    }
+
+
+    [WebMethod]
     public string[] CreateDummyTickets()
     {
 
@@ -496,43 +951,221 @@ namespace TSWebServices
       return result.ToArray();
     }
 
+    [WebMethod]
+    public ActionLogProxy[] GetTicketHistory(int ticketID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+      ActionLogs logs = new ActionLogs(ticket.Collection.LoginUser);
+      
+      logs.LoadByTicketID(ticketID);
+      return logs.GetActionLogProxies();
+    }
 
     [WebMethod]
     public TicketInfo GetTicketInfo(int ticketNumber)
     {
       TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
       if (ticket == null) return null;
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+      MarkTicketAsRead(ticket.TicketID);
 
       TicketInfo info = new TicketInfo();
       info.Ticket = ticket.GetProxy();
 
-      List<TicketCustomer> customers = new List<TicketCustomer>();
+      info.Customers = GetTicketCustomers(ticket.TicketID);
+      info.Related = GetRelatedTickets(ticket.TicketID);
+      info.Tags = GetTags(ticket.TicketID);
 
-      ContactsView contacts = new ContactsView(ticket.Collection.LoginUser);
-      contacts.LoadByTicketID(ticket.TicketID);
-      foreach (ContactsViewItem contact in contacts)
+      Actions actions = new Actions(ticket.Collection.LoginUser);
+      actions.LoadByTicketID(ticket.TicketID);
+
+      List<ActionInfo> actionInfos = new List<ActionInfo>();
+
+      for (int i = 0; i < actions.Count; i++)
       {
-        TicketCustomer customer = new TicketCustomer();
-        customer.Company = contact.Organization;
-        customer.OrganizationID = contact.OrganizationID;
-        customer.Contact = contact.FirstName + " " + contact.LastName;
-        customer.UserID = contact.UserID;
-        customers.Add(customer);
+        ActionInfo actionInfo = GetActionInfo(ticket.Collection.LoginUser, actions[i]);
+        if (i > 0 && actionInfo.Action.SystemActionTypeID != SystemActionType.Description) { actionInfo.Action.Description = null; }
+        actionInfos.Add(actionInfo);
       }
 
-      Organizations organizations = new Organizations(ticket.Collection.LoginUser);
-      organizations.LoadByNotContactTicketID(ticket.TicketID);
-      foreach (Organization organization in organizations)
-      {
-        TicketCustomer customer = new TicketCustomer();
-        customer.Company = organization.Name;
-        customer.OrganizationID = organization.OrganizationID;
-        customer.UserID = null;
-        customers.Add(customer);
-      }
-      info.Customers = customers.ToArray();
+      info.Actions = actionInfos.ToArray();
 
+      return info;
+
+    }
+
+    [WebMethod]
+    public TagProxy[] GetTags(int ticketID)
+    {
+      Tags tags = new Tags(TSAuthentication.GetLoginUser());
+      tags.LoadByReference(ReferenceType.Tickets, ticketID);
+      return tags.GetTagProxies();
+    }
+
+    [WebMethod]
+    public TagProxy[] AddTag(int ticketID, string value)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+      value = value.Trim();
+      Tag tag = Tags.GetTag(ticket.Collection.LoginUser, value);
+      if (tag == null)
+      {
+        Tags tags = new Tags(ticket.Collection.LoginUser);
+        tag = tags.AddNewTag();
+        tag.OrganizationID = TSAuthentication.OrganizationID;
+        tag.Value = value;
+        tags.Save();
+      }
+
+      TagLink link = TagLinks.GetTagLink(ticket.Collection.LoginUser, ReferenceType.Tickets, ticketID, tag.TagID);
+      if (link == null)
+      { 
+        TagLinks links = new TagLinks(ticket.Collection.LoginUser);
+        link = links.AddNewTagLink();
+        link.RefType = ReferenceType.Tickets;
+        link.RefID = ticketID;
+        link.TagID = tag.TagID;
+        links.Save();
+      }
+      return GetTags(ticketID);
+    }
+
+    [WebMethod]
+    public TagProxy[] RemoveTag(int ticketID, int tagID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+      TagLink link = TagLinks.GetTagLink(TSAuthentication.GetLoginUser(), ReferenceType.Tickets, ticketID, tagID);
+      Tag tag = Tags.GetTag(TSAuthentication.GetLoginUser(), tagID);
+      int count = tag.GetLinkCount();
+      link.Delete();
+      link.Collection.Save();
+      if (count < 2)
+      {
+        tag.Delete();
+        tag.Collection.Save();
+      }
+
+      return GetTags(ticketID);
+    }
+
+    private bool IsTicketRelated(Ticket ticket1, Ticket ticket2)
+    {
+      if (ticket1.ParentID != null && ticket1.ParentID == ticket2.TicketID) return true;
+      if (ticket2.ParentID != null && ticket2.ParentID == ticket1.TicketID) return true;
+      TicketRelationship item = TicketRelationships.GetTicketRelationship(ticket1.Collection.LoginUser, ticket1.TicketID, ticket2.TicketID);
+      return item != null;
+    }
+
+    [WebMethod]
+    public RelatedTicket[] AddRelated(int ticketID1, int ticketID2, bool? isTicket1Parent)
+    {
+      if (ticketID1 == ticketID2) return null;
+
+      Ticket ticket1 = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID1);
+      Ticket ticket2 = Tickets.GetTicket(ticket1.Collection.LoginUser, ticketID2);
+
+      if (!CanEditTicket(ticket1)) return null;
+
+      if (isTicket1Parent == null) // just related
+      {
+        
+        if (IsTicketRelated(ticket1, ticket2)) 
+        {
+          throw new Exception("The ticket is already associated.");
+        }
+
+        TicketRelationship item = (new TicketRelationships(ticket1.Collection.LoginUser)).AddNewTicketRelationship();
+        item.OrganizationID = TSAuthentication.OrganizationID;
+        item.Ticket1ID = ticketID1;
+        item.Ticket2ID = ticketID2;
+        item.Collection.Save();
+      }
+      else if (isTicket1Parent == true) // parent
+      {
+        if (ticket2.ParentID != null)
+        {
+          if (ticket1.ParentID == ticket2.TicketID) return null;
+          throw new Exception("Ticket " + ticket2.TicketNumber + " is already a child of another ticket.");
+        }
+        TicketRelationship item = TicketRelationships.GetTicketRelationship(ticket1.Collection.LoginUser, ticketID1, ticketID2);
+        if (item != null)
+        {
+          item.Delete();
+          item.Collection.Save();
+        }
+
+        ticket2.ParentID = ticket1.TicketID;
+        ticket2.Collection.Save();
+      }
+      else // child
+      {
+        if (ticket1.ParentID != null && ticket1.ParentID == ticket2.TicketID) return null;
+
+        TicketRelationship item = TicketRelationships.GetTicketRelationship(ticket1.Collection.LoginUser, ticketID1, ticketID2);
+        if (item != null)
+        {
+          item.Delete();
+          item.Collection.Save();
+        }
+
+        ticket1.ParentID = ticket2.TicketID;
+        ticket1.Collection.Save();
+      }
+      return GetRelatedTickets(ticket1.TicketID);
+    
+    }
+
+    [WebMethod]
+    public bool? RemoveRelated(int ticketID1, int ticketID2)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Ticket ticket1 = Tickets.GetTicket(loginUser, ticketID1);
+      Ticket ticket2 = Tickets.GetTicket(loginUser, ticketID2);
+      if (!CanEditTicket(ticket1)) return null;
+      
+      TicketRelationship item = TicketRelationships.GetTicketRelationship(loginUser, ticketID1, ticketID2);
+      if (item != null)
+      {
+        item.Delete();
+        item.Collection.Save();
+      }
+
+      if (ticket1.ParentID != null && ticket1.ParentID == (int)ticketID2)
+      {
+        ticket1.ParentID = null;
+        ticket1.Collection.Save();
+      }
+
+      if (ticket2.ParentID != null && ticket2.ParentID == (int)ticketID1)
+      {
+        ticket2.ParentID = null;
+        ticket2.Collection.Save();
+      }
+
+      return true;
+    }
+
+    [WebMethod]
+    public AutocompleteItem[] SearchTags(string term)
+    {
+      List<AutocompleteItem> result = new List<AutocompleteItem>();
+      Tags tags = new Tags(TSAuthentication.GetLoginUser());
+      tags.LoadBySearchTerm(term);
+      foreach (Tag tag in tags)
+      {
+        result.Add(new AutocompleteItem(tag.Value, tag.TagID.ToString()));
+      }
+
+      return result.ToArray();
+    }
+
+    public RelatedTicket[] GetRelatedTickets(int ticketID)
+    {
       List<RelatedTicket> relatedTickets = new List<RelatedTicket>();
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
 
       if (ticket.ParentID != null)
       {
@@ -546,7 +1179,7 @@ namespace TSWebServices
           relatedTicket.Severity = parent.Severity;
           relatedTicket.Status = parent.Status;
           relatedTicket.Type = parent.TicketTypeName;
-          relatedTicket.IsParent = false;
+          relatedTicket.IsParent = true;
           relatedTickets.Add(relatedTicket);
         }
       }
@@ -582,29 +1215,68 @@ namespace TSWebServices
         relatedTickets.Add(relatedTicket);
       }
 
+      return relatedTickets.ToArray();
+    }
 
-      info.Related = relatedTickets.ToArray();
+    private TicketCustomer[] GetTicketCustomers(int ticketID)
+    {
+      List<TicketCustomer> customers = new List<TicketCustomer>();
 
-      Tags tags = new Tags(ticket.Collection.LoginUser);
-      tags.LoadByReference(ReferenceType.Tickets, ticket.TicketID);
-
-      info.Tags = tags.GetTagProxies();
-
-      Actions actions = new Actions(ticket.Collection.LoginUser);
-      actions.LoadByTicketID(ticket.TicketID);
-      info.Actions = actions.GetActionProxies();
-
-      for (int i = 0; i < info.Actions.Length; i++)
+      ContactsView contacts = new ContactsView(TSAuthentication.GetLoginUser());
+      contacts.LoadByTicketID(ticketID);
+      foreach (ContactsViewItem contact in contacts)
       {
-        info.Actions[i].Name = actions[i].ActionTitle;
-        if (i > 0 && info.Actions[i].SystemActionTypeID != SystemActionType.Description)
-        {
-          info.Actions[i].Description = null;
-        }
+        TicketCustomer customer = new TicketCustomer();
+        customer.Company = contact.Organization;
+        customer.OrganizationID = contact.OrganizationID;
+        customer.Contact = contact.FirstName + " " + contact.LastName;
+        customer.UserID = contact.UserID;
+        customers.Add(customer);
       }
 
-      return info;
+      Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+      organizations.LoadByNotContactTicketID(ticketID);
+      foreach (Organization organization in organizations)
+      {
+        TicketCustomer customer = new TicketCustomer();
+        customer.Company = organization.Name;
+        customer.OrganizationID = organization.OrganizationID;
+        customer.UserID = null;
+        customers.Add(customer);
+      }
+      return customers.ToArray();
+    }
 
+    private ActionInfo GetActionInfo(LoginUser loginUser, TeamSupport.Data.Action action)
+    {
+      ActionInfo actionInfo = new ActionInfo();
+      actionInfo.Action = action.GetProxy();
+      UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
+      if (creator != null)  actionInfo.Creator = new UserInfo(creator);
+      actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
+      return actionInfo;
+    }
+
+    [WebMethod]
+    public ActionInfo GetActionInfo(int actionID)
+    {
+      TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), actionID);
+      Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+      return GetActionInfo(action.Collection.LoginUser, action);
+    }
+
+
+    [WebMethod]
+    public void DeleteAttachment(int attachmentID)
+    {
+      Attachment attachment = Attachments.GetAttachment(TSAuthentication.GetLoginUser(), attachmentID);
+      if (attachment == null || attachment.RefType != ReferenceType.Actions) return;
+      TeamSupport.Data.Action action = Actions.GetAction(attachment.Collection.LoginUser, attachment.RefID);
+      if (!CanEditAction(action)) return;
+      attachment.DeleteFile();
+      attachment.Delete();
+      attachment.Collection.Save();
     }
   }
 
@@ -666,13 +1338,67 @@ namespace TSWebServices
     [DataMember]
     public TicketsViewItemProxy Ticket { get; set; }
     [DataMember]
-    public ActionProxy[] Actions { get; set; }
+    public ActionInfo[] Actions { get; set; }
     [DataMember]
     public TicketCustomer[] Customers { get; set; }
     [DataMember]
     public RelatedTicket[] Related { get; set; }
     [DataMember]
     public TagProxy[] Tags { get; set; }
+  }
+
+  [DataContract]
+  public class ActionInfo
+  {
+    [DataMember]
+    public UserInfo Creator { get; set; }
+    [DataMember]
+    public ActionProxy Action { get; set; }
+    [DataMember]
+    public AttachmentProxy[] Attachments { get; set; }
+  }
+
+  [DataContract]
+  public class UserInfo
+  {
+    [DataMember] public int UserID { get; set; }
+    [DataMember] public string Email { get; set; }
+    [DataMember] public string FirstName { get; set; }
+    [DataMember] public string MiddleName { get; set; }
+    [DataMember] public string LastName { get; set; }
+    [DataMember] public string Title { get; set; }
+    [DataMember] public bool IsActive { get; set; }
+    [DataMember] public DateTime LastLogin { get; set; }
+    [DataMember] public DateTime LastActivity { get; set; }
+    [DataMember] public DateTime? LastPing { get; set; }
+    [DataMember] public bool IsSystemAdmin { get; set; }
+    [DataMember] public bool IsPortalUser { get; set; }
+    [DataMember] public bool IsChatUser { get; set; }
+    [DataMember] public bool InOffice { get; set; }
+    [DataMember] public string InOfficeComment { get; set; }
+    [DataMember] public int OrganizationID { get; set; }
+    [DataMember] public string Organization { get; set; }
+
+    public UserInfo(UsersViewItem user)
+    {
+      this.OrganizationID = user.OrganizationID;
+      this.Organization = user.Organization;
+      this.InOfficeComment = user.InOfficeComment;
+      this.InOffice = user.InOffice;
+      this.IsChatUser = user.IsChatUser;
+      this.IsPortalUser = user.IsPortalUser;
+      this.IsSystemAdmin = user.IsSystemAdmin;
+      this.IsActive = user.IsActive;
+      this.Title = user.Title;
+      this.LastName = user.LastName;
+      this.MiddleName = user.MiddleName;
+      this.FirstName = user.FirstName;
+      this.Email = user.Email;
+      this.UserID = user.UserID;
+      this.LastLogin = DateTime.SpecifyKind(user.LastLogin, DateTimeKind.Local);
+      this.LastActivity = DateTime.SpecifyKind(user.LastActivity, DateTimeKind.Local);
+      this.LastPing = user.LastPing == null ? user.LastPing : DateTime.SpecifyKind((DateTime)user.LastPing, DateTimeKind.Local); 
+    }
   }
 
   [DataContract]

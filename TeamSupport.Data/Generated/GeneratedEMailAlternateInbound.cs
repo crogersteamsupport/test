@@ -353,7 +353,6 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-
     public virtual EMailAlternateInboundItem AddNewEMailAlternateInboundItem()
     {
       if (Table.Columns.Count < 1) LoadColumns("EMailAlternateInbound");

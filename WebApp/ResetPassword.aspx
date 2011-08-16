@@ -7,7 +7,7 @@
     a.login-link { text-decoration: underline !important; font-size: 1.4em; }
   </style>
 
-  <script src="Resources_141/Js/jquery.cookie.js" type="text/javascript"></script>
+  <script src="Resources_143/Js/jquery.cookie.js" type="text/javascript"></script>
   <script type="text/javascript">
 
     $(document).ready(function () {

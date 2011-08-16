@@ -6,7 +6,7 @@
   <style type="text/css">
     .crmLabelDiv
     {
-      padding-top: 10px;
+      padding-top: 3px;
     }
   </style>
 </asp:Content>
@@ -34,6 +34,8 @@
           <div><telerik:RadTextBox ID="textTypeFieldMatch" runat="server" Width="250px"></telerik:RadTextBox></div>
           
           <div class="crmLabelDiv"><asp:CheckBox ID="cbActive" runat="server" Text="CRM synchronization active" /></div>
+          <div class="crmLabelDiv" style="display:none;"><asp:CheckBox ID="cbEmail" runat="server" Text="Send welcome email to imported contacts" /></div>
+          <div class="crmLabelDiv" style="display:none;"><asp:CheckBox ID="cbPortalAccess" runat="server" Text="Give portal access to cusotmers imported" /></div>
     </div>
   </div>
 </asp:Content>

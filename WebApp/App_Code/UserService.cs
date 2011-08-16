@@ -12,6 +12,7 @@ using System.Web.Security;
 using System.Text;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
+using System.Runtime.Serialization;
 
 namespace TSWebServices
 {
@@ -69,5 +70,39 @@ namespace TSWebServices
       setting.Collection.Save();
       return setting.GetProxy();
     }
+
+    [WebMethod]
+    public BasicUser[] GetUsers()
+    {
+      Users users = new Users(TSAuthentication.GetLoginUser());
+      users.LoadByOrganizationID(TSAuthentication.OrganizationID, false);
+      List<BasicUser> result = new List<BasicUser>();
+
+      foreach (User user in users)
+      {
+        BasicUser basic = new BasicUser();
+        basic.Name = user.FirstName + " " + user.LastName;
+        basic.UserID = user.UserID;
+        result.Add(basic);
+      }
+      return result.ToArray();
+    }
+
+    [WebMethod]
+    public GroupProxy[] GetGroups()
+    {
+      Groups groups = new Groups(TSAuthentication.GetLoginUser());
+      groups.LoadByOrganizationID(TSAuthentication.OrganizationID);
+      return groups.GetGroupProxies();
+    }
+
+    [DataContract]
+    public class BasicUser
+    {
+      [DataMember] public string Name { get; set; }
+      [DataMember] public int UserID { get; set; }
+    }
+
+
   }
 }

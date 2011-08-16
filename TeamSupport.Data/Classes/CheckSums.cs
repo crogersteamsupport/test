@@ -52,7 +52,8 @@ namespace TeamSupport.Data
           sql = string.Format(sql, "TicketTypes");
           break;
         case ReferenceType.Users:
-          sql = "SELECT CHECKSUM_AGG(CHECKSUM(FirstName, LastName, Email, IsActive, MarkDeleted, TimeZoneID, CultureName, IsSystemAdmin, IsChatUser, InOffice, InOfficeComment)) FROM Users WHERE OrganizationID = " + loginUser.OrganizationID.ToString();
+          //sql = "SELECT CHECKSUM_AGG(CHECKSUM(FirstName, LastName, Email, IsActive, MarkDeleted, TimeZoneID, CultureName, IsSystemAdmin, IsChatUser, InOffice, InOfficeComment)) FROM Users WHERE OrganizationID = " + loginUser.OrganizationID.ToString();
+          sql = "SELECT CHECKSUM_AGG(CHECKSUM(FirstName, LastName)) FROM Users WHERE OrganizationID = " + loginUser.OrganizationID.ToString();
           break;
         case ReferenceType.TicketNextStatuses:
           sql = "SELECT CHECKSUM_AGG(CHECKSUM(*)) FROM TicketNextStatuses tns LEFT JOIN TicketStatuses ts ON ts.TicketStatusID = tns.CurrentStatusID WHERE ts.OrganizationID = " + loginUser.OrganizationID.ToString();

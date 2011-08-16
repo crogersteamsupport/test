@@ -26,6 +26,7 @@ public partial class Frames_UserInformation : BaseFramePage
     {
       userID = int.Parse(Request["UserID"]);
       user = Users.GetUser(UserSession.LoginUser, userID);
+      if (user.OrganizationID != TSAuthentication.OrganizationID) throw new Exception("Invalid user id.");
     }
     catch (Exception)
     {

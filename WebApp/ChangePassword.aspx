@@ -16,7 +16,7 @@
       $('#btnChange').button().click(function (e) {
         $('#divAlert').hide();
         e.preventDefault();
-        PageMethods.ChangePW($('#textPassword').val(), $('#textConfirm').val(), function (result) {
+        PageMethods.ChangePW($('#textPassword').val(), $('#textConfirm').val(), $('.sessionid').val(), function (result) {
           if (result != "") {
             $('#divAlert').html(result).show('fast');
           }
@@ -52,5 +52,6 @@
     </div>
   </div>
   </div>
+  <input class="sessionid" type="hidden" runat="server" id="fieldSessionID" />
   
 </asp:Content>

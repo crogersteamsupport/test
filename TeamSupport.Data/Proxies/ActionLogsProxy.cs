@@ -23,6 +23,8 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public string CreatorName { get; set; }
+    
           
   }
   
@@ -39,6 +41,7 @@ namespace TeamSupport.Data
       result.RefType = this.RefType;
       result.OrganizationID = this.OrganizationID;
       result.ActionLogID = this.ActionLogID;
+      result.CreatorName = this.CreatorName;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
       result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);

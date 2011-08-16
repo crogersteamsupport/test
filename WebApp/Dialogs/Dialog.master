@@ -76,7 +76,7 @@
         <table border="0" cellpadding="0" cellspacing="10">
           <tr>
             <td>
-              <asp:Button ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" />
+              <asp:Button ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" OnClientClick="top.Ts.Cache.checkAll();" />
             </td>
             <td>
               <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClientClick="Close(); return false;" />

@@ -57,7 +57,9 @@ public partial class Dialogs_CRMProperties : BaseDialogPage
     textSecurityToken.Text = item.SecurityToken;
     textSecurityTokenConfirm.Text = item.SecurityToken;
     textTypeFieldMatch.Text = item.TypeFieldMatch;
-    cbActive.Checked = item.Active == null ? false : (bool)item.Active;
+    cbActive.Checked = item.Active;
+    cbEmail.Checked = item.SendWelcomeEmail;
+    cbPortalAccess.Checked = item.AllowPortalAccess;
     SetLabels(item.CRMType);
   }
 
@@ -121,7 +123,7 @@ public partial class Dialogs_CRMProperties : BaseDialogPage
       _manager.Alert("Security Tokens do not match.");
       return false;
     }
-
+    /*
     if (textSecurityToken.Text.Trim() == "")
     {
       _manager.Alert("Please enter a security token.");
@@ -133,6 +135,7 @@ public partial class Dialogs_CRMProperties : BaseDialogPage
       _manager.Alert("Please enter a password.");
       return false;
     }
+     */
     CRMLinkTableItem item = GetCrmItem();
     if (item == null)
     {
@@ -141,9 +144,11 @@ public partial class Dialogs_CRMProperties : BaseDialogPage
       item.OrganizationID = UserSession.LoginUser.OrganizationID;
     }
     item.Active = cbActive.Checked;
+    item.AllowPortalAccess = cbPortalAccess.Checked;
+    item.SendWelcomeEmail = cbEmail.Checked;
     item.CRMType = cmbType.SelectedValue;
-    item.Password = textPassword.Text;
-    item.SecurityToken = textSecurityToken.Text;
+    if (textPassword.Text.Trim() != "") item.Password = textPassword.Text;
+    if (textSecurityToken.Text.Trim() != "") item.SecurityToken = textSecurityToken.Text;
     item.TypeFieldMatch = textTypeFieldMatch.Text;
     item.Username = cmbType.SelectedIndex == 0 ? textUserName.Text.Replace(" ", "") : textUserName.Text;
     item.Collection.Save();

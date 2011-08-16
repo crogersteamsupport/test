@@ -58,6 +58,8 @@ namespace TeamSupport.Data
     [DataMember] public decimal? SlaWarningHours { get; set; }
     [DataMember] public string Contacts { get; set; }
     [DataMember] public string Customers { get; set; }
+    [DataMember] public DateTime? SlaViolationDate { get; set; }
+    [DataMember] public DateTime? SlaWarningDate { get; set; }
     [DataMember] public bool IsRead { get; set; }
     [DataMember] public bool IsFlagged { get; set; }
     [DataMember] public bool IsSubscribed { get; set; }
@@ -117,6 +119,8 @@ namespace TeamSupport.Data
       result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
       result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
        
+      result.SlaWarningDate = this.SlaWarningDate == null ? this.SlaWarningDate : DateTime.SpecifyKind((DateTime)this.SlaWarningDate, DateTimeKind.Local); 
+      result.SlaViolationDate = this.SlaViolationDate == null ? this.SlaViolationDate : DateTime.SpecifyKind((DateTime)this.SlaViolationDate, DateTimeKind.Local); 
       result.DateClosed = this.DateClosed == null ? this.DateClosed : DateTime.SpecifyKind((DateTime)this.DateClosed, DateTimeKind.Local);
 
       result.IsRead = this.IsRead;// || (Collection.LoginUser.UserID != 34 && Collection.LoginUser.UserID != 43 && Collection.LoginUser.OrganizationID != 300197);

@@ -319,6 +319,9 @@ namespace TeamSupport.Data
         case ReferenceType.Tickets:
           result = "TicketsView.TicketID";
           break;
+        case ReferenceType.OrganizationProducts:
+          result = "OrganizationProductsView.OrganizationProductID";
+          break;
         default:
           result = "";
           break;
@@ -894,6 +897,14 @@ namespace TeamSupport.Data
         text = Regex.Replace(text, Regex.Escape("https://app.teamsupport.com/ticket.aspx?ticketid=" + s), "javascript:top.Ts.MainPage.openTicket(" + s + ",true);", RegexOptions.IgnoreCase);
       }
 
+      while (true)
+      {
+        id = FindTicketID(text, "../?ticketid");
+        text = RemoveTicketTarget(text, "../?ticketid");
+        if (id < 0) break;
+        string s = id.ToString();
+        text = Regex.Replace(text, Regex.Escape("../?ticketid" + s), "javascript:top.Ts.MainPage.openTicket(" + s + ",true);", RegexOptions.IgnoreCase);
+      }
       return text;
     }
 

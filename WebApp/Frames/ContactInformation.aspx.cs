@@ -20,11 +20,13 @@ public partial class Frames_ContactInformation : BaseFramePage
   {
     int userID;
     User user;
-
+    
     try
     {
       userID = int.Parse(Request["UserID"]);
       user = Users.GetUser(UserSession.LoginUser, userID);
+      Organization organization = Organizations.GetOrganization(UserSession.LoginUser, user.OrganizationID);
+      if (organization.ParentID != TSAuthentication.OrganizationID) throw new Exception("Invalid user id");
     }
     catch (Exception)
     {

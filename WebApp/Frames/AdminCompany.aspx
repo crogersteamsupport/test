@@ -9,7 +9,6 @@
       <telerik:AjaxSetting AjaxControlID="RadAjaxManager1">
         <UpdatedControls>
           <telerik:AjaxUpdatedControl ControlID="pnlProperties" />
-          <telerik:AjaxUpdatedControl ControlID="pnlCrm" />
           <telerik:AjaxUpdatedControl ControlID="pnlPhone" />
           <telerik:AjaxUpdatedControl ControlID="pnlAddress" />
         </UpdatedControls>
@@ -53,44 +52,7 @@
           </div>
         </div>
       </div>
-      <div id="divCrm" runat="server">
-      <div class="groupDiv groupLightBlue" style="padding-top: 10px;">
-        <div class="groupHeaderDiv">
-          <span class="groupHeaderSpan"></span>
-          <span class="groupCaptionSpan">CRM Integration</span>
-          <span class="groupButtonSpanWrapper">
-            <span class="groupButtonsSpan">
-              <asp:LinkButton ID="btnCrm" runat="server" CssClass="groupButtonLink">
-            <span class="groupButtonSpan">
-            <img alt="" src="../images/icons/edit.png" class="groupButtonImage" />
-                <span class="groupButtonTextSpan">Edit CRM Properties</span> </span></asp:LinkButton>
-            </span>
-          </span>
-        </div>
-        <div class="groupBodyWrapperDiv">
-          <div class="groupBodyDiv">
-            <div id="pnlCrm" runat="server" class="adminDiv" style="padding: 5px 5px 5px 5px;">
-              <asp:Label ID="lblCrm" runat="server" Text="There are no properties to display."></asp:Label>
-              <asp:Repeater ID="rptCrm" runat="server">
-                <ItemTemplate>
-                  <div style="margin: 5px 5px 5px 15px; line-height: 20px;">
-                    <span style="font-weight: bold;">
-                      <%# DataBinder.Eval(Container.DataItem, "Name")%></span>
-                    <span>
-                      <%# DataBinder.Eval(Container.DataItem, "Value")%>
-                      <br />
-                    </span>
-                  </div>
-                </ItemTemplate>
-              </asp:Repeater>
-                  <div style="margin: 5px 5px 5px 15px;">
-                <asp:Button ID="btnCRMResync" runat="server" Text="Force Resync" OnClientClick="PageMethods.ForceCRMResync(); alert('Resync has started.'); return false;" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>
+      
       <div id="divChat" runat="server">
       <div class="groupDiv groupLightBlue" style="padding-top: 10px;">
         <div class="groupHeaderDiv">
@@ -236,14 +198,6 @@
         return false;
       }
 
-      function GetApiToken() {
-        PageMethods.GetApiToken(function(result) {
-          $('.apiToken').html(result).show();
-          $('.showApiToken').hide();
-
-        });
-      
-      }
     
     </script>
 

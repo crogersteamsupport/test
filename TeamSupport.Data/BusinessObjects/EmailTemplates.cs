@@ -185,6 +185,7 @@ namespace TeamSupport.Data
       EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 0);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
       template.ReplaceParameter("CreatorAddress", creatorAddress.ToString());
+      template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, true));
       return template.GetMessage();
     }
 
@@ -192,6 +193,7 @@ namespace TeamSupport.Data
     {
       EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 1);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
+      template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, true));
       if (creator != null) template.ReplaceFields("Creator", creator);
       return template.GetMessage();
     }

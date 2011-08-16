@@ -196,7 +196,6 @@ namespace TeamSupport.Services
         job.AutoStopLimit = 100000;
         job.TimeoutSeconds = 10;
         job.SearchFlags =
-          SearchFlags.dtsSearchSelectMostRecent |
           SearchFlags.dtsSearchStemming |
           SearchFlags.dtsSearchDelayDocInfo;
 
@@ -205,14 +204,13 @@ namespace TeamSupport.Services
         {
           job.Fuzziness = 1;
           job.Request = job.Request + "*";
-          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
         }
 
         if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
         job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
         job.Execute();
         SearchResults results = job.Results;
-
 
         IDictionary<string, object> contextDictionary = (IDictionary<string, object>)context;
         List<RadComboBoxItemData> list = new List<RadComboBoxItemData>();

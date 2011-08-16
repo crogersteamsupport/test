@@ -21,6 +21,13 @@ namespace TeamSupport.Data
         else return "";
       }
     }
+
+    public void DeleteFile()
+    {
+      try { File.Delete(Path); }
+      catch (Exception) { }
+    
+    }
   }
 
   public partial class Attachments

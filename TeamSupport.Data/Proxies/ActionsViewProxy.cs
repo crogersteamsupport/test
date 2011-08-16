@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public ActionsViewItemProxy() {}
     [DataMember] public int ActionID { get; set; }
     [DataMember] public int? ActionTypeID { get; set; }
-    [DataMember] public int SystemActionTypeID { get; set; }
+    [DataMember] public SystemActionType SystemActionTypeID { get; set; }
     [DataMember] public string Name { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int? TimeSpent { get; set; }
@@ -30,6 +30,7 @@ namespace TeamSupport.Data
     [DataMember] public string CreatorName { get; set; }
     [DataMember] public string ModifierName { get; set; }
     [DataMember] public string ActionType { get; set; }
+    /*
     [DataMember] public string ProductName { get; set; }
     [DataMember] public string ReportedVersion { get; set; }
     [DataMember] public string SolvedVersion { get; set; }
@@ -57,7 +58,8 @@ namespace TeamSupport.Data
     [DataMember] public int DaysClosed { get; set; }
     [DataMember] public int? DaysOpened { get; set; }
     [DataMember] public string CloserName { get; set; }
-    [DataMember] public decimal? HoursSpent { get; set; }
+    [DataMember] public decimal? HoursSpent { get; set; }*/
+    [DataMember] public string DisplayName { get; set; }
           
   }
   
@@ -66,7 +68,7 @@ namespace TeamSupport.Data
     public ActionsViewItemProxy GetProxy()
     {
       ActionsViewItemProxy result = new ActionsViewItemProxy();
-      result.HoursSpent = this.HoursSpent;
+     /* result.HoursSpent = this.HoursSpent;
       result.CloserName = this.CloserName;
       result.DaysOpened = this.DaysOpened;
       result.DaysClosed = this.DaysClosed;
@@ -92,7 +94,7 @@ namespace TeamSupport.Data
       result.GroupName = this.GroupName;
       result.SolvedVersion = this.SolvedVersion;
       result.ReportedVersion = this.ReportedVersion;
-      result.ProductName = this.ProductName;
+      result.ProductName = this.ProductName;*/
       result.ActionType = this.ActionType;
       result.ModifierName = this.ModifierName;
       result.CreatorName = this.CreatorName;
@@ -107,11 +109,12 @@ namespace TeamSupport.Data
       result.SystemActionTypeID = this.SystemActionTypeID;
       result.ActionTypeID = this.ActionTypeID;
       result.ActionID = this.ActionID;
+      result.DisplayName = this.DisplayName;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
       result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
        
-      result.DateClosed = this.DateClosed == null ? this.DateClosed : DateTime.SpecifyKind((DateTime)this.DateClosed, DateTimeKind.Local); 
+      //result.DateClosed = this.DateClosed == null ? this.DateClosed : DateTime.SpecifyKind((DateTime)this.DateClosed, DateTimeKind.Local); 
       result.DateStarted = this.DateStarted == null ? this.DateStarted : DateTime.SpecifyKind((DateTime)this.DateStarted, DateTimeKind.Local); 
        
       return result;

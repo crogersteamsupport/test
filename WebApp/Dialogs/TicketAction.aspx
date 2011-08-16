@@ -9,7 +9,7 @@
 
     <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
-  <script src="../js_5/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js" type="text/javascript"></script>
 
   <style type="text/css">
     .reToolbar.Office2007 .InsertTicketLink { background-image: url(../images/icons/add.png); }
@@ -179,7 +179,7 @@
         }
 
         var myCallbackFunction = function(sender, args) {
-          editor.pasteHtml(String.format("<a href={0} target='{1}' class='{2}'>{3}</a> ", args.href, args.target, args.className, args.name))
+          editor.pasteHtml(String.format("<a href={0} target='{1}' class='{2}' onclick='{4}'>{3}</a> ", args.href, args.target, args.className, args.name, args.onclick))
         }
 
         editor.showExternalDialog(

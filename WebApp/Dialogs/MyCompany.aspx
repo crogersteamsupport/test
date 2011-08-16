@@ -81,9 +81,6 @@
 
         <tr>
           <td class="labelColTD" colspan="2">
-            <asp:CheckBox ID="cbApiEnabled" runat="server" Text="Enable API"/>
-          </td>
-          <td class="labelColTD" colspan="2">
             <asp:CheckBox ID="cbDisableStatusNotifications" runat="server" Text="Disable ticket status update emails"/>
           </td>
         </tr>
@@ -112,10 +109,6 @@
           </td>
         </tr>
         <tr>
-          <td colspan="2">
-            <asp:Button ID="btnResetAPI" runat="server" Text="Reset API Token" 
-              onclick="btnResetAPI_Click" />
-          </td>
           <td colspan="2">
             <asp:Button ID="btnResetEmail" runat="server" Text="Reset System Email" 
               Visible="false" onclick="btnResetEmail_Click"/>

@@ -34,18 +34,6 @@ namespace TeamSupport.Data
     
 
     
-    public bool? Active
-    {
-      get { return Row["Active"] != DBNull.Value ? (bool?)Row["Active"] : null; }
-      set { Row["Active"] = CheckNull(value); }
-    }
-    
-    public string CRMType
-    {
-      get { return Row["CRMType"] != DBNull.Value ? (string)Row["CRMType"] : null; }
-      set { Row["CRMType"] = CheckNull(value); }
-    }
-    
     public string Username
     {
       get { return Row["Username"] != DBNull.Value ? (string)Row["Username"] : null; }
@@ -94,6 +82,18 @@ namespace TeamSupport.Data
     {
       get { return (bool)Row["SendBackTicketData"]; }
       set { Row["SendBackTicketData"] = CheckNull(value); }
+    }
+    
+    public string CRMType
+    {
+      get { return (string)Row["CRMType"]; }
+      set { Row["CRMType"] = CheckNull(value); }
+    }
+    
+    public bool Active
+    {
+      get { return (bool)Row["Active"]; }
+      set { Row["Active"] = CheckNull(value); }
     }
     
     public int OrganizationID

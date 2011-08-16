@@ -9,13 +9,12 @@
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
     <script type="text/javascript" language="javascript">
       function pageLoad() {
-        setInterval('Update();', 400);
+        setInterval('Update();', 1000);
       }
 
       function Update() {
-        PageMethods.Update(function(result) {
-          $('#sapndes').text(result);
-        });
+        //PageMethods.Update(function(result) { $('#sapndes').text(result); });
+        window.location = window.location;
       }
     </script>
 </head>

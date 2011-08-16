@@ -187,35 +187,6 @@ public partial class Dialogs_Organization : BaseDialogPage
 
     Organization organization;
 
-    if (cbPortal.Checked)
-    {
-      int portalCount = Organizations.GetPortalCount(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
-      organization = (Organization)Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
-
-      if (portalCount >= organization.PortalSeats)
-      {
-        if (UserSession.CurrentUser.IsFinanceAdmin)
-        {
-          _manager.Alert("You have exceeded the number of portal seat licenses. If you would like to add additional portal licenses to your account, please contact our sales team at 800.596.2820 x806, or send an email to sales@teamsupport.com");
-        }
-        else
-        {
-          Users users = new Users(UserSession.LoginUser);
-          users.LoadFinanceAdmins(UserSession.LoginUser.OrganizationID);
-          if (users.IsEmpty)
-          {
-            _manager.Alert("Please ask your billing administrator to purchase additional portal seat licenses.");
-          }
-          else
-          {
-            _manager.Alert("Please ask your billing administrator (" + users[0].FirstLastName + ") to purchase additional portal seat licenses.");
-          }
-        }
-        return false;
-      }
-    }
-    
-
     Organizations organizations = new Organizations(UserSession.LoginUser); ;
 
     if (_organizatinID < 0)

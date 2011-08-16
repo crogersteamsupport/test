@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy() {}
     [DataMember] public int CRMLinkID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
-    [DataMember] public bool? Active { get; set; }
+    [DataMember] public bool Active { get; set; }
     [DataMember] public string CRMType { get; set; }
     [DataMember] public string Username { get; set; }
     [DataMember] public string Password { get; set; }

@@ -18,9 +18,18 @@ using System.Text;
 
 public partial class ChangePassword : System.Web.UI.Page
 {
-  [WebMethod]
-  public static string ChangePW(string password, string confirm)
+
+  protected override void OnLoad(EventArgs e)
   {
+    base.OnLoad(e);
+    fieldSessionID.Value = TSAuthentication.SessionID;
+  }
+
+  [WebMethod]
+  public static string ChangePW(string password, string confirm, string sessionID)
+  {
+    if (TSAuthentication.SessionID != sessionID) return "Unable to authenticate your session.  Please refresh the page and try again.";
+
     bool result = false;
     StringBuilder builder = new StringBuilder("<ul>");
     if (password.Trim() != confirm.Trim())

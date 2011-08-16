@@ -14,6 +14,29 @@ namespace TeamSupport.Data
       return TicketsView.GetTicketsViewItem(Collection.LoginUser, TicketID);
     }
 
+    public string DisplayName
+    {
+      get
+      {
+        string title = "";
+
+        switch (SystemActionTypeID)
+        {
+          case SystemActionType.Description: title = "Description"; break;
+          case SystemActionType.Resolution: title = "Resolution"; break;
+          case SystemActionType.Email: title = "Email: " + Name; break;
+          case SystemActionType.PingUpdate: title = "Ping Updated"; break;
+          case SystemActionType.Chat: title = "Chat"; break;
+          default:
+            title = ActionType == "" ? "[No Action Type]" : ActionType;
+            if (!string.IsNullOrEmpty(Name)) title += ": " + Name;
+            break;
+        }
+        return title;
+      }
+
+    }
+
   }
   
   public partial class ActionsView

@@ -91,7 +91,7 @@ public partial class Frames_Ticket : BaseFramePage
       {
         LastTicketTypeID = _ticket.TicketTypeID;
       }
-      spanUrl.InnerText = "https://app.teamsupport.com?TicketID=" + _ticket.TicketID.ToString(); 
+      spanUrl.InnerText = Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com") + "?TicketID=" + _ticket.TicketID.ToString(); 
       _fieldControls = new CustomFieldControls(ReferenceType.Tickets, LastTicketTypeID, _ticket.TicketID, 2, tblCustomControls, "PropertyChanged");
       _fieldControls.LoadCustomControls(200);
     }
@@ -656,7 +656,7 @@ public partial class Frames_Ticket : BaseFramePage
       name = name.Trim();
       if (name != "")
       {
-        ticket.Name = name;
+        ticket.Name = HttpUtility.HtmlEncode(name);
         ticket.Collection.Save();
       }
     }

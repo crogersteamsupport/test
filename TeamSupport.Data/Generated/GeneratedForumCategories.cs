@@ -46,6 +46,24 @@ namespace TeamSupport.Data
       set { Row["Position"] = CheckNull(value); }
     }
     
+    public int? TicketType
+    {
+      get { return Row["TicketType"] != DBNull.Value ? (int?)Row["TicketType"] : null; }
+      set { Row["TicketType"] = CheckNull(value); }
+    }
+    
+    public int? GroupID
+    {
+      get { return Row["GroupID"] != DBNull.Value ? (int?)Row["GroupID"] : null; }
+      set { Row["GroupID"] = CheckNull(value); }
+    }
+    
+    public int? ProductID
+    {
+      get { return Row["ProductID"] != DBNull.Value ? (int?)Row["ProductID"] : null; }
+      set { Row["ProductID"] = CheckNull(value); }
+    }
+    
 
     
     public string OrganizationID
@@ -169,7 +187,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ForumCategories] SET     [ParentID] = @ParentID,    [CategoryName] = @CategoryName,    [CategoryDesc] = @CategoryDesc,    [OrganizationID] = @OrganizationID,    [Position] = @Position  WHERE ([CategoryID] = @CategoryID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ForumCategories] SET     [ParentID] = @ParentID,    [CategoryName] = @CategoryName,    [CategoryDesc] = @CategoryDesc,    [OrganizationID] = @OrganizationID,    [Position] = @Position,    [TicketType] = @TicketType,    [GroupID] = @GroupID,    [ProductID] = @ProductID  WHERE ([CategoryID] = @CategoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CategoryID", SqlDbType.Int, 4);
@@ -214,13 +232,55 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("TicketType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("GroupID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ForumCategories] (    [ParentID],    [CategoryName],    [CategoryDesc],    [OrganizationID],    [Position]) VALUES ( @ParentID, @CategoryName, @CategoryDesc, @OrganizationID, @Position); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ForumCategories] (    [ParentID],    [CategoryName],    [CategoryDesc],    [OrganizationID],    [Position],    [TicketType],    [GroupID],    [ProductID]) VALUES ( @ParentID, @CategoryName, @CategoryDesc, @OrganizationID, @Position, @TicketType, @GroupID, @ProductID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("GroupID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TicketType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("Position", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -369,7 +429,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CategoryID], [ParentID], [CategoryName], [CategoryDesc], [OrganizationID], [Position] FROM [dbo].[ForumCategories] WHERE ([CategoryID] = @CategoryID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CategoryID], [ParentID], [CategoryName], [CategoryDesc], [OrganizationID], [Position], [TicketType], [GroupID], [ProductID] FROM [dbo].[ForumCategories] WHERE ([CategoryID] = @CategoryID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CategoryID", categoryID);
         Fill(command);

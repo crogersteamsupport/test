@@ -45,7 +45,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
     using (SqlConnection connection = new SqlConnection(UserSession.ConnectionString))
     {
       string query = report.GetSql(false);
-      query = query.Replace("SELECT ", "SELECT TOP 25 ");
+      query = query.Replace("SELECT ", "SELECT TOP 100 ");
       SqlCommand command = new SqlCommand(query, connection);
       Report.CreateParameters(UserSession.LoginUser, command, UserSession.LoginUser.UserID);
       SqlDataAdapter adapter = new SqlDataAdapter(command);
@@ -128,7 +128,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
       {
         if (table.Columns.Contains("SLA_Violation_Hours"))
         {
-          try { if (double.Parse(row["SLA_Violation_Hours"].ToString()) < 1) slaClass = "slaViolation"; } 
+          try { if (double.Parse(row["SLA_Violation_Hours"].ToString()) < 1) slaClass = "slaViolation"; }
           catch { }
         }
 
@@ -138,12 +138,12 @@ public partial class Frames_Dashboard : System.Web.UI.Page
           catch { }
         }
       }
-      
-      
+
+
       string click = "<td class=\"icon {1}\"><img src=\"../images/icons/folder_open.png\" onclick=\"{0}\" /></td>";
       if (hasTicket)
       {
-        builder.Append(string.Format(click, "openTicket("+ row["Ticket_Number"].ToString() +"); return false;", slaClass));
+        builder.Append(string.Format(click, "openTicket(" + row["Ticket_Number"].ToString() + "); return false;", slaClass));
       }
       else if (hasCustomer)
       {
@@ -156,7 +156,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
         builder.Append("<td>");
         if (row[column] is DateTime && row[column] != DBNull.Value)
         {
-          builder.Append(DataUtils.DateToLocal(UserSession.LoginUser,((DateTime)row[column])).ToString("g", UserSession.LoginUser.CultureInfo));
+          builder.Append(DataUtils.DateToLocal(UserSession.LoginUser, ((DateTime)row[column])).ToString("g", UserSession.LoginUser.CultureInfo));
         }
         else
         {
@@ -237,7 +237,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
   public static string GetPortletHtml(Portlet portlet, Report report)
   {
     string caption = portlet.Caption.Length >= 35 ? portlet.Caption.Substring(0, 32) + "..." : portlet.Caption;
-    
+
     if (string.IsNullOrEmpty(report.ExternalURL))
     {
       DataTable table = GetReportDataTable(report);
@@ -267,7 +267,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
       portletIDs = Settings.SystemDB.ReadIntArray("DefaultPortletIDs");
       Settings.UserDB.WriteIntArray("DashboardPortlets", portletIDs);
     }
-    int maxCol = GetColumnCount()-1;
+    int maxCol = GetColumnCount() - 1;
     List<Portlet> portlets = new List<Portlet>();
     foreach (int id in portletIDs)
     {
@@ -300,7 +300,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
       }
       catch (Exception)
       {
-        
+
       }
     }
     FixPortletYs(portlets, 0);
@@ -320,12 +320,12 @@ public partial class Frames_Dashboard : System.Web.UI.Page
     List<int> list = new List<int>();
 
     foreach (int i in portletIDs)
-	  {
+    {
       if (GetPortletID(i).ToLower() != portletID.ToLower())
       {
         list.Add(i);
       }
-	  }
+    }
     Settings.UserDB.WriteIntArray("DashboardPortlets", list.ToArray());
   }
 

@@ -219,7 +219,7 @@ namespace TeamSupport.ServiceLibrary
 
       message.Subject = string.Format(message.Subject, ticket.TicketNumber);
 
-      string link = "<div><a href=\"https://app.teamsupport.com?TicketID={0}\" target=\"TSMain\">Ticket {1}: {2}</a></div>";
+      string link = "<div><a href=\"" + SystemSettings.ReadString(LoginUser, "AppDomain", "https://app.teamsupport.com") + "?TicketID={0}\" target=\"TSMain\">Ticket {1}: {2}</a></div>";
       StringBuilder builder = new StringBuilder();
       string description = "";
       if (!isWarning)

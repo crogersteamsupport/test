@@ -108,6 +108,49 @@ namespace TSWebServices
       return table[0].GetProxy();
     }
     
+    [WebMethod]
+    public CRMLinkTableItemProxy[] GetCrmLinks()
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+      CRMLinkTable table = new CRMLinkTable(TSAuthentication.GetLoginUser());
+      table.LoadByOrganizationID(TSAuthentication.OrganizationID);
+      return table.GetCRMLinkTableItemProxies();
+    }
+
+    [WebMethod]
+    public CRMLinkTableItemProxy SaveCrmLink(int crmLinkID, bool isActive, string crmType, string password, string token, string tag, string userName)
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+      CRMLinkTableItem item;
+
+      if (crmLinkID < 0)
+      {
+        item = (new CRMLinkTable(TSAuthentication.GetLoginUser())).AddNewCRMLinkTableItem();
+        item.AllowPortalAccess = false;
+        item.LastProcessed = DateTime.UtcNow;
+        item.LastTicketID = -1;
+        item.OrganizationID = TSAuthentication.OrganizationID;
+        item.SendBackTicketData = true;
+        item.SendWelcomeEmail = false;
+      }
+      else
+      {
+        item = CRMLinkTable.GetCRMLinkTableItem(TSAuthentication.GetLoginUser(), crmLinkID);
+        if (item.OrganizationID != TSAuthentication.OrganizationID) return null;
+      }
+
+      item.Active = isActive;
+      item.CRMType = crmType;
+      item.Password = password;
+      item.SecurityToken = token;
+      item.TypeFieldMatch = tag;
+      item.Username = userName;
+
+      item.Collection.Save();
+      return item.GetProxy();
+
+    }
+
 
     // need to move to users service
     [WebMethod]
@@ -257,7 +300,78 @@ namespace TSWebServices
       return result;
     }
 
+    [WebMethod]
+    public ApiInfo GenerateNewApiToken()
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+      Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+      organization.WebServiceID = Guid.NewGuid();
+      organization.Collection.Save();
+      return GetApiInfo();
+    }
 
+    [WebMethod]
+    public ApiInfo SetApiEnabled(bool value)
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+      Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+      organization.IsApiEnabled = value;
+      organization.Collection.Save();
+      return GetApiInfo();
+    }
+
+    [WebMethod]
+    public ApiInfo GetApiInfo()
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+      Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+      ApiInfo info = new ApiInfo();
+      info.RequestCount = ApiLogs.GetDailyRequestCount(organization.Collection.LoginUser, TSAuthentication.OrganizationID);
+      info.RequestMax = organization.APIRequestLimit;
+      info.Token = organization.WebServiceID.ToString();
+      info.IsEnabled = organization.IsApiEnabled;
+      info.IsActive = organization.IsApiActive;
+      return info;
+    }
+
+    [WebMethod]
+    public AutocompleteItem[] GetUserOrOrganization(string searchTerm)
+    {
+      Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+      organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true);
+
+      UsersView users = new UsersView(organizations.LoginUser);
+      users.LoadByLikeName(TSAuthentication.OrganizationID, searchTerm);
+
+      List<AutocompleteItem> list = new List<AutocompleteItem>();
+      foreach (Organization organization in organizations)
+      {
+        list.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString(), "o"));
+      }
+
+      foreach (UsersViewItem user in users)
+      {
+        list.Add(new AutocompleteItem(String.Format("{0}, {1} [{2}]", user.LastName, user.FirstName, user.Organization), user.UserID.ToString(), "u"));
+      }
+
+      return list.ToArray();
+    }
+  }
+
+
+  [DataContract]
+  public class ApiInfo
+  {
+    [DataMember]
+    public int RequestCount { get; set; }
+    [DataMember]
+    public int RequestMax { get; set; }
+    [DataMember]
+    public string Token { get; set; }
+    [DataMember]
+    public bool IsEnabled { get; set; }
+    [DataMember]
+    public bool IsActive { get; set; }
 
   }
 }

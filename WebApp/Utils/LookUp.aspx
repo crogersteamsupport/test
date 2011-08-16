@@ -5,12 +5,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title></title>
-  <link href="../Resources_141/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="../Resources_141/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
-  <link href="../Resources_141/Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <script src="../Resources_141/Js/jquery-latest.min.js" type="text/javascript"></script>
+  <link href="../Resources_143/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="../Resources_143/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="../Resources_143/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 
-  <script src="../Resources_141/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js" type="text/javascript"></script>
 
     <script language="javascript" type="text/javascript">
 

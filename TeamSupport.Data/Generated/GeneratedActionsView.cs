@@ -256,9 +256,9 @@ namespace TeamSupport.Data
       set { Row["Name"] = CheckNull(value); }
     }
     
-    public int SystemActionTypeID
+    public SystemActionType SystemActionTypeID
     {
-      get { return (int)Row["SystemActionTypeID"]; }
+      get { return (SystemActionType)Row["SystemActionTypeID"]; }
       set { Row["SystemActionTypeID"] = CheckNull(value); }
     }
     

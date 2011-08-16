@@ -49,8 +49,8 @@ namespace TeamSupport.Data
 
   public partial class TicketsViewItem
   {
-    public string TicketUrl { get { return "https://app.teamsupport.com?TicketID=" + TicketID.ToString(); } }
-//    public string TicketUrl { get { return "https://app.teamsupport.com/Ticket.aspx?ticketid=" + TicketID.ToString(); } }
+    public string TicketUrl { get { return SystemSettings.ReadString(Collection.LoginUser, "AppDomain", "https://app.teamsupport.com") + "?TicketID=" + TicketID.ToString(); } }
+
     public string PortalUrl
     {
       get 
@@ -189,9 +189,10 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT TOP 1 * FROM TicketsView WHERE OrganizationID = @OrganizationID AND TicketNumber= @TicketNumber";
+        command.CommandText = "SELECT TOP 1 * FROM UserTicketsView WHERE OrganizationID = @OrganizationID AND TicketNumber= @TicketNumber AND ViewerID = @ViewerID";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@ViewerID", LoginUser.UserID);
         command.Parameters.AddWithValue("@TicketNumber", ticketNumber);
         Fill(command);
       }
@@ -384,7 +385,7 @@ namespace TeamSupport.Data
 
       string sort = string.Format("[{0}] {1}", filter.SortColumn.Trim(), (filter.SortAsc ? "ASC" : "DESC"));
 
-      string fields = 
+      string fields =
         @"
           tv.[TicketID]
         ,tv.[ProductName]
@@ -429,6 +430,8 @@ namespace TeamSupport.Data
         ,tv.[Contacts]
         ,tv.[SlaViolationTime]
         ,tv.[SlaWarningTime]
+        ,tv.[SlaViolationDate]
+        ,tv.[SlaWarningDate]
         ,CAST(0 AS dec(24,6)) AS [SlaViolationHours]
         ,CAST(0 AS dec(24,6)) AS [SlaWarningHours]
         ,tv.ViewerID

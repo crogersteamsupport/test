@@ -168,17 +168,9 @@ public partial class Dialogs_CustomField : BaseDialogPage
     string name = textApiFieldName.Text.Trim();
     if (name == "") 
     {
-      StringBuilder builder = new StringBuilder();
-      foreach (char c in textName.Text.Trim())
-      {
-        if (char.IsLetterOrDigit(c))
-        {
-          builder.Append(c);
-        }
-      }
-      name = builder.ToString();
+      name = textName.Text;
     }
-    return Char.IsDigit(name[0]) ? "_" + name :  name;
+    return CustomFields.GenerateApiFieldName(name);
   }
 
   private bool FieldExists(string apiFieldName)
