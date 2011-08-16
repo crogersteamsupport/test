@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+  <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery.ui.panel.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery.ui.panel.js" type="text/javascript"></script>
+  <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
+  <script src="../Js/jquery.ui.timepicker.js" type="text/javascript"></script>
+
+  <script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+      $('select').combobox();
+
+      var availableTags = [
+			"ActionScript",
+			"AppleScript",
+			"Asp",
+			"BASIC",
+			"C",
+			"C++",
+			"Clojure",
+			"COBOL",
+			"ColdFusion",
+			"Erlang",
+			"Fortran",
+			"Groovy",
+			"Haskell",
+			"Java",
+			"JavaScript",
+			"Lisp",
+			"Perl",
+			"PHP",
+			"Python",
+			"Ruby",
+			"Scala",
+			"Scheme"
+		];
+      $(".text").autocomplete({
+        source: availableTags
+      });
+
+      $('.ts-panel').panel({ title: "test", buttons: [
+        { text: "Edit",
+          click: function () { alert("edit"); },
+          iconClass: "ts-icon ts-icon-edit"
+        },
+
+        { text: "Delete",
+          click: function () { alert("Delete"); },
+          iconClass: "ts-icon ts-icon-delete"
+        },
+
+        {
+          click: function () { alert("minus"); },
+          iconClass: "ui-icon ui-icon-minus"
+        }
+      ]
+      });
+
+      $('button').button()
+
+      $('#btnGet').click(function () { alert($('#selTest').val()); });
+      $('#btnSet1').click(function () { $('#selTest').combobox("setValue", "1"); });
+      $('#btnSet2').click(function () { $('#selTest').combobox("setValue", "2"); });
+      $('#btnSet3').click(function () { $('#selTest').combobox("setValue", "3"); });
+      $('#btnSet4').click(function () { $('#selTest').combobox("setValue", "4"); });
+      $('.ts-panel').show();
+
+      $('#textTime1').datetimepicker();
+      $('#textTime2').datepicker();
+
+    });
+
+    
+  </script>
+</head>
+<body>
+  <div class="ts-panel ui-helper-hidden" title="Kevin's First Panel">
+    
+    <select id="selTest">
+      <option value="1">Option 1</option>
+      <option value="2">Option 2</option>
+      <option value="3">Option 3</option>
+      <option value="4">Option 4</option>
+    </select>
+
+    <input type="text" class="text ui-widget ui-widget-content ui-corner-all" />
+    
+    <button id="btnGet">Get Value</button>
+    <button id="btnSet1">Set 1</button>
+    <button id="btnSet2">Set 2</button>
+    <button id="btnSet3">Set 3</button>
+    <button id="btnSet4">Set 4</button>
+    <span id="spanOut"></span>
+
+  </div>
+    <br />
+    <br />
+
+    <input type="text" id="textTime1"/>
+    <input type="text" id="textTime2"/>
+
+</body>
+</html>

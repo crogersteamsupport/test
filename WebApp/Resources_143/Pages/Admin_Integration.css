@@ -1,0 +1,17 @@
+﻿    .int-list { list-style:none; margin:0; padding:0; }
+    .int-list li { border:none; }
+    .int-list h1 { line-height: 16px; font-size: 16px; font-weight:bold; cursor:pointer;}
+    .int-list h1 img { float:left; display:block; margin: 0 .3em; }
+    .int-list h1 .ui-icon { float:left; }
+    .int-list li .int-panel { padding: 0 1em 1em 1em; line-height: 1.1em;}
+    .int-panel input.text { width: 250px; display:block; margin-bottom: 1em; }
+    .int-panel label { display:block; margin-bottom: .25em; font-weight:bold;}
+    .int-footer .int-message { padding: 1em 1em; background-image:none;}
+    .int-footer div { margin: 1em 0; }
+    .int-action button { margin-right: 1em;}
+    label.checkbox { display:inline;}
+    #int-api-inactive { font-size: 1.2em; font-weight:bold;}
+    dl dt { float:left; font-weight:bold; margin-right:1em; padding:.5em; width:165px; text-align:right;}
+    dl dd { margin:2px 0; padding:5px 0; }
+    .int-list dl dd strong.ui-state-error { border: none; background: transparent none; }
+    .ts-api a.int-api-link-users  { font-weight: bold; display:block; padding: 1em 0; }
