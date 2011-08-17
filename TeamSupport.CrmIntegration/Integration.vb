@@ -164,7 +164,6 @@ Namespace TeamSupport
 
                     Else
                         'if still not found, add new
-
                         thisCompany = (New Organizations(User)).AddNewOrganization()
                         thisCompany.ParentID = ParentOrgID
                         thisCompany.Name = company.AccountName
@@ -180,7 +179,6 @@ Namespace TeamSupport
                     End If
                 End If
 
-                'thisCompany.TimeZoneID = 
                 thisCompany.Collection.Save()
 
                 Dim findAddress As New Addresses(User)
@@ -244,6 +242,8 @@ Namespace TeamSupport
             End Sub
 
             Protected Sub UpdateContactInfo(ByVal person As EmployeeData, ByVal companyID As String, ByVal ParentOrgID As String)
+                ParentOrgID = CRMLinkRow.OrganizationID
+
                 If Processor.IsStopped Then
                     Return
                 End If
@@ -254,10 +254,6 @@ Namespace TeamSupport
                 End If
 
                 Log.Write(String.Format("Adding/updating contact information for {0} ({1},{2}).", person.Email, person.LastName, person.FirstName))
-
-                Dim parentCompany As New Organizations(User)
-                parentCompany.LoadByOrganizationID(ParentOrgID)
-                Dim allowPortalAccess As Boolean = parentCompany(0).HasPortalAccess
 
                 Dim findCompany As New Organizations(User)
 
@@ -276,16 +272,20 @@ Namespace TeamSupport
                     Else
                         Dim pw = DataUtils.GenerateRandomPassword()
 
+                        Dim crmlinkOrg As New Organizations(User)
+                        crmlinkOrg.LoadByOrganizationID(ParentOrgID)
+                        Dim isAdvancedPortal As Boolean = crmlinkOrg(0).IsAdvancedPortal
+
                         'add the contact
                         thisUser = (New Users(User)).AddNewUser()
                         thisUser.OrganizationID = thisCompany.OrganizationID
                         thisUser.IsActive = True
                         thisUser.IsPasswordExpired = True
-                        thisUser.IsPortalUser = allowPortalAccess AndAlso CRMLinkRow.AllowPortalAccess
+                        thisUser.IsPortalUser = isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess
                         thisUser.CryptedPassword = Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(pw, "MD5")
                         thisUser.Collection.Save()
 
-                        If allowPortalAccess AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
+                        If isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
                             EmailPosts.SendWelcomePortalUser(User, thisUser.UserID, pw)
                         End If
                     End If
