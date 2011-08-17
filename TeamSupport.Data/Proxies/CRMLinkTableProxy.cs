@@ -25,6 +25,8 @@ namespace TeamSupport.Data
     [DataMember] public bool SendBackTicketData { get; set; }
     [DataMember] public DateTime LastProcessed { get; set; }
     [DataMember]    public int LastTicketID { get; set; }
+    [DataMember]    public bool AllowPortalAccess { get; set; }
+      [DataMember] public bool SendWelcomeEmail {get; set;}
   }
   
   public partial class CRMLinkTableItem : BaseItem
@@ -42,7 +44,9 @@ namespace TeamSupport.Data
       result.Active = this.Active;
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
-       
+      result.AllowPortalAccess = this.AllowPortalAccess;
+      result.SendWelcomeEmail = this.SendWelcomeEmail;
+
       result.LastProcessed = DateTime.SpecifyKind(this.LastProcessed, DateTimeKind.Local);
        
       result.LastLink = this.LastLink == null ? this.LastLink : DateTime.SpecifyKind((DateTime)this.LastLink, DateTimeKind.Local); 
