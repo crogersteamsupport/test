@@ -40,6 +40,12 @@ namespace TeamSupport.Data
       set { Row["CRMObjectName"] = CheckNull(value); }
     }
     
+    public int? CustomFieldID
+    {
+      get { return Row["CustomFieldID"] != DBNull.Value ? (int?)Row["CustomFieldID"] : null; }
+      set { Row["CustomFieldID"] = CheckNull(value); }
+    }
+    
     public string TSFieldName
     {
       get { return Row["TSFieldName"] != DBNull.Value ? (string)Row["TSFieldName"] : null; }
@@ -47,12 +53,6 @@ namespace TeamSupport.Data
     }
     
 
-    
-    public int CustomFieldID
-    {
-      get { return (int)Row["CustomFieldID"]; }
-      set { Row["CustomFieldID"] = CheckNull(value); }
-    }
     
     public string CRMFieldName
     {

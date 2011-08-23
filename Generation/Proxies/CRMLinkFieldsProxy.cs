@@ -17,7 +17,7 @@ namespace TeamSupport.Data
     [DataMember] public int CRMLinkID { get; set; }
     [DataMember] public string CRMObjectName { get; set; }
     [DataMember] public string CRMFieldName { get; set; }
-    [DataMember] public int CustomFieldID { get; set; }
+    [DataMember] public int? CustomFieldID { get; set; }
     [DataMember] public string TSFieldName { get; set; }
           
   }
