@@ -164,10 +164,16 @@ Namespace TeamSupport
 
                     Else
                         'if still not found, add new
+
+                        Dim crmlinkOrg As New Organizations(User)
+                        crmlinkOrg.LoadByOrganizationID(ParentOrgID)
+                        Dim isAdvancedPortal As Boolean = crmlinkOrg(0).IsAdvancedPortal
+
                         thisCompany = (New Organizations(User)).AddNewOrganization()
                         thisCompany.ParentID = ParentOrgID
                         thisCompany.Name = company.AccountName
                         thisCompany.CRMLinkID = company.AccountID
+                        thisCompany.HasPortalAccess = isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess
                         thisCompany.IsActive = True
 
                         With New Organizations(User)
