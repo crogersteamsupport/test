@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
+using System.IO;
 
 namespace TSWebServices
 {
@@ -141,6 +142,14 @@ namespace TSWebServices
     [WebMethod(true)]
     public TicketAutomationTriggerProxy SaveTrigger(SaveTriggerData data)
     {
+      HttpContext.Current.Request.InputStream.Position = 0;
+      string rawJson = null;
+      using (StreamReader reader = new StreamReader(HttpContext.Current.Request.InputStream))
+      {
+        rawJson = reader.ReadToEnd();
+      }
+
+
       TicketAutomationTrigger trigger = null;
       if (data.TriggerID > -1)
       {

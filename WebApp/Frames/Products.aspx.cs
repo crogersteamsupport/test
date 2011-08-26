@@ -104,7 +104,7 @@ public partial class Frames_Products : BaseFramePage
       if (versionID < 0)
         url = "ProductVersions.aspx?ProductID=" + productID.ToString();
       else
-        url = "../Resources_143/Pages/ProductVersion.html?VersionID=" + versionID.ToString();
+        url = "../Resources_144/Pages/ProductVersion.html?VersionID=" + versionID.ToString();
     }
     else if (tsMain.SelectedIndex == 3)
     {
@@ -289,7 +289,7 @@ public partial class Frames_Products : BaseFramePage
     tsMain.Tabs.Clear();
 
     tsMain.Tabs.Add(new RadTab("Product Information", "ProductInformation.aspx?"));
-    tsMain.Tabs.Add(new RadTab("Version Information", "../Resources_143/Pages/ProductVersion.html?"));
+    tsMain.Tabs.Add(new RadTab("Version Information", "../Resources_144/Pages/ProductVersion.html?"));
     tsMain.Tabs.Add(new RadTab("Customers", "ProductOrganizations.aspx?"));
 
     RadTab tab = new RadTab("History", "History.aspx?");

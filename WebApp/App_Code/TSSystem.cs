@@ -95,66 +95,66 @@ namespace TSWebServices
       if (org.ParentID != null)
       {
 
-        items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "Resources_143/images/nav/16/Dashboard.png", string.Format(data, "Frames/Dashboard.aspx", "Resources_143/PaneInfo/Dashboard.html")));
+        items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "Resources_144/images/nav/16/Dashboard.png", string.Format(data, "Frames/Dashboard.aspx", "Resources_144/PaneInfo/Dashboard.html")));
 
 
-        TsMenuItem ticketItem = new TsMenuItem("tickets", "mniTickets", "Tickets", "Resources_143/images/nav/16/tickets.png", string.Format(data, "Resources_143/Pages/TicketTabs.html", "Resources_143/PaneInfo/Tickets.html"));
+        TsMenuItem ticketItem = new TsMenuItem("tickets", "mniTickets", "Tickets", "Resources_144/images/nav/16/tickets.png", string.Format(data, "Resources_144/Pages/TicketTabs.html", "Resources_144/PaneInfo/Tickets.html"));
         items.Add(ticketItem);
 
-        ticketItem.AddItem(new TsMenuItem("mytickets", "mniMyTickets", "My Tickets", "Resources_143/images/nav/16/mytickets.png", string.Format(data, "Resources_143/Pages/TicketTabs.html?UserID=" + TSAuthentication.UserID, "Resources_143/PaneInfo/MyTickets.html")));
-        ticketItem.AddItem(new TsMenuItem("tickettags", "mniTicketTags", "Ticket Tags", "Resources_143/images/nav/16/tag.png", string.Format(data, "Frames/TicketTags.aspx", "Resources_143/PaneInfo/TicketTags.html")));
+        ticketItem.AddItem(new TsMenuItem("mytickets", "mniMyTickets", "My Tickets", "Resources_144/images/nav/16/mytickets.png", string.Format(data, "Resources_144/Pages/TicketTabs.html?UserID=" + TSAuthentication.UserID, "Resources_144/PaneInfo/MyTickets.html")));
+        ticketItem.AddItem(new TsMenuItem("tickettags", "mniTicketTags", "Ticket Tags", "Resources_144/images/nav/16/tag.png", string.Format(data, "Frames/TicketTags.aspx", "Resources_144/PaneInfo/TicketTags.html")));
         TicketTypes ticketTypes = new TicketTypes(loginUser);
         ticketTypes.LoadByOrganizationID(TSAuthentication.OrganizationID, org.ProductType);
         foreach (TicketType ticketType in ticketTypes)
         {
-          ticketItem.AddItem(new TsMenuItem("tickettype", "mniTicketType_" + ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.IconUrl, string.Format(data, "Resources_143/Pages/TicketTabs.html?TicketTypeID=" + ticketType.TicketTypeID.ToString(), "Resources_143/PaneInfo/Tickets.html")));
+          ticketItem.AddItem(new TsMenuItem("tickettype", "mniTicketType_" + ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.IconUrl, string.Format(data, "Resources_144/Pages/TicketTabs.html?TicketTypeID=" + ticketType.TicketTypeID.ToString(), "Resources_144/PaneInfo/Tickets.html")));
         }
 
-        items.Add(new TsMenuItem("kb", "mniKB", "Knowledge Base", "Resources_143/images/nav/16/knowledge.png", string.Format(data, "Frames/KnowledgeBase.aspx", "Resources_143/PaneInfo/Knowledge.html")));
+        items.Add(new TsMenuItem("kb", "mniKB", "Knowledge Base", "Resources_144/images/nav/16/knowledge.png", string.Format(data, "Frames/KnowledgeBase.aspx", "Resources_144/PaneInfo/Knowledge.html")));
 
         if (org.ProductType != ProductType.Express)
         {
           int? articleID = org.DefaultWikiArticleID;
           string wikiLink = articleID == null ? "Wiki/ViewPage.aspx" : "Wiki/ViewPage.aspx?ArticleID=" + articleID;
-          items.Add(new TsMenuItem("wiki", "mniWiki", "Wiki", "Resources_143/images/nav/16/wiki.png", string.Format(data, wikiLink, "Resources_143/PaneInfo/Wiki.html")));
+          items.Add(new TsMenuItem("wiki", "mniWiki", "Wiki", "Resources_144/images/nav/16/wiki.png", string.Format(data, wikiLink, "Resources_144/PaneInfo/Wiki.html")));
         }
 
-        items.Add(new TsMenuItem("search", "mniSearch", "Search", "Resources_143/images/nav/16/search.png", string.Format(data, "Frames/Search.aspx", "Resources_143/PaneInfo/Search.html")));
+        items.Add(new TsMenuItem("search", "mniSearch", "Search", "Resources_144/images/nav/16/search.png", string.Format(data, "Frames/Search.aspx", "Resources_144/PaneInfo/Search.html")));
 
         if (user.IsChatUser && org.ChatSeats > 0)
         {
-          items.Add(new TsMenuItem("chat", "mniChat", "Chat", "Resources_143/images/nav/16/chat.png", string.Format(data, "Frames/Chat.aspx", "Resources_143/PaneInfo/Chat.html")));
+          items.Add(new TsMenuItem("chat", "mniChat", "Chat", "Resources_144/images/nav/16/chat.png", string.Format(data, "Frames/Chat.aspx", "Resources_144/PaneInfo/Chat.html")));
         }
 
         if (org.ProductType != ProductType.Express)
-          items.Add(new TsMenuItem("wc", "mniWC", "Water Cooler", "Resources_143/images/nav/16/watercooler.png", string.Format(data, "WaterCooler/WaterCooler.aspx", "Resources_143/PaneInfo/WaterCooler.html")));
-        items.Add(new TsMenuItem("users", "mniUsers", "Users", "Resources_143/images/nav/16/users.png", string.Format(data, "Frames/Users.aspx", "Resources_143/PaneInfo/Users.html")));
-        items.Add(new TsMenuItem("groups", "mniGroups", "Groups", "Resources_143/images/nav/16/groups.png", string.Format(data, "Frames/Groups.aspx", "Resources_143/PaneInfo/Groups.html")));
+          items.Add(new TsMenuItem("wc", "mniWC", "Water Cooler", "Resources_144/images/nav/16/watercooler.png", string.Format(data, "WaterCooler/WaterCooler.aspx", "Resources_144/PaneInfo/WaterCooler.html")));
+        items.Add(new TsMenuItem("users", "mniUsers", "Users", "Resources_144/images/nav/16/users.png", string.Format(data, "Frames/Users.aspx", "Resources_144/PaneInfo/Users.html")));
+        items.Add(new TsMenuItem("groups", "mniGroups", "Groups", "Resources_144/images/nav/16/groups.png", string.Format(data, "Frames/Groups.aspx", "Resources_144/PaneInfo/Groups.html")));
         if (org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.HelpDesk)
-          items.Add(new TsMenuItem("customers", "mniCustomers", "Customers", "Resources_143/images/nav/16/customers.png", string.Format(data, "Frames/Organizations.aspx", "Resources_143/PaneInfo/Customers.html")));
+          items.Add(new TsMenuItem("customers", "mniCustomers", "Customers", "Resources_144/images/nav/16/customers.png", string.Format(data, "Frames/Organizations.aspx", "Resources_144/PaneInfo/Customers.html")));
         if (org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.BugTracking)
-          items.Add(new TsMenuItem("products", "mniProducts", "Products", "Resources_143/images/nav/16/products.png", string.Format(data, "Frames/Products.aspx", "Resources_143/PaneInfo/Products.html")));
+          items.Add(new TsMenuItem("products", "mniProducts", "Products", "Resources_144/images/nav/16/products.png", string.Format(data, "Frames/Products.aspx", "Resources_144/PaneInfo/Products.html")));
         if (org.IsInventoryEnabled)
-          items.Add(new TsMenuItem("inventory", "mniInventory", "Inventory", "Resources_143/images/nav/16/inventory.png", string.Format(data, "Inventory/Inventory.aspx", "Resources_143/PaneInfo/Inventory.html")));
+          items.Add(new TsMenuItem("inventory", "mniInventory", "Inventory", "Resources_144/images/nav/16/inventory.png", string.Format(data, "Inventory/Inventory.aspx", "Resources_144/PaneInfo/Inventory.html")));
 
         if (user.IsSystemAdmin || !org.AdminOnlyReports)
-          items.Add(new TsMenuItem("reports", "mniReports", "Reports", "Resources_143/images/nav/16/reports.png", string.Format(data, "Frames/Reports.aspx", "Resources_143/PaneInfo/Reports.html")));
+          items.Add(new TsMenuItem("reports", "mniReports", "Reports", "Resources_144/images/nav/16/reports.png", string.Format(data, "Frames/Reports.aspx", "Resources_144/PaneInfo/Reports.html")));
         if (user.IsSystemAdmin)
-          items.Add(new TsMenuItem("admin", "mniAdmin", "Admin", "Resources_143/images/nav/16/admin.png", string.Format(data, "Frames/Admin.aspx", "Resources_143/PaneInfo/Admin.html")));
+          items.Add(new TsMenuItem("admin", "mniAdmin", "Admin", "Resources_144/images/nav/16/admin.png", string.Format(data, "Frames/Admin.aspx", "Resources_144/PaneInfo/Admin.html")));
         if (TSAuthentication.OrganizationID == 1078)
         {
-          TsMenuItem utils = new TsMenuItem("utils", "mniUtils", "Utilities", "Resources_143/images/nav/16/iis.png", string.Format(data, "Resources_143/Pages/Utils.html", "Resources_143/PaneInfo/Admin.html"));
+          TsMenuItem utils = new TsMenuItem("utils", "mniUtils", "Utilities", "Resources_144/images/nav/16/iis.png", string.Format(data, "Resources_144/Pages/Utils.html", "Resources_144/PaneInfo/Admin.html"));
           items.Add(utils);
-          utils.AddItem(new TsMenuItem("utils", "utils-tickets", "Tickets", "Resources_143/images/nav/16/Tickets.png", string.Format(data, "Resources_143/Pages/Utils_Tickets.html", "Resources_143/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-organizations", "Organizations", "Resources_143/images/nav/16/Customers.png", string.Format(data, "Resources_143/Pages/Utils_Organizations.html", "Resources_143/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-exceptions", "Exceptions", "Resources_143/images/nav/16/close_2.png", string.Format(data, "Resources_143/Pages/Utils_Exceptions.html", "Resources_143/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-services", "Services", "Resources_143/images/nav/16/close_2.png", string.Format(data, "Resources_143/Pages/Utils_Services.html", "Resources_143/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-tickets", "Tickets", "Resources_144/images/nav/16/Tickets.png", string.Format(data, "Resources_144/Pages/Utils_Tickets.html", "Resources_144/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-organizations", "Organizations", "Resources_144/images/nav/16/Customers.png", string.Format(data, "Resources_144/Pages/Utils_Organizations.html", "Resources_144/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-exceptions", "Exceptions", "Resources_144/images/nav/16/close_2.png", string.Format(data, "Resources_144/Pages/Utils_Exceptions.html", "Resources_144/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-services", "Services", "Resources_144/images/nav/16/close_2.png", string.Format(data, "Resources_144/Pages/Utils_Services.html", "Resources_144/PaneInfo/Admin.html")));
         }
       }
       else
       {
-        items.Add(new TsMenuItem("tsusers", "mniUsers", "System Users", "Resources_143/images/nav/16/users.png", string.Format(data, "Frames/Users.aspx", "Resources_143/PaneInfo/Users.html")));
-        items.Add(new TsMenuItem("tscustomers", "mniCustomers", "System Customers", "Resources_143/images/nav/16/customers.png", string.Format(data, "Frames/Organizations.aspx", "Resources_143/PaneInfo/Organizations.html")));
+        items.Add(new TsMenuItem("tsusers", "mniUsers", "System Users", "Resources_144/images/nav/16/users.png", string.Format(data, "Frames/Users.aspx", "Resources_144/PaneInfo/Users.html")));
+        items.Add(new TsMenuItem("tscustomers", "mniCustomers", "System Customers", "Resources_144/images/nav/16/customers.png", string.Format(data, "Frames/Organizations.aspx", "Resources_144/PaneInfo/Organizations.html")));
       }
       return items.ToArray();
     }
@@ -206,9 +206,13 @@ namespace TSWebServices
         LoginUser loginUser = new LoginUser(userID, user.OrganizationID, null);
 
 
-        user.LastPing = DateTime.UtcNow;
-        if (TSAuthentication.Ticket.Expired && !TSAuthentication.IsBackdoor) user.SessionID = null;
-        user.Collection.Save();
+        user.UpdatePing();
+
+        if (TSAuthentication.Ticket.Expired && !TSAuthentication.IsBackdoor)
+        {
+          user.SessionID = null;
+          user.Collection.Save();
+        }
 
         bool isSessionValid = (sessionID == TSAuthentication.SessionID) || TSAuthentication.IsBackdoor;
         if (!isSessionValid && !TSAuthentication.Ticket.Expired)
@@ -407,6 +411,30 @@ namespace TSWebServices
       {
         ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "TSSystem", "Extra Info");
       }
+    }
+
+    [WebMethod]
+    public CustomValueProxy SaveCustomValue(int customFieldID, int refID, object value)
+    {
+      CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), customFieldID, refID);
+      if (value == null)
+      {
+        customValue.Value = null;
+        customValue.Collection.Save();
+        return null;
+      }
+
+      if (customValue.FieldType == CustomFieldType.DateTime)
+      {
+        customValue.Value = ((DateTime)value).ToString();
+      }
+      else
+      {
+        customValue.Value = value.ToString();
+      }
+
+      customValue.Collection.Save();
+      return customValue.GetProxy();
     }
 
   }

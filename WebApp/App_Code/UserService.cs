@@ -96,6 +96,21 @@ namespace TSWebServices
       return groups.GetGroupProxies();
     }
 
+    [WebMethod]
+    public AutocompleteItem[] SearchUsers(string searchTerm)
+    {
+      UsersView users = new UsersView(TSAuthentication.GetLoginUser());
+      users.LoadByTerm(TSAuthentication.OrganizationID, searchTerm, 15);
+
+      List<AutocompleteItem> list = new List<AutocompleteItem>();
+      foreach (UsersViewItem user in users)
+      {
+        list.Add(new AutocompleteItem(user.FirstName + " " + user.LastName, user.UserID.ToString()));
+      }
+
+      return list.ToArray();
+    }
+
     [DataContract]
     public class BasicUser
     {

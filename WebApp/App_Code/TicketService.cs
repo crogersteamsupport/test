@@ -14,6 +14,8 @@ using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
 using dtSearch.Engine;
+using HtmlAgilityPack;
+using System.IO;
 
 namespace TSWebServices
 {
@@ -456,7 +458,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public TicketStatusProxy SetTicketType(int ticketID, int ticketTypeID)
+    public object[] SetTicketType(int ticketID, int ticketTypeID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (ticketTypeID == ticket.TicketTypeID) return null;
@@ -469,7 +471,10 @@ namespace TSWebServices
       statuses.LoadAvailableTicketStatuses(ticketTypeID, null);
       ticket.TicketStatusID = statuses[0].TicketStatusID;
       ticket.Collection.Save();
-      return statuses[0].GetProxy();
+      List<object> result = new List<object>();
+      result.Add(statuses[0].GetProxy());
+      result.Add(GetCustomValues(ticketID));
+      return result.ToArray();
     }
 
     [WebMethod]
@@ -858,12 +863,25 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void SetSubscribed(int ticketID, bool value)
+    public UserInfo[] SetSubscribed(int ticketID, bool value, int? userID)
     {
-      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return;
-      if (!value) Subscriptions.RemoveSubscription(ticket.Collection.LoginUser, TSAuthentication.UserID, ReferenceType.Tickets, ticketID);
-      else Subscriptions.AddSubscription(ticket.Collection.LoginUser, TSAuthentication.UserID, ReferenceType.Tickets, ticketID);
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+      UsersViewItem user = UsersView.GetUsersViewItem(ticket.Collection.LoginUser, userID == null ? TSAuthentication.UserID : (int)userID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID || user.OrganizationID != TSAuthentication.OrganizationID) return null;
+      if (!value) Subscriptions.RemoveSubscription(ticket.Collection.LoginUser, user.UserID, ReferenceType.Tickets, ticketID);
+      else Subscriptions.AddSubscription(ticket.Collection.LoginUser, user.UserID, ReferenceType.Tickets, ticketID);
+      return GetSubscribers(ticket);
+    }
+
+    [WebMethod]
+    public UserInfo[] SetQueue(int ticketID, bool value, int? userID)
+    {
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+      UsersViewItem user = UsersView.GetUsersViewItem(ticket.Collection.LoginUser, userID == null ? TSAuthentication.UserID : (int)userID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID || user.OrganizationID != TSAuthentication.OrganizationID) return null;
+      if (!value) TicketQueue.Dequeue(user.Collection.LoginUser, ticketID, user.UserID);
+      else TicketQueue.Enqueue(user.Collection.LoginUser, ticketID, user.UserID);
+      return GetQueuers(ticket);
     }
 
     [WebMethod]
@@ -975,7 +993,10 @@ namespace TSWebServices
 
       info.Customers = GetTicketCustomers(ticket.TicketID);
       info.Related = GetRelatedTickets(ticket.TicketID);
-      info.Tags = GetTags(ticket.TicketID);
+      info.Tags = GetTicketTags(ticket.TicketID);
+      info.CustomValues = GetCustomValues(ticket.TicketID);
+      info.Subscribers = GetSubscribers(ticket);
+      info.Queuers = GetQueuers(ticket);
 
       Actions actions = new Actions(ticket.Collection.LoginUser);
       actions.LoadByTicketID(ticket.TicketID);
@@ -985,7 +1006,7 @@ namespace TSWebServices
       for (int i = 0; i < actions.Count; i++)
       {
         ActionInfo actionInfo = GetActionInfo(ticket.Collection.LoginUser, actions[i]);
-        if (i > 0 && actionInfo.Action.SystemActionTypeID != SystemActionType.Description) { actionInfo.Action.Description = null; }
+        //if (i > 0 && actionInfo.Action.SystemActionTypeID != SystemActionType.Description) { actionInfo.Action.Description = null; }
         actionInfos.Add(actionInfo);
       }
 
@@ -996,7 +1017,17 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public TagProxy[] GetTags(int ticketID)
+    public CustomValueProxy[] GetCustomValues(int ticketID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+      CustomValues values = new CustomValues(ticket.Collection.LoginUser);
+      values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID);
+      return values.GetCustomValueProxies();
+    }
+
+    [WebMethod]
+    public TagProxy[] GetTicketTags(int ticketID)
     {
       Tags tags = new Tags(TSAuthentication.GetLoginUser());
       tags.LoadByReference(ReferenceType.Tickets, ticketID);
@@ -1029,7 +1060,7 @@ namespace TSWebServices
         link.TagID = tag.TagID;
         links.Save();
       }
-      return GetTags(ticketID);
+      return GetTicketTags(ticketID);
     }
 
     [WebMethod]
@@ -1048,7 +1079,7 @@ namespace TSWebServices
         tag.Collection.Save();
       }
 
-      return GetTags(ticketID);
+      return GetTicketTags(ticketID);
     }
 
     private bool IsTicketRelated(Ticket ticket1, Ticket ticket2)
@@ -1251,10 +1282,39 @@ namespace TSWebServices
     {
       ActionInfo actionInfo = new ActionInfo();
       actionInfo.Action = action.GetProxy();
+      if (actionInfo.Action.Description != null)
+      {
+        //actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), HtmlUtility.TidyHtml(actionInfo.Action.Description));
+        actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), actionInfo.Action.Description);
+      }
       UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
       if (creator != null)  actionInfo.Creator = new UserInfo(creator);
       actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
       return actionInfo;
+    }
+
+    private UserInfo[] GetSubscribers(TicketsViewItem ticket)
+    {
+      UsersView users = new UsersView(ticket.Collection.LoginUser);
+      users.LoadBySubscription(ticket.TicketID, ReferenceType.Tickets);
+      List<UserInfo> result = new List<UserInfo>();
+      foreach (UsersViewItem user in users)
+      {
+        result.Add(new UserInfo(user));
+      }
+      return result.ToArray();
+    }
+
+    private UserInfo[] GetQueuers(TicketsViewItem ticket)
+    {
+      UsersView users = new UsersView(ticket.Collection.LoginUser);
+      users.LoadByTicketQueue(ticket.TicketID);
+      List<UserInfo> result = new List<UserInfo>();
+      foreach (UsersViewItem user in users)
+      {
+        result.Add(new UserInfo(user));
+      }
+      return result.ToArray();
     }
 
     [WebMethod]
@@ -1335,16 +1395,14 @@ namespace TSWebServices
   [DataContract]
   public class TicketInfo
   {
-    [DataMember]
-    public TicketsViewItemProxy Ticket { get; set; }
-    [DataMember]
-    public ActionInfo[] Actions { get; set; }
-    [DataMember]
-    public TicketCustomer[] Customers { get; set; }
-    [DataMember]
-    public RelatedTicket[] Related { get; set; }
-    [DataMember]
-    public TagProxy[] Tags { get; set; }
+    [DataMember] public TicketsViewItemProxy Ticket { get; set; }
+    [DataMember] public ActionInfo[] Actions { get; set; }
+    [DataMember] public TicketCustomer[] Customers { get; set; }
+    [DataMember] public RelatedTicket[] Related { get; set; }
+    [DataMember] public TagProxy[] Tags { get; set; }
+    [DataMember] public CustomValueProxy[] CustomValues { get; set; }
+    [DataMember] public UserInfo[] Subscribers { get; set; }
+    [DataMember] public UserInfo[] Queuers { get; set; }
   }
 
   [DataContract]
