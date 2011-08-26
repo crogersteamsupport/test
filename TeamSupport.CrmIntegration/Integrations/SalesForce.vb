@@ -57,13 +57,14 @@ Namespace TeamSupport
                     Binding.QueryOptionsValue.batchSize = 2000 '**What happens if we return more information than the batch size??
                     Binding.QueryOptionsValue.batchSizeSpecified = True
 
-                    Dim LastModifiedDateTime As DateTime
-                    Dim LastUpdateSFFormat As String 'format for SF query for time is 2011-01-26T16:57:00.000Z  ('yyyy'-'MM'-'dd'T'HH': 'mm': 'ss.fffffff'Z' )
-                    Dim TempTime As DateTime
-                    TempTime = Date.Parse(CRMLinkRow.LastLink)
-                    TempTime = DateAdd(DateInterval.Hour, -1, TempTime) 'push last update time back 1 hour to make sure we catch every change
-                    LastUpdateSFFormat = TempTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")
+                    Dim LastUpdateSFFormat As String
+                    Dim TempTime As New DateTime(1900, 1, 1)
 
+                    If CRMLinkRow.LastLink IsNot Nothing Then
+                        TempTime = CRMLinkRow.LastLink.Value.AddHours(-1) 'push last update time back 1 hour to make sure we catch every change
+                    End If
+
+                    LastUpdateSFFormat = TempTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'") 'format for SF query for time is 2011-01-26T16:57:00.000Z  ('yyyy'-'MM'-'dd'T'HH': 'mm': 'ss.fffffff'Z' )
 
                     'SalesForce returns the LastModifed time in the Local Timezone of the organization.  Therefor, we need to store the LastUpdate
                     ' time as UTC and convert it to the local organization's TZ so they both match.
@@ -146,6 +147,7 @@ Namespace TeamSupport
                                 For i As Integer = 0 To qr.records.Length - 1
                                     Dim thisCompany As New CompanyData()
                                     Log.Write("In for loop iteration " + i.ToString)
+                                    Dim LastModifiedDateTime As DateTime
 
                                     Dim records As sObject() = qr.records
                                     Dim contact As sObject = records(i)
@@ -169,10 +171,7 @@ Namespace TeamSupport
                                         End If
                                     End With
 
-                                    Log.Write("Company name=" + thisCompany.AccountName)
-                                    Log.Write("Record Last Modified in SF= " + LastModifiedDateTime.ToString)
-
-                                    Log.Write("Company " + thisCompany.AccountName + " has been modified.")
+                                    Log.Write("Company " & thisCompany.AccountName & " last modified on " & LastModifiedDateTime.ToString())
 
                                     UpdateOrgInfo(thisCompany, ParentOrgID)
                                     Log.Write("Completed AddOrUpdateAccountInformation for company " + thisCompany.AccountName)
@@ -458,7 +457,7 @@ Namespace TeamSupport
             Private Sub GetProductAndLicenseInfo(ByVal SFLastUpdateTime As String)
                 'This is *** CUSTOM CODE *** for Axceler to see if we can get their license and product information
 
-       
+
                 Log.Write("In GetProductAndLicenseInfo routine.")
 
                 'The results will be placed in qr
