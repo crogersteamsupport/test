@@ -629,24 +629,26 @@ Namespace TeamSupport
 
             Private Sub GetCustomFields(ByVal objType As String, ByVal TypeString As String, ByVal LastUpdate As String)
                 Dim customFieldList As String = Nothing
-                Dim customFields As New CRMLinkFields(User)
-                customFields.LoadByObjectType(objType, CRMLinkRow.CRMLinkID)
+                Dim theseFields As New CRMLinkFields(User)
 
-                If customFields.Count > 0 Then
-                    Dim objDescription = Binding.describeSObject(objType)
+                Try
+                    theseFields.LoadByObjectType(objType, CRMLinkRow.CRMLinkID)
 
-                    For Each cField As CRMLinkField In customFields
-                        For Each apiField As Field In objDescription.fields
-                            If apiField.name = cField.CRMFieldName Then
-                                If customFieldList Is Nothing Then
-                                    customFieldList = apiField.name
-                                Else
-                                    customFieldList &= ", " & apiField.name
+                    If theseFields.Count > 0 Then
+                        Dim objDescription = Binding.describeSObject(objType)
+
+                        For Each cField As CRMLinkField In theseFields
+                            For Each apiField As Field In objDescription.fields
+                                If apiField.name = cField.CRMFieldName Then
+                                    If customFieldList Is Nothing Then
+                                        customFieldList = apiField.name
+                                    Else
+                                        customFieldList &= ", " & apiField.name
+                                    End If
                                 End If
-                            End If
+                            Next
                         Next
-                    Next
-                End If
+                    End If
 
                 If customFieldList IsNot Nothing Then
                     Dim customQuery As String = "select Account.ID, " & IIf(objType = "Account", "", "email, ") & customFieldList & " from " & objType & " where SystemModStamp >= " + LastUpdate + " and (" + TypeString + ")"
@@ -682,7 +684,7 @@ Namespace TeamSupport
                                 If objType = "Account" Then
                                     For Each thisField As Xml.XmlElement In record.Any
                                         If thisField.InnerText <> "" Then
-                                            Dim thisMapping As CRMLinkField = customFields.FindByCRMFieldName(thisField.LocalName)
+                                            Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
 
                                             If thisMapping IsNot Nothing Then
                                                 If thisMapping.CustomFieldID IsNot Nothing Then
@@ -709,7 +711,7 @@ Namespace TeamSupport
 
                                         For Each thisField As Xml.XmlElement In record.Any
                                             If thisField.InnerText <> "" Then
-                                                Dim thisMapping As CRMLinkField = customFields.FindByCRMFieldName(thisField.LocalName)
+                                                Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
 
                                                 If thisMapping IsNot Nothing Then
                                                     If thisMapping.CustomFieldID IsNot Nothing Then
@@ -733,8 +735,14 @@ Namespace TeamSupport
                     Catch e As Exception
                         Log.Write("Error caught in GetCustomFields: " & e.Message)
                         Log.Write(e.StackTrace)
-                    End Try
-                End If
+                        End Try
+
+                    End If
+
+                Catch ex As Exception
+                    Log.Write("Exception caught in GetCustomFields: " & ex.Message)
+                    Log.Write(ex.StackTrace)
+                End Try
             End Sub
 
 
