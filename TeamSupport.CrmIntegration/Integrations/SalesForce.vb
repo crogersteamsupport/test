@@ -637,7 +637,7 @@ Namespace TeamSupport
 
                     For Each cField As CRMLinkField In customFields
                         For Each apiField As Field In objDescription.fields
-                            If apiField.custom AndAlso apiField.name = cField.CRMFieldName Then
+                            If apiField.name = cField.CRMFieldName Then
                                 If customFieldList Is Nothing Then
                                     customFieldList = apiField.name
                                 Else
