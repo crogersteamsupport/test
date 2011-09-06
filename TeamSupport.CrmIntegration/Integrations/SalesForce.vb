@@ -511,64 +511,87 @@ Namespace TeamSupport
                         While Not done
 
                             For i As Integer = 0 To qr.records.Length - 1
-                                Dim ProductName, LicenseType, LicenseStatus, AccountID As String
-                                Dim ExpirationDate As Date? = Nothing
-                                Dim tempExpiration As Date
 
-                                Log.Write("In GetProductAndLicenseInfo routine - i=" + i.ToString)
+                                Try
+                                    Dim ProductName, LicenseType, LicenseStatus, AccountID As String
+                                    Dim ExpirationDate As Date? = Nothing
+                                    Dim tempExpiration As Date
 
-                                Dim records As sObject() = qr.records
-                                Dim Products As sObject = records(i)
+                                    Log.Write("In GetProductAndLicenseInfo routine - i=" + i.ToString)
 
-                                ProductName = records(i).Any(0).InnerText
+                                    Dim records As sObject() = qr.records
+                                    Dim Products As sObject = records(i)
 
-                                If Date.TryParse(records(i).Any(1).InnerText, tempExpiration) Then
-                                    ExpirationDate = tempExpiration
-                                Else
-                                    ExpirationDate = Nothing
-                                    Log.Write("failed to parse expiration date value: " & records(i).Any(1).InnerText)
-                                End If
+                                    ProductName = records(i).Any(0).InnerText
 
-                                LicenseType = records(i).Any(2).InnerText
-                                LicenseStatus = records(i).Any(3).InnerText
-                                AccountID = records(i).Any(4).InnerText
+                                    If Date.TryParse(records(i).Any(1).InnerText, tempExpiration) Then
+                                        ExpirationDate = tempExpiration
+                                    Else
+                                        ExpirationDate = Nothing
+                                        Log.Write("failed to parse expiration date value: " & records(i).Any(1).InnerText)
+                                    End If
 
-                                ' 1) See if we can match a product in TS with the product name
-                                Dim thisProduct As Product
-                                Dim findProduct As New Products(User)
-                                findProduct.LoadByOrganizationID(CRMLinkRow.OrganizationID)
+                                    LicenseType = records(i).Any(2).InnerText
+                                    LicenseStatus = records(i).Any(3).InnerText
+                                    AccountID = records(i).Any(4).InnerText
 
-                                thisProduct = findProduct.FindByName(ProductName)
+                                    ' 1) See if we can match a product in TS with the product name
+                                    Dim thisProduct As Product
+                                    Dim findProduct As New Products(User)
+                                    findProduct.LoadByOrganizationID(CRMLinkRow.OrganizationID)
 
-                                If thisProduct IsNot Nothing Then
-                                    Log.Write(String.Format("ProductName = {0}, ExpirationDate = {1}, ProductID = {2}, AccountID = {3}", _
-                                                            ProductName, IIf(ExpirationDate IsNot Nothing, ExpirationDate.ToString(), ""), thisProduct.ProductID.ToString(), AccountID))
+                                    thisProduct = findProduct.FindByName(ProductName)
 
-                                    ' 2) If we can, lets see if the product ID is assigned to this customer
-                                    Dim findCompany As New Organizations(User)
-                                    Dim thisCompany As Organization
+                                    If thisProduct IsNot Nothing Then
+                                        Log.Write(String.Format("ProductName = {0}, ExpirationDate = {1}, ProductID = {2}, AccountID = {3}", _
+                                                                ProductName, IIf(ExpirationDate IsNot Nothing, ExpirationDate.ToString(), ""), thisProduct.ProductID.ToString(), AccountID))
 
-                                    'make sure the company already exists
-                                    findCompany.LoadByCRMLinkID(AccountID, CRMLinkRow.OrganizationID)
+                                        ' 2) If we can, lets see if the product ID is assigned to this customer
+                                        Dim findCompany As New Organizations(User)
+                                        Dim thisCompany As Organization
 
-                                    If findCompany.Count > 0 Then
-                                        thisCompany = findCompany(0)
-                                        Dim findOrgProd As New OrganizationProducts(User)
-                                        Dim thisOrgProd As OrganizationProduct
+                                        'make sure the company already exists
+                                        findCompany.LoadByCRMLinkID(AccountID, CRMLinkRow.OrganizationID)
 
-                                        Log.Write("Found product for " & thisCompany.Name)
+                                        If findCompany.Count > 0 Then
+                                            thisCompany = findCompany(0)
+                                            Dim findOrgProd As New OrganizationProducts(User)
+                                            Dim thisOrgProd As OrganizationProduct
 
-                                        findOrgProd.LoadByOrganizationAndProductID(thisCompany.OrganizationID, thisProduct.ProductID)
+                                            Log.Write("Found product for " & thisCompany.Name)
 
-                                        If findOrgProd.Count > 0 Then
-                                            thisOrgProd = findOrgProd(0)
-                                            'The company already has the product associated with them.
-                                            ' We now just need to update the waranty expiration date 
-                                            '  Note that the waranty expiration date is a custom field just for this customer...
-                                            '      3) Update the waranty expiration date (this should be a custom field on product)
-                                            '         Update CustomValue set CustomValue={ExpirationDate} where CustomFieldID = 3761 and RefID={OrganizationProductID}
+                                            findOrgProd.LoadByOrganizationAndProductID(thisCompany.OrganizationID, thisProduct.ProductID)
 
-                                            If ExpirationDate IsNot Nothing AndAlso ExpirationDate > thisOrgProd.SupportExpiration Then 'test to see if we are using the most up to date expiration date (only use product/expiration date that is the most recent)
+                                            If findOrgProd.Count > 0 Then
+                                                thisOrgProd = findOrgProd(0)
+                                                'The company already has the product associated with them.
+                                                ' We now just need to update the waranty expiration date 
+                                                '  Note that the waranty expiration date is a custom field just for this customer...
+                                                '      3) Update the waranty expiration date (this should be a custom field on product)
+                                                '         Update CustomValue set CustomValue={ExpirationDate} where CustomFieldID = 3761 and RefID={OrganizationProductID}
+
+                                                If ExpirationDate IsNot Nothing AndAlso ExpirationDate > thisOrgProd.SupportExpiration Then 'test to see if we are using the most up to date expiration date (only use product/expiration date that is the most recent)
+                                                    thisOrgProd.SupportExpiration = ExpirationDate
+                                                    thisOrgProd.Collection.Save()
+
+                                                    'License Type - CustomFieldID is 3770 (test value 101)
+                                                        UpdateCustomValue(3770, thisOrgProd.OrganizationProductID, LicenseType)
+                                                    
+                                                    'License Status - CustomFieldID is 3771 (test value 102)
+                                                    UpdateCustomValue(3771, thisOrgProd.OrganizationProductID, LicenseStatus)
+
+                                                    Log.Write("Product updated.")
+                                                Else
+                                                    Log.Write("Date information not updated since there is a later expiration date.")
+                                                End If
+
+                                            Else
+                                                'We need to add the product to this company
+                                                thisOrgProd = (New OrganizationProducts(User)).AddNewOrganizationProduct()
+                                                thisOrgProd.OrganizationID = thisCompany.OrganizationID
+                                                thisOrgProd.ProductID = thisProduct.ProductID
+
+                                                'Product added, lets add/update the expiration date
                                                 thisOrgProd.SupportExpiration = ExpirationDate
                                                 thisOrgProd.Collection.Save()
 
@@ -577,35 +600,18 @@ Namespace TeamSupport
 
                                                 'License Status - CustomFieldID is 3771 (test value 102)
                                                 UpdateCustomValue(3771, thisOrgProd.OrganizationProductID, LicenseStatus)
-
-                                                Log.Write("Product updated.")
-                                            Else
-                                                Log.Write("Date information not updated since there is a later expiration date.")
+                                                Log.Write("Product added.")
                                             End If
 
                                         Else
-                                            'We need to add the product to this company
-                                            thisOrgProd = (New OrganizationProducts(User)).AddNewOrganizationProduct()
-                                            thisOrgProd.OrganizationID = thisCompany.OrganizationID
-                                            thisOrgProd.ProductID = thisProduct.ProductID
-
-                                            'Product added, lets add/update the expiration date
-                                            thisOrgProd.SupportExpiration = ExpirationDate
-                                            thisOrgProd.Collection.Save()
-
-                                            'License Type - CustomFieldID is 3770 (test value 101)
-                                            UpdateCustomValue(3770, thisOrgProd.OrganizationProductID, LicenseType)
-
-                                            'License Status - CustomFieldID is 3771 (test value 102)
-                                            UpdateCustomValue(3771, thisOrgProd.OrganizationProductID, LicenseStatus)
-                                            Log.Write("Product added.")
+                                            Log.Write("Product not updated because company does not exist.")
                                         End If
 
-                                    Else
-                                        Log.Write("Product not updated because company does not exist.")
                                     End If
 
-                                End If
+                                Catch ex As Exception
+                                    Log.Write("Error updating product " & i.ToString() & ": " & ex.Message & " " & ex.StackTrace)
+                                End Try
 
                             Next
 
