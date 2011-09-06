@@ -192,7 +192,8 @@ Namespace TeamSupport
                             Try
                                 GetCustomFields("Account", TypeString, LastUpdateSFFormat)
                             Catch ex As Exception
-                                Log.Write("Error running GetCustomfields: " & ex.StackTrace)
+                                Log.Write("Error running GetCustomFields: " & ex.Message)
+                                Log.Write(ex.StackTrace)
                             End Try
 
                             Log.Write("All done updating company information.")
@@ -410,7 +411,8 @@ Namespace TeamSupport
                         Try
                             GetCustomFields("Contact", TypeString, LastUpdate)
                         Catch ex As Exception
-                            Log.Write("Error running GetCustomFields: " & ex.StackTrace)
+                            Log.Write("Error running GetCustomFields: " & ex.Message)
+                            Log.Write(ex.StackTrace)
                         End Try
 
                     Else
