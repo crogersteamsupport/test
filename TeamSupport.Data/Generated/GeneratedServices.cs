@@ -102,11 +102,21 @@ namespace TeamSupport.Data
       get { return Row["LastStartTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastStartTime"]) : null; }
       set { Row["LastStartTime"] = CheckNull(value); }
     }
+
+    public DateTime? LastStartTimeUtc
+    {
+      get { return Row["LastStartTime"] != DBNull.Value ? (DateTime?)Row["LastStartTime"] : null; }
+    }
     
     public DateTime? LastEndTime
     {
       get { return Row["LastEndTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastEndTime"]) : null; }
       set { Row["LastEndTime"] = CheckNull(value); }
+    }
+
+    public DateTime? LastEndTimeUtc
+    {
+      get { return Row["LastEndTime"] != DBNull.Value ? (DateTime?)Row["LastEndTime"] : null; }
     }
     
 

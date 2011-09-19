@@ -36,7 +36,7 @@ namespace TeamSupport.Data
       result.PortalLoginID = this.PortalLoginID;
        
        
-      result.LoginDateTime = this.LoginDateTime == null ? this.LoginDateTime : DateTime.SpecifyKind((DateTime)this.LoginDateTime, DateTimeKind.Local); 
+      result.LoginDateTime = this.LoginDateTimeUtc == null ? this.LoginDateTimeUtc : DateTime.SpecifyKind((DateTime)this.LoginDateTimeUtc, DateTimeKind.Utc); 
        
       return result;
     }	

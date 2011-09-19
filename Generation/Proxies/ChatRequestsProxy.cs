@@ -43,7 +43,7 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.ChatRequestID = this.ChatRequestID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
        
       return result;

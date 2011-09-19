@@ -26,11 +26,12 @@ namespace TeamSupport.Data
     [DataMember] public bool? IsVisibleOnPortal { get; set; }
     [DataMember] public bool IsFirstIndexSelect { get; set; }
     [DataMember] public bool IsRequired { get; set; }
+    /*
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
-          
+    */      
   }
   
   public partial class CustomField : BaseItem
@@ -38,8 +39,6 @@ namespace TeamSupport.Data
     public CustomFieldProxy GetProxy()
     {
       CustomFieldProxy result = new CustomFieldProxy();
-      result.ModifierID = this.ModifierID;
-      result.CreatorID = this.CreatorID;
       result.IsRequired = this.IsRequired;
       result.IsFirstIndexSelect = this.IsFirstIndexSelect;
       result.IsVisibleOnPortal = this.IsVisibleOnPortal;
@@ -53,9 +52,13 @@ namespace TeamSupport.Data
       result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
       result.CustomFieldID = this.CustomFieldID;
-       
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+
+      /*
+      result.ModifierID = this.ModifierID;
+      result.CreatorID = this.CreatorID;
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
+       */
        
        
       return result;

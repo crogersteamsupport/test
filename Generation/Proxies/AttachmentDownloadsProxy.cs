@@ -31,7 +31,7 @@ namespace TeamSupport.Data
       result.AttachmentOrganizationID = this.AttachmentOrganizationID;
       result.AttachmentDownloadID = this.AttachmentDownloadID;
        
-      result.DateDownloaded = DateTime.SpecifyKind(this.DateDownloaded, DateTimeKind.Local);
+      result.DateDownloaded = DateTime.SpecifyKind(this.DateDownloadedUtc, DateTimeKind.Utc);
        
        
       return result;

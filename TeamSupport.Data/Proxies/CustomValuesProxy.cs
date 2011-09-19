@@ -13,10 +13,10 @@ namespace TeamSupport.Data
   public class CustomValueProxy
   {
     public CustomValueProxy() {}
-    [DataMember] public int CustomValueID { get; set; }
+    [DataMember] public int? CustomValueID { get; set; }
     [DataMember] public int CustomFieldID { get; set; }
-    [DataMember] public int RefID { get; set; }
-    [DataMember] public string Value { get; set; }
+    [DataMember] public int? RefID { get; set; }
+    [DataMember] public object Value { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
@@ -45,10 +45,9 @@ namespace TeamSupport.Data
       CustomValueProxy result = new CustomValueProxy();
       result.ModifierID = Row["ModifierID"] == DBNull.Value ? -1 : this.ModifierID;
       result.CreatorID = Row["CreatorID"] == DBNull.Value ? -1 : this.CreatorID;
-      result.Value = Row["CustomValue"] == DBNull.Value ? "" : this.Value;
-      result.RefID = Row["RefID"] == DBNull.Value ? -1 : this.RefID;
+      result.RefID = Row["RefID"] == DBNull.Value ? null : (int?)this.RefID;
       result.CustomFieldID = this.CustomFieldID;
-      result.CustomValueID = Row["CustomValueID"] == DBNull.Value ? -1 : this.CustomValueID;
+      result.CustomValueID = Row["CustomValueID"] == DBNull.Value ? null : (int?)this.CustomValueID;
        
       result.DateCreated = DateTime.SpecifyKind(Row["DateCreated"] == DBNull.Value ? DateTime.MinValue : this.DateCreated, DateTimeKind.Local);
       result.DateModified = DateTime.SpecifyKind(Row["DateModified"] == DBNull.Value ? DateTime.MinValue : this.DateModified, DateTimeKind.Local);
@@ -66,6 +65,24 @@ namespace TeamSupport.Data
       result.IsFirstIndexSelect = this.IsFirstIndexSelect;
       result.IsRequired = this.IsRequired;
       result.OrganizationID = this.OrganizationID;
+
+      if (this.FieldType == CustomFieldType.DateTime)
+      {
+        result.Value = null;
+        if (Row["CustomValue"] != DBNull.Value)
+        {
+          DateTime date;
+          if (DateTime.TryParse(this.Value, out date))
+          { 
+            date = DateTime.SpecifyKind(DateTime.Parse(this.Value), DateTimeKind.Utc);
+            result.Value = date;
+          }
+        }
+      }
+      else
+      {
+        result.Value = Row["CustomValue"] == DBNull.Value ? "" : this.Value;
+      }
 
       return result;
     }	

@@ -147,6 +147,11 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
       set { Row["DateCreated"] = CheckNull(value); }
     }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
+    }
     
 
     #endregion

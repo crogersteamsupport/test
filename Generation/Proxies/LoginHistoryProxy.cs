@@ -51,7 +51,7 @@ namespace TeamSupport.Data
       result.UserID = this.UserID;
       result.LoginHistoryID = this.LoginHistoryID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
        
       return result;

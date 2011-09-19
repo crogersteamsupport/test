@@ -4,8 +4,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
   <title></title>
-  <link href="../css_5/frame.css" rel="stylesheet" type="text/css" />
-  <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
+  <link href="../Resources_146/Css/frame.css" rel="stylesheet" type="text/css" />
+  <link href="../Resources_146/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="../Resources_146/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="../Resources_146/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js" type="text/javascript"></script>
@@ -83,6 +84,7 @@
 
 
     function loadPortlets() {
+      $('.page-loading').show().next().hide();
       PageMethods.GetColumnCount(function (colCount) {
         PageMethods.GetPortlets(function (portlets) {
           _portlets = portlets;
@@ -116,14 +118,15 @@
           });
           $('.portlet-column').sortable({ connectWith: '.portlet-column', cancel: '.portlet-body', items: '.portlet', placeholder: 'portlet-placeholder', forcePlaceholderSize: true, stop: onPortletPositionChanged, opacity: 0.6, tolerance: 'pointer' });
           $(".portlet-header").disableSelection();
+
+          $('.page-loading').hide().next().show();
+
         });
       });
     }
 
     function refresh() {
-      $('.portlet-container').hide();
       loadPortlets();
-      $('.portlet-container').show('slow');
     }
 
     function onShow() {
@@ -162,7 +165,8 @@
   <form id="form1" runat="server">
   <telerik:RadScriptManager ID="RadScriptManager1" runat="server" EnablePageMethods="true">
   </telerik:RadScriptManager>
-  <div class="portlet-container-wrapper">
+  <div class="ts-loading page-loading"></div>
+  <div class="portlet-container-wrapper ui-widget-content ui-widget">
     <div class="header">
       <a class="ts-link" href="#" onclick="showReportDialog(); return false;">Add Report</a> |
       <a class="ts-link" href="#" onclick="refresh(); return false;">Refresh</a></div>

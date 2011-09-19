@@ -19,7 +19,7 @@
     .q-item { border-bottom: solid 1px #AAC3E3; cursor: url(../cursors/move.cur), pointer; height: 17px; font-size: 12px; padding: 5px 5px; margin:0; line-height:17px; }
     li.ui-sortable-helper {cursor: url(../cursors/grab.cur), move !important;}
     li.q-item-notme { background: #f5f5f5; color: #888; border-bottom: solid 1px #ccc;}
-    li.q-item-closed { text-decoration: line-through;}
+    li.q-item-closed, li.q-item-closed div { text-decoration: line-through;}
     li.q-item-hover { background: #E3EFFF !important; }
     li.q-item-grab { cursor: url(../cursors/grab.cur), move; }
     li.q-item-header { cursor: default; background: #DBE6F4; border-bottom:solid 1px #8DB2E3; height: 22px; line-height:22px; font-size: 12px;}

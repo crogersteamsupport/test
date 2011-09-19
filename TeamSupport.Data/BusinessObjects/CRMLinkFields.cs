@@ -13,6 +13,20 @@ namespace TeamSupport.Data
   
   public partial class CRMLinkFields
   {
+
+    public void LoadByCrmLinkID(int crmLinkID)
+    { 
+      
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = " SELECT * FROM CrmLinkFields WHERE (CrmLinkID = @CrmLinkID) ORDER BY CrmObjectName, CrmFieldName, TsFieldName";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@CrmLinkID", crmLinkID);
+        Fill(command);
+      }
+
+    }
+
       public void LoadByObjectType(string objType, int CRMLinkID) {
 
           using (SqlCommand command = new SqlCommand())

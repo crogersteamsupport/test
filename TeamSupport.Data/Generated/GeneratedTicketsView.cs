@@ -301,10 +301,20 @@ namespace TeamSupport.Data
     {
       get { return Row["SlaViolationDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["SlaViolationDate"]) : null; }
     }
+
+    public DateTime? SlaViolationDateUtc
+    {
+      get { return Row["SlaViolationDate"] != DBNull.Value ? (DateTime?)Row["SlaViolationDate"] : null; }
+    }
     
     public DateTime? SlaWarningDate
     {
       get { return Row["SlaWarningDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["SlaWarningDate"]) : null; }
+    }
+
+    public DateTime? SlaWarningDateUtc
+    {
+      get { return Row["SlaWarningDate"] != DBNull.Value ? (DateTime?)Row["SlaWarningDate"] : null; }
     }
     
     
@@ -316,11 +326,21 @@ namespace TeamSupport.Data
       get { return Row["DateClosed"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateClosed"]) : null; }
       set { Row["DateClosed"] = CheckNull(value); }
     }
+
+    public DateTime? DateClosedUtc
+    {
+      get { return Row["DateClosed"] != DBNull.Value ? (DateTime?)Row["DateClosed"] : null; }
+    }
     
     public DateTime? SlaViolationTimeClosed
     {
       get { return Row["SlaViolationTimeClosed"] != DBNull.Value ? DateToLocal((DateTime?)Row["SlaViolationTimeClosed"]) : null; }
       set { Row["SlaViolationTimeClosed"] = CheckNull(value); }
+    }
+
+    public DateTime? SlaViolationTimeClosedUtc
+    {
+      get { return Row["SlaViolationTimeClosed"] != DBNull.Value ? (DateTime?)Row["SlaViolationTimeClosed"] : null; }
     }
     
     public DateTime? SlaViolationLastAction
@@ -328,11 +348,21 @@ namespace TeamSupport.Data
       get { return Row["SlaViolationLastAction"] != DBNull.Value ? DateToLocal((DateTime?)Row["SlaViolationLastAction"]) : null; }
       set { Row["SlaViolationLastAction"] = CheckNull(value); }
     }
+
+    public DateTime? SlaViolationLastActionUtc
+    {
+      get { return Row["SlaViolationLastAction"] != DBNull.Value ? (DateTime?)Row["SlaViolationLastAction"] : null; }
+    }
     
     public DateTime? SlaViolationInitialResponse
     {
       get { return Row["SlaViolationInitialResponse"] != DBNull.Value ? DateToLocal((DateTime?)Row["SlaViolationInitialResponse"]) : null; }
       set { Row["SlaViolationInitialResponse"] = CheckNull(value); }
+    }
+
+    public DateTime? SlaViolationInitialResponseUtc
+    {
+      get { return Row["SlaViolationInitialResponse"] != DBNull.Value ? (DateTime?)Row["SlaViolationInitialResponse"] : null; }
     }
     
     public DateTime? SlaWarningTimeClosed
@@ -340,17 +370,32 @@ namespace TeamSupport.Data
       get { return Row["SlaWarningTimeClosed"] != DBNull.Value ? DateToLocal((DateTime?)Row["SlaWarningTimeClosed"]) : null; }
       set { Row["SlaWarningTimeClosed"] = CheckNull(value); }
     }
+
+    public DateTime? SlaWarningTimeClosedUtc
+    {
+      get { return Row["SlaWarningTimeClosed"] != DBNull.Value ? (DateTime?)Row["SlaWarningTimeClosed"] : null; }
+    }
     
     public DateTime? SlaWarningLastAction
     {
       get { return Row["SlaWarningLastAction"] != DBNull.Value ? DateToLocal((DateTime?)Row["SlaWarningLastAction"]) : null; }
       set { Row["SlaWarningLastAction"] = CheckNull(value); }
     }
+
+    public DateTime? SlaWarningLastActionUtc
+    {
+      get { return Row["SlaWarningLastAction"] != DBNull.Value ? (DateTime?)Row["SlaWarningLastAction"] : null; }
+    }
     
     public DateTime? SlaWarningInitialResponse
     {
       get { return Row["SlaWarningInitialResponse"] != DBNull.Value ? DateToLocal((DateTime?)Row["SlaWarningInitialResponse"]) : null; }
       set { Row["SlaWarningInitialResponse"] = CheckNull(value); }
+    }
+
+    public DateTime? SlaWarningInitialResponseUtc
+    {
+      get { return Row["SlaWarningInitialResponse"] != DBNull.Value ? (DateTime?)Row["SlaWarningInitialResponse"] : null; }
     }
     
 
@@ -360,11 +405,21 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
       set { Row["DateCreated"] = CheckNull(value); }
     }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
+    }
     
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
       set { Row["DateModified"] = CheckNull(value); }
+    }
+
+    public DateTime DateModifiedUtc
+    {
+      get { return (DateTime)Row["DateModified"]; }
     }
     
 

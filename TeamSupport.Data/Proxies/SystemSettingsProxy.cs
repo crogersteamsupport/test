@@ -16,10 +16,6 @@ namespace TeamSupport.Data
     [DataMember] public int SystemSettingID { get; set; }
     [DataMember] public string SettingKey { get; set; }
     [DataMember] public string SettingValue { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
           
   }
   
@@ -31,6 +27,9 @@ namespace TeamSupport.Data
       result.SettingValue = this.SettingValue;
       result.SettingKey = this.SettingKey;
       result.SystemSettingID = this.SystemSettingID;
+       
+       
+       
       return result;
     }	
   }

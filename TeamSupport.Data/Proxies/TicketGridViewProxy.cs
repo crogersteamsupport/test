@@ -101,10 +101,10 @@ namespace TeamSupport.Data
       result.ProductName = this.ProductName;
       result.TicketID = this.TicketID;
        
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
-      result.DateClosed = this.DateClosed == null ? this.DateClosed : DateTime.SpecifyKind((DateTime)this.DateClosed, DateTimeKind.Local); 
+      result.DateClosed = this.DateClosedUtc == null ? this.DateClosedUtc : DateTime.SpecifyKind((DateTime)this.DateClosedUtc, DateTimeKind.Utc); 
        
       return result;
     }	

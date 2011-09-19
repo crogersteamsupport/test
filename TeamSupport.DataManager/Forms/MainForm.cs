@@ -63,9 +63,11 @@ namespace TeamSupport.DataManager
 
     private void MainForm_Load(object sender, EventArgs e)
     {
+      int initOrgID = Properties.Settings.Default.LastOrgID;
       Properties.Settings.Default.Reload();
-      SetTypeGuessRowsForExcelImport();
+      Importer.SetTypeGuessRowsForExcelImport();
       LoadOrganizations();
+      SelectOrganization(initOrgID);
     }
     
     private void LoadOrganizations()
@@ -76,7 +78,7 @@ namespace TeamSupport.DataManager
 
       foreach (Organization organization in organizations)
       {
-        cmbOrganization.Items.Add(new NamObjectItem(organization.OrganizationID + ":  " + organization.Name, organization.OrganizationID));
+         cmbOrganization.Items.Add(new NamObjectItem(organization.Name + " [" + organization.OrganizationID.ToString() + "]", organization.OrganizationID));
       }
       cmbOrganization.SelectedIndex = 0;
     }
@@ -96,7 +98,8 @@ namespace TeamSupport.DataManager
     
     private void LoadOrganization(int organizationID)
     {
-    
+      Properties.Settings.Default.LastOrgID = organizationID;
+      Properties.Settings.Default.Save();
       propertiesControl1.OrganizationID = organizationID;
       customFieldsControl1.OrganizationID = organizationID;
       customPropertiesControl1.OrganizationID = organizationID;
@@ -152,33 +155,6 @@ namespace TeamSupport.DataManager
       LoadOrganization((int)((NamObjectItem)cmbOrganization.SelectedItem).Value);
     }
 
-    private void SetTypeGuessRowsForExcelImport()
-    {
-      RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Jet\4.0\Engines\Excel", true);
-      if (key == null)
-      {
-        key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\Jet\4.0\Engines\Excel", true);
-      }
-
-      if (key != null)
-      {
-        key.SetValue("TypeGuessRows", 0);
-        key.SetValue("ImportMixedTypes", "Text");
-      }
-
-      key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office\12.0\Access Connectivity Engine\Engines\Excel", true);
-      if (key == null)
-      {
-        key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\Office\12.0\Access Connectivity Engine\Engines\Excel", true);
-      }
-
-      if (key != null)
-      {
-        key.SetValue("TypeGuessRows", 0);
-        key.SetValue("ImportMixedTypes", "Text");
-      }
-    }
- 
     private void MainForm_KeyDown(object sender, KeyEventArgs e)
     {
       if (tabControl1.SelectedTab != tpQuery) return;

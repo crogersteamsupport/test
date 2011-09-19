@@ -40,11 +40,11 @@ namespace TeamSupport.Data
       result.ChatID = this.ChatID;
       result.ChatParticipantID = this.ChatParticipantID;
        
-      result.LastTyped = DateTime.SpecifyKind(this.LastTyped, DateTimeKind.Local);
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateJoined = DateTime.SpecifyKind(this.DateJoined, DateTimeKind.Local);
+      result.LastTyped = DateTime.SpecifyKind(this.LastTypedUtc, DateTimeKind.Utc);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateJoined = DateTime.SpecifyKind(this.DateJoinedUtc, DateTimeKind.Utc);
        
-      result.DateLeft = this.DateLeft == null ? this.DateLeft : DateTime.SpecifyKind((DateTime)this.DateLeft, DateTimeKind.Local); 
+      result.DateLeft = this.DateLeftUtc == null ? this.DateLeftUtc : DateTime.SpecifyKind((DateTime)this.DateLeftUtc, DateTimeKind.Utc); 
        
       return result;
     }	

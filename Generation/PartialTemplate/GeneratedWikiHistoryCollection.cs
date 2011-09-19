@@ -90,11 +90,21 @@ namespace TeamSupport.Data
       get { return Row["CreatedDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["CreatedDate"]) : null; }
       set { Row["CreatedDate"] = CheckNull(value); }
     }
+
+    public DateTime? CreatedDateUtc
+    {
+      get { return Row["CreatedDate"] != DBNull.Value ? (DateTime?)Row["CreatedDate"] : null; }
+    }
     
     public DateTime? ModifiedDate
     {
       get { return Row["ModifiedDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["ModifiedDate"]) : null; }
       set { Row["ModifiedDate"] = CheckNull(value); }
+    }
+
+    public DateTime? ModifiedDateUtc
+    {
+      get { return Row["ModifiedDate"] != DBNull.Value ? (DateTime?)Row["ModifiedDate"] : null; }
     }
     
 

@@ -30,7 +30,7 @@ namespace TeamSupport.Data
       result.CRMResultsID = this.CRMResultsID;
        
        
-      result.AttemptDateTime = this.AttemptDateTime == null ? this.AttemptDateTime : DateTime.SpecifyKind((DateTime)this.AttemptDateTime, DateTimeKind.Local); 
+      result.AttemptDateTime = this.AttemptDateTimeUtc == null ? this.AttemptDateTimeUtc : DateTime.SpecifyKind((DateTime)this.AttemptDateTimeUtc, DateTimeKind.Utc); 
        
       return result;
     }	

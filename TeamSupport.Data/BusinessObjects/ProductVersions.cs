@@ -16,11 +16,19 @@ namespace TeamSupport.Data
 
     public ProductVersion FindByImportID(string importID)
     {
+      return FindByImportID(importID, null);
+    }
+
+    public ProductVersion FindByImportID(string importID, int? productID)
+    {
       foreach (ProductVersion productVersion in this)
       {
-        if (productVersion.ImportID == importID)
+        if (productID == null || productVersion.ProductID == (int)productID)
         {
-          return productVersion;
+          if ((productVersion.ImportID != null && productVersion.ImportID.ToLower().Trim() == importID) || productVersion.VersionNumber.ToLower().Trim() == importID)
+          {
+            return productVersion;
+          }
         }
       }
       return null;

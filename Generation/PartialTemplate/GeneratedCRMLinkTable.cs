@@ -34,18 +34,6 @@ namespace TeamSupport.Data
     
 
     
-    public bool? Active
-    {
-      get { return Row["Active"] != DBNull.Value ? (bool?)Row["Active"] : null; }
-      set { Row["Active"] = CheckNull(value); }
-    }
-    
-    public string CRMType
-    {
-      get { return Row["CRMType"] != DBNull.Value ? (string)Row["CRMType"] : null; }
-      set { Row["CRMType"] = CheckNull(value); }
-    }
-    
     public string Username
     {
       get { return Row["Username"] != DBNull.Value ? (string)Row["Username"] : null; }
@@ -96,6 +84,18 @@ namespace TeamSupport.Data
       set { Row["SendBackTicketData"] = CheckNull(value); }
     }
     
+    public string CRMType
+    {
+      get { return (string)Row["CRMType"]; }
+      set { Row["CRMType"] = CheckNull(value); }
+    }
+    
+    public bool Active
+    {
+      get { return (bool)Row["Active"]; }
+      set { Row["Active"] = CheckNull(value); }
+    }
+    
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
@@ -114,6 +114,11 @@ namespace TeamSupport.Data
       get { return Row["LastLink"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastLink"]) : null; }
       set { Row["LastLink"] = CheckNull(value); }
     }
+
+    public DateTime? LastLinkUtc
+    {
+      get { return Row["LastLink"] != DBNull.Value ? (DateTime?)Row["LastLink"] : null; }
+    }
     
 
     
@@ -121,6 +126,11 @@ namespace TeamSupport.Data
     {
       get { return DateToLocal((DateTime)Row["LastProcessed"]); }
       set { Row["LastProcessed"] = CheckNull(value); }
+    }
+
+    public DateTime LastProcessedUtc
+    {
+      get { return (DateTime)Row["LastProcessed"]; }
     }
     
 

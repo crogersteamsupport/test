@@ -72,6 +72,11 @@ namespace TeamSupport.Data
       get { return Row["ViewDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["ViewDateTime"]) : null; }
       set { Row["ViewDateTime"] = CheckNull(value); }
     }
+
+    public DateTime? ViewDateTimeUtc
+    {
+      get { return Row["ViewDateTime"] != DBNull.Value ? (DateTime?)Row["ViewDateTime"] : null; }
+    }
     
 
     

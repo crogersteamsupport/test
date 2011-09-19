@@ -176,11 +176,21 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateModified"]); }
       set { Row["DateModified"] = CheckNull(value); }
     }
+
+    public DateTime DateModifiedUtc
+    {
+      get { return (DateTime)Row["DateModified"]; }
+    }
     
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
       set { Row["DateCreated"] = CheckNull(value); }
+    }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
     }
     
     public DateTime DateDue
@@ -188,11 +198,21 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateDue"]); }
       set { Row["DateDue"] = CheckNull(value); }
     }
+
+    public DateTime DateDueUtc
+    {
+      get { return (DateTime)Row["DateDue"]; }
+    }
     
     public DateTime DateBilled
     {
       get { return DateToLocal((DateTime)Row["DateBilled"]); }
       set { Row["DateBilled"] = CheckNull(value); }
+    }
+
+    public DateTime DateBilledUtc
+    {
+      get { return (DateTime)Row["DateBilled"]; }
     }
     
     public DateTime DateEnd
@@ -200,11 +220,21 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateEnd"]); }
       set { Row["DateEnd"] = CheckNull(value); }
     }
+
+    public DateTime DateEndUtc
+    {
+      get { return (DateTime)Row["DateEnd"]; }
+    }
     
     public DateTime DateStart
     {
       get { return DateToLocal((DateTime)Row["DateStart"]); }
       set { Row["DateStart"] = CheckNull(value); }
+    }
+
+    public DateTime DateStartUtc
+    {
+      get { return (DateTime)Row["DateStart"]; }
     }
     
 

@@ -16,10 +16,6 @@ namespace TeamSupport.Data
     [DataMember] public int SystemSettingID { get; set; }
     [DataMember] public string SettingKey { get; set; }
     [DataMember] public string SettingValue { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
-    [DataMember] public int CreatorID { get; set; }
-    [DataMember] public int ModifierID { get; set; }
           
   }
   
@@ -28,14 +24,10 @@ namespace TeamSupport.Data
     public SystemSettingProxy GetProxy()
     {
       SystemSettingProxy result = new SystemSettingProxy();
-      result.ModifierID = this.ModifierID;
-      result.CreatorID = this.CreatorID;
       result.SettingValue = this.SettingValue;
       result.SettingKey = this.SettingKey;
       result.SystemSettingID = this.SystemSettingID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
        
        
       return result;

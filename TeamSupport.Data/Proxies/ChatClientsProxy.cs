@@ -38,8 +38,8 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.ChatClientID = this.ChatClientID;
        
-      result.LastPing = DateTime.SpecifyKind(this.LastPing, DateTimeKind.Local);
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.LastPing = DateTime.SpecifyKind(this.LastPingUtc, DateTimeKind.Utc);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
        
       return result;

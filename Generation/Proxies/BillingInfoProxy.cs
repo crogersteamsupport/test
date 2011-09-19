@@ -47,9 +47,9 @@ namespace TeamSupport.Data
       result.CreditCardID = this.CreditCardID;
       result.OrganizationID = this.OrganizationID;
        
-      result.NextInvoiceDate = DateTime.SpecifyKind(this.NextInvoiceDate, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.NextInvoiceDate = DateTime.SpecifyKind(this.NextInvoiceDateUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
        
       return result;

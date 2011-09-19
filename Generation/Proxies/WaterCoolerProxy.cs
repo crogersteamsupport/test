@@ -37,7 +37,7 @@ namespace TeamSupport.Data
       result.UserID = this.UserID;
       result.MessageID = this.MessageID;
        
-      result.TimeStamp = DateTime.SpecifyKind(this.TimeStamp, DateTimeKind.Local);
+      result.TimeStamp = DateTime.SpecifyKind(this.TimeStampUtc, DateTimeKind.Utc);
        
        
       return result;

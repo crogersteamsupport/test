@@ -47,8 +47,8 @@ namespace TeamSupport.Data
       result.HistoryID = this.HistoryID;
        
        
-      result.DateCreated = this.DateCreated == null ? this.DateCreated : DateTime.SpecifyKind((DateTime)this.DateCreated, DateTimeKind.Local); 
-      result.ActionTime = this.ActionTime == null ? this.ActionTime : DateTime.SpecifyKind((DateTime)this.ActionTime, DateTimeKind.Local); 
+      result.DateCreated = this.DateCreatedUtc == null ? this.DateCreatedUtc : DateTime.SpecifyKind((DateTime)this.DateCreatedUtc, DateTimeKind.Utc); 
+      result.ActionTime = this.ActionTimeUtc == null ? this.ActionTimeUtc : DateTime.SpecifyKind((DateTime)this.ActionTimeUtc, DateTimeKind.Utc); 
        
       return result;
     }	

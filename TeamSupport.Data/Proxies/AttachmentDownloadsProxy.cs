@@ -29,7 +29,7 @@ namespace TeamSupport.Data
       result.AttachmentID = this.AttachmentID;
       result.AttachmentDownloadID = this.AttachmentDownloadID;
        
-      result.DateDownloaded = DateTime.SpecifyKind(this.DateDownloaded, DateTimeKind.Local);
+      result.DateDownloaded = DateTime.SpecifyKind(this.DateDownloadedUtc, DateTimeKind.Utc);
        
        
       return result;

@@ -35,7 +35,7 @@ namespace TeamSupport.Data
       result.ChatID = this.ChatID;
       result.ChatMessageID = this.ChatMessageID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
        
       return result;

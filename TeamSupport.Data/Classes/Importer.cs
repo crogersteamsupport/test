@@ -564,7 +564,7 @@ namespace TeamSupport.Data
     #endregion
 
     #region Utility Methods
-    private static void SetTypeGuessRowsForExcelImport()
+    public static void SetTypeGuessRowsForExcelImport()
     {
       RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Jet\4.0\Engines\Excel", true);
       if (key == null)
@@ -578,6 +578,30 @@ namespace TeamSupport.Data
         key.SetValue("ImportMixedTypes", "Text");
       }
 
+      SetAceProperties("10.0", 0, "Text");
+      SetAceProperties("11.0", 0, "Text");
+      SetAceProperties("12.0", 0, "Text");
+      SetAceProperties("13.0", 0, "Text");
+      SetAceProperties("14.0", 0, "Text");
+      SetAceProperties("15.0", 0, "Text");
+      SetAceProperties("16.0", 0, "Text");
+    }
+
+    private static void SetAceProperties(string officeVersion, int typeGuessRows, string importMixedTypes)
+    {
+      RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office\"+officeVersion+@"\Access Connectivity Engine\Engines\Excel", true);
+      if (key != null)
+      {
+        key.SetValue("TypeGuessRows", typeGuessRows);
+        key.SetValue("ImportMixedTypes", importMixedTypes);
+      }
+
+      key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\Office\"+officeVersion+@"\Access Connectivity Engine\Engines\Excel", true);
+      if (key != null)
+      {
+        key.SetValue("TypeGuessRows", typeGuessRows);
+        key.SetValue("ImportMixedTypes", importMixedTypes);
+      }
     }
 
     private string GetListToCommaString(List<string> list)
@@ -1354,8 +1378,8 @@ namespace TeamSupport.Data
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
-        if (list.ContainsKey(row["CustomerID"].ToString().Trim())) continue;
-        //if (existing.FindByImportID(row["CustomerID"].ToString().Trim()) != null) continue;
+        //if (list.ContainsKey(row["CustomerID"].ToString().Trim())) continue;
+        if (existing.FindByImportID(row["CustomerID"].ToString().Trim()) != null) continue;
         Organization organization = organizations.AddNewOrganization();
         organization.Description = "";
         organization.ExtraStorageUnits = 0;
@@ -1523,7 +1547,7 @@ namespace TeamSupport.Data
           _log.AppendError(row, "Version skipped due to missing product.");
           continue;
         }
-        if (existing.FindByImportID(row["VersionID"].ToString().Trim()) != null) continue;
+        if (existing.FindByImportID(row["VersionID"].ToString().Trim(), product.ProductID) != null) continue;
 
         ProductVersion productVersion = productVersions.AddNewProductVersion();
         productVersion.Description = row["Description"].ToString().Trim();
@@ -2199,14 +2223,29 @@ namespace TeamSupport.Data
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
-        Product product = products.FindByImportID(row["ProductID"].ToString().Trim());
         Organization organization = organizations.FindByImportID(row["CustomerID"].ToString().Trim());
-        ProductVersion version = productVersions.FindByImportID(row["VersionID"].ToString().Trim());
+        
+        Product product = products.FindByImportID(row["ProductID"].ToString().Trim());
 
         if (organization == null || product == null)
         {
-          _log.AppendError(row, "Customer Product skipped due to missing organization or product.");
+          _log.AppendError(row, string.Format("Customer Product skipped due to missing organization or product. [Customer={0}  Product={1}  Version={2}", 
+            row["CustomerID"].ToString().Trim(),
+            row["ProductID"].ToString().Trim(),
+            row["VersionID"].ToString().Trim()
+            ));
           continue;
+        }
+
+        ProductVersion version = productVersions.FindByImportID(row["VersionID"].ToString().Trim(), product.ProductID);
+
+        if (version == null && row["VersionID"].ToString().Trim() != "")
+        {
+          _log.AppendError(row, string.Format("Customer Product skipped due to missing version. [Customer={0}  Product={1}  Version={2}",
+            row["CustomerID"].ToString().Trim(),
+            row["ProductID"].ToString().Trim(),
+            row["VersionID"].ToString().Trim()
+            ));
         }
 
         OrganizationProduct organizationProduct = organizationProducts.AddNewOrganizationProduct();

@@ -161,10 +161,38 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM CustomValues WHERE (RefID = @RefID) AND (CustomFieldID = @CustomFieldID)";
+        command.CommandText = //"SELECT * FROM CustomValues WHERE (RefID = @RefID) AND (CustomFieldID = @CustomFieldID)";
+
+        @"
+SELECT 
+cv.CustomValueID, 
+cv.RefID, 
+cv.CustomValue, 
+cv.DateCreated, 
+cv.DateModified, 
+cv.CreatorID, 
+cv.ModifierID, 
+cf.Name, 
+cf.ApiFieldName, 
+cf.FieldType, 
+cf.ListValues, 
+cf.Description, 
+cf.RefType, 
+cf.AuxID, 
+cf.Position, 
+cf.IsVisibleOnPortal, 
+cf.IsFirstIndexSelect,
+cf.IsRequired,
+cf.OrganizationID, 
+cf.CustomFieldID
+FROM CustomFields cf LEFT JOIN CustomValues cv on cv.CustomFieldID = cf.CustomFieldID 
+WHERE cf.OrganizationID = @OrganizationID
+AND cv.RefID=@RefID
+AND cf.CustomFieldID = @CustomFieldID";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefID", refID);
         command.Parameters.AddWithValue("@CustomFieldID", customFieldID);
+        command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
         Fill(command);
       }
     }

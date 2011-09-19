@@ -96,6 +96,11 @@ namespace TeamSupport.Data
       get { return Row["ReleaseDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["ReleaseDate"]) : null; }
       set { Row["ReleaseDate"] = CheckNull(value); }
     }
+
+    public DateTime? ReleaseDateUtc
+    {
+      get { return Row["ReleaseDate"] != DBNull.Value ? (DateTime?)Row["ReleaseDate"] : null; }
+    }
     
 
     
@@ -104,11 +109,21 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateModified"]); }
       set { Row["DateModified"] = CheckNull(value); }
     }
+
+    public DateTime DateModifiedUtc
+    {
+      get { return (DateTime)Row["DateModified"]; }
+    }
     
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
       set { Row["DateCreated"] = CheckNull(value); }
+    }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
     }
     
 

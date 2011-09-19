@@ -43,6 +43,7 @@ public partial class _Default : System.Web.UI.Page
     Response.Expires = 0;
 
     User user = Users.GetUser(UserSession.LoginUser, UserSession.LoginUser.UserID);
+    if (user == null) return;
     user.LastActivity = DateTime.UtcNow;
     if (!TSAuthentication.IsBackdoor) user.SessionID = Guid.NewGuid();
     user.Collection.Save();

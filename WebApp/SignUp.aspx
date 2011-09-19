@@ -134,7 +134,7 @@
             </telerik:RadTextBox>
           </td>
         </tr>
-        <tr style="display:none;">
+        <tr style="">
           <td>
             Promotional Code:
           </td>

@@ -72,6 +72,11 @@ namespace TeamSupport.Data
       get { return Row["TriggerDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["TriggerDateTime"]) : null; }
       set { Row["TriggerDateTime"] = CheckNull(value); }
     }
+
+    public DateTime? TriggerDateTimeUtc
+    {
+      get { return Row["TriggerDateTime"] != DBNull.Value ? (DateTime?)Row["TriggerDateTime"] : null; }
+    }
     
 
     

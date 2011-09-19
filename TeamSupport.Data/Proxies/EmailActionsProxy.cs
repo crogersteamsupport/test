@@ -44,7 +44,7 @@ namespace TeamSupport.Data
       result.EMailActionID = this.EMailActionID;
        
        
-      result.DateTime = this.DateTime == null ? this.DateTime : System.DateTime.SpecifyKind((DateTime)this.DateTime, DateTimeKind.Local); 
+      //result.DateTime = this.DateTimeUtc == null ? this.DateTimeUtc : DateTime.SpecifyKind((DateTime)this.DateTimeUtc, DateTimeKind.Utc); 
        
       return result;
     }	

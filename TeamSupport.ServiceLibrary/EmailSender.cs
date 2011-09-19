@@ -80,6 +80,8 @@ namespace TeamSupport.ServiceLibrary
             email.Attempts = email.Attempts + 1;
             email.Collection.Save();
             MailMessage message = email.GetMailMessage();
+            message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
+            message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
             client.Send(message);
             email.IsSuccess = true;
             email.IsWaiting = false;

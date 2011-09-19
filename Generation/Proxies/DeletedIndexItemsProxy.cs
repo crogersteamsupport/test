@@ -29,7 +29,7 @@ namespace TeamSupport.Data
       result.RefID = this.RefID;
       result.DeletedIndexID = this.DeletedIndexID;
        
-      result.DateDeleted = DateTime.SpecifyKind(this.DateDeleted, DateTimeKind.Local);
+      result.DateDeleted = DateTime.SpecifyKind(this.DateDeletedUtc, DateTimeKind.Utc);
        
        
       return result;

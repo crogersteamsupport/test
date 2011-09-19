@@ -43,7 +43,7 @@ namespace TeamSupport.Data
       result.URL = this.URL;
       result.ExceptionLogID = this.ExceptionLogID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
        
       return result;

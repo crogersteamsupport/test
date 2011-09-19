@@ -72,12 +72,12 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.InvoiceID = this.InvoiceID;
        
-      result.DateStart = DateTime.SpecifyKind(this.DateStart, DateTimeKind.Local);
-      result.DateEnd = DateTime.SpecifyKind(this.DateEnd, DateTimeKind.Local);
-      result.DateBilled = DateTime.SpecifyKind(this.DateBilled, DateTimeKind.Local);
-      result.DateDue = DateTime.SpecifyKind(this.DateDue, DateTimeKind.Local);
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      result.DateStart = DateTime.SpecifyKind(this.DateStartUtc, DateTimeKind.Utc);
+      result.DateEnd = DateTime.SpecifyKind(this.DateEndUtc, DateTimeKind.Utc);
+      result.DateBilled = DateTime.SpecifyKind(this.DateBilledUtc, DateTimeKind.Utc);
+      result.DateDue = DateTime.SpecifyKind(this.DateDueUtc, DateTimeKind.Utc);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
        
       return result;

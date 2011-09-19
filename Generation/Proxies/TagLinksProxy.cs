@@ -33,7 +33,7 @@ namespace TeamSupport.Data
       result.TagID = this.TagID;
       result.TagLinkID = this.TagLinkID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
        
       return result;

@@ -38,7 +38,7 @@ namespace TeamSupport.Data
       result.TicketID = this.TicketID;
        
        
-      result.LastViewed = this.LastViewed == null ? this.LastViewed : DateTime.SpecifyKind((DateTime)this.LastViewed, DateTimeKind.Local); 
+      result.LastViewed = this.LastViewedUtc == null ? this.LastViewedUtc : DateTime.SpecifyKind((DateTime)this.LastViewedUtc, DateTimeKind.Utc); 
        
       return result;
     }	

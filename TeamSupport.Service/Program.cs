@@ -29,6 +29,7 @@ namespace TeamSupport.Service
       _threads.Add(new SlaProcessor());
       _threads.Add(new Indexer());
       _threads.Add(new CrmPool());
+      _threads.Add(new TransLocks());
     }
 
     private void TestConnection()

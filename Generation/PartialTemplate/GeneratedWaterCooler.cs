@@ -86,6 +86,11 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["TimeStamp"]); }
       set { Row["TimeStamp"] = CheckNull(value); }
     }
+
+    public DateTime TimeStampUtc
+    {
+      get { return (DateTime)Row["TimeStamp"]; }
+    }
     
 
     #endregion

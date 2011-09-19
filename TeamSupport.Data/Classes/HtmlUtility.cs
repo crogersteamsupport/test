@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using TidyNet;
+using HtmlAgilityPack;
 
 namespace TeamSupport.Data
 {
@@ -52,6 +53,7 @@ namespace TeamSupport.Data
             {"ul", new List<string>         {"style", "class"}},
             {"li", new List<string>         {"style", "class"}},
             {"blockquote", new List<string> {"style", "class"}},
+            {"pre", new List<string>        {"style", "class"}},
             {"code", new List<string>       {"style", "class"}},
             
             {"a", new List<string>          {"style", "class", "href", "title", "target"}},
@@ -145,7 +147,7 @@ namespace TeamSupport.Data
             return output;
         }
 
-        private static string TidyHtml(string text)
+        public static string TidyHtml(string text)
         {
             var doc = new Tidy();
             var messages = new TidyMessageCollection();
@@ -228,7 +230,123 @@ namespace TeamSupport.Data
             return Content;
         }
 
-    }
+        public static string TagHtml(LoginUser loginUser,  string text)
+        {
+          HtmlDocument doc = new HtmlDocument();
+          doc.LoadHtml(text);
+          if (doc != null && doc.DocumentNode != null)
+          {
+            StringBuilder builder = new StringBuilder();
+            Tags tags = new Tags(loginUser);
+            tags.LoadByOrganization(loginUser.OrganizationID);
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//text()");
+            if (nodes != null)
+            {
+              foreach (HtmlAgilityPack.HtmlTextNode node in nodes)
+              {
+                if (node.ParentNode != null && node.ParentNode.Name == "a") continue;
+                foreach (Tag tag in tags)
+                {
+                  node.Text = DataUtils.CreateLinks(node.Text, tag.Value, "#", "tag-link tagid-" + tag.TagID.ToString(), "_blank");
+                }
 
-    
+                builder.Append(node.Text);
+              }
+              using (StringWriter writer = new StringWriter())
+              {
+                doc.Save(writer);
+                return writer.ToString();
+              }
+            }
+          }
+
+          return "";
+        }
+
+        public static string Sanitize(string text)
+        {
+          HtmlDocument doc = new HtmlDocument();
+          doc.LoadHtml(text);
+          //http://htmlagilitypack.codeplex.com/discussions/24346
+          //Remove potentially harmful elements
+          //HtmlNodeCollection nc = doc.DocumentNode.SelectNodes("//script|//link|//iframe|//frameset|//frame|//applet|//object|//embed");
+          HtmlNodeCollection nc = doc.DocumentNode.SelectNodes("//script|//style|//link");
+          if (nc != null)
+          {
+            foreach (HtmlNode node in nc)
+            {
+              node.ParentNode.RemoveChild(node, false);
+
+            }
+          }
+
+          //remove hrefs to java/j/vbscript URLs
+          nc = doc.DocumentNode.SelectNodes("//a[starts-with(translate(@href, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'javascript')]|//a[starts-with(translate(@href, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'jscript')]|//a[starts-with(translate(@href, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'vbscript')]");
+          if (nc != null)
+          {
+
+            foreach (HtmlNode node in nc)
+            {
+              node.SetAttributeValue("href", "#");
+            }
+          }
+
+
+          //remove img with refs to java/j/vbscript URLs
+          nc = doc.DocumentNode.SelectNodes("//img[starts-with(translate(@src, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'javascript')]|//img[starts-with(translate(@src, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'jscript')]|//img[starts-with(translate(@src, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'vbscript')]");
+          if (nc != null)
+          {
+            foreach (HtmlNode node in nc)
+            {
+              node.SetAttributeValue("src", "#");
+            }
+          }
+
+          //remove on<Event> handlers from all tags
+          nc = doc.DocumentNode.SelectNodes("//*[@onclick or @onmouseover or @onfocus or @onblur or @onmouseout or @ondoubleclick or @onload or @onunload]");
+          if (nc != null)
+          {
+            foreach (HtmlNode node in nc)
+            {
+              node.Attributes.Remove("onFocus");
+              node.Attributes.Remove("onBlur");
+              node.Attributes.Remove("onClick");
+              node.Attributes.Remove("onMouseOver");
+              node.Attributes.Remove("onMouseOut");
+              node.Attributes.Remove("onDoubleClick");
+              node.Attributes.Remove("onLoad");
+              node.Attributes.Remove("onUnload");
+            }
+          }
+
+          // remove any style attributes that contain the word expression (IE evaluates this as script)
+          nc = doc.DocumentNode.SelectNodes("//*[contains(translate(@style, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'expression')]");
+          if (nc != null)
+          {
+            foreach (HtmlNode node in nc)
+            {
+              node.Attributes.Remove("stYle");
+            }
+          }
+
+          return doc.DocumentNode.WriteTo();
+
+
+          //remove attributes handlers from all tags
+          //nc = doc.DocumentNode.SelectNodes("//*[@class or @id or @style]");
+          nc = doc.DocumentNode.SelectNodes("//*[@class or @id]");
+          if (nc != null)
+          {
+            foreach (HtmlNode node in nc)
+            {
+              node.Attributes.Remove("id");
+              node.Attributes.Remove("class");
+              node.Attributes.Remove("style");
+            }
+          }
+
+          return doc.DocumentNode.WriteTo();
+        }
+
+    }
 }

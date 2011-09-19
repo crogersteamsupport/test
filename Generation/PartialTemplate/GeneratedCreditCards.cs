@@ -98,17 +98,32 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateModfied"]); }
       set { Row["DateModfied"] = CheckNull(value); }
     }
+
+    public DateTime DateModfiedUtc
+    {
+      get { return (DateTime)Row["DateModfied"]; }
+    }
     
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
       set { Row["DateCreated"] = CheckNull(value); }
     }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
+    }
     
     public DateTime ExpirationDate
     {
       get { return DateToLocal((DateTime)Row["ExpirationDate"]); }
       set { Row["ExpirationDate"] = CheckNull(value); }
+    }
+
+    public DateTime ExpirationDateUtc
+    {
+      get { return (DateTime)Row["ExpirationDate"]; }
     }
     
 

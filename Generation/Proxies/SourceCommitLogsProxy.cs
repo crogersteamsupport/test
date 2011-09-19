@@ -44,7 +44,7 @@ namespace TeamSupport.Data
       result.CommitID = this.CommitID;
        
        
-      result.CommitDateTime = this.CommitDateTime == null ? this.CommitDateTime : DateTime.SpecifyKind((DateTime)this.CommitDateTime, DateTimeKind.Local); 
+      result.CommitDateTime = this.CommitDateTimeUtc == null ? this.CommitDateTimeUtc : DateTime.SpecifyKind((DateTime)this.CommitDateTimeUtc, DateTimeKind.Utc); 
        
       return result;
     }	

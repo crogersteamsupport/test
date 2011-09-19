@@ -45,12 +45,12 @@ namespace TeamSupport.Data
     [DataMember] public string LastVersion { get; set; }
     [DataMember] public Guid? SessionID { get; set; }
     [DataMember] public string ImportID { get; set; }
-    [DataMember] public string OrgsUserCanSeeOnPortal { get; set; }
-    [DataMember] public bool DoNotAutoSubscribe { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public string OrgsUserCanSeeOnPortal { get; set; }
+    [DataMember] public bool DoNotAutoSubscribe { get; set; }
           
   }
   
@@ -59,10 +59,10 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
-      result.ModifierID = this.ModifierID;
-      result.CreatorID = this.CreatorID;
       result.DoNotAutoSubscribe = this.DoNotAutoSubscribe;
       result.OrgsUserCanSeeOnPortal = this.OrgsUserCanSeeOnPortal;
+      result.ModifierID = this.ModifierID;
+      result.CreatorID = this.CreatorID;
       result.ImportID = this.ImportID;
       result.SessionID = this.SessionID;
       result.LastVersion = this.LastVersion;
@@ -91,14 +91,14 @@ namespace TeamSupport.Data
       result.Email = this.Email;
       result.UserID = this.UserID;
        
-      result.LastLogin = DateTime.SpecifyKind(this.LastLogin, DateTimeKind.Local);
-      result.LastActivity = DateTime.SpecifyKind(this.LastActivity, DateTimeKind.Local);
-      result.ActivatedOn = DateTime.SpecifyKind(this.ActivatedOn, DateTimeKind.Local);
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      result.LastLogin = DateTime.SpecifyKind(this.LastLoginUtc, DateTimeKind.Utc);
+      result.LastActivity = DateTime.SpecifyKind(this.LastActivityUtc, DateTimeKind.Utc);
+      result.ActivatedOn = DateTime.SpecifyKind(this.ActivatedOnUtc, DateTimeKind.Utc);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
-      result.DeactivatedOn = this.DeactivatedOn == null ? this.DeactivatedOn : DateTime.SpecifyKind((DateTime)this.DeactivatedOn, DateTimeKind.Local); 
-      result.LastPing = this.LastPing == null ? this.LastPing : DateTime.SpecifyKind((DateTime)this.LastPing, DateTimeKind.Local); 
+      result.DeactivatedOn = this.DeactivatedOnUtc == null ? this.DeactivatedOnUtc : DateTime.SpecifyKind((DateTime)this.DeactivatedOnUtc, DateTimeKind.Utc); 
+      result.LastPing = this.LastPingUtc == null ? this.LastPingUtc : DateTime.SpecifyKind((DateTime)this.LastPingUtc, DateTimeKind.Utc); 
        
       return result;
     }	

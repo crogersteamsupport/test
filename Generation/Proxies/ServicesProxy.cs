@@ -17,8 +17,8 @@ namespace TeamSupport.Data
     [DataMember] public string Name { get; set; }
     [DataMember] public bool Enabled { get; set; }
     [DataMember] public int Interval { get; set; }
-    [DataMember] public DateTime LastStartTime { get; set; }
-    [DataMember] public DateTime LastEndTime { get; set; }
+    [DataMember] public DateTime? LastStartTime { get; set; }
+    [DataMember] public DateTime? LastEndTime { get; set; }
     [DataMember] public string LastResult { get; set; }
     [DataMember] public string LastError { get; set; }
     [DataMember] public int ErrorCount { get; set; }
@@ -44,9 +44,9 @@ namespace TeamSupport.Data
       result.Name = this.Name;
       result.ServiceID = this.ServiceID;
        
-      result.LastStartTime = DateTime.SpecifyKind(this.LastStartTime, DateTimeKind.Local);
-      result.LastEndTime = DateTime.SpecifyKind(this.LastEndTime, DateTimeKind.Local);
        
+      result.LastEndTime = this.LastEndTimeUtc == null ? this.LastEndTimeUtc : DateTime.SpecifyKind((DateTime)this.LastEndTimeUtc, DateTimeKind.Utc); 
+      result.LastStartTime = this.LastStartTimeUtc == null ? this.LastStartTimeUtc : DateTime.SpecifyKind((DateTime)this.LastStartTimeUtc, DateTimeKind.Utc); 
        
       return result;
     }	

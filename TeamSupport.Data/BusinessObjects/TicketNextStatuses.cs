@@ -74,7 +74,7 @@ namespace TeamSupport.Data
 SELECT * FROM TicketNextStatuses tns
 LEFT JOIN TicketStatuses ts ON ts.TicketStatusID = tns.CurrentStatusID
 WHERE (ts.OrganizationID = @OrganizationID) 
-ORDER BY tns.CurrentStatusID
+ORDER BY tns.CurrentStatusID, tns.Position
 ";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);

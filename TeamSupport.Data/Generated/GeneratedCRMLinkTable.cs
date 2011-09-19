@@ -114,6 +114,11 @@ namespace TeamSupport.Data
       get { return Row["LastLink"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastLink"]) : null; }
       set { Row["LastLink"] = CheckNull(value); }
     }
+
+    public DateTime? LastLinkUtc
+    {
+      get { return Row["LastLink"] != DBNull.Value ? (DateTime?)Row["LastLink"] : null; }
+    }
     
 
     
@@ -121,6 +126,11 @@ namespace TeamSupport.Data
     {
       get { return DateToLocal((DateTime)Row["LastProcessed"]); }
       set { Row["LastProcessed"] = CheckNull(value); }
+    }
+
+    public DateTime LastProcessedUtc
+    {
+      get { return (DateTime)Row["LastProcessed"]; }
     }
     
 

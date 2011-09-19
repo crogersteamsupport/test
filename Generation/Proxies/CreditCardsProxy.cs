@@ -43,9 +43,9 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.CreditCardID = this.CreditCardID;
        
-      result.ExpirationDate = DateTime.SpecifyKind(this.ExpirationDate, DateTimeKind.Local);
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModfied = DateTime.SpecifyKind(this.DateModfied, DateTimeKind.Local);
+      result.ExpirationDate = DateTime.SpecifyKind(this.ExpirationDateUtc, DateTimeKind.Utc);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModfied = DateTime.SpecifyKind(this.DateModfiedUtc, DateTimeKind.Utc);
        
        
       return result;

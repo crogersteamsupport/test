@@ -8,13 +8,13 @@
 <head id="Head1" runat="server">
   <title>Team Support</title>
   <link rel="SHORTCUT ICON" href="~/favicon.ico" />
-  <link href="Resources_144/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_144/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_144/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_144/Css/jquery.ketchup.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_144/Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="Resources_144/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="Resources_144/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
-  <link href="Resources_144/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_146/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_146/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_146/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_146/Css/jquery.ketchup.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_146/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="Resources_146/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="Resources_146/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <link href="Resources_146/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
 
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
@@ -53,27 +53,28 @@
         <asp:ServiceReference Path="~/Services/TSSystem.asmx" />
         <asp:ServiceReference Path="~/Services/SettingService.asmx" />
         <asp:ServiceReference Path="~/Services/TicketService.asmx" />
+        <asp:ServiceReference Path="~/Services/CustomFieldsService.asmx" />
         <asp:ServiceReference Path="~/Services/AutomationService.asmx" />
+        <asp:ServiceReference Path="~/Services/AdminService.asmx" />
         <asp:ServiceReference Path="~/Services/UserService.asmx" />
         <asp:ServiceReference Path="~/Services/OrganizationService.asmx" />
         <asp:ServiceReference Path="~/Services/ProductService.asmx" />
-        <asp:ServiceReference Path="~/Services/CustomFieldsService.asmx" />
 
         <asp:ServiceReference Path="~/Services/PrivateServices.asmx" />
       </services>
     <scripts>
         
-          <asp:ScriptReference Path="Resources_144/Js/json2.js" />
-          <asp:ScriptReference Path="Resources_144/Js/jquery.layout.min.js" />
-          <asp:ScriptReference Path="Resources_144/Js/jquery.jgrowl_minimized.js" />
-          <asp:ScriptReference Path="Resources_144/Js/jquery.editlabel.js" />
-          <asp:ScriptReference Path="Resources_144/Js/jquery.cookie.js" />
-          <asp:ScriptReference Path="Resources_144/Js/ts/ts.system.js" />
-          <asp:ScriptReference Path="Resources_144/Js/ts/ts.utils.js" />
-          <asp:ScriptReference Path="Resources_144/Js/ts/ts.cache.js" />
-          <asp:ScriptReference Path="Resources_144/Js/ts/ts.ui.tabs.js" />
-          <asp:ScriptReference Path="Resources_144/Js/ts/ts.ui.menutree.js" />
-          <asp:ScriptReference Path="Resources_144/Js/ts/ts.pages.main.js" />
+          <asp:ScriptReference Path="Resources_146/Js/json2.js" />
+          <asp:ScriptReference Path="Resources_146/Js/jquery.layout.min.js" />
+          <asp:ScriptReference Path="Resources_146/Js/jquery.jgrowl_minimized.js" />
+          <asp:ScriptReference Path="Resources_146/Js/jquery.editlabel.js" />
+          <asp:ScriptReference Path="Resources_146/Js/jquery.cookie.js" />
+          <asp:ScriptReference Path="Resources_146/Js/ts/ts.system.js" />
+          <asp:ScriptReference Path="Resources_146/Js/ts/ts.utils.js" />
+          <asp:ScriptReference Path="Resources_146/Js/ts/ts.cache.js" />
+          <asp:ScriptReference Path="Resources_146/Js/ts/ts.ui.tabs.js" />
+          <asp:ScriptReference Path="Resources_146/Js/ts/ts.ui.menutree.js" />
+          <asp:ScriptReference Path="Resources_146/Js/ts/ts.pages.main.js" />
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>

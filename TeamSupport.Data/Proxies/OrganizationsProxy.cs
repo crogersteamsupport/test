@@ -18,9 +18,6 @@ namespace TeamSupport.Data
     [DataMember] public string Description { get; set; }
     [DataMember] public string Website { get; set; }
     [DataMember] public string WhereHeard { get; set; }
-    [DataMember] public string PrimaryInterest { get; set; }
-    [DataMember] public string PotentialSeats { get; set; }
-    [DataMember] public string EvalProcess { get; set; }
     [DataMember] public string PromoCode { get; set; }
     [DataMember] public bool IsCustomerFree { get; set; }
     [DataMember] public int UserSeats { get; set; }
@@ -72,8 +69,12 @@ namespace TeamSupport.Data
     [DataMember] public bool? MatchEmailSubject { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public string PrimaryInterest { get; set; }
+    [DataMember] public string PotentialSeats { get; set; }
+    [DataMember] public string EvalProcess { get; set; }
     [DataMember] public bool? AddAdditionalContacts { get; set; }
     [DataMember] public bool? ChangeStatusIfClosed { get; set; }
+    [DataMember] public bool IsPublicArticles { get; set; }
           
   }
   
@@ -82,8 +83,12 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.IsPublicArticles = this.IsPublicArticles;
       result.ChangeStatusIfClosed = this.ChangeStatusIfClosed;
       result.AddAdditionalContacts = this.AddAdditionalContacts;
+      result.EvalProcess = this.EvalProcess;
+      result.PotentialSeats = this.PotentialSeats;
+      result.PrimaryInterest = this.PrimaryInterest;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.MatchEmailSubject = this.MatchEmailSubject;
@@ -130,21 +135,18 @@ namespace TeamSupport.Data
       result.UserSeats = this.UserSeats;
       result.IsCustomerFree = this.IsCustomerFree;
       result.PromoCode = this.PromoCode;
-      result.EvalProcess = this.EvalProcess;
-      result.PotentialSeats = this.PotentialSeats;
-      result.PrimaryInterest = this.PrimaryInterest;
       result.WhereHeard = this.WhereHeard;
       result.Website = this.Website;
       result.Description = this.Description;
       result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
-      result.BusinessDayStart = DateTime.SpecifyKind(this.BusinessDayStart, DateTimeKind.Local);
-      result.BusinessDayEnd = DateTime.SpecifyKind(this.BusinessDayEnd, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
+      result.BusinessDayStart = DateTime.SpecifyKind(this.BusinessDayStartUtc, DateTimeKind.Utc);
+      result.BusinessDayEnd = DateTime.SpecifyKind(this.BusinessDayEndUtc, DateTimeKind.Utc);
        
-      result.SAExpirationDate = this.SAExpirationDate == null ? this.SAExpirationDate : DateTime.SpecifyKind((DateTime)this.SAExpirationDate, DateTimeKind.Local); 
+      result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc); 
        
       return result;
     }	

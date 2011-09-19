@@ -62,6 +62,11 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateDeleted"]); }
       set { Row["DateDeleted"] = CheckNull(value); }
     }
+
+    public DateTime DateDeletedUtc
+    {
+      get { return (DateTime)Row["DateDeleted"]; }
+    }
     
 
     #endregion

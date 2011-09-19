@@ -25,9 +25,9 @@ namespace TeamSupport.Data
       <$ItemName$>Proxy result = new <$ItemName$>Proxy();
       <$BeginFields=[!DateTime]$>result.<$PropertyName$> = this.<$PropertyName$>;
       <$EndFields$> 
-      <$BeginFields=[DateTime,!Nullable]$>result.<$PropertyName$> = DateTime.SpecifyKind(this.<$PropertyName$>, DateTimeKind.Local);
+      <$BeginFields=[DateTime,!Nullable]$>result.<$PropertyName$> = DateTime.SpecifyKind(this.<$PropertyName$>Utc, DateTimeKind.Utc);
       <$EndFields$> 
-      <$BeginFields=[DateTime,Nullable]$>result.<$PropertyName$> = this.<$PropertyName$> == null ? this.<$PropertyName$> : DateTime.SpecifyKind((DateTime)this.<$PropertyName$>, DateTimeKind.Local); 
+      <$BeginFields=[DateTime,Nullable]$>result.<$PropertyName$> = this.<$PropertyName$>Utc == null ? this.<$PropertyName$>Utc : DateTime.SpecifyKind((DateTime)this.<$PropertyName$>Utc, DateTimeKind.Utc); 
       <$EndFields$> 
       return result;
     }	

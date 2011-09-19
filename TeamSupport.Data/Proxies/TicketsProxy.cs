@@ -33,10 +33,18 @@ namespace TeamSupport.Data
     [DataMember] public string ImportID { get; set; }
     [DataMember] public DateTime? LastViolationTime { get; set; }
     [DataMember] public DateTime? LastWarningTime { get; set; }
-    [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public string TicketSource { get; set; }
     [DataMember] public string PortalEmail { get; set; }
+    [DataMember] public DateTime? SlaViolationTimeClosed { get; set; }
+    [DataMember] public DateTime? SlaViolationLastAction { get; set; }
+    [DataMember] public DateTime? SlaViolationInitialResponse { get; set; }
+    [DataMember] public DateTime? SlaWarningTimeClosed { get; set; }
+    [DataMember] public DateTime? SlaWarningLastAction { get; set; }
+    [DataMember] public DateTime? SlaWarningInitialResponse { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public int? DocID { get; set; }
+    [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
           
@@ -49,6 +57,8 @@ namespace TeamSupport.Data
       TicketProxy result = new TicketProxy();
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
+      result.DocID = this.DocID;
+      result.NeedsIndexing = this.NeedsIndexing;
       result.PortalEmail = this.PortalEmail;
       result.TicketSource = this.TicketSource;
       result.ImportID = this.ImportID;
@@ -69,12 +79,18 @@ namespace TeamSupport.Data
       result.ReportedVersionID = this.ReportedVersionID;
       result.TicketID = this.TicketID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
-      result.LastWarningTime = this.LastWarningTime == null ? this.LastWarningTime : DateTime.SpecifyKind((DateTime)this.LastWarningTime, DateTimeKind.Local); 
-      result.LastViolationTime = this.LastViolationTime == null ? this.LastViolationTime : DateTime.SpecifyKind((DateTime)this.LastViolationTime, DateTimeKind.Local); 
-      result.DateClosed = this.DateClosed == null ? this.DateClosed : DateTime.SpecifyKind((DateTime)this.DateClosed, DateTimeKind.Local); 
+      result.SlaWarningInitialResponse = this.SlaWarningInitialResponseUtc == null ? this.SlaWarningInitialResponseUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningInitialResponseUtc, DateTimeKind.Utc); 
+      result.SlaWarningLastAction = this.SlaWarningLastActionUtc == null ? this.SlaWarningLastActionUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningLastActionUtc, DateTimeKind.Utc); 
+      result.SlaWarningTimeClosed = this.SlaWarningTimeClosedUtc == null ? this.SlaWarningTimeClosedUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningTimeClosedUtc, DateTimeKind.Utc); 
+      result.SlaViolationInitialResponse = this.SlaViolationInitialResponseUtc == null ? this.SlaViolationInitialResponseUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationInitialResponseUtc, DateTimeKind.Utc); 
+      result.SlaViolationLastAction = this.SlaViolationLastActionUtc == null ? this.SlaViolationLastActionUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationLastActionUtc, DateTimeKind.Utc); 
+      result.SlaViolationTimeClosed = this.SlaViolationTimeClosedUtc == null ? this.SlaViolationTimeClosedUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationTimeClosedUtc, DateTimeKind.Utc); 
+      result.LastWarningTime = this.LastWarningTimeUtc == null ? this.LastWarningTimeUtc : DateTime.SpecifyKind((DateTime)this.LastWarningTimeUtc, DateTimeKind.Utc); 
+      result.LastViolationTime = this.LastViolationTimeUtc == null ? this.LastViolationTimeUtc : DateTime.SpecifyKind((DateTime)this.LastViolationTimeUtc, DateTimeKind.Utc); 
+      result.DateClosed = this.DateClosedUtc == null ? this.DateClosedUtc : DateTime.SpecifyKind((DateTime)this.DateClosedUtc, DateTimeKind.Utc); 
        
       return result;
     }	

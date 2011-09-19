@@ -31,6 +31,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime NextAttempt { get; set; }
     [DataMember] public DateTime? DateSent { get; set; }
     [DataMember] public string LastFailedReason { get; set; }
+    [DataMember] public int? EmailPostID { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
           
   }
@@ -40,6 +41,7 @@ namespace TeamSupport.Data
     public EmailProxy GetProxy()
     {
       EmailProxy result = new EmailProxy();
+      result.EmailPostID = this.EmailPostID;
       result.LastFailedReason = this.LastFailedReason;
       result.Attempts = this.Attempts;
       result.IsHtml = this.IsHtml;
@@ -57,10 +59,10 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.EmailID = this.EmailID;
        
-      result.NextAttempt = DateTime.SpecifyKind(this.NextAttempt, DateTimeKind.Local);
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.NextAttempt = DateTime.SpecifyKind(this.NextAttemptUtc, DateTimeKind.Utc);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
-      result.DateSent = this.DateSent == null ? this.DateSent : DateTime.SpecifyKind((DateTime)this.DateSent, DateTimeKind.Local); 
+      result.DateSent = this.DateSentUtc == null ? this.DateSentUtc : DateTime.SpecifyKind((DateTime)this.DateSentUtc, DateTimeKind.Utc); 
        
       return result;
     }	

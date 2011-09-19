@@ -19,6 +19,7 @@ namespace TeamSupport.Data
     [DataMember] public string OrganizationName { get; set; }
     [DataMember] public bool? Success { get; set; }
     [DataMember] public DateTime? LoginDateTime { get; set; }
+    [DataMember] public string IPAddress { get; set; }
           
   }
   
@@ -27,6 +28,7 @@ namespace TeamSupport.Data
     public PortalLoginHistoryItemProxy GetProxy()
     {
       PortalLoginHistoryItemProxy result = new PortalLoginHistoryItemProxy();
+      result.IPAddress = this.IPAddress;
       result.Success = this.Success;
       result.OrganizationName = this.OrganizationName;
       result.OrganizationID = this.OrganizationID;
@@ -34,7 +36,7 @@ namespace TeamSupport.Data
       result.PortalLoginID = this.PortalLoginID;
        
        
-      result.LoginDateTime = this.LoginDateTime == null ? this.LoginDateTime : DateTime.SpecifyKind((DateTime)this.LoginDateTime, DateTimeKind.Local); 
+      result.LoginDateTime = this.LoginDateTimeUtc == null ? this.LoginDateTimeUtc : DateTime.SpecifyKind((DateTime)this.LoginDateTimeUtc, DateTimeKind.Utc); 
        
       return result;
     }	

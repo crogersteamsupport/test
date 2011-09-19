@@ -43,7 +43,7 @@ namespace TeamSupport.Data
       result.UserID = this.UserID;
       result.LoginAttemptID = this.LoginAttemptID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
        
       return result;

@@ -75,7 +75,7 @@ namespace TSWebServices
     public BasicUser[] GetUsers()
     {
       Users users = new Users(TSAuthentication.GetLoginUser());
-      users.LoadByOrganizationID(TSAuthentication.OrganizationID, false);
+      users.LoadByOrganizationID(TSAuthentication.OrganizationID, true);
       List<BasicUser> result = new List<BasicUser>();
 
       foreach (User user in users)

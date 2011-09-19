@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public ActionsViewItemProxy() {}
     [DataMember] public int ActionID { get; set; }
     [DataMember] public int? ActionTypeID { get; set; }
-    [DataMember] public int SystemActionTypeID { get; set; }
+    [DataMember] public SystemActionType SystemActionTypeID { get; set; }
     [DataMember] public string Name { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int? TimeSpent { get; set; }
@@ -108,11 +108,11 @@ namespace TeamSupport.Data
       result.ActionTypeID = this.ActionTypeID;
       result.ActionID = this.ActionID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
-      result.DateClosed = this.DateClosed == null ? this.DateClosed : DateTime.SpecifyKind((DateTime)this.DateClosed, DateTimeKind.Local); 
-      result.DateStarted = this.DateStarted == null ? this.DateStarted : DateTime.SpecifyKind((DateTime)this.DateStarted, DateTimeKind.Local); 
+      result.DateClosed = this.DateClosedUtc == null ? this.DateClosedUtc : DateTime.SpecifyKind((DateTime)this.DateClosedUtc, DateTimeKind.Utc); 
+      result.DateStarted = this.DateStartedUtc == null ? this.DateStartedUtc : DateTime.SpecifyKind((DateTime)this.DateStartedUtc, DateTimeKind.Utc); 
        
       return result;
     }	

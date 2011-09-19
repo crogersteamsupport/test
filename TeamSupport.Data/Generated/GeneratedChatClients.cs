@@ -86,11 +86,21 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
       set { Row["DateCreated"] = CheckNull(value); }
     }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
+    }
     
     public DateTime LastPing
     {
       get { return DateToLocal((DateTime)Row["LastPing"]); }
       set { Row["LastPing"] = CheckNull(value); }
+    }
+
+    public DateTime LastPingUtc
+    {
+      get { return (DateTime)Row["LastPing"]; }
     }
     
 

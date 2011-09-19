@@ -228,11 +228,21 @@ namespace TeamSupport.Data
       get { return Row["LastPing"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastPing"]) : null; }
       set { Row["LastPing"] = CheckNull(value); }
     }
+
+    public DateTime? LastPingUtc
+    {
+      get { return Row["LastPing"] != DBNull.Value ? (DateTime?)Row["LastPing"] : null; }
+    }
     
     public DateTime? DeactivatedOn
     {
       get { return Row["DeactivatedOn"] != DBNull.Value ? DateToLocal((DateTime?)Row["DeactivatedOn"]) : null; }
       set { Row["DeactivatedOn"] = CheckNull(value); }
+    }
+
+    public DateTime? DeactivatedOnUtc
+    {
+      get { return Row["DeactivatedOn"] != DBNull.Value ? (DateTime?)Row["DeactivatedOn"] : null; }
     }
     
 
@@ -242,11 +252,21 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateModified"]); }
       set { Row["DateModified"] = CheckNull(value); }
     }
+
+    public DateTime DateModifiedUtc
+    {
+      get { return (DateTime)Row["DateModified"]; }
+    }
     
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
       set { Row["DateCreated"] = CheckNull(value); }
+    }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
     }
     
     public DateTime ActivatedOn
@@ -254,17 +274,32 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["ActivatedOn"]); }
       set { Row["ActivatedOn"] = CheckNull(value); }
     }
+
+    public DateTime ActivatedOnUtc
+    {
+      get { return (DateTime)Row["ActivatedOn"]; }
+    }
     
     public DateTime LastActivity
     {
       get { return DateToLocal((DateTime)Row["LastActivity"]); }
       set { Row["LastActivity"] = CheckNull(value); }
     }
+
+    public DateTime LastActivityUtc
+    {
+      get { return (DateTime)Row["LastActivity"]; }
+    }
     
     public DateTime LastLogin
     {
       get { return DateToLocal((DateTime)Row["LastLogin"]); }
       set { Row["LastLogin"] = CheckNull(value); }
+    }
+
+    public DateTime LastLoginUtc
+    {
+      get { return (DateTime)Row["LastLogin"]; }
     }
     
 

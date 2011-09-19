@@ -450,6 +450,7 @@ namespace TSWebServices
     [WebMethod]
     public string SetTicketName(int ticketID, string name)
     {
+      if (name.Trim() == "") name = "[Untitled Ticket]";
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (!CanEditTicket(ticket)) return name;
       ticket.Name = HttpUtility.HtmlEncode(name);
@@ -504,17 +505,17 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public string SetTicketUser(int ticketID, int? userID)
+    public UserInfo SetTicketUser(int ticketID, int? userID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (!CanEditTicket(ticket)) return null;
 
-      User user = userID != null ? Users.GetUser(TSAuthentication.GetLoginUser(), (int)userID) : null; 
+      UsersViewItem user = userID != null ? UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)userID) : null; 
       if (userID == ticket.UserID) return null;
       if (user != null && user.OrganizationID != TSAuthentication.OrganizationID) return null;
       ticket.UserID = userID;
       ticket.Collection.Save();
-      return user == null ? "" : user.FirstLastName;
+      return user == null ? null : new UserInfo(user);
     }
 
     [WebMethod]
@@ -587,12 +588,12 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public string AssignUser(int ticketID, int? userID)
+    public UserInfo AssignUser(int ticketID, int? userID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (!CanEditTicket(ticket)) return null;
 
-      User user = userID != null ? Users.GetUser(ticket.Collection.LoginUser, (int)userID) : null;
+      UsersViewItem user = userID != null ? UsersView.GetUsersViewItem(ticket.Collection.LoginUser, (int)userID) : null;
       if (user != null)
       {
         if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
@@ -600,7 +601,7 @@ namespace TSWebServices
       if (ticket.UserID == userID) return null;
       ticket.UserID = userID;
       ticket.Collection.Save();
-      return user == null ? "" : user.FirstLastName;
+      return user == null ? null : new UserInfo(user);
     }
 
    
@@ -1002,18 +1003,47 @@ namespace TSWebServices
       actions.LoadByTicketID(ticket.TicketID);
 
       List<ActionInfo> actionInfos = new List<ActionInfo>();
+      actions.Table.Columns["Description"].AllowDBNull = true;
 
       for (int i = 0; i < actions.Count; i++)
       {
-        ActionInfo actionInfo = GetActionInfo(ticket.Collection.LoginUser, actions[i]);
-        //if (i > 0 && actionInfo.Action.SystemActionTypeID != SystemActionType.Description) { actionInfo.Action.Description = null; }
+        ActionInfo actionInfo = GetActionInfo(ticket.Collection.LoginUser, actions[i], i < 10 || actions[i].SystemActionTypeID == SystemActionType.Description);
         actionInfos.Add(actionInfo);
       }
 
       info.Actions = actionInfos.ToArray();
 
       return info;
+    }
 
+    private ActionInfo GetActionInfo(LoginUser loginUser, TeamSupport.Data.Action action)
+    {
+      return GetActionInfo(loginUser, action, true);
+    }
+
+    private ActionInfo GetActionInfo(LoginUser loginUser, TeamSupport.Data.Action action, bool includeDescription)
+    {
+      ActionInfo actionInfo = new ActionInfo();
+      actionInfo.Action = action.GetProxy();
+      if (!includeDescription) actionInfo.Action.Description = null;
+      if (actionInfo.Action.Description != null)
+      {
+        actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), HtmlUtility.Sanitize(actionInfo.Action.Description));
+      }
+
+      UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
+      if (creator != null) actionInfo.Creator = new UserInfo(creator);
+      actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
+      return actionInfo;
+    }
+
+    [WebMethod]
+    public ActionInfo GetActionInfo(int actionID)
+    {
+      TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), actionID);
+      Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+      return GetActionInfo(action.Collection.LoginUser, action);
     }
 
     [WebMethod]
@@ -1040,6 +1070,7 @@ namespace TSWebServices
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (!CanEditTicket(ticket)) return null;
       value = value.Trim();
+      if (value == "") return null;
       Tag tag = Tags.GetTag(ticket.Collection.LoginUser, value);
       if (tag == null)
       {
@@ -1278,21 +1309,6 @@ namespace TSWebServices
       return customers.ToArray();
     }
 
-    private ActionInfo GetActionInfo(LoginUser loginUser, TeamSupport.Data.Action action)
-    {
-      ActionInfo actionInfo = new ActionInfo();
-      actionInfo.Action = action.GetProxy();
-      if (actionInfo.Action.Description != null)
-      {
-        //actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), HtmlUtility.TidyHtml(actionInfo.Action.Description));
-        actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), actionInfo.Action.Description);
-      }
-      UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
-      if (creator != null)  actionInfo.Creator = new UserInfo(creator);
-      actionInfo.Attachments = action.GetAttachments().GetAttachmentProxies();
-      return actionInfo;
-    }
-
     private UserInfo[] GetSubscribers(TicketsViewItem ticket)
     {
       UsersView users = new UsersView(ticket.Collection.LoginUser);
@@ -1316,16 +1332,6 @@ namespace TSWebServices
       }
       return result.ToArray();
     }
-
-    [WebMethod]
-    public ActionInfo GetActionInfo(int actionID)
-    {
-      TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), actionID);
-      Ticket ticket = Tickets.GetTicket(action.Collection.LoginUser, action.TicketID);
-      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
-      return GetActionInfo(action.Collection.LoginUser, action);
-    }
-
 
     [WebMethod]
     public void DeleteAttachment(int attachmentID)

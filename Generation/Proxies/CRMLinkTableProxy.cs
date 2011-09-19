@@ -15,7 +15,7 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy() {}
     [DataMember] public int CRMLinkID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
-    [DataMember] public bool? Active { get; set; }
+    [DataMember] public bool Active { get; set; }
     [DataMember] public string CRMType { get; set; }
     [DataMember] public string Username { get; set; }
     [DataMember] public string Password { get; set; }
@@ -48,9 +48,9 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
        
-      result.LastProcessed = DateTime.SpecifyKind(this.LastProcessed, DateTimeKind.Local);
+      result.LastProcessed = DateTime.SpecifyKind(this.LastProcessedUtc, DateTimeKind.Utc);
        
-      result.LastLink = this.LastLink == null ? this.LastLink : DateTime.SpecifyKind((DateTime)this.LastLink, DateTimeKind.Local); 
+      result.LastLink = this.LastLinkUtc == null ? this.LastLinkUtc : DateTime.SpecifyKind((DateTime)this.LastLinkUtc, DateTimeKind.Utc); 
        
       return result;
     }	

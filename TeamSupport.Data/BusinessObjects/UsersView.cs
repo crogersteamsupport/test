@@ -44,6 +44,33 @@ namespace TeamSupport.Data
       LoadByLikeName(organizationID, name, int.MaxValue);
     }
 
+    public void LoadByTerm(int parentID, string term, int max)
+    {
+      if (term.Trim().Length < 2) return;
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+@"SELECT TOP (@MaxRows) u.* FROM UsersView u
+WHERE ((RTRIM(u.FirstName) +' '+ RTRIM(u.LastName) LIKE '%'+@term+'%') 
+OR (RTRIM(RTRIM(u.LastName)) +' '+ RTRIM(u.FirstName) LIKE '%'+@term+'%') 
+OR (RTRIM(u.LastName) +', '+ RTRIM(u.FirstName) LIKE '%'+@term+'%') 
+OR (RTRIM(u.LastName) +','+ RTRIM(u.FirstName) LIKE '%'+@term+'%') 
+OR (RTRIM(u.LastName) LIKE '%'+@term+'%') 
+OR (RTRIM(u.FirstName) LIKE '%'+@term+'%') 
+--OR (u.email LIKE '%'+@term+'%')
+)
+AND (u.OrganizationID = @OrganizationID)  
+AND (u.MarkDeleted = 0)
+ORDER BY u.LastName, u.FirstName";
+        command.CommandType = CommandType.Text;
+
+        command.Parameters.AddWithValue("@term", term);
+        command.Parameters.AddWithValue("@MaxRows", max);
+        command.Parameters.AddWithValue("@OrganizationID", parentID);
+        Fill(command);
+      }
+    }
+
     public void LoadByLikeName(int organizationID, string name, int max)
     {
       if (name.Trim().Length < 2) return;
@@ -69,6 +96,45 @@ ORDER BY u.LastName, u.FirstName";
         command.Parameters.AddWithValue("@Name", name);
         command.Parameters.AddWithValue("@MaxRows", max);
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
+    public void LoadBySubscription(int refID, ReferenceType refType)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = 
+@"SELECT u.* FROM UsersView u 
+LEFT JOIN Subscriptions s ON u.UserID = s.UserID 
+WHERE (s.RefID = @TicketID) 
+AND (s.RefType = @RefType) 
+AND (u.IsActive = 1) 
+AND (u.MarkDeleted = 0)
+ORDER BY u.FirstName, u.LastName";
+
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", refID);
+        command.Parameters.AddWithValue("@RefType", (int)refType);
+        Fill(command, "Users,Tickets,Subscriptions");
+      }
+    }
+
+    public void LoadByTicketQueue(int ticketID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+@"
+SELECT u.* FROM 
+UsersView u 
+LEFT JOIN TicketQueue q ON u.UserID = q.UserID 
+WHERE (q.TicketID = @TicketID) 
+AND (u.IsActive = 1) 
+AND (u.MarkDeleted = 0)
+ORDER BY u.FirstName, u.LastName";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", ticketID);
         Fill(command);
       }
     }

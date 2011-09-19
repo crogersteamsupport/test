@@ -36,6 +36,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("BasicPortalDirections", "BasicPortalDirections", false, false, false);
       _fieldMap.AddMap("DeflectionEnabled", "DeflectionEnabled", false, false, false);
       _fieldMap.AddMap("DisplayForum", "DisplayForum", false, false, false);
+      _fieldMap.AddMap("DisplayFooter", "DisplayFooter", false, false, false);
             
     }
   }

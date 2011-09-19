@@ -34,7 +34,7 @@ namespace TeamSupport.Data
       result.KBViewID = this.KBViewID;
        
        
-      result.ViewDateTime = this.ViewDateTime == null ? this.ViewDateTime : DateTime.SpecifyKind((DateTime)this.ViewDateTime, DateTimeKind.Local); 
+      result.ViewDateTime = this.ViewDateTimeUtc == null ? this.ViewDateTimeUtc : DateTime.SpecifyKind((DateTime)this.ViewDateTimeUtc, DateTimeKind.Utc); 
        
       return result;
     }	

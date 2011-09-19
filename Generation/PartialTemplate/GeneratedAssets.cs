@@ -120,17 +120,32 @@ namespace TeamSupport.Data
       get { return Row["WarrantyExpiration"] != DBNull.Value ? DateToLocal((DateTime?)Row["WarrantyExpiration"]) : null; }
       set { Row["WarrantyExpiration"] = CheckNull(value); }
     }
+
+    public DateTime? WarrantyExpirationUtc
+    {
+      get { return Row["WarrantyExpiration"] != DBNull.Value ? (DateTime?)Row["WarrantyExpiration"] : null; }
+    }
     
     public DateTime? DateCreated
     {
       get { return Row["DateCreated"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateCreated"]) : null; }
       set { Row["DateCreated"] = CheckNull(value); }
     }
+
+    public DateTime? DateCreatedUtc
+    {
+      get { return Row["DateCreated"] != DBNull.Value ? (DateTime?)Row["DateCreated"] : null; }
+    }
     
     public DateTime? DateModified
     {
       get { return Row["DateModified"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateModified"]) : null; }
       set { Row["DateModified"] = CheckNull(value); }
+    }
+
+    public DateTime? DateModifiedUtc
+    {
+      get { return Row["DateModified"] != DBNull.Value ? (DateTime?)Row["DateModified"] : null; }
     }
     
 

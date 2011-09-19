@@ -41,10 +41,10 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.OrganizationProductID = this.OrganizationProductID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
-      result.SupportExpiration = this.SupportExpiration == null ? this.SupportExpiration : DateTime.SpecifyKind((DateTime)this.SupportExpiration, DateTimeKind.Local); 
+      result.SupportExpiration = this.SupportExpirationUtc == null ? this.SupportExpirationUtc : DateTime.SpecifyKind((DateTime)this.SupportExpirationUtc, DateTimeKind.Utc); 
        
       return result;
     }	

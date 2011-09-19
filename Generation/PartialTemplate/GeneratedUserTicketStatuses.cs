@@ -68,6 +68,11 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateRead"]); }
       set { Row["DateRead"] = CheckNull(value); }
     }
+
+    public DateTime DateReadUtc
+    {
+      get { return (DateTime)Row["DateRead"]; }
+    }
     
 
     #endregion

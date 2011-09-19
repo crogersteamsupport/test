@@ -16,10 +16,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SystemSettingID", "SystemSettingID", false, false, false);
       _fieldMap.AddMap("SettingKey", "SettingKey", false, false, false);
       _fieldMap.AddMap("SettingValue", "SettingValue", false, false, false);
-      _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
-      _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
-      _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
-      _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
             
     }
   }

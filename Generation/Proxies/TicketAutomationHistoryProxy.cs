@@ -34,7 +34,7 @@ namespace TeamSupport.Data
       result.HistoryID = this.HistoryID;
        
        
-      result.TriggerDateTime = this.TriggerDateTime == null ? this.TriggerDateTime : DateTime.SpecifyKind((DateTime)this.TriggerDateTime, DateTimeKind.Local); 
+      result.TriggerDateTime = this.TriggerDateTimeUtc == null ? this.TriggerDateTimeUtc : DateTime.SpecifyKind((DateTime)this.TriggerDateTimeUtc, DateTimeKind.Utc); 
        
       return result;
     }	

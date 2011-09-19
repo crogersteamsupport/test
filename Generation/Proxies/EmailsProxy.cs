@@ -59,10 +59,10 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.EmailID = this.EmailID;
        
-      result.NextAttempt = DateTime.SpecifyKind(this.NextAttempt, DateTimeKind.Local);
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.NextAttempt = DateTime.SpecifyKind(this.NextAttemptUtc, DateTimeKind.Utc);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
-      result.DateSent = this.DateSent == null ? this.DateSent : DateTime.SpecifyKind((DateTime)this.DateSent, DateTimeKind.Local); 
+      result.DateSent = this.DateSentUtc == null ? this.DateSentUtc : DateTime.SpecifyKind((DateTime)this.DateSentUtc, DateTimeKind.Utc); 
        
       return result;
     }	

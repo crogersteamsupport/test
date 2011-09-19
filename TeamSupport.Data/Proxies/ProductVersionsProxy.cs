@@ -43,10 +43,10 @@ namespace TeamSupport.Data
       result.ProductID = this.ProductID;
       result.ProductVersionID = this.ProductVersionID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
-      result.ReleaseDate = this.ReleaseDate == null ? this.ReleaseDate : DateTime.SpecifyKind((DateTime)this.ReleaseDate, DateTimeKind.Local); 
+      result.ReleaseDate = this.ReleaseDateUtc == null ? this.ReleaseDateUtc : DateTime.SpecifyKind((DateTime)this.ReleaseDateUtc, DateTimeKind.Utc); 
        
       return result;
     }	

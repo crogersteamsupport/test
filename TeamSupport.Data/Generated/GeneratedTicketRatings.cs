@@ -85,6 +85,11 @@ namespace TeamSupport.Data
       get { return Row["LastViewed"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastViewed"]) : null; }
       set { Row["LastViewed"] = CheckNull(value); }
     }
+
+    public DateTime? LastViewedUtc
+    {
+      get { return Row["LastViewed"] != DBNull.Value ? (DateTime?)Row["LastViewed"] : null; }
+    }
     
 
     

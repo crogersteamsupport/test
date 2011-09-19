@@ -69,6 +69,8 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? SlaWarningLastAction { get; set; }
     [DataMember] public DateTime? SlaWarningInitialResponse { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public DateTime? SlaViolationDate { get; set; }
+    [DataMember] public DateTime? SlaWarningDate { get; set; }
           
   }
   
@@ -125,16 +127,18 @@ namespace TeamSupport.Data
       result.ProductName = this.ProductName;
       result.TicketID = this.TicketID;
        
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
-      result.SlaWarningInitialResponse = this.SlaWarningInitialResponse == null ? this.SlaWarningInitialResponse : DateTime.SpecifyKind((DateTime)this.SlaWarningInitialResponse, DateTimeKind.Local); 
-      result.SlaWarningLastAction = this.SlaWarningLastAction == null ? this.SlaWarningLastAction : DateTime.SpecifyKind((DateTime)this.SlaWarningLastAction, DateTimeKind.Local); 
-      result.SlaWarningTimeClosed = this.SlaWarningTimeClosed == null ? this.SlaWarningTimeClosed : DateTime.SpecifyKind((DateTime)this.SlaWarningTimeClosed, DateTimeKind.Local); 
-      result.SlaViolationInitialResponse = this.SlaViolationInitialResponse == null ? this.SlaViolationInitialResponse : DateTime.SpecifyKind((DateTime)this.SlaViolationInitialResponse, DateTimeKind.Local); 
-      result.SlaViolationLastAction = this.SlaViolationLastAction == null ? this.SlaViolationLastAction : DateTime.SpecifyKind((DateTime)this.SlaViolationLastAction, DateTimeKind.Local); 
-      result.SlaViolationTimeClosed = this.SlaViolationTimeClosed == null ? this.SlaViolationTimeClosed : DateTime.SpecifyKind((DateTime)this.SlaViolationTimeClosed, DateTimeKind.Local); 
-      result.DateClosed = this.DateClosed == null ? this.DateClosed : DateTime.SpecifyKind((DateTime)this.DateClosed, DateTimeKind.Local); 
+      result.SlaWarningDate = this.SlaWarningDateUtc == null ? this.SlaWarningDateUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningDateUtc, DateTimeKind.Utc); 
+      result.SlaViolationDate = this.SlaViolationDateUtc == null ? this.SlaViolationDateUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationDateUtc, DateTimeKind.Utc); 
+      result.SlaWarningInitialResponse = this.SlaWarningInitialResponseUtc == null ? this.SlaWarningInitialResponseUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningInitialResponseUtc, DateTimeKind.Utc); 
+      result.SlaWarningLastAction = this.SlaWarningLastActionUtc == null ? this.SlaWarningLastActionUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningLastActionUtc, DateTimeKind.Utc); 
+      result.SlaWarningTimeClosed = this.SlaWarningTimeClosedUtc == null ? this.SlaWarningTimeClosedUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningTimeClosedUtc, DateTimeKind.Utc); 
+      result.SlaViolationInitialResponse = this.SlaViolationInitialResponseUtc == null ? this.SlaViolationInitialResponseUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationInitialResponseUtc, DateTimeKind.Utc); 
+      result.SlaViolationLastAction = this.SlaViolationLastActionUtc == null ? this.SlaViolationLastActionUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationLastActionUtc, DateTimeKind.Utc); 
+      result.SlaViolationTimeClosed = this.SlaViolationTimeClosedUtc == null ? this.SlaViolationTimeClosedUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationTimeClosedUtc, DateTimeKind.Utc); 
+      result.DateClosed = this.DateClosedUtc == null ? this.DateClosedUtc : DateTime.SpecifyKind((DateTime)this.DateClosedUtc, DateTimeKind.Utc); 
        
       return result;
     }	

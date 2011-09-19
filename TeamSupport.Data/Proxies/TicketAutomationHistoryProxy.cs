@@ -17,6 +17,8 @@ namespace TeamSupport.Data
     [DataMember] public int TicketID { get; set; }
     [DataMember] public int TriggerID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
+    [DataMember] public DateTime? TriggerDateTime { get; set; }
+    [DataMember] public string ActionType { get; set; }
           
   }
   
@@ -25,12 +27,14 @@ namespace TeamSupport.Data
     public TicketAutomationHistoryItemProxy GetProxy()
     {
       TicketAutomationHistoryItemProxy result = new TicketAutomationHistoryItemProxy();
+      result.ActionType = this.ActionType;
       result.OrganizationID = this.OrganizationID;
       result.TriggerID = this.TriggerID;
       result.TicketID = this.TicketID;
       result.HistoryID = this.HistoryID;
        
        
+      result.TriggerDateTime = this.TriggerDateTimeUtc == null ? this.TriggerDateTimeUtc : DateTime.SpecifyKind((DateTime)this.TriggerDateTimeUtc, DateTimeKind.Utc); 
        
       return result;
     }	

@@ -114,6 +114,9 @@
       <HintPath>C:\Program Files (x86)\dtSearch Developer\bin64\dtSearchNetApi3.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\HtmlAgilityPack\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -159,6 +162,7 @@
     <Compile Include="BusinessObjects\ChatUserSettings.cs" />
     <Compile Include="BusinessObjects\ContactsView.cs" />
     <Compile Include="BusinessObjects\CreditCards.cs" />
+    <Compile Include="BusinessObjects\CRMLinkFields.cs" />
     <Compile Include="BusinessObjects\CRMLinkResults.cs" />
     <Compile Include="BusinessObjects\CRMLinkTable.cs" />
     <Compile Include="BusinessObjects\CustomFields.cs" />
@@ -210,6 +214,7 @@
     <Compile Include="FieldMaps\AttachmentDownloadsFieldMap.cs" />
     <Compile Include="FieldMaps\ChatClientsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ChatUserSettingsFieldMap.cs" />
+    <Compile Include="FieldMaps\CRMLinkFieldsFieldMap.cs" />
     <Compile Include="FieldMaps\DeletedIndexItemsFieldMap.cs" />
     <Compile Include="FieldMaps\EMailAlternateInboundFieldMap.cs" />
     <Compile Include="FieldMaps\EmailPostHistoryFieldMap.cs" />
@@ -392,6 +397,7 @@
     <Compile Include="Generated\GeneratedChatSettings.cs" />
     <Compile Include="Generated\GeneratedContactsView.cs" />
     <Compile Include="Generated\GeneratedCreditCards.cs" />
+    <Compile Include="Generated\GeneratedCRMLinkFields.cs" />
     <Compile Include="Generated\GeneratedCRMLinkResults.cs" />
     <Compile Include="Generated\GeneratedCRMLinkTable.cs" />
     <Compile Include="Generated\GeneratedCustomFields.cs" />
@@ -504,6 +510,7 @@
     <Compile Include="Proxies\ChatUserSettingsProxy.cs" />
     <Compile Include="Proxies\ContactsViewProxy.cs" />
     <Compile Include="Proxies\CreditCardsProxy.cs" />
+    <Compile Include="Proxies\CRMLinkFieldsProxy.cs" />
     <Compile Include="Proxies\CRMLinkResultsProxy.cs" />
     <Compile Include="Proxies\CRMLinkTableProxy.cs" />
     <Compile Include="Proxies\CustomFieldsProxy.cs" />

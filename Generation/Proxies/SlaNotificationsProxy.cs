@@ -31,12 +31,12 @@ namespace TeamSupport.Data
       result.TicketID = this.TicketID;
        
        
-      result.InitialResponseWarningDate = this.InitialResponseWarningDate == null ? this.InitialResponseWarningDate : DateTime.SpecifyKind((DateTime)this.InitialResponseWarningDate, DateTimeKind.Local); 
-      result.LastActionWarningDate = this.LastActionWarningDate == null ? this.LastActionWarningDate : DateTime.SpecifyKind((DateTime)this.LastActionWarningDate, DateTimeKind.Local); 
-      result.TimeClosedWarningDate = this.TimeClosedWarningDate == null ? this.TimeClosedWarningDate : DateTime.SpecifyKind((DateTime)this.TimeClosedWarningDate, DateTimeKind.Local); 
-      result.InitialResponseViolationDate = this.InitialResponseViolationDate == null ? this.InitialResponseViolationDate : DateTime.SpecifyKind((DateTime)this.InitialResponseViolationDate, DateTimeKind.Local); 
-      result.LastActionViolationDate = this.LastActionViolationDate == null ? this.LastActionViolationDate : DateTime.SpecifyKind((DateTime)this.LastActionViolationDate, DateTimeKind.Local); 
-      result.TimeClosedViolationDate = this.TimeClosedViolationDate == null ? this.TimeClosedViolationDate : DateTime.SpecifyKind((DateTime)this.TimeClosedViolationDate, DateTimeKind.Local); 
+      result.InitialResponseWarningDate = this.InitialResponseWarningDateUtc == null ? this.InitialResponseWarningDateUtc : DateTime.SpecifyKind((DateTime)this.InitialResponseWarningDateUtc, DateTimeKind.Utc); 
+      result.LastActionWarningDate = this.LastActionWarningDateUtc == null ? this.LastActionWarningDateUtc : DateTime.SpecifyKind((DateTime)this.LastActionWarningDateUtc, DateTimeKind.Utc); 
+      result.TimeClosedWarningDate = this.TimeClosedWarningDateUtc == null ? this.TimeClosedWarningDateUtc : DateTime.SpecifyKind((DateTime)this.TimeClosedWarningDateUtc, DateTimeKind.Utc); 
+      result.InitialResponseViolationDate = this.InitialResponseViolationDateUtc == null ? this.InitialResponseViolationDateUtc : DateTime.SpecifyKind((DateTime)this.InitialResponseViolationDateUtc, DateTimeKind.Utc); 
+      result.LastActionViolationDate = this.LastActionViolationDateUtc == null ? this.LastActionViolationDateUtc : DateTime.SpecifyKind((DateTime)this.LastActionViolationDateUtc, DateTimeKind.Utc); 
+      result.TimeClosedViolationDate = this.TimeClosedViolationDateUtc == null ? this.TimeClosedViolationDateUtc : DateTime.SpecifyKind((DateTime)this.TimeClosedViolationDateUtc, DateTimeKind.Utc); 
        
       return result;
     }	

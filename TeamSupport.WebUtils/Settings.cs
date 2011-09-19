@@ -54,8 +54,7 @@ namespace TeamSupport.WebUtils
       {
         ex.Data["Value"] = value;
         ex.Data["Length"] = value.Length.ToString();
-        ExceptionLogs.LogException(_loginUser, ex, "Read JSON Setting");
-        DataUtils.LogException(_loginUser, ex);
+        //ExceptionLogs.LogException(_loginUser, ex, "Read JSON Setting");
         return default(T);
       }
     }

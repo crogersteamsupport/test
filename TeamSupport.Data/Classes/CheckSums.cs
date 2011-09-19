@@ -37,7 +37,7 @@ namespace TeamSupport.Data
           sql = string.Format(sql, "Products");
           break;
         case ReferenceType.ProductVersions:
-          sql = "SELECT CHECKSUM_AGG(CHECKSUM(p.Name, pv.VersionNumber)) FROM ProductVersions pv LEFT JOIN Products p ON p.ProductID = pv.ProductID WHERE p.OrganizationID = 1088" + loginUser.OrganizationID.ToString();
+          sql = "SELECT CHECKSUM_AGG(CHECKSUM(p.Name, pv.VersionNumber)) FROM ProductVersions pv LEFT JOIN Products p ON p.ProductID = pv.ProductID WHERE p.OrganizationID = " + loginUser.OrganizationID.ToString();
           break;
         case ReferenceType.ProductVersionStatuses:
           sql = string.Format(sql, "ProductVersionStatuses");

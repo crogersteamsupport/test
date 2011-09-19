@@ -141,12 +141,12 @@ namespace TeamSupport.Data
       result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
-      result.BusinessDayStart = DateTime.SpecifyKind(this.BusinessDayStart, DateTimeKind.Local);
-      result.BusinessDayEnd = DateTime.SpecifyKind(this.BusinessDayEnd, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
+      result.BusinessDayStart = DateTime.SpecifyKind(this.BusinessDayStartUtc, DateTimeKind.Utc);
+      result.BusinessDayEnd = DateTime.SpecifyKind(this.BusinessDayEndUtc, DateTimeKind.Utc);
        
-      result.SAExpirationDate = this.SAExpirationDate == null ? this.SAExpirationDate : DateTime.SpecifyKind((DateTime)this.SAExpirationDate, DateTimeKind.Local); 
+      result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc); 
        
       return result;
     }	

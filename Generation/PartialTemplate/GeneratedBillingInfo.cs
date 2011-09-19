@@ -111,17 +111,32 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
       set { Row["DateCreated"] = CheckNull(value); }
     }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
+    }
     
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
       set { Row["DateModified"] = CheckNull(value); }
     }
+
+    public DateTime DateModifiedUtc
+    {
+      get { return (DateTime)Row["DateModified"]; }
+    }
     
     public DateTime NextInvoiceDate
     {
       get { return DateToLocal((DateTime)Row["NextInvoiceDate"]); }
       set { Row["NextInvoiceDate"] = CheckNull(value); }
+    }
+
+    public DateTime NextInvoiceDateUtc
+    {
+      get { return (DateTime)Row["NextInvoiceDate"]; }
     }
     
 

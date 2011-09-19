@@ -116,7 +116,7 @@ namespace TeamSupport.ServiceLibrary
           try
           {
             if (IsStopped && !_runHandlesStop) return;
-            if (service.Enabled && (lastTime.AddSeconds(service.Interval) < DateTime.Now || !IsLoop))
+            if (service.Enabled && (lastTime.AddMilliseconds(service.Interval) < DateTime.Now || !IsLoop))
             {
               service.LastStartTime = DateTime.Now;
               service.Collection.Save();

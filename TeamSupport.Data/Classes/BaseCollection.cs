@@ -282,9 +282,12 @@ namespace TeamSupport.Data
     {
       _loginUser = loginUser;
       _table = new DataTable();
+      _deadlockCount = 0;
     }
 
     #region Private Members
+
+    private int _deadlockCount = 0;
 
     #endregion
 
@@ -358,12 +361,15 @@ namespace TeamSupport.Data
         try
         {
           Save(connection);
+          _deadlockCount = 0;
         }
         catch (SqlException ex) 
         {
-          if (ex.Number == 1205)
+          if (ex.Number == 1205 && _deadlockCount < 3)
           {
+            _deadlockCount++;
             connection.Close();
+            System.Threading.Thread.Sleep(10000);
             Save();
             return;
           }

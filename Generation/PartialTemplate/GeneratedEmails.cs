@@ -144,6 +144,11 @@ namespace TeamSupport.Data
       get { return Row["DateSent"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateSent"]) : null; }
       set { Row["DateSent"] = CheckNull(value); }
     }
+
+    public DateTime? DateSentUtc
+    {
+      get { return Row["DateSent"] != DBNull.Value ? (DateTime?)Row["DateSent"] : null; }
+    }
     
 
     
@@ -152,11 +157,21 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
       set { Row["DateCreated"] = CheckNull(value); }
     }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
+    }
     
     public DateTime NextAttempt
     {
       get { return DateToLocal((DateTime)Row["NextAttempt"]); }
       set { Row["NextAttempt"] = CheckNull(value); }
+    }
+
+    public DateTime NextAttemptUtc
+    {
+      get { return (DateTime)Row["NextAttempt"]; }
     }
     
 

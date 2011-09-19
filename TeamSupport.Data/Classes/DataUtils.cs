@@ -851,18 +851,16 @@ namespace TeamSupport.Data
 
     public static string GetMailLinkHRef(LoginUser loginUser, int userID, int ticketID)
     {
-      User user = (User)Users.GetUser(loginUser, userID);
-      Organization organization = (Organization)Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
-      Ticket ticket = (Ticket)Tickets.GetTicket(loginUser, ticketID);
+      User user = Users.GetUser(loginUser, userID);
+      Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
+      Ticket ticket = Tickets.GetTicket(loginUser, ticketID);
       if (user == null || organization == null || ticket == null) return "";
 
       StringBuilder builder = new StringBuilder();
       builder.Append("mailto:" + user.Email);
       builder.Append("?cc=" + organization.GetReplyToAddress());
       builder.Append("&subject=" + HttpUtility.UrlPathEncode(ticket.Name).Replace("#", "%23") + " - [" + ticket.TicketNumber + "]");
-      //builder.Append("&subject=" + HttpUtility.UrlPathEncode(ticket.Name) + " - [" + ticket.TicketNumber + "]");
       return builder.ToString();
-
     }
 
     public static bool ResetPassword(LoginUser loginUser, User user, bool isPortalUser)

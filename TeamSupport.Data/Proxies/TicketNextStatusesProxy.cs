@@ -36,8 +36,6 @@ namespace TeamSupport.Data
       result.CurrentStatusID = this.CurrentStatusID;
       result.TicketNextStatusID = this.TicketNextStatusID;
        
-      //result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      //result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
        
        
       return result;

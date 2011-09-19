@@ -52,9 +52,9 @@ namespace TeamSupport.Data
       result.AssetID = this.AssetID;
        
        
-      result.DateModified = this.DateModified == null ? this.DateModified : DateTime.SpecifyKind((DateTime)this.DateModified, DateTimeKind.Local); 
-      result.DateCreated = this.DateCreated == null ? this.DateCreated : DateTime.SpecifyKind((DateTime)this.DateCreated, DateTimeKind.Local); 
-      result.WarrantyExpiration = this.WarrantyExpiration == null ? this.WarrantyExpiration : DateTime.SpecifyKind((DateTime)this.WarrantyExpiration, DateTimeKind.Local); 
+      result.DateModified = this.DateModifiedUtc == null ? this.DateModifiedUtc : DateTime.SpecifyKind((DateTime)this.DateModifiedUtc, DateTimeKind.Utc); 
+      result.DateCreated = this.DateCreatedUtc == null ? this.DateCreatedUtc : DateTime.SpecifyKind((DateTime)this.DateCreatedUtc, DateTimeKind.Utc); 
+      result.WarrantyExpiration = this.WarrantyExpirationUtc == null ? this.WarrantyExpirationUtc : DateTime.SpecifyKind((DateTime)this.WarrantyExpirationUtc, DateTimeKind.Utc); 
        
       return result;
     }	

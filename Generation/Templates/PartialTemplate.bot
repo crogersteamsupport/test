@@ -61,12 +61,22 @@ namespace TeamSupport.Data
     {
       get { return Row["<$FieldName$>"] != DBNull.Value ? DateToLocal((<$DataType$>)Row["<$FieldName$>"]) : null; }
     }
+
+    public <$DataType$> <$PropertyName$>Utc
+    {
+      get { return Row["<$FieldName$>"] != DBNull.Value ? (<$DataType$>)Row["<$FieldName$>"] : null; }
+    }
     <$EndFields$>
     
     <$BeginFields=[DateTime,ReadOnly,!Nullable]$>
     public <$DataType$> <$PropertyName$>
     {
       get { return DateToLocal((<$DataType$>)Row["<$FieldName$>"]); }
+    }
+
+    public <$DataType$> <$PropertyName$>Utc
+    {
+      get { return (<$DataType$>)Row["<$FieldName$>"]; }
     }
     <$EndFields$>
 
@@ -76,6 +86,11 @@ namespace TeamSupport.Data
       get { return Row["<$FieldName$>"] != DBNull.Value ? DateToLocal((<$DataType$>)Row["<$FieldName$>"]) : null; }
       set { Row["<$FieldName$>"] = CheckNull(value); }
     }
+
+    public <$DataType$> <$PropertyName$>Utc
+    {
+      get { return Row["<$FieldName$>"] != DBNull.Value ? (<$DataType$>)Row["<$FieldName$>"] : null; }
+    }
     <$EndFields$>
 
     <$BeginFields=[DateTime,!ReadOnly, !Nullable]$>
@@ -83,6 +98,11 @@ namespace TeamSupport.Data
     {
       get { return DateToLocal((<$DataType$>)Row["<$FieldName$>"]); }
       set { Row["<$FieldName$>"] = CheckNull(value); }
+    }
+
+    public <$DataType$> <$PropertyName$>Utc
+    {
+      get { return (<$DataType$>)Row["<$FieldName$>"]; }
     }
     <$EndFields$>
 

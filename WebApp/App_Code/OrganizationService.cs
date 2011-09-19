@@ -118,7 +118,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public CRMLinkTableItemProxy SaveCrmLink(int crmLinkID, bool isActive, string crmType, string password, string token, string tag, string userName)
+    public CRMLinkTableItemProxy SaveCrmLink(int crmLinkID, bool isActive, string crmType, string password, string token, string tag, string userName, bool email, bool portal)
     {
       if (!TSAuthentication.IsSystemAdmin) return null;
       CRMLinkTableItem item;
@@ -126,12 +126,10 @@ namespace TSWebServices
       if (crmLinkID < 0)
       {
         item = (new CRMLinkTable(TSAuthentication.GetLoginUser())).AddNewCRMLinkTableItem();
-        item.AllowPortalAccess = false;
         item.LastProcessed = DateTime.UtcNow;
         item.LastTicketID = -1;
         item.OrganizationID = TSAuthentication.OrganizationID;
         item.SendBackTicketData = true;
-        item.SendWelcomeEmail = false;
       }
       else
       {
@@ -140,7 +138,9 @@ namespace TSWebServices
       }
 
       item.Active = isActive;
+      item.AllowPortalAccess = portal;
       item.CRMType = crmType;
+      item.SendWelcomeEmail = email;
       item.Password = password;
       item.SecurityToken = token;
       item.TypeFieldMatch = tag;
@@ -151,6 +151,61 @@ namespace TSWebServices
 
     }
 
+
+    [WebMethod]
+    public CRMLinkFieldProxy[] GetCrmLinkFields(int crmLinkID)
+    {
+      CRMLinkFields fields = new CRMLinkFields(TSAuthentication.GetLoginUser());
+      fields.LoadByCrmLinkID(crmLinkID);
+      return fields.GetCRMLinkFieldProxies();
+    }
+
+    [WebMethod]
+    public CRMLinkFieldProxy[] SaveCrmLinkField(int crmLinkID, int tsFieldID, bool isCustom, string crmName, ReferenceType refType)
+    {
+      CRMLinkTableItem link = CRMLinkTable.GetCRMLinkTableItem(TSAuthentication.GetLoginUser(), crmLinkID);
+      if (link.OrganizationID != TSAuthentication.OrganizationID) return null;
+      CRMLinkField field = (new CRMLinkFields(link.Collection.LoginUser)).AddNewCRMLinkField();
+
+      if (isCustom)
+      {
+        //CustomField custom = CustomFields.GetCustomField(link.Collection.LoginUser, tsFieldID);
+        field.TSFieldName = null;
+      }
+      else
+      {
+        ReportTableField rtf = ReportTableFields.GetReportTableField(link.Collection.LoginUser, tsFieldID);
+        field.TSFieldName = rtf.FieldName;
+      }
+
+      switch (refType)
+      {
+        case ReferenceType.Organizations:
+          field.CRMObjectName = "Account";
+          break;
+        case ReferenceType.Contacts:
+          field.CRMObjectName = "Contact";
+          break;
+        default:
+          break;
+      }
+
+      field.CRMLinkID = crmLinkID;
+      field.CRMFieldName = crmName;
+      field.CustomFieldID = isCustom ? (int?)tsFieldID : null;
+      field.Collection.Save();
+      return GetCrmLinkFields(crmLinkID);
+    }
+
+    [WebMethod]
+    public void DeleteCrmLinkField(int crmLinkFieldID)
+    {
+      CRMLinkField field = CRMLinkFields.GetCRMLinkField(TSAuthentication.GetLoginUser(), crmLinkFieldID);
+      CRMLinkTableItem link = CRMLinkTable.GetCRMLinkTableItem(TSAuthentication.GetLoginUser(), field.CRMLinkID);
+      if (link.OrganizationID != TSAuthentication.OrganizationID) return;
+      field.Delete();
+      field.Collection.Save();
+    }
 
     // need to move to users service
     [WebMethod]

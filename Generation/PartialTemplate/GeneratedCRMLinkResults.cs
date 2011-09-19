@@ -60,6 +60,11 @@ namespace TeamSupport.Data
       get { return Row["AttemptDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["AttemptDateTime"]) : null; }
       set { Row["AttemptDateTime"] = CheckNull(value); }
     }
+
+    public DateTime? AttemptDateTimeUtc
+    {
+      get { return Row["AttemptDateTime"] != DBNull.Value ? (DateTime?)Row["AttemptDateTime"] : null; }
+    }
     
 
     

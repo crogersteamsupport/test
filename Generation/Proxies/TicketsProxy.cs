@@ -79,18 +79,18 @@ namespace TeamSupport.Data
       result.ReportedVersionID = this.ReportedVersionID;
       result.TicketID = this.TicketID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
-      result.SlaWarningInitialResponse = this.SlaWarningInitialResponse == null ? this.SlaWarningInitialResponse : DateTime.SpecifyKind((DateTime)this.SlaWarningInitialResponse, DateTimeKind.Local); 
-      result.SlaWarningLastAction = this.SlaWarningLastAction == null ? this.SlaWarningLastAction : DateTime.SpecifyKind((DateTime)this.SlaWarningLastAction, DateTimeKind.Local); 
-      result.SlaWarningTimeClosed = this.SlaWarningTimeClosed == null ? this.SlaWarningTimeClosed : DateTime.SpecifyKind((DateTime)this.SlaWarningTimeClosed, DateTimeKind.Local); 
-      result.SlaViolationInitialResponse = this.SlaViolationInitialResponse == null ? this.SlaViolationInitialResponse : DateTime.SpecifyKind((DateTime)this.SlaViolationInitialResponse, DateTimeKind.Local); 
-      result.SlaViolationLastAction = this.SlaViolationLastAction == null ? this.SlaViolationLastAction : DateTime.SpecifyKind((DateTime)this.SlaViolationLastAction, DateTimeKind.Local); 
-      result.SlaViolationTimeClosed = this.SlaViolationTimeClosed == null ? this.SlaViolationTimeClosed : DateTime.SpecifyKind((DateTime)this.SlaViolationTimeClosed, DateTimeKind.Local); 
-      result.LastWarningTime = this.LastWarningTime == null ? this.LastWarningTime : DateTime.SpecifyKind((DateTime)this.LastWarningTime, DateTimeKind.Local); 
-      result.LastViolationTime = this.LastViolationTime == null ? this.LastViolationTime : DateTime.SpecifyKind((DateTime)this.LastViolationTime, DateTimeKind.Local); 
-      result.DateClosed = this.DateClosed == null ? this.DateClosed : DateTime.SpecifyKind((DateTime)this.DateClosed, DateTimeKind.Local); 
+      result.SlaWarningInitialResponse = this.SlaWarningInitialResponseUtc == null ? this.SlaWarningInitialResponseUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningInitialResponseUtc, DateTimeKind.Utc); 
+      result.SlaWarningLastAction = this.SlaWarningLastActionUtc == null ? this.SlaWarningLastActionUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningLastActionUtc, DateTimeKind.Utc); 
+      result.SlaWarningTimeClosed = this.SlaWarningTimeClosedUtc == null ? this.SlaWarningTimeClosedUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningTimeClosedUtc, DateTimeKind.Utc); 
+      result.SlaViolationInitialResponse = this.SlaViolationInitialResponseUtc == null ? this.SlaViolationInitialResponseUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationInitialResponseUtc, DateTimeKind.Utc); 
+      result.SlaViolationLastAction = this.SlaViolationLastActionUtc == null ? this.SlaViolationLastActionUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationLastActionUtc, DateTimeKind.Utc); 
+      result.SlaViolationTimeClosed = this.SlaViolationTimeClosedUtc == null ? this.SlaViolationTimeClosedUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationTimeClosedUtc, DateTimeKind.Utc); 
+      result.LastWarningTime = this.LastWarningTimeUtc == null ? this.LastWarningTimeUtc : DateTime.SpecifyKind((DateTime)this.LastWarningTimeUtc, DateTimeKind.Utc); 
+      result.LastViolationTime = this.LastViolationTimeUtc == null ? this.LastViolationTimeUtc : DateTime.SpecifyKind((DateTime)this.LastViolationTimeUtc, DateTimeKind.Utc); 
+      result.DateClosed = this.DateClosedUtc == null ? this.DateClosedUtc : DateTime.SpecifyKind((DateTime)this.DateClosedUtc, DateTimeKind.Utc); 
        
       return result;
     }	

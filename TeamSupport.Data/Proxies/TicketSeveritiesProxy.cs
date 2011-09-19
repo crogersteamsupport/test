@@ -37,8 +37,6 @@ namespace TeamSupport.Data
       result.Name = this.Name;
       result.TicketSeverityID = this.TicketSeverityID;
        
-      //result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      //result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
        
        
       return result;

@@ -31,7 +31,7 @@ namespace TeamSupport.Data
       result.TicketID = this.TicketID;
       result.UserTicketStatusID = this.UserTicketStatusID;
        
-      result.DateRead = DateTime.SpecifyKind(this.DateRead, DateTimeKind.Local);
+      result.DateRead = DateTime.SpecifyKind(this.DateReadUtc, DateTimeKind.Utc);
        
        
       return result;

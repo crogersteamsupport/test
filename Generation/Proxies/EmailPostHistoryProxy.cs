@@ -57,7 +57,7 @@ namespace TeamSupport.Data
       result.EmailPostType = this.EmailPostType;
       result.EmailPostID = this.EmailPostID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
        
       return result;

@@ -46,6 +46,17 @@ namespace TeamSupport.Data
       return ((FirstName.Trim() + LastName.Trim()).ToLower() == name) || ((LastName.Trim() + FirstName.Trim()).ToLower() == name);
     }
 
+    public void UpdatePing()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "UPDATE Users SET LastPing = GETUTCDATE() WHERE UserID = @UserID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@UserID", UserID);
+        Collection.ExecuteNonQuery(command, "Users");
+      }
+    }
+
   }
   
   public partial class Users
@@ -255,7 +266,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT *, LastName + ', ' + FirstName AS DisplayName FROM Users WHERE OrganizationID = @OrganizationID AND (@ActiveOnly = 0 OR IsActive = 1) AND (MarkDeleted = 0) ORDER BY LastName, FirstName";
+        command.CommandText = "SELECT *, LastName + ', ' + FirstName AS DisplayName FROM Users WHERE OrganizationID = @OrganizationID AND (@ActiveOnly = 0 OR IsActive = 1) AND (MarkDeleted = 0) ORDER BY FirstName, LastName";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);

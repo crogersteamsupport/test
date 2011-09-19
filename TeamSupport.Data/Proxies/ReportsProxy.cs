@@ -24,6 +24,7 @@ namespace TeamSupport.Data
     [DataMember] public int? ReportSubcategoryID { get; set; }
     [DataMember] public string QueryObject { get; set; }
     [DataMember] public string ExternalURL { get; set; }
+    [DataMember] public string LastSqlExecuted { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
@@ -38,6 +39,7 @@ namespace TeamSupport.Data
       ReportProxy result = new ReportProxy();
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
+      result.LastSqlExecuted = this.LastSqlExecuted;
       result.ExternalURL = this.ExternalURL;
       result.QueryObject = this.QueryObject;
       result.ReportSubcategoryID = this.ReportSubcategoryID;
@@ -50,8 +52,8 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.ReportID = this.ReportID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
        
       return result;

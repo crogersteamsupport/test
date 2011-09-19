@@ -37,7 +37,7 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.ApiLogID = this.ApiLogID;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
        
       return result;

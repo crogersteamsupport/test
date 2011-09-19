@@ -84,6 +84,11 @@ namespace TeamSupport.Data
       get { return Row["DateLeft"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateLeft"]) : null; }
       set { Row["DateLeft"] = CheckNull(value); }
     }
+
+    public DateTime? DateLeftUtc
+    {
+      get { return Row["DateLeft"] != DBNull.Value ? (DateTime?)Row["DateLeft"] : null; }
+    }
     
 
     
@@ -92,17 +97,32 @@ namespace TeamSupport.Data
       get { return DateToLocal((DateTime)Row["DateJoined"]); }
       set { Row["DateJoined"] = CheckNull(value); }
     }
+
+    public DateTime DateJoinedUtc
+    {
+      get { return (DateTime)Row["DateJoined"]; }
+    }
     
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
       set { Row["DateCreated"] = CheckNull(value); }
     }
+
+    public DateTime DateCreatedUtc
+    {
+      get { return (DateTime)Row["DateCreated"]; }
+    }
     
     public DateTime LastTyped
     {
       get { return DateToLocal((DateTime)Row["LastTyped"]); }
       set { Row["LastTyped"] = CheckNull(value); }
+    }
+
+    public DateTime LastTypedUtc
+    {
+      get { return (DateTime)Row["LastTyped"]; }
     }
     
 

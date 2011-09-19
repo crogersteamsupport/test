@@ -51,10 +51,10 @@ namespace TeamSupport.Data
       result.ActionID = this.ActionID;
       result.DisplayName = this.DisplayName;
        
-      result.DateCreated = DateTime.SpecifyKind(this.DateCreated, DateTimeKind.Local);
-      result.DateModified = DateTime.SpecifyKind(this.DateModified, DateTimeKind.Local);
+      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
+      result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
-      result.DateStarted = this.DateStarted == null ? this.DateStarted : DateTime.SpecifyKind((DateTime)this.DateStarted, DateTimeKind.Local); 
+      result.DateStarted = this.DateStartedUtc == null ? this.DateStartedUtc : DateTime.SpecifyKind((DateTime)this.DateStartedUtc, DateTimeKind.Utc); 
        
       return result;
     }	

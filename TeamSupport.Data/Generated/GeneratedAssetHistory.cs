@@ -108,11 +108,21 @@ namespace TeamSupport.Data
       get { return Row["ActionTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["ActionTime"]) : null; }
       set { Row["ActionTime"] = CheckNull(value); }
     }
+
+    public DateTime? ActionTimeUtc
+    {
+      get { return Row["ActionTime"] != DBNull.Value ? (DateTime?)Row["ActionTime"] : null; }
+    }
     
     public DateTime? DateCreated
     {
       get { return Row["DateCreated"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateCreated"]) : null; }
       set { Row["DateCreated"] = CheckNull(value); }
+    }
+
+    public DateTime? DateCreatedUtc
+    {
+      get { return Row["DateCreated"] != DBNull.Value ? (DateTime?)Row["DateCreated"] : null; }
     }
     
 
