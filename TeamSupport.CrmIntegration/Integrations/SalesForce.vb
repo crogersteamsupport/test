@@ -753,19 +753,21 @@ Namespace TeamSupport
                 End Try
             End Sub
 
-
-
             Private Sub UpdateCustomValue(ByVal customFieldID As Integer, ByVal RefID As Integer, ByVal Value As String)
+                Log.Write("updating custom value with " & customFieldID & ", " & RefID & ", " & Value)
                 Dim findCustom As New CustomValues(User)
                 Dim thisCustom As CustomValue
 
                 findCustom.LoadByFieldID(customFieldID, RefID)
                 If findCustom.Count > 0 Then
                     thisCustom = findCustom(0)
+                    Log.Write("updating existing custom value...")
+
                 Else
                     thisCustom = (New CustomValues(User)).AddNewCustomValue()
                     thisCustom.CustomFieldID = customFieldID
                     thisCustom.RefID = RefID
+                    Log.Write("adding new custom value...")
                 End If
 
                 thisCustom.Value = Value
