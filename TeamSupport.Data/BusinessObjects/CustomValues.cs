@@ -186,13 +186,12 @@ cf.IsRequired,
 cf.OrganizationID, 
 cf.CustomFieldID
 FROM CustomFields cf LEFT JOIN CustomValues cv on cv.CustomFieldID = cf.CustomFieldID 
-WHERE cf.OrganizationID = @OrganizationID
-AND cv.RefID=@RefID
-AND cf.CustomFieldID = @CustomFieldID";
+WHERE cf.CustomFieldID = @CustomFieldID
+AND cv.RefID=@RefID";
+
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefID", refID);
         command.Parameters.AddWithValue("@CustomFieldID", customFieldID);
-        command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
         Fill(command);
       }
     }
