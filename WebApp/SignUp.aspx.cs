@@ -106,7 +106,7 @@ public partial class SignUp : System.Web.UI.Page
     organization.BusinessDayEnd = new DateTime(2010, 1, 1, 17, 0, 0, DateTimeKind.Utc);
     organization.ExtraStorageUnits = 0;
     organization.UserSeats = 100;
-    organization.ChatSeats = 100;
+    organization.ChatSeats = 999999;
     organization.APIRequestLimit = 5000;
     organization.CultureName = "en-US";
     organization.PromoCode = textPromoCode.Text;
@@ -210,9 +210,6 @@ the loop - including the customer base - and dramatically increases customer sat
     portalOption.DisplayGroups = true;
     portalOption.DisplayProducts = true;
     portalOptions.Save();
-
-
-
 
     EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, password);
     EmailPosts.SendSignUpNotification(loginUser, user.UserID);

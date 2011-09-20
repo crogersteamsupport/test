@@ -34,7 +34,8 @@ SELECT  L.request_session_id AS SPID,
         ES.host_name AS HostName,
         TST.is_user_transaction as IsUserTransaction,
         AT.name as TransactionName,
-        CN.auth_scheme as AuthenticationMethod
+        CN.auth_scheme as AuthenticationMethod,
+        GETDATE() AS DateCreated
 FROM    sys.dm_tran_locks L
         JOIN sys.partitions P ON P.hobt_id = L.resource_associated_entity_id
         JOIN sys.objects O ON O.object_id = P.object_id
@@ -44,7 +45,7 @@ FROM    sys.dm_tran_locks L
         JOIN sys.dm_exec_connections CN ON CN.session_id = ES.session_id
         CROSS APPLY sys.dm_exec_sql_text(CN.most_recent_sql_handle) AS ST
 WHERE   resource_database_id = 5
-ORDER BY L.request_session_id
+ORDER BY L.request_session_id DESC
 ", connection);
 
           command.ExecuteNonQuery();

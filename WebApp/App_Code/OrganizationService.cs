@@ -169,8 +169,8 @@ namespace TSWebServices
 
       if (isCustom)
       {
-        //CustomField custom = CustomFields.GetCustomField(link.Collection.LoginUser, tsFieldID);
-        field.TSFieldName = null;
+        CustomField custom = CustomFields.GetCustomField(link.Collection.LoginUser, tsFieldID);
+        field.TSFieldName = custom.Name;
       }
       else
       {
