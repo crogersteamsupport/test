@@ -17,6 +17,9 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
   <div>
+    <div>
+    <img src="Resources_147/Images/support_desk_application_price_boxes_nobuttons.jpg" />
+    </div>
     <div style="width: 500px; float: left; text-align: left; padding-left: 10px;">
   <div style="font-size: 24px; padding: 0 0 10px 10px;">Setup your 14 day free trial</div>
       <table cellpadding="0" cellspacing="10" border="0" width="100%">

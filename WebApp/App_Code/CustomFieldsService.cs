@@ -38,7 +38,7 @@ namespace TSWebServices
 
 
     [WebMethod]
-    public FieldItem[] GetAllFields(ReferenceType refType, int? auxID)
+    public FieldItem[] GetAllFields(ReferenceType refType, int? auxID, bool isReadOnly)
     {
       List<FieldItem> items = new List<FieldItem>();
 
@@ -54,7 +54,7 @@ namespace TSWebServices
 
 
       ReportTableFields fields = new ReportTableFields(TSAuthentication.GetLoginUser());
-      fields.LoadByReportTableID(tableID);
+      fields.LoadByReportTableID(tableID, isReadOnly);
 
       CustomFields customs = new CustomFields(fields.LoginUser);
       customs.LoadByReferenceType(TSAuthentication.OrganizationID, refType, auxID);

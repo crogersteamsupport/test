@@ -21,6 +21,7 @@ namespace TeamSupport.ServiceTestApplication
     EmailSender _emailSender;
     SlaProcessor _slaProcessor;
     Indexer _indexer;
+    IndexMaintenance _indexMaint;
     CrmPool _crmPool;
     
     public Form1()
@@ -47,6 +48,7 @@ namespace TeamSupport.ServiceTestApplication
       if (_emailSender != null) _emailSender.Stop();
       if (_slaProcessor != null) _slaProcessor.Stop();
       if (_indexer != null) _indexer.Stop();
+      if (_indexMaint != null) _indexMaint.Stop();
       if (_crmPool != null) _crmPool.Stop();
     }
 
@@ -105,6 +107,11 @@ namespace TeamSupport.ServiceTestApplication
     private void btnCrmPool_Click(object sender, EventArgs e)
     {
       if (_crmPool == null || _crmPool.IsStopped) StartProcess(_crmPool = new CrmPool(), sender as Button); else StopProcess(_crmPool, sender as Button);
+    }
+
+    private void btnIndexMaint_Click(object sender, EventArgs e)
+    {
+      if (_indexMaint == null || _indexMaint.IsStopped) StartProcess(_indexMaint = new IndexMaintenance(), sender as Button); else StopProcess(_indexMaint, sender as Button);
     }
 
 

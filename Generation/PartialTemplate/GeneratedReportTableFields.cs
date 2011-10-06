@@ -48,6 +48,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool IsReadOnly
+    {
+      get { return (bool)Row["IsReadOnly"]; }
+      set { Row["IsReadOnly"] = CheckNull(value); }
+    }
+    
     public bool IsVisible
     {
       get { return (bool)Row["IsVisible"]; }
@@ -187,7 +193,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportTableFields] SET     [ReportTableID] = @ReportTableID,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [Description] = @Description,    [LookupTableID] = @LookupTableID  WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportTableFields] SET     [ReportTableID] = @ReportTableID,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [Description] = @Description,    [LookupTableID] = @LookupTableID,    [IsReadOnly] = @IsReadOnly  WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportTableFieldID", SqlDbType.Int, 4);
@@ -253,13 +259,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IsReadOnly", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportTableFields] (    [ReportTableID],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [Description],    [LookupTableID]) VALUES ( @ReportTableID, @FieldName, @Alias, @DataType, @Size, @IsVisible, @Description, @LookupTableID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportTableFields] (    [ReportTableID],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [Description],    [LookupTableID],    [IsReadOnly]) VALUES ( @ReportTableID, @FieldName, @Alias, @DataType, @Size, @IsVisible, @Description, @LookupTableID, @IsReadOnly); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("IsReadOnly", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("LookupTableID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -429,7 +449,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportTableFieldID], [ReportTableID], [FieldName], [Alias], [DataType], [Size], [IsVisible], [Description], [LookupTableID] FROM [dbo].[ReportTableFields] WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportTableFieldID], [ReportTableID], [FieldName], [Alias], [DataType], [Size], [IsVisible], [Description], [LookupTableID], [IsReadOnly] FROM [dbo].[ReportTableFields] WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportTableFieldID", reportTableFieldID);
         Fill(command);

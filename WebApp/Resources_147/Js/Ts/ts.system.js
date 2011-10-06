@@ -78,6 +78,7 @@ Ts.Services = {};
     this.Organization = null;
     this.Culture = null;
     this.ChatUserSettings = null;
+    this.AppDomain = null;
     //this.TicketTypes = null;
 
     var self = this;
@@ -107,7 +108,10 @@ Ts.Services = {};
             self.Culture = result;
             Ts.Services.System.GetCurrentUserChatSettings(function (result) {
               self.ChatUserSettings = result;
-              if (callback) { callback(self.User); }
+              Ts.Services.System.GetAppDomain(function(result) { 
+                self.AppDomain = result;
+                if (callback) { callback(self.User); }
+              });
             });
           });
         });

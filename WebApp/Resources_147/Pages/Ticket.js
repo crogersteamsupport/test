@@ -700,9 +700,10 @@ $(document).ready(function () {
       autoresize_on_init: true,
       spellchecker_rpc_url: "TinyMCEHandler.aspx?module=SpellChecker",
       gecko_spellcheck: true,
+      extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
       convert_urls: true,
+      remove_script_host: false,
       relative_urls: false,
-      //content_css: "../Css/jquery-ui-latest.custom.css,../Css/ts.ui.css,../Css/editor.css",
       content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
       body_class: "ui-widget ui-widget-content",
 
@@ -718,7 +719,8 @@ $(document).ready(function () {
             top.Ts.MainPage.selectTicket(null, function (ticketID) {
               top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
                 ed.focus();
-                var html = '<a href="https://app.teamsupport.com?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
+
+                var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
                 ed.selection.setContent(html);
                 ed.execCommand('mceAutoResize');
                 ed.focus();
@@ -1927,7 +1929,7 @@ $(document).ready(function () {
       if (info.Ticket.IsFlagged === true) $('#btnFlag .ts-toolbar-caption').text('Unflag');
 
 
-      var ticketUrl = window.location.href.replace('Resources_146/Pages/Ticket.html', '');
+      var ticketUrl = window.location.href.replace('Resources_147/Pages/Ticket.html', '');
       $('<a>')
       .attr('href', ticketUrl)
       .attr('target', '_blank')

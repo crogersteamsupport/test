@@ -152,7 +152,7 @@ AdminInt = function () {
 
   function loadFields(select, refType) {
     select.empty();
-    top.Ts.Services.CustomFields.GetAllFields(refType, null, function (fields) {
+    top.Ts.Services.CustomFields.GetAllFields(refType, null, false, function (fields) {
       for (var i = 0; i < fields.length; i++) {
         $('<option>')
           .text(fields[i].Name)

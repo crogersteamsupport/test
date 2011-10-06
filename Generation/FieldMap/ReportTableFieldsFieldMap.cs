@@ -22,6 +22,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("IsVisible", "IsVisible", false, false, false);
       _fieldMap.AddMap("Description", "Description", false, false, false);
       _fieldMap.AddMap("LookupTableID", "LookupTableID", false, false, false);
+      _fieldMap.AddMap("IsReadOnly", "IsReadOnly", false, false, false);
             
     }
   }

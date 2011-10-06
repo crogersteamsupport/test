@@ -2719,7 +2719,8 @@ AS
     [Size],
     [IsVisible],
     [Description],
-    [LookupTableID]
+    [LookupTableID],
+    [IsReadOnly]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -2738,6 +2739,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @IsVisible bit,
   @Description varchar(1000),
   @LookupTableID int,
+  @IsReadOnly bit,
   @Identity int OUT
 )
 AS
@@ -2751,7 +2753,8 @@ AS
     [Size],
     [IsVisible],
     [Description],
-    [LookupTableID])
+    [LookupTableID],
+    [IsReadOnly])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -2760,7 +2763,8 @@ AS
     @Size,
     @IsVisible,
     @Description,
-    @LookupTableID)
+    @LookupTableID,
+    @IsReadOnly)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -2779,7 +2783,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @Size int,
   @IsVisible bit,
   @Description varchar(1000),
-  @LookupTableID int
+  @LookupTableID int,
+  @IsReadOnly bit
 )
 AS
   SET NOCOUNT OFF;
@@ -2792,7 +2797,8 @@ AS
     [Size] = @Size,
     [IsVisible] = @IsVisible,
     [Description] = @Description,
-    [LookupTableID] = @LookupTableID
+    [LookupTableID] = @LookupTableID,
+    [IsReadOnly] = @IsReadOnly
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -10063,7 +10069,10 @@ AS
     [BasicPortalDirections],
     [DeflectionEnabled],
     [DisplayForum],
-    [DisplayFooter]
+    [DisplayFooter],
+    [DisplayPortalPhone],
+    [DisplayAdvProducts],
+    [DisplayAdvKB]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -10098,6 +10107,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @DeflectionEnabled bit,
   @DisplayForum bit,
   @DisplayFooter bit,
+  @DisplayPortalPhone bit,
+  @DisplayAdvProducts bit,
+  @DisplayAdvKB bit,
   @Identity int OUT
 )
 AS
@@ -10127,7 +10139,10 @@ AS
     [BasicPortalDirections],
     [DeflectionEnabled],
     [DisplayForum],
-    [DisplayFooter])
+    [DisplayFooter],
+    [DisplayPortalPhone],
+    [DisplayAdvProducts],
+    [DisplayAdvKB])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -10152,7 +10167,10 @@ AS
     @BasicPortalDirections,
     @DeflectionEnabled,
     @DisplayForum,
-    @DisplayFooter)
+    @DisplayFooter,
+    @DisplayPortalPhone,
+    @DisplayAdvProducts,
+    @DisplayAdvKB)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -10186,7 +10204,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @BasicPortalDirections varchar(1000),
   @DeflectionEnabled bit,
   @DisplayForum bit,
-  @DisplayFooter bit
+  @DisplayFooter bit,
+  @DisplayPortalPhone bit,
+  @DisplayAdvProducts bit,
+  @DisplayAdvKB bit
 )
 AS
   SET NOCOUNT OFF;
@@ -10214,7 +10235,10 @@ AS
     [BasicPortalDirections] = @BasicPortalDirections,
     [DeflectionEnabled] = @DeflectionEnabled,
     [DisplayForum] = @DisplayForum,
-    [DisplayFooter] = @DisplayFooter
+    [DisplayFooter] = @DisplayFooter,
+    [DisplayPortalPhone] = @DisplayPortalPhone,
+    [DisplayAdvProducts] = @DisplayAdvProducts,
+    [DisplayAdvKB] = @DisplayAdvKB
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -14478,7 +14502,8 @@ AS
     [Size],
     [IsVisible],
     [Description],
-    [LookupTableID]
+    [LookupTableID],
+    [IsReadOnly]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -14497,6 +14522,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @IsVisible bit,
   @Description varchar(1000),
   @LookupTableID int,
+  @IsReadOnly bit,
   @Identity int OUT
 )
 AS
@@ -14510,7 +14536,8 @@ AS
     [Size],
     [IsVisible],
     [Description],
-    [LookupTableID])
+    [LookupTableID],
+    [IsReadOnly])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -14519,7 +14546,8 @@ AS
     @Size,
     @IsVisible,
     @Description,
-    @LookupTableID)
+    @LookupTableID,
+    @IsReadOnly)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -14538,7 +14566,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @Size int,
   @IsVisible bit,
   @Description varchar(1000),
-  @LookupTableID int
+  @LookupTableID int,
+  @IsReadOnly bit
 )
 AS
   SET NOCOUNT OFF;
@@ -14551,7 +14580,8 @@ AS
     [Size] = @Size,
     [IsVisible] = @IsVisible,
     [Description] = @Description,
-    [LookupTableID] = @LookupTableID
+    [LookupTableID] = @LookupTableID,
+    [IsReadOnly] = @IsReadOnly
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -21822,7 +21852,10 @@ AS
     [BasicPortalDirections],
     [DeflectionEnabled],
     [DisplayForum],
-    [DisplayFooter]
+    [DisplayFooter],
+    [DisplayPortalPhone],
+    [DisplayAdvProducts],
+    [DisplayAdvKB]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -21857,6 +21890,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @DeflectionEnabled bit,
   @DisplayForum bit,
   @DisplayFooter bit,
+  @DisplayPortalPhone bit,
+  @DisplayAdvProducts bit,
+  @DisplayAdvKB bit,
   @Identity int OUT
 )
 AS
@@ -21886,7 +21922,10 @@ AS
     [BasicPortalDirections],
     [DeflectionEnabled],
     [DisplayForum],
-    [DisplayFooter])
+    [DisplayFooter],
+    [DisplayPortalPhone],
+    [DisplayAdvProducts],
+    [DisplayAdvKB])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -21911,7 +21950,10 @@ AS
     @BasicPortalDirections,
     @DeflectionEnabled,
     @DisplayForum,
-    @DisplayFooter)
+    @DisplayFooter,
+    @DisplayPortalPhone,
+    @DisplayAdvProducts,
+    @DisplayAdvKB)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -21945,7 +21987,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @BasicPortalDirections varchar(1000),
   @DeflectionEnabled bit,
   @DisplayForum bit,
-  @DisplayFooter bit
+  @DisplayFooter bit,
+  @DisplayPortalPhone bit,
+  @DisplayAdvProducts bit,
+  @DisplayAdvKB bit
 )
 AS
   SET NOCOUNT OFF;
@@ -21973,7 +22018,10 @@ AS
     [BasicPortalDirections] = @BasicPortalDirections,
     [DeflectionEnabled] = @DeflectionEnabled,
     [DisplayForum] = @DisplayForum,
-    [DisplayFooter] = @DisplayFooter
+    [DisplayFooter] = @DisplayFooter,
+    [DisplayPortalPhone] = @DisplayPortalPhone,
+    [DisplayAdvProducts] = @DisplayAdvProducts,
+    [DisplayAdvKB] = @DisplayAdvKB
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -26237,7 +26285,8 @@ AS
     [Size],
     [IsVisible],
     [Description],
-    [LookupTableID]
+    [LookupTableID],
+    [IsReadOnly]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -26256,6 +26305,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @IsVisible bit,
   @Description varchar(1000),
   @LookupTableID int,
+  @IsReadOnly bit,
   @Identity int OUT
 )
 AS
@@ -26269,7 +26319,8 @@ AS
     [Size],
     [IsVisible],
     [Description],
-    [LookupTableID])
+    [LookupTableID],
+    [IsReadOnly])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -26278,7 +26329,8 @@ AS
     @Size,
     @IsVisible,
     @Description,
-    @LookupTableID)
+    @LookupTableID,
+    @IsReadOnly)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -26297,7 +26349,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @Size int,
   @IsVisible bit,
   @Description varchar(1000),
-  @LookupTableID int
+  @LookupTableID int,
+  @IsReadOnly bit
 )
 AS
   SET NOCOUNT OFF;
@@ -26310,7 +26363,8 @@ AS
     [Size] = @Size,
     [IsVisible] = @IsVisible,
     [Description] = @Description,
-    [LookupTableID] = @LookupTableID
+    [LookupTableID] = @LookupTableID,
+    [IsReadOnly] = @IsReadOnly
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -33581,7 +33635,10 @@ AS
     [BasicPortalDirections],
     [DeflectionEnabled],
     [DisplayForum],
-    [DisplayFooter]
+    [DisplayFooter],
+    [DisplayPortalPhone],
+    [DisplayAdvProducts],
+    [DisplayAdvKB]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -33616,6 +33673,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @DeflectionEnabled bit,
   @DisplayForum bit,
   @DisplayFooter bit,
+  @DisplayPortalPhone bit,
+  @DisplayAdvProducts bit,
+  @DisplayAdvKB bit,
   @Identity int OUT
 )
 AS
@@ -33645,7 +33705,10 @@ AS
     [BasicPortalDirections],
     [DeflectionEnabled],
     [DisplayForum],
-    [DisplayFooter])
+    [DisplayFooter],
+    [DisplayPortalPhone],
+    [DisplayAdvProducts],
+    [DisplayAdvKB])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -33670,7 +33733,10 @@ AS
     @BasicPortalDirections,
     @DeflectionEnabled,
     @DisplayForum,
-    @DisplayFooter)
+    @DisplayFooter,
+    @DisplayPortalPhone,
+    @DisplayAdvProducts,
+    @DisplayAdvKB)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -33704,7 +33770,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @BasicPortalDirections varchar(1000),
   @DeflectionEnabled bit,
   @DisplayForum bit,
-  @DisplayFooter bit
+  @DisplayFooter bit,
+  @DisplayPortalPhone bit,
+  @DisplayAdvProducts bit,
+  @DisplayAdvKB bit
 )
 AS
   SET NOCOUNT OFF;
@@ -33732,7 +33801,10 @@ AS
     [BasicPortalDirections] = @BasicPortalDirections,
     [DeflectionEnabled] = @DeflectionEnabled,
     [DisplayForum] = @DisplayForum,
-    [DisplayFooter] = @DisplayFooter
+    [DisplayFooter] = @DisplayFooter,
+    [DisplayPortalPhone] = @DisplayPortalPhone,
+    [DisplayAdvProducts] = @DisplayAdvProducts,
+    [DisplayAdvKB] = @DisplayAdvKB
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -37996,7 +38068,8 @@ AS
     [Size],
     [IsVisible],
     [Description],
-    [LookupTableID]
+    [LookupTableID],
+    [IsReadOnly]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -38015,6 +38088,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @IsVisible bit,
   @Description varchar(1000),
   @LookupTableID int,
+  @IsReadOnly bit,
   @Identity int OUT
 )
 AS
@@ -38028,7 +38102,8 @@ AS
     [Size],
     [IsVisible],
     [Description],
-    [LookupTableID])
+    [LookupTableID],
+    [IsReadOnly])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -38037,7 +38112,8 @@ AS
     @Size,
     @IsVisible,
     @Description,
-    @LookupTableID)
+    @LookupTableID,
+    @IsReadOnly)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -38056,7 +38132,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @Size int,
   @IsVisible bit,
   @Description varchar(1000),
-  @LookupTableID int
+  @LookupTableID int,
+  @IsReadOnly bit
 )
 AS
   SET NOCOUNT OFF;
@@ -38069,7 +38146,8 @@ AS
     [Size] = @Size,
     [IsVisible] = @IsVisible,
     [Description] = @Description,
-    [LookupTableID] = @LookupTableID
+    [LookupTableID] = @LookupTableID,
+    [IsReadOnly] = @IsReadOnly
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -45340,7 +45418,10 @@ AS
     [BasicPortalDirections],
     [DeflectionEnabled],
     [DisplayForum],
-    [DisplayFooter]
+    [DisplayFooter],
+    [DisplayPortalPhone],
+    [DisplayAdvProducts],
+    [DisplayAdvKB]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -45375,6 +45456,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @DeflectionEnabled bit,
   @DisplayForum bit,
   @DisplayFooter bit,
+  @DisplayPortalPhone bit,
+  @DisplayAdvProducts bit,
+  @DisplayAdvKB bit,
   @Identity int OUT
 )
 AS
@@ -45404,7 +45488,10 @@ AS
     [BasicPortalDirections],
     [DeflectionEnabled],
     [DisplayForum],
-    [DisplayFooter])
+    [DisplayFooter],
+    [DisplayPortalPhone],
+    [DisplayAdvProducts],
+    [DisplayAdvKB])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -45429,7 +45516,10 @@ AS
     @BasicPortalDirections,
     @DeflectionEnabled,
     @DisplayForum,
-    @DisplayFooter)
+    @DisplayFooter,
+    @DisplayPortalPhone,
+    @DisplayAdvProducts,
+    @DisplayAdvKB)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -45463,7 +45553,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @BasicPortalDirections varchar(1000),
   @DeflectionEnabled bit,
   @DisplayForum bit,
-  @DisplayFooter bit
+  @DisplayFooter bit,
+  @DisplayPortalPhone bit,
+  @DisplayAdvProducts bit,
+  @DisplayAdvKB bit
 )
 AS
   SET NOCOUNT OFF;
@@ -45491,7 +45584,10 @@ AS
     [BasicPortalDirections] = @BasicPortalDirections,
     [DeflectionEnabled] = @DeflectionEnabled,
     [DisplayForum] = @DisplayForum,
-    [DisplayFooter] = @DisplayFooter
+    [DisplayFooter] = @DisplayFooter,
+    [DisplayPortalPhone] = @DisplayPortalPhone,
+    [DisplayAdvProducts] = @DisplayAdvProducts,
+    [DisplayAdvKB] = @DisplayAdvKB
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -49755,7 +49851,8 @@ AS
     [Size],
     [IsVisible],
     [Description],
-    [LookupTableID]
+    [LookupTableID],
+    [IsReadOnly]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -49774,6 +49871,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @IsVisible bit,
   @Description varchar(1000),
   @LookupTableID int,
+  @IsReadOnly bit,
   @Identity int OUT
 )
 AS
@@ -49787,7 +49885,8 @@ AS
     [Size],
     [IsVisible],
     [Description],
-    [LookupTableID])
+    [LookupTableID],
+    [IsReadOnly])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -49796,7 +49895,8 @@ AS
     @Size,
     @IsVisible,
     @Description,
-    @LookupTableID)
+    @LookupTableID,
+    @IsReadOnly)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -49815,7 +49915,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @Size int,
   @IsVisible bit,
   @Description varchar(1000),
-  @LookupTableID int
+  @LookupTableID int,
+  @IsReadOnly bit
 )
 AS
   SET NOCOUNT OFF;
@@ -49828,7 +49929,8 @@ AS
     [Size] = @Size,
     [IsVisible] = @IsVisible,
     [Description] = @Description,
-    [LookupTableID] = @LookupTableID
+    [LookupTableID] = @LookupTableID,
+    [IsReadOnly] = @IsReadOnly
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -57099,7 +57201,10 @@ AS
     [BasicPortalDirections],
     [DeflectionEnabled],
     [DisplayForum],
-    [DisplayFooter]
+    [DisplayFooter],
+    [DisplayPortalPhone],
+    [DisplayAdvProducts],
+    [DisplayAdvKB]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -57134,6 +57239,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @DeflectionEnabled bit,
   @DisplayForum bit,
   @DisplayFooter bit,
+  @DisplayPortalPhone bit,
+  @DisplayAdvProducts bit,
+  @DisplayAdvKB bit,
   @Identity int OUT
 )
 AS
@@ -57163,7 +57271,10 @@ AS
     [BasicPortalDirections],
     [DeflectionEnabled],
     [DisplayForum],
-    [DisplayFooter])
+    [DisplayFooter],
+    [DisplayPortalPhone],
+    [DisplayAdvProducts],
+    [DisplayAdvKB])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -57188,7 +57299,10 @@ AS
     @BasicPortalDirections,
     @DeflectionEnabled,
     @DisplayForum,
-    @DisplayFooter)
+    @DisplayFooter,
+    @DisplayPortalPhone,
+    @DisplayAdvProducts,
+    @DisplayAdvKB)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -57222,7 +57336,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @BasicPortalDirections varchar(1000),
   @DeflectionEnabled bit,
   @DisplayForum bit,
-  @DisplayFooter bit
+  @DisplayFooter bit,
+  @DisplayPortalPhone bit,
+  @DisplayAdvProducts bit,
+  @DisplayAdvKB bit
 )
 AS
   SET NOCOUNT OFF;
@@ -57250,7 +57367,10 @@ AS
     [BasicPortalDirections] = @BasicPortalDirections,
     [DeflectionEnabled] = @DeflectionEnabled,
     [DisplayForum] = @DisplayForum,
-    [DisplayFooter] = @DisplayFooter
+    [DisplayFooter] = @DisplayFooter,
+    [DisplayPortalPhone] = @DisplayPortalPhone,
+    [DisplayAdvProducts] = @DisplayAdvProducts,
+    [DisplayAdvKB] = @DisplayAdvKB
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 

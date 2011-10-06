@@ -24,6 +24,18 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByReportTableID(int reportTableID, bool isReadOnly)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT rtf.*, rt.Alias AS TableAlias FROM ReportTableFields rtf LEFT JOIN ReportTables rt ON rt.ReportTableID = rtf.ReportTableID WHERE rtf.ReportTableID = @ReportTableID AND IsVisible = 1 AND IsReadOnly = @IsReadOnly ORDER BY rtf.Alias";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("ReportTableID", reportTableID);
+        command.Parameters.AddWithValue("IsReadOnly", isReadOnly);
+        Fill(command);
+      }
+    }
+
     public void LoadByReportTableID(int reportTableID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -34,6 +46,7 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
     public void LoadByReportSubcategoryID(int reportSubcategoryID)
     {
       using (SqlCommand command = new SqlCommand())

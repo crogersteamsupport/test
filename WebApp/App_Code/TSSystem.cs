@@ -38,6 +38,13 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public string GetAppDomain()
+    {
+      return Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com");
+    }
+
+
+    [WebMethod]
     public OrganizationProxy GetCurrentOrganization()
     {
       return TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).GetProxy();

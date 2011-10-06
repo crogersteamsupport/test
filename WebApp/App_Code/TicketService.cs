@@ -254,7 +254,8 @@ namespace TSWebServices
         {
           job.Fuzziness = 1;
           job.Request = job.Request + "*";
-          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
+          //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
         }
 
         if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
@@ -312,7 +313,7 @@ namespace TSWebServices
         int num = 0;
         if (!int.TryParse(searchTerm, out num))
         {
-          job.Fuzziness = 1;
+          job.Fuzziness = 0;
           job.Request = job.Request;
           job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
         }

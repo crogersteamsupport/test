@@ -383,7 +383,15 @@ namespace TeamSupport.Data
     {
       SqlCommand command = new SqlCommand();
 
-      string sort = string.Format("[{0}] {1}", filter.SortColumn.Trim(), (filter.SortAsc ? "ASC" : "DESC"));
+      string sort = filter.SortColumn.Trim();
+      switch (sort)
+      {
+        case "Severity": sort = "SeverityPosition"; break;
+        case "Status": sort = "StatusPosition"; break;
+        default: break;
+      }
+
+      sort = string.Format("[{0}] {1}", filter.SortColumn.Trim(), (filter.SortAsc ? "ASC" : "DESC"));
 
       string fields =
         @"

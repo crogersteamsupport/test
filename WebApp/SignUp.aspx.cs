@@ -225,6 +225,7 @@ the loop - including the customer base - and dramatically increases customer sat
     mOrg.Name = tsOrg.Name;
     mOrg.ImportID = tsOrg.OrganizationID.ToString();
     mOrg.HasPortalAccess = true;
+    mOrg.IsActive = true;
     mOrg.Collection.Save();
 
     User mUser = (new Users(tsOrg.Collection.LoginUser)).AddNewUser();
@@ -245,6 +246,52 @@ the loop - including the customer base - and dramatically increases customer sat
     phone.RefType = ReferenceType.Organizations;
     phone.Number = phoneNumber;
     phone.Collection.Save();
+
+    OrganizationProduct op = null;
+    OrganizationProducts ops = new OrganizationProducts(tsOrg.Collection.LoginUser);
+    op = ops.AddNewOrganizationProduct();
+    op.OrganizationID = mOrg.OrganizationID;
+    op.ProductID = 219; //TeamSupport
+    op.ProductVersionID = null;
+    op.IsVisibleOnPortal = true;
+
+    op = ops.AddNewOrganizationProduct();
+    op.OrganizationID = mOrg.OrganizationID;
+    op.ProductID = 233;  //Email Handler
+    op.ProductVersionID = null;
+    op.IsVisibleOnPortal = true;
+
+    op = ops.AddNewOrganizationProduct();
+    op.OrganizationID = mOrg.OrganizationID;
+    op.ProductID = 234;  // Adv Portal
+    op.ProductVersionID = null;
+    op.IsVisibleOnPortal = true;
+
+    op = ops.AddNewOrganizationProduct();
+    op.OrganizationID = mOrg.OrganizationID;
+    op.ProductID = 1068;  // Basic Portal
+    op.ProductVersionID = null;
+    op.IsVisibleOnPortal = true;
+
+    op = ops.AddNewOrganizationProduct();
+    op.OrganizationID = mOrg.OrganizationID;
+    op.ProductID = 1970;  //Chat
+    op.ProductVersionID = null;
+    op.IsVisibleOnPortal = true;
+
+    op = ops.AddNewOrganizationProduct();
+    op.OrganizationID = mOrg.OrganizationID;
+    op.ProductID = 2580;  // KB
+    op.ProductVersionID = null;
+    op.IsVisibleOnPortal = true;
+
+    op = ops.AddNewOrganizationProduct();
+    op.OrganizationID = mOrg.OrganizationID;
+    op.ProductID = 1877;  // API
+    op.ProductVersionID = null;
+    op.IsVisibleOnPortal = true;
+    ops.Save();
+
 
   }
 

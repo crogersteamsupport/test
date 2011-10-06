@@ -28,6 +28,7 @@ namespace TeamSupport.Service
       _threads.Add(new EmailSender());
       _threads.Add(new SlaProcessor());
       _threads.Add(new Indexer());
+      _threads.Add(new IndexMaintenance());
       _threads.Add(new CrmPool());
       _threads.Add(new TransLocks());
     }

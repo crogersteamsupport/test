@@ -37,6 +37,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DeflectionEnabled", "DeflectionEnabled", false, false, false);
       _fieldMap.AddMap("DisplayForum", "DisplayForum", false, false, false);
       _fieldMap.AddMap("DisplayFooter", "DisplayFooter", false, false, false);
+      _fieldMap.AddMap("DisplayPortalPhone", "DisplayPortalPhone", false, false, false);
+      _fieldMap.AddMap("DisplayAdvProducts", "DisplayAdvProducts", false, false, false);
+      _fieldMap.AddMap("DisplayAdvKB", "DisplayAdvKB", false, false, false);
             
     }
   }
