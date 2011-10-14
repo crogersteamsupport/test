@@ -66,6 +66,8 @@ Ts.Pages.Main.prototype =
       });
     });
 
+
+
     $('.main-header-links a').addClass('ui-state-default ui-corner-all').hover(function (e) { $(this).addClass('ui-state-hover'); }, function (e) { $(this).removeClass('ui-state-hover'); });
 
     $('.main-status-online').click(function () {
@@ -581,6 +583,21 @@ Ts.Pages.Main.prototype =
     .focusout(function () { $(this).val('Search for a ticket...').addClass('main-quick-ticket-blur').removeClass('ui-autocomplete-loading'); })
     .click(function () { $(this).val('').removeClass('main-quick-ticket-blur'); })
     .val('Search for a ticket...');
+
+    top.Ts.Services.Users.ShowIntroVideo(function (result) {
+      var overrideIntro = Ts.Utils.getQueryValue('intro');
+      if (result === false && !(overrideIntro != null && overrideIntro == 1)) return;
+      var div = $('<div>')
+        .append('<iframe width="420" height="315" src="https://www.youtube.com/embed/BVl7zLVzT7E?rel=0&autoplay=1" frameborder="0" allowfullscreen></iframe>')
+        .appendTo('body');
+
+      div.dialog({
+        width: 'auto',
+        height: 'auto',
+        title: 'Introduction',
+        resizable: false
+      });
+    });
 
   }, // end init
 

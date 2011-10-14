@@ -371,7 +371,7 @@ function GetSelectUserDialog(refID, refType) {
     return wnd;
 }
 
-function GetCustomFieldDialog(customFieldID, refType, auxID) {
+function GetCustomFieldDialog(customFieldID, refType, auxID, catID) {
     var manager = GetRadWindowManager();
     var wnd = manager.getWindowByName('wndCustomField');
     var url = 'Dialogs/CustomField.aspx?'
@@ -384,7 +384,12 @@ function GetCustomFieldDialog(customFieldID, refType, auxID) {
     }
     else {
         url = url + 'RefType=' + refType;
+      }
+
+    if (catID != null) {
+      url = url + '&CatID=' + catID;
     }
+
     wnd.setSize(400, 500);
 
     wnd.setUrl(url);

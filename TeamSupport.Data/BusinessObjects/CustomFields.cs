@@ -242,23 +242,36 @@ namespace TeamSupport.Data
       fields1.Save();
     }
 
-    public virtual int GetMaxPosition(int organizationID, ReferenceType refType, int auxID)
+    public virtual int GetMaxPosition(int organizationID, ReferenceType refType, int auxID, int? customFieldCategoryID)
     {
       int position = -1;
 
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT MAX(Position) FROM CustomFields WHERE (RefType = @RefType) AND (AuxID = @AuxID OR AuxID < 0) AND (OrganizationID = @OrganizationID)";
+        command.CommandText = 
+@"SELECT MAX(Position) 
+FROM CustomFields 
+WHERE (RefType = @RefType) 
+AND (AuxID = @AuxID OR AuxID < 0) 
+AND (OrganizationID = @OrganizationID) 
+AND (ISNULL(CustomFieldCategoryID, -1) = @CustomFieldCategoryID)";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@RefType", refType);
         command.Parameters.AddWithValue("@AuxID", auxID);
-        
+        command.Parameters.AddWithValue("@CustomFieldCategoryID", customFieldCategoryID == null ? -1 : (int)customFieldCategoryID);
+
         object o = ExecuteScalar(command);
         if (o == DBNull.Value) return -1;
         position = (int)o;
       }
       return position;
+      
+    }
+
+    public virtual int GetMaxPosition(int organizationID, ReferenceType refType, int auxID)
+    {
+      return GetMaxPosition(organizationID, refType, auxID, null);
     }
 
     

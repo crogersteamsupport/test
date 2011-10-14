@@ -3,7 +3,31 @@
 
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Charting" TagPrefix="cc1" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server"></asp:Content>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
+  <style type="text/css">
+  .customfield-cat {margin: 10px 5px 5px 10px; padding: 0; line-height:16px; padding-bottom: 1em; cursor:pointer;}
+  .customfield-cat .caption { font-weight: bold; font-size: 1.2em; float:left;}
+  .customfield-cat .ui-icon { float:left; margin-right: .25em;}
+  .ui-widget-content.ts-separator { height: 1px; border-bottom: none; border-left:none; border-right:none; clear:both; margin: 7px 5px 10px 15px;  }
+  </style>
+
+  <script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+      $('.customfield-cat').click(function (e) {
+        $(this).next().toggle().next().toggle();
+        if ($(this).next().is(':visible')) {
+          $(this).find('.ui-icon').addClass('ui-icon-triangle-1-s').removeClass('ui-icon-triangle-1-e');
+        }
+        else {
+          $(this).find('.ui-icon').addClass('ui-icon-triangle-1-e').removeClass('ui-icon-triangle-1-s');
+        }
+      });
+
+
+
+    });
+  </script>
+</asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
   <telerik:RadSplitter ID="splMain" runat="server" Width="100%" Height="100%" BorderSize="0"
     BackColor="White" VisibleDuringInit="false">
@@ -189,6 +213,7 @@
                             </div>
                           </ItemTemplate>
                         </asp:Repeater>
+                        <asp:Literal ID="litProperties" runat="server"></asp:Literal>
                       </div>
                     </div>
                   </div>

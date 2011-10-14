@@ -72,6 +72,10 @@ pre {border: 1px solid #92B4DE; margin: 1em 0; padding: .5em .5em; font-family:c
 label.checkbox { vertical-align: middle; margin: 0px; top:0; font-weight:bold; display:inline; }    
 input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; width: auto;}
 
+.label { padding: 0 0 .2em 0; display:block; font-size:1em; font-weight:bold; }
+.label-block { float:left; padding-right: 1em; vertical-align:middle;}
+
+
 .ts-loading { background-color: transparent; background-image: url('../images/loading/loading2.gif'); background-repeat: no-repeat;  background-position: 50% 25%; height:100%; min-height: 200px; }
 
 .mceLayout .mceIframeContainer { background: #fff;}
@@ -91,7 +95,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .ui-widget-content.ts-separator { height: 1px; border-bottom: none; border-left:none; border-right:none; margin-bottom: .5em; clear:both; }
 
 /* Old, but used in automation admin */
-.ts-section { margin: .5em .5em; padding: 0 .5em .5em .5em; border: none; clear:both;}
+.ts-section { margin: .5em .5em; padding: .5em .5em .5em .5em; border: none; clear:both;}
 .ts-side-widget { background-color: #fff; }
 .ts-content { background-image:none; border:none; overflow:auto; background-color: #fff;} 
 .ts-content h1 { padding: .5em 0 .5em 0; font-size: 1.5em; }

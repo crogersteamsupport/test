@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace TSWebServices
 {
@@ -72,7 +73,127 @@ namespace TSWebServices
       return items.ToArray();
     }
 
+    [WebMethod]
+    public CustomFieldProxy[] GetCustomFields(ReferenceType refType, int? auxID)
+    {
+      CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+      fields.LoadByReferenceType(TSAuthentication.OrganizationID, refType, auxID);
+      return fields.GetCustomFieldProxies();
+      
+    }
+
+    [WebMethod]
+    public CustomFieldCategoryProxy[] GetCategories(ReferenceType refType, int? auxID)
+    {
+      CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
+      cats.LoadByRefType(refType, auxID);
+      return cats.GetCustomFieldCategoryProxies();
+    }
+
+    public bool IsDuplicateCategory(int? categoryID, ReferenceType refType, int? auxID, string text)
+    {
+      text = text.Trim();
+      CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
+      cats.LoadByRefType(refType, auxID);
+
+      foreach (CustomFieldCategory item in cats)
+      {
+        if (categoryID != null && item.CustomFieldCategoryID == categoryID) continue;
+
+        if (item.Category.Trim().ToLower() == text.ToLower())
+        {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    [WebMethod]
+    public CustomFieldCategoryProxy NewCategory(ReferenceType refType, int? auxID, string text)
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+      CustomFieldCategory cat = (new CustomFieldCategories(TSAuthentication.GetLoginUser()).AddNewCustomFieldCategory());
+      cat.Category = text;
+      cat.Position = CustomFieldCategories.GetMaxPosition(TSAuthentication.GetLoginUser(), refType, auxID) +1;
+      cat.OrganizationID = TSAuthentication.OrganizationID;
+      cat.AuxID = auxID;
+      cat.RefType = refType;
+      cat.Collection.Save();
+      return cat.GetProxy();
+    }
+
+    [WebMethod]
+    public CustomFieldCategoryProxy SaveCategory(int categoryID, string text)
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+      CustomFieldCategory cat = CustomFieldCategories.GetCustomFieldCategory(TSAuthentication.GetLoginUser(), categoryID);
+      if (cat.OrganizationID != TSAuthentication.OrganizationID) return null;
+      cat.Category = text;
+      cat.Collection.Save();
+      return cat.GetProxy();
+    }
+
+    [WebMethod]
+    public void DeleteCategory(int categoryID)
+    {
+      if (!TSAuthentication.IsSystemAdmin) return;
+      CustomFieldCategory cat = CustomFieldCategories.GetCustomFieldCategory(TSAuthentication.GetLoginUser(), categoryID);
+      if (cat.OrganizationID != TSAuthentication.OrganizationID) return;
+      cat.Delete();
+      cat.Collection.Save();
+    }
+
+    [WebMethod]
+    public void DeleteCustomField(int fieldID)
+    {
+      if (!TSAuthentication.IsSystemAdmin) return;
+      CustomField field = CustomFields.GetCustomField(TSAuthentication.GetLoginUser(), fieldID);
+      field.Delete();
+      field.Collection.Save();
+    }
+ 
+   [WebMethod]
+   public CategoryOrder SaveOrder(string data)
+   {
+     List<CategoryOrder> orders = JsonConvert.DeserializeObject<List<CategoryOrder>>(data);
+
+     if (!TSAuthentication.IsSystemAdmin) return null;
+     CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+     fields.LoadByOrganization(TSAuthentication.OrganizationID);
+
+     CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
+     cats.LoadByOrganization(TSAuthentication.OrganizationID);
+
+
+
+     int x = 0;
+
+     foreach (CategoryOrder order in orders)
+     {
+       if (order.CatID != null)
+       {
+         cats.FindByCustomFieldCategoryID((int)order.CatID).Position = x;
+         x++;
+       }
+       
+       int y = 0;
+       foreach (int fieldID in order.FieldIDs)
+       {
+         CustomField field = fields.FindByCustomFieldID(fieldID);
+         field.Position = y;
+         y++;
+         field.CustomFieldCategoryID = order.CatID;
+       }
+     }
+     fields.Save();
+     cats.Save();
+     return null;
+   }
+
   }
+
+ 
 
   [DataContract(Namespace = "http://teamsupport.com/")]
   public class FieldItem
@@ -88,4 +209,16 @@ namespace TSWebServices
     [DataMember] public bool IsCustom { get; set; }
     [DataMember] public string Name { get; set; }
   }
+
+  [DataContract(Namespace = "http://teamsupport.com/")]
+  public class CategoryOrder
+  {
+    public CategoryOrder() {
+    }
+    [DataMember] public int? CatID {get; set;}
+    [DataMember] public List<int> FieldIDs {get; set;}
+  }
+
+  
+
 }

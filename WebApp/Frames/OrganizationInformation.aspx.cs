@@ -204,11 +204,32 @@ public partial class Frames_OrganizationInformation : BaseFramePage
 
     foreach (CustomField field in fields)
     {
+      if (field.CustomFieldCategoryID != null) continue;
       CustomValue value = CustomValues.GetValue(UserSession.LoginUser, field.CustomFieldID, organizationID);
       table.Rows.Add(new string[] { field.Name + ":", value.Value });
-
     }
 
+    CustomFieldCategories cats = new CustomFieldCategories(UserSession.LoginUser);
+    cats.LoadByRefType(ReferenceType.Organizations);
+
+    StringBuilder builder = new StringBuilder();
+    string prop = "<div style=\"margin: 5px 5px 5px 15px; line-height: 20px;\"><span style=\"font-weight: bold;\">{0}: </span><span> {1}<br /></span></div>";
+    foreach (CustomFieldCategory cat in cats)
+    {
+      builder.Append("<div class=\"customfield-cat\"><span class=\"ui-icon ui-icon-triangle-1-s\"></span><span class=\"caption\">" + cat.Category);
+      builder.Append("</span></div><div class=\"ui-widget-content ts-separator\"></div>");
+      builder.Append("<div>");
+      foreach (CustomField field in fields)
+      {
+        if (field.CustomFieldCategoryID != null && field.CustomFieldCategoryID == cat.CustomFieldCategoryID)
+        { 
+         CustomValue value = CustomValues.GetValue(UserSession.LoginUser, field.CustomFieldID, organizationID);
+         builder.Append(string.Format(prop, field.Name, value.Value));
+        }
+      }
+      builder.Append("</div>");
+    }
+    litProperties.Text = builder.ToString();
 
 
     rptProperties.DataSource = table;

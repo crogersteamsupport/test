@@ -39,7 +39,6 @@ public partial class Dialogs_CustomField : BaseDialogPage
       
     }
 
-
     if (!IsPostBack)
     {
       LoadFieldTypes();
@@ -80,7 +79,7 @@ public partial class Dialogs_CustomField : BaseDialogPage
       Response.End();
       return;
     }
-
+    
     textDescription.Text = fields[0].Description;
     textName.Text = fields[0].Name;
     textApiFieldName.Text = fields[0].ApiFieldName;
@@ -110,7 +109,7 @@ public partial class Dialogs_CustomField : BaseDialogPage
     if (FieldExists(apiFieldName)) return false;
 
 
-
+    int? catID = Request["CatID"] == null ? null : (int?)int.Parse(Request["CatID"]);
 
     CustomFields fields = new CustomFields(UserSession.LoginUser);
     CustomField field;
@@ -121,6 +120,7 @@ public partial class Dialogs_CustomField : BaseDialogPage
       field.OrganizationID = UserSession.LoginUser.OrganizationID;
       field.RefType = _refType;
       field.AuxID = _auxID;
+      field.CustomFieldCategoryID = catID;
       field.Position = fields.GetMaxPosition(UserSession.LoginUser.OrganizationID, _refType, _auxID) + 1;
     }
     else

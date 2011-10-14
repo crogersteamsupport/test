@@ -111,6 +111,19 @@ namespace TSWebServices
       return list.ToArray();
     }
 
+    [WebMethod]
+    public bool ShowIntroVideo()
+    {
+      if (Settings.UserDB.ReadBool("ShowIntroVideo", true) && Organizations.GetUserCount(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID) == 1)
+      {
+        Settings.UserDB.WriteBool("ShowIntroVideo", false);
+        return true;
+      }
+
+      return false;
+    
+    }
+
     [DataContract]
     public class BasicUser
     {

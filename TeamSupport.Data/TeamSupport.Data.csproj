@@ -165,6 +165,7 @@
     <Compile Include="BusinessObjects\CRMLinkFields.cs" />
     <Compile Include="BusinessObjects\CRMLinkResults.cs" />
     <Compile Include="BusinessObjects\CRMLinkTable.cs" />
+    <Compile Include="BusinessObjects\CustomFieldCategories.cs" />
     <Compile Include="BusinessObjects\CustomFields.cs" />
     <Compile Include="BusinessObjects\CustomValues.cs" />
     <Compile Include="BusinessObjects\DeletedIndexItems.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="FieldMaps\ChatClientsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ChatUserSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkFieldsFieldMap.cs" />
+    <Compile Include="FieldMaps\CustomFieldCategoriesFieldMap.cs" />
     <Compile Include="FieldMaps\DeletedIndexItemsFieldMap.cs" />
     <Compile Include="FieldMaps\EMailAlternateInboundFieldMap.cs" />
     <Compile Include="FieldMaps\EmailPostHistoryFieldMap.cs" />
@@ -400,6 +402,7 @@
     <Compile Include="Generated\GeneratedCRMLinkFields.cs" />
     <Compile Include="Generated\GeneratedCRMLinkResults.cs" />
     <Compile Include="Generated\GeneratedCRMLinkTable.cs" />
+    <Compile Include="Generated\GeneratedCustomFieldCategories.cs" />
     <Compile Include="Generated\GeneratedCustomFields.cs" />
     <Compile Include="Generated\GeneratedCustomValues.cs" />
     <Compile Include="Generated\GeneratedDeletedIndexItems.cs" />
@@ -513,6 +516,7 @@
     <Compile Include="Proxies\CRMLinkFieldsProxy.cs" />
     <Compile Include="Proxies\CRMLinkResultsProxy.cs" />
     <Compile Include="Proxies\CRMLinkTableProxy.cs" />
+    <Compile Include="Proxies\CustomFieldCategoriesProxy.cs" />
     <Compile Include="Proxies\CustomFieldsProxy.cs" />
     <Compile Include="Proxies\CustomValuesProxy.cs" />
     <Compile Include="Proxies\DeletedIndexItemsProxy.cs" />

@@ -251,36 +251,36 @@ namespace TeamSupport.WebUtils
       //string inputTDClass = "input" + _columns.ToString() + "ColTD";
       string labelTDClass = "labelColTD";
       string inputTDClass = "inputColTD";
-
       foreach (CustomField field in fields)
       {
-        if (tr == null) tr = new HtmlTableRow();
-        HtmlTableCell tdLabel = new HtmlTableCell();
-        tdLabel.InnerHtml = @"<div class=""tableLabelDiv"">" + field.Name + ":</div>";
-        tdLabel.Attributes.Add("class", labelTDClass);
-        tr.Controls.Add(tdLabel);
+        if (field.CustomFieldCategoryID == null) tr = AddCells(tr, field, labelTDClass, inputTDClass, width, ref cols);
+      }
+      
+      if (tr != null) _table.Controls.Add(tr);
+      cols = 0;
 
-        HtmlTableCell tdInput = new HtmlTableCell();
-        tdInput.Attributes.Add("class", inputTDClass);
-        Control fieldControl = CreateFieldControl(field, width);
-        if (fieldControl != null) { 
-          tdInput.Controls.Add(fieldControl); 
-          Label validator = new Label();
-          validator.Text = "*";
-          validator.CssClass = "customFieldValid";
-         // tdInput.Controls.Add(validator);
-        }
-        tr.Controls.Add(tdInput);
+      CustomFieldCategories cats = new CustomFieldCategories(UserSession.LoginUser);
+      cats.LoadByRefType(_refType, _auxID);
 
-        cols++;
-        if (cols > _columns-1)
+      foreach (CustomFieldCategory cat in cats)
+      {
+        if (tr != null) _table.Controls.Add(tr);
+        cols = 0;
+        tr = new HtmlTableRow();
+        HtmlTableCell tdCat = new HtmlTableCell();
+        tdCat.InnerHtml = cat.Category;
+        tdCat.Attributes.Add("style", "font-size: 1.5em;");
+        tdCat.Attributes.Add("colspan", _columns.ToString());
+        tr.Controls.Add(tdCat);
+        _table.Controls.Add(tr);
+        tr = null;
+
+        foreach (CustomField field in fields)
         {
-          _table.Controls.Add(tr);
-          cols = 0;
-          tr = null;
+          if (field.CustomFieldCategoryID == cat.CustomFieldCategoryID) tr = AddCells(tr, field, labelTDClass, inputTDClass, width, ref cols);
         }
       }
-
+      
       if (tr != null)
       {
         HtmlTableCell tdLabel = new HtmlTableCell();
@@ -295,6 +295,38 @@ namespace TeamSupport.WebUtils
 
         _table.Controls.Add(tr);
       }
+    }
+
+    private HtmlTableRow AddCells(HtmlTableRow tr, CustomField field, string labelTDClass, string inputTDClass, int width, ref int cols)
+    {
+      if (tr == null) tr = new HtmlTableRow();
+      HtmlTableCell tdLabel = new HtmlTableCell();
+      tdLabel.InnerHtml = @"<div class=""tableLabelDiv"">" + field.Name + ":</div>";
+      tdLabel.Attributes.Add("class", labelTDClass);
+      tr.Controls.Add(tdLabel);
+
+      HtmlTableCell tdInput = new HtmlTableCell();
+      tdInput.Attributes.Add("class", inputTDClass);
+      Control fieldControl = CreateFieldControl(field, width);
+      if (fieldControl != null)
+      {
+        tdInput.Controls.Add(fieldControl);
+        Label validator = new Label();
+        validator.Text = "*";
+        validator.CssClass = "customFieldValid";
+        // tdInput.Controls.Add(validator);
+      }
+      tr.Controls.Add(tdInput);
+
+      cols++;
+      if (cols > _columns - 1)
+      {
+        _table.Controls.Add(tr);
+        cols = 0;
+        tr = null;
+      }
+      return tr;
+    
     }
 
     public void ClearCustomControls()
