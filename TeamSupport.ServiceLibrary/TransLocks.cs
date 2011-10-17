@@ -44,7 +44,7 @@ FROM    sys.dm_tran_locks L
         JOIN sys.dm_tran_active_transactions AT ON TST.transaction_id = AT.transaction_id
         JOIN sys.dm_exec_connections CN ON CN.session_id = ES.session_id
         CROSS APPLY sys.dm_exec_sql_text(CN.most_recent_sql_handle) AS ST
-WHERE   resource_database_id = 5
+WHERE   resource_database_id = DB_ID('teamsupport')
 ORDER BY L.request_session_id DESC
 ", connection);
 

@@ -298,7 +298,7 @@ AdminCustomFields = function () {
     .addClass('ts-icon ts-icon-save')
     .click(function (e) {
       e.preventDefault();
-      if ($(this).prev().val().trim() === '') {
+      if ($.trim($(this).prev().val()) === '') {
         alert('Please enter a name for the category.');
         return;
       }

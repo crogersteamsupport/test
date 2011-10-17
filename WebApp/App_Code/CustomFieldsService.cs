@@ -114,7 +114,7 @@ namespace TSWebServices
     {
       if (!TSAuthentication.IsSystemAdmin) return null;
       CustomFieldCategory cat = (new CustomFieldCategories(TSAuthentication.GetLoginUser()).AddNewCustomFieldCategory());
-      cat.Category = text;
+      cat.Category = text.Trim();
       cat.Position = CustomFieldCategories.GetMaxPosition(TSAuthentication.GetLoginUser(), refType, auxID) +1;
       cat.OrganizationID = TSAuthentication.OrganizationID;
       cat.AuxID = auxID;
@@ -129,7 +129,7 @@ namespace TSWebServices
       if (!TSAuthentication.IsSystemAdmin) return null;
       CustomFieldCategory cat = CustomFieldCategories.GetCustomFieldCategory(TSAuthentication.GetLoginUser(), categoryID);
       if (cat.OrganizationID != TSAuthentication.OrganizationID) return null;
-      cat.Category = text;
+      cat.Category = text.Trim();
       cat.Collection.Save();
       return cat.GetProxy();
     }

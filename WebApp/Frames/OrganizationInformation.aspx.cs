@@ -163,9 +163,12 @@ public partial class Frames_OrganizationInformation : BaseFramePage
     if (organizationID != UserSession.LoginUser.OrganizationID)
     { 
       table.Rows.Add(new string[] { "Active:", organization.IsActive.ToString() });
-      table.Rows.Add(new string[] { "API Enabled:", (organization.IsApiActive && organization.IsApiEnabled).ToString() });
-      table.Rows.Add(new string[] { "API Token:", organization.WebServiceID.ToString() });
-      table.Rows.Add(new string[] { "OrganizationID:", organization.OrganizationID.ToString() });
+      if (UserSession.CurrentUser.IsSystemAdmin)
+      {
+        table.Rows.Add(new string[] { "API Enabled:", (organization.IsApiActive && organization.IsApiEnabled).ToString() });
+        table.Rows.Add(new string[] { "API Token:", organization.WebServiceID.ToString() });
+        table.Rows.Add(new string[] { "OrganizationID:", organization.OrganizationID.ToString() });
+      }
     }
     if (UserSession.CurrentUser.HasPortalRights)
     {

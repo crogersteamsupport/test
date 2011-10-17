@@ -588,6 +588,7 @@ Ts.Pages.Main.prototype =
       var overrideIntro = Ts.Utils.getQueryValue('intro');
       if (result === false && !(overrideIntro != null && overrideIntro == 1)) return;
       var div = $('<div>')
+        .addClass('dialog-intro')
         .append('<iframe width="420" height="315" src="https://www.youtube.com/embed/BVl7zLVzT7E?rel=0&autoplay=1" frameborder="0" allowfullscreen></iframe>')
         .appendTo('body');
 
@@ -595,7 +596,10 @@ Ts.Pages.Main.prototype =
         width: 'auto',
         height: 'auto',
         title: 'Introduction',
-        resizable: false
+        resizable: false,
+        close: function () {
+          div.remove();
+        }
       });
     });
 
