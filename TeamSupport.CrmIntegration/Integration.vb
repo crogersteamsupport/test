@@ -517,6 +517,24 @@ Namespace TeamSupport
                 result.AttemptDateTime = Now.ToUniversalTime()
                 result.Collection.Save()
             End Sub
+
+            Protected Sub UpdateCustomValue(ByVal customFieldID As Integer, ByVal RefID As Integer, ByVal Value As String)
+                Dim findCustom As New CustomValues(User)
+                Dim thisCustom As CustomValue
+
+                findCustom.LoadByFieldID(customFieldID, RefID)
+                If findCustom.Count > 0 Then
+                    thisCustom = findCustom(0)
+
+                Else
+                    thisCustom = (New CustomValues(User)).AddNewCustomValue()
+                    thisCustom.CustomFieldID = customFieldID
+                    thisCustom.RefID = RefID
+                End If
+
+                thisCustom.Value = Value
+                thisCustom.Collection.Save()
+            End Sub
         End Class
 
         Public Enum IntegrationError

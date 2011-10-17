@@ -337,6 +337,33 @@ namespace TeamSupport.Services
     }
 
     [WebMethod(true)]
+    public IEnumerable GetReportNodes(RadTreeNodeData node, IDictionary context) {
+        Reports _reports = new Reports(UserSession.LoginUser);
+
+        switch ((ReportType)Enum.Parse(typeof(ReportType), node.Value)) { 
+            case ReportType.Standard:
+                _reports.LoadStandard();
+                break;
+            case ReportType.Favorite:
+                _reports.LoadFavorites(UserSession.CurrentUser.UserID);
+                break;
+            default:
+                _reports.LoadCustom(UserSession.CurrentUser.OrganizationID);
+                break;
+        }
+
+        List<RadTreeNodeData> list = new List<RadTreeNodeData>();
+        foreach (Report rep in _reports) {
+            RadTreeNodeData newNode = new RadTreeNodeData();
+            newNode.Text = rep.Name;
+            newNode.Value = rep.ReportID.ToString();
+            newNode.Attributes.Add("ExternalURL", rep.ExternalURL);
+            list.Add(newNode);
+        }
+        return list;
+    }
+
+    [WebMethod(true)]
     public IEnumerable GetVersionNodes(RadTreeNodeData node, IDictionary context)
     {
       ProductVersions versions = new ProductVersions(UserSession.LoginUser);
@@ -514,6 +541,21 @@ namespace TeamSupport.Services
               && 
               string.IsNullOrEmpty(report.Query);
     }
+
+    [WebMethod(true)]
+    public bool IsFavoriteReport(int reportID) {
+        Report report = (Report)Reports.GetReport(UserSession.LoginUser, reportID);
+        return report.IsFavorite;
+    }
+
+    [WebMethod(true)]
+    public void ToggleFavoriteReport(int reportID)
+    {
+        Report report = (Report)Reports.GetReport(UserSession.LoginUser, reportID);
+        if (report.IsFavorite) { report.IsFavorite = false; }
+        else { report.IsFavorite = true; }
+    }
+
 
     #region Admin Methods
 

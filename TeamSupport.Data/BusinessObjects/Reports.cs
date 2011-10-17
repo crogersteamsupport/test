@@ -128,6 +128,32 @@ namespace TeamSupport.Data
         throw new Exception("Missing OrganizationID parameter in report query.");
       }
     }
+
+    public bool IsFavorite {
+        get
+        {
+            return UserSettings.ReadString(Collection.LoginUser, "FavoriteReport", "").Split(',').Contains(this.ReportID.ToString());
+        }
+        set {
+            string currentSetting = UserSettings.ReadString(Collection.LoginUser, "FavoriteReport", "");
+            string newSetting = "";
+
+            if (value && !IsFavorite)
+            {
+                newSetting = currentSetting + "," + this.ReportID.ToString();
+            }
+            else if (!value && IsFavorite)
+            {
+                newSetting = string.Join(",", currentSetting.Split(',').Where(val => val != this.ReportID.ToString()).ToArray());
+            }
+
+            if (newSetting != currentSetting)
+            {
+                newSetting = newSetting.Trim(',');
+                UserSettings.WriteString(Collection.LoginUser, "FavoriteReport", newSetting);
+            }
+        }
+    }
   }
 
   public partial class Reports
@@ -143,5 +169,39 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    public void LoadStandard() {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * FROM Reports WHERE OrganizationID IS NULL ORDER BY Name";
+            command.CommandType = CommandType.Text;
+            Fill(command);
+        }
+    }
+
+    public void LoadCustom(int organizationID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * FROM Reports WHERE OrganizationID = @OrganizationID ORDER BY Name";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            Fill(command);
+        }
+    }
+
+    public void LoadFavorites(int userID) {
+        if (UserSettings.ReadString(LoginUser, "FavoriteReport", "") != "")
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"SELECT * FROM Reports WHERE ReportID IN (" + UserSettings.ReadString(LoginUser, "FavoriteReport", "").Trim(',') +
+                                        ") ORDER BY Name";
+                command.CommandType = CommandType.Text;
+                    Fill(command);
+            }
+        }
+    }
+
   }
 }

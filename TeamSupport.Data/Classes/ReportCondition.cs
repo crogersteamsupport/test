@@ -196,14 +196,30 @@ namespace TeamSupport.Data
 
           if (condition.Value1.ToString().Trim() == "" && (condition.ConditionOperator == ConditionOperator.IsEqualTo || condition.ConditionOperator == ConditionOperator.IsNotEqualTo))
           {
-            if (condition.ConditionOperator == ConditionOperator.IsEqualTo)
-            {
-              value = " IS NULL";
-            }
-            else if (condition.ConditionOperator == ConditionOperator.IsNotEqualTo)
-            {
-              value = " IS NOT NULL";
-            }
+              //ticketsview.customers will not be null
+              if (field.ReportTableFieldID == 251) {
+
+                  if (condition.ConditionOperator == ConditionOperator.IsEqualTo)
+                  {
+                      value = " = ''";
+                  }
+                  else if (condition.ConditionOperator == ConditionOperator.IsNotEqualTo)
+                  {
+                      value = " <> ''";
+                  }
+              }
+              else
+              {
+                  if (condition.ConditionOperator == ConditionOperator.IsEqualTo)
+                  {
+                      value = " IS NULL";
+                  }
+                  else if (condition.ConditionOperator == ConditionOperator.IsNotEqualTo)
+                  {
+                      value = " IS NOT NULL";
+                  }
+
+              }
           }
           else
           {

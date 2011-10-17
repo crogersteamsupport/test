@@ -6,9 +6,9 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
   <telerik:RadAjaxManager ID="ajaxManager" runat="server" UpdatePanelsRenderMode="Inline">
     <AjaxSettings>
-      <telerik:AjaxSetting AjaxControlID="gridReportList">
+      <telerik:AjaxSetting AjaxControlID="reportTree">
         <UpdatedControls>
-          <telerik:AjaxUpdatedControl ControlID="gridReportList" />
+          <telerik:AjaxUpdatedControl ControlID="reportTree" />
           <telerik:AjaxUpdatedControl ControlID="gridReport" />
         </UpdatedControls>
       </telerik:AjaxSetting>
@@ -31,12 +31,13 @@
             ImageUrl="~/images/icons/edit.png"></telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Text="Delete" Value="Delete" Enabled="false"
             ImageUrl="~/images/icons/trash.png"></telerik:RadToolBarButton>
-          <telerik:RadToolBarButton runat="server" Text="Export to PDF" ImageUrl="~/images/icons/Export.png"
+          <telerik:RadToolBarButton runat="server" Text="Export to PDF" Enabled="false" ImageUrl="~/images/icons/Export.png"
             Value="ExportPDF" Visible="false"></telerik:RadToolBarButton>
-          <telerik:RadToolBarButton runat="server" Text="Export to Excel" ImageUrl="~/images/icons/Export.png"
+          <telerik:RadToolBarButton runat="server" Text="Export to Excel" Enabled="false" ImageUrl="~/images/icons/Export.png"
             Value="ExportExcel"></telerik:RadToolBarButton>
-          <telerik:RadToolBarButton runat="server" Text="Export to CSV" ImageUrl="~/images/icons/Export.png"
+          <telerik:RadToolBarButton runat="server" Text="Export to CSV" Enabled="false" ImageUrl="~/images/icons/Export.png"
             Value="ExportCSV"></telerik:RadToolBarButton>
+            <telerik:RadToolBarButton runat="server" Text="Add to Favorites" Value="Favorite" Enabled="false" ImageUrl="~/images/icons/Favorites.png"></telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Value="Help" ImageUrl="~/images/icons/Help.png"
             Text="Help" ToolTip="Help." Visible="false"></telerik:RadToolBarButton>
             
@@ -47,28 +48,15 @@
       <telerik:RadSplitter ID="RadSplitter1" runat="server" Height="100%" Width="100%"
         BorderSize="0">
         <telerik:RadPane ID="paneGrid" runat="server" Width="200px" Scrolling="None" OnClientResized="GridResized">
-          <div class="stretchContentHolderDiv">
-            <telerik:RadGrid ID="gridReportList" runat="server" AutoGenerateColumns="False" GridLines="None"
-              Height="100%" Width="100%" ShowHeader="False" BorderWidth="0px" OnNeedDataSource="gridReportList_NeedDataSource"
-              OnDataBound="gridReportList_DataBound">
-              <MasterTableView DataKeyNames="ReportID,ExternalURL" ClientDataKeyNames="ReportID,ExternalURL">
-                <Columns>
-                  <telerik:GridBoundColumn DataField="ReportID" UniqueName="ReportID" Visible="false">
-                  </telerik:GridBoundColumn>
-                  <telerik:GridBoundColumn DataField="ExternalURL" UniqueName="ExternalURL" Visible="false">
-                  </telerik:GridBoundColumn>
-                  <telerik:GridBoundColumn DataField="Name" UniqueName="Name">
-                    <HeaderStyle Width="100%" />
-                    <ItemStyle BorderWidth="0px" />
-                  </telerik:GridBoundColumn>
-                </Columns>
-              </MasterTableView>
-              <ClientSettings>
-                <Selecting AllowRowSelect="True"></Selecting>
-                <Scrolling AllowScroll="True" UseStaticHeaders="True" />
-                <ClientEvents OnRowSelected="ReportSelected" />
-              </ClientSettings>
-            </telerik:RadGrid>
+          <div class="stretchContentHolderDiv">            
+        <telerik:RadTreeView ID="reportTree" runat="server" BorderWidth="0px" PersistLoadOnDemandNodes="true" LoadingStatusPosition="BelowNodeText" OnClientNodeClicked="NodeClicked" OnClientNodeCollapsed="NodeCollapsed" EnableViewState="false" Width="100%" Height="100%">
+            <Nodes>
+                <telerik:RadTreeNode runat="server" Text="Stock Reports" ExpandMode="WebService" Value="0"></telerik:RadTreeNode>
+                <telerik:RadTreeNode runat="server" Text="Custom Reports" ExpandMode="WebService" Value="1"></telerik:RadTreeNode>
+                <telerik:RadTreeNode runat="server" Text="My Favorites" ExpandMode="WebService" Value="2" />
+               </Nodes>
+            <WebServiceSettings Path="../Services/PrivateServices.asmx" Method="GetReportNodes"/>
+        </telerik:RadTreeView>
           </div>
         </telerik:RadPane>
         <telerik:RadSplitBar ID="RadSplitBar1" runat="server" />
@@ -96,62 +84,165 @@
 
         window.location = window.location;
 
-      }
+    }
+
+    function refreshNode(nodeValue) {
+        var tree = $find("<%=reportTree.ClientID %>");
+        var thisNode = tree.findNodeByValue(nodeValue);
+        
+       tree.trackChanges();
+       thisNode.get_nodes().clear();
+       thisNode.set_expanded(false);
+       tree.commitChanges();
+       thisNode.set_expandMode(Telerik.Web.UI.TreeNodeExpandMode.WebService);
+
+       thisNode.expand();
+    }
 
       function GridResized(sender, args) {
         top.privateServices.SetUserSetting('ReportsGridWidth', sender.get_width());
       }
 
-      function ReportSelected(sender, args) {
-        var id = args.getDataKeyValue('ReportID');
-        top.privateServices.SetUserSetting('SelectedReportID', id);
-        top.privateServices.CanEditReport(id, SetCanEdit);
-        PageMethods.GetCsvUrl(function(result) {
-          var toolBar = $find("<%= tbUser.ClientID %>");
-          var button = toolBar.findItemByValue("ExportCSV");          
-          button.set_navigateUrl(result);
-        });
-
-
-        LoadContentPage();
-      }
-
       function SetCanEdit(result) {
         var toolBar = $find("<%=tbUser.ClientID %>");
-        var itemEdit = toolBar.findItemByValue("Edit");
-        var itemDelete = toolBar.findItemByValue("Delete");
-        itemEdit.set_enabled(result);
-        itemDelete.set_enabled(result);
+        toolBar.findItemByValue("Edit").set_enabled(result);
+    }
+
+    function SetCanDelete(result) {
+        var toolBar = $find("<%=tbUser.ClientID %>");
+        toolBar.findItemByValue("Delete").set_enabled(result);
+    }
+
+    function SetCanEditOrDelete(result) {
+        SetCanDelete(result);
+        SetCanEdit(result);
+    }
+
+    function SetIsReport(result) {
+        var toolBar = $find("<%=tbUser.ClientID %>");
+        var itemFav = toolBar.findItemByValue("Favorite");
+        var itemExpCSV = toolBar.findItemByValue("ExportCSV");
+        var itemExpEx = toolBar.findItemByValue("ExportExcel");
+
+        itemFav.set_enabled(result);
+        itemExpCSV.set_enabled(result);
+        itemExpEx.set_enabled(result);
+    }
+
+    function SetIsFavorite(result) {
+        var toolBar = $find("<%=tbUser.ClientID %>");
+        var itemFav = toolBar.findItemByValue("Favorite");
+        itemFav.set_enabled(true);
+
+        if (result) {
+            itemFav.set_text("Remove Favorite");
+        }
+        else { itemFav.set_text("Add to Favorites"); }
+    }
+
+      function NodeCollapsed(sender, args) {
+          var node = args.get_node();
+          node.get_nodes().clear();
+          node.set_expandMode(Telerik.Web.UI.TreeNodeExpandMode.WebService);
+
+          node.set_selected(true);
+          SetNode(node);
+      }
+
+      function NodeClicked(sender, args) {
+          SetNode(args.get_node());
+      }
+
+      function SetNode(node) {
+          //prevent deletion/editing until we re-enable
+          SetCanEditOrDelete(false);
+          var typeNode = GetTypeNode(node);
+          var reportNode = GetReportNode(node);
+
+          top.privateServices.SetUserSetting('SelectedReportTypeID', typeNode.get_value());
+
+          if (reportNode != null) {
+
+              var id = reportNode.get_value();
+
+              if (typeNode.get_value() == 2) { //don't allow deletion when in favorites
+                  SetCanDelete(false);
+                  top.privateServices.CanEditReport(id, SetCanEdit);
+              }
+              else {
+                  top.privateServices.CanEditReport(id, SetCanEditOrDelete);
+              }
+
+              top.privateServices.SetUserSetting('SelectedReportID', id);
+              top.privateServices.IsFavoriteReport(id, SetIsFavorite);
+              SetIsReport(true);
+
+              PageMethods.GetCsvUrl(function (result) {
+                  var toolBar = $find("<%= tbUser.ClientID %>");
+                  var button = toolBar.findItemByValue("ExportCSV");
+                  button.set_navigateUrl(result);
+              });
+
+
+          }
+          else {
+              top.privateServices.SetUserSetting('SelectedReportID', -1);
+              SetCanEdit(false);
+              SetCanDelete(false);
+              SetIsReport(false);
+          }
+
+          LoadContentPage();
+      }
+
+      function GetTypeNode(node) {
+          if (node.get_parent() != node.get_treeView()) {
+              return node.get_parent();
+          }
+          else {
+              return node;
+          }
+      }
+
+      function GetReportNode(node) {
+          if (node.get_parent() != node.get_treeView()) {
+              return node;
+          }
+          else {
+              return null;
+          }
 
       }
 
       function GetSelectedReportID() {
-        var item = $find("<%=gridReportList.ClientID %>").get_masterTableView().get_selectedItems()[0];
-        return item.getDataKeyValue('ReportID');
-      }
-
-      function SetSelectedReportID(id) {
-        var item = $find("<%=gridReportList.ClientID %>").get_masterTableView().get_selectedItems()[0];
-        return item.getDataKeyValue('ReportID');
+          var tree = $find("<%= reportTree.ClientID %>");
+          return tree.get_selectedNode().get_value();
       }
 
       function GetSelectedExternalURL() {
-        var item = $find("<%=gridReportList.ClientID %>").get_masterTableView().get_selectedItems()[0];
-        var url = item.getDataKeyValue('ExternalURL');
-        if (!url || url == '') {
+          var tree = $find("<%= reportTree.ClientID %>");
+          var url = tree.get_selectedNode().get_attributes().getAttribute('ExternalURL');
+        if (!url || url == '' || url === undefined) {
           return 'ReportResults.aspx'
         }
         else {
           return url;
         }
       }
-
+      
       function LoadContentPage() {
         showLoadingPanel("<%=frmReport.ClientID %>");
 
         var id = GetSelectedReportID();
         var frame = $get("<%=frmReport.ClientID %>");
-        frame.setAttribute('src', GetSelectedExternalURL() + '?ReportID=' + id);
+
+        if (id < 3) { //this tells us it's a report type
+            frame.setAttribute('src', '');
+        }
+        else{
+            frame.setAttribute('src', GetSelectedExternalURL() + '?ReportID=' + id);
+        }
+
         hideLoadingPanel("<%=frmReport.ClientID %>");
 
       }
@@ -166,6 +257,7 @@
         else if (value == 'Edit') { EditReport(); }
         else if (value == 'Delete') { DeleteReport(); }
         else if (value == 'Help') { top.ShowHelpDialog(430); }
+        else if (value == 'Favorite') {FavoriteReport();}
       }
 
       function NewReport() {
@@ -183,9 +275,19 @@
       function DeleteReport() {
         if (confirm('Are you sure you would like to delete this report?')) {
           top.privateServices.DeleteReport(GetSelectedReportID());
-        }
-        setTimeout('RefreshGrid()', 1000);
       }
+
+      var tree = $find("<%= reportTree.ClientID %>");
+      refreshNode(tree.get_selectedNode().get_parent().get_value());
+      refreshNode(2);
+  }
+
+  function FavoriteReport() {
+      top.privateServices.ToggleFavoriteReport(GetSelectedReportID());
+
+      top.privateServices.IsFavoriteReport(GetSelectedReportID(), SetIsFavorite);
+      refreshNode(2);
+  }
 
       function ExportPDF() {
         var frame = $get("<%=frmReport.ClientID %>");
@@ -203,19 +305,18 @@
       }
 
       function DialogClosed(sender, args) {
-        sender.remove_close(DialogClosed);
-        //RefreshGrid();
-        if (args.get_argument() > -1) __doPostBack();
+          sender.remove_close(DialogClosed);
 
+          if (args.get_argument() > -1 && args.get_argument() != null) {
+              refreshNode(1);
+              setTimeout(function () {
+                  var tree = $find("<%=reportTree.ClientID %>");
+                  var thisNode = tree.findNodeByValue(args.get_argument());
+                  thisNode.set_selected(true);
+                  SetNode(thisNode);
+              }, 500);
+          }
       }
-
-      function RefreshGrid() {
-        var grid = $find("<%=gridReportList.ClientID %>").get_masterTableView();
-        grid.rebind();
-
-        setTimeout('LoadContentPage();', 500);
-
-      }      
       
     </script>
 

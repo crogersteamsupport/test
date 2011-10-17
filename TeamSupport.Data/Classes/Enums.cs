@@ -139,6 +139,12 @@ namespace TeamSupport.Data
       Zoho
   }
 
+  public enum ReportType { 
+      Standard = 0,
+      Custom,
+      Favorite
+  }
+
   public class Enums
 	{
     public static Dictionary<string, string> PortalThemeNames = new Dictionary<string, string>

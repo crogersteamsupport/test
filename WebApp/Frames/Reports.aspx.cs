@@ -22,73 +22,94 @@ public partial class Frames_Reports : BaseFramePage
   {
     Page.Culture = UserSession.LoginUser.CultureInfo.Name;
     
-    int newReportID = Settings.Session.ReadInt("NewReportID");
+    int newReportID = Settings.Session.ReadInt("NewReportID",-1);
     if (newReportID > -1)
     {
       Settings.Session.WriteInt("NewReportID", -1);
       Settings.UserDB.WriteInt("SelectedReportID", newReportID);
-      gridReportList.MasterTableView.ClearSelectedItems();
-      gridReportList.Rebind();
+      loadReport();
     }
 
     if (!IsPostBack)
     {
       paneGrid.Width = new Unit(Settings.UserDB.ReadInt("ReportsGridWidth", 200), UnitType.Pixel);
-      SetToolbar();
+      if (Settings.UserDB.ReadInt("SelectedReportID") > -1)
+      {
+          loadReport();
+      }
     }
   }
 
-  private void SetToolbar()
+  protected void loadReport()
   {
-    RadToolBarButton button = tbUser.FindItemByValue("ExportCSV") as RadToolBarButton;
-    //button.NavigateUrl = GetCsvUrl();
-    //button.Target = "_blank";
-  
-  }
-
-  protected void gridReportList_NeedDataSource(object source, GridNeedDataSourceEventArgs e)
-  {
-    Reports reports = new Reports(UserSession.LoginUser);
-    reports.LoadAll(UserSession.LoginUser.OrganizationID);
-    gridReportList.DataSource = reports.Table;
-  }
-
-  protected void gridReportList_DataBound(object sender, EventArgs e)
-  {
-    if (!SetReportID(Settings.UserDB.ReadInt("SelectedReportID")) && gridReportList.Items.Count > 0)
-    {
-      gridReportList.Items[0].Selected = true;
-      SetToolbar();
-    }
-
     int id = GetReportID();
     Report report = (Report)Reports.GetReport(UserSession.LoginUser, id);
-    string url = string.IsNullOrEmpty(report.ExternalURL) ? "ReportResults.aspx" : report.ExternalURL;
-    if (report != null) frmReport.Attributes["src"] = url + "?ReportID=" + id.ToString();
+    if (report != null)
+    {
+        ReportType repType = (ReportType)Enum.Parse(typeof(ReportType), Settings.UserDB.ReadInt("SelectedReportTypeID").ToString());
 
-    tbUser.Items[1].Enabled = UserSession.CurrentUser.IsSystemAdmin && report.OrganizationID != null && report.OrganizationID == UserSession.LoginUser.OrganizationID;
-    tbUser.Items[2].Enabled = tbUser.Items[1].Enabled;
+        ExpandNode(repType, id);
+
+        string url = string.IsNullOrEmpty(report.ExternalURL) ? "ReportResults.aspx" : report.ExternalURL;
+        frmReport.Attributes["src"] = url + "?ReportID=" + id.ToString();
+
+        tbUser.Items[1].Enabled = UserSession.CurrentUser.IsSystemAdmin && report.OrganizationID != null && report.OrganizationID == UserSession.LoginUser.OrganizationID;
+        tbUser.Items[2].Enabled = tbUser.Items[1].Enabled && repType != ReportType.Favorite;
+        tbUser.Items[3].Enabled = true;
+        tbUser.Items[5].Enabled = true;
+        tbUser.Items[6].Enabled = true;
+
+        tbUser.Items[6].Text = report.IsFavorite ? "Remove Favorite" : tbUser.Items[6].Text;
+    }
   }
-
+    
   private int GetReportID()
   {
-    if (gridReportList.SelectedItems.Count < 1) return -1;
-    GridItem item = gridReportList.SelectedItems[0];
-    return (int)item.OwnerTableView.DataKeyValues[item.ItemIndex]["ReportID"]; ;
+      int reportID = -1;
+      if (reportTree.SelectedNodes.Count > 0){
+      RadTreeNode item = reportTree.SelectedNode;
+      reportID = int.Parse(item.Value) > 2 ? int.Parse(item.Value) : -1;}
+      if (reportID == -1) { //load up last report viewed if nothing else is selected
+          reportID = Settings.UserDB.ReadInt("SelectedReportID",  -1);
+      }
+      
+      return reportID;
   }
 
-  private bool SetReportID(int id)
-  {
-    GridDataItem item = gridReportList.MasterTableView.FindItemByKeyValue("ReportID", id);
-    if (item != null)
-    {
-      item.Selected = true;
-      return true;
-    }
-    else
-    {
-      return false;
-    }
+  private void ExpandNode(ReportType type) {
+      ExpandNode(type, -1);
+  }
+
+  private void ExpandNode(ReportType type, int valNodeToSelect) {
+      RadTreeNode typeNode = reportTree.FindNodeByValue(((int)type).ToString());
+
+      Reports _reports = new Reports(UserSession.LoginUser);
+      switch (type)
+      {
+          case ReportType.Standard:
+              _reports.LoadStandard();
+              break;
+          case ReportType.Favorite:
+              _reports.LoadFavorites(UserSession.CurrentUser.UserID);
+              break;
+          default:
+              _reports.LoadCustom(UserSession.CurrentUser.OrganizationID);
+              break;
+      }
+
+      foreach (Report rep in _reports)
+      {
+          RadTreeNode newNode = new RadTreeNode();
+          newNode.Text = rep.Name;
+          newNode.Value = rep.ReportID.ToString();
+          newNode.Attributes.Add("ExternalURL", rep.ExternalURL);
+
+          if (newNode.Value == valNodeToSelect.ToString()) { newNode.Selected = true; }
+          typeNode.Nodes.Add(newNode);
+      }
+
+      typeNode.Expanded = true;
+      typeNode.ExpandMode = TreeNodeExpandMode.WebService;
   }
   
   [WebMethod(true)]

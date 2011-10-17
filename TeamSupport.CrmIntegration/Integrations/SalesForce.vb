@@ -577,8 +577,8 @@ Namespace TeamSupport
                                                     thisOrgProd.Collection.Save()
 
                                                     'License Type - CustomFieldID is 3770 (test value 101)
-                                                        UpdateCustomValue(3770, thisOrgProd.OrganizationProductID, LicenseType)
-                                                    
+                                                    UpdateCustomValue(3770, thisOrgProd.OrganizationProductID, LicenseType)
+
                                                     'License Status - CustomFieldID is 3771 (test value 102)
                                                     UpdateCustomValue(3771, thisOrgProd.OrganizationProductID, LicenseStatus)
 
@@ -658,91 +658,91 @@ Namespace TeamSupport
                         Next
                     End If
 
-                If customFieldList IsNot Nothing Then
-                    Dim customQuery As String = "select Account.ID, " & IIf(objType = "Account", "", "email, ") & customFieldList & " from " & objType & " where SystemModStamp >= " + LastUpdate + " and (" + TypeString + ")"
+                    If customFieldList IsNot Nothing Then
+                        Dim customQuery As String = "select Account.ID, " & IIf(objType = "Account", "", "email, ") & customFieldList & " from " & objType & " where SystemModStamp >= " + LastUpdate + " and (" + TypeString + ")"
 
-                    Log.Write(customQuery)
+                        Log.Write(customQuery)
 
-                    Try
-                        Dim qr As QueryResult = Binding.query(customQuery)
+                        Try
+                            Dim qr As QueryResult = Binding.query(customQuery)
 
-                        Log.Write(qr.size.ToString() & " records with custom fields to sync.")
+                            Log.Write(qr.size.ToString() & " records with custom fields to sync.")
 
-                        For Each record As sObject In qr.records
-                            Dim accountID As String
+                            For Each record As sObject In qr.records
+                                Dim accountID As String
 
-                            'find the object in OUR system
-                            If objType = "Account" Then
-                                accountID = record.Id
-
-                            ElseIf objType = "Contact" Then
-                                accountID = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName = "Account")("sf:Id").InnerText
-
-                            Else
-                                Return
-                            End If
-
-                            Dim findAccount As New Organizations(User)
-                            findAccount.LoadByCRMLinkID(accountID, CRMLinkRow.OrganizationID)
-
-                            If findAccount.Count > 0 Then
-                                Dim thisAccount As Organization = findAccount(0)
-
-                                'update fields
+                                'find the object in OUR system
                                 If objType = "Account" Then
-                                    For Each thisField As Xml.XmlElement In record.Any
-                                        If thisField.InnerText <> "" Then
-                                            Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
+                                    accountID = record.Id
 
-                                            If thisMapping IsNot Nothing Then
-                                                If thisMapping.CustomFieldID IsNot Nothing Then
-                                                    UpdateCustomValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, thisField.InnerText)
+                                ElseIf objType = "Contact" Then
+                                    accountID = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName = "Account")("sf:Id").InnerText
 
-                                                ElseIf thisMapping.TSFieldName IsNot Nothing Then
-                                                    thisAccount.Row(thisMapping.TSFieldName) = thisField.InnerText
-                                                    thisAccount.BaseCollection.Save()
-                                                End If
-                                            End If
-                                        End If
-                                    Next
+                                Else
+                                    Return
+                                End If
 
-                                Else 'if it's not an account, it's a contact (otherwise we would have returned above)
-                                    Dim email As String = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName.ToLower() = "email").InnerText
+                                Dim findAccount As New Organizations(User)
+                                findAccount.LoadByCRMLinkID(accountID, CRMLinkRow.OrganizationID)
 
-                                    Dim findContact As New Users(User)
-                                    Dim thisContact As User = Nothing
+                                If findAccount.Count > 0 Then
+                                    Dim thisAccount As Organization = findAccount(0)
 
-                                    findContact.LoadByOrganizationID(thisAccount.OrganizationID, False)
-                                    thisContact = findContact.FindByEmail(email)
-
-                                    If thisContact IsNot Nothing Then
-
+                                    'update fields
+                                    If objType = "Account" Then
                                         For Each thisField As Xml.XmlElement In record.Any
                                             If thisField.InnerText <> "" Then
                                                 Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
 
                                                 If thisMapping IsNot Nothing Then
                                                     If thisMapping.CustomFieldID IsNot Nothing Then
-                                                        UpdateCustomValue(thisMapping.CustomFieldID, thisContact.UserID, thisField.InnerText)
+                                                        UpdateCustomValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, thisField.InnerText)
 
                                                     ElseIf thisMapping.TSFieldName IsNot Nothing Then
-                                                        thisContact.Row(thisMapping.TSFieldName) = thisField.InnerText
-                                                        thisContact.BaseCollection.Save()
+                                                        thisAccount.Row(thisMapping.TSFieldName) = thisField.InnerText
+                                                        thisAccount.BaseCollection.Save()
                                                     End If
                                                 End If
                                             End If
-
                                         Next
 
+                                    Else 'if it's not an account, it's a contact (otherwise we would have returned above)
+                                        Dim email As String = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName.ToLower() = "email").InnerText
+
+                                        Dim findContact As New Users(User)
+                                        Dim thisContact As User = Nothing
+
+                                        findContact.LoadByOrganizationID(thisAccount.OrganizationID, False)
+                                        thisContact = findContact.FindByEmail(email)
+
+                                        If thisContact IsNot Nothing Then
+
+                                            For Each thisField As Xml.XmlElement In record.Any
+                                                If thisField.InnerText <> "" Then
+                                                    Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
+
+                                                    If thisMapping IsNot Nothing Then
+                                                        If thisMapping.CustomFieldID IsNot Nothing Then
+                                                            UpdateCustomValue(thisMapping.CustomFieldID, thisContact.UserID, thisField.InnerText)
+
+                                                        ElseIf thisMapping.TSFieldName IsNot Nothing Then
+                                                            thisContact.Row(thisMapping.TSFieldName) = thisField.InnerText
+                                                            thisContact.BaseCollection.Save()
+                                                        End If
+                                                    End If
+                                                End If
+
+                                            Next
+
+                                        End If
+
                                     End If
-
                                 End If
-                            End If
 
-                        Next
-                    Catch e As Exception
-                        Log.Write("Error caught in GetCustomFields: " & e.Message)
-                        Log.Write(e.StackTrace)
+                            Next
+                        Catch e As Exception
+                            Log.Write("Error caught in GetCustomFields: " & e.Message)
+                            Log.Write(e.StackTrace)
                         End Try
 
                     End If
@@ -751,27 +751,6 @@ Namespace TeamSupport
                     Log.Write("Exception caught in GetCustomFields: " & ex.Message)
                     Log.Write(ex.StackTrace)
                 End Try
-            End Sub
-
-            Private Sub UpdateCustomValue(ByVal customFieldID As Integer, ByVal RefID As Integer, ByVal Value As String)
-                Log.Write("updating custom value with " & customFieldID & ", " & RefID & ", " & Value)
-                Dim findCustom As New CustomValues(User)
-                Dim thisCustom As CustomValue
-
-                findCustom.LoadByFieldID(customFieldID, RefID)
-                If findCustom.Count > 0 Then
-                    thisCustom = findCustom(0)
-                    Log.Write("updating existing custom value...")
-
-                Else
-                    thisCustom = (New CustomValues(User)).AddNewCustomValue()
-                    thisCustom.CustomFieldID = customFieldID
-                    thisCustom.RefID = RefID
-                    Log.Write("adding new custom value...")
-                End If
-
-                thisCustom.Value = Value
-                thisCustom.Collection.Save()
             End Sub
 
             Protected Overrides Sub Finalize()

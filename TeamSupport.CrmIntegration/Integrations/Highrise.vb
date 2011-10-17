@@ -38,6 +38,9 @@ Namespace TeamSupport
                 SyncError = False
                 UseSSL = True
 
+                'strip .highrisehq.com from username if present
+                CompanyName = CompanyName.Replace(".highrisehq.com", "")
+
                 Try
                     Dim TagIDs As New List(Of String)()
 
