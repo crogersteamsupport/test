@@ -391,7 +391,7 @@ namespace TeamSupport.Data
         default: break;
       }
 
-      sort = string.Format("[{0}] {1}", filter.SortColumn.Trim(), (filter.SortAsc ? "ASC" : "DESC"));
+      sort = string.Format("[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
 
       string fields =
         @"

@@ -15,12 +15,14 @@
     $(document).ready(function () {
       $('.customfield-cat').click(function (e) {
         $(this).next().toggle().next().toggle();
-        if ($(this).next().is(':visible')) {
+        var expanded = $(this).next().is(':visible');
+        if (expanded) {
           $(this).find('.ui-icon').addClass('ui-icon-triangle-1-s').removeClass('ui-icon-triangle-1-e');
         }
         else {
           $(this).find('.ui-icon').addClass('ui-icon-triangle-1-e').removeClass('ui-icon-triangle-1-s');
         }
+        top.privateServices.SetUserSetting('Custom Cat Expanded (Customer) - ' + $(this).find('.caption').text(), expanded);
       });
 
 

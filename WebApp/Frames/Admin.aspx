@@ -15,15 +15,15 @@
              Value="AdminCompany.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="My Portal" 
              Value="AdminPortal.aspx"></telerik:RadTab>
-           <telerik:RadTab runat="server" Selected="True" Text="Custom Fields" Value="../Resources_147/Pages/Admin_CustomFields.html"></telerik:RadTab>
+           <telerik:RadTab runat="server" Selected="True" Text="Custom Fields" Value="../Resources_148/Pages/Admin_CustomFields.html"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Custom Properties" 
              Value="AdminCustomProperties.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="SLA" Value="AdminSla.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Workflow" Value="AdminWorkflow.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Email" Value="AdminEmails.aspx"></telerik:RadTab>
-           <telerik:RadTab runat="server" Text="Integration" Value="../Resources_147/Pages/Admin_Integration.html" Visible="true"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="Integration" Value="../Resources_148/Pages/Admin_Integration.html" Visible="true"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Ticket Templates" Value="AdminTicketTemplates.aspx"></telerik:RadTab>
-           <telerik:RadTab runat="server" Text="Ticket Automation" Value="../Resources_147/Pages/Admin_Automation.html" Visible="true"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="Ticket Automation" Value="../Resources_148/Pages/Admin_Automation.html" Visible="true"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Chat" Value="AdminChat.aspx" Visible="false"></telerik:RadTab>
          </Tabs>
         </telerik:RadTabStrip>

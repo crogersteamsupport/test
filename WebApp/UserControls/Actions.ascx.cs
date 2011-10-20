@@ -186,7 +186,7 @@ public partial class UserControls_Actions : System.Web.UI.UserControl
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < attachments.Count; i++)
     {
-      builder.Append(" &nbsp <a href=\"javascript:top.openAttachment('" + attachments[i].AttachmentID.ToString() + "');\">" + attachments[i].FileName + "</a>");
+      builder.Append(" &nbsp <a href=\"javascript:top.Ts.MainPage.openAttachment('" + attachments[i].AttachmentID.ToString() + "');\">" + attachments[i].FileName + "</a>");
       if (i != attachments.Count - 1) builder.Append(",");
     }
 

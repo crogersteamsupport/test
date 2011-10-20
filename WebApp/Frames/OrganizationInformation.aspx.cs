@@ -219,9 +219,13 @@ public partial class Frames_OrganizationInformation : BaseFramePage
     string prop = "<div style=\"margin: 5px 5px 5px 15px; line-height: 20px;\"><span style=\"font-weight: bold;\">{0}: </span><span> {1}<br /></span></div>";
     foreach (CustomFieldCategory cat in cats)
     {
-      builder.Append("<div class=\"customfield-cat\"><span class=\"ui-icon ui-icon-triangle-1-s\"></span><span class=\"caption\">" + cat.Category);
-      builder.Append("</span></div><div class=\"ui-widget-content ts-separator\"></div>");
-      builder.Append("<div>");
+      bool isExpanded = Settings.UserDB.ReadBool("Custom Cat Expanded (Customer) - " + cat.Category, false);
+      string markerClass = isExpanded ? "ui-icon-triangle-1-s" : "ui-icon-triangle-1-e";
+      string displayClass = isExpanded ? "" : "ui-helper-hidden";
+
+      builder.Append("<div class=\"customfield-cat\"><span class=\"ui-icon "+markerClass+"\"></span><span class=\"caption\">" + cat.Category);
+      builder.Append("</span></div><div class=\"ui-widget-content ts-separator "+displayClass+"\"></div>");
+      builder.Append("<div class=\""+displayClass+"\">");
       foreach (CustomField field in fields)
       {
         if (field.CustomFieldCategoryID != null && field.CustomFieldCategoryID == cat.CustomFieldCategoryID)
