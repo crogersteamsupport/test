@@ -345,6 +345,7 @@ Namespace TeamSupport
                     Catch ex As Exception
                         'Uh Oh - Error.  Probably no fax number, so we'll try without the fax number
                         Log.Write("Error getting contact - Trying without fax number.")
+                        Log.Write(ex.Message & " " & ex.StackTrace)
                         'SystemModstamp or LastModifiedDate
                         'Note - Added second phone just so we have something in that space..
                         If Not ForceUpdate Then
