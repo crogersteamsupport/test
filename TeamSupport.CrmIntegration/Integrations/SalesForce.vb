@@ -346,13 +346,13 @@ Namespace TeamSupport
                         'Uh Oh - Error.  Probably no fax number, so we'll try without the fax number
                         Log.Write("Error getting contact - Trying without fax number.")
                         'SystemModstamp or LastModifiedDate
+                        'Note - Added second phone just so we have something in that space..
                         If Not ForceUpdate Then
                             qr = Binding.query("select email, FirstName, LastName, Phone, MobilePhone, Phone, Title, IsDeleted, SystemModstamp, Account.ID from Contact where SystemModStamp >= " + LastUpdate + " and (" + TypeString + ")")
                         Else
-                            qr = Binding.query("select email, FirstName, LastName, Phone, MobilePhone, Phone, Title, IsDeleted, SystemModstamp, Account.ID from Contact where Account.ID = " + AccountIDToUpdate)
+                            qr = Binding.query("select email, FirstName, LastName, Phone, MobilePhone, Phone, Title, IsDeleted, SystemModstamp, Account.ID from Contact where Account.ID = '" + AccountIDToUpdate + "'")
                         End If
 
-                        'Note - Added second phone just so we have something in that space..
                         done = False
 
                         Log.Write("Found " + qr.size.ToString + " contact records (no fax).")
