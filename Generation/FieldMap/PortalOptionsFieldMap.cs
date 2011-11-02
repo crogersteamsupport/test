@@ -40,6 +40,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DisplayPortalPhone", "DisplayPortalPhone", false, false, false);
       _fieldMap.AddMap("DisplayAdvProducts", "DisplayAdvProducts", false, false, false);
       _fieldMap.AddMap("DisplayAdvKB", "DisplayAdvKB", false, false, false);
+      _fieldMap.AddMap("DisplayProductVersion", "DisplayProductVersion", false, false, false);
             
     }
   }

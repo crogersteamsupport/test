@@ -209,6 +209,7 @@ the loop - including the customer base - and dramatically increases customer sat
     portalOption.KBAccess = true;
     portalOption.DisplayGroups = true;
     portalOption.DisplayProducts = true;
+    portalOption.DisplayProductVersion = true;
     portalOption.DisplayAdvKB = true;
     portalOptions.Save();
 

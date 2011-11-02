@@ -61,16 +61,16 @@
           </tr>
           <tr>
             <td>
-              Use Recaptcha:
-            </td>
-            <td>
-              <asp:CheckBox ID="cbRecaptcha" runat="server" />
-            </td>
-            <td>
               Display Product Pulldown in Portals:
             </td>
             <td>
               <asp:CheckBox ID="cbProduct" runat="server" />
+            </td>
+            <td>
+              Display Product Version Pulldown in Portals:
+            </td>
+            <td>
+              <asp:CheckBox ID="cbVersion" runat="server" />
             </td>
           </tr>
           <tr>
@@ -95,10 +95,22 @@
               <asp:CheckBox ID="cbGroup" runat="server" />
             </td>
             <td>
+              Use Recaptcha:
+            </td>
+            <td>
+              <asp:CheckBox ID="cbRecaptcha" runat="server" />
+            </td>
+          </tr>
+          <tr>
+            <td>
               Theme:
             </td>
             <td>
               <telerik:RadComboBox ID="cmbTheme" runat="server" Width="225px"></telerik:RadComboBox>
+            </td>
+            <td>
+            </td>
+            <td>
             </td>
           </tr>
           <tr>

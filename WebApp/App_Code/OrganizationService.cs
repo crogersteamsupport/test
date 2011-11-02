@@ -94,20 +94,30 @@ namespace TSWebServices
     public OrganizationProxy GetOrganization(int organizationID)
     {
       Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);
-      if (TSAuthentication.OrganizationID != 1078 && organization.ParentID != TSAuthentication.OrganizationID && organization.OrganizationID != TSAuthentication.OrganizationID) return null;
+      if (TSAuthentication.OrganizationID != 1088 && TSAuthentication.OrganizationID != 1078 && organization.ParentID != TSAuthentication.OrganizationID && organization.OrganizationID != TSAuthentication.OrganizationID) return null;
        return organization.GetProxy();
     }
 
     [WebMethod]
-    public CRMLinkTableItemProxy GetCrmLink(int organizationID)
+    public CRMLinkTableItemProxy[] AdminGetCrmLinks(int organizationID)
     {
+      if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
+
       CRMLinkTable table = new CRMLinkTable(TSAuthentication.GetLoginUser());
       table.LoadByOrganizationID(organizationID);
-      if (table.IsEmpty) return null;
-      if (TSAuthentication.OrganizationID != 1078) return null;
-      return table[0].GetProxy();
+      return table.GetCRMLinkTableItemProxies();
     }
-    
+
+
+    [WebMethod]
+    public void ResetCrmLastLink(int crmLinkID)
+    {
+      if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+      CRMLinkTableItem item = CRMLinkTable.GetCRMLinkTableItem(TSAuthentication.GetLoginUser(), crmLinkID);
+      item.LastLink = null;
+      item.Collection.Save();
+    }
+
     [WebMethod]
     public CRMLinkTableItemProxy[] GetCrmLinks()
     {
@@ -227,7 +237,7 @@ namespace TSWebServices
     public AutocompleteItem[] AdminGetOrganizations(string name)
     {
       List<AutocompleteItem> result = new List<AutocompleteItem>();
-      if (TSAuthentication.OrganizationID != 1078) return result.ToArray();
+      if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return result.ToArray();
       Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
       organizations.LoadByLikeOrganizationName(1, name, false, 20);
       foreach (Organization organization in organizations)

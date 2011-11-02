@@ -184,6 +184,7 @@
     <Compile Include="BusinessObjects\ForumPermissions.cs" />
     <Compile Include="BusinessObjects\ForumTickets.cs" />
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
+    <Compile Include="BusinessObjects\Reminders.cs" />
     <Compile Include="BusinessObjects\Services.cs" />
     <Compile Include="BusinessObjects\ServiceSettings.cs" />
     <Compile Include="BusinessObjects\TagLinks.cs" />
@@ -228,6 +229,7 @@
     <Compile Include="FieldMaps\ForumPermissionsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumTicketsFieldMap.cs" />
     <Compile Include="FieldMaps\OrganizationEmailsFieldMap.cs" />
+    <Compile Include="FieldMaps\RemindersFieldMap.cs" />
     <Compile Include="FieldMaps\ServiceSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ServicesFieldMap.cs" />
     <Compile Include="FieldMaps\TagLinksFieldMap.cs" />
@@ -441,6 +443,7 @@
     <Compile Include="Generated\GeneratedProductVersions.cs" />
     <Compile Include="Generated\GeneratedProductVersionStatuses.cs" />
     <Compile Include="Generated\GeneratedProductVersionsView.cs" />
+    <Compile Include="Generated\GeneratedReminders.cs" />
     <Compile Include="Generated\GeneratedReportData.cs" />
     <Compile Include="Generated\GeneratedReportFields.cs" />
     <Compile Include="Generated\GeneratedReports.cs" />
@@ -555,6 +558,7 @@
     <Compile Include="Proxies\ProductVersionsProxy.cs" />
     <Compile Include="Proxies\ProductVersionStatusesProxy.cs" />
     <Compile Include="Proxies\ProductVersionsViewProxy.cs" />
+    <Compile Include="Proxies\RemindersProxy.cs" />
     <Compile Include="Proxies\ReportDataProxy.cs" />
     <Compile Include="Proxies\ReportFieldsProxy.cs" />
     <Compile Include="Proxies\ReportsProxy.cs" />

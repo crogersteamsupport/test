@@ -40,6 +40,7 @@ namespace TeamSupport.Data
     [DataMember] public bool DisplayPortalPhone { get; set; }
     [DataMember] public bool DisplayAdvProducts { get; set; }
     [DataMember] public bool DisplayAdvKB { get; set; }
+    [DataMember] public bool DisplayProductVersion { get; set; }
           
   }
   
@@ -48,6 +49,7 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.DisplayProductVersion = this.DisplayProductVersion;
       result.DisplayAdvKB = this.DisplayAdvKB;
       result.DisplayAdvProducts = this.DisplayAdvProducts;
       result.DisplayPortalPhone = this.DisplayPortalPhone;

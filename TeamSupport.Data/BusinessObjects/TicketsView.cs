@@ -440,6 +440,7 @@ namespace TeamSupport.Data
         ,tv.[SlaWarningTime]
         ,tv.[SlaViolationDate]
         ,tv.[SlaWarningDate]
+        ,tv.[TicketSource]
         ,CAST(0 AS dec(24,6)) AS [SlaViolationHours]
         ,CAST(0 AS dec(24,6)) AS [SlaWarningHours]
         ,tv.ViewerID

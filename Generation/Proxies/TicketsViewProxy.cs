@@ -71,6 +71,7 @@ namespace TeamSupport.Data
     [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public DateTime? SlaViolationDate { get; set; }
     [DataMember] public DateTime? SlaWarningDate { get; set; }
+    [DataMember] public string TicketSource { get; set; }
           
   }
   
@@ -79,6 +80,7 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
+      result.TicketSource = this.TicketSource;
       result.NeedsIndexing = this.NeedsIndexing;
       result.Customers = this.Customers;
       result.Contacts = this.Contacts;

@@ -380,6 +380,32 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public string GetTicketTypeTemplateText(int ticketTypeID)
+    {
+      if (TicketTemplates.GetTicketTypeCount(TSAuthentication.GetLoginUser()) > 0)
+      {
+        TicketTemplate template = TicketTemplates.GetByTicketType(TSAuthentication.GetLoginUser(), ticketTypeID);
+        if (template == null) return "";
+        if (template.OrganizationID != TSAuthentication.OrganizationID) return "";
+        return template.TemplateText;
+      }
+
+      return null;
+    }
+
+    [WebMethod]
+    public string GetValueTemplateText(string value)
+    {
+      int count = TicketTemplates.GetTriggerTextCount(TSAuthentication.GetLoginUser());
+      if (count < 1) return null;
+
+      TicketTemplate template = TicketTemplates.GetByTriggerText(TSAuthentication.GetLoginUser(), value);
+      if (template == null) return "";
+      if (template.OrganizationID != TSAuthentication.OrganizationID) return "";
+      return template.TemplateText;
+    }
+    
+    [WebMethod]
     public void DeleteTicket(int ticketID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -751,6 +777,33 @@ namespace TSWebServices
       }
 
       return GetTicketCustomers(ticketID);
+    }
+
+    [WebMethod]
+    public TicketCustomer GetTicketCustomer(string type, int id)
+    {
+      if (type == "u")
+      {
+        ContactsViewItem contact = ContactsView.GetContactsViewItem(TSAuthentication.GetLoginUser(), id);
+        if (contact.OrganizationParentID != TSAuthentication.OrganizationID) return null;
+        TicketCustomer customer = new TicketCustomer();
+        customer.Company = contact.Organization;
+        customer.OrganizationID = contact.OrganizationID;
+        customer.Contact = contact.FirstName + " " + contact.LastName;
+        customer.UserID = contact.UserID;
+        return customer;
+      }
+      else
+      {
+        Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), id);
+        if (organization.ParentID != TSAuthentication.OrganizationID) return null;
+        TicketCustomer customer = new TicketCustomer();
+        customer.Company = organization.Name;
+        customer.OrganizationID = organization.OrganizationID;
+        customer.UserID = null;
+        return customer;
+      }
+
     }
 
     [WebMethod]
@@ -1345,6 +1398,134 @@ namespace TSWebServices
       attachment.Delete();
       attachment.Collection.Save();
     }
+
+    [WebMethod]
+    public NewTicketSaveInfo DummyTicketSaveInfo()
+    {
+      return null;
+    }
+
+    [WebMethod]
+    public int[] NewTicket(string data)
+    {
+      List<int> result = new List<int>();
+      NewTicketSaveInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<NewTicketSaveInfo>(data);
+
+      Ticket ticket = (new Tickets(TSAuthentication.GetLoginUser())).AddNewTicket();
+      ticket.OrganizationID = TSAuthentication.OrganizationID;
+      ticket.TicketSource = info.ChatID != null ? "Chat" : "Agent";
+      ticket.Name = info.Name;
+      ticket.TicketTypeID = info.TicketTypeID;
+      ticket.TicketStatusID = info.TicketStatusID;
+      ticket.TicketSeverityID = info.TicketSeverityID;
+      ticket.UserID = info.UserID < 0 ? null : (int?) info.UserID;
+      ticket.GroupID = info.GroupID < 0 ? null : (int?) info.GroupID;
+      ticket.ProductID = info.ProductID < 0 ? null : (int?) info.ProductID;
+      ticket.ReportedVersionID = info.ReportedID < 0 ? null : (int?) info.ReportedID;
+      ticket.SolvedVersionID = info.ResolvedID < 0 ? null : (int?) info.ResolvedID;
+      ticket.ProductID = info.ProductID < 0 ? null : (int?) info.ProductID;
+      ticket.IsKnowledgeBase = info.IsKnowledgebase;
+      ticket.IsVisibleOnPortal = info.IsVisibleOnPortal;
+      ticket.ParentID = info.ParentTicketID;
+      ticket.Collection.Save();
+
+      TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
+      action.ActionTypeID = null;
+      action.Name = "Description";
+      action.SystemActionTypeID = SystemActionType.Description;
+      action.Description = info.Description;
+      action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
+      action.IsKnowledgeBase = ticket.IsKnowledgeBase;
+      action.TicketID = ticket.TicketID;
+      action.Collection.Save();
+
+      result.Add(ticket.TicketID);
+      result.Add(action.ActionID);
+
+      foreach (int ticketID in info.RelatedTickets)
+      {
+        AddRelated(ticket.TicketID, ticketID, null);
+      }
+
+      foreach (int ticketID in info.ChildTickets)
+      {
+        AddRelated(ticket.TicketID, ticketID, true);
+      }
+
+      foreach (int userID in info.Subscribers)
+      {
+        Subscriptions.AddSubscription(ticket.Collection.LoginUser, userID, ReferenceType.Tickets, ticket.TicketID);
+      }
+
+      foreach (int userID in info.Queuers)
+      {
+        TicketQueue.Enqueue(ticket.Collection.LoginUser, ticket.TicketID, userID);
+      }
+
+      foreach (string tag in info.Tags)
+      {
+        AddTag(ticket.TicketID, tag);
+      }
+
+      foreach (int id in info.Customers)
+      {
+        AddTicketCustomer(ticket.TicketID, "o", id);
+      }
+
+      foreach (int id in info.Contacts)
+      {
+        AddTicketCustomer(ticket.TicketID, "u", id);
+      }
+
+      foreach (CustomFieldSaveInfo field in info.Fields)
+      {
+        CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, ticket.TicketID);
+        if (field.Value == null)
+        {
+          customValue.Value = null;
+          customValue.Collection.Save();
+          return null;
+        }
+
+        if (customValue.FieldType == CustomFieldType.DateTime)
+        {
+          customValue.Value = ((DateTime)field.Value).ToString();
+        }
+        else
+        {
+          customValue.Value = field.Value.ToString();
+        }
+
+        customValue.Collection.Save();
+      }
+
+      if (info.ChatID != null)
+      {
+
+        Chat chat = Chats.GetChat(ticket.Collection.LoginUser, (int)info.ChatID);
+        if (chat != null)
+        {
+          TeamSupport.Data.Action chatAction = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
+          chatAction.ActionTypeID = null;
+          chatAction.Name = "Chat";
+          chatAction.SystemActionTypeID = SystemActionType.Chat;
+          chatAction.Description = chat.GetHtml(true, UserSession.LoginUser.OrganizationCulture);
+          chatAction.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
+          chatAction.IsKnowledgeBase = ticket.IsKnowledgeBase;
+          chatAction.TicketID = ticket.TicketID;
+          chatAction.Collection.Save();
+          chat.ActionID = chatAction.ActionID;
+          chat.Collection.Save();
+        }
+      }
+
+
+      User user = Users.GetUser(ticket.Collection.LoginUser, TSAuthentication.UserID);
+      if (user.SubscribeToNewTickets) Subscriptions.AddSubscription(ticket.Collection.LoginUser, TSAuthentication.UserID, ReferenceType.Tickets, ticket.TicketID);
+
+
+      return result.ToArray();
+    }
   }
 
   [DataContract]
@@ -1410,6 +1591,42 @@ namespace TSWebServices
     [DataMember] public CustomValueProxy[] CustomValues { get; set; }
     [DataMember] public UserInfo[] Subscribers { get; set; }
     [DataMember] public UserInfo[] Queuers { get; set; }
+  }
+
+  [DataContract(Namespace = "http://teamsupport.com/")]
+  public class NewTicketSaveInfo
+  {
+    public NewTicketSaveInfo() { }
+    [DataMember] public string Name { get; set; }
+    [DataMember] public int TicketTypeID { get; set; }
+    [DataMember] public int TicketStatusID { get; set; }
+    [DataMember] public int TicketSeverityID { get; set; }
+    [DataMember] public int UserID { get; set; }
+    [DataMember] public int GroupID { get; set; }
+    [DataMember] public int ProductID { get; set; }
+    [DataMember] public int ReportedID { get; set; }
+    [DataMember] public int ResolvedID { get; set; }
+    [DataMember] public bool IsVisibleOnPortal { get; set; }
+    [DataMember] public bool IsKnowledgebase { get; set; }
+    [DataMember] public string Description { get; set; }
+    [DataMember] public int? ChatID { get; set; }
+    [DataMember] public int? ParentTicketID { get; set; }
+    [DataMember] public List<int> RelatedTickets { get; set; }
+    [DataMember] public List<int> ChildTickets { get; set; }
+    [DataMember] public List<int> Customers { get; set; }
+    [DataMember] public List<int> Contacts { get; set; }
+    [DataMember] public List<string> Tags { get; set; }
+    [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
+    [DataMember] public List<int> Subscribers { get; set; }
+    [DataMember] public List<int> Queuers { get; set; }
+  }
+
+  [DataContract(Namespace = "http://teamsupport.com/")]
+  public class CustomFieldSaveInfo
+  {
+    public CustomFieldSaveInfo() { }
+    [DataMember] public int CustomFieldID { get; set; }
+    [DataMember] public object Value { get; set; }
   }
 
   [DataContract]

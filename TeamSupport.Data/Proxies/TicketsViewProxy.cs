@@ -65,7 +65,7 @@ namespace TeamSupport.Data
     [DataMember] public bool IsSubscribed { get; set; }
     [DataMember] public bool IsEnqueued { get; set; }
     [DataMember] public int? ViewerID { get; set; }
-          
+    [DataMember] public string TicketSource { get; set; }
   }
   
   public partial class TicketsViewItem : BaseItem
@@ -73,6 +73,7 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
+      result.TicketSource = this.TicketSource;
       result.Customers = this.Customers;
       result.Contacts = this.Contacts;
       result.SlaWarningHours = this.SlaWarningHours;

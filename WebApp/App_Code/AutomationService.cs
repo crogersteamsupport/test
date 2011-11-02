@@ -140,15 +140,10 @@ namespace TSWebServices
     }
 
     [WebMethod(true)]
-    public TicketAutomationTriggerProxy SaveTrigger(SaveTriggerData data)
+    public TicketAutomationTriggerProxy SaveTrigger(string value)
     {
+      SaveTriggerData data = Newtonsoft.Json.JsonConvert.DeserializeObject<SaveTriggerData>(value);
       HttpContext.Current.Request.InputStream.Position = 0;
-      string rawJson = null;
-      using (StreamReader reader = new StreamReader(HttpContext.Current.Request.InputStream))
-      {
-        rawJson = reader.ReadToEnd();
-      }
-
 
       TicketAutomationTrigger trigger = null;
       if (data.TriggerID > -1)

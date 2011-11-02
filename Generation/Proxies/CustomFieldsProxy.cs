@@ -14,6 +14,7 @@ namespace TeamSupport.Data
   {
     public CustomFieldProxy() {}
     [DataMember] public int CustomFieldID { get; set; }
+    [DataMember] public int? CustomFieldCategoryID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public string Name { get; set; }
     [DataMember] public string ApiFieldName { get; set; }
@@ -52,6 +53,7 @@ namespace TeamSupport.Data
       result.ApiFieldName = this.ApiFieldName;
       result.Name = this.Name;
       result.OrganizationID = this.OrganizationID;
+      result.CustomFieldCategoryID = this.CustomFieldCategoryID;
       result.CustomFieldID = this.CustomFieldID;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);

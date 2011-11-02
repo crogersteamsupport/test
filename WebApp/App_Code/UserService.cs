@@ -43,7 +43,15 @@ namespace TSWebServices
 
       return user.GetProxy();
     }
-    
+
+    [WebMethod]
+    public UserProxy GetUser(int userID)
+    {
+      User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+      if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
+      return user.GetProxy();
+    }
+
     [WebMethod]
     public UserProxy ToggleUserStatus()
     {

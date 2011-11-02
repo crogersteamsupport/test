@@ -95,6 +95,7 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
     cbDeflection.Checked = portalOption.DeflectionEnabled == null ? false : (bool)portalOption.DeflectionEnabled;
     textPortalName.Text = portalOption.PortalName;
     cbProduct.Checked = portalOption.DisplayProducts == null ? false : (bool) portalOption.DisplayProducts;
+    cbVersion.Checked = portalOption.DisplayProductVersion;
     cbArticles.Checked = organization.IsPublicArticles;
     cbKb.Checked = portalOption.KBAccess == null ? false : (bool)portalOption.KBAccess;
     cbGroup.Checked = portalOption.DisplayGroups == null ? false : (bool)portalOption.DisplayGroups;
@@ -141,6 +142,7 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
     portalOption.KBAccess = cbKb.Checked;
     portalOption.DisplayGroups = cbGroup.Checked;
     portalOption.DisplayProducts = cbProduct.Checked;
+    portalOption.DisplayProductVersion = cbVersion.Checked;
     portalOption.BasicPortalColumnWidth = textWidth.Value == null ? null : (int?)textWidth.Value;
     portalOption.BasicPortalDirections = textBasicPortalDirections.Text == null ? "" : textBasicPortalDirections.Text;
     portalOption.AdvPortalWidth = textAdvWidth.Value == null ? null : (int?)textAdvWidth.Value;

@@ -133,6 +133,10 @@ public partial class Frames_AdminPortal : BaseFramePage
       builder.Append(portalOption.DisplayProducts == null ? "True" : ((bool)portalOption.DisplayProducts).ToString());
       builder.Append("</td></tr>");
 
+      builder.Append("<tr><td><strong>Display Product Version Pulldown in Portals:</strong></td><td>");
+      builder.Append(portalOption.DisplayProductVersion.ToString());
+      builder.Append("</td></tr>");
+
       builder.Append("<tr><td><strong>Display Group Pulldown in Portals:</strong></td><td>");
       builder.Append(portalOption.DisplayGroups == null ? "True" : ((bool)portalOption.DisplayGroups).ToString());
       builder.Append("</td></tr>");
