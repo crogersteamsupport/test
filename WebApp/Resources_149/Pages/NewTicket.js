@@ -493,6 +493,27 @@ $(document).ready(function () {
 
   function ellipseString(text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
+  var execGetCompany = null;
+  function execGetCompany(request, response) {
+    if (execGetCompany) { execGetCompany._executor.abort(); }
+    execGetCompany = top.Ts.Services.Organizations.SearchOrganization(request.term, function (result) { response(result); });
+  }
+  /*
+  $('.ticket-new-customer-company')
+    .autocomplete({
+      minLength: 2,
+      source: execGetCompany,
+      select: function (event, ui) {
+        $(this)
+        .data('item', ui.item)
+        .removeClass('ui-autocomplete-loading')
+        .next().show();
+      }
+
+    });
+    
+    */
+
   $('.ticket-customer-new').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -505,24 +526,26 @@ $(document).ready(function () {
       e.stopPropagation();
       $('.ticket-rail-input').remove();
       $(this).parent().find('.ui-icon').removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
+
       var container = $('<div>')
-    .addClass('ticket-rail-input')
-    .prependTo($(this).parent().next().show());
+        .addClass('ticket-rail-input')
+        .prependTo($(this).parent().next().show());
+
       var input = $('<input type="text">')
-    .addClass('ui-corner-all ui-widget-content')
-    .autocomplete({
-      minLength: 2,
-      source: getCustomers,
-      select: function (event, ui) {
-        $(this)
-    .data('item', ui.item)
-    .removeClass('ui-autocomplete-loading')
-    .next().show();
-      }
-    })
-    .appendTo(container)
-    .focus()
-    .width(container.width() - 48 - 12);
+        .addClass('ui-corner-all ui-widget-content')
+        .autocomplete({
+          minLength: 2,
+          source: getCustomers,
+          select: function (event, ui) {
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading')
+            .next().show();
+          }
+        })
+        .appendTo(container)
+        .focus()
+        .width(container.width() - 48 - 12);
 
       $('<span>')
     .addClass('ts-icon ts-icon-save')
@@ -1245,6 +1268,9 @@ $(document).ready(function () {
       $('.new-ticket-save-buttons').removeClass('saving');
     });
   });
+
+  $('a').addClass('ui-state-default ts-link');
+
 });
 
 

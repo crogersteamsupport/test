@@ -1509,7 +1509,7 @@ namespace TSWebServices
           chatAction.ActionTypeID = null;
           chatAction.Name = "Chat";
           chatAction.SystemActionTypeID = SystemActionType.Chat;
-          chatAction.Description = chat.GetHtml(true, UserSession.LoginUser.OrganizationCulture);
+          chatAction.Description = chat.GetHtml(true, chatAction.Collection.LoginUser.OrganizationCulture);
           chatAction.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
           chatAction.IsKnowledgeBase = ticket.IsKnowledgeBase;
           chatAction.TicketID = ticket.TicketID;
@@ -1526,6 +1526,13 @@ namespace TSWebServices
 
       return result.ToArray();
     }
+
+    [WebMethod]
+    public void AddNewTicketCustomer(string first, string last, string email, string company, int? organizationID)
+    { 
+    
+    }
+
   }
 
   [DataContract]

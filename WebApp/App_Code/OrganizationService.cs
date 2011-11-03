@@ -421,6 +421,22 @@ namespace TSWebServices
 
       return list.ToArray();
     }
+
+    [WebMethod]
+    public AutocompleteItem[] SearchOrganization(string searchTerm)
+    {
+      Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+      organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true);
+
+      List<AutocompleteItem> list = new List<AutocompleteItem>();
+      foreach (Organization organization in organizations)
+      {
+        list.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString(), organization));
+      }
+
+      return list.ToArray();
+    }
+
   }
 
 
