@@ -136,7 +136,8 @@ namespace TeamSupport.Data
       Batchbook,
       FreshBooks,
       MailChimp,
-      Zoho
+      ZohoCRM,
+      ZohoReports
   }
 
   public enum ReportType { 

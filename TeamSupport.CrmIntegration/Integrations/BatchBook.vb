@@ -180,7 +180,7 @@ Namespace TeamSupport
                 Dim returnXML As XmlDocument = Nothing
 
                 If CRMLinkRow.Username <> "" Then
-                    returnXML = GetXML(New NetworkCredential(CRMLinkRow.SecurityToken, "X"), BBUri)
+                    returnXML = GetXML(BBUri, New NetworkCredential(CRMLinkRow.SecurityToken, "X"))
                 End If
                 Return returnXML
             End Function

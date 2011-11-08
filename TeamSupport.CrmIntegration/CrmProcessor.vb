@@ -93,9 +93,15 @@ Namespace TeamSupport
                             Else
                                 Return
                             End If
-                        Case IntegrationType.Zoho
-                            If Settings.ReadBool("ZohoEnabled", True) Then
-                                CRM = New Zoho(CRMLinkTableItem, Log, LoginUser, Me)
+                        Case IntegrationType.ZohoCRM
+                            If Settings.ReadBool("ZohoCRMEnabled", True) Then
+                                CRM = New ZohoCRM(CRMLinkTableItem, Log, LoginUser, Me)
+                            Else
+                                Return
+                            End If
+                        Case IntegrationType.ZohoReports
+                            If Settings.ReadBool("ZohoReportsEnabled", True) Then
+                                CRM = New ZohoReports(CRMLinkTableItem, Log, LoginUser, Me)
                             Else
                                 Return
                             End If

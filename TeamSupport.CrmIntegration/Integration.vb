@@ -28,7 +28,7 @@ Namespace TeamSupport
 
             Public MustOverride Function PerformSync() As Boolean
 
-            Protected Delegate Function GetCompanyXML(ByVal Tag As String) As XmlDocument
+            Protected Delegate Function GetCompanyXML() As XmlDocument
             Protected Delegate Function ParseCompanyXML(ByVal CompaniesToSync As XmlDocument) As List(Of CompanyData)
             Protected Delegate Function GetPeopleXML(ByVal AccountID As String) As XmlDocument
             Protected Delegate Function ParsePeopleXML(ByVal PeopleToSync As XmlDocument) As List(Of EmployeeData)
@@ -38,21 +38,10 @@ Namespace TeamSupport
                 Dim CompanySyncData As List(Of CompanyData) = Nothing
 
                 'retrieve company data
-                If CRMLinkRow.TypeFieldMatch.Contains(",") Then
-                    For Each TagToMatch As String In CRMLinkRow.TypeFieldMatch.Split(",")
-                        If Processor.IsStopped Then
-                            Return False
-                        End If
-                        CompaniesToSync = GetCompanyXML(Trim(TagToMatch))
+                CompaniesToSync = GetCompanyXML()
 
-                    Next
-
-                Else
-                    CompaniesToSync = GetCompanyXML(CRMLinkRow.TypeFieldMatch)
-
-                    If CompaniesToSync IsNot Nothing Then
-                        CompanySyncData = ParseCompanyXML(CompaniesToSync)
-                    End If
+                If CompaniesToSync IsNot Nothing Then
+                    CompanySyncData = ParseCompanyXML(CompaniesToSync)
                 End If
 
                 If CompanySyncData IsNot Nothing Then
@@ -366,7 +355,11 @@ Namespace TeamSupport
 
             End Sub
 
-            Protected Function GetXML(ByVal Key As NetworkCredential, ByVal Address As Uri) As XmlDocument
+            Protected Function GetXML(ByVal Address As Uri) As XmlDocument
+                Return GetXML(Address, Nothing)
+            End Function
+
+            Protected Function GetXML(ByVal Address As Uri, ByVal Key As NetworkCredential) As XmlDocument
                 Dim returnXML As XmlDocument = Nothing
 
                 If Address IsNot Nothing Then

@@ -156,7 +156,7 @@ Namespace TeamSupport
             Private Function GetMailChimpXML(ByVal PathAndQuery As String) As XmlDocument
                 Dim MCUri As New Uri("https://" & datacenter & ".api.mailchimp.com/1.3/" & PathAndQuery & "&output=xml")
 
-                Return GetXML(Nothing, MCUri)
+                Return GetXML(MCUri)
             End Function
 
             Private Function BatchSubscribe(ByVal postString As String) As Boolean
