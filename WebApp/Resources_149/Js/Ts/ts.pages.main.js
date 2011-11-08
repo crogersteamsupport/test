@@ -521,14 +521,11 @@ Ts.Pages.Main.prototype =
               .addClass('main-tab-content-item main-tab-newticket main-ticket-new')
               .appendTo('.main-tab-content');
 
-            var showNewTicket = window.location.hostname.indexOf('127.0.0.1') > -1 || window.location.hostname.indexOf('beta') > -1 || window.location.hostname.indexOf('kevin') > -1;
-            var nwLnk = showNewTicket ? 'Resources_149/Pages/NewTicket.html' : 'frames/newticket.aspx';
-
             $('<iframe>')
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
               .appendTo(div)
-              .attr('src', nwLnk + query);
+              .attr('src', 'Resources_149/Pages/NewTicket.html' + query);
             //.attr('src', 'frames/newticket.aspx' + query);
           }
           else {

@@ -123,10 +123,10 @@ $(document).ready(function () {
 
   var users = top.Ts.Cache.getUsers();
   for (var i = 0; i < users.length; i++) {
-    $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo('.newticket-user');
+    var option = $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo('.newticket-user');
   }
   addUnassignedComboItem($('.newticket-user').combobox());
-
+  $('.newticket-user').combobox('setValue', top.Ts.System.User.UserID);
 
   var groups = top.Ts.Cache.getGroups();
   for (var i = 0; i < groups.length; i++) {
@@ -262,7 +262,7 @@ $(document).ready(function () {
 
     $('<input>')
     .attr('type', 'text')
-    .addClass('ui-widget-content ui-corner-all')
+    .addClass('ui-widget-content ui-corner-all newticket-custom-datetime')
     .css('width', '150px')
     .datetimepicker()
     .appendTo(div);
@@ -500,19 +500,19 @@ $(document).ready(function () {
   }
   /*
   $('.ticket-new-customer-company')
-    .autocomplete({
-      minLength: 2,
-      source: execGetCompany,
-      select: function (event, ui) {
-        $(this)
-        .data('item', ui.item)
-        .removeClass('ui-autocomplete-loading')
-        .next().show();
-      }
+  .autocomplete({
+  minLength: 2,
+  source: execGetCompany,
+  select: function (event, ui) {
+  $(this)
+  .data('item', ui.item)
+  .removeClass('ui-autocomplete-loading')
+  .next().show();
+  }
 
-    });
+  });
     
-    */
+  */
 
   $('.ticket-customer-new').click(function (e) {
     e.preventDefault();
@@ -537,10 +537,10 @@ $(document).ready(function () {
           minLength: 2,
           source: getCustomers,
           select: function (event, ui) {
-            $(this)
-            .data('item', ui.item)
-            .removeClass('ui-autocomplete-loading')
-            .next().show();
+            $(this).removeClass('ui-autocomplete-loading');
+            top.Ts.Services.Tickets.GetTicketCustomer(ui.item.data, ui.item.id, function (result) {
+              appendCustomer(result);
+            });
           }
         })
         .appendTo(container)
@@ -1071,6 +1071,13 @@ $(document).ready(function () {
         }
 
     }
+
+    var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+    if (chatID && chatID != null) {
+      top.Ts.Services.Tickets.GetChatCustomer(chatid, function (result) {
+        appendCustomer(result);
+      });
+    }
   }
 
 
@@ -1192,6 +1199,12 @@ $(document).ready(function () {
         case top.Ts.CustomFieldType.PickList:
           field.Value = $(this).find('select').val();
           break;
+        case top.Ts.CustomFieldType.DateTime:
+          //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+          var dt = $(this).find('input').datetimepicker('getDate');
+          field.Value = dt == null ? null : dt.toUTCString();
+          //field.Value = $(this).find('input').datetimepicker('getDate');
+          break;
         default:
           field.Value = $(this).find('input').val();
       }
@@ -1240,9 +1253,11 @@ $(document).ready(function () {
     });
 
     var chatID = top.Ts.Utils.getQueryValue('chatid', window)
-    if (chatID && chatID != null) info.ChatID = chatID;
+    if (chatID && chatID != null) {
+      info.ChatID = chatID;
+    }
 
-    top.Ts.Services.Tickets.NewTicket(JSON.stringify(info), function (result) {
+    top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
 
       if (result == null) {
         alert('There was an error saving your ticket.  Please try again.');
@@ -1268,6 +1283,7 @@ $(document).ready(function () {
       $('.new-ticket-save-buttons').removeClass('saving');
     });
   });
+
 
   $('a').addClass('ui-state-default ts-link');
 

@@ -79,7 +79,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .label-block { float:left; margin: 1em 1em 0 1em; display:inline; min-height: 4em;}
 */
 .label { font-weight:bold; display:block; margin-bottom: .25em; white-space:nowrap; }
-.label-block { float:left; margin: .25em .25em .25em 0; padding: .25em .25em; display:inline; height: 40px; border: 1px solid #fff;}
+.label-block { float:left; margin: .25em .25em .25em 0; padding: .25em .25em; display:inline; height: 40px; border: 1px solid #fcfdfd; }
 
 .checkbox.label-block { line-height: 40px; height:40px; }
 .checkbox.label-block label { vertical-align: middle; margin: 0px; top:0; font-weight:bold; padding-left: .5em;}    

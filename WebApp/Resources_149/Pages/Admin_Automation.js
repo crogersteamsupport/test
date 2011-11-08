@@ -259,7 +259,7 @@ AdminAuto = function () {
     select.empty();
     var products = top.Ts.Cache.getProducts();
     for (var i = 0; i < products.length; i++) {
-      select.append('<option value="' + products[i].id + '">' + products[i].Name + '</option>');
+      select.append('<option value="' + products[i].ProductID + '">' + products[i].Name + '</option>');
     }
     select.find('option:first').attr('selected', 'selected');
     return select;

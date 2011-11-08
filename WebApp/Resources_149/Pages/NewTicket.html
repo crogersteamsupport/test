@@ -39,13 +39,16 @@
     .new-ticket-save-buttons button { margin-right: 1em;}
     .new-ticket-save-buttons.saving { background: transparent url('../Images/loading/dots64.gif') no-repeat scroll 50% 50%; }
     .new-ticket-save-buttons.saving button { display: none;}
+
   </style>
+
   <!--[if IE 7]>
     <style type="text/css">
       .ticket-removable-item { width: 250px;}
       .ticket-rail h3 a { margin-top: -1.5em; margin-right: 1em;}
       .ticket-removable-item-description { float:none; clear:left;}
       .ticket-name-value { width: 250px;}
+      .newticket-fields { width: 100%; }
       #divProduct .ts-icon-info { float:left; margin-left: .5em;}
     </style>
   <![endif]-->
@@ -54,30 +57,28 @@
   <div class="ts-loading page-loading ui-helper-hidden">
   </div>
 
-  <div class="ticket-panel-content ui-widget-content ts-color-bg-accent ui-widget ui-helper-hiddenx">
+  <div class="ticket-panel-content ui-widget-content ts-color-bg-accent ui-widget">
     <div class="ticket-content-wrapper">
       <div class="ticket-content">
-        <div class="ui-widget-content ui-corner-all ticket-content-section">
+        <div class="ui-widget-content ui-corner-all ticket-content-section ">
           <div class="label-block" style="float: none; display: block;">
             <span class="label">New Ticket Name</span>
             <input type="text" class="ui-corner-all ui-widget-content text newticket-name" style="width: 99%" />
           </div>
-          
+
           <div class="ui-helper-clearfix"></div>
           <textarea class="newticket-desc" style="width: 100%; height: 50px;"></textarea>
 
-          <div class="ui-helper-clearfix"></div>
-                    <ul class="upload-queue">
-                    </ul>
-
-          <div class="ui-helper-clearfix"></div>
-            <form class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
-              <input type="file" name="file[]">
-              <a class="ui-state-default ts-link" href="#" title="You can drag and drop your attachments here.">Attach File >></a>
-            </form>
+          <ul class="upload-queue"></ul>
           <div class="ui-helper-clearfix"></div>
 
-          <div class="ui-helper-clearfix"></div>
+          <form class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+            <input type="file" name="file[]">
+            <a class="ui-state-default ts-link" href="#" title="You can drag and drop your attachments here.">Attach File >></a>
+          </form>
+          <div class="ui-helper-clearfix" style="clear:both;"></div>
+
+
           <div class="label-block checkbox">
             <input type="checkbox" class="newticket-portal"><label>Visible to Customers</label>
           </div>
@@ -119,10 +120,9 @@
               <select class="newticket-resolved"></select>
             </div>
           </div>
-          <div class="ui-helper-clearfix">
-          </div>
-
+          <div class="ui-helper-clearfix"></div>
           <div class="new-ticket-save-buttons"> <button class="newticket-save">Save</button><button class="newticket-save-close">Save &amp Close</button><button class="newticket-cancel">Cancel</button></div>
+          <div class="ui-helper-clearfix"></div>
         </div>
       </div>
     </div>

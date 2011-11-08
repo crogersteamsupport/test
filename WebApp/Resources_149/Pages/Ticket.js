@@ -644,6 +644,103 @@ $(document).ready(function () {
       }
     });
 
+  function appendReminders(reminders) {
+    $('#divReminders').empty().append('<div class="ts-separator ui-widget-content">');
+
+    for (var i = 0; i < reminders.length; i++) {
+      appendReminder(subscribers[i]);
+    }
+  }
+
+  function appendReminder(reminder) {
+    var item = $('<div>')
+      .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-reminder')
+      .data('data', reminder);
+
+    $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
+    var title = $('<div>').addClass('ticket-removable-item-title').appendTo(item);
+    $('<a>')
+      .attr('href', '#')
+      .addClass('value ui-state-default ts-link')
+      .click(function (e) {
+        e.preventDefault();
+        //top.Ts.MainPage.openUser(subscriber.UserID);
+      })
+      .text(ellipseString('reminder name', 30))
+      .appendTo(title);
+
+    $('#divReminders').append(item);
+
+  }
+
+  $('#divReminders').delegate('.ticket-reminder .ui-icon-close', 'click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var item = $(this).parent();
+    var user = item.data('o');
+    item.remove();
+    top.Ts.Services.Tickets.RemoveReminder(_ticketID, false, user.UserID, function (subscribers) {
+      appendReminders(subscribers);
+    }, function () {
+      alert('There was a problem removing the reminder from the ticket.');
+    });
+  });
+
+  $('.ticket-reminder-add')
+    .click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      $('.ticket-rail-input').remove();
+
+      $(this).parent().find('.ui-icon').removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
+
+      var container = $('<div>')
+        .addClass('ticket-rail-input')
+        .prependTo($(this).parent().next().show());
+
+      var input = $('<input type="text">')
+        .addClass('ui-corner-all ui-widget-content')
+        .autocomplete({
+          minLength: 2,
+          source: getUsers,
+          select: function (event, ui) {
+            $(this)
+            .data('userID', ui.item.id)
+            .removeClass('ui-autocomplete-loading')
+            .next().show();
+          }
+        })
+        .appendTo(container)
+        .focus()
+        .width(container.width() - 48 - 12);
+
+      $('<span>')
+        .addClass('ts-icon ts-icon-save')
+        .hide()
+        .click(function (e) {
+          var userID = $(this).prev().data('userID');
+          $(this).parent().remove();
+          top.Ts.Services.Tickets.SetSubscribed(_ticketID, true, userID, function (subscribers) {
+            appendSubscribers(subscribers);
+          }, function () {
+            $(this).parent().remove();
+            alert('There was an error adding the subscriber.');
+          });
+
+        })
+        .appendTo(container)
+
+      $('<span>')
+        .addClass('ts-icon ts-icon-cancel')
+        .click(function (e) {
+          $(this).parent().remove();
+        })
+      .appendTo(container);
+
+      $('<div>').addClass('clearfix').appendTo(container);
+    });
+
+
   var clueTipOptions = {
     mouseOutClose: true,
     width: 400,
@@ -667,7 +764,6 @@ $(document).ready(function () {
     },
     onActivate: function (ct, c) {
       $(this).mouseout(function () {
-        alert('out');
       });
     }
   };
@@ -833,7 +929,7 @@ $(document).ready(function () {
     element.find('.ticket-action-form-cancel').click(function () { callback(null); element.remove(); });
     element.find('.ticket-action-form-save').click(function () {
       $(this).closest('.ticket-action-form-buttons').addClass('saving');
-      saveAction(element, action, function (result) {
+      var saved = saveAction(element, action, function (result) {
         if (element.find('.upload-queue li').length > 0 && result !== null) {
           newAction = result;
           element.find('.upload-queue li').each(function (i, o) {
@@ -845,10 +941,12 @@ $(document).ready(function () {
           });
         }
         else {
+          $(this).closest('.ticket-action-form-buttons').removeClass('saving');
           element.remove();
           callback(result);
         }
       });
+      if (saved == false) $(this).closest('.ticket-action-form-buttons').removeClass('saving');
     });
     var uploadName = 'new_action';
     if (action != null) {
@@ -1781,6 +1879,7 @@ $(document).ready(function () {
     });
 
   });
+
   addToolbarButton('btnSubscribe', 'ts-icon-subscribed', 'Subscribe', function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -2186,7 +2285,7 @@ $(document).ready(function () {
 
 
   function appendCustomEditDate(field, element) {
-    var date = field.Value === null ? null : top.Ts.Utils.getMsDate(field.Value);
+    var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
     var result = $('<a>')
       .attr('href', '#')
       .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))

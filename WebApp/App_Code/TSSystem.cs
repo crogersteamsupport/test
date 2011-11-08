@@ -433,7 +433,7 @@ namespace TSWebServices
       CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), customFieldID, refID);
       if (value == null)
       {
-        customValue.Value = null;
+        customValue.Value = "";
         customValue.Collection.Save();
         return null;
       }

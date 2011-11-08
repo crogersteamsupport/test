@@ -386,12 +386,13 @@ namespace TeamSupport.Data
       string sort = filter.SortColumn.Trim();
       switch (sort)
       {
-        case "Severity": sort = "SeverityPosition"; break;
-        case "Status": sort = "StatusPosition"; break;
-        default: break;
+        case "Severity": sort = string.Format("[SeverityPosition] {0}", (filter.SortAsc ? "ASC" : "DESC")); break;
+        case "Status": sort = string.Format("[StatusPosition] {0}, [Status] {0}, [TicketTypeName] {0}", (filter.SortAsc ? "ASC" : "DESC")); break;
+        default: 
+          sort = string.Format("[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
+          break;
       }
 
-      sort = string.Format("[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
 
       string fields =
         @"

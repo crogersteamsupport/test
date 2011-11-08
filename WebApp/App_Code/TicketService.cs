@@ -807,6 +807,14 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public TicketCustomer GetChatCustomer(int chatID)
+    { 
+      Chat chat = Chats.GetChat(TSAuthentication.GetLoginUser(), chatID);
+      if (chat != null || chat.OrganizationID != TSAuthentication.OrganizationID) return null;
+      return GetTicketCustomer("u", chat.GetInitiatorLinkedUserID());
+    }
+
+    [WebMethod]
     public TicketCustomer[] RemoveTicketContact(int ticketID, int userID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -1482,18 +1490,24 @@ namespace TSWebServices
         CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, ticket.TicketID);
         if (field.Value == null)
         {
-          customValue.Value = null;
-          customValue.Collection.Save();
-          return null;
-        }
-
-        if (customValue.FieldType == CustomFieldType.DateTime)
-        {
-          customValue.Value = ((DateTime)field.Value).ToString();
+          customValue.Value = "";
         }
         else
         {
-          customValue.Value = field.Value.ToString();
+          if (customValue.FieldType == CustomFieldType.DateTime)
+          {
+            //customValue.Value = ((DateTime)field.Value).ToString();
+            DateTime dt;
+            if (DateTime.TryParse((string)field.Value, null, System.Globalization.DateTimeStyles.AdjustToUniversal, out dt))
+            {
+              customValue.Value = dt.ToString();              
+            }
+          }
+          else
+          {
+            customValue.Value = field.Value.ToString();
+          }
+
         }
 
         customValue.Collection.Save();

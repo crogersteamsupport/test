@@ -267,10 +267,10 @@ ORDER BY cf.Position";
           string[] items = field.ListValues.Split('|');
           if (items.Length > 0) value.Value = items[0];
         }
-
-        
         value.RefID = refID;
-        return value;
+        value.Collection.Save();
+        values.LoadByFieldID(customFieldID, refID);
+        return values[0];
       }
       else
       {

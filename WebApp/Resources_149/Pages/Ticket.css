@@ -1,6 +1,6 @@
 ﻿    .ui-popup { position: absolute; z-index: 5000; }
     .ticket-panel-toolbar { border-top: none; }
-    .ticket-panel-content { overflow-x: hidden; overflow-y: auto; border: none; height:100%;}
+    .ticket-panel-content { overflow-x: hidden; overflow-y: auto; border: none; height:100%; position:relative;}
     
     .ticket-number { line-height: 16px;}
     .ticket-number .ticket-sla-status { float:left; margin-right: 3px;}
@@ -52,8 +52,8 @@
     .ticket-rail-input .buttons { margin: .5em 0 0 1em;}
     .ticket-rail-input .buttons button { margin-left: .5em; padding:0 0; float:none; }
 
-    .ticket-content { margin-right: 300px; padding: 0 1em 1em 1em; }
-    .ticket-content-wrapper { float: left; width: 100%;  }
+    .ticket-content { margin-right: 300px; padding: 0 1em 1em 1em;  }
+    .ticket-content-wrapper { float: left; width: 100%; }
 
     .ticket-removable-item { padding: .25em .5em; margin: 0 .5em .5em 0; float:left;  }
     .ticket-removable-item .ts-icon-info { float:left;}
