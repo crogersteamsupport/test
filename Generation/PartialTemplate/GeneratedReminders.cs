@@ -42,10 +42,16 @@ namespace TeamSupport.Data
       set { Row["CreatorID"] = CheckNull(value); }
     }
     
-    public bool IsComplete
+    public bool HasEmailSent
     {
-      get { return (bool)Row["IsComplete"]; }
-      set { Row["IsComplete"] = CheckNull(value); }
+      get { return (bool)Row["HasEmailSent"]; }
+      set { Row["HasEmailSent"] = CheckNull(value); }
+    }
+    
+    public bool IsDismissed
+    {
+      get { return (bool)Row["IsDismissed"]; }
+      set { Row["IsDismissed"] = CheckNull(value); }
     }
     
     public int UserID
@@ -54,10 +60,10 @@ namespace TeamSupport.Data
       set { Row["UserID"] = CheckNull(value); }
     }
     
-    public string Note
+    public string Description
     {
-      get { return (string)Row["Note"]; }
-      set { Row["Note"] = CheckNull(value); }
+      get { return (string)Row["Description"]; }
+      set { Row["Description"] = CheckNull(value); }
     }
     
     public int RefID
@@ -66,10 +72,16 @@ namespace TeamSupport.Data
       set { Row["RefID"] = CheckNull(value); }
     }
     
-    public int RefType
+    public ReferenceType RefType
     {
-      get { return (int)Row["RefType"]; }
+      get { return (ReferenceType)Row["RefType"]; }
       set { Row["RefType"] = CheckNull(value); }
+    }
+    
+    public int OrganizationID
+    {
+      get { return (int)Row["OrganizationID"]; }
+      set { Row["OrganizationID"] = CheckNull(value); }
     }
     
 
@@ -197,10 +209,17 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Reminders] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Note] = @Note,    [DueDate] = @DueDate,    [UserID] = @UserID,    [IsComplete] = @IsComplete  WHERE ([ReminderID] = @ReminderID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Reminders] SET     [OrganizationID] = @OrganizationID,    [RefType] = @RefType,    [RefID] = @RefID,    [Description] = @Description,    [DueDate] = @DueDate,    [UserID] = @UserID,    [IsDismissed] = @IsDismissed,    [HasEmailSent] = @HasEmailSent  WHERE ([ReminderID] = @ReminderID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReminderID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -221,7 +240,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Note", SqlDbType.NVarChar, 4000);
+		tempParameter = updateCommand.Parameters.Add("Description", SqlDbType.NVarChar, 4000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -242,7 +261,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("IsComplete", SqlDbType.Bit, 1);
+		tempParameter = updateCommand.Parameters.Add("IsDismissed", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("HasEmailSent", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -254,7 +280,7 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Reminders] (    [RefType],    [RefID],    [Note],    [DueDate],    [UserID],    [IsComplete],    [CreatorID],    [DateCreated]) VALUES ( @RefType, @RefID, @Note, @DueDate, @UserID, @IsComplete, @CreatorID, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Reminders] (    [OrganizationID],    [RefType],    [RefID],    [Description],    [DueDate],    [UserID],    [IsDismissed],    [HasEmailSent],    [CreatorID],    [DateCreated]) VALUES ( @OrganizationID, @RefType, @RefID, @Description, @DueDate, @UserID, @IsDismissed, @HasEmailSent, @CreatorID, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
@@ -271,7 +297,14 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("IsComplete", SqlDbType.Bit, 1);
+		tempParameter = insertCommand.Parameters.Add("HasEmailSent", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsDismissed", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -292,7 +325,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Note", SqlDbType.NVarChar, 4000);
+		tempParameter = insertCommand.Parameters.Add("Description", SqlDbType.NVarChar, 4000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -307,6 +340,13 @@ namespace TeamSupport.Data
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -425,7 +465,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReminderID], [RefType], [RefID], [Note], [DueDate], [UserID], [IsComplete], [CreatorID], [DateCreated] FROM [dbo].[Reminders] WHERE ([ReminderID] = @ReminderID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReminderID], [OrganizationID], [RefType], [RefID], [Description], [DueDate], [UserID], [IsDismissed], [HasEmailSent], [CreatorID], [DateCreated] FROM [dbo].[Reminders] WHERE ([ReminderID] = @ReminderID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReminderID", reminderID);
         Fill(command);

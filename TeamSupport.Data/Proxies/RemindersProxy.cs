@@ -14,12 +14,13 @@ namespace TeamSupport.Data
   {
     public ReminderProxy() {}
     [DataMember] public int ReminderID { get; set; }
-    [DataMember] public int RefType { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
     [DataMember] public int RefID { get; set; }
-    [DataMember] public string Note { get; set; }
+    [DataMember] public string Description { get; set; }
     [DataMember] public DateTime DueDate { get; set; }
     [DataMember] public int UserID { get; set; }
-    [DataMember] public bool IsComplete { get; set; }
+    [DataMember] public bool IsDismissed { get; set; }
+    [DataMember] public bool HasEmailSent { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
           
@@ -31,9 +32,10 @@ namespace TeamSupport.Data
     {
       ReminderProxy result = new ReminderProxy();
       result.CreatorID = this.CreatorID;
-      result.IsComplete = this.IsComplete;
+      result.HasEmailSent = this.HasEmailSent;
+      result.IsDismissed = this.IsDismissed;
       result.UserID = this.UserID;
-      result.Note = this.Note;
+      result.Description = this.Description;
       result.RefID = this.RefID;
       result.RefType = this.RefType;
       result.ReminderID = this.ReminderID;

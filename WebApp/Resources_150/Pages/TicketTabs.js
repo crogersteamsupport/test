@@ -1,0 +1,179 @@
+﻿/// <reference path="ts/ts.js" />
+/// <reference path="ts/ts.services.js" />
+/// <reference path="ts/ts.system.js" />
+/// <reference path="ts/ts.utils.js" />
+/// <reference path="ts/ts.ui.menutree.js" />
+/// <reference path="ts/ts.ui.tabs.js" />
+/// <reference path="~/Default.aspx" />
+/// <reference path="ts/ts.pages.main.js" />
+/// <reference path="ts/ts.ui.ticketgrid.js" />
+
+$(document).ready(function () {
+  var self = this;
+  this.Tabs = new Ts.Ui.Tabs($('.tickets-panel-tabs')[0]);
+  var tabs = this.Tabs
+
+
+  var ticketTypeID = top.Ts.Utils.getQueryValue('tickettypeid', window);
+  var userID = top.Ts.Utils.getQueryValue('userid', window);
+  var groupID = top.Ts.Utils.getQueryValue('groupid', window);
+  var organizationID = top.Ts.Utils.getQueryValue('organizationid', window);
+  var productID = top.Ts.Utils.getQueryValue('productid', window);
+  var versionID = top.Ts.Utils.getQueryValue('versionid', window);
+  var isKB = top.Ts.Utils.getQueryValue('iskb', window);
+
+  var filter = new top.TeamSupport.Data.TicketLoadFilter();
+  var url = 'TicketGrid.html?';
+
+  if (ticketTypeID) {
+    top.Ts.Services.Tickets.GetTicketType(ticketTypeID, function (ticketType) {
+      filter.TicketTypeID = ticketTypeID;
+      filter.UserID = top.Ts.System.User.UserID;
+      filter.IsClosed = false;
+      tabs.add(true, 'tickettab', 'my', 'My ' + ticketType.Name, false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      delete filter.UserID;
+      tabs.add(true, 'tickettab', 'open', 'Open ' + ticketType.Name, false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      filter.IsClosed = true;
+      tabs.add(true, 'tickettab', 'closed', 'Closed ' + ticketType.Name, false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      filter.IsClosed = false;
+      filter.UserID = -1;
+      tabs.add(true, 'tickettab', 'unassigned', 'Unassigned ' + ticketType.Name, false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      delete filter.IsClosed;
+      delete filter.UserID;
+      tabs.add(true, 'tickettab', 'all', 'All ' + ticketType.Name, false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      afterLoad();
+    });
+  }
+  else if (userID) {
+    filter.UserID = userID;
+    filter.IsClosed = false;
+    tabs.add(true, 'tickettab', 'open', 'Open Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    filter.GroupID = -1;
+    tabs.add(true, 'tickettab', 'groups', 'Open Group Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    delete filter.GroupID;
+    filter.IsClosed = true;
+    tabs.add(true, 'tickettab', 'closed', 'Closed Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    delete filter.IsClosed;
+    tabs.add(true, 'tickettab', 'all', 'All Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    tabs.add(true, 'tickettab', 'queue', 'Ticket Queue', false, false, false, '', '', '../../Frames/TicketQueue.aspx?UserID=' + userID);
+    //tabs.add(true, 'tickettab', 'reminders', 'Reminders', false, false, false, '', '', 'Reminders.html?UserID=' + userID);
+    afterLoad();
+  }
+  else if (groupID) {
+
+  }
+  else if (organizationID) {
+
+  }
+  else if (productID) {
+
+  }
+  else if (versionID) {
+
+  }
+  else if (isKB) {
+
+  }
+  else {
+    filter.IsClosed = false;
+    tabs.add(true, 'tickettab', 'open', 'All Open', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    filter.IsClosed = true;
+    tabs.add(true, 'tickettab', 'closed', 'All Closed', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    filter.IsClosed = false;
+    filter.UserID = -1;
+    tabs.add(true, 'tickettab', 'unassigned', 'All Unassigned ', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    delete filter.IsClosed;
+    delete filter.UserID;
+    tabs.add(true, 'tickettab', 'all', 'All Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    afterLoad();
+  }
+
+  function afterLoad() {
+    self.Tabs.bind('afterSelect', function (tab) {
+      $('.tickets-panel-grid .tickets-tab-content').hide();
+      var div = $('.tickets-panel-grid .tickets-tab-' + tab.getId());
+      if (div.length < 1) {
+        div = $('<div class="tickets-tab-content tickets-tab-' + tab.getId() + '"><iframe class="tickets-grid-iframe" src="' + tab.getData() + '" scrolling="no" frameborder="0" height="100%" width="100%"></iframe></div>').appendTo('.tickets-panel-grid');
+      }
+      div.show();
+      top.Ts.Services.Settings.WriteUserSetting('TicketGrid-tab-' + window.location.search, tab.getId());
+
+      var frame = $('.tickets-grid-iframe:visible')[0];
+      if (frame && frame.contentWindow.onShow) frame.contentWindow.onShow();
+    });
+
+
+    $('.ts-loading').hide().next().show();
+    $('.tickets-layout').layout({
+      resizeNestedLayout: true,
+      defaults: {
+        spacing_open: 0,
+        closable: false
+      },
+      center: {
+        paneSelector: ".tickets-panel-grid"
+      },
+      north: {
+        paneSelector: ".tickets-panel-tabs",
+        size: 31
+      },
+      south: {
+        paneSelector: ".tickets-panel-footer",
+        size: 21
+      }
+    });
+    //tabs.getByIndex(0).select();
+    top.Ts.Services.Settings.ReadUserSetting('TicketGrid-tab-' + window.location.search, tabs.getByIndex(0).getId(), function (result) {
+      tabs.find(result, 'tickettab').select();
+
+
+    });
+
+
+  }
+
+
+});
+
+function setGridCount(count) {
+  $('.ticket-grid-count').text(count + ' Tickets');
+}
+
+function onShow() {
+  var frame = $('.tickets-grid-iframe:visible')[0];
+  if (frame && frame.contentWindow.onShow) frame.contentWindow.onShow(); 
+
+}
+
+/*
+Ts.Pages.Tickets.prototype =
+{
+  constructor: Ts.Pages.Tickets,
+  refresh: function () {
+    var tab = this.Tabs.getSelected();
+    if (tab) {
+      var data = tab.getData();
+      if (data == 'external') {
+        var contentFrame = $(this.Element).find('.tickets-panel-grid .tickets-tab-' + tab.getId()).find('iframe')[0];
+        try { if (contentFrame.contentWindow.refreshData) contentFrame.contentWindow.refreshData(); } catch (err) { }
+        try { if (contentFrame.contentWindow.onShow) contentFrame.contentWindow.onShow(); } catch (err) { }
+      }
+      else {
+        var grid = tab.getData();
+        grid.refresh();
+      }
+
+    }
+  }
+
+
+};
+
+Ts.Pages.Tickets.Tab = function (caption, ticketLoadFilter, externalUrl) {
+  this.Caption = caption;
+  this.TicketLoadFilter = ticketLoadFilter;
+  this.ExternalUrl = externalUrl;
+  //TeamSupport.Data.TicketLoadFilter()
+}
+
+*/

@@ -69,6 +69,9 @@
           <telerik:RadToolBarButton runat="server" Value="Help" ImageUrl="~/images/icons/Help.png"
             Text="Help" ToolTip="Help." Visible="false">
           </telerik:RadToolBarButton>
+          <telerik:RadToolBarButton runat="server" Value="Reminder" ImageUrl="~/images/icons/Clock.png"
+            Text="Add Reminder" ToolTip="Add a reminder for this customer." Visible="false">
+          </telerik:RadToolBarButton>
         </Items>
       </telerik:RadToolBar>
     </telerik:RadPane>
@@ -365,6 +368,14 @@
         }
         else if (value == 'Help') {
           top.ShowHelpDialog(130);
+        }
+        else if (value == 'Reminder') {
+          top.Ts.MainPage.editReminder({
+            RefType: top.Ts.ReferenceTypes.Organizations,
+            RefID: getData(getSelectedItemID()).OrganizationID
+            },
+            true,
+            function () { });
         }
 
       }      

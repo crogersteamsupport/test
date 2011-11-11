@@ -810,7 +810,7 @@ namespace TSWebServices
     public TicketCustomer GetChatCustomer(int chatID)
     { 
       Chat chat = Chats.GetChat(TSAuthentication.GetLoginUser(), chatID);
-      if (chat != null || chat.OrganizationID != TSAuthentication.OrganizationID) return null;
+      if (chat == null || chat.OrganizationID != TSAuthentication.OrganizationID) return null;
       return GetTicketCustomer("u", chat.GetInitiatorLinkedUserID());
     }
 
@@ -1060,6 +1060,10 @@ namespace TSWebServices
       info.CustomValues = GetCustomValues(ticket.TicketID);
       info.Subscribers = GetSubscribers(ticket);
       info.Queuers = GetQueuers(ticket);
+
+      Reminders reminders = new Reminders(ticket.Collection.LoginUser);
+      reminders.LoadByItem(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
+      info.Reminders = reminders.GetReminderProxies();
 
       Actions actions = new Actions(ticket.Collection.LoginUser);
       actions.LoadByTicketID(ticket.TicketID);
@@ -1498,9 +1502,9 @@ namespace TSWebServices
           {
             //customValue.Value = ((DateTime)field.Value).ToString();
             DateTime dt;
-            if (DateTime.TryParse((string)field.Value, null, System.Globalization.DateTimeStyles.AdjustToUniversal, out dt))
+            if (DateTime.TryParse(((string)field.Value).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
             {
-              customValue.Value = dt.ToString();              
+              customValue.Value = dt.ToUniversalTime().ToString();              
             }
           }
           else
@@ -1612,6 +1616,7 @@ namespace TSWebServices
     [DataMember] public CustomValueProxy[] CustomValues { get; set; }
     [DataMember] public UserInfo[] Subscribers { get; set; }
     [DataMember] public UserInfo[] Queuers { get; set; }
+    [DataMember] public ReminderProxy[] Reminders { get; set; }
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]

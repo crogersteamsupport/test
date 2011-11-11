@@ -52,6 +52,12 @@ namespace TeamSupport.Data
       set { Row["ImportID"] = CheckNull(value); }
     }
     
+    public string ActionSource
+    {
+      get { return Row["ActionSource"] != DBNull.Value ? (string)Row["ActionSource"] : null; }
+      set { Row["ActionSource"] = CheckNull(value); }
+    }
+    
 
     
     public int TicketID
@@ -238,7 +244,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Actions] SET     [ActionTypeID] = @ActionTypeID,    [SystemActionTypeID] = @SystemActionTypeID,    [Name] = @Name,    [Description] = @Description,    [TimeSpent] = @TimeSpent,    [DateStarted] = @DateStarted,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [TicketID] = @TicketID  WHERE ([ActionID] = @ActionID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Actions] SET     [ActionTypeID] = @ActionTypeID,    [SystemActionTypeID] = @SystemActionTypeID,    [Name] = @Name,    [Description] = @Description,    [TimeSpent] = @TimeSpent,    [DateStarted] = @DateStarted,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [TicketID] = @TicketID,    [ActionSource] = @ActionSource  WHERE ([ActionID] = @ActionID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ActionID", SqlDbType.Int, 4);
@@ -332,13 +338,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ActionSource", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Actions] (    [ActionTypeID],    [SystemActionTypeID],    [Name],    [Description],    [TimeSpent],    [DateStarted],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [TicketID]) VALUES ( @ActionTypeID, @SystemActionTypeID, @Name, @Description, @TimeSpent, @DateStarted, @IsVisibleOnPortal, @IsKnowledgeBase, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @TicketID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Actions] (    [ActionTypeID],    [SystemActionTypeID],    [Name],    [Description],    [TimeSpent],    [DateStarted],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [TicketID],    [ActionSource]) VALUES ( @ActionTypeID, @SystemActionTypeID, @Name, @Description, @TimeSpent, @DateStarted, @IsVisibleOnPortal, @IsKnowledgeBase, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @TicketID, @ActionSource); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ActionSource", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -550,7 +570,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ActionID], [ActionTypeID], [SystemActionTypeID], [Name], [Description], [TimeSpent], [DateStarted], [IsVisibleOnPortal], [IsKnowledgeBase], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [TicketID] FROM [dbo].[Actions] WHERE ([ActionID] = @ActionID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ActionID], [ActionTypeID], [SystemActionTypeID], [Name], [Description], [TimeSpent], [DateStarted], [IsVisibleOnPortal], [IsKnowledgeBase], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [TicketID], [ActionSource] FROM [dbo].[Actions] WHERE ([ActionID] = @ActionID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ActionID", actionID);
         Fill(command);

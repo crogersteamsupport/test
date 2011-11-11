@@ -2466,113 +2466,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReminder
-
-(
-  @ReminderID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReminderID],
-    [RefType],
-    [RefID],
-    [Note],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [CreatorID],
-    [DateCreated]
-  FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReminder
-
-(
-  @RefType int,
-  @RefID int,
-  @Note nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @CreatorID int,
-  @DateCreated datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reminders]
-  (
-    [RefType],
-    [RefID],
-    [Note],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [CreatorID],
-    [DateCreated])
-  VALUES (
-    @RefType,
-    @RefID,
-    @Note,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @CreatorID,
-    @DateCreated)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
-
-(
-  @ReminderID int,
-  @RefType int,
-  @RefID int,
-  @Note nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Reminders]
-  SET
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [Note] = @Note,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
-
-(
-  @ReminderID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionStatus
 GO
 
@@ -2689,6 +2582,125 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ProductVersionStatuses]
   WHERE ([ProductVersionStatusID] = @ProductVersionStatusID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketTemplate
+
+(
+  @TicketTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketTemplateID],
+    [OrganizationID],
+    [TemplateType],
+    [IsEnabled],
+    [TicketTypeID],
+    [TriggerText],
+    [TemplateText],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[TicketTemplates]
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketTemplate
+
+(
+  @OrganizationID int,
+  @TemplateType int,
+  @IsEnabled bit,
+  @TicketTypeID int,
+  @TriggerText varchar(500),
+  @TemplateText varchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[TicketTemplates]
+  (
+    [OrganizationID],
+    [TemplateType],
+    [IsEnabled],
+    [TicketTypeID],
+    [TriggerText],
+    [TemplateText],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @OrganizationID,
+    @TemplateType,
+    @IsEnabled,
+    @TicketTypeID,
+    @TriggerText,
+    @TemplateText,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
+
+(
+  @TicketTemplateID int,
+  @OrganizationID int,
+  @TemplateType int,
+  @IsEnabled bit,
+  @TicketTypeID int,
+  @TriggerText varchar(500),
+  @TemplateText varchar(MAX),
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[TicketTemplates]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [TemplateType] = @TemplateType,
+    [IsEnabled] = @IsEnabled,
+    [TicketTypeID] = @TicketTypeID,
+    [TriggerText] = @TriggerText,
+    [TemplateText] = @TemplateText,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
+
+(
+  @TicketTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[TicketTemplates]
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
 GO
 
 
@@ -3615,6 +3627,125 @@ AS
     [CryptedPassword]
   FROM [dbo].[ContactsView]
   WHERE ([UserID] = @UserID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReminder
+
+(
+  @ReminderID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReminderID],
+    [OrganizationID],
+    [RefType],
+    [RefID],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsDismissed],
+    [HasEmailSent],
+    [CreatorID],
+    [DateCreated]
+  FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReminder
+
+(
+  @OrganizationID int,
+  @RefType int,
+  @RefID int,
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @CreatorID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Reminders]
+  (
+    [OrganizationID],
+    [RefType],
+    [RefID],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsDismissed],
+    [HasEmailSent],
+    [CreatorID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @RefType,
+    @RefID,
+    @Description,
+    @DueDate,
+    @UserID,
+    @IsDismissed,
+    @HasEmailSent,
+    @CreatorID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
+
+(
+  @ReminderID int,
+  @OrganizationID int,
+  @RefType int,
+  @RefID int,
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsDismissed bit,
+  @HasEmailSent bit
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Reminders]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [Description] = @Description,
+    [DueDate] = @DueDate,
+    [UserID] = @UserID,
+    [IsDismissed] = @IsDismissed,
+    [HasEmailSent] = @HasEmailSent
+  WHERE ([ReminderID] = @ReminderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
+
+(
+  @ReminderID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
 
@@ -7756,125 +7887,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicketTemplate
-
-(
-  @TicketTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketTemplateID],
-    [OrganizationID],
-    [TemplateType],
-    [IsEnabled],
-    [TicketTypeID],
-    [TriggerText],
-    [TemplateText],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[TicketTemplates]
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicketTemplate
-
-(
-  @OrganizationID int,
-  @TemplateType int,
-  @IsEnabled bit,
-  @TicketTypeID int,
-  @TriggerText varchar(500),
-  @TemplateText varchar(8000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TicketTemplates]
-  (
-    [OrganizationID],
-    [TemplateType],
-    [IsEnabled],
-    [TicketTypeID],
-    [TriggerText],
-    [TemplateText],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @OrganizationID,
-    @TemplateType,
-    @IsEnabled,
-    @TicketTypeID,
-    @TriggerText,
-    @TemplateText,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
-
-(
-  @TicketTemplateID int,
-  @OrganizationID int,
-  @TemplateType int,
-  @IsEnabled bit,
-  @TicketTypeID int,
-  @TriggerText varchar(500),
-  @TemplateText varchar(8000),
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TicketTemplates]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [TemplateType] = @TemplateType,
-    [IsEnabled] = @IsEnabled,
-    [TicketTypeID] = @TicketTypeID,
-    [TriggerText] = @TriggerText,
-    [TemplateText] = @TemplateText,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
-
-(
-  @TicketTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TicketTemplates]
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLogsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLogsViewItem
 GO
 
@@ -9301,7 +9313,8 @@ AS
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [TicketID]
+    [TicketID],
+    [ActionSource]
   FROM [dbo].[Actions]
   WHERE ([ActionID] = @ActionID)
 GO
@@ -9326,6 +9339,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertAction
   @CreatorID int,
   @ModifierID int,
   @TicketID int,
+  @ActionSource varchar(50),
   @Identity int OUT
 )
 AS
@@ -9345,7 +9359,8 @@ AS
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [TicketID])
+    [TicketID],
+    [ActionSource])
   VALUES (
     @ActionTypeID,
     @SystemActionTypeID,
@@ -9360,7 +9375,8 @@ AS
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @TicketID)
+    @TicketID,
+    @ActionSource)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -9383,7 +9399,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateAction
   @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int,
-  @TicketID int
+  @TicketID int,
+  @ActionSource varchar(50)
 )
 AS
   SET NOCOUNT OFF;
@@ -9400,7 +9417,8 @@ AS
     [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [TicketID] = @TicketID
+    [TicketID] = @TicketID,
+    [ActionSource] = @ActionSource
   WHERE ([ActionID] = @ActionID)
 GO
 
@@ -14369,113 +14387,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReminder
-
-(
-  @ReminderID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReminderID],
-    [RefType],
-    [RefID],
-    [Note],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [CreatorID],
-    [DateCreated]
-  FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReminder
-
-(
-  @RefType int,
-  @RefID int,
-  @Note nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @CreatorID int,
-  @DateCreated datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reminders]
-  (
-    [RefType],
-    [RefID],
-    [Note],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [CreatorID],
-    [DateCreated])
-  VALUES (
-    @RefType,
-    @RefID,
-    @Note,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @CreatorID,
-    @DateCreated)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
-
-(
-  @ReminderID int,
-  @RefType int,
-  @RefID int,
-  @Note nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Reminders]
-  SET
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [Note] = @Note,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
-
-(
-  @ReminderID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionStatus
 GO
 
@@ -14592,6 +14503,125 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ProductVersionStatuses]
   WHERE ([ProductVersionStatusID] = @ProductVersionStatusID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketTemplate
+
+(
+  @TicketTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketTemplateID],
+    [OrganizationID],
+    [TemplateType],
+    [IsEnabled],
+    [TicketTypeID],
+    [TriggerText],
+    [TemplateText],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[TicketTemplates]
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketTemplate
+
+(
+  @OrganizationID int,
+  @TemplateType int,
+  @IsEnabled bit,
+  @TicketTypeID int,
+  @TriggerText varchar(500),
+  @TemplateText varchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[TicketTemplates]
+  (
+    [OrganizationID],
+    [TemplateType],
+    [IsEnabled],
+    [TicketTypeID],
+    [TriggerText],
+    [TemplateText],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @OrganizationID,
+    @TemplateType,
+    @IsEnabled,
+    @TicketTypeID,
+    @TriggerText,
+    @TemplateText,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
+
+(
+  @TicketTemplateID int,
+  @OrganizationID int,
+  @TemplateType int,
+  @IsEnabled bit,
+  @TicketTypeID int,
+  @TriggerText varchar(500),
+  @TemplateText varchar(MAX),
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[TicketTemplates]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [TemplateType] = @TemplateType,
+    [IsEnabled] = @IsEnabled,
+    [TicketTypeID] = @TicketTypeID,
+    [TriggerText] = @TriggerText,
+    [TemplateText] = @TemplateText,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
+
+(
+  @TicketTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[TicketTemplates]
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
 GO
 
 
@@ -15518,6 +15548,125 @@ AS
     [CryptedPassword]
   FROM [dbo].[ContactsView]
   WHERE ([UserID] = @UserID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReminder
+
+(
+  @ReminderID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReminderID],
+    [OrganizationID],
+    [RefType],
+    [RefID],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsDismissed],
+    [HasEmailSent],
+    [CreatorID],
+    [DateCreated]
+  FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReminder
+
+(
+  @OrganizationID int,
+  @RefType int,
+  @RefID int,
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @CreatorID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Reminders]
+  (
+    [OrganizationID],
+    [RefType],
+    [RefID],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsDismissed],
+    [HasEmailSent],
+    [CreatorID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @RefType,
+    @RefID,
+    @Description,
+    @DueDate,
+    @UserID,
+    @IsDismissed,
+    @HasEmailSent,
+    @CreatorID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
+
+(
+  @ReminderID int,
+  @OrganizationID int,
+  @RefType int,
+  @RefID int,
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsDismissed bit,
+  @HasEmailSent bit
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Reminders]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [Description] = @Description,
+    [DueDate] = @DueDate,
+    [UserID] = @UserID,
+    [IsDismissed] = @IsDismissed,
+    [HasEmailSent] = @HasEmailSent
+  WHERE ([ReminderID] = @ReminderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
+
+(
+  @ReminderID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
 
@@ -19659,125 +19808,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicketTemplate
-
-(
-  @TicketTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketTemplateID],
-    [OrganizationID],
-    [TemplateType],
-    [IsEnabled],
-    [TicketTypeID],
-    [TriggerText],
-    [TemplateText],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[TicketTemplates]
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicketTemplate
-
-(
-  @OrganizationID int,
-  @TemplateType int,
-  @IsEnabled bit,
-  @TicketTypeID int,
-  @TriggerText varchar(500),
-  @TemplateText varchar(8000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TicketTemplates]
-  (
-    [OrganizationID],
-    [TemplateType],
-    [IsEnabled],
-    [TicketTypeID],
-    [TriggerText],
-    [TemplateText],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @OrganizationID,
-    @TemplateType,
-    @IsEnabled,
-    @TicketTypeID,
-    @TriggerText,
-    @TemplateText,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
-
-(
-  @TicketTemplateID int,
-  @OrganizationID int,
-  @TemplateType int,
-  @IsEnabled bit,
-  @TicketTypeID int,
-  @TriggerText varchar(500),
-  @TemplateText varchar(8000),
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TicketTemplates]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [TemplateType] = @TemplateType,
-    [IsEnabled] = @IsEnabled,
-    [TicketTypeID] = @TicketTypeID,
-    [TriggerText] = @TriggerText,
-    [TemplateText] = @TemplateText,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
-
-(
-  @TicketTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TicketTemplates]
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLogsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLogsViewItem
 GO
 
@@ -21204,7 +21234,8 @@ AS
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [TicketID]
+    [TicketID],
+    [ActionSource]
   FROM [dbo].[Actions]
   WHERE ([ActionID] = @ActionID)
 GO
@@ -21229,6 +21260,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertAction
   @CreatorID int,
   @ModifierID int,
   @TicketID int,
+  @ActionSource varchar(50),
   @Identity int OUT
 )
 AS
@@ -21248,7 +21280,8 @@ AS
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [TicketID])
+    [TicketID],
+    [ActionSource])
   VALUES (
     @ActionTypeID,
     @SystemActionTypeID,
@@ -21263,7 +21296,8 @@ AS
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @TicketID)
+    @TicketID,
+    @ActionSource)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -21286,7 +21320,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateAction
   @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int,
-  @TicketID int
+  @TicketID int,
+  @ActionSource varchar(50)
 )
 AS
   SET NOCOUNT OFF;
@@ -21303,7 +21338,8 @@ AS
     [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [TicketID] = @TicketID
+    [TicketID] = @TicketID,
+    [ActionSource] = @ActionSource
   WHERE ([ActionID] = @ActionID)
 GO
 
@@ -26272,113 +26308,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReminder
-
-(
-  @ReminderID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReminderID],
-    [RefType],
-    [RefID],
-    [Note],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [CreatorID],
-    [DateCreated]
-  FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReminder
-
-(
-  @RefType int,
-  @RefID int,
-  @Note nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @CreatorID int,
-  @DateCreated datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reminders]
-  (
-    [RefType],
-    [RefID],
-    [Note],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [CreatorID],
-    [DateCreated])
-  VALUES (
-    @RefType,
-    @RefID,
-    @Note,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @CreatorID,
-    @DateCreated)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
-
-(
-  @ReminderID int,
-  @RefType int,
-  @RefID int,
-  @Note nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Reminders]
-  SET
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [Note] = @Note,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
-
-(
-  @ReminderID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionStatus
 GO
 
@@ -26495,6 +26424,125 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ProductVersionStatuses]
   WHERE ([ProductVersionStatusID] = @ProductVersionStatusID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketTemplate
+
+(
+  @TicketTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketTemplateID],
+    [OrganizationID],
+    [TemplateType],
+    [IsEnabled],
+    [TicketTypeID],
+    [TriggerText],
+    [TemplateText],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[TicketTemplates]
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketTemplate
+
+(
+  @OrganizationID int,
+  @TemplateType int,
+  @IsEnabled bit,
+  @TicketTypeID int,
+  @TriggerText varchar(500),
+  @TemplateText varchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[TicketTemplates]
+  (
+    [OrganizationID],
+    [TemplateType],
+    [IsEnabled],
+    [TicketTypeID],
+    [TriggerText],
+    [TemplateText],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @OrganizationID,
+    @TemplateType,
+    @IsEnabled,
+    @TicketTypeID,
+    @TriggerText,
+    @TemplateText,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
+
+(
+  @TicketTemplateID int,
+  @OrganizationID int,
+  @TemplateType int,
+  @IsEnabled bit,
+  @TicketTypeID int,
+  @TriggerText varchar(500),
+  @TemplateText varchar(MAX),
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[TicketTemplates]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [TemplateType] = @TemplateType,
+    [IsEnabled] = @IsEnabled,
+    [TicketTypeID] = @TicketTypeID,
+    [TriggerText] = @TriggerText,
+    [TemplateText] = @TemplateText,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
+
+(
+  @TicketTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[TicketTemplates]
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
 GO
 
 
@@ -27421,6 +27469,125 @@ AS
     [CryptedPassword]
   FROM [dbo].[ContactsView]
   WHERE ([UserID] = @UserID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReminder
+
+(
+  @ReminderID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReminderID],
+    [OrganizationID],
+    [RefType],
+    [RefID],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsDismissed],
+    [HasEmailSent],
+    [CreatorID],
+    [DateCreated]
+  FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReminder
+
+(
+  @OrganizationID int,
+  @RefType int,
+  @RefID int,
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @CreatorID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Reminders]
+  (
+    [OrganizationID],
+    [RefType],
+    [RefID],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsDismissed],
+    [HasEmailSent],
+    [CreatorID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @RefType,
+    @RefID,
+    @Description,
+    @DueDate,
+    @UserID,
+    @IsDismissed,
+    @HasEmailSent,
+    @CreatorID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
+
+(
+  @ReminderID int,
+  @OrganizationID int,
+  @RefType int,
+  @RefID int,
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsDismissed bit,
+  @HasEmailSent bit
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Reminders]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [Description] = @Description,
+    [DueDate] = @DueDate,
+    [UserID] = @UserID,
+    [IsDismissed] = @IsDismissed,
+    [HasEmailSent] = @HasEmailSent
+  WHERE ([ReminderID] = @ReminderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
+
+(
+  @ReminderID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
 
@@ -31562,125 +31729,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicketTemplate
-
-(
-  @TicketTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketTemplateID],
-    [OrganizationID],
-    [TemplateType],
-    [IsEnabled],
-    [TicketTypeID],
-    [TriggerText],
-    [TemplateText],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[TicketTemplates]
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicketTemplate
-
-(
-  @OrganizationID int,
-  @TemplateType int,
-  @IsEnabled bit,
-  @TicketTypeID int,
-  @TriggerText varchar(500),
-  @TemplateText varchar(8000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TicketTemplates]
-  (
-    [OrganizationID],
-    [TemplateType],
-    [IsEnabled],
-    [TicketTypeID],
-    [TriggerText],
-    [TemplateText],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @OrganizationID,
-    @TemplateType,
-    @IsEnabled,
-    @TicketTypeID,
-    @TriggerText,
-    @TemplateText,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
-
-(
-  @TicketTemplateID int,
-  @OrganizationID int,
-  @TemplateType int,
-  @IsEnabled bit,
-  @TicketTypeID int,
-  @TriggerText varchar(500),
-  @TemplateText varchar(8000),
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TicketTemplates]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [TemplateType] = @TemplateType,
-    [IsEnabled] = @IsEnabled,
-    [TicketTypeID] = @TicketTypeID,
-    [TriggerText] = @TriggerText,
-    [TemplateText] = @TemplateText,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
-
-(
-  @TicketTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TicketTemplates]
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLogsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLogsViewItem
 GO
 
@@ -33107,7 +33155,8 @@ AS
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [TicketID]
+    [TicketID],
+    [ActionSource]
   FROM [dbo].[Actions]
   WHERE ([ActionID] = @ActionID)
 GO
@@ -33132,6 +33181,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertAction
   @CreatorID int,
   @ModifierID int,
   @TicketID int,
+  @ActionSource varchar(50),
   @Identity int OUT
 )
 AS
@@ -33151,7 +33201,8 @@ AS
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [TicketID])
+    [TicketID],
+    [ActionSource])
   VALUES (
     @ActionTypeID,
     @SystemActionTypeID,
@@ -33166,7 +33217,8 @@ AS
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @TicketID)
+    @TicketID,
+    @ActionSource)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -33189,7 +33241,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateAction
   @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int,
-  @TicketID int
+  @TicketID int,
+  @ActionSource varchar(50)
 )
 AS
   SET NOCOUNT OFF;
@@ -33206,7 +33259,8 @@ AS
     [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [TicketID] = @TicketID
+    [TicketID] = @TicketID,
+    [ActionSource] = @ActionSource
   WHERE ([ActionID] = @ActionID)
 GO
 
@@ -38175,113 +38229,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReminder
-
-(
-  @ReminderID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReminderID],
-    [RefType],
-    [RefID],
-    [Note],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [CreatorID],
-    [DateCreated]
-  FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReminder
-
-(
-  @RefType int,
-  @RefID int,
-  @Note nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @CreatorID int,
-  @DateCreated datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reminders]
-  (
-    [RefType],
-    [RefID],
-    [Note],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [CreatorID],
-    [DateCreated])
-  VALUES (
-    @RefType,
-    @RefID,
-    @Note,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @CreatorID,
-    @DateCreated)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
-
-(
-  @ReminderID int,
-  @RefType int,
-  @RefID int,
-  @Note nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Reminders]
-  SET
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [Note] = @Note,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
-
-(
-  @ReminderID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionStatus
 GO
 
@@ -38398,6 +38345,125 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ProductVersionStatuses]
   WHERE ([ProductVersionStatusID] = @ProductVersionStatusID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketTemplate
+
+(
+  @TicketTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketTemplateID],
+    [OrganizationID],
+    [TemplateType],
+    [IsEnabled],
+    [TicketTypeID],
+    [TriggerText],
+    [TemplateText],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[TicketTemplates]
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketTemplate
+
+(
+  @OrganizationID int,
+  @TemplateType int,
+  @IsEnabled bit,
+  @TicketTypeID int,
+  @TriggerText varchar(500),
+  @TemplateText varchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[TicketTemplates]
+  (
+    [OrganizationID],
+    [TemplateType],
+    [IsEnabled],
+    [TicketTypeID],
+    [TriggerText],
+    [TemplateText],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @OrganizationID,
+    @TemplateType,
+    @IsEnabled,
+    @TicketTypeID,
+    @TriggerText,
+    @TemplateText,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
+
+(
+  @TicketTemplateID int,
+  @OrganizationID int,
+  @TemplateType int,
+  @IsEnabled bit,
+  @TicketTypeID int,
+  @TriggerText varchar(500),
+  @TemplateText varchar(MAX),
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[TicketTemplates]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [TemplateType] = @TemplateType,
+    [IsEnabled] = @IsEnabled,
+    [TicketTypeID] = @TicketTypeID,
+    [TriggerText] = @TriggerText,
+    [TemplateText] = @TemplateText,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
+
+(
+  @TicketTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[TicketTemplates]
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
 GO
 
 
@@ -39324,6 +39390,125 @@ AS
     [CryptedPassword]
   FROM [dbo].[ContactsView]
   WHERE ([UserID] = @UserID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReminder
+
+(
+  @ReminderID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReminderID],
+    [OrganizationID],
+    [RefType],
+    [RefID],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsDismissed],
+    [HasEmailSent],
+    [CreatorID],
+    [DateCreated]
+  FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReminder
+
+(
+  @OrganizationID int,
+  @RefType int,
+  @RefID int,
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @CreatorID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Reminders]
+  (
+    [OrganizationID],
+    [RefType],
+    [RefID],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsDismissed],
+    [HasEmailSent],
+    [CreatorID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @RefType,
+    @RefID,
+    @Description,
+    @DueDate,
+    @UserID,
+    @IsDismissed,
+    @HasEmailSent,
+    @CreatorID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
+
+(
+  @ReminderID int,
+  @OrganizationID int,
+  @RefType int,
+  @RefID int,
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsDismissed bit,
+  @HasEmailSent bit
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Reminders]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [Description] = @Description,
+    [DueDate] = @DueDate,
+    [UserID] = @UserID,
+    [IsDismissed] = @IsDismissed,
+    [HasEmailSent] = @HasEmailSent
+  WHERE ([ReminderID] = @ReminderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
+
+(
+  @ReminderID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
 
@@ -43465,125 +43650,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicketTemplate
-
-(
-  @TicketTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketTemplateID],
-    [OrganizationID],
-    [TemplateType],
-    [IsEnabled],
-    [TicketTypeID],
-    [TriggerText],
-    [TemplateText],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[TicketTemplates]
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicketTemplate
-
-(
-  @OrganizationID int,
-  @TemplateType int,
-  @IsEnabled bit,
-  @TicketTypeID int,
-  @TriggerText varchar(500),
-  @TemplateText varchar(8000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TicketTemplates]
-  (
-    [OrganizationID],
-    [TemplateType],
-    [IsEnabled],
-    [TicketTypeID],
-    [TriggerText],
-    [TemplateText],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @OrganizationID,
-    @TemplateType,
-    @IsEnabled,
-    @TicketTypeID,
-    @TriggerText,
-    @TemplateText,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
-
-(
-  @TicketTemplateID int,
-  @OrganizationID int,
-  @TemplateType int,
-  @IsEnabled bit,
-  @TicketTypeID int,
-  @TriggerText varchar(500),
-  @TemplateText varchar(8000),
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TicketTemplates]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [TemplateType] = @TemplateType,
-    [IsEnabled] = @IsEnabled,
-    [TicketTypeID] = @TicketTypeID,
-    [TriggerText] = @TriggerText,
-    [TemplateText] = @TemplateText,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
-
-(
-  @TicketTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TicketTemplates]
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLogsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLogsViewItem
 GO
 
@@ -45010,7 +45076,8 @@ AS
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [TicketID]
+    [TicketID],
+    [ActionSource]
   FROM [dbo].[Actions]
   WHERE ([ActionID] = @ActionID)
 GO
@@ -45035,6 +45102,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertAction
   @CreatorID int,
   @ModifierID int,
   @TicketID int,
+  @ActionSource varchar(50),
   @Identity int OUT
 )
 AS
@@ -45054,7 +45122,8 @@ AS
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [TicketID])
+    [TicketID],
+    [ActionSource])
   VALUES (
     @ActionTypeID,
     @SystemActionTypeID,
@@ -45069,7 +45138,8 @@ AS
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @TicketID)
+    @TicketID,
+    @ActionSource)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -45092,7 +45162,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateAction
   @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int,
-  @TicketID int
+  @TicketID int,
+  @ActionSource varchar(50)
 )
 AS
   SET NOCOUNT OFF;
@@ -45109,7 +45180,8 @@ AS
     [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [TicketID] = @TicketID
+    [TicketID] = @TicketID,
+    [ActionSource] = @ActionSource
   WHERE ([ActionID] = @ActionID)
 GO
 
@@ -50078,113 +50150,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReminder
-
-(
-  @ReminderID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReminderID],
-    [RefType],
-    [RefID],
-    [Note],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [CreatorID],
-    [DateCreated]
-  FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReminder
-
-(
-  @RefType int,
-  @RefID int,
-  @Note nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit,
-  @CreatorID int,
-  @DateCreated datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reminders]
-  (
-    [RefType],
-    [RefID],
-    [Note],
-    [DueDate],
-    [UserID],
-    [IsComplete],
-    [CreatorID],
-    [DateCreated])
-  VALUES (
-    @RefType,
-    @RefID,
-    @Note,
-    @DueDate,
-    @UserID,
-    @IsComplete,
-    @CreatorID,
-    @DateCreated)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
-
-(
-  @ReminderID int,
-  @RefType int,
-  @RefID int,
-  @Note nvarchar(4000),
-  @DueDate datetime,
-  @UserID int,
-  @IsComplete bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Reminders]
-  SET
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [Note] = @Note,
-    [DueDate] = @DueDate,
-    [UserID] = @UserID,
-    [IsComplete] = @IsComplete
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
-
-(
-  @ReminderID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reminders]
-  WHERE ([ReminderID] = @ReminderID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectProductVersionStatus' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectProductVersionStatus
 GO
 
@@ -50301,6 +50266,125 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ProductVersionStatuses]
   WHERE ([ProductVersionStatusID] = @ProductVersionStatusID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketTemplate
+
+(
+  @TicketTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [TicketTemplateID],
+    [OrganizationID],
+    [TemplateType],
+    [IsEnabled],
+    [TicketTypeID],
+    [TriggerText],
+    [TemplateText],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID]
+  FROM [dbo].[TicketTemplates]
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketTemplate
+
+(
+  @OrganizationID int,
+  @TemplateType int,
+  @IsEnabled bit,
+  @TicketTypeID int,
+  @TriggerText varchar(500),
+  @TemplateText varchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[TicketTemplates]
+  (
+    [OrganizationID],
+    [TemplateType],
+    [IsEnabled],
+    [TicketTypeID],
+    [TriggerText],
+    [TemplateText],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID])
+  VALUES (
+    @OrganizationID,
+    @TemplateType,
+    @IsEnabled,
+    @TicketTypeID,
+    @TriggerText,
+    @TemplateText,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
+
+(
+  @TicketTemplateID int,
+  @OrganizationID int,
+  @TemplateType int,
+  @IsEnabled bit,
+  @TicketTypeID int,
+  @TriggerText varchar(500),
+  @TemplateText varchar(MAX),
+  @DateModified datetime,
+  @ModifierID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[TicketTemplates]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [TemplateType] = @TemplateType,
+    [IsEnabled] = @IsEnabled,
+    [TicketTypeID] = @TicketTypeID,
+    [TriggerText] = @TriggerText,
+    [TemplateText] = @TemplateText,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
+
+(
+  @TicketTemplateID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[TicketTemplates]
+  WHERE ([TicketTemplateID] = @TicketTemplateID)
 GO
 
 
@@ -51227,6 +51311,125 @@ AS
     [CryptedPassword]
   FROM [dbo].[ContactsView]
   WHERE ([UserID] = @UserID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReminder
+
+(
+  @ReminderID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReminderID],
+    [OrganizationID],
+    [RefType],
+    [RefID],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsDismissed],
+    [HasEmailSent],
+    [CreatorID],
+    [DateCreated]
+  FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReminder
+
+(
+  @OrganizationID int,
+  @RefType int,
+  @RefID int,
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsDismissed bit,
+  @HasEmailSent bit,
+  @CreatorID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Reminders]
+  (
+    [OrganizationID],
+    [RefType],
+    [RefID],
+    [Description],
+    [DueDate],
+    [UserID],
+    [IsDismissed],
+    [HasEmailSent],
+    [CreatorID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @RefType,
+    @RefID,
+    @Description,
+    @DueDate,
+    @UserID,
+    @IsDismissed,
+    @HasEmailSent,
+    @CreatorID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReminder
+
+(
+  @ReminderID int,
+  @OrganizationID int,
+  @RefType int,
+  @RefID int,
+  @Description nvarchar(4000),
+  @DueDate datetime,
+  @UserID int,
+  @IsDismissed bit,
+  @HasEmailSent bit
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Reminders]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [RefType] = @RefType,
+    [RefID] = @RefID,
+    [Description] = @Description,
+    [DueDate] = @DueDate,
+    [UserID] = @UserID,
+    [IsDismissed] = @IsDismissed,
+    [HasEmailSent] = @HasEmailSent
+  WHERE ([ReminderID] = @ReminderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReminder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReminder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReminder
+
+(
+  @ReminderID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Reminders]
+  WHERE ([ReminderID] = @ReminderID)
 GO
 
 
@@ -55368,125 +55571,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectTicketTemplate
-
-(
-  @TicketTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [TicketTemplateID],
-    [OrganizationID],
-    [TemplateType],
-    [IsEnabled],
-    [TicketTypeID],
-    [TriggerText],
-    [TemplateText],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID]
-  FROM [dbo].[TicketTemplates]
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertTicketTemplate
-
-(
-  @OrganizationID int,
-  @TemplateType int,
-  @IsEnabled bit,
-  @TicketTypeID int,
-  @TriggerText varchar(500),
-  @TemplateText varchar(8000),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[TicketTemplates]
-  (
-    [OrganizationID],
-    [TemplateType],
-    [IsEnabled],
-    [TicketTypeID],
-    [TriggerText],
-    [TemplateText],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID])
-  VALUES (
-    @OrganizationID,
-    @TemplateType,
-    @IsEnabled,
-    @TicketTypeID,
-    @TriggerText,
-    @TemplateText,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateTicketTemplate
-
-(
-  @TicketTemplateID int,
-  @OrganizationID int,
-  @TemplateType int,
-  @IsEnabled bit,
-  @TicketTypeID int,
-  @TriggerText varchar(500),
-  @TemplateText varchar(8000),
-  @DateModified datetime,
-  @ModifierID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[TicketTemplates]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [TemplateType] = @TemplateType,
-    [IsEnabled] = @IsEnabled,
-    [TicketTypeID] = @TicketTypeID,
-    [TriggerText] = @TriggerText,
-    [TemplateText] = @TemplateText,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketTemplate' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteTicketTemplate
-
-(
-  @TicketTemplateID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[TicketTemplates]
-  WHERE ([TicketTemplateID] = @TicketTemplateID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectActionLogsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectActionLogsViewItem
 GO
 
@@ -56913,7 +56997,8 @@ AS
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [TicketID]
+    [TicketID],
+    [ActionSource]
   FROM [dbo].[Actions]
   WHERE ([ActionID] = @ActionID)
 GO
@@ -56938,6 +57023,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertAction
   @CreatorID int,
   @ModifierID int,
   @TicketID int,
+  @ActionSource varchar(50),
   @Identity int OUT
 )
 AS
@@ -56957,7 +57043,8 @@ AS
     [DateModified],
     [CreatorID],
     [ModifierID],
-    [TicketID])
+    [TicketID],
+    [ActionSource])
   VALUES (
     @ActionTypeID,
     @SystemActionTypeID,
@@ -56972,7 +57059,8 @@ AS
     @DateModified,
     @CreatorID,
     @ModifierID,
-    @TicketID)
+    @TicketID,
+    @ActionSource)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -56995,7 +57083,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateAction
   @ImportID varchar(50),
   @DateModified datetime,
   @ModifierID int,
-  @TicketID int
+  @TicketID int,
+  @ActionSource varchar(50)
 )
 AS
   SET NOCOUNT OFF;
@@ -57012,7 +57101,8 @@ AS
     [ImportID] = @ImportID,
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
-    [TicketID] = @TicketID
+    [TicketID] = @TicketID,
+    [ActionSource] = @ActionSource
   WHERE ([ActionID] = @ActionID)
 GO
 

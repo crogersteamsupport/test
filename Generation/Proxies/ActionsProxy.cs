@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public int TicketID { get; set; }
+    [DataMember] public string ActionSource { get; set; }
           
   }
   
@@ -36,6 +37,7 @@ namespace TeamSupport.Data
     public ActionProxy GetProxy()
     {
       ActionProxy result = new ActionProxy();
+      result.ActionSource = this.ActionSource;
       result.TicketID = this.TicketID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;

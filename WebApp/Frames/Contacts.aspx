@@ -15,6 +15,8 @@
         </telerik:RadToolBarButton>
         <telerik:RadToolBarButton runat="server" Text="Delete" ImageUrl="~/images/icons/trash.png" Value="DeleteUser">
         </telerik:RadToolBarButton>
+        <telerik:RadToolBarButton runat="server" Text="Add Reminder" ImageUrl="~/images/icons/clock.png" Value="Reminder" Visible="false">
+        </telerik:RadToolBarButton>
       </Items>
     </telerik:RadToolBar>
     </telerik:RadPane>
@@ -146,6 +148,14 @@
         else if (value == 'DeleteUser') {
           radconfirm('Are you sure you would like to PERMANENTLEY delete this contact?', function(arg) { if (arg) top.privateServices.DeleteUser(GetSelectedUserID(), RefreshGrid); }, 250, 125, null, 'Delete User');
 
+        }
+        else if (value == 'Reminder') {
+          top.Ts.MainPage.editReminder({
+            RefType: top.Ts.ReferenceTypes.Contacts,
+            RefID: GetSelectedUserID()
+          },
+            true,
+            function () { });
         }
 
       }   
