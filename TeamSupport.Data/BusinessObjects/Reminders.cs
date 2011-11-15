@@ -37,6 +37,16 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    public void LoadForEmail()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Reminders WHERE (HasEmailSent = 0) AND (IsDismissed = 0) AND (DueDate <= GETUTCDATE()) ORDER BY DueDate";
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }
   }
   
 }

@@ -23,6 +23,7 @@ namespace TeamSupport.ServiceTestApplication
     Indexer _indexer;
     IndexMaintenance _indexMaint;
     CrmPool _crmPool;
+    ReminderProcessor _reminderProcessor;
     
     public Form1()
     {
@@ -50,6 +51,7 @@ namespace TeamSupport.ServiceTestApplication
       if (_indexer != null) _indexer.Stop();
       if (_indexMaint != null) _indexMaint.Stop();
       if (_crmPool != null) _crmPool.Stop();
+      if (_reminderProcessor != null) _crmPool.Stop();
     }
 
     private void StartProcess(ServiceThread thread, Button button)
@@ -112,6 +114,12 @@ namespace TeamSupport.ServiceTestApplication
     private void btnIndexMaint_Click(object sender, EventArgs e)
     {
       if (_indexMaint == null || _indexMaint.IsStopped) StartProcess(_indexMaint = new IndexMaintenance(), sender as Button); else StopProcess(_indexMaint, sender as Button);
+    }
+
+    private void btnReminders_Click(object sender, EventArgs e)
+    {
+      if (_reminderProcessor == null || _reminderProcessor.IsStopped) StartProcess(_reminderProcessor = new ReminderProcessor(), sender as Button); else StopProcess(_reminderProcessor, sender as Button);
+
     }
 
 

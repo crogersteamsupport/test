@@ -42,7 +42,8 @@
         $('#results').html('<h2>.NET</h2><div>' + result + '</div><h2>JavaScript</h2><div>' + str + '</div>');
       }
     );
-  }
+    }
+
   
 </script>
 </head>

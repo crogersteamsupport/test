@@ -13,6 +13,74 @@ namespace TeamSupport.Data
   {
     private int _organizationID = -1;
 
+    public EmailTemplate ReplaceActions(TicketsViewItem ticket, bool publicOnly)
+    {
+      return ReplaceActions(ticket, publicOnly, true);
+    }
+
+    public EmailTemplate ReplaceActions(TicketsViewItem ticket, bool publicOnly, bool isIncluded)
+    {
+      if (!isIncluded) 
+      {
+        ReplaceParameter("Actions", "");
+        return this;
+      }
+
+      ReplaceParameter("Actions", GetActionsText(ticket, publicOnly, 0));
+      
+      List<string> values = new List<string>();
+
+      Match match = Regex.Match(Body, @"\{\{Actions:\d*\}\}", RegexOptions.IgnoreCase);
+      while (match.Success)
+      {
+        values.Add(match.Value);
+        match = match.NextMatch();
+      }
+
+      foreach (string value in values)
+      {
+        try
+        {
+          if (value.Length < 11) continue;
+          int end = value.IndexOf('}');
+          if (end < 11) continue;
+          int max = int.Parse(value.Substring(10, end - 10));
+          ReplaceParameter("Actions:" + max.ToString(), GetActionsText(ticket, publicOnly, max));
+        }
+        catch (Exception)
+        {
+        }
+      }
+
+      return this;
+    }
+
+    private string GetActionsText(TicketsViewItem ticket, bool publicOnly, int maxActions)
+    {
+      ActionsView actions = new ActionsView(Collection.LoginUser);
+      actions.LoadByTicketID(ticket.TicketID, publicOnly);
+
+      EmailTemplate actionTemplate = EmailTemplates.GetTemplate(Collection.LoginUser, ticket.OrganizationID, 15);
+      string body = actionTemplate.Body;
+
+      StringBuilder builder = new StringBuilder();
+      int count = 0;
+      foreach (ActionsViewItem action in actions)
+      {
+        if (action.TicketID != ticket.TicketID) continue;
+        actionTemplate.Body = body;
+        actionTemplate.ReplaceCommonParameters().ReplaceFields("Action", action);
+        builder.AppendLine(actionTemplate.Body);
+        count++;
+        if (count >= maxActions && maxActions > 0) break;
+      }
+
+      return builder.ToString();
+    }
+
+
+
+
     public EmailTemplate ReplaceParameter(string parameterName, string value)
     {
       parameterName = "{{" + parameterName + "}}";
@@ -36,7 +104,7 @@ namespace TeamSupport.Data
 
     public EmailTemplate ReplaceFields(string objectName, DataRow row)
     {
-      if (row != null) 
+      if (row != null)
       {
         foreach (DataColumn column in row.Table.Columns)
         {
@@ -127,7 +195,7 @@ namespace TeamSupport.Data
     }
 
   }
-  
+
   public partial class EmailTemplates
   {
     public void LoadAll(bool includeTSOnly)
@@ -143,27 +211,7 @@ namespace TeamSupport.Data
 
     #region Utilities
 
-    private static string GetActionsText(LoginUser loginUser, TicketsViewItem ticket, bool publicOnly)
-    {
-      ActionsView actions = new ActionsView(loginUser);
-      actions.LoadByTicketID(ticket.TicketID, publicOnly);
-
-      EmailTemplate actionTemplate = GetTemplate(loginUser, ticket.OrganizationID, 15);
-      string body = actionTemplate.Body;
-
-      StringBuilder builder = new StringBuilder();
-      foreach (ActionsViewItem action in actions)
-      {
-        if (action.TicketID != ticket.TicketID) continue;
-        actionTemplate.Body = body;
-        actionTemplate.ReplaceCommonParameters().ReplaceFields("Action", action);
-        builder.AppendLine(actionTemplate.Body);
-      }
-
-      return builder.ToString();
-    }
-
-    private static EmailTemplate GetTemplate(LoginUser loginUser, int organizationID, int emailTemplateID)
+    public static EmailTemplate GetTemplate(LoginUser loginUser, int organizationID, int emailTemplateID)
     {
       EmailTemplate result = EmailTemplates.GetEmailTemplate(loginUser, emailTemplateID);
       result.UpdateForOrganization(organizationID);
@@ -185,7 +233,7 @@ namespace TeamSupport.Data
       EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 0);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
       template.ReplaceParameter("CreatorAddress", creatorAddress.ToString());
-      template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, true));
+      template.ReplaceActions(ticket, true);
       return template.GetMessage();
     }
 
@@ -193,7 +241,7 @@ namespace TeamSupport.Data
     {
       EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 1);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
-      template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, true));
+      template.ReplaceActions(ticket, true);
       if (creator != null) template.ReplaceFields("Creator", creator);
       return template.GetMessage();
     }
@@ -203,7 +251,7 @@ namespace TeamSupport.Data
       EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 2);
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
       if (creator != null) template.ReplaceFields("Creator", creator);
-      template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, false));
+      template.ReplaceActions(ticket, false);
       return template.GetMessage();
     }
 
@@ -217,8 +265,8 @@ namespace TeamSupport.Data
         if (assignee != null) template.ReplaceFields("Assignee", assignee);
       }
 
-      
-      template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, false)).ReplaceParameter("Assignor", assignor);;
+
+      template.ReplaceActions(ticket, false).ReplaceParameter("Assignor", assignor);
       return template.GetMessage();
     }
 
@@ -232,7 +280,7 @@ namespace TeamSupport.Data
         if (group != null) template.ReplaceFields("Group", group);
       }
 
-      template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, false)).ReplaceParameter("Assignor", assignor); ; ;
+      template.ReplaceActions(ticket, false).ReplaceParameter("Assignor", assignor);
       return template.GetMessage();
     }
 
@@ -242,8 +290,7 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
-      if (includeActions) template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, false));
-      else template.ReplaceParameter("Actions", "");
+      template.ReplaceActions(ticket, false, includeActions);
       template.ReplaceParameter("Changes", changeText);
       return template.GetMessage();
     }
@@ -254,8 +301,7 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
-      if (includeActions) template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, true));
-      else template.ReplaceParameter("Actions", "");
+      template.ReplaceActions(ticket, true, includeActions);
       return template.GetMessage();
     }
 
@@ -265,8 +311,7 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
-      if (includeActions) template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, true));
-      else template.ReplaceParameter("Actions", "");
+      template.ReplaceActions(ticket, true, includeActions);
       return template.GetMessage();
     }
 
@@ -276,8 +321,7 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
-      if (includeActions) template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, true));
-      else template.ReplaceParameter("Actions", "");
+      template.ReplaceActions(ticket, true, includeActions);
       return template.GetMessage();
     }
 
@@ -343,8 +387,7 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
 
       if (requestor != null) template.ReplaceFields("Requestor", requestor);
-      if (includeActions) template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, false));
-      else template.ReplaceParameter("Actions", "");
+      template.ReplaceActions(ticket, false, includeActions);
       return template.GetMessage();
     }
 
@@ -354,7 +397,39 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Sender", sender).ReplaceFields("Ticket", ticket);
 
 
-      template.ReplaceParameter("Actions", GetActionsText(loginUser, ticket, true)).ReplaceParameter("Recipient", recipient); ;
+      template.ReplaceActions(ticket, true).ReplaceParameter("Recipient", recipient); ;
+      return template.GetMessage();
+    }
+
+    public static MailMessage GetReminderTicketEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, TicketsViewItem ticket)
+    {
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 22);
+      template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Ticket", ticket);
+      template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", DataUtils.DateToLocal(loginUser, reminder.DueDate).ToString("g", loginUser.OrganizationCulture));
+      template.ReplaceActions(ticket, false);
+      return template.GetMessage();
+    }
+
+    public static MailMessage GetReminderCustomerEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, OrganizationsViewItem company)
+    {
+      EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 23);
+      template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Company", company);
+      template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", DataUtils.DateToLocal(loginUser, reminder.DueDate).ToString("g", loginUser.OrganizationCulture));
+      return template.GetMessage();
+    }
+
+    public static MailMessage GetReminderContactEmail(LoginUser loginUser, Reminder reminder, UsersViewItem user, ContactsViewItem contact)
+    {
+      EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 24);
+      template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Contact", contact);
+      template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", DataUtils.DateToLocal(loginUser, reminder.DueDate).ToString("g", loginUser.OrganizationCulture));
+      return template.GetMessage();
+    }
+
+    public static MailMessage GetSlaEmail(LoginUser loginUser, TicketsViewItem ticket, string violationType, bool isWarning)
+    {
+      EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, isWarning ? 26 : 25);
+      template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceActions(ticket, false).ReplaceParameter("ViolationType", violationType);
       return template.GetMessage();
     }
 
@@ -377,5 +452,5 @@ namespace TeamSupport.Data
     #endregion
 
   }
-  
+
 }

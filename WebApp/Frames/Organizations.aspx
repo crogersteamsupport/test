@@ -70,7 +70,7 @@
             Text="Help" ToolTip="Help." Visible="false">
           </telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Value="Reminder" ImageUrl="~/images/icons/Clock.png"
-            Text="Add Reminder" ToolTip="Add a reminder for this customer." Visible="false">
+            Text="Add Reminder" ToolTip="Add a reminder for this customer." Visible="true">
           </telerik:RadToolBarButton>
         </Items>
       </telerik:RadToolBar>

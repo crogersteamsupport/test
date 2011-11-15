@@ -1537,6 +1537,22 @@ namespace TSWebServices
         }
       }
 
+      Reminders reminders = new Reminders(ticket.Collection.LoginUser);
+      foreach (NewTicketReminderInfo reminderInfo in info.Reminders)
+      {
+        Reminder reminder = reminders.AddNewReminder();
+        reminder.OrganizationID = TSAuthentication.OrganizationID;
+        reminder.RefID = ticket.TicketID;
+        reminder.RefType = ReferenceType.Tickets;
+        DateTime dt;
+        if (DateTime.TryParse((reminderInfo.DueDate).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+        {
+          reminder.DueDate = dt.ToUniversalTime();
+        }
+        reminder.Description = reminderInfo.Description;
+        reminder.UserID = reminderInfo.UserID;
+      }
+      reminders.Save();
 
       User user = Users.GetUser(ticket.Collection.LoginUser, TSAuthentication.UserID);
       if (user.SubscribeToNewTickets) Subscriptions.AddSubscription(ticket.Collection.LoginUser, TSAuthentication.UserID, ReferenceType.Tickets, ticket.TicketID);
@@ -1645,6 +1661,17 @@ namespace TSWebServices
     [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
     [DataMember] public List<int> Subscribers { get; set; }
     [DataMember] public List<int> Queuers { get; set; }
+    [DataMember] public List<NewTicketReminderInfo> Reminders { get; set; }
+
+  }
+
+  [DataContract(Namespace = "http://teamsupport.com/")]
+  public class NewTicketReminderInfo
+  {
+    public NewTicketReminderInfo() { }
+    [DataMember] public string Description { get; set; }
+    [DataMember] public string DueDate { get; set; }
+    [DataMember] public int UserID { get; set; }
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]

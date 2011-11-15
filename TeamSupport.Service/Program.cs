@@ -31,6 +31,7 @@ namespace TeamSupport.Service
       _threads.Add(new IndexMaintenance());
       _threads.Add(new CrmPool());
       _threads.Add(new TransLocks());
+      _threads.Add(new ReminderProcessor());
     }
 
     private void TestConnection()

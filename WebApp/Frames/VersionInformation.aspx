@@ -2,11 +2,11 @@
 <%@ Register assembly="Telerik.Web.UI" namespace="Telerik.Web.UI" tagprefix="telerik" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
-  <link href="../Resources_150/Css/jquery.fileupload-ui.css" rel="stylesheet" type="text/css" />
+  <link href="../Resources_151/Css/jquery.fileupload-ui.css" rel="stylesheet" type="text/css" />
 
-  <script src="../Resources_150/Js/jquery.fileupload.js" type="text/javascript"></script>
+  <script src="../Resources_151/Js/jquery.fileupload.js" type="text/javascript"></script>
 
-  <script src="../Resources_150/Js/jquery.fileupload-ui.js" type="text/javascript"></script>
+  <script src="../Resources_151/Js/jquery.fileupload-ui.js" type="text/javascript"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 <div style="width:100%; height:100%; background-color:#ffffff; overflow:auto;">

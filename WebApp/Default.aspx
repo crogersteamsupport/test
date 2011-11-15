@@ -8,15 +8,15 @@
 <head id="Head1" runat="server">
   <title>Team Support</title>
   <link rel="SHORTCUT ICON" href="~/favicon.ico" />
-  <link href="Resources_150/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_150/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_150/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_150/Css/jquery.ketchup.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_150/Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_150/Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
-  <link href="Resources_150/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="Resources_150/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="Resources_150/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
-  <link href="Resources_150/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_151/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_151/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_151/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_151/Css/jquery.ketchup.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_151/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_151/Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
+  <link href="Resources_151/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="Resources_151/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="Resources_151/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <link href="Resources_151/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
 
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
@@ -66,19 +66,19 @@
       </services>
     <scripts>
         
-          <asp:ScriptReference Path="Resources_150/Js/json2.js" />
-          <asp:ScriptReference Path="Resources_150/Js/jquery.layout.min.js" />
-          <asp:ScriptReference Path="Resources_150/Js/jquery.jgrowl_minimized.js" />
-          <asp:ScriptReference Path="Resources_150/Js/jquery.editlabel.js" />
-          <asp:ScriptReference Path="Resources_150/Js/jquery.ui.combobox.js" />
-          <asp:ScriptReference Path="Resources_150/Js/jquery.ui.timepicker.js" />
-          <asp:ScriptReference Path="Resources_150/Js/jquery.cookie.js" />
-          <asp:ScriptReference Path="Resources_150/Js/ts/ts.system.js" />
-          <asp:ScriptReference Path="Resources_150/Js/ts/ts.utils.js" />
-          <asp:ScriptReference Path="Resources_150/Js/ts/ts.cache.js" />
-          <asp:ScriptReference Path="Resources_150/Js/ts/ts.ui.tabs.js" />
-          <asp:ScriptReference Path="Resources_150/Js/ts/ts.ui.menutree.js" />
-          <asp:ScriptReference Path="Resources_150/Js/ts/ts.pages.main.js" />
+          <asp:ScriptReference Path="Resources_151/Js/json2.js" />
+          <asp:ScriptReference Path="Resources_151/Js/jquery.layout.min.js" />
+          <asp:ScriptReference Path="Resources_151/Js/jquery.jgrowl_minimized.js" />
+          <asp:ScriptReference Path="Resources_151/Js/jquery.editlabel.js" />
+          <asp:ScriptReference Path="Resources_151/Js/jquery.ui.combobox.js" />
+          <asp:ScriptReference Path="Resources_151/Js/jquery.ui.timepicker.js" />
+          <asp:ScriptReference Path="Resources_151/Js/jquery.cookie.js" />
+          <asp:ScriptReference Path="Resources_151/Js/ts/ts.system.js" />
+          <asp:ScriptReference Path="Resources_151/Js/ts/ts.utils.js" />
+          <asp:ScriptReference Path="Resources_151/Js/ts/ts.cache.js" />
+          <asp:ScriptReference Path="Resources_151/Js/ts/ts.ui.tabs.js" />
+          <asp:ScriptReference Path="Resources_151/Js/ts/ts.ui.menutree.js" />
+          <asp:ScriptReference Path="Resources_151/Js/ts/ts.pages.main.js" />
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>

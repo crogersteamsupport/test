@@ -36,6 +36,7 @@
       this.btnCrmPool = new System.Windows.Forms.Button();
       this.btnIndexer = new System.Windows.Forms.Button();
       this.btnIndexMaint = new System.Windows.Forms.Button();
+      this.btnReminders = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // btnEmailProcessor
@@ -54,9 +55,9 @@
       // 
       this.btnSlaProcessor.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btnSlaProcessor.ForeColor = System.Drawing.Color.Green;
-      this.btnSlaProcessor.Location = new System.Drawing.Point(12, 160);
+      this.btnSlaProcessor.Location = new System.Drawing.Point(12, 198);
       this.btnSlaProcessor.Name = "btnSlaProcessor";
-      this.btnSlaProcessor.Size = new System.Drawing.Size(221, 31);
+      this.btnSlaProcessor.Size = new System.Drawing.Size(221, 29);
       this.btnSlaProcessor.TabIndex = 22;
       this.btnSlaProcessor.Text = "Start SLA Processor";
       this.btnSlaProcessor.UseVisualStyleBackColor = true;
@@ -78,9 +79,9 @@
       // 
       this.btnCrmPool.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btnCrmPool.ForeColor = System.Drawing.Color.Green;
-      this.btnCrmPool.Location = new System.Drawing.Point(12, 197);
+      this.btnCrmPool.Location = new System.Drawing.Point(12, 235);
       this.btnCrmPool.Name = "btnCrmPool";
-      this.btnCrmPool.Size = new System.Drawing.Size(221, 31);
+      this.btnCrmPool.Size = new System.Drawing.Size(221, 29);
       this.btnCrmPool.TabIndex = 24;
       this.btnCrmPool.Text = "Start CRM Pool";
       this.btnCrmPool.UseVisualStyleBackColor = true;
@@ -90,9 +91,9 @@
       // 
       this.btnIndexer.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btnIndexer.ForeColor = System.Drawing.Color.Green;
-      this.btnIndexer.Location = new System.Drawing.Point(12, 86);
+      this.btnIndexer.Location = new System.Drawing.Point(12, 124);
       this.btnIndexer.Name = "btnIndexer";
-      this.btnIndexer.Size = new System.Drawing.Size(221, 31);
+      this.btnIndexer.Size = new System.Drawing.Size(221, 29);
       this.btnIndexer.TabIndex = 25;
       this.btnIndexer.Text = "Start Indexer";
       this.btnIndexer.UseVisualStyleBackColor = true;
@@ -102,19 +103,32 @@
       // 
       this.btnIndexMaint.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btnIndexMaint.ForeColor = System.Drawing.Color.Green;
-      this.btnIndexMaint.Location = new System.Drawing.Point(12, 123);
+      this.btnIndexMaint.Location = new System.Drawing.Point(12, 161);
       this.btnIndexMaint.Name = "btnIndexMaint";
-      this.btnIndexMaint.Size = new System.Drawing.Size(221, 31);
+      this.btnIndexMaint.Size = new System.Drawing.Size(221, 29);
       this.btnIndexMaint.TabIndex = 26;
       this.btnIndexMaint.Text = "Start Index Maintenance";
       this.btnIndexMaint.UseVisualStyleBackColor = true;
       this.btnIndexMaint.Click += new System.EventHandler(this.btnIndexMaint_Click);
       // 
+      // btnReminders
+      // 
+      this.btnReminders.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btnReminders.ForeColor = System.Drawing.Color.Green;
+      this.btnReminders.Location = new System.Drawing.Point(12, 86);
+      this.btnReminders.Name = "btnReminders";
+      this.btnReminders.Size = new System.Drawing.Size(221, 31);
+      this.btnReminders.TabIndex = 27;
+      this.btnReminders.Text = "Start Reminder Processor";
+      this.btnReminders.UseVisualStyleBackColor = true;
+      this.btnReminders.Click += new System.EventHandler(this.btnReminders_Click);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(248, 237);
+      this.ClientSize = new System.Drawing.Size(248, 272);
+      this.Controls.Add(this.btnReminders);
       this.Controls.Add(this.btnIndexMaint);
       this.Controls.Add(this.btnIndexer);
       this.Controls.Add(this.btnCrmPool);
@@ -137,6 +151,7 @@
     private System.Windows.Forms.Button btnCrmPool;
     private System.Windows.Forms.Button btnIndexer;
     private System.Windows.Forms.Button btnIndexMaint;
+    private System.Windows.Forms.Button btnReminders;
   }
 }
 

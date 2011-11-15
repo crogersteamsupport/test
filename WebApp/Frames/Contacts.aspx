@@ -15,7 +15,7 @@
         </telerik:RadToolBarButton>
         <telerik:RadToolBarButton runat="server" Text="Delete" ImageUrl="~/images/icons/trash.png" Value="DeleteUser">
         </telerik:RadToolBarButton>
-        <telerik:RadToolBarButton runat="server" Text="Add Reminder" ImageUrl="~/images/icons/clock.png" Value="Reminder" Visible="false">
+        <telerik:RadToolBarButton runat="server" Text="Add Reminder" ImageUrl="~/images/icons/clock.png" Value="Reminder" Visible="true">
         </telerik:RadToolBarButton>
       </Items>
     </telerik:RadToolBar>

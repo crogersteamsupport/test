@@ -71,7 +71,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         cmbTemplate.Items.Add(new Telerik.Web.UI.RadComboBoxItem(template.Name, template.EmailTemplateID.ToString()));
       }
 
-      divSubject.Visible = UserSession.LoginUser.UserID == 34;
+      //divSubject.Visible = UserSession.LoginUser.UserID == 34;
       LoadEAICombos();
     
     }

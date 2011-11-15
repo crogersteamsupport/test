@@ -164,27 +164,54 @@ namespace TeamSupport.ServiceLibrary
     }
 
 
-
-    private void SendMessage(int organizationID, string description, MailMessage message)
+    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, NotificationType notificationType)
     {
-      StringBuilder builder = new StringBuilder();
-      builder.AppendLine("<span class=\"TeamSupportStart\">&nbsp</span>");
 
-      builder.AppendLine(message.Body);
-      builder.AppendLine("<span class=\"TeamSupportEnd\">&nbsp</span>");
+      Users users = new Users(LoginUser);
+      User user = null;
 
-      message.Body = builder.ToString();
+      
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(LoginUser, ticketID);
+      if (ticket == null) return;
+
+      string violationType = "";
+      switch (notificationType)
+      {
+        case NotificationType.InitialResponse: violationType = "Initial Resoponse"; break;
+        case NotificationType.LastAction: violationType = "Last Action"; break;
+        case NotificationType.TimeClosed: violationType = "Time to Close"; break;
+        default: break;
+      }
+
+      MailMessage message = EmailTemplates.GetSlaEmail(LoginUser, ticket, violationType, isWarning);
+
+
+      if (ticket.GroupID != null && useGroup)
+      {
+        users.LoadByGroupID((int)ticket.GroupID);
+      }
+
+      if (ticket.UserID != null && useUser && users.FindByUserID((int)ticket.UserID) == null)
+      {
+        user = Users.GetUser(LoginUser, (int)ticket.UserID);
+      }
+
+      foreach (User item in users)
+      {
+        message.To.Add(new MailAddress(item.Email, item.FirstLastName));
+      }
+
+      if (user != null)
+        message.To.Add(new MailAddress(user.Email, user.FirstLastName));
 
       if (message.To.Count > 0)
-      { 
-        //_smtpClient.Send(message); 
-        
-        Emails.AddEmail(LoginUser, organizationID, null, description, message);
+      {
+        Emails.AddEmail(LoginUser, ticket.OrganizationID, null, "Sla Message", message);
       }
-    
-    }
 
-    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, NotificationType notificationType)
+    }
+    /*
+    private void NotifyViolationOld(int ticketID, bool useUser, bool useGroup, bool isWarning, NotificationType notificationType)
     {
       MailMessage message = new MailMessage();
 
@@ -273,6 +300,21 @@ namespace TeamSupport.ServiceLibrary
 
     }
 
+    private void SendMessage(int organizationID, string description, MailMessage message)
+    {
+      StringBuilder builder = new StringBuilder();
+      builder.AppendLine("<span class=\"TeamSupportStart\">&nbsp</span>");
 
+      builder.AppendLine(message.Body);
+      builder.AppendLine("<span class=\"TeamSupportEnd\">&nbsp</span>");
+
+      message.Body = builder.ToString();
+
+      if (message.To.Count > 0)
+      { 
+        Emails.AddEmail(LoginUser, organizationID, null, description, message);
+      }
+    }
+*/
   }
 }
