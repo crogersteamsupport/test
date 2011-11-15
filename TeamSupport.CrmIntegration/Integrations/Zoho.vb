@@ -337,14 +337,13 @@ Namespace TeamSupport
                 Next
 
                 For Each thisRow As DataRow In thisTable.Rows
-                    If CRMLinkRow.LastLink IsNot Nothing AndAlso thisRow("DateModified") > CRMLinkRow.LastLink.Value.AddMinutes(-30) Then
+                    If CRMLinkRow.LastLink Is Nothing Or thisRow("DateModified") > CRMLinkRow.LastLink.Value.AddMinutes(-30) Then
 
                         If csvContent Is Nothing Then
                             csvContent = New StringBuilder(csvHeader.ToString())
                         End If
 
                         For i As Integer = 0 To thisTable.Columns.Count - 1
-                            'TODO: check isdbnull(thisrow(i))?
                             If thisTable.Columns(i).DataType Is GetType(String) Then
                                 csvContent.Append("""" & thisRow(i).ToString() & """")
                             Else
