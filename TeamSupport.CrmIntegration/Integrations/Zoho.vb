@@ -337,7 +337,7 @@ Namespace TeamSupport
                 Next
 
                 For Each thisRow As DataRow In thisTable.Rows
-                    If CRMLinkRow.LastLink Is Nothing Or thisRow("DateModified") > CRMLinkRow.LastLink.Value.AddMinutes(-30) Then
+                    If CRMLinkRow.LastLink Is Nothing OrElse thisRow("DateModified") > CRMLinkRow.LastLink.Value.AddMinutes(-30) Then
 
                         If csvContent Is Nothing Then
                             csvContent = New StringBuilder(csvHeader.ToString())
