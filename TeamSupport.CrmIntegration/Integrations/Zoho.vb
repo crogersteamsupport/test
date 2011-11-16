@@ -345,7 +345,7 @@ Namespace TeamSupport
 
                         For i As Integer = 0 To thisTable.Columns.Count - 1
                             If thisTable.Columns(i).DataType Is GetType(String) Then
-                                csvContent.Append("""" & thisRow(i).ToString() & """")
+                                csvContent.Append("""" & thisRow(i).ToString().Replace("""", "'") & """")
                             Else
                                 csvContent.Append(thisRow(i).ToString())
                             End If
