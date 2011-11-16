@@ -287,7 +287,7 @@ Namespace TeamSupport
 
                     With thisUser
                         .Email = person.Email
-                        .FirstName = person.FirstName
+                        .FirstName = IIf(person.FirstName IsNot Nothing, person.FirstName, "")
                         .LastName = person.LastName
                         .Title = person.Title
                         .MarkDeleted = False
