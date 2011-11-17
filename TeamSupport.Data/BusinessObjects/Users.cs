@@ -718,6 +718,287 @@ AND u.IsPortalUser = 1";
       if (parent == null) return null;
       return parent;
     }
+
+    public static void CreateDefaultUsers(LoginUser loginUser)
+    {
+      Users users = new Users(loginUser);
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "";
+        command.CommandType = CommandType.Text;
+
+
+        Organization organization = Organizations.GetOrganization(loginUser, 1078);
+        if (organization == null)
+        {
+          command.CommandText = @"
+SET IDENTITY_INSERT [Organizations] ON
+INSERT INTO [Organizations]
+           (OrganizationID,
+           [Name]
+           ,[Description]
+           ,[Website]
+           ,[WhereHeard]
+           ,[PromoCode]
+           ,[IsCustomerFree]
+           ,[UserSeats]
+           ,[PortalSeats]
+           ,[ChatSeats]
+           ,[ExtraStorageUnits]
+           ,[ImportID]
+           ,[IsActive]
+           ,[IsApiActive]
+           ,[IsApiEnabled]
+           ,[IsInventoryEnabled]
+           ,[TimeZoneID]
+           ,[InActiveReason]
+           ,[HasPortalAccess]
+           ,[IsAdvancedPortal]
+           ,[IsBasicPortal]
+           ,[PrimaryUserID]
+           ,[DefaultPortalGroupID]
+           ,[DefaultSupportGroupID]
+           ,[DefaultSupportUserID]
+           ,[ProductType]
+           ,[ParentID]
+           ,[WebServiceID]
+           ,[SystemEmailID]
+           ,[ChatID]
+           ,[PortalGuid]
+           ,[CRMLinkID]
+           ,[SAExpirationDate]
+           ,[APIRequestLimit]
+           ,[DateCreated]
+           ,[DateModified]
+           ,[RequireNewKeyword]
+           ,[RequireKnownUserForNewEmail]
+           ,[EmailDelimiter]
+           ,[OrganizationReplyToAddress]
+           ,[CompanyDomains]
+           ,[AdminOnlyCustomers]
+           ,[AdminOnlyReports]
+           ,[ShowWiki]
+           ,[DefaultWikiArticleID]
+           ,[SlaLevelID]
+           ,[InternalSlaLevelID]
+           ,[BusinessDays]
+           ,[BusinessDayStart]
+           ,[BusinessDayEnd]
+           ,[UseEuropeDate]
+           ,[CultureName]
+           ,[TimedActionsRequired]
+           ,[MatchEmailSubject]
+           ,[CreatorID]
+           ,[ModifierID]
+           ,[PrimaryInterest]
+           ,[PotentialSeats]
+           ,[EvalProcess]
+           ,[AddAdditionalContacts]
+           ,[ChangeStatusIfClosed]
+           ,[IsPublicArticles])
+     VALUES
+     (
+1078,'Muroc Systems, Inc.','','',NULL,NULL,1,10,1000,10,0,NULL,1,1,1,1,'Central Standard Time','',1,1,1,43,16,NULL,NULL,2,1,'8B7E4E7E-E28E-438E-825B-F6F2A2A4DA65','58AECA7C-9B9B-4C7E-AD2D-EE79E2E69E3D','22BD89B8-5162-4509-8B0D-F209A0AA6EE9','57EE1F58-5C8B-4B47-B629-BE7C702A2022',NULL,NULL,5000,'2008-10-10 17:30:47.177','2011-10-28 01:21:03.057',0,0,NULL,'Support@TeamSupport.com','',0,0,1,26,NULL,8,62,'2010-02-22 15:00:00.000','2010-02-22 23:00:00.000',0,'en-US',0,0,43,43,NULL,NULL,NULL,1,1,1
+     )
+SET IDENTITY_INSERT [Organizations] OFF
+";
+          users.ExecuteNonQuery(command, "Organizations");
+        }
+
+        organization = Organizations.GetOrganization(loginUser, 1);
+        if (organization == null)
+        {
+          command.CommandText = @"
+SET IDENTITY_INSERT [Organizations] ON
+
+INSERT INTO [Organizations]
+           (OrganizationID,
+           [Name]
+           ,[Description]
+           ,[Website]
+           ,[WhereHeard]
+           ,[PromoCode]
+           ,[IsCustomerFree]
+           ,[UserSeats]
+           ,[PortalSeats]
+           ,[ChatSeats]
+           ,[ExtraStorageUnits]
+           ,[ImportID]
+           ,[IsActive]
+           ,[IsApiActive]
+           ,[IsApiEnabled]
+           ,[IsInventoryEnabled]
+           ,[TimeZoneID]
+           ,[InActiveReason]
+           ,[HasPortalAccess]
+           ,[IsAdvancedPortal]
+           ,[IsBasicPortal]
+           ,[PrimaryUserID]
+           ,[DefaultPortalGroupID]
+           ,[DefaultSupportGroupID]
+           ,[DefaultSupportUserID]
+           ,[ProductType]
+           ,[ParentID]
+           ,[WebServiceID]
+           ,[SystemEmailID]
+           ,[ChatID]
+           ,[PortalGuid]
+           ,[CRMLinkID]
+           ,[SAExpirationDate]
+           ,[APIRequestLimit]
+           ,[DateCreated]
+           ,[DateModified]
+           ,[RequireNewKeyword]
+           ,[RequireKnownUserForNewEmail]
+           ,[EmailDelimiter]
+           ,[OrganizationReplyToAddress]
+           ,[CompanyDomains]
+           ,[AdminOnlyCustomers]
+           ,[AdminOnlyReports]
+           ,[ShowWiki]
+           ,[DefaultWikiArticleID]
+           ,[SlaLevelID]
+           ,[InternalSlaLevelID]
+           ,[BusinessDays]
+           ,[BusinessDayStart]
+           ,[BusinessDayEnd]
+           ,[UseEuropeDate]
+           ,[CultureName]
+           ,[TimedActionsRequired]
+           ,[MatchEmailSubject]
+           ,[CreatorID]
+           ,[ModifierID]
+           ,[PrimaryInterest]
+           ,[PotentialSeats]
+           ,[EvalProcess]
+           ,[AddAdditionalContacts]
+           ,[ChangeStatusIfClosed]
+           ,[IsPublicArticles])
+     VALUES
+     (
+     1,'TeamSupport.com','',NULL,NULL,NULL,1,9999999,99999999,9999999,999999,NULL,1,1,0,0,'Central Standard Time',NULL,1,0,0,NULL,NULL,NULL,NULL,2,NULL,'863e9558-5f29-48bb-8cb9-c93eb77947cf','81e72c55-9b3b-4db0-8d88-b3a991d9672c','d9565c77-c78c-4176-9580-674a29f60de6','e266e1ce-d96e-4a1a-a46d-c18778723ad9',NULL,NULL,5000,'2008-06-20 05:00:00.000','2008-11-05 01:09:56.213',0,0,NULL,NULL,NULL,0,0,0,NULL,NULL,NULL,62,'2010-02-22 15:00:00.000','2010-02-22 23:00:00.000',0,'en-US',0,0,2,43,NULL,NULL,NULL,1,1,0
+     )
+
+SET IDENTITY_INSERT [Organizations] OFF
+";
+          users.ExecuteNonQuery(command, "Organizations");
+        }
+
+        User user = Users.GetUser(loginUser, 54);
+        if (user == null)
+        {
+          command.CommandText = @"
+SET IDENTITY_INSERT Users On
+
+INSERT INTO [Users]
+           (UserID,
+           [Email]
+           ,[FirstName]
+           ,[MiddleName]
+           ,[LastName]
+           ,[Title]
+           ,[CryptedPassword]
+           ,[IsActive]
+           ,[MarkDeleted]
+           ,[TimeZoneID]
+           ,[CultureName]
+           ,[LastLogin]
+           ,[LastActivity]
+           ,[LastPing]
+           ,[LastWaterCoolerID]
+           ,[IsSystemAdmin]
+           ,[IsFinanceAdmin]
+           ,[IsPasswordExpired]
+           ,[IsPortalUser]
+           ,[IsChatUser]
+           ,[PrimaryGroupID]
+           ,[InOffice]
+           ,[InOfficeComment]
+           ,[ReceiveTicketNotifications]
+           ,[ReceiveAllGroupNotifications]
+           ,[SubscribeToNewTickets]
+           ,[ActivatedOn]
+           ,[DeactivatedOn]
+           ,[OrganizationID]
+           ,[LastVersion]
+           ,[SessionID]
+           ,[ImportID]
+           ,[DateCreated]
+           ,[DateModified]
+           ,[CreatorID]
+           ,[ModifierID]
+           ,[OrgsUserCanSeeOnPortal]
+           ,[DoNotAutoSubscribe])
+     VALUES
+           (
+54,'kjones@murocsystems.com','Kevin','','Jones','','C6E3C4E8F7BFAFF9A1FC35C07BD5574E',1,0,'Central Standard Time','en-US','2011-11-15 05:20:46.050','2011-11-15 05:41:54.820','2011-11-15 06:04:28.203',17961,1,1,0,1,1,NULL,1,'',1,0,0,'2008-06-27 22:05:10.993',NULL,1,'1.2.9','C4735AE0-5C96-4969-B7C9-485E48167FFB',NULL,'2008-07-01 11:31:39.737','2011-11-15 05:41:54.823',30,-1,NULL,0           
+           )
+
+SET IDENTITY_INSERT Users Off
+";
+          users.ExecuteNonQuery(command, "Users");
+        }
+
+        user = Users.GetUser(loginUser, 34);
+        if (user == null)
+        {
+          command.CommandText = @"
+SET IDENTITY_INSERT Users On
+
+INSERT INTO [Users]
+           (UserID,
+           [Email]
+           ,[FirstName]
+           ,[MiddleName]
+           ,[LastName]
+           ,[Title]
+           ,[CryptedPassword]
+           ,[IsActive]
+           ,[MarkDeleted]
+           ,[TimeZoneID]
+           ,[CultureName]
+           ,[LastLogin]
+           ,[LastActivity]
+           ,[LastPing]
+           ,[LastWaterCoolerID]
+           ,[IsSystemAdmin]
+           ,[IsFinanceAdmin]
+           ,[IsPasswordExpired]
+           ,[IsPortalUser]
+           ,[IsChatUser]
+           ,[PrimaryGroupID]
+           ,[InOffice]
+           ,[InOfficeComment]
+           ,[ReceiveTicketNotifications]
+           ,[ReceiveAllGroupNotifications]
+           ,[SubscribeToNewTickets]
+           ,[ActivatedOn]
+           ,[DeactivatedOn]
+           ,[OrganizationID]
+           ,[LastVersion]
+           ,[SessionID]
+           ,[ImportID]
+           ,[DateCreated]
+           ,[DateModified]
+           ,[CreatorID]
+           ,[ModifierID]
+           ,[OrgsUserCanSeeOnPortal]
+           ,[DoNotAutoSubscribe])
+     VALUES
+           (
+34,'kjones@murocsystems.com','Kevin','','Jones','','C6E3C4E8F7BFAFF9A1FC35C07BD5574E',1,0,'Central Standard Time','en-US','2011-11-15 05:20:46.050','2011-11-15 05:41:54.820','2011-11-15 06:04:28.203',17961,1,1,0,1,1,NULL,1,'',1,0,0,'2008-06-27 22:05:10.993',NULL,1078,'1.2.9','C4735AE0-5C96-4969-B7C9-485E48167FFB',NULL,'2008-07-01 11:31:39.737','2011-11-15 05:41:54.823',30,-1,NULL,0           
+           )
+
+SET IDENTITY_INSERT Users Off
+
+";
+          users.ExecuteNonQuery(command, "Users");
+        }
+      }
+
     
+    
+    }
+
   }
 }

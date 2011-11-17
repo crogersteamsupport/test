@@ -133,6 +133,121 @@ Ts.Services = {};
   Ts.System = new TsSystem();
   Ts._addInit(Ts.System);
 
+
+  function TsUserSettings() { this._cache = new Array(); }
+  TsUserSettings.prototype =
+  {
+    constructor: TsUserSettings,
+    read: function(key, defaultValue, callback){
+      var cached = this._cache[key];
+      if (cached != undefined) {
+        callback(cached);
+        return;
+      }
+      var self = this;
+      top.Ts.Services.Settings.ReadUserSetting(key, defaultValue, function(result){
+        self._cache[key] = result;
+        callback(result);
+      });
+    },
+    write: function(key, value, callback){
+      var cached = this._cache[key];
+      if (cached != undefined && cached == value)  {
+        if (callback) callback();
+        return;
+      }
+      this._cache[key] = value;
+      top.Ts.Services.Settings.WriteUserSetting(key, value, callback);
+    }
+  };
+
+  function TsOrgSettings() { this._cache = new Array(); }
+  TsOrgSettings.prototype =
+  {
+    constructor: TsOrgSettings,
+    read: function(key, defaultValue, callback){
+      var cached = this._cache[key];
+      if (cached != undefined) {
+        callback(cached);
+        return;
+      }
+      var self = this;
+      top.Ts.Services.Settings.ReadOrganizationSetting(key, defaultValue, function(result){
+        self._cache[key] = result;
+        callback(result);
+      });
+    },
+    write: function(key, value, callback){
+      var cached = this._cache[key];
+      if (cached != undefined && cached == value)  {
+        if (callback) callback();
+        return;
+      }
+      this._cache[key] = value;
+      top.Ts.Services.Settings.WriteOrganizationSetting(key, value, callback);
+    }
+  };
+
+  function TsSessionSettings() { this._cache = new Array(); }
+  TsSessionSettings.prototype =
+  {
+    constructor: TsSessionSettings,
+    read: function(key, defaultValue, callback){
+      var cached = this._cache[key];
+      if (cached != undefined) {
+        callback(cached);
+        return;
+      }
+      var self = this;
+      top.Ts.Services.Settings.ReadSessionSetting(key, defaultValue, function(result){
+        self._cache[key] = result;
+        callback(result);
+      });
+    },
+    write: function(key, value, callback){
+      var cached = this._cache[key];
+      if (cached != undefined && cached == value)  {
+        if (callback) callback();
+        return;
+      }
+      this._cache[key] = value;
+      top.Ts.Services.Settings.WriteSessionSetting(key, value, callback);
+    }
+  };
+
+  function TsSystemSettings() { this._cache = new Array(); }
+  TsSystemSettings.prototype =
+  {
+    constructor: TsSystemSettings,
+    read: function(key, defaultValue, callback){
+      var cached = this._cache[key];
+      if (cached != undefined) {
+        callback(cached);
+        return;
+      }
+      var self = this;
+      top.Ts.Services.Settings.ReadSystemSetting(key, defaultValue, function(result){
+        self._cache[key] = result;
+        callback(result);
+      });
+    },
+    write: function(key, value, callback){
+      var cached = this._cache[key];
+      if (cached != undefined && cached == value)  {
+        if (callback) callback();
+        return;
+      }
+      this._cache[key] = value;
+      top.Ts.Services.Settings.WriteSystemSetting(key, value, callback);
+    }
+  };
+
+  Ts.Settings = {}
+  Ts.Settings.User =  new TsUserSettings();
+  Ts.Settings.Organization =  new TsOrgSettings();
+  Ts.Settings.Session =  new TsSessionSettings();
+  Ts.Settings.System =  new TsSystemSettings();
+
   Ts.ReferenceTypes = {}
   Ts.ReferenceTypes.None = -1;
   Ts.ReferenceTypes.Actions = 0; 
@@ -192,6 +307,7 @@ Ts.Services = {};
   Ts.ProductType.HelpDesk = 1;
   Ts.ProductType.Enterprise = 2;
   Ts.ProductType.BugTracking= 3;
+
   
 
 })();

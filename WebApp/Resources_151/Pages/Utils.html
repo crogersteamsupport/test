@@ -55,6 +55,24 @@
         });
       });
 
+      $('#btnDefaultUsers').click(function (e) {
+        e.preventDefault();
+        top.Ts.Services.Users.CreateDefaultUsers();
+      });
+
+      $('#btnTest').click(function (e) {
+        e.preventDefault();
+        top.Ts.Settings.User.read('kevin', 'val', function (r) {
+          alert(r);
+          top.Ts.Settings.User.read('kevin', 'val2', function (r2) {
+            alert(r2);
+            top.Ts.Settings.User.write('kevin', 'valb', function () {
+              top.Ts.Settings.User.read('kevin', 'val3', function (r3) { alert(r3); });
+            });
+          });
+        });
+      });
+
       $('#btnDummyCreate').click(function (e) {
         e.preventDefault();
         $('.dummyCreate').html('...');
@@ -109,6 +127,8 @@
   <div class="utils-content ui-widget ui-widget-content">
     <button id="btnRefresh">Refresh</button>&nbsp
     <button id="btnGenKeys">Generate Machine Keys</button>&nbsp
+    <button id="btnDefaultUsers">Create Default Users</button>&nbsp
+    <button id="btnTest">Test</button>&nbsp
   </div>
   <div class="utils-content ui-widget ui-widget-content">
     

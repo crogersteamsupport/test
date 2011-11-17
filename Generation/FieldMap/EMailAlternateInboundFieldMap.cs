@@ -19,6 +19,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("GroupToAssign", "GroupToAssign", false, false, false);
       _fieldMap.AddMap("DefaultTicketType", "DefaultTicketType", false, false, false);
       _fieldMap.AddMap("ProductID", "ProductID", false, false, false);
+      _fieldMap.AddMap("SendingEMailAddress", "SendingEMailAddress", false, false, false);
             
     }
   }

@@ -117,6 +117,7 @@
       g_loading = true;
       PageMethods.GetTicketTemplate(id, function(template) {
         $('#cbIsEnabled')[0].checked = template.IsEnabled;
+        $('#cbPortal')[0].checked = template.IsVisibleOnPortal;
         if (template.TemplateType == 0) $('#rbTicketType')[0].checked = true; else $('#rbPickList')[0].checked = true;
         $find('textPickList').set_value(template.TriggerText);
         $find('editTemplate').set_html(template.TemplateText);
@@ -131,6 +132,7 @@
       PageMethods.SaveTicketTemplate(getSelectedTemplateID(),
         templateType,
         $('#cbIsEnabled')[0].checked,
+        $('#cbPortal')[0].checked,
         $find('cmbTicketType').get_value(),
         $find('textPickList').get_value(),
         $find('editTemplate').get_html(),
@@ -151,6 +153,7 @@
       item.select();
       combo.commitChanges();
       $('#cbIsEnabled')[0].checked = true;
+      $('#cbPortal')[0].checked = false;
       $('#rbPickList')[0].checked = true;
       $find('editTemplate').set_html('');
       $find('textPickList').set_value('');
@@ -205,6 +208,8 @@
         <fieldset id="fieldsTemplate" class="ts-fieldset">
           <asp:CheckBox ID="cbIsEnabled" runat="server" CssClass="checkBox" Text="Enabled" />
           <p>Check this box to enable this ticket template.</p>
+          <asp:CheckBox ID="cbPortal" runat="server" CssClass="checkBox" Text="Visible on Customer Portal" />
+          <p>Check this box to use this ticket template on the customer portal.</p>
           <asp:RadioButton ID="rbTicketType" runat="server" Checked="true" Text="Ticket Type" GroupName="TemplateType"/>
           <asp:RadioButton ID="rbPickList" runat="server" Checked="false" Text="Custom Pick List" GroupName="TemplateType"/>
           <p>The Ticket Type template will insert the template into the ticket's description whenever the ticket type changes.</p>

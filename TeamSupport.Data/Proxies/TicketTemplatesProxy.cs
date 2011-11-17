@@ -17,6 +17,7 @@ namespace TeamSupport.Data
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public TicketTemplateType TemplateType { get; set; }
     [DataMember] public bool IsEnabled { get; set; }
+    [DataMember] public bool IsVisibleOnPortal { get; set; }
     [DataMember] public int? TicketTypeID { get; set; }
     [DataMember] public string TriggerText { get; set; }
     [DataMember] public string TemplateText { get; set; }
@@ -38,6 +39,7 @@ namespace TeamSupport.Data
       result.TriggerText = this.TriggerText;
       result.TicketTypeID = this.TicketTypeID;
       result.IsEnabled = this.IsEnabled;
+      result.IsVisibleOnPortal = this.IsVisibleOnPortal;
       result.TemplateType = this.TemplateType;
       result.OrganizationID = this.OrganizationID;
       result.TicketTemplateID = this.TicketTemplateID;

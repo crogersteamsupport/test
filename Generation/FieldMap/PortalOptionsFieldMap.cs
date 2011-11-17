@@ -41,6 +41,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DisplayAdvProducts", "DisplayAdvProducts", false, false, false);
       _fieldMap.AddMap("DisplayAdvKB", "DisplayAdvKB", false, false, false);
       _fieldMap.AddMap("DisplayProductVersion", "DisplayProductVersion", false, false, false);
+      _fieldMap.AddMap("LandingPageHtml", "LandingPageHtml", false, false, false);
+      _fieldMap.AddMap("DisplayLandingPage", "DisplayLandingPage", false, false, false);
             
     }
   }

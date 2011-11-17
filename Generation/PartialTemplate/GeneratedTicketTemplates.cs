@@ -48,6 +48,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool IsVisibleOnPortal
+    {
+      get { return (bool)Row["IsVisibleOnPortal"]; }
+      set { Row["IsVisibleOnPortal"] = CheckNull(value); }
+    }
+    
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
@@ -209,7 +215,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketTemplates] SET     [OrganizationID] = @OrganizationID,    [TemplateType] = @TemplateType,    [IsEnabled] = @IsEnabled,    [TicketTypeID] = @TicketTypeID,    [TriggerText] = @TriggerText,    [TemplateText] = @TemplateText,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([TicketTemplateID] = @TicketTemplateID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketTemplates] SET     [OrganizationID] = @OrganizationID,    [TemplateType] = @TemplateType,    [IsEnabled] = @IsEnabled,    [TicketTypeID] = @TicketTypeID,    [TriggerText] = @TriggerText,    [TemplateText] = @TemplateText,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [IsVisibleOnPortal] = @IsVisibleOnPortal  WHERE ([TicketTemplateID] = @TicketTemplateID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketTemplateID", SqlDbType.Int, 4);
@@ -275,13 +281,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IsVisibleOnPortal", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketTemplates] (    [OrganizationID],    [TemplateType],    [IsEnabled],    [TicketTypeID],    [TriggerText],    [TemplateText],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @OrganizationID, @TemplateType, @IsEnabled, @TicketTypeID, @TriggerText, @TemplateText, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketTemplates] (    [OrganizationID],    [TemplateType],    [IsEnabled],    [TicketTypeID],    [TriggerText],    [TemplateText],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [IsVisibleOnPortal]) VALUES ( @OrganizationID, @TemplateType, @IsEnabled, @TicketTypeID, @TriggerText, @TemplateText, @DateCreated, @DateModified, @CreatorID, @ModifierID, @IsVisibleOnPortal); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("IsVisibleOnPortal", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -465,7 +485,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketTemplateID], [OrganizationID], [TemplateType], [IsEnabled], [TicketTypeID], [TriggerText], [TemplateText], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[TicketTemplates] WHERE ([TicketTemplateID] = @TicketTemplateID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketTemplateID], [OrganizationID], [TemplateType], [IsEnabled], [TicketTypeID], [TriggerText], [TemplateText], [DateCreated], [DateModified], [CreatorID], [ModifierID], [IsVisibleOnPortal] FROM [dbo].[TicketTemplates] WHERE ([TicketTemplateID] = @TicketTemplateID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketTemplateID", ticketTemplateID);
         Fill(command);

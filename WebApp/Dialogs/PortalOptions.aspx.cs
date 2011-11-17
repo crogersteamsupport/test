@@ -86,12 +86,14 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
     PortalOption portalOption = (PortalOption)PortalOptions.GetPortalOption(UserSession.LoginUser, organizationID);
     if (portalOption == null || organization == null) return;
     textFooter.Text = portalOption.PortalHTMLFooter;
+    textLanding.Text = portalOption.LandingPageHtml;
     textHeader.Text = portalOption.PortalHTMLHeader;
     cbUseCompanyInBasic.Checked = portalOption.UseCompanyInBasic == null ? false : (bool)portalOption.UseCompanyInBasic;
     cbCompanyRequiredInBasic.Checked = portalOption.CompanyRequiredInBasic == null ? false : (bool)portalOption.CompanyRequiredInBasic;
     cbHideGroupAssignedTo.Checked = portalOption.HideGroupAssignedTo == null ? false : (bool)portalOption.HideGroupAssignedTo;
     cbHideUserAssignedTo.Checked = portalOption.HideUserAssignedTo == null ? false : (bool)portalOption.HideUserAssignedTo;
     cbRecaptcha.Checked = portalOption.UseRecaptcha == null ? true : (bool)portalOption.UseRecaptcha;
+    cbLanding.Checked = portalOption.DisplayLandingPage;
     cbDeflection.Checked = portalOption.DeflectionEnabled == null ? false : (bool)portalOption.DeflectionEnabled;
     textPortalName.Text = portalOption.PortalName;
     cbProduct.Checked = portalOption.DisplayProducts == null ? false : (bool) portalOption.DisplayProducts;
@@ -133,11 +135,13 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
 
     portalOption.PortalHTMLHeader = textHeader.Text;
     portalOption.PortalHTMLFooter = textFooter.Text;
+    portalOption.LandingPageHtml = textLanding.Text;
     portalOption.UseCompanyInBasic = cbUseCompanyInBasic.Checked;
     portalOption.CompanyRequiredInBasic = cbCompanyRequiredInBasic.Checked;
     portalOption.HideUserAssignedTo = cbHideUserAssignedTo.Checked;
     portalOption.HideGroupAssignedTo = cbHideGroupAssignedTo.Checked;
     portalOption.UseRecaptcha = cbRecaptcha.Checked;
+    portalOption.DisplayLandingPage = cbLanding.Checked;
     portalOption.DeflectionEnabled = cbDeflection.Checked;
     portalOption.KBAccess = cbKb.Checked;
     portalOption.DisplayGroups = cbGroup.Checked;

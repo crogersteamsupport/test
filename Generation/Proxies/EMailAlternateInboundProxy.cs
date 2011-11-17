@@ -19,6 +19,7 @@ namespace TeamSupport.Data
     [DataMember] public int? GroupToAssign { get; set; }
     [DataMember] public int? DefaultTicketType { get; set; }
     [DataMember] public int? ProductID { get; set; }
+    [DataMember] public string SendingEMailAddress { get; set; }
           
   }
   
@@ -27,6 +28,7 @@ namespace TeamSupport.Data
     public EMailAlternateInboundItemProxy GetProxy()
     {
       EMailAlternateInboundItemProxy result = new EMailAlternateInboundItemProxy();
+      result.SendingEMailAddress = this.SendingEMailAddress;
       result.ProductID = this.ProductID;
       result.DefaultTicketType = this.DefaultTicketType;
       result.GroupToAssign = this.GroupToAssign;

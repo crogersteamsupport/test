@@ -41,6 +41,8 @@ namespace TeamSupport.Data
     [DataMember] public bool DisplayAdvProducts { get; set; }
     [DataMember] public bool DisplayAdvKB { get; set; }
     [DataMember] public bool DisplayProductVersion { get; set; }
+    [DataMember] public string LandingPageHtml { get; set; }
+    [DataMember] public bool DisplayLandingPage { get; set; }
           
   }
   
@@ -49,6 +51,8 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.DisplayLandingPage = this.DisplayLandingPage;
+      result.LandingPageHtml = this.LandingPageHtml;
       result.DisplayProductVersion = this.DisplayProductVersion;
       result.DisplayAdvKB = this.DisplayAdvKB;
       result.DisplayAdvProducts = this.DisplayAdvProducts;

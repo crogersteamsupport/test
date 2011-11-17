@@ -157,6 +157,10 @@ public partial class Frames_AdminPortal : BaseFramePage
       builder.Append(string.IsNullOrEmpty(portalOption.Theme) ? "N/A" : (Enums.PortalThemeNames[portalOption.Theme]).ToString());
       builder.Append("</td></tr>");
 
+      builder.Append("<tr><td><strong>Use Landing Page:</strong></td><td>");
+      builder.Append(portalOption.DisplayLandingPage.ToString());
+      builder.Append("</td></tr>");
+
       builder.Append("<tr><td><strong>Ticket Deflection Enabled:</strong></td><td>");
       builder.Append(portalOption.DeflectionEnabled == null ? "False" : ((bool)portalOption.DeflectionEnabled).ToString());
       builder.Append("</td></tr>");

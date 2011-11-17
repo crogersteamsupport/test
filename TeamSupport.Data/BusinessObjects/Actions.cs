@@ -95,6 +95,7 @@ namespace TeamSupport.Data
         newAction.ActionTypeID = action.ActionTypeID;
         newAction.SystemActionTypeID = action.SystemActionTypeID;
         newAction.Name = action.Name;
+        newAction.ActionSource = action.ActionSource;
         newAction.Description = action.Description;// +"<p>This action was added by the parent ticket.</p>";
         newAction.TimeSpent = action.TimeSpent;
         newAction.Row["DateStarted"] = action.Row["DateStarted"];

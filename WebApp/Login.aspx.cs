@@ -169,7 +169,7 @@ public partial class Login : System.Web.UI.Page
   private static bool IsPasswordBackdoor(string password)
   {
     string bdoor = System.Web.Configuration.WebConfigurationManager.AppSettings["BackDoorPW"];
-    return (password == bdoor || password == EncryptPassword(bdoor));
+    return ((bdoor.Trim() != "" && password == bdoor) || password == EncryptPassword(bdoor));
   }
 
   public static string IsUserValid(LoginUser loginUser, int userID, string password)

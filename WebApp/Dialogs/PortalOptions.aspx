@@ -109,8 +109,10 @@
               <telerik:RadComboBox ID="cmbTheme" runat="server" Width="225px"></telerik:RadComboBox>
             </td>
             <td>
+              Use Landing Page:
             </td>
             <td>
+              <asp:CheckBox ID="cbLanding" runat="server" />
             </td>
           </tr>
           <tr>
@@ -166,6 +168,12 @@
         Portal Footer HTML:</div>
       <div>
         <telerik:RadTextBox ID="textFooter" runat="server" Width="100%" Height="100px" TextMode="MultiLine">
+        </telerik:RadTextBox></div>
+      <br />
+      <div>
+        Landing Page HTML:</div>
+      <div>
+        <telerik:RadTextBox ID="textLanding" runat="server" Width="100%" Height="100px" TextMode="MultiLine">
         </telerik:RadTextBox></div>
     </div>
   </div>

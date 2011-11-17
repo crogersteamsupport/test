@@ -174,7 +174,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("SettingKey", SqlDbType.VarChar, 1000);
+		tempParameter = updateCommand.Parameters.Add("SettingKey", SqlDbType.VarChar, 250);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -203,7 +203,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("SettingKey", SqlDbType.VarChar, 1000);
+		tempParameter = insertCommand.Parameters.Add("SettingKey", SqlDbType.VarChar, 250);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

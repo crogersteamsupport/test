@@ -82,7 +82,7 @@ public partial class Frames_AdminTicketTemplates : System.Web.UI.Page
   }
 
   [WebMethod(true)]
-  public static int SaveTicketTemplate(int ticketTemplateID, int templateType, bool isEnabled, int ticketTypeID, string value, string text)
+  public static int SaveTicketTemplate(int ticketTemplateID, int templateType, bool isEnabled, bool isPortal, int ticketTypeID, string value, string text)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return -1;
     TicketTemplate template;
@@ -99,6 +99,7 @@ public partial class Frames_AdminTicketTemplates : System.Web.UI.Page
     template.TemplateText = text;
     template.TriggerText = value;
     template.IsEnabled = isEnabled;
+    template.IsVisibleOnPortal = isPortal;
 
     template.Collection.Save();
     return template.TicketTemplateID;

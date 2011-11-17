@@ -99,6 +99,7 @@ public partial class Chat_ChatOffline : System.Web.UI.Page
     action.Description = builder.ToString();
     action.IsKnowledgeBase = false;
     action.IsVisibleOnPortal = true;
+    action.ActionSource = "ChatOffline";
     action.Name = "Description";
     action.TicketID = ticket.TicketID;
     action.Collection.Save();

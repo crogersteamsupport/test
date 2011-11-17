@@ -14,7 +14,6 @@ namespace TeamSupport.Data
     {
       _fieldMap = new FieldMap();
       _fieldMap.AddMap("CustomFieldID", "CustomFieldID", false, false, false);
-      _fieldMap.AddMap("CustomFieldCategoryID", "CustomFieldCategoryID", false, false, false);
       _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, false);
       _fieldMap.AddMap("Name", "Name", false, false, false);
       _fieldMap.AddMap("ApiFieldName", "ApiFieldName", false, false, false);
@@ -31,6 +30,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
+      _fieldMap.AddMap("CustomFieldCategoryID", "CustomFieldCategoryID", false, false, false);
             
     }
   }

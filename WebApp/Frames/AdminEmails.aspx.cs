@@ -208,7 +208,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     {
       result.Body = emails[0].Body;
       result.IsHtml = emails[0].IsHtml;
-      result.Subject = template.Subject;
+      result.Subject = emails[0].Subject;
       result.Header = emails[0].Header;
       result.Footer = emails[0].Footer;
       result.UseTemplate = emails[0].UseGlobalTemplate && template.IsEmail;
@@ -270,7 +270,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
       email.EmailTemplateID = emailTemplateID;
       email.IsHtml = isHtml;
       email.OrganizationID = UserSession.LoginUser.OrganizationID;
-      email.Subject = template.Subject;
+      email.Subject = subject;
       email.Header = header;
       email.Footer = footer;
       email.UseGlobalTemplate = useTemplate && template.IsEmail;

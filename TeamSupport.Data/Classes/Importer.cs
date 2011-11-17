@@ -1826,6 +1826,7 @@ namespace TeamSupport.Data
         action.DateStarted = GetDBDate(row["DateStarted"].ToString().Trim(), true);
         string desc = row["Description"].ToString().Trim();
         action.Description = desc == "" ? "Comment" : desc;
+        action.ActionSource = "Import";
         action.IsVisibleOnPortal = row["VisibleOnPortal"].ToString().ToLower().IndexOf("t") > -1;
         action.ModifierID = _loginUser.UserID;
         action.Name = GetDBString(row["Name"], 500, false);

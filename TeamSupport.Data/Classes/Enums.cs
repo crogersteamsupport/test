@@ -153,7 +153,8 @@ namespace TeamSupport.Data
       {"Default","Gray"},
       {"Web20","Blue"},
       {"Hay","Green"},
-      {"Sunset","Orange"}
+      {"Sunset","Orange"},
+      {"Beta","Beta"}
     };
 
     public static Dictionary<SystemActionType, string> SystemActionNames = new Dictionary<SystemActionType, string>

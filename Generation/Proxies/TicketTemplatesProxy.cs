@@ -24,6 +24,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public bool IsVisibleOnPortal { get; set; }
           
   }
   
@@ -32,6 +33,7 @@ namespace TeamSupport.Data
     public TicketTemplateProxy GetProxy()
     {
       TicketTemplateProxy result = new TicketTemplateProxy();
+      result.IsVisibleOnPortal = this.IsVisibleOnPortal;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.TemplateText = this.TemplateText;

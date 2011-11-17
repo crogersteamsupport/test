@@ -243,6 +243,7 @@ public partial class Frames_NewTicket : BaseFramePage
           TeamSupport.Data.Action chatAction = actions.AddNewAction();
           chatAction.ActionTypeID = null;
           chatAction.Name = "Chat";
+          chatAction.ActionSource = "Chat";
           chatAction.SystemActionTypeID = SystemActionType.Chat;
           chatAction.Description = chat.GetHtml(true, UserSession.LoginUser.OrganizationCulture);
           chatAction.IsVisibleOnPortal = cbPortal.Checked;

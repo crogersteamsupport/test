@@ -1445,6 +1445,7 @@ namespace TSWebServices
       action.ActionTypeID = null;
       action.Name = "Description";
       action.SystemActionTypeID = SystemActionType.Description;
+      action.ActionSource = ticket.TicketSource;
       action.Description = info.Description;
       action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
       action.IsKnowledgeBase = ticket.IsKnowledgeBase;
@@ -1526,6 +1527,7 @@ namespace TSWebServices
           TeamSupport.Data.Action chatAction = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
           chatAction.ActionTypeID = null;
           chatAction.Name = "Chat";
+          chatAction.ActionSource = "Chat";
           chatAction.SystemActionTypeID = SystemActionType.Chat;
           chatAction.Description = chat.GetHtml(true, chatAction.Collection.LoginUser.OrganizationCulture);
           chatAction.IsVisibleOnPortal = ticket.IsVisibleOnPortal;

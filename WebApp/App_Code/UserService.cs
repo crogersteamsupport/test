@@ -97,6 +97,12 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void CreateDefaultUsers()
+    {
+      Users.CreateDefaultUsers(TSAuthentication.GetLoginUser());
+    }
+
+    [WebMethod]
     public GroupProxy[] GetGroups()
     {
       Groups groups = new Groups(TSAuthentication.GetLoginUser());

@@ -53,5 +53,28 @@ namespace TSWebServices
       Settings.Session.WriteString(key, value);
     }
 
+    [WebMethod(true)]
+    public string ReadOrganizationSetting(string key, string defaultValue)
+    {
+      return Settings.OrganizationDB.ReadString(key, defaultValue);
+    }
+
+    [WebMethod(true)]
+    public void WriteOrganizationSetting(string key, string value)
+    {
+      Settings.OrganizationDB.WriteString(key, value);
+    }
+
+    [WebMethod(true)]
+    public string ReadSystemSetting(string key, string defaultValue)
+    {
+      return Settings.SystemDB.ReadString(key, defaultValue);
+    }
+
+    [WebMethod(true)]
+    public void WriteSystemSetting(string key, string value)
+    {
+      Settings.SystemDB.WriteString(key, value);
+    }
   }
 }

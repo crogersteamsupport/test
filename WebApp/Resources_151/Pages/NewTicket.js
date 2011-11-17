@@ -1030,7 +1030,7 @@ $(document).ready(function () {
       e.preventDefault();
       e.stopPropagation();
       top.Ts.MainPage.editReminder(
-        { RefType: top.Ts.ReferenceTypes.Tickets, }, 
+        { RefType: top.Ts.ReferenceTypes.Tickets }, 
         false, 
         function (reminder) { appendReminder(reminder); }
       );
