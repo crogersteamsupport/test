@@ -657,7 +657,8 @@ AS
     [CreatorID],
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe]
+    [DoNotAutoSubscribe],
+    [IsClassicView]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -705,6 +706,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
   @Identity int OUT
 )
 AS
@@ -747,7 +749,8 @@ AS
     [CreatorID],
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe])
+    [DoNotAutoSubscribe],
+    [IsClassicView])
   VALUES (
     @Email,
     @FirstName,
@@ -785,7 +788,8 @@ AS
     @CreatorID,
     @ModifierID,
     @OrgsUserCanSeeOnPortal,
-    @DoNotAutoSubscribe)
+    @DoNotAutoSubscribe,
+    @IsClassicView)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -831,7 +835,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @DateModified datetime,
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit
 )
 AS
   SET NOCOUNT OFF;
@@ -871,7 +876,8 @@ AS
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
-    [DoNotAutoSubscribe] = @DoNotAutoSubscribe
+    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
+    [IsClassicView] = @IsClassicView
   WHERE ([UserID] = @UserID)
 GO
 
@@ -12602,7 +12608,8 @@ AS
     [CreatorID],
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe]
+    [DoNotAutoSubscribe],
+    [IsClassicView]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -12650,6 +12657,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
   @Identity int OUT
 )
 AS
@@ -12692,7 +12700,8 @@ AS
     [CreatorID],
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe])
+    [DoNotAutoSubscribe],
+    [IsClassicView])
   VALUES (
     @Email,
     @FirstName,
@@ -12730,7 +12739,8 @@ AS
     @CreatorID,
     @ModifierID,
     @OrgsUserCanSeeOnPortal,
-    @DoNotAutoSubscribe)
+    @DoNotAutoSubscribe,
+    @IsClassicView)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -12776,7 +12786,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @DateModified datetime,
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit
 )
 AS
   SET NOCOUNT OFF;
@@ -12816,7 +12827,8 @@ AS
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
-    [DoNotAutoSubscribe] = @DoNotAutoSubscribe
+    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
+    [IsClassicView] = @IsClassicView
   WHERE ([UserID] = @UserID)
 GO
 
@@ -24547,7 +24559,8 @@ AS
     [CreatorID],
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe]
+    [DoNotAutoSubscribe],
+    [IsClassicView]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -24595,6 +24608,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
   @Identity int OUT
 )
 AS
@@ -24637,7 +24651,8 @@ AS
     [CreatorID],
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe])
+    [DoNotAutoSubscribe],
+    [IsClassicView])
   VALUES (
     @Email,
     @FirstName,
@@ -24675,7 +24690,8 @@ AS
     @CreatorID,
     @ModifierID,
     @OrgsUserCanSeeOnPortal,
-    @DoNotAutoSubscribe)
+    @DoNotAutoSubscribe,
+    @IsClassicView)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -24721,7 +24737,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @DateModified datetime,
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit
 )
 AS
   SET NOCOUNT OFF;
@@ -24761,7 +24778,8 @@ AS
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
-    [DoNotAutoSubscribe] = @DoNotAutoSubscribe
+    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
+    [IsClassicView] = @IsClassicView
   WHERE ([UserID] = @UserID)
 GO
 
@@ -36492,7 +36510,8 @@ AS
     [CreatorID],
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe]
+    [DoNotAutoSubscribe],
+    [IsClassicView]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -36540,6 +36559,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
   @Identity int OUT
 )
 AS
@@ -36582,7 +36602,8 @@ AS
     [CreatorID],
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe])
+    [DoNotAutoSubscribe],
+    [IsClassicView])
   VALUES (
     @Email,
     @FirstName,
@@ -36620,7 +36641,8 @@ AS
     @CreatorID,
     @ModifierID,
     @OrgsUserCanSeeOnPortal,
-    @DoNotAutoSubscribe)
+    @DoNotAutoSubscribe,
+    @IsClassicView)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -36666,7 +36688,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @DateModified datetime,
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit
 )
 AS
   SET NOCOUNT OFF;
@@ -36706,7 +36729,8 @@ AS
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
-    [DoNotAutoSubscribe] = @DoNotAutoSubscribe
+    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
+    [IsClassicView] = @IsClassicView
   WHERE ([UserID] = @UserID)
 GO
 
@@ -48437,7 +48461,8 @@ AS
     [CreatorID],
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe]
+    [DoNotAutoSubscribe],
+    [IsClassicView]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -48485,6 +48510,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
+  @IsClassicView bit,
   @Identity int OUT
 )
 AS
@@ -48527,7 +48553,8 @@ AS
     [CreatorID],
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
-    [DoNotAutoSubscribe])
+    [DoNotAutoSubscribe],
+    [IsClassicView])
   VALUES (
     @Email,
     @FirstName,
@@ -48565,7 +48592,8 @@ AS
     @CreatorID,
     @ModifierID,
     @OrgsUserCanSeeOnPortal,
-    @DoNotAutoSubscribe)
+    @DoNotAutoSubscribe,
+    @IsClassicView)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -48611,7 +48639,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @DateModified datetime,
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
-  @DoNotAutoSubscribe bit
+  @DoNotAutoSubscribe bit,
+  @IsClassicView bit
 )
 AS
   SET NOCOUNT OFF;
@@ -48651,7 +48680,8 @@ AS
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
-    [DoNotAutoSubscribe] = @DoNotAutoSubscribe
+    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
+    [IsClassicView] = @IsClassicView
   WHERE ([UserID] = @UserID)
 GO
 

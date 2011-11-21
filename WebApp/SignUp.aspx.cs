@@ -211,6 +211,8 @@ the loop - including the customer base - and dramatically increases customer sat
     portalOption.DisplayProducts = true;
     portalOption.DisplayProductVersion = true;
     portalOption.DisplayAdvKB = true;
+    portalOption.DisplayLandingPage = true;
+    portalOption.LandingPageHtml = "<div style=\"margin: 0 auto;font: 12px arial\"><h1 style=\"font-size:20px;font-weight:bold;color:#666;margin:0px\">Support Center</h1>Welcome our Customer Portal!<br /><div class=\"widgetcontainer\"><div class=\"LandingPageContent\"><h3 style=\"color:#3079c6\">Recent KnowledgeBase Articles</h3><div class=\"LandingPageInnerContent\"><ts_latestknowledgebase,5,../Images/bulb.png></div><h3 style=\"color:#3079c6\">Popular KnowledgeBase Articles</h3><div class=\"LandingPageInnerContent\"><ts_knowledgebase,5,../Images/bulb.png></div><h3 style=\"color:#3079c6\">Recent Tickets</h3><div class=\"LandingPageInnerContent\"><ts_alltickets,5,../Images/file.png></div></div></div></div>";
     portalOptions.Save();
 
     EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, password);

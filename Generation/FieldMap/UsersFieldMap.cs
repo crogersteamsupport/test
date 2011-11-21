@@ -51,6 +51,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("OrgsUserCanSeeOnPortal", "OrgsUserCanSeeOnPortal", false, false, false);
       _fieldMap.AddMap("DoNotAutoSubscribe", "DoNotAutoSubscribe", false, false, false);
+      _fieldMap.AddMap("IsClassicView", "IsClassicView", false, false, false);
             
     }
   }
