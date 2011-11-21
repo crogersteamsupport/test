@@ -95,28 +95,50 @@
   </div>
   <div class="main-container ui-widget ui-helper-hidden">
     <div class="main-content">
-      <div class="main-tabs">
-      </div>
+      <div class="ui-helper-hidden classic-tabs"></div>
       <div class="main-tab-content">
         <div class="ts-loading">
         </div>
       </div>
     </div>
-    <div class="main-header ui-widget-header">
-      <div class="main-header-left">
-        <div class="main-header-logo">
+    <div class="main-header new-view-header">
+      <div class="new-view">
+        <div class="main-header-title">
+          <div class="main-header-content-wrapper">
+            <div class="main-header-content">
+              <div class="main-company-logo"></div>
+              <a class="main-header-new-ticket main-link-newticket" href="#"><span></span></a>
+              <input class="ui-corner-all ui-widget-content main-quick-ticket" type="text" />
+            </div>
+          </div>
+          <div class="main-header-right">
+            <div class="main-header-menu">
+            <ul>
+              <li class="menu-chatstatus notlast"><a href="#"><span class="ts-icon"></span><span class="menu-chatstatus-text"></span></a></li>
+              <li class="menu-officestatus notlast"><a href="#"><span class="ts-icon"></span><span>Office Status</span><span class="ui-icon ui-icon-triangle-1-s"></span></a></li>
+              <li class="menu-help notlast"><a href="#"><span>Help</span><span class="ui-icon ui-icon-triangle-1-s"></span></a></li>
+              <li class="menu-signout"><a href="#"><span>Sign Out</span></a></li>
+            </ul>
+            </div>
+          </div>
         </div>
-        <div class="main-header-status">
-          <span>My Status:</span> <span class="main-status-chat ts-icon ts-icon-chat ts-clickable">
-          </span><span class="main-status-online ts-icon ts-icon-offline ts-clickable"></span>
-          <span class="main-header-status-text ts-clickable">What is your status?</span>
-        </div>
+        <div class="main-tabs ui-widget-header"></div>
       </div>
-      <div class="main-header-links">
-        <a href="http://help.teamsupport.com" target="TSHelp">Documentation</a>
-        <a href="#"  onclick="window.open('https://app.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'); return false;" target="TSChat">Chat With Us</a>
-        <a href="#" onclick="Ts.System.openSupport(); return false;">Support</a>
-        <a href="#" onclick="Ts.System.signOut(); return false;">Sign Out</a>
+      <div class="ui-helper-hidden classic-view">
+        <div class="main-header-left">
+          <div class="main-header-logo"></div>
+          <div class="main-header-status">
+            <span>My Status:</span> <span class="main-status-chat ts-icon ts-icon-chat ts-clickable">
+            </span><span class="main-status-online ts-icon ts-icon-offline ts-clickable"></span>
+            <span class="main-header-status-text ts-clickable">What is your status?</span>
+          </div>
+        </div>
+        <div class="main-header-links">
+          <a href="http://help.teamsupport.com" target="TSHelp">Documentation</a>
+          <a class="menu-help-chat" href="#">Chat With Us</a>
+          <a class="menu-help-support" href="#">Support</a>
+          <a class="menu-signout" href="#">Sign Out</a>
+        </div>
       </div>
     </div>
     <div class="main-footer ui-widget-header">
@@ -136,7 +158,7 @@
       </div>
     </div>
     <div class="main-nav ui-widget-content ts-noborder">
-      <div class="main-quick-panel ui-widget-header">
+      <div class="main-quick-panel ui-widget-header ui-helper-hidden classic-view">
         <div>
           <a href="#" class="main-link-newticket ui-corner-all ui-state-default"><span class="ts-icon ts-icon-new">
           </span>Create New Ticket</a></div>
@@ -352,6 +374,33 @@
         <select class="reminder-user"></select>
       </div>
     </div>
+  </div>
+
+  <div class="menu-popup menu-popup-officestatus ui-widget-content ui-widget ui-corner-bottom">
+    <ul>
+      <li class="menu-office-online"><a class="ts-link ui-state-default" href="#"><span class="ts-icon ts-icon-online"></span><span>Available</span></a><div class="ts-clearfix"></div></li>
+      <li class="menu-office-offline"><a class=" ts-link ui-state-default" href="#"><span class="ts-icon ts-icon-offline"></span><span>Busy</span></a><div class="ts-clearfix"></div></li>
+    </ul>
+    <div class="ts-clearfix"></div>
+    <div class="ts-separator ui-widget-content"></div>
+    <div class="label-block label-block-nofloat">
+      <span class="label">My Status</span>
+      <input type="text"  class="ui-widget-content ui-corner-all text menu-status-text menu-input" style="width: 200px"/>
+    </div>
+    <div class="menu-office-status-action ui-helper-hidden">
+      <button class="menu-office-save">Save Status</button> or <a href="#" class="ts-link ui-state-default menu-office-cancel">Cancel</a>
+    </div>
+  </div>
+
+  <div class="menu-popup menu-popup-help ui-widget-content ui-widget ui-corner-bottom">
+    <ul>
+      <li><a class="ts-link ui-state-default" href="http://help.teamsupport.com" target="TSHelp">Documentation</a></li>
+      <li><a class="menu-help-chat ts-link ui-state-default" href="#">Chat with us</a></li>
+      <li><a class="menu-help-support ts-link ui-state-default" href="#">Support portal</a></li>
+      <li><div class="ui-widget-content ts-separator"></div></li>
+      <li><a class="menu-help-switch ts-link ui-state-default" href="#">Switch to classic view</a></li>
+      <input type="text"  class="menu-input menu-input-hidden"/>
+    </ul>
   </div>
   </form>
 </body>

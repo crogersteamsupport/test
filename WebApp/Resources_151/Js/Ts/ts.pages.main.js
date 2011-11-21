@@ -19,20 +19,37 @@ Ts.Pages.Main.prototype =
   constructor: Ts.Pages.Main,
 
   loadUserStatus: function () {
-    if (Ts.System.ChatUserSettings.IsAvailable) { $('.main-status-chat').removeClass('ui-state-disabled'); } else { $('.main-status-chat').addClass('ui-state-disabled'); }
-    if (Ts.System.User.InOffice) { $('.main-status-online').switchClass('ts-icon-offline', 'ts-icon-online', 0); } else { $('.main-status-online').switchClass('ts-icon-online', 'ts-icon-offline', 0); }
+    if (Ts.System.ChatUserSettings.IsAvailable) {
+      $('.main-status-chat').removeClass('ui-state-disabled');
+      $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small');
+      $('.menu-chatstatus-text').text('Chat: Online');
+    }
+    else {
+      $('.menu-chatstatus-text').text('Chat: Offline');
+      $('.menu-chatstatus .ts-icon').addClass('ts-icon-nochat-small');
+      $('.main-status-chat').addClass('ui-state-disabled');
+    }
+
+    if (Ts.System.User.InOffice) {
+      $('.main-status-online').switchClass('ts-icon-offline', 'ts-icon-online', 0);
+      $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small');
+    }
+    else {
+      $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small');
+      $('.main-status-online').switchClass('ts-icon-online', 'ts-icon-offline', 0);
+    }
 
     var status = Ts.System.User.InOfficeComment === '' ? 'What is your status?' : Ts.System.User.InOfficeComment;
     $('.main-header-status-text').text(status).siblings('input').val(status);
+    $('.menu-status-text').val(Ts.System.User.InOfficeComment).data('o', Ts.System.User.InOfficeComment);
     $('.main-status-left').html('Logged in as: ' + Ts.System.User.FirstName + ' ' + Ts.System.User.LastName + ' - ' + Ts.System.Organization.Name);
   },
 
   getCalcStyle: function () {
-    var colorHeader = $('.main-header').css('background-color');
-    var colorBorder = $('.main-header').css('border-bottom-color');
+    var colorHeader = $('.main-footer').css('background-color');
+    var colorBorder = $('.main-footer').css('border-top-color');
     var colorContent = $('.main-nav').css('background-color');
     colorContent = "transparent";
-
     return '<style type="text/css">.ui-layout-resizer { background-color: ' + colorBorder + '; border: 0px solid ' + colorHeader + '; }' +
     '.ui-layout-toggler { background-color: ' + colorHeader + ';}</style>'; // 'li.ts-menutree-item  div { border:1px solid ' + colorContent + ';}</style>';  
   },
@@ -66,6 +83,125 @@ Ts.Pages.Main.prototype =
       });
     });
 
+    $('.menu-signout').click(function (e) {
+      e.preventDefault();
+      top.Ts.System.signOut();
+    });
+
+    $('.menu-help-support').click(function (e) {
+      e.preventDefault();
+      top.Ts.System.openSupport();
+    });
+
+    $('.menu-help-chat').click(function (e) {
+      e.preventDefault();
+      window.open('https://app.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
+    });
+
+    $('.menu-help-switch').click(function (e) {
+      e.preventDefault();
+      Ts.Services.Users.SetClassicView(function () {
+        window.location = '.';
+      });
+    });
+
+
+    $('.main-header-menu li')
+      .hover(function () { $(this).addClass('hover'); }, function () { $('.main-header-menu li').removeClass('hover'); })
+      .click(function (e) {
+        e.stopPropagation();
+        if (menuBlur != null) clearTimeout(menuBlur);
+      });
+
+    $('.menu-popup').click(function (e) {
+      e.stopPropagation();
+    });
+
+    $('.menu-chatstatus').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      Ts.Services.Users.ToggleUserChatStatus(function (setting) {
+        Ts.System.ChatUserSettings = setting;
+        if (Ts.System.ChatUserSettings.IsAvailable) {
+          $('.menu-chatstatus .ts-icon').addClass('ts-icon-chat-small').removeClass('ts-icon-nochat-small');
+          $('.menu-chatstatus-text').text('Chat: Online');
+        }
+        else {
+          $('.menu-chatstatus .ts-icon').addClass('ts-icon-nochat-small').removeClass('ts-icon-chat-small');
+          $('.menu-chatstatus-text').text('Chat: Offline');
+        }
+      });
+    });
+
+    $('.menu-officestatus').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      hidePopupMenus();
+      $(this).addClass('selected ui-widget-content ui-corner-top').removeClass('hover');
+      $('.menu-popup-officestatus').css('left', $(this).offset().left).show().find('.menu-input').focus();
+    });
+
+    $('.menu-office-online').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      Ts.Services.Users.UpdateUserStatus(true, function () {
+        $('.menu-officestatus .ts-icon').addClass('ts-icon-online-small').removeClass('ts-icon-offline-small');
+      });
+      hidePopupMenus();
+    });
+
+    $('.menu-office-offline').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      Ts.Services.Users.UpdateUserStatus(false, function () {
+        $('.menu-officestatus .ts-icon').addClass('ts-icon-offline-small').removeClass('ts-icon-online-small');
+      });
+      hidePopupMenus();
+    });
+
+    $('.menu-input-hidden').css('opacity', '0');
+
+    $('.menu-popup-officestatus li').hover(function () { $(this).addClass('ui-state-hover'); }, function () { $('.menu-popup-officestatus li').removeClass('ui-state-hover'); });
+
+    $('.menu-status-text').keypress(function () {
+      $('.menu-office-status-action').show();
+    });
+
+    $('.menu-office-save').click(function (e) {
+      e.preventDefault();
+      $('.menu-office-status-action').hide();
+      $('.menu-status-text').data('o', $('.menu-status-text').val())
+      Ts.Services.Users.UpdateUserStatusComment($('.menu-status-text').val());
+    });
+
+    $('.menu-office-cancel').click(function (e) {
+      e.preventDefault();
+      $('.menu-status-text').val($('.menu-status-text').data('o'));
+      $('.menu-office-status-action').hide();
+    });
+
+
+    $('.menu-help').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      hidePopupMenus();
+      $(this).addClass('selected ui-widget-content ui-corner-top').removeClass('hover');
+      $('.menu-popup-help').show().css('left', $(this).offset().left + $(this).outerWidth() - $('.menu-popup-help').outerWidth()).find('.menu-input').focus();
+    });
+
+    var menuBlur = null;
+    $('.menu-input').blur(function () {
+      if ($('.main-header-menu:focus').length > 0) return;
+      menuBlur = setTimeout(hidePopupMenus, 500);
+    });
+
+    $(document).click(function (e) { hidePopupMenus(); });
+
+    function hidePopupMenus() {
+      if ($('.main-header-menu:focus').length > 0) return;
+      $('.menu-popup').hide();
+      $('.main-header-menu li').removeClass('selected ui-widget-content ui-corner-top');
+    }
 
 
     $('.main-header-links a').addClass('ui-state-default ui-corner-all').hover(function (e) { $(this).addClass('ui-state-hover'); }, function (e) { $(this).removeClass('ui-state-hover'); });
@@ -140,8 +276,8 @@ Ts.Pages.Main.prototype =
         paneSelector: ".main-header",
         closable: false,
         resizable: false,
-        size: 60,
-        spacing_open: 0
+        size: (Ts.System.User.IsClassicView == true ? 60 : 80),
+        spacing_open: 1
       },
       south: {
         paneSelector: ".main-footer",
@@ -175,37 +311,46 @@ Ts.Pages.Main.prototype =
     });
 
 
-    $('.main-nav').layout({
-      resizeNestedLayout: true,
-      defaults: {
-        spacing_open: 0,
-        closable: false,
-        resizable: false
-      },
-      center: {
-        paneSelector: ".main-menutree"
-      },
-      north: {
-        paneSelector: ".main-quick-panel"
-      }
-    });
+    if (Ts.System.User.IsClassicView == true) {
+      $('.classic-view').show();
+      $('.new-view').hide();
+      $('.main-header').addClass('classic-view-header ui-widget-header').removeClass('new-view-header');
+      $('.main-tabs').removeClass('main-tabs');
+      $('.classic-tabs').addClass('main-tabs');
 
-    $('.main-content').layout({
-      resizeNestedLayout: true,
-      defaults: {
-        spacing_open: 0,
-        closable: false,
-        resizable: false
-      },
-      center: {
-        paneSelector: ".main-tab-content"
-      },
-      north: {
-        paneSelector: ".main-tabs",
-        size: 31
+      $('.main-nav').layout({
+        resizeNestedLayout: true,
+        defaults: {
+          spacing_open: 0,
+          closable: false,
+          resizable: false
+        },
+        center: {
+          paneSelector: ".main-menutree"
+        },
+        north: {
+          paneSelector: ".main-quick-panel"
+        }
+      });
 
-      }
-    });
+      $('.main-content').layout({
+        resizeNestedLayout: true,
+        defaults: {
+          spacing_open: 0,
+          closable: false,
+          resizable: false
+        },
+        center: {
+          paneSelector: ".main-tab-content"
+        },
+        north: {
+          paneSelector: ".main-tabs",
+          size: 31
+
+        }
+      });
+
+    }
 
     function beforeMenuItemSelect(item) {
       var mi = self.MainMenu.getSelected();

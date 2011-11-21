@@ -45,11 +45,39 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void SetClassicView()
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      User user = TSAuthentication.GetUser(loginUser);
+      user.IsClassicView = true;
+      user.Collection.Save();
+    }
+
+    [WebMethod]
     public UserProxy GetUser(int userID)
     {
       User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
       if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
       return user.GetProxy();
+    }
+
+    [WebMethod]
+    public bool UpdateUserStatus(bool value)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      User user = TSAuthentication.GetUser(loginUser);
+      user.InOffice = value;
+      user.Collection.Save();
+      return value;
+      /*
+      WaterCooler watercooler = new WaterCooler(loginUser);
+      WaterCoolerItem item = watercooler.AddNewWaterCoolerItem();
+      item.Message = string.Format("<strong>{0}</strong> {1}", user.FirstLastName, user.InOffice ? "is now in the office." : "has left the office.");
+      item.OrganizationID = user.OrganizationID;
+      item.TimeStamp = DateTime.UtcNow;
+      item.UserID = user.UserID;
+      watercooler.Save();
+      */
     }
 
     [WebMethod]

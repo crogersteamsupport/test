@@ -80,6 +80,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 */
 .label { font-weight:bold; display:block; margin-bottom: .25em; white-space:nowrap; }
 .label-block { float:left; margin: .25em .25em .25em 0; padding: .25em .25em; display:inline; height: 40px; border: 1px solid #fcfdfd; }
+.label-block-nofloat {float: none; display: block; clear:both;}
 
 .checkbox.label-block { line-height: 40px; height:40px; }
 .checkbox.label-block label { vertical-align: middle; margin: 0px; top:0; font-weight:bold; padding-left: .5em;}    
@@ -149,6 +150,11 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .ts-icon-online { background-position: -352px 0; }
 .ts-icon-offline { background-position: -832px 0; }
 .ts-icon-chat { background-position: -288px -16px; }
+.ts-icon-nochat { background-position: -288px -48px; }
+.ts-icon-chat-small { background-position: -800px -16px; }
+.ts-icon-nochat-small { background-position: -848px -16px; }
+.ts-icon-online-small { background-position: -816px -16px; }
+.ts-icon-offline-small { background-position: -832px -16px; }
 .ts-icon-edit { background-position: -960px 0px; }
 .ts-icon-cancel { background-position: -896px 0px; }
 .ts-icon-save { background-position: -928px 0px; }
@@ -210,10 +216,10 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .chat-message-self .chat-name { color:#696969;}
 
 /* Ts Tabs */
-.ts-tabs { position: relative; padding: 0 .5em; zoom: 1; z-index:99999 !important; border-left: none; border-right:none; border-top:none; overflow:hidden; margin-top:1px;} 
+.ts-tabs { position: relative; padding: 0 .5em; zoom: 1;  border-left: none; border-right:none; border-top:none; overflow:hidden; margin-top:1px;} 
 .ts-tabs .ui-icon-close { float:left; cursor:pointer; margin: .33em .25em 0 0; padding:0;}
 .ts-tabs li { list-style: none; float: left; position: relative; border-bottom: 0 !important; padding: 0 .33em; white-space: nowrap; height:25px; line-height:25px; margin: 5px .1em 0 0; cursor:pointer;}
-.ts-tabs li a { float: left; text-decoration: none; display:block; margin: 0 .33em;}
+.ts-tabs li a { float: left; text-decoration: none; display:block; margin: 0 .33em; padding-right: .25em;}
 .ts-tabs li a:hover { text-decoration:none;}
 .ts-tabs li.ui-state-active a, .ts-tabs li.ui-state-disabled a, .ts-tabs li.ui-state-processing a { cursor: default; }
 .ts-tabs-hide { display: none !important; }

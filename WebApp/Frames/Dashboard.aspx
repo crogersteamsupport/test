@@ -19,7 +19,7 @@
     .slaViolation { background: #E86868; }
     .viewMore { padding: 3px 0 3px 7px; background: #E0EEFF; border-top: solid 1px #A6BED6; }
     .externalReport { padding: 0 0 2px 0; }
-    .portlet-container-wrapper { height: 100%; overflow-y: auto; overflow-x: hidden; position:relative;}
+    .portlet-container-wrapper { height: 100%; overflow-y: auto; overflow-x: hidden; position:relative; border:none;}
     .portlet-container { padding: 10px 0 0 10px; overflow: hidden; }
     .portlet-column { padding-bottom: 10px; min-height: 20px; overflow: hidden; }
     #column0 { width: 300px; float: left; margin-left: -100%; }
