@@ -358,7 +358,7 @@ Namespace TeamSupport
                             If thisTable.Columns(i).DataType Is GetType(String) Then
                                 csvContent.Append("""" & thisRow(i).ToString().Replace("""", "'") & """")
                             ElseIf thisTable.Columns(i).DataType Is GetType(DateTime) AndAlso Not IsDBNull(thisRow(i)) Then 'translate dates to org's local timezone
-                                csvContent.Append("""" & CRMLinkRow.DateToLocal(CType(thisRow(i).ToString(), DateTime?)) & """")
+                                csvContent.Append("""" & CRMLinkRow.DateToLocal(CType(thisRow(i).ToString(), DateTime)).ToString("M/d/yyyy H:mm:ss") & """")
                             Else
                                 csvContent.Append(thisRow(i).ToString())
                             End If
