@@ -254,6 +254,7 @@ Namespace TeamSupport
             Private Function SendReportData() As Boolean
                 Dim success As Boolean = True
                 Dim thisSettings As New ServiceLibrary.Settings(User, Processor.ServiceName)
+                Dim thisTableName As String = "Tickets"
 
                 'load data from ticketsview into a csv
                 Dim tix As New TicketsView(User)
@@ -269,8 +270,8 @@ Namespace TeamSupport
                 Dim batches As List(Of String) = GetCSVBatches(ticketsData, ticketsViewBatchSize)
 
                 'now that we have data, send it to zoho
-                Dim zohoUri As New Uri(String.Format("https://reportsapi.zoho.com/api/{0}/{3}/Tickets?ZOHO_ACTION=IMPORT&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={1}&ticket={2}&ZOHO_API_VERSION=1.0", _
-                                                     CRMLinkRow.Username, CRMLinkRow.SecurityToken, APITicket, databaseName))
+                Dim zohoUri As New Uri(String.Format("https://reportsapi.zoho.com/api/{0}/{3}/{4}?ZOHO_ACTION=IMPORT&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={1}&ticket={2}&ZOHO_API_VERSION=1.0", _
+                                                     CRMLinkRow.Username, CRMLinkRow.SecurityToken, APITicket, databaseName, thisTableName))
 
                 For Each batch As String In batches
                     Dim byteData As Byte() = UTF8Encoding.UTF8.GetBytes(batch)
@@ -305,7 +306,7 @@ Namespace TeamSupport
 
                     'we have to delete the dummy row we insert with each import
                     Log.Write("Deleting dummy row...")
-                    If DeleteZohoTableRow("TicketsView", "-1") Then
+                    If DeleteZohoTableRow(thisTableName, "-1") Then
                         Log.Write("row -1 deleted successfully")
                     Else
                         Log.Write("Error deleting dummy row.")
