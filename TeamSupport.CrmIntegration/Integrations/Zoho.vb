@@ -282,6 +282,7 @@ Namespace TeamSupport
                     postParameters.Add("ZOHO_DELIMITER", "0")
                     postParameters.Add("ZOHO_QUOTED", "2")
                     postParameters.Add("ZOHO_CREATE_TABLE", "true")
+                    postParameters.Add("ZOHO_DATE_FORMAT", "MM/dd/yyyy HH:mm:ss")
                     postParameters.Add("ZOHO_FILE", byteData)
 
                     Try
@@ -331,7 +332,7 @@ Namespace TeamSupport
                     If thisCol.DataType Is GetType(String) Then
                         csvHeader.Append("""String""")
                     ElseIf thisCol.DataType Is GetType(DateTime) Then
-                        csvHeader.Append("""" & DateTime.MinValue.ToString() & """")
+                        csvHeader.Append("""1/1/1900 1:00:00""")
                     ElseIf thisCol.DataType Is GetType(Boolean) Then
                         csvHeader.Append("true")
                     ElseIf thisCol.DataType Is GetType(Decimal) Then
@@ -353,7 +354,7 @@ Namespace TeamSupport
                             If thisTable.Columns(i).DataType Is GetType(String) Then
                                 csvContent.Append("""" & thisRow(i).ToString().Replace("""", "'") & """")
                             ElseIf thisTable.Columns(i).DataType Is GetType(DateTime) AndAlso Not IsDBNull(thisRow(i)) Then 'translate dates to org's local timezone
-                                csvContent.Append(CRMLinkRow.DateToLocal(CType(thisRow(i).ToString(), DateTime?)))
+                                csvContent.Append("""" & CRMLinkRow.DateToLocal(CType(thisRow(i).ToString(), DateTime?)) & """")
                             Else
                                 csvContent.Append(thisRow(i).ToString())
                             End If
