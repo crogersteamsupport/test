@@ -287,6 +287,8 @@ Namespace TeamSupport
                     postParameters.Add("ZOHO_DATE_FORMAT", "MM/dd/yyyy HH:mm:ss")
                     postParameters.Add("ZOHO_FILE", byteData)
 
+                    File.WriteAllBytes(Path.Combine(thisSettings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkRow.OrganizationID.ToString() & "\reports.csv"), byteData)
+
                     Try
                         Using response As HttpWebResponse = WebHelpers.MultipartFormDataPost(zohoUri, Client, postParameters)
 
