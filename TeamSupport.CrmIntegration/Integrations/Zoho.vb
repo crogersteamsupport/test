@@ -258,14 +258,11 @@ Namespace TeamSupport
 
                 'load data from ticketsview into a csv
                 Dim tix As New TicketsView(User)
-                tix.LoadByOrganizationID(CRMLinkRow.OrganizationID)
+                tix.LoadForZoho(CRMLinkRow.OrganizationID, CRMLinkRow.LastLink)
                 Dim ticketsData As DataTable = tix.Table.Copy()
                 ticketsData.TableName = "TicketsView"
 
                 Dim ticketsViewBatchSize As Integer = thisSettings.ReadInt("ZohoReportsBatchSize", 50000)
-
-                'edit the datatable so we are only sending relevant data
-                FormatTable(ticketsData)
 
                 Dim batches As List(Of String) = GetCSVBatches(ticketsData, ticketsViewBatchSize)
 
@@ -287,7 +284,7 @@ Namespace TeamSupport
                     postParameters.Add("ZOHO_DATE_FORMAT", "MM/dd/yyyy HH:mm:ss")
                     postParameters.Add("ZOHO_FILE", byteData)
 
-                    File.WriteAllBytes(Path.Combine(thisSettings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkRow.OrganizationID.ToString() & "\reports.csv"), byteData)
+                    '       File.WriteAllBytes(Path.Combine(thisSettings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkRow.OrganizationID.ToString() & "\reports.csv"), byteData)
 
                     Try
                         Using response As HttpWebResponse = WebHelpers.MultipartFormDataPost(zohoUri, Client, postParameters)
@@ -333,7 +330,9 @@ Namespace TeamSupport
 
                 'append a dummy row so zoho knows what data type each column is--in case this is the first import
                 For Each thisCol As DataColumn In thisTable.Columns
-                    If thisCol.DataType Is GetType(String) Then
+                    If thisCol.ColumnName = "TicketURL" Then
+                        csvHeader.Append("""http://www.teamsupport.com""")
+                    ElseIf thisCol.DataType Is GetType(String) Then
                         csvHeader.Append("""String""")
                     ElseIf thisCol.DataType Is GetType(DateTime) Then
                         csvHeader.Append("""1/1/1900 1:00:00""")
@@ -348,7 +347,6 @@ Namespace TeamSupport
                 Next
 
                 For Each thisRow As DataRow In thisTable.Rows
-                    If CRMLinkRow.LastLink Is Nothing OrElse thisRow("DateModified") > CRMLinkRow.LastLink.Value.AddMinutes(-30) Then
 
                         If csvContent Is Nothing Then
                             csvContent = New StringBuilder(csvHeader.ToString())
@@ -373,7 +371,6 @@ Namespace TeamSupport
                             csvContent = Nothing
                         End If
 
-                    End If
                 Next
 
                 If csvContent IsNot Nothing Then
@@ -397,52 +394,7 @@ Namespace TeamSupport
                 Return PostQueryString(Nothing, ZohoUri, PostParameters)
             End Function
 
-            Private Sub FormatTable(ByRef thisTable As DataTable)
-
-                Select Case thisTable.TableName
-                    Case "TicketsView"
-                        thisTable.PrimaryKey = {thisTable.Columns("TicketNumber")}
-
-                        thisTable.Columns.Remove("TicketID")
-                        thisTable.Columns.Remove("ReportedVersionID")
-                        thisTable.Columns.Remove("SolvedVersionID")
-                        thisTable.Columns.Remove("ProductID")
-                        thisTable.Columns.Remove("GroupID")
-                        thisTable.Columns.Remove("UserID")
-                        thisTable.Columns.Remove("TicketStatusID")
-                        thisTable.Columns.Remove("TicketTypeID")
-                        thisTable.Columns.Remove("TicketSeverityID")
-                        thisTable.Columns.Remove("OrganizationID")
-                        thisTable.Columns.Remove("ParentID")
-                        thisTable.Columns.Remove("ModifierID")
-                        thisTable.Columns.Remove("CreatorID")
-                        thisTable.Columns.Remove("CloserID")
-                        thisTable.Columns.Remove("NeedsIndexing")
-
-                        thisTable.Columns("UserName").ColumnName = "AssignedTo"
-
-                        'reorder remaining columns
-                        thisTable.Columns("TicketNumber").SetOrdinal(0)
-                        thisTable.Columns("Name").SetOrdinal(1)
-                        thisTable.Columns("TicketTypeName").SetOrdinal(2)
-                        thisTable.Columns("Status").SetOrdinal(3)
-                        thisTable.Columns("Severity").SetOrdinal(4)
-                        thisTable.Columns("AssignedTo").SetOrdinal(5)
-                        thisTable.Columns("Customers").SetOrdinal(6)
-                        thisTable.Columns("Contacts").SetOrdinal(7)
-                        thisTable.Columns("ProductName").SetOrdinal(8)
-                        thisTable.Columns("ReportedVersion").SetOrdinal(9)
-                        thisTable.Columns("SolvedVersion").SetOrdinal(10)
-                        thisTable.Columns("GroupName").SetOrdinal(11)
-                        thisTable.Columns("DateModified").SetOrdinal(12)
-                        thisTable.Columns("DateCreated").SetOrdinal(13)
-                        thisTable.Columns("DaysOpened").SetOrdinal(14)
-                        thisTable.Columns("IsClosed").SetOrdinal(15)
-                        thisTable.Columns("CloserName").SetOrdinal(16)
-                        thisTable.Columns("SlaViolationTime").SetOrdinal(17)
-                End Select
-
-            End Sub
+        
         End Class
     End Namespace
 End Namespace

@@ -642,6 +642,27 @@ namespace TeamSupport.Data
     
     }
 
+    public void LoadForZoho(int organizationID, DateTime? lastModified)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"SELECT TicketNumber, 'https://app.teamsupport.com?ticketid=' + CONVERT(VARCHAR,tv.TicketID) AS 'TicketURL',
+                                        Name, TicketTypeName, Status, Severity, UserName AS 'AssignedTo', Customers, Contacts,
+                                        ProductName, ReportedVersion, SolvedVersion, GroupName, DateModified, DateCreated, DaysOpened, IsClosed,
+                                        CloserName, SlaViolationTime, StatusPosition, SeverityPosition, IsVisibleOnPortal, IsKnowledgeBase, DateClosed,
+                                        DaysClosed, CreatorName, ModifierName, HoursSpent, Tags, SlaWarningTime, SlaViolationHours, SlaWarningHours, 
+                                        MinsSinceCreated, DaysSinceCreated,
+                                        (datediff(mi,'1900-01-01',(select top 1 timeinoldstatus from statushistory where ticketid = tv.ticketid and isnull(timeinoldstatus,-99)<>-99 order by statuschangetime))) as MinutesToFirstResponse
+                                    FROM TicketsView tv
+                                    WHERE OrganizationID = @OrganizationID and DateModified > @LastMod
+                                    ORDER BY TicketNumber";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@LastMod", lastModified.HasValue ? lastModified.Value.AddMinutes(-30) : new DateTime(1900,1,1));
+            Fill(command);
+        }
+    }
+
     public void LoadForTags(string tags)
     {
       string[] tagArray = tags.Split(',');
