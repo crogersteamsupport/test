@@ -187,7 +187,7 @@ Namespace TeamSupport
             End Function
 
             Private Function GetZohoCompanyXML() As XmlDocument
-                Dim ZohoPath As String = "Accounts/getRecords?newFormat=1"
+                Dim ZohoPath As String = "Accounts/getRecords?newFormat=1&fromIndex=1&toIndex=200"
 
                 If CRMLinkRow.LastLink IsNot Nothing Then
                     ZohoPath &= "&lastModifiedTime=" & CRMLinkRow.LastLink.Value.AddMinutes(-30).ToString("s").Replace("T", " ")
