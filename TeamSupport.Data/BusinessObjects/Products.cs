@@ -92,6 +92,19 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByCustomerIDs(int[] organizationIDs)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        string ids = string.Join(",", organizationIDs.Select(x => x.ToString()).ToArray());
+        command.CommandText = @"SELECT p.* FROM Products p WHERE p.ProductID IN 
+                                (SELECT DISTINCT op.ProductID FROM OrganizationProducts op 
+                                 WHERE op.OrganizationID IN ("+ ids +"))";
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }
+
     public void LoadByCustomerID(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())

@@ -18,9 +18,9 @@
   <!--[if IE 7]><link href="Resources_151/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="Resources_151/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="Resources_151/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
 
+  <script src="Resources_151/Js/jquery-1.5.1.min.js" type="text/javascript"></script>
+  <script src="Resources_151/Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js" type="text/javascript"></script>
   <script type="text/javascript" language="javascript">
 
     var g_uac = ''
@@ -134,10 +134,16 @@
           </div>
         </div>
         <div class="main-header-links">
-          <a href="http://help.teamsupport.com" target="TSHelp">Documentation</a>
-          <a class="menu-help-chat" href="#">Chat With Us</a>
-          <a class="menu-help-support" href="#">Support</a>
-          <a class="menu-signout" href="#">Sign Out</a>
+          <div class="old-header-links">
+            <a href="http://help.teamsupport.com" target="TSHelp">Documentation</a>
+            <a class="menu-help-chat" href="#">Chat With Us</a>
+            <a class="menu-help-support" href="#">Support</a>
+            <a class="menu-signout" href="#">Sign Out</a>
+          </div>
+          <ul class="ui-helper-hidden">
+            <li><a class="menu-help" href="#"><span>Help</span><span class="ui-icon ui-icon-triangle-1-s"></span></a></li>
+            <li><a class="menu-signout" href="#">Sign Out</a></li>
+          </ul>
         </div>
       </div>
     </div>
@@ -376,7 +382,7 @@
     </div>
   </div>
 
-  <div class="menu-popup menu-popup-officestatus ui-widget-content ui-widget ui-corner-bottom">
+  <div class="menu-popup menu-popup-officestatus ui-widget-content ui-widget ui-corner-bottom new-view-menu">
     <ul>
       <li class="menu-office-online"><a class="ts-link ui-state-default" href="#"><span class="ts-icon ts-icon-online"></span><span>Available</span></a><div class="ts-clearfix"></div></li>
       <li class="menu-office-offline"><a class=" ts-link ui-state-default" href="#"><span class="ts-icon ts-icon-offline"></span><span>Busy</span></a><div class="ts-clearfix"></div></li>
@@ -392,7 +398,7 @@
     </div>
   </div>
 
-  <div class="menu-popup menu-popup-help ui-widget-content ui-widget ui-corner-bottom">
+  <div class="menu-popup menu-popup-help ui-widget-content ui-widget ui-corner-bottom new-view-menu">
     <ul>
       <li><a class="ts-link ui-state-default" href="http://help.teamsupport.com" target="TSHelp">Documentation</a></li>
       <li><a class="menu-help-chat ts-link ui-state-default" href="#">Chat with us</a></li>

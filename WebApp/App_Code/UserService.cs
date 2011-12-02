@@ -45,11 +45,11 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void SetClassicView()
+    public void SetIsClassicView(bool value)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       User user = TSAuthentication.GetUser(loginUser);
-      user.IsClassicView = true;
+      user.IsClassicView = value;
       user.Collection.Save();
     }
 

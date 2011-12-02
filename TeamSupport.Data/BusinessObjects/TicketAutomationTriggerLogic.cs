@@ -17,7 +17,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT t.*, rtf.FieldName FROM TicketAutomationTriggerLogic t LEFT JOIN ReportTableFields rtf ON rtf.ReportTableFieldID = t.FieldID WHERE rtf.ReportTableID = 10 AND t.TriggerID = @TriggerID";
+        command.CommandText = "SELECT t.*, rtf.FieldName FROM TicketAutomationTriggerLogic t LEFT JOIN ReportTableFields rtf ON rtf.ReportTableFieldID = t.FieldID WHERE t.TriggerID = @TriggerID";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@TriggerID", triggerID);
         Fill(command);

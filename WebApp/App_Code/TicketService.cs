@@ -1247,6 +1247,51 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public int[] GetCustomerProductIDs(int[] customerIDs)
+    {
+
+      Products products = new Products(TSAuthentication.GetLoginUser());
+      products.LoadByCustomerIDs(customerIDs);
+
+      if (products.IsEmpty) return null;
+      List<int> productIDs = new List<int>();
+      foreach (Product product in products)
+      {
+        productIDs.Add(product.ProductID);
+      }
+
+      return productIDs.ToArray();
+
+    }
+
+    [WebMethod]
+    public int[] GetTicketCustomerProductIDs(int ticketID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      Organizations organizations = new Organizations(ticket.Collection.LoginUser);
+      organizations.LoadByTicketID(ticketID);
+      if (organizations.IsEmpty) return null;
+
+      List<int> organizationIDs = new List<int>();
+      foreach (Organization organization in organizations)
+      {
+        organizationIDs.Add(organization.OrganizationID);
+      }
+      Products products = new Products(ticket.Collection.LoginUser);
+      products.LoadByCustomerIDs(organizationIDs.ToArray());
+
+      if (products.IsEmpty) return null;
+      List<int> productIDs = new List<int>();
+      foreach (Product product in products)
+      {
+        productIDs.Add(product.ProductID);
+      }
+
+      return productIDs.ToArray();
+
+    }
+
+    [WebMethod]
     public bool? RemoveRelated(int ticketID1, int ticketID2)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -1345,6 +1390,7 @@ namespace TSWebServices
 
       return relatedTickets.ToArray();
     }
+
 
     private TicketCustomer[] GetTicketCustomers(int ticketID)
     {

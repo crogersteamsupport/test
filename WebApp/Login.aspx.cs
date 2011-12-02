@@ -161,7 +161,6 @@ public partial class Login : System.Web.UI.Page
     {
       ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Login.aspx");
       result[0] = "There was an error connecting to TeamSupport.com";
-      
     }
     return result;
   }

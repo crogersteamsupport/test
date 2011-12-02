@@ -92,8 +92,8 @@ public partial class Frames_AdminPortal : BaseFramePage
       builder.Append("<tr><td><strong>Default Portal Group:</strong></td><td>");
       if (organization.DefaultPortalGroupID != null)
       {
-        Group group = (Group)Groups.GetGroup(UserSession.LoginUser, (int)organization.DefaultPortalGroupID);
-        builder.Append(group.Name);
+        Group group = Groups.GetGroup(UserSession.LoginUser, (int)organization.DefaultPortalGroupID);
+        if (group != null) builder.Append(group.Name);
       }
       else
       {

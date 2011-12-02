@@ -844,15 +844,7 @@ WHERE tgv.OrganizationID = @OrganizationID"
                                   AND ((@DateCreatedEnd is null) OR (tgv.DateCreated <= @DateCreatedEnd))
                                   AND ((@DateModifiedBegin is null) OR (tgv.DateModified >= @DateModifiedBegin))
                                   AND ((@DateModifiedEnd is null) OR (tgv.DateModified <= @DateModifiedEnd))
-                                  AND ((@Search = '""""') OR (tgv.TicketNumber LIKE '%'+@SearchClean+'%') 
-                                        OR (CONTAINS((t.[Name]), @Search))
-                                        OR EXISTS (SELECT * FROM Actions a WHERE (a.TicketID = tgv.TicketID) AND CONTAINS((a.[Description], a.[Name]), @Search))
-                                        --OR EXISTS (SELECT * FROM CustomValues cv 
-                                          --      LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID 
-                                            --    WHERE (cf.RefType = 17)
-                                              --  AND (cv.RefID = tgv.TicketID)
-                                                --AND CONTAINS((cv.[CustomValue]), @Search))
-                                        )
+                             
                                 )
                               	  
                                   SELECT * FROM TicketRows 

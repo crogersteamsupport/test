@@ -15,6 +15,7 @@ namespace TeamSupport.Data
     private string _application;
     private string _category;
     private int _failures;
+    private bool _doesExist = false;
 
     public static string GetConnectionString(LoginUser loginUser)
     {
@@ -30,6 +31,19 @@ namespace TeamSupport.Data
       _category = category;
       _connectionString = GetConnectionString(loginUser);
       _failures = 0;
+
+      try
+      {
+        using (SqlConnection connection = new SqlConnection(_connectionString))
+        {
+          connection.Open();
+          connection.Close();
+        }
+      }
+      catch (Exception ex)
+      {
+        _doesExist = false;
+      }
     }
 
     public void Log(string text)
@@ -49,6 +63,7 @@ namespace TeamSupport.Data
 
     public void Log(string text, int? userID, ReferenceType? refType, int? refID)
     {
+      if (!_doesExist) return;
       if (_failures > 3) return;
       try
       {

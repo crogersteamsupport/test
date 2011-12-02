@@ -150,19 +150,16 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Require [New] keyword for emails:", organization.RequireNewKeyword.ToString() });
     table.Rows.Add(new string[] { "Require a known email address for emails:", organization.RequireKnownUserForNewEmail.ToString() });
     */
-    table.Rows.Add(new string[] { "Default Wiki Article:", organization.DefaultWikiArticleID == null ? "[None Assigned]" : WikiArticles.GetWikiArticle(UserSession.LoginUser, (int)organization.DefaultWikiArticleID).ArticleName });
+    
+    WikiArticle defArticle = organization.DefaultWikiArticleID == null ? null : WikiArticles.GetWikiArticle(UserSession.LoginUser, (int)organization.DefaultWikiArticleID);
+    table.Rows.Add(new string[] { "Default Wiki Article:", defArticle == null ? "[None Assigned]" : defArticle.ArticleName });
+    
+    
     table.Rows.Add(new string[] { "Only Admin Can Modify Customers:", organization.AdminOnlyCustomers.ToString() });
     table.Rows.Add(new string[] { "Only Admin Can View Reports:", organization.AdminOnlyReports.ToString() });
 
-    if (organization.InternalSlaLevelID != null)
-    {
-      SlaLevel level = SlaLevels.GetSlaLevel(UserSession.LoginUser, (int)organization.InternalSlaLevelID);
-      table.Rows.Add(new string[] { "Internal SLA:", level.Name });
-    }
-    else
-	  {
-      table.Rows.Add(new string[] { "Internal SLA:", "[None Assigned]" });
-	  }
+    SlaLevel level = organization.InternalSlaLevelID != null  ? SlaLevels.GetSlaLevel(UserSession.LoginUser, (int)organization.InternalSlaLevelID) : null;
+    table.Rows.Add(new string[] { "Internal SLA:", level == null ? "[None Assigned]" :level.Name});
 
 
     

@@ -67,7 +67,8 @@ namespace TeamSupport.ServiceLibrary
 
       SmtpClient client = new SmtpClient();
       client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port"));
-      client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
+      string username = Settings.ReadString("SMTP UserName", "");
+      if (username.Trim() != "") client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
 
       foreach (Email email in emails)
       {

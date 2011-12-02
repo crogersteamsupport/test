@@ -39,11 +39,26 @@ namespace TSWebServices
       actions.LoadActive();
       result.Actions = actions.GetTicketAutomationPossibleActionProxies();
 
-      ReportTableFields fields = new ReportTableFields(UserSession.LoginUser);
+
+      List<AutoFieldItem> fieldItems = new List<AutoFieldItem>();
+      ReportTableFields fields = new ReportTableFields(TSAuthentication.GetLoginUser());
       fields.LoadByReportTableID(10);
-      result.Fields = fields.GetReportTableFieldProxies();
 
+      CustomFields customs = new CustomFields(fields.LoginUser);
+      customs.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets);
 
+      foreach (ReportTableField field in fields)
+      {
+        fieldItems.Add(new AutoFieldItem(field));
+      }
+
+      foreach (CustomField custom in customs)
+      {
+        fieldItems.Add(new AutoFieldItem(custom));
+      }
+
+      result.Fields = fieldItems.ToArray();
+      
       Users users = new Users(UserSession.LoginUser);
       users.LoadByOrganizationID(UserSession.LoginUser.OrganizationID, true);
       List<AutocompleteItem> userItems = new List<AutocompleteItem>();
@@ -190,11 +205,11 @@ namespace TSWebServices
       actions.Save();
 
       logic = new TicketAutomationTriggerLogic(UserSession.LoginUser);
-      foreach (TicketAutomationTriggerLogicItemProxy logicItemProxy in data.LogicItems)
+      foreach (LogicItem logicItemProxy in data.LogicItems)
       {
         TicketAutomationTriggerLogicItem logicItem = logic.AddNewTicketAutomationTriggerLogicItem();
         logicItem.TriggerID = trigger.TriggerID;
-        logicItem.TableID = logicItemProxy.TableID;
+        logicItem.TableID = logicItemProxy.IsCustom ? -1 : logicItemProxy.TableID;
         logicItem.FieldID = logicItemProxy.FieldID;
         logicItem.TestValue = logicItemProxy.TestValue;
         logicItem.Measure = logicItemProxy.Measure;
@@ -238,7 +253,7 @@ namespace TSWebServices
     [DataMember]
     public List<TicketAutomationActionProxy> Actions { get; set; }
     [DataMember]
-    public List<TicketAutomationTriggerLogicItemProxy> LogicItems { get; set; }
+    public List<LogicItem> LogicItems { get; set; }
   }
 
 
@@ -256,27 +271,93 @@ namespace TSWebServices
     [DataMember]
     public AutocompleteItem[] Groups { get; set; }
     [DataMember]
-    public ReportTableFieldProxy[] Fields { get; set; }
+    public AutoFieldItem[] Fields { get; set; }
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]
   public class LogicItem
   {
-    [DataMember]
-    public int TriggerLogicID { get; set; }
-    [DataMember]
-    public int TriggerID { get; set; }
-    [DataMember]
-    public int TableID { get; set; }
-    [DataMember]
-    public int FieldID { get; set; }
-    [DataMember]
-    public string FieldName { get; set; }
-    [DataMember]
-    public string Measure { get; set; }
-    [DataMember]
-    public string TestValue { get; set; }
+    [DataMember] public int TriggerLogicID { get; set; }
+    [DataMember] public int TriggerID { get; set; }
+    [DataMember] public int TableID { get; set; }
+    [DataMember] public int FieldID { get; set; }
+    [DataMember] public string FieldName { get; set; }
+    [DataMember] public string Measure { get; set; }
+    [DataMember] public string TestValue { get; set; }
+    [DataMember] public bool IsCustom { get; set; }
+    [DataMember] public bool MatchAll { get; set; }
   }
-  
+  [DataContract(Namespace = "http://teamsupport.com/")]
+  [KnownType(typeof(AutoFieldItem))]
+  public class AutoFieldItem
+  {
+    public AutoFieldItem() { }
+    public AutoFieldItem(CustomField field) 
+    {
+      this.FieldID = field.CustomFieldID;
+      this.RefType = ReferenceType.Tickets;
+      this.AuxID = field.AuxID;
+      this.IsCustom = true;
+      this.FieldName = field.Name;
+      this.Alias = field.Name;
+
+      switch (field.FieldType)
+      {
+        case CustomFieldType.Text:
+          this.DataType = "text";
+          break;
+        case CustomFieldType.DateTime:
+          this.DataType = "datetime";
+          break;
+        case CustomFieldType.Boolean:
+          this.DataType = "bit";
+          break;
+        case CustomFieldType.Number:
+          this.DataType = "text";
+          break;
+        case CustomFieldType.PickList:
+          this.DataType = "list";
+          break;
+        default:
+          this.DataType = "text";
+          break;
+      }
+      this.Size = 0;
+      this.IsVisible = true;
+      this.Description = field.Description;
+      this.LookupTableID = null;
+      this.ListValues = field.ListValues.Split('|');
+    }
+
+    public AutoFieldItem(ReportTableField field) 
+    {
+      this.FieldID = field.ReportTableFieldID;
+      this.RefType = ReferenceType.Tickets;
+      this.AuxID = null;
+      this.IsCustom = false;
+      this.ListValues = null;
+      this.FieldName = field.FieldName;
+      this.Alias = field.Alias;
+      this.DataType = field.DataType;
+      this.Size = field.Size;
+      this.IsVisible = field.IsVisible;
+      this.Description = field.Description;
+      this.LookupTableID = field.LookupTableID;
+    }
+
+    [DataMember] public int FieldID { get; set; }
+    [DataMember] public ReferenceType RefType { get; set; }
+    [DataMember] public int? AuxID { get; set; }
+    [DataMember] public bool IsCustom { get; set; }
+    [DataMember] public string[] ListValues { get; set; }
+    [DataMember] public string FieldName { get; set; }
+    [DataMember] public string Alias { get; set; }
+    [DataMember] public string DataType { get; set; }
+    [DataMember] public int Size { get; set; }
+    [DataMember] public bool IsVisible { get; set; }
+    [DataMember] public string Description { get; set; }
+    [DataMember] public int? LookupTableID { get; set; }
+
+  }
 
 }
