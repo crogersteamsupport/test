@@ -8,7 +8,7 @@ using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Text;
 
-public partial class Resources_151_Pages_Tips_Sla : System.Web.UI.Page
+public partial class Tips_Sla : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {

@@ -110,7 +110,7 @@ $(document).ready(function () {
         .appendTo(title);
       $('<span>')
       .addClass('ts-icon ts-icon-info')
-      .attr('rel', 'Tips/User.aspx?UserID=' + customer.UserID + '&TicketID=' + _ticketID)
+      .attr('rel', '../../../Tips/User.aspx?UserID=' + customer.UserID + '&TicketID=' + _ticketID)
       .cluetip(clueTipOptions)
       .appendTo(title);
 
@@ -125,7 +125,7 @@ $(document).ready(function () {
         .appendTo(desc);
       $('<span>')
       .addClass('ts-icon ts-icon-info')
-      .attr('rel', 'Tips/Customer.aspx?CustomerID=' + customer.OrganizationID + '&TicketID=' + _ticketID)
+      .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID + '&TicketID=' + _ticketID)
       .cluetip(clueTipOptions)
       .appendTo(desc);
     }
@@ -143,7 +143,7 @@ $(document).ready(function () {
 
       $('<span>')
       .addClass('ts-icon ts-icon-info')
-      .attr('rel', 'Tips/Customer.aspx?CustomerID=' + customer.OrganizationID + '&TicketID=' + _ticketID)
+      .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID + '&TicketID=' + _ticketID)
       .cluetip(clueTipOptions)
       .appendTo(title);
     }
@@ -261,7 +261,7 @@ $(document).ready(function () {
 
     $('<span>')
       .addClass('ts-icon ts-icon-info')
-      .attr('rel', 'Tips/User.aspx?UserID=' + subscriber.UserID + '&TicketID=' + _ticketID)
+      .attr('rel', '../../../Tips/User.aspx?UserID=' + subscriber.UserID + '&TicketID=' + _ticketID)
       .cluetip(clueTipOptions)
       .appendTo(title);
     $('#divSubscribers').append(item);
@@ -369,7 +369,7 @@ $(document).ready(function () {
 
     $('<span>')
       .addClass('ts-icon ts-icon-info')
-      .attr('rel', 'Tips/User.aspx?UserID=' + queue.UserID + '&TicketID=' + _ticketID)
+      .attr('rel', '../../../Tips/User.aspx?UserID=' + queue.UserID + '&TicketID=' + _ticketID)
       .cluetip(clueTipOptions)
       .appendTo(title);
     $('#divQueues').append(item);
@@ -561,7 +561,7 @@ $(document).ready(function () {
 
       $('<span>')
       .addClass('ts-icon ts-icon-info')
-      .attr('rel', 'Tips/Ticket.aspx?TicketID=' + related.TicketID)
+      .attr('rel', '../../../Tips/Ticket.aspx?TicketID=' + related.TicketID)
       .cluetip(clueTipOptions)
       .appendTo(item.find('.ticket-removable-item-title'));
 
@@ -715,39 +715,13 @@ $(document).ready(function () {
       );
     });
 
+  var tipTimer = null;
+  var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
 
-  var clueTipOptions = {
-    mouseOutClose: true,
-    width: 400,
-    hoverIntent: {
-      sensitivity: 1,
-      interval: 50,
-      timeout: 0
-    },
-    cluetipClass: 'ui-corner-all',
-    showTitle: false,
-    dropShadow: (!($.browser.msie)),
-    dropShadowSteps: 10,
-    sticky: true,
-    ajaxProcess: function (data) {
-      //data = data.replace(/<(style|title)[^<]+<\/(style|title)>/gm, '').replace(/<(link|meta)[^>]+>/g, '');
-      return data;
-    },
-    onShow: function (ct, c) {
-      if (tipTimer != null) clearTimeout(tipTimer);
-      ct.addClass('ui-corner-all').find('.ui-cluetip-content').addClass('ui-corner-all').find('a').addClass('ts-link ui-state-default');
-    },
-    onActivate: function (ct, c) {
-      $(this).mouseout(function () {
-      });
-    }
-  };
   $('body').delegate('.ts-icon-info', 'mouseout', function (e) {
     if (tipTimer != null) clearTimeout(tipTimer);
     tipTimer = setTimeout("$(document).trigger('hideCluetip');", 1000);
   });
-
-  var tipTimer = null;
 
   $('body').delegate('.cluetip', 'mouseover', function (e) {
     if (tipTimer != null) clearTimeout(tipTimer);
@@ -910,7 +884,7 @@ $(document).ready(function () {
           element.find('.upload-queue li').each(function (i, o) {
             var data = $(o).data('data');
             //data.form.prop('action', '../../Upload/Actions/' + newAction.ActionID);
-            data.url = '../../Upload/Actions/' + newAction.Action.ActionID;
+            data.url = '../../../Upload/Actions/' + newAction.Action.ActionID;
             data.jqXHR = data.submit();
             $(o).data('data', data);
           });
@@ -1140,7 +1114,7 @@ $(document).ready(function () {
     if (creator !== null) {
       $('<span>')
       .addClass('ts-icon ts-icon-info')
-      .attr('rel', 'Tips/User.aspx?UserID=' + creator.UserID + '&TicketID=' + _ticketID)
+      .attr('rel', '../../../Tips/User.aspx?UserID=' + creator.UserID + '&TicketID=' + _ticketID)
       .cluetip(clueTipOptions)
       .appendTo(element.find('.ticket-action-info'));
     }
@@ -1180,7 +1154,7 @@ $(document).ready(function () {
         .attr('target', '_blank')
         .text(attachments[i].FileName)
         .addClass('ui-state-default ts-link')
-        .attr('href', '../dc/1078/attachments/' + attachments[i].AttachmentID)
+        .attr('href', '../../../dc/1/attachments/' + attachments[i].AttachmentID)
         .appendTo(item);
         if (canEdit) {
           $('<span>')
@@ -1525,7 +1499,7 @@ $(document).ready(function () {
     }
     $('#userName').parent().find('.ts-icon-info')
     .toggle(isAssigned)
-    .attr('rel', 'Tips/User.aspx?UserID=' + id + '&TicketID=' + _ticketID)
+    .attr('rel', '../../../Tips/User.aspx?UserID=' + id + '&TicketID=' + _ticketID)
     .cluetip(clueTipOptions)
   }
 
@@ -2004,7 +1978,7 @@ $(document).ready(function () {
       }
 
       $('.ticket-sla-info')
-        .attr('rel', 'Tips/Sla.aspx?TicketID=' + _ticketID)
+        .attr('rel', '../../../Tips/Sla.aspx?TicketID=' + _ticketID)
         .cluetip(clueTipOptions);
 
       $('#ticketNumber').text(info.Ticket.TicketNumber);
@@ -2031,7 +2005,7 @@ $(document).ready(function () {
       if (info.Ticket.IsFlagged === true) $('#btnFlag .ts-toolbar-caption').text('Unflag');
 
       $('.ticket-source').css('backgroundImage', "url('../" + top.Ts.Utils.getTicketSourceIcon(info.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (info.Ticket.TicketSource == null ? 'Agent' : info.Ticket.TicketSource));
-      var ticketUrl = window.location.href.replace('Resources_151/Pages/Ticket.html', '');
+      var ticketUrl = window.location.href.replace('vcr/140/Pages/Ticket.html', '');
       $('<a>')
       .attr('href', ticketUrl)
       .attr('target', '_blank')
@@ -2365,7 +2339,7 @@ $(document).ready(function () {
     if (id !== null) {
       $('.ticket-product-info')
         .show()
-        .attr('rel', 'Tips/Product.aspx?ProductID=' + id + '&TicketID=' + _ticketID)
+        .attr('rel', '../../../Tips/Product.aspx?ProductID=' + id + '&TicketID=' + _ticketID)
         .cluetip(clueTipOptions);
     }
   }
@@ -2377,7 +2351,7 @@ $(document).ready(function () {
       if (id !== null) {
         $('.ticket-resolved-info')
         .show()
-        .attr('rel', 'Tips/Version.aspx?VersionID=' + id + '&TicketID=' + _ticketID)
+        .attr('rel', '../../../Tips/Version.aspx?VersionID=' + id + '&TicketID=' + _ticketID)
         .cluetip(clueTipOptions);
       }
     } else {
@@ -2385,7 +2359,7 @@ $(document).ready(function () {
       if (id !== null) {
         $('.ticket-reported-info')
         .show()
-        .attr('rel', 'Tips/Version.aspx?VersionID=' + id + '&TicketID=' + _ticketID)
+        .attr('rel', '../../../Tips/Version.aspx?VersionID=' + id + '&TicketID=' + _ticketID)
         .cluetip(clueTipOptions);
       }
       $('#reported').text(id == null ? 'Unassigned' : name);

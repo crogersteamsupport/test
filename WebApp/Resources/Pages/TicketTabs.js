@@ -55,7 +55,7 @@ $(document).ready(function () {
     tabs.add(true, 'tickettab', 'closed', 'Closed Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
     delete filter.IsClosed;
     tabs.add(true, 'tickettab', 'all', 'All Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
-    tabs.add(true, 'tickettab', 'queue', 'Ticket Queue', false, false, false, '', '', '../../Frames/TicketQueue.aspx?UserID=' + userID);
+    tabs.add(true, 'tickettab', 'queue', 'Ticket Queue', false, false, false, '', '', '../../../Frames/TicketQueue.aspx?UserID=' + userID);
     tabs.add(true, 'tickettab', 'reminders', 'Reminders', false, false, false, '', '', 'Reminders.html?UserID=' + userID);
     afterLoad();
   }

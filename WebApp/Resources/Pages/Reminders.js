@@ -65,17 +65,17 @@ Reminders = function () {
           case top.Ts.ReferenceTypes.Contacts:
             itemIcon
             .addClass('ts-icon-contact')
-            .attr('rel', 'Tips/User.aspx?UserID=' + reminder.RefID);
+            .attr('rel', '../../../Tips/User.aspx?UserID=' + reminder.RefID);
             break;
           case top.Ts.ReferenceTypes.Organizations:
             itemIcon
             .addClass('ts-icon-company')
-            .attr('rel', 'Tips/Customer.aspx?CustomerID=' + reminder.RefID);
+            .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + reminder.RefID);
             break;
           case top.Ts.ReferenceTypes.Tickets:
             itemIcon
             .addClass('ts-icon-ticket')
-            .attr('rel', 'Tips/Ticket.aspx?TicketID=' + reminder.RefID);
+            .attr('rel', '../../../Tips/Ticket.aspx?TicketID=' + reminder.RefID);
             break;
         }
         itemIcon.cluetip(top.Ts.Utils.getClueTipOptions(tipTimer))
@@ -119,7 +119,7 @@ Reminders = function () {
   }
 
 
-  $('body').delegate('.ts-icon-info', 'mouseout', function (e) {
+  $('body').delegate('.item-icon', 'mouseout', function (e) {
     if (tipTimer != null) clearTimeout(tipTimer);
     tipTimer = setTimeout("$(document).trigger('hideCluetip');", 1000);
   });

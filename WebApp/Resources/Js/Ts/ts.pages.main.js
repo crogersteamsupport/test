@@ -686,12 +686,12 @@ Ts.Pages.Main.prototype =
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
               .appendTo(div)
-              .attr('src', 'Resources_151/Pages/Ticket.html?TicketNumber=' + tab.getId());
+              .attr('src', 'vcr/140/Pages/Ticket.html?TicketNumber=' + tab.getId());
           }
           else {
             div.show();
           }
-          $('.main-info-content').load('Resources_151/PaneInfo/ticket.html');
+          $('.main-info-content').load('vcr/140/PaneInfo/ticket.html');
 
           break;
         case Ts.Ui.Tabs.Tab.Type.NewTicket:
@@ -707,13 +707,13 @@ Ts.Pages.Main.prototype =
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
               .appendTo(div)
-              .attr('src', 'Resources_151/Pages/NewTicket.html' + query);
+              .attr('src', 'vcr/140/Pages/NewTicket.html' + query);
             //.attr('src', 'frames/newticket.aspx' + query);
           }
           else {
             div.show();
           }
-          $('.main-info-content').load('Resources_151/PaneInfo/newticket.html');
+          $('.main-info-content').load('vcr/140/PaneInfo/newticket.html');
           break;
         default:
 

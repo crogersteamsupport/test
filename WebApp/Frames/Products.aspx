@@ -193,7 +193,7 @@
             url = 'ProductVersions.aspx?ProductID=' + productNode.get_value();
           }
           else {
-            url = '../Resources_151/Pages/ProductVersion.html?VersionID=' + versionNode.get_value();
+            url = '../vcr/140/Pages/ProductVersion.html?VersionID=' + versionNode.get_value();
           }
         }
         else if (index == 3) {

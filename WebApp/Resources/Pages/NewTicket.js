@@ -450,7 +450,7 @@ $(document).ready(function () {
     .appendTo(title);
       $('<span>')
     .addClass('ts-icon ts-icon-info')
-    .attr('rel', 'Tips/User.aspx?UserID=' + customer.UserID)
+    .attr('rel', '../../../Tips/User.aspx?UserID=' + customer.UserID)
     .cluetip(clueTipOptions)
     .appendTo(title);
 
@@ -465,7 +465,7 @@ $(document).ready(function () {
     .appendTo(desc);
       $('<span>')
     .addClass('ts-icon ts-icon-info')
-    .attr('rel', 'Tips/Customer.aspx?CustomerID=' + customer.OrganizationID)
+    .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID)
     .cluetip(clueTipOptions)
     .appendTo(desc);
     }
@@ -483,7 +483,7 @@ $(document).ready(function () {
 
       $('<span>')
     .addClass('ts-icon ts-icon-info')
-    .attr('rel', 'Tips/Customer.aspx?CustomerID=' + customer.OrganizationID)
+    .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID)
     .cluetip(clueTipOptions)
     .appendTo(title);
     }
@@ -592,40 +592,15 @@ $(document).ready(function () {
       $('<div>').addClass('clearfix').appendTo(container);
     });
 
-  var clueTipOptions = {
-    mouseOutClose: true,
-    width: 400,
-    hoverIntent: {
-      sensitivity: 1,
-      interval: 50,
-      timeout: 0
-    },
-    cluetipClass: 'ui-corner-all',
-    showTitle: false,
-    dropShadow: (!($.browser.msie)),
-    dropShadowSteps: 10,
-    sticky: true,
-    ajaxProcess: function (data) {
-      //data = data.replace(/<(style|title)[^<]+<\/(style|title)>/gm, '').replace(/<(link|meta)[^>]+>/g, '');
-      return data;
-    },
-    onShow: function (ct, c) {
-      if (tipTimer != null) clearTimeout(tipTimer);
-      ct.addClass('ui-corner-all').find('.ui-cluetip-content').addClass('ui-corner-all').find('a').addClass('ts-link ui-state-default');
-    },
-    onActivate: function (ct, c) {
-      $(this).mouseout(function () {
-        alert('out');
-      });
-    }
-  };
+
+  var tipTimer = null;
+
+  var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
 
   $('body').delegate('.ts-icon-info', 'mouseout', function (e) {
     if (tipTimer != null) clearTimeout(tipTimer);
     tipTimer = setTimeout("$(document).trigger('hideCluetip');", 1000);
   });
-
-  var tipTimer = null;
 
   $('body').delegate('.cluetip', 'mouseover', function (e) {
     if (tipTimer != null) clearTimeout(tipTimer);
@@ -744,7 +719,7 @@ $(document).ready(function () {
 
     $('<span>')
       .addClass('ts-icon ts-icon-info')
-      .attr('rel', 'Tips/Ticket.aspx?TicketID=' + related.TicketID)
+      .attr('rel', '../../../Tips/Ticket.aspx?TicketID=' + related.TicketID)
       .cluetip(clueTipOptions)
       .appendTo(item.find('.ticket-removable-item-title'));
 
@@ -840,7 +815,7 @@ $(document).ready(function () {
 
     $('<span>')
       .addClass('ts-icon ts-icon-info')
-      .attr('rel', 'Tips/User.aspx?UserID=' + queue.UserID)
+      .attr('rel', '../../../Tips/User.aspx?UserID=' + queue.UserID)
       .cluetip(clueTipOptions)
       .appendTo(title);
 
@@ -932,7 +907,7 @@ $(document).ready(function () {
 
     $('<span>')
       .addClass('ts-icon ts-icon-info')
-      .attr('rel', 'Tips/User.aspx?UserID=' + subscriber.UserID)
+      .attr('rel', '../../../Tips/User.aspx?UserID=' + subscriber.UserID)
       .cluetip(clueTipOptions)
       .appendTo(title);
     $('#divSubscribers .newticket-noitems').hide().after(item);
@@ -1355,7 +1330,7 @@ $(document).ready(function () {
       if ($('.upload-queue li').length > 0) {
         $('.upload-queue li').each(function (i, o) {
           var data = $(o).data('data');
-          data.url = '../../Upload/Actions/' + result[1];
+          data.url = '../../../Upload/Actions/' + result[1];
           data.jqXHR = data.submit();
           $(o).data('data', data);
         });

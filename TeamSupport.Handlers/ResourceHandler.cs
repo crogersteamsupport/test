@@ -43,7 +43,7 @@ namespace TeamSupport.Handlers
         for (int i = 0; i < context.Request.Url.Segments.Length; i++)
         {
           string s = context.Request.Url.Segments[i].ToLower().Trim().Replace("/", "");
-          if (s == "resources")
+          if (s == "vcr")
           {
 
             flag = true;
@@ -60,9 +60,11 @@ namespace TeamSupport.Handlers
         }
 
         string fileName = builder.ToString();
+        //context.Response.ContentType = "text/html";
+        //context.Response.Write(fileName);
         context.Response.ContentType = DataUtils.MimeTypeFromFileName(fileName);
         context.Response.WriteFile(fileName);
-
+        // You can test if JS and minify if you want....
       }
       catch (Exception ex)
       {
