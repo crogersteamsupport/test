@@ -4,6 +4,7 @@ Imports System.Web
 Imports System.Xml
 Imports System.Text
 Imports System.IO
+Imports System.Data.SqlClient
 
 Namespace TeamSupport
     Namespace CrmIntegration
@@ -225,9 +226,16 @@ Namespace TeamSupport
             Inherits Zoho
 
             Private databaseName As String = "TeamSupport"
+            Private reportsToSend As Dictionary(Of String, String)
 
             Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
                 MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.ZohoReports)
+
+                reportsToSend = New Dictionary(Of String, String)()
+                reportsToSend.Add("KnowledgeBaseTraffic,ViewingIP", "select k.viewdatetime as 'DateAndTime', t.name as 'ArticleTitle',  searchterm as 'SearchTermUsed', viewip as 'ViewingIP' from KBStats as k, organizations as o, tickets as t where k.organizationid = @OrganizationID and k.organizationid = o.organizationid and k.kbarticleid = t.ticketid AND k.viewdatetime > @LastModified")
+                reportsToSend.Add("ChatRequests,ChatRequestor", "select cr.datecreated as 'DateAndTime', cc.lastname+', '+cc.firstname as 'ChatRequestor', cc.email as 'RequestorsEmail',cr.message as 'Question', cr.isaccepted as 'ChatAccepted' from chatrequests as cr, organizations as o, chatclients as cc where cr.organizationid = o.organizationid and cc.chatclientid = cr.requestorid and o.organizationid = @OrganizationID AND cr.datecreated > @LastModified")
+                reportsToSend.Add("TicketStatusHistory,Old_Status", "select t.ticketnumber as Ticket_Number, t.name as Ticket_Name,  ts_old.name as Old_Status, ts_new.name as New_Status, StatusChangeTime as Time_Status_Changed, convert(varchar, sh.timeinoldstatus, 14) as Time_In_Old_Status, u.lastname+', '+u.firstname as User_Who_Changed from statushistory as sh left outer join ticketstatuses as ts_old on sh.oldstatus = ts_old.ticketstatusid left outer join ticketstatuses as ts_new on sh.newstatus = ts_new.ticketstatusid,tickets as t, users as u where sh.ticketid = t.ticketid and sh.modifierid = u.userid and sh.organizationid = @OrganizationID AND StatusChangeTime > @LastModified")
+                reportsToSend.Add("PortalLoginHistory,Username", "select Username, Success, LoginDateTime, IPAddress from portalloginhistory where OrganizationID = @OrganizationID AND LoginDateTime > @LastModified")
             End Sub
 
             Public Overrides Function PerformSync() As Boolean
@@ -252,68 +260,76 @@ Namespace TeamSupport
             End Function
 
             Private Function SendReportData() As Boolean
-                Dim success As Boolean = True
                 Dim thisSettings As New ServiceLibrary.Settings(User, Processor.ServiceName)
-                Dim thisTableName As String = "Tickets"
 
                 'load data from ticketsview into a csv
                 Dim tix As New TicketsView(User)
                 tix.LoadForZoho(CRMLinkRow.OrganizationID, CRMLinkRow.LastLink)
                 Dim ticketsData As DataTable = tix.Table.Copy()
-                ticketsData.TableName = "TicketsView"
 
                 Dim ticketsViewBatchSize As Integer = thisSettings.ReadInt("ZohoReportsBatchSize", 50000)
 
                 Dim batches As List(Of String) = GetCSVBatches(ticketsData, ticketsViewBatchSize)
+                Log.Write("Found " & batches.Count & " ticketsView batches to send to Zoho.")
 
                 'now that we have data, send it to zoho
-                Dim zohoUri As New Uri(String.Format("https://reportsapi.zoho.com/api/{0}/{3}/{4}?ZOHO_ACTION=IMPORT&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={1}&ticket={2}&ZOHO_API_VERSION=1.0", _
-                                                     CRMLinkRow.Username, CRMLinkRow.SecurityToken, APITicket, databaseName, thisTableName))
-
                 For Each batch As String In batches
                     Dim byteData As Byte() = UTF8Encoding.UTF8.GetBytes(batch)
 
-                    Dim postParameters As New Dictionary(Of String, Object)()
-                    postParameters.Add("ZOHO_IMPORT_TYPE", "UPDATEADD")
-                    postParameters.Add("ZOHO_MATCHING_COLUMNS", "TicketNumber")
-                    postParameters.Add("ZOHO_AUTO_IDENTIFY", "false")
-                    postParameters.Add("ZOHO_ON_IMPORT_ERROR", "ABORT")
-                    postParameters.Add("ZOHO_DELIMITER", "0")
-                    postParameters.Add("ZOHO_QUOTED", "2")
-                    postParameters.Add("ZOHO_CREATE_TABLE", "true")
-                    postParameters.Add("ZOHO_DATE_FORMAT", "MM/dd/yyyy HH:mm:ss")
-                    postParameters.Add("ZOHO_FILE", byteData)
-
-                    '       File.WriteAllBytes(Path.Combine(thisSettings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkRow.OrganizationID.ToString() & "\reports.csv"), byteData)
-
-                    Try
-                        Using response As HttpWebResponse = WebHelpers.MultipartFormDataPost(zohoUri, Client, postParameters)
-
-                            If response.StatusCode <> HttpStatusCode.OK Then
-                                Log.Write("Error posting query string: " & response.StatusDescription)
-                            Else
-                                Log.Write(response.StatusDescription)
-                            End If
-
-                        End Using
-                    Catch ex As WebException
-                        Log.Write("Error contacting " & zohoUri.ToString() & ": " & ex.Message)
-                        Log.Write(New StreamReader(ex.Response.GetResponseStream()).ReadToEnd())
-
-                        success = False
-                    End Try
+                    If Not ImportZohoCSV("Tickets", "TicketNumber", byteData) Then
+                        Log.Write("Error sending Tickets to Zoho.")
+                        Return False
+                    End If
 
                     'we have to delete the dummy row we insert with each import
-                    Log.Write("Deleting dummy row...")
-                    If DeleteZohoTableRow(thisTableName, "-1") Then
+                    Log.Write("Deleting datatype row...")
+                    If DeleteZohoTableRow("Tickets", "TicketNumber", "-1") Then
                         Log.Write("row -1 deleted successfully")
                     Else
                         Log.Write("Error deleting dummy row.")
-                        success = False
+                        Return False
                     End If
                 Next
 
-                Return success
+                Log.Write("TicketsView batches sent successfully.")
+
+                'get batches for other reports
+                Log.Write(reportsToSend.Count & " other reports to send to Zoho...")
+
+                For Each reportQuery As KeyValuePair(Of String, String) In reportsToSend
+                    Dim tableName As String = reportQuery.Key.Split(",")(0)
+                    Dim tableKey As String = reportQuery.Key.Split(",")(1)
+
+                    Dim thisCommand As New SqlCommand(reportQuery.Value)
+
+                    thisCommand.Parameters.AddWithValue("@OrganizationID", CRMLinkRow.OrganizationID)
+                    thisCommand.Parameters.AddWithValue("@LastModified", If(CRMLinkRow.LastLink.HasValue, CRMLinkRow.LastLink.Value.AddMinutes(-1), New DateTime(1900, 1, 1)))
+
+                    Dim thisTable As DataTable = SqlExecutor.ExecuteQuery(User, thisCommand)
+                    Dim batches2 As List(Of String) = GetCSVBatches(thisTable, ticketsViewBatchSize)
+
+                    Log.Write("Found " & batches2.Count & " " & tableName & " batches to send to Zoho...")
+
+                    For Each batch As String In batches2
+                        Dim byteData As Byte() = UTF8Encoding.UTF8.GetBytes(batch)
+
+                        If Not ImportZohoCSV(tableName, byteData) Then
+                            Log.Write("Error sending " & tableName & " to Zoho.")
+                            Return False
+                        End If
+
+                        Log.Write("Deleting datatype row...")
+                        If DeleteZohoTableRow(tableName, tableKey, "'String'") Then
+                            Log.Write("Row deleted successfully.")
+                        Else
+                            Log.Write("Error deleting datatype row.")
+                            Return False
+                        End If
+                    Next
+
+                Next
+
+                Return True
             End Function
 
             Private Function GetCSVBatches(ByVal thisTable As DataTable, ByVal batchSize As Integer) As List(Of String)
@@ -380,11 +396,59 @@ Namespace TeamSupport
                 Return csvBatches
             End Function
 
-            'only works for ticketsview right now
-            Private Function DeleteZohoTableRow(ByVal tableName As String, ByVal rowKey As String) As Boolean
-                Dim DeletePath As String = String.Format("{0}/{1}/{2}?ZOHO_ACTION=DELETE&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={3}&ZOHO_API_VERSION=1.0", CRMLinkRow.Username, databaseName, tableName, CRMLinkRow.SecurityToken)
-                Dim DeleteParameters As String = "&ZOHO_CRITERIA=(""TicketNumber"" = " & rowKey & ")"
+            Private Function ImportZohoCSV(ByVal tableName As String, ByVal keyName As String, ByVal byteData As Byte()) As Boolean
+                Dim success As Boolean = True
+                Dim zohoUri As New Uri(String.Format("https://reportsapi.zoho.com/api/{0}/{3}/{4}?ZOHO_ACTION=IMPORT&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={1}&ticket={2}&ZOHO_API_VERSION=1.0", _
+                                                     CRMLinkRow.Username, CRMLinkRow.SecurityToken, APITicket, databaseName, tableName))
 
+                Dim postParameters As New Dictionary(Of String, Object)()
+
+                If keyName IsNot Nothing Then
+                    postParameters.Add("ZOHO_IMPORT_TYPE", "UPDATEADD")
+                    postParameters.Add("ZOHO_MATCHING_COLUMNS", keyName)
+                Else
+                    postParameters.Add("ZOHO_IMPORT_TYPE", "APPEND")
+                End If
+
+                postParameters.Add("ZOHO_AUTO_IDENTIFY", "false")
+                postParameters.Add("ZOHO_ON_IMPORT_ERROR", "ABORT")
+                postParameters.Add("ZOHO_DELIMITER", "0")
+                postParameters.Add("ZOHO_QUOTED", "2")
+                postParameters.Add("ZOHO_CREATE_TABLE", "true")
+                postParameters.Add("ZOHO_DATE_FORMAT", "MM/dd/yyyy HH:mm:ss")
+                postParameters.Add("ZOHO_FILE", byteData)
+
+                '       File.WriteAllBytes(Path.Combine(thisSettings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkRow.OrganizationID.ToString() & "\reports.csv"), byteData)
+
+                Try
+                    Using response As HttpWebResponse = WebHelpers.MultipartFormDataPost(zohoUri, Client, postParameters)
+
+                        If response.StatusCode <> HttpStatusCode.OK Then
+                            Log.Write("Error posting query string: " & response.StatusDescription)
+                        Else
+                            Log.Write(response.StatusDescription)
+                        End If
+
+                    End Using
+                Catch ex As WebException
+                    Log.Write("Error contacting " & zohoUri.ToString() & ": " & ex.Message)
+                    Log.Write(New StreamReader(ex.Response.GetResponseStream()).ReadToEnd())
+
+                    success = False
+                End Try
+
+                Return success
+            End Function
+
+            Private Function ImportZohoCSV(ByVal tableName As String, ByVal byteData As Byte()) As Boolean
+                Return ImportZohoCSV(tableName, Nothing, byteData)
+            End Function
+
+            Private Function DeleteZohoTableRow(ByVal tableName As String, ByVal keyName As String, ByVal rowKey As String) As Boolean
+                Dim DeletePath As String = String.Format("{0}/{1}/{2}?ZOHO_ACTION=DELETE&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={3}&ZOHO_API_VERSION=1.0", CRMLinkRow.Username, databaseName, tableName, CRMLinkRow.SecurityToken)
+                Dim DeleteParameters As String = "&ZOHO_CRITERIA=(""" & keyName & """ = " & rowKey & ")"
+
+                Log.Write(DeleteParameters)
                 Return PostZohoReports(DeletePath, DeleteParameters) = HttpStatusCode.OK
             End Function
 
@@ -394,7 +458,6 @@ Namespace TeamSupport
                 Return PostQueryString(Nothing, ZohoUri, PostParameters)
             End Function
 
-        
         End Class
     End Namespace
 End Namespace

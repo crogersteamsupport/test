@@ -647,7 +647,7 @@ namespace TeamSupport.Data
         using (SqlCommand command = new SqlCommand())
         {
             command.CommandText = @"SELECT TicketNumber, 'https://app.teamsupport.com?ticketid=' + CONVERT(VARCHAR,tv.TicketID) AS 'TicketURL',
-                                        Name, TicketTypeName, Status, Severity, UserName AS 'AssignedTo', Customers, Contacts,
+                                        Name, TicketTypeName, TicketSource, Status, Severity, UserName AS 'AssignedTo', Customers, Contacts,
                                         ProductName, ReportedVersion, SolvedVersion, GroupName, DateModified, DateCreated, DaysOpened, IsClosed,
                                         CloserName, SlaViolationTime, StatusPosition, SeverityPosition, IsVisibleOnPortal, IsKnowledgeBase, DateClosed,
                                         DaysClosed, CreatorName, ModifierName, HoursSpent, Tags, SlaWarningTime, SlaViolationHours, SlaWarningHours, 
