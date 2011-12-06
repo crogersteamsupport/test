@@ -29,6 +29,7 @@ Public Module WebHelpers
         request.ContentType = contentType
         request.UserAgent = userAgent
         request.ContentLength = formData.Length
+        request.Timeout = 180 * 1000 'give request 3 minutes
 
         Using postStream As Stream = request.GetRequestStream()
             postStream.Write(formData, 0, formData.Length)

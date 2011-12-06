@@ -234,7 +234,7 @@ Namespace TeamSupport
                 reportsToSend = New Dictionary(Of String, String)()
                 reportsToSend.Add("KnowledgeBaseTraffic,ViewingIP", "select k.viewdatetime as 'DateAndTime', t.name as 'ArticleTitle',  searchterm as 'SearchTermUsed', viewip as 'ViewingIP' from KBStats as k, organizations as o, tickets as t where k.organizationid = @OrganizationID and k.organizationid = o.organizationid and k.kbarticleid = t.ticketid AND k.viewdatetime > @LastModified")
                 reportsToSend.Add("ChatRequests,ChatRequestor", "select cr.datecreated as 'DateAndTime', cc.lastname+', '+cc.firstname as 'ChatRequestor', cc.email as 'RequestorsEmail',cr.message as 'Question', cr.isaccepted as 'ChatAccepted' from chatrequests as cr, organizations as o, chatclients as cc where cr.organizationid = o.organizationid and cc.chatclientid = cr.requestorid and o.organizationid = @OrganizationID AND cr.datecreated > @LastModified")
-                reportsToSend.Add("TicketStatusHistory,Old_Status", "select t.ticketnumber as Ticket_Number, t.name as Ticket_Name,  ts_old.name as Old_Status, ts_new.name as New_Status, StatusChangeTime as Time_Status_Changed, convert(varchar, sh.timeinoldstatus, 14) as Time_In_Old_Status, u.lastname+', '+u.firstname as User_Who_Changed from statushistory as sh left outer join ticketstatuses as ts_old on sh.oldstatus = ts_old.ticketstatusid left outer join ticketstatuses as ts_new on sh.newstatus = ts_new.ticketstatusid,tickets as t, users as u where sh.ticketid = t.ticketid and sh.modifierid = u.userid and sh.organizationid = @OrganizationID AND StatusChangeTime > @LastModified")
+                reportsToSend.Add("TicketStatusHistory,Old_Status", "select t.ticketnumber as Ticket_Number, t.name as Ticket_Name,  ts_old.name as Old_Status, ts_new.name as New_Status, StatusChangeTime as Time_Status_Changed, datediff(mi,'1900-01-01', sh.timeinoldstatus) as Minutes_In_Old_Status, u.lastname+', '+u.firstname as User_Who_Changed from statushistory as sh left outer join ticketstatuses as ts_old on sh.oldstatus = ts_old.ticketstatusid left outer join ticketstatuses as ts_new on sh.newstatus = ts_new.ticketstatusid,tickets as t, users as u where sh.ticketid = t.ticketid and sh.modifierid = u.userid and sh.organizationid = @OrganizationID AND StatusChangeTime > @LastModified")
                 reportsToSend.Add("PortalLoginHistory,Username", "select Username, Success, LoginDateTime, IPAddress from portalloginhistory where OrganizationID = @OrganizationID AND LoginDateTime > @LastModified")
             End Sub
 
@@ -364,28 +364,28 @@ Namespace TeamSupport
 
                 For Each thisRow As DataRow In thisTable.Rows
 
-                        If csvContent Is Nothing Then
-                            csvContent = New StringBuilder(csvHeader.ToString())
+                    If csvContent Is Nothing Then
+                        csvContent = New StringBuilder(csvHeader.ToString())
+                    End If
+
+                    For i As Integer = 0 To thisTable.Columns.Count - 1
+                        If thisTable.Columns(i).DataType Is GetType(String) Then
+                            csvContent.Append("""" & thisRow(i).ToString().Replace("""", "'") & """")
+                        ElseIf thisTable.Columns(i).DataType Is GetType(DateTime) AndAlso Not IsDBNull(thisRow(i)) Then 'translate dates to org's local timezone
+                            csvContent.Append("""" & CRMLinkRow.DateToLocal(CType(thisRow(i).ToString(), DateTime)).ToString("M/d/yyyy H:mm:ss") & """")
+                        Else
+                            csvContent.Append(thisRow(i).ToString())
                         End If
+                        csvContent.Append(If(i < thisTable.Columns.Count - 1, ",", Environment.NewLine))
+                    Next
+                    rowIndex += 1
 
-                        For i As Integer = 0 To thisTable.Columns.Count - 1
-                            If thisTable.Columns(i).DataType Is GetType(String) Then
-                                csvContent.Append("""" & thisRow(i).ToString().Replace("""", "'") & """")
-                            ElseIf thisTable.Columns(i).DataType Is GetType(DateTime) AndAlso Not IsDBNull(thisRow(i)) Then 'translate dates to org's local timezone
-                                csvContent.Append("""" & CRMLinkRow.DateToLocal(CType(thisRow(i).ToString(), DateTime)).ToString("M/d/yyyy H:mm:ss") & """")
-                            Else
-                                csvContent.Append(thisRow(i).ToString())
-                            End If
-                            csvContent.Append(If(i < thisTable.Columns.Count - 1, ",", Environment.NewLine))
-                        Next
-                        rowIndex += 1
+                    If rowIndex = batchSize Then
+                        csvBatches.Add(csvContent.ToString())
 
-                        If rowIndex = batchSize Then
-                            csvBatches.Add(csvContent.ToString())
-
-                            rowIndex = 0
-                            csvContent = Nothing
-                        End If
+                        rowIndex = 0
+                        csvContent = Nothing
+                    End If
 
                 Next
 
@@ -432,7 +432,10 @@ Namespace TeamSupport
                     End Using
                 Catch ex As WebException
                     Log.Write("Error contacting " & zohoUri.ToString() & ": " & ex.Message)
-                    Log.Write(New StreamReader(ex.Response.GetResponseStream()).ReadToEnd())
+
+                    If ex.Response.GetResponseStream IsNot Nothing Then
+                        Log.Write(New StreamReader(ex.Response.GetResponseStream()).ReadToEnd())
+                    End If
 
                     success = False
                 End Try
