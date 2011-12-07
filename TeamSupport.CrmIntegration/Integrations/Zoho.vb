@@ -232,14 +232,25 @@ Namespace TeamSupport
                 MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.ZohoReports)
 
                 reportsToSend = New Dictionary(Of String, String)()
-                reportsToSend.Add("KnowledgeBaseTraffic,ViewingIP", "select k.viewdatetime as 'DateAndTime', t.name as 'ArticleTitle',  searchterm as 'SearchTermUsed', viewip as 'ViewingIP' from KBStats as k, organizations as o, tickets as t where k.organizationid = @OrganizationID and k.organizationid = o.organizationid and k.kbarticleid = t.ticketid AND k.viewdatetime > @LastModified")
-                reportsToSend.Add("ChatRequests,ChatRequestor", "select cr.datecreated as 'DateAndTime', cc.lastname+', '+cc.firstname as 'ChatRequestor', cc.email as 'RequestorsEmail',cr.message as 'Question', cr.isaccepted as 'ChatAccepted' from chatrequests as cr, organizations as o, chatclients as cc where cr.organizationid = o.organizationid and cc.chatclientid = cr.requestorid and o.organizationid = @OrganizationID AND cr.datecreated > @LastModified")
-                reportsToSend.Add("TicketStatusHistory,Old_Status", "select t.ticketnumber as Ticket_Number, t.name as Ticket_Name,  ts_old.name as Old_Status, ts_new.name as New_Status, StatusChangeTime as Time_Status_Changed, datediff(mi,'1900-01-01', sh.timeinoldstatus) as Minutes_In_Old_Status, u.lastname+', '+u.firstname as User_Who_Changed from statushistory as sh left outer join ticketstatuses as ts_old on sh.oldstatus = ts_old.ticketstatusid left outer join ticketstatuses as ts_new on sh.newstatus = ts_new.ticketstatusid,tickets as t, users as u where sh.ticketid = t.ticketid and sh.modifierid = u.userid and sh.organizationid = @OrganizationID AND StatusChangeTime > @LastModified")
-                reportsToSend.Add("PortalLoginHistory,Username", "select Username, Success, LoginDateTime, IPAddress from portalloginhistory where OrganizationID = @OrganizationID AND LoginDateTime > @LastModified")
+                reportsToSend.Add("KnowledgeBaseTraffic|ViewingIP,DateAndTime", "select k.viewdatetime as 'DateAndTime', t.name as 'ArticleTitle',  searchterm as 'SearchTermUsed', viewip as 'ViewingIP' from KBStats as k, organizations as o, tickets as t where k.organizationid = @OrganizationID and k.organizationid = o.organizationid and k.kbarticleid = t.ticketid AND k.viewdatetime > @LastModified")
+                reportsToSend.Add("ChatRequests|ChatRequestor,DateAndTime", "select cr.datecreated as 'DateAndTime', cc.lastname+', '+cc.firstname as 'ChatRequestor', cc.email as 'RequestorsEmail',cr.message as 'Question', cr.isaccepted as 'ChatAccepted' from chatrequests as cr, organizations as o, chatclients as cc where cr.organizationid = o.organizationid and cc.chatclientid = cr.requestorid and o.organizationid = @OrganizationID AND cr.datecreated > @LastModified")
+                reportsToSend.Add("TicketStatusHistory|User_Who_Changed,Time_Status_Changed", "select t.ticketnumber as Ticket_Number, t.name as Ticket_Name,  ts_old.name as Old_Status, ts_new.name as New_Status, StatusChangeTime as Time_Status_Changed, datediff(mi,'1900-01-01', sh.timeinoldstatus) as Time_In_Old_Status, u.lastname+', '+u.firstname as User_Who_Changed from statushistory as sh left outer join ticketstatuses as ts_old on sh.oldstatus = ts_old.ticketstatusid left outer join ticketstatuses as ts_new on sh.newstatus = ts_new.ticketstatusid,tickets as t, users as u where sh.ticketid = t.ticketid and sh.modifierid = u.userid and sh.organizationid = @OrganizationID AND StatusChangeTime > @LastModified")
+                reportsToSend.Add("PortalLoginHistory|Username,LoginDateTime", "select Username, Success, LoginDateTime, IPAddress from portalloginhistory where OrganizationID = @OrganizationID AND LoginDateTime > @LastModified")
             End Sub
 
             Public Overrides Function PerformSync() As Boolean
                 Dim Success As Boolean = False
+
+                'check to make sure we have all the data we need
+                If CRMLinkRow.SecurityToken Is Nothing OrElse CRMLinkRow.SecurityToken = "" Then
+                    _exception = New IntegrationException("API key not specified.")
+                ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
+                    _exception = New IntegrationException("Username or password not specified.")
+                End If
+
+                If Exception IsNot Nothing Then
+                    Return False
+                End If
 
                 If GenerateTicket() Then
 
@@ -297,8 +308,8 @@ Namespace TeamSupport
                 Log.Write(reportsToSend.Count & " other reports to send to Zoho...")
 
                 For Each reportQuery As KeyValuePair(Of String, String) In reportsToSend
-                    Dim tableName As String = reportQuery.Key.Split(",")(0)
-                    Dim tableKey As String = reportQuery.Key.Split(",")(1)
+                    Dim tableName As String = reportQuery.Key.Split("|")(0)
+                    Dim tableKey As String = reportQuery.Key.Split("|")(1)
 
                     Dim thisCommand As New SqlCommand(reportQuery.Value)
 
@@ -313,13 +324,13 @@ Namespace TeamSupport
                     For Each batch As String In batches2
                         Dim byteData As Byte() = UTF8Encoding.UTF8.GetBytes(batch)
 
-                        If Not ImportZohoCSV(tableName, byteData) Then
+                        If Not ImportZohoCSV(tableName, tableKey, byteData) Then
                             Log.Write("Error sending " & tableName & " to Zoho.")
                             Return False
                         End If
 
                         Log.Write("Deleting datatype row...")
-                        If DeleteZohoTableRow(tableName, tableKey, "'String'") Then
+                        If DeleteZohoTableRow(tableName, tableKey.Split(",")(0), "'String'") Then
                             Log.Write("Row deleted successfully.")
                         Else
                             Log.Write("Error deleting datatype row.")
@@ -403,13 +414,8 @@ Namespace TeamSupport
 
                 Dim postParameters As New Dictionary(Of String, Object)()
 
-                If keyName IsNot Nothing Then
                     postParameters.Add("ZOHO_IMPORT_TYPE", "UPDATEADD")
                     postParameters.Add("ZOHO_MATCHING_COLUMNS", keyName)
-                Else
-                    postParameters.Add("ZOHO_IMPORT_TYPE", "APPEND")
-                End If
-
                 postParameters.Add("ZOHO_AUTO_IDENTIFY", "false")
                 postParameters.Add("ZOHO_ON_IMPORT_ERROR", "ABORT")
                 postParameters.Add("ZOHO_DELIMITER", "0")
@@ -441,10 +447,6 @@ Namespace TeamSupport
                 End Try
 
                 Return success
-            End Function
-
-            Private Function ImportZohoCSV(ByVal tableName As String, ByVal byteData As Byte()) As Boolean
-                Return ImportZohoCSV(tableName, Nothing, byteData)
             End Function
 
             Private Function DeleteZohoTableRow(ByVal tableName As String, ByVal keyName As String, ByVal rowKey As String) As Boolean

@@ -13,10 +13,17 @@ Namespace TeamSupport
             Protected Processor As CrmProcessor
             Protected ReadOnly Type As IntegrationType
             Protected Const Client As String = "Muroc Client"
+            Protected _exception As IntegrationException = Nothing
 
             'tracks global errors so we can not update the sync date if there's a problem
             Public Property SyncError As Boolean
             Public Property ErrorCode As IntegrationError = IntegrationError.None
+            Public ReadOnly Property Exception As IntegrationException
+                Get
+                    Return _exception
+                End Get
+            End Property
+
 
             Protected Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor, ByVal thisType As IntegrationType)
                 CRMLinkRow = crmLinkOrg
@@ -498,7 +505,7 @@ Namespace TeamSupport
                 Return returnStatus
             End Function
 
-            Protected Sub LogSyncResult(ByVal ResultText As String)
+            Public Sub LogSyncResult(ByVal ResultText As String)
                 LogSyncResult(ResultText, CRMLinkRow.OrganizationID, User)
             End Sub
 
@@ -535,6 +542,22 @@ Namespace TeamSupport
             Unknown
             InvalidLogin
         End Enum
+
+        Public Class IntegrationException
+            Inherits Exception
+
+            Public Sub New()
+                MyBase.New()
+            End Sub
+
+            Public Sub New(ByVal message As String)
+                MyBase.New(message)
+            End Sub
+
+            Public Sub New(ByVal message As String, ByVal inner As Exception)
+                MyBase.New(message, inner)
+            End Sub
+        End Class
 
         Public Class CompanyData
             Property City As String
