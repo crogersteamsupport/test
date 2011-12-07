@@ -53,12 +53,25 @@ Namespace TeamSupport
         Public Class ZohoCRM
             Inherits Zoho
 
+            Private Const MaxBatchSize = 200
+
             Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
                 MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.ZohoCRM)
             End Sub
 
             Public Overrides Function PerformSync() As Boolean
                 Dim Success As Boolean = False
+
+                'check to make sure we have all the data we need
+                If CRMLinkRow.SecurityToken Is Nothing OrElse CRMLinkRow.SecurityToken = "" Then
+                    _exception = New IntegrationException("API key not specified.")
+                ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
+                    _exception = New IntegrationException("Username or password not specified.")
+                End If
+
+                If Exception IsNot Nothing Then
+                    Return False
+                End If
 
                 If GenerateTicket() Then
 
@@ -94,50 +107,78 @@ Namespace TeamSupport
             Private Function ParseZohoCompanyXML(ByVal CompaniesToSync As XmlDocument) As List(Of CompanyData)
                 Dim CompanySyncData As List(Of CompanyData) = Nothing
                 Dim tagsToMatch As String() = Array.ConvertAll(CRMLinkRow.TypeFieldMatch.ToLower().Split(","), Function(p As String) p.Trim())
-                Dim allaccounts As XElement = XElement.Load(New XmlNodeReader(CompaniesToSync))
 
-                If allaccounts.Descendants("row").Count > 0 Then
-                    CompanySyncData = New List(Of CompanyData)()
-                End If
+                Dim needToGetMore As Boolean = True
+                Dim returnedRecords As Integer = 0
+                Dim totalRecords As Integer = 1
 
-                For Each company As XElement In allaccounts.Descendants("row")
-                    If Processor.IsStopped Then
-                        Return Nothing
+                While needToGetMore
+                    Dim allaccounts As XElement = XElement.Load(New XmlNodeReader(CompaniesToSync))
+
+                    For Each company As XElement In allaccounts.Descendants("row")
+                        If Processor.IsStopped Then
+                            Return Nothing
+                        End If
+
+                        If CompanySyncData Is Nothing Then
+                            CompanySyncData = New List(Of CompanyData)()
+                        End If
+
+                        Dim thisCustomer As New CompanyData()
+                        Dim add As Boolean = False
+
+                        With thisCustomer
+                            'Zoho's XML is really ugly so we have to parse it in a really ugly way
+                            For Each dataitem As XElement In company.Descendants("FL")
+                                Select Case dataitem.Attribute("val").Value
+                                    Case "ACCOUNTID"
+                                        .AccountID = dataitem.Value
+                                    Case "Account Name"
+                                        .AccountName = dataitem.Value
+                                    Case "Shipping City"
+                                        .City = dataitem.Value
+                                    Case "Shipping Country"
+                                        .Country = dataitem.Value
+                                    Case "Shipping State"
+                                        .State = dataitem.Value
+                                    Case "Shipping Street"
+                                        .Street = dataitem.Value
+                                    Case "Shipping Code"
+                                        .Zip = dataitem.Value
+                                    Case "Phone"
+                                        .Phone = dataitem.Value
+                                    Case "Account Type"
+                                        add = tagsToMatch.Contains(dataitem.Value.ToLower())
+                                End Select
+                            Next
+                        End With
+
+                        If add Then
+                            CompanySyncData.Add(thisCustomer)
+                        End If
+
+                        returnedRecords += 1
+                        totalRecords += 1
+                    Next
+
+                    If returnedRecords = MaxBatchSize Then
+                        Log.Write("getting next set of records..." & totalRecords.ToString())
+
+                        Try
+                            CompaniesToSync = GetZohoCompanyXML(totalRecords, totalRecords + MaxBatchSize - 1)
+                        Catch ex As Exception
+                            Log.Write("Error getting next records..." & ex.Message)
+                        End Try
+
+                        If XElement.Load(New XmlNodeReader(CompaniesToSync)).Descendants("row").Count > 0 Then
+                            returnedRecords = 0
+                        Else
+                            needToGetMore = False
+                        End If
+                    Else
+                        needToGetMore = False
                     End If
-
-                    Dim thisCustomer As New CompanyData()
-                    Dim add As Boolean = False
-
-                    With thisCustomer
-                        'Zoho's XML is really ugly so we have to parse it in a really ugly way
-                        For Each dataitem As XElement In company.Descendants("FL")
-                            Select Case dataitem.Attribute("val").Value
-                                Case "ACCOUNTID"
-                                    .AccountID = dataitem.Value
-                                Case "Account Name"
-                                    .AccountName = dataitem.Value
-                                Case "Shipping City"
-                                    .City = dataitem.Value
-                                Case "Shipping Country"
-                                    .Country = dataitem.Value
-                                Case "Shipping State"
-                                    .State = dataitem.Value
-                                Case "Shipping Street"
-                                    .Street = dataitem.Value
-                                Case "Shipping Code"
-                                    .Zip = dataitem.Value
-                                Case "Phone"
-                                    .Phone = dataitem.Value
-                                Case "Account Type"
-                                    add = tagsToMatch.Contains(dataitem.Value.ToLower())
-                            End Select
-                        Next
-                    End With
-
-                    If add Then
-                        CompanySyncData.Add(thisCustomer)
-                    End If
-                Next
+                End While
 
                 Return CompanySyncData
             End Function
@@ -188,7 +229,11 @@ Namespace TeamSupport
             End Function
 
             Private Function GetZohoCompanyXML() As XmlDocument
-                Dim ZohoPath As String = "Accounts/getRecords?newFormat=1&fromIndex=1&toIndex=200"
+                Return GetZohoCompanyXML(1, 200)
+            End Function
+
+            Private Function GetZohoCompanyXML(ByVal from As Short, ByVal _to As Short) As XmlDocument
+                Dim ZohoPath As String = "Accounts/getRecords?newFormat=1&fromIndex=" & from.ToString() & "&toIndex=" & _to.ToString()
 
                 If CRMLinkRow.LastLink IsNot Nothing Then
                     ZohoPath &= "&lastModifiedTime=" & CRMLinkRow.LastLink.Value.AddMinutes(-30).ToString("s").Replace("T", " ")
