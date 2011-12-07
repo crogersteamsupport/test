@@ -359,7 +359,7 @@ Namespace TeamSupport
                     Dim thisCommand As New SqlCommand(reportQuery.Value)
 
                     thisCommand.Parameters.AddWithValue("@OrganizationID", CRMLinkRow.OrganizationID)
-                    thisCommand.Parameters.AddWithValue("@LastModified", If(CRMLinkRow.LastLink.HasValue, CRMLinkRow.LastLink.Value.AddMinutes(-1), New DateTime(1900, 1, 1)))
+                    thisCommand.Parameters.AddWithValue("@LastModified", If(CRMLinkRow.LastLink.HasValue, CRMLinkRow.LastLink.Value.AddMinutes(-15), New DateTime(1900, 1, 1)))
 
                     Dim thisTable As DataTable = SqlExecutor.ExecuteQuery(User, thisCommand)
                     Dim batches2 As List(Of String) = GetCSVBatches(thisTable, ticketsViewBatchSize)
@@ -459,8 +459,14 @@ Namespace TeamSupport
 
                 Dim postParameters As New Dictionary(Of String, Object)()
 
+                'only bother updating if it is an update... if it is a new sync, just add
+                If CRMLinkRow.LastLink.HasValue Then
                     postParameters.Add("ZOHO_IMPORT_TYPE", "UPDATEADD")
                     postParameters.Add("ZOHO_MATCHING_COLUMNS", keyName)
+                Else
+                    postParameters.Add("ZOHO_IMPORT_TYPE", "APPEND")
+                End If
+
                 postParameters.Add("ZOHO_AUTO_IDENTIFY", "false")
                 postParameters.Add("ZOHO_ON_IMPORT_ERROR", "ABORT")
                 postParameters.Add("ZOHO_DELIMITER", "0")
