@@ -484,7 +484,7 @@ Namespace TeamSupport
                 Catch ex As WebException
                     Log.Write("Error contacting " & zohoUri.ToString() & ": " & ex.Message)
 
-                    If ex.Response.GetResponseStream IsNot Nothing Then
+                    If ex.Response IsNot Nothing Then
                         Log.Write(New StreamReader(ex.Response.GetResponseStream()).ReadToEnd())
                     End If
 
