@@ -281,6 +281,10 @@ Namespace TeamSupport
                 reportsToSend.Add("ChatRequests|ChatRequestor,DateAndTime", "select cr.datecreated as 'DateAndTime', cc.lastname+', '+cc.firstname as 'ChatRequestor', cc.email as 'RequestorsEmail',cr.message as 'Question', cr.isaccepted as 'ChatAccepted' from chatrequests as cr, organizations as o, chatclients as cc where cr.organizationid = o.organizationid and cc.chatclientid = cr.requestorid and o.organizationid = @OrganizationID AND cr.datecreated > @LastModified")
                 reportsToSend.Add("TicketStatusHistory|User_Who_Changed,Time_Status_Changed", "select t.ticketnumber as Ticket_Number, t.name as Ticket_Name,  ts_old.name as Old_Status, ts_new.name as New_Status, StatusChangeTime as Time_Status_Changed, datediff(mi,'1900-01-01', sh.timeinoldstatus) as Time_In_Old_Status, u.lastname+', '+u.firstname as User_Who_Changed from statushistory as sh left outer join ticketstatuses as ts_old on sh.oldstatus = ts_old.ticketstatusid left outer join ticketstatuses as ts_new on sh.newstatus = ts_new.ticketstatusid,tickets as t, users as u where sh.ticketid = t.ticketid and sh.modifierid = u.userid and sh.organizationid = @OrganizationID AND StatusChangeTime > @LastModified")
                 reportsToSend.Add("PortalLoginHistory|Username,LoginDateTime", "select Username, Success, LoginDateTime, IPAddress from portalloginhistory where OrganizationID = @OrganizationID AND LoginDateTime > @LastModified")
+
+                If CRMLinkRow.TypeFieldMatch IsNot Nothing AndAlso CRMLinkRow.TypeFieldMatch <> "" Then
+                    databaseName = CRMLinkRow.TypeFieldMatch
+                End If
             End Sub
 
             Public Overrides Function PerformSync() As Boolean
