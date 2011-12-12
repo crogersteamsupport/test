@@ -302,6 +302,7 @@ Namespace TeamSupport
                 End If
 
                 If GenerateTicket() Then
+                    Log.Write("Login successful. Sending report data...")
 
                     Try
                         Success = SendReportData()
@@ -325,38 +326,50 @@ Namespace TeamSupport
                 'load data from ticketsview into a csv
                 Dim tix As New TicketsView(User)
                 tix.LoadForZoho(CRMLinkRow.OrganizationID, CRMLinkRow.LastLink)
-                Dim ticketsData As DataTable = tix.Table.Copy()
 
                 Dim ticketsViewBatchSize As Integer = thisSettings.ReadInt("ZohoReportsBatchSize", 50000)
 
-                Dim batches As List(Of String) = GetCSVBatches(ticketsData, ticketsViewBatchSize)
-                Log.Write("Found " & batches.Count & " ticketsView batches to send to Zoho.")
+                Dim batches As List(Of String) = GetCSVBatches(tix.Table, ticketsViewBatchSize)
 
-                'now that we have data, send it to zoho
-                For Each batch As String In batches
-                    Dim byteData As Byte() = UTF8Encoding.UTF8.GetBytes(batch)
+                If batches IsNot Nothing Then
+                    Log.Write("Found " & batches.Count & " ticketsView batches to send to Zoho.")
 
-                    If Not ImportZohoCSV("Tickets", "TicketNumber", byteData) Then
-                        Log.Write("Error sending Tickets to Zoho.")
-                        Return False
-                    End If
+                    'now that we have data, send it to zoho
+                    For Each batch As String In batches
+                        If Processor.IsStopped Then
+                            Return False
+                        End If
 
-                    'we have to delete the dummy row we insert with each import
-                    Log.Write("Deleting datatype row...")
-                    If DeleteZohoTableRow("Tickets", "TicketNumber", "-1") Then
-                        Log.Write("row -1 deleted successfully")
-                    Else
-                        Log.Write("Error deleting dummy row.")
-                        Return False
-                    End If
-                Next
+                        Dim byteData As Byte() = UTF8Encoding.UTF8.GetBytes(batch)
 
-                Log.Write("TicketsView batches sent successfully.")
+                        If Not ImportZohoCSV("Tickets", "TicketNumber", byteData) Then
+                            Log.Write("Error sending Tickets to Zoho.")
+                            Return False
+                        End If
+
+                        'we have to delete the dummy row we insert with each import
+                        Log.Write("Deleting datatype row...")
+                        If DeleteZohoTableRow("Tickets", "TicketNumber", "-1") Then
+                            Log.Write("row -1 deleted successfully")
+                        Else
+                            Log.Write("Error deleting dummy row.")
+                            Return False
+                        End If
+                    Next
+
+                    Log.Write("TicketsView batches sent successfully.")
+                Else
+                    Log.Write("no TicketsView data to send.")
+                End If
 
                 'get batches for other reports
                 Log.Write(reportsToSend.Count & " other reports to send to Zoho...")
 
                 For Each reportQuery As KeyValuePair(Of String, String) In reportsToSend
+                    If Processor.IsStopped Then
+                        Return False
+                    End If
+
                     Dim tableName As String = reportQuery.Key.Split("|")(0)
                     Dim tableKey As String = reportQuery.Key.Split("|")(1)
 
@@ -368,24 +381,32 @@ Namespace TeamSupport
                     Dim thisTable As DataTable = SqlExecutor.ExecuteQuery(User, thisCommand)
                     Dim batches2 As List(Of String) = GetCSVBatches(thisTable, ticketsViewBatchSize)
 
-                    Log.Write("Found " & batches2.Count & " " & tableName & " batches to send to Zoho...")
+                    If batches2 IsNot Nothing Then
+                        Log.Write("Found " & batches2.Count & " " & tableName & " batches to send to Zoho...")
 
-                    For Each batch As String In batches2
-                        Dim byteData As Byte() = UTF8Encoding.UTF8.GetBytes(batch)
+                        For Each batch As String In batches2
+                            If Processor.IsStopped Then
+                                Return False
+                            End If
 
-                        If Not ImportZohoCSV(tableName, tableKey, byteData) Then
-                            Log.Write("Error sending " & tableName & " to Zoho.")
-                            Return False
-                        End If
+                            Dim byteData As Byte() = UTF8Encoding.UTF8.GetBytes(batch)
 
-                        Log.Write("Deleting datatype row...")
-                        If DeleteZohoTableRow(tableName, tableKey.Split(",")(0), "'String'") Then
-                            Log.Write("Row deleted successfully.")
-                        Else
-                            Log.Write("Error deleting datatype row.")
-                            Return False
-                        End If
-                    Next
+                            If Not ImportZohoCSV(tableName, tableKey, byteData) Then
+                                Log.Write("Error sending " & tableName & " to Zoho.")
+                                Return False
+                            End If
+
+                            Log.Write("Deleting datatype row...")
+                            If DeleteZohoTableRow(tableName, tableKey.Split(",")(0), "'String'") Then
+                                Log.Write("Row deleted successfully.")
+                            Else
+                                Log.Write("Error deleting datatype row.")
+                                Return False
+                            End If
+                        Next
+                    Else
+                        Log.Write("No " & tableName & " data to send.")
+                    End If
 
                 Next
 
@@ -423,6 +444,9 @@ Namespace TeamSupport
                 Next
 
                 For Each thisRow As DataRow In thisTable.Rows
+                    If Processor.IsStopped Then
+                        Return Nothing
+                    End If
 
                     If csvContent Is Nothing Then
                         csvContent = New StringBuilder(csvHeader.ToString())
