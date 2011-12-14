@@ -160,7 +160,7 @@ TicketGrid = function () {
     e.preventDefault();
     e.stopPropagation();
     var s = JSON.stringify(ticketLoadFilter);
-    window.open('dc/1078/ticketexport?filter=' + encodeURIComponent(s));
+    window.open('../../../dc/1078/ticketexport?filter=' + encodeURIComponent(s));
   });
 
   addToolbarButton('btnHistory', 'ts-icon-history', 'History', function (e) {

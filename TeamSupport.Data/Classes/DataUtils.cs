@@ -1548,6 +1548,14 @@ namespace TeamSupport.Data
       return result;
     }
 
+    public static string IntArrayToCommaString(int[] list)
+    {
+      return string.Join(",", list.Select(x => x.ToString()).ToArray());
+    }
 
+    public static int[] StringArrayToIntArray(string[] list)
+    {
+      return list.Select(x => int.Parse(x)).ToArray();
+    }
   }
 }

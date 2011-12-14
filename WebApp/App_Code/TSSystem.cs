@@ -119,6 +119,11 @@ namespace TSWebServices
 
         items.Add(new TsMenuItem("kb", "mniKB", "Knowledge Base", "vcr/140/images/nav/16/knowledge.png", string.Format(data, "Frames/KnowledgeBase.aspx", "vcr/140/PaneInfo/Knowledge.html")));
 
+        if (org.UseForums == true)
+        {
+          items.Add(new TsMenuItem("forum", "mniForum", "Community", "vcr/140/images/nav/16/forum.png", string.Format(data, "vcr/140/Pages/Tickets.html", "vcr/140/PaneInfo/Forum.html")));
+        }
+
         if (org.ProductType != ProductType.Express)
         {
           int? articleID = org.DefaultWikiArticleID;
@@ -633,7 +638,13 @@ namespace TSWebServices
     public object data { get; set; }
   }
 
-   
+  [DataContract]
+  public class IDList
+  {
+    public IDList() { }
+    [DataMember]
+    public List<int> List { get; set; }
+  }
   [DataContract]
   public class Culture
   {

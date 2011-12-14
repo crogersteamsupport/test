@@ -57,14 +57,6 @@
           <td class="inputColTD">
             <asp:CheckBox ID="cbIsSystemAdmin" runat="server" Text="" CssClass="" />
           </td>
-          <td class="labelColTD" style="display:none;">
-            Financial Admin:
-          </td>
-          <td class="inputColTD" style="display:none;">
-            <asp:CheckBox ID="cbIsFinanceAdmin" runat="server" Text="" CssClass="" />
-          </td>
-        </tr>
-        <tr>
           <td class="labelColTD" id="tdChatLabel" runat="server">
             Chat User:
           </td>
@@ -88,11 +80,19 @@
         </tr>
         <tr>
           <td class="labelColTD" id="td1" runat="server">
-            Automatically Subscribe to New Tickets:
+            Automatically subscribe to new tickets I post:
           </td>
           <td class="inputColTD">
             <asp:CheckBox ID="cbSubscribe" runat="server" Text=""/>
           </td>
+          <td class="labelColTD">
+           Automatically subscribe to tickets when I post an action:
+          </td>
+          <td class="inputColTD">
+            <asp:CheckBox ID="cbSubscribeAction" runat="server" Text=""/>
+          </td>
+        </tr>
+        <tr>
           <td class="labelColTD">
            Do not subscribe to tickets when cc'd on email:
           </td>

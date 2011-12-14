@@ -72,6 +72,8 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? SlaViolationDate { get; set; }
     [DataMember] public DateTime? SlaWarningDate { get; set; }
     [DataMember] public string TicketSource { get; set; }
+    [DataMember] public int? ForumCategory { get; set; }
+    [DataMember] public string CategoryName { get; set; }
           
   }
   
@@ -80,6 +82,8 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
+      result.CategoryName = this.CategoryName;
+      result.ForumCategory = this.ForumCategory;
       result.TicketSource = this.TicketSource;
       result.NeedsIndexing = this.NeedsIndexing;
       result.Customers = this.Customers;

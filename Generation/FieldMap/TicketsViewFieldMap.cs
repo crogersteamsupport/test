@@ -72,6 +72,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SlaViolationDate", "SlaViolationDate", false, false, false);
       _fieldMap.AddMap("SlaWarningDate", "SlaWarningDate", false, false, false);
       _fieldMap.AddMap("TicketSource", "TicketSource", false, false, false);
+      _fieldMap.AddMap("ForumCategory", "ForumCategory", false, false, false);
+      _fieldMap.AddMap("CategoryName", "CategoryName", false, false, false);
             
     }
   }

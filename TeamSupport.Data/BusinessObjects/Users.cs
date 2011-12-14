@@ -495,6 +495,8 @@ AND u.UserID IN
 LEFT JOIN UserTickets ut ON ut.UserID = u.UserID
 LEFT JOIN Organizations o ON o.OrganizationID = u.OrganizationID
 WHERE ut.TicketID = @TicketID
+AND u.MarkDeleted = 0
+AND o.IsActive = 1
 AND (o.HasPortalAccess = 0 OR u.IsPortalUser = 0)";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@TicketID", ticketID);
@@ -511,6 +513,8 @@ LEFT JOIN UserTickets ut ON ut.UserID = u.UserID
 LEFT JOIN Organizations o ON o.OrganizationID = u.OrganizationID
 WHERE ut.TicketID = @TicketID
 AND o.HasPortalAccess = 1
+AND u.MarkDeleted = 0
+AND o.IsActive = 1
 AND u.IsPortalUser = 1";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@TicketID", ticketID);

@@ -73,9 +73,9 @@ $(document).ready(function () {
     });
   }
 
-  var fileUpload = $('#file-upload').fileUpload({
+  var fileUpload = $('#file-upload').fileupload({
     namespace: 'product_versions',
-    onSend: function (event, files, index, xhr, handler) {
+    send: function (event, files, index, xhr, handler) {
       if (!xhr.upload) {
         $('#divProgressBar').progressbar({ value: 50 });
       }

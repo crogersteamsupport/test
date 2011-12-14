@@ -658,7 +658,8 @@ AS
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
-    [IsClassicView]
+    [IsClassicView],
+    [SubscribeToNewActions]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -707,6 +708,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
+  @SubscribeToNewActions bit,
   @Identity int OUT
 )
 AS
@@ -750,7 +752,8 @@ AS
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
-    [IsClassicView])
+    [IsClassicView],
+    [SubscribeToNewActions])
   VALUES (
     @Email,
     @FirstName,
@@ -789,7 +792,8 @@ AS
     @ModifierID,
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
-    @IsClassicView)
+    @IsClassicView,
+    @SubscribeToNewActions)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -836,7 +840,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
-  @IsClassicView bit
+  @IsClassicView bit,
+  @SubscribeToNewActions bit
 )
 AS
   SET NOCOUNT OFF;
@@ -877,7 +882,8 @@ AS
     [ModifierID] = @ModifierID,
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
-    [IsClassicView] = @IsClassicView
+    [IsClassicView] = @IsClassicView,
+    [SubscribeToNewActions] = @SubscribeToNewActions
   WHERE ([UserID] = @UserID)
 GO
 
@@ -1682,7 +1688,8 @@ AS
     [EvalProcess],
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
-    [IsPublicArticles]
+    [IsPublicArticles],
+    [UseForums]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -1754,6 +1761,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
+  @UseForums bit,
   @Identity int OUT
 )
 AS
@@ -1820,7 +1828,8 @@ AS
     [EvalProcess],
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
-    [IsPublicArticles])
+    [IsPublicArticles],
+    [UseForums])
   VALUES (
     @Name,
     @Description,
@@ -1882,7 +1891,8 @@ AS
     @EvalProcess,
     @AddAdditionalContacts,
     @ChangeStatusIfClosed,
-    @IsPublicArticles)
+    @IsPublicArticles,
+    @UseForums)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1952,7 +1962,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
-  @IsPublicArticles bit
+  @IsPublicArticles bit,
+  @UseForums bit
 )
 AS
   SET NOCOUNT OFF;
@@ -2016,7 +2027,8 @@ AS
     [EvalProcess] = @EvalProcess,
     [AddAdditionalContacts] = @AddAdditionalContacts,
     [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
-    [IsPublicArticles] = @IsPublicArticles
+    [IsPublicArticles] = @IsPublicArticles,
+    [UseForums] = @UseForums
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -3929,7 +3941,9 @@ AS
     [NeedsIndexing],
     [SlaViolationDate],
     [SlaWarningDate],
-    [TicketSource]
+    [TicketSource],
+    [ForumCategory],
+    [CategoryName]
   FROM [dbo].[TicketsView]
   WHERE ([TicketID] = @TicketID)
 GO
@@ -12609,7 +12623,8 @@ AS
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
-    [IsClassicView]
+    [IsClassicView],
+    [SubscribeToNewActions]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -12658,6 +12673,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
+  @SubscribeToNewActions bit,
   @Identity int OUT
 )
 AS
@@ -12701,7 +12717,8 @@ AS
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
-    [IsClassicView])
+    [IsClassicView],
+    [SubscribeToNewActions])
   VALUES (
     @Email,
     @FirstName,
@@ -12740,7 +12757,8 @@ AS
     @ModifierID,
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
-    @IsClassicView)
+    @IsClassicView,
+    @SubscribeToNewActions)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -12787,7 +12805,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
-  @IsClassicView bit
+  @IsClassicView bit,
+  @SubscribeToNewActions bit
 )
 AS
   SET NOCOUNT OFF;
@@ -12828,7 +12847,8 @@ AS
     [ModifierID] = @ModifierID,
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
-    [IsClassicView] = @IsClassicView
+    [IsClassicView] = @IsClassicView,
+    [SubscribeToNewActions] = @SubscribeToNewActions
   WHERE ([UserID] = @UserID)
 GO
 
@@ -13633,7 +13653,8 @@ AS
     [EvalProcess],
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
-    [IsPublicArticles]
+    [IsPublicArticles],
+    [UseForums]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -13705,6 +13726,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
+  @UseForums bit,
   @Identity int OUT
 )
 AS
@@ -13771,7 +13793,8 @@ AS
     [EvalProcess],
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
-    [IsPublicArticles])
+    [IsPublicArticles],
+    [UseForums])
   VALUES (
     @Name,
     @Description,
@@ -13833,7 +13856,8 @@ AS
     @EvalProcess,
     @AddAdditionalContacts,
     @ChangeStatusIfClosed,
-    @IsPublicArticles)
+    @IsPublicArticles,
+    @UseForums)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -13903,7 +13927,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
-  @IsPublicArticles bit
+  @IsPublicArticles bit,
+  @UseForums bit
 )
 AS
   SET NOCOUNT OFF;
@@ -13967,7 +13992,8 @@ AS
     [EvalProcess] = @EvalProcess,
     [AddAdditionalContacts] = @AddAdditionalContacts,
     [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
-    [IsPublicArticles] = @IsPublicArticles
+    [IsPublicArticles] = @IsPublicArticles,
+    [UseForums] = @UseForums
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -15880,7 +15906,9 @@ AS
     [NeedsIndexing],
     [SlaViolationDate],
     [SlaWarningDate],
-    [TicketSource]
+    [TicketSource],
+    [ForumCategory],
+    [CategoryName]
   FROM [dbo].[TicketsView]
   WHERE ([TicketID] = @TicketID)
 GO
@@ -24560,7 +24588,8 @@ AS
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
-    [IsClassicView]
+    [IsClassicView],
+    [SubscribeToNewActions]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -24609,6 +24638,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
+  @SubscribeToNewActions bit,
   @Identity int OUT
 )
 AS
@@ -24652,7 +24682,8 @@ AS
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
-    [IsClassicView])
+    [IsClassicView],
+    [SubscribeToNewActions])
   VALUES (
     @Email,
     @FirstName,
@@ -24691,7 +24722,8 @@ AS
     @ModifierID,
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
-    @IsClassicView)
+    @IsClassicView,
+    @SubscribeToNewActions)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -24738,7 +24770,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
-  @IsClassicView bit
+  @IsClassicView bit,
+  @SubscribeToNewActions bit
 )
 AS
   SET NOCOUNT OFF;
@@ -24779,7 +24812,8 @@ AS
     [ModifierID] = @ModifierID,
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
-    [IsClassicView] = @IsClassicView
+    [IsClassicView] = @IsClassicView,
+    [SubscribeToNewActions] = @SubscribeToNewActions
   WHERE ([UserID] = @UserID)
 GO
 
@@ -25584,7 +25618,8 @@ AS
     [EvalProcess],
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
-    [IsPublicArticles]
+    [IsPublicArticles],
+    [UseForums]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -25656,6 +25691,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
+  @UseForums bit,
   @Identity int OUT
 )
 AS
@@ -25722,7 +25758,8 @@ AS
     [EvalProcess],
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
-    [IsPublicArticles])
+    [IsPublicArticles],
+    [UseForums])
   VALUES (
     @Name,
     @Description,
@@ -25784,7 +25821,8 @@ AS
     @EvalProcess,
     @AddAdditionalContacts,
     @ChangeStatusIfClosed,
-    @IsPublicArticles)
+    @IsPublicArticles,
+    @UseForums)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -25854,7 +25892,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
-  @IsPublicArticles bit
+  @IsPublicArticles bit,
+  @UseForums bit
 )
 AS
   SET NOCOUNT OFF;
@@ -25918,7 +25957,8 @@ AS
     [EvalProcess] = @EvalProcess,
     [AddAdditionalContacts] = @AddAdditionalContacts,
     [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
-    [IsPublicArticles] = @IsPublicArticles
+    [IsPublicArticles] = @IsPublicArticles,
+    [UseForums] = @UseForums
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -27831,7 +27871,9 @@ AS
     [NeedsIndexing],
     [SlaViolationDate],
     [SlaWarningDate],
-    [TicketSource]
+    [TicketSource],
+    [ForumCategory],
+    [CategoryName]
   FROM [dbo].[TicketsView]
   WHERE ([TicketID] = @TicketID)
 GO
@@ -36511,7 +36553,8 @@ AS
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
-    [IsClassicView]
+    [IsClassicView],
+    [SubscribeToNewActions]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -36560,6 +36603,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
+  @SubscribeToNewActions bit,
   @Identity int OUT
 )
 AS
@@ -36603,7 +36647,8 @@ AS
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
-    [IsClassicView])
+    [IsClassicView],
+    [SubscribeToNewActions])
   VALUES (
     @Email,
     @FirstName,
@@ -36642,7 +36687,8 @@ AS
     @ModifierID,
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
-    @IsClassicView)
+    @IsClassicView,
+    @SubscribeToNewActions)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -36689,7 +36735,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
-  @IsClassicView bit
+  @IsClassicView bit,
+  @SubscribeToNewActions bit
 )
 AS
   SET NOCOUNT OFF;
@@ -36730,7 +36777,8 @@ AS
     [ModifierID] = @ModifierID,
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
-    [IsClassicView] = @IsClassicView
+    [IsClassicView] = @IsClassicView,
+    [SubscribeToNewActions] = @SubscribeToNewActions
   WHERE ([UserID] = @UserID)
 GO
 
@@ -37535,7 +37583,8 @@ AS
     [EvalProcess],
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
-    [IsPublicArticles]
+    [IsPublicArticles],
+    [UseForums]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -37607,6 +37656,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
+  @UseForums bit,
   @Identity int OUT
 )
 AS
@@ -37673,7 +37723,8 @@ AS
     [EvalProcess],
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
-    [IsPublicArticles])
+    [IsPublicArticles],
+    [UseForums])
   VALUES (
     @Name,
     @Description,
@@ -37735,7 +37786,8 @@ AS
     @EvalProcess,
     @AddAdditionalContacts,
     @ChangeStatusIfClosed,
-    @IsPublicArticles)
+    @IsPublicArticles,
+    @UseForums)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -37805,7 +37857,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
-  @IsPublicArticles bit
+  @IsPublicArticles bit,
+  @UseForums bit
 )
 AS
   SET NOCOUNT OFF;
@@ -37869,7 +37922,8 @@ AS
     [EvalProcess] = @EvalProcess,
     [AddAdditionalContacts] = @AddAdditionalContacts,
     [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
-    [IsPublicArticles] = @IsPublicArticles
+    [IsPublicArticles] = @IsPublicArticles,
+    [UseForums] = @UseForums
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -39782,7 +39836,9 @@ AS
     [NeedsIndexing],
     [SlaViolationDate],
     [SlaWarningDate],
-    [TicketSource]
+    [TicketSource],
+    [ForumCategory],
+    [CategoryName]
   FROM [dbo].[TicketsView]
   WHERE ([TicketID] = @TicketID)
 GO
@@ -48462,7 +48518,8 @@ AS
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
-    [IsClassicView]
+    [IsClassicView],
+    [SubscribeToNewActions]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -48511,6 +48568,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
+  @SubscribeToNewActions bit,
   @Identity int OUT
 )
 AS
@@ -48554,7 +48612,8 @@ AS
     [ModifierID],
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
-    [IsClassicView])
+    [IsClassicView],
+    [SubscribeToNewActions])
   VALUES (
     @Email,
     @FirstName,
@@ -48593,7 +48652,8 @@ AS
     @ModifierID,
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
-    @IsClassicView)
+    @IsClassicView,
+    @SubscribeToNewActions)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -48640,7 +48700,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ModifierID int,
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
-  @IsClassicView bit
+  @IsClassicView bit,
+  @SubscribeToNewActions bit
 )
 AS
   SET NOCOUNT OFF;
@@ -48681,7 +48742,8 @@ AS
     [ModifierID] = @ModifierID,
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
-    [IsClassicView] = @IsClassicView
+    [IsClassicView] = @IsClassicView,
+    [SubscribeToNewActions] = @SubscribeToNewActions
   WHERE ([UserID] = @UserID)
 GO
 
@@ -49486,7 +49548,8 @@ AS
     [EvalProcess],
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
-    [IsPublicArticles]
+    [IsPublicArticles],
+    [UseForums]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -49558,6 +49621,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
+  @UseForums bit,
   @Identity int OUT
 )
 AS
@@ -49624,7 +49688,8 @@ AS
     [EvalProcess],
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
-    [IsPublicArticles])
+    [IsPublicArticles],
+    [UseForums])
   VALUES (
     @Name,
     @Description,
@@ -49686,7 +49751,8 @@ AS
     @EvalProcess,
     @AddAdditionalContacts,
     @ChangeStatusIfClosed,
-    @IsPublicArticles)
+    @IsPublicArticles,
+    @UseForums)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -49756,7 +49822,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @EvalProcess varchar(100),
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
-  @IsPublicArticles bit
+  @IsPublicArticles bit,
+  @UseForums bit
 )
 AS
   SET NOCOUNT OFF;
@@ -49820,7 +49887,8 @@ AS
     [EvalProcess] = @EvalProcess,
     [AddAdditionalContacts] = @AddAdditionalContacts,
     [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
-    [IsPublicArticles] = @IsPublicArticles
+    [IsPublicArticles] = @IsPublicArticles,
+    [UseForums] = @UseForums
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -51733,7 +51801,9 @@ AS
     [NeedsIndexing],
     [SlaViolationDate],
     [SlaWarningDate],
-    [TicketSource]
+    [TicketSource],
+    [ForumCategory],
+    [CategoryName]
   FROM [dbo].[TicketsView]
   WHERE ([TicketID] = @TicketID)
 GO

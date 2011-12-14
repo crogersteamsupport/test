@@ -1247,11 +1247,13 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public int[] GetCustomerProductIDs(int[] customerIDs)
+    public int[] GetCustomerProductIDs(string customerIDs)
     {
+      int[] list = Newtonsoft.Json.JsonConvert.DeserializeObject<int[]>(customerIDs);
+      if (list.Length < 1) return null;
 
       Products products = new Products(TSAuthentication.GetLoginUser());
-      products.LoadByCustomerIDs(customerIDs);
+      products.LoadByCustomerIDs(list);
 
       if (products.IsEmpty) return null;
       List<int> productIDs = new List<int>();
@@ -1419,6 +1421,14 @@ namespace TSWebServices
         customers.Add(customer);
       }
       return customers.ToArray();
+    }
+
+    [WebMethod]
+    public UserInfo[] GetSubscribers(int ticketID)
+    {
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+      return GetSubscribers(ticket);
     }
 
     private UserInfo[] GetSubscribers(TicketsViewItem ticket)

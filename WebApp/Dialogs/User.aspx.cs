@@ -68,11 +68,11 @@ public partial class Dialogs_User : BaseDialogPage
       textFirstName.Text = "";
       textLastName.Text = "";
       cbActive.Checked = true;
-      cbIsFinanceAdmin.Checked = false;
       cbIsSystemAdmin.Checked = false;
       cbChat.Checked = false;
       cbEmailNotify.Checked = true;
       cbSubscribe.Checked = false;
+      cbSubscribeAction.Checked = false;
       cbReceiveGroup.Checked = false;
       cbNoAutoSubscribe.Checked = false;
       Page.Title = "New User";
@@ -137,10 +137,10 @@ public partial class Dialogs_User : BaseDialogPage
       textTitle.Text = users[0].Title;
       cbActive.Checked = users[0].IsActive;
       cbIsSystemAdmin.Checked = users[0].IsSystemAdmin;
-      cbIsFinanceAdmin.Checked = users[0].IsFinanceAdmin;
       cbChat.Checked = users[0].IsChatUser;
       cbEmailNotify.Checked = users[0].ReceiveTicketNotifications;
       cbSubscribe.Checked = users[0].SubscribeToNewTickets;
+      cbSubscribeAction.Checked = users[0].SubscribeToNewActions;
       cbReceiveGroup.Checked = users[0].ReceiveAllGroupNotifications;
       cbNoAutoSubscribe.Checked = users[0].DoNotAutoSubscribe;
 
@@ -254,6 +254,7 @@ public partial class Dialogs_User : BaseDialogPage
     user.CultureName = cmbDateFormat.SelectedValue;
     user.ReceiveTicketNotifications = cbEmailNotify.Checked;
     user.SubscribeToNewTickets = cbSubscribe.Checked;
+    user.SubscribeToNewActions = cbSubscribeAction.Checked;
     user.ReceiveAllGroupNotifications = cbReceiveGroup.Checked;
     user.DoNotAutoSubscribe = cbNoAutoSubscribe.Checked;
     UserSession.LoginUser.TimeZoneInfo = null;
@@ -262,7 +263,6 @@ public partial class Dialogs_User : BaseDialogPage
     {
       user.IsActive = cbActive.Checked;
       user.IsSystemAdmin = cbIsSystemAdmin.Checked;
-      user.IsFinanceAdmin = cbIsFinanceAdmin.Checked;
       user.IsChatUser = cbChat.Checked;
     }
 

@@ -22,6 +22,7 @@ $(document).ready(function () {
   }
   _lastTicketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
 
+  $('.newticket-status').combobox();
 
   $('.newticket-type').combobox({
     selected: function (e, ui) {
@@ -103,16 +104,22 @@ $(document).ready(function () {
 
 
 
+
   function setTicketStatus() {
     var statuses = top.Ts.Cache.getTicketStatuses();
     var ticketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
     $('.newticket-status').empty();
+    var flag = false;
     for (var i = 0; i < statuses.length; i++) {
       if (statuses[i].TicketTypeID == ticketTypeID) {
         $('<option>').attr('value', statuses[i].TicketStatusID).text(statuses[i].Name).data('o', statuses[i]).appendTo('.newticket-status');
+        if (flag == false) {
+          $('.newticket-status').combobox('setValue', statuses[i].TicketStatusID);
+          flag = true;
+        }
+
       }
     }
-    $('.newticket-status').combobox();
   }
 
   var severities = top.Ts.Cache.getTicketSeverities();
@@ -135,23 +142,55 @@ $(document).ready(function () {
   addUnassignedComboItem($('.newticket-group').combobox());
 
   function loadProducts(doAll) {
+    if (doAll != undefined && doAll == true) {
+      var products = top.Ts.Cache.getProducts();
+      $('.newticket-product option').remove();
+      for (var i = 0; i < products.length; i++) {
+        $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('.newticket-product');
+      }
+      $('<option>').attr('value', -1).text('Unassigned').data('o', null).prependTo('.newticket-product');
+      return;
+    }
     top.Ts.Settings.Organization.read('ShowOnlyCustomerProducts', false, function (showOnlyCustomers) {
       if (showOnlyCustomers == "True") {
-        top.Ts.Services.Tickets.GetCustomerProductIDs(organizationIDs, function (productIDs) { 
-          
-          
+
+        var organizationIDs = new Array();
+        $('.ticket-customer-company').each(function () {
+          organizationIDs[organizationIDs.length] = $(this).data('data').OrganizationID;
+        });
+        $('.ticket-customer-contact').each(function () {
+          organizationIDs[organizationIDs.length] = $(this).data('data').OrganizationID;
+        });
+        if (organizationIDs.length < 1) {
+          loadProducts(true);
+          return;
+        }
+        top.Ts.Services.Tickets.GetCustomerProductIDs(top.JSON.stringify(organizationIDs), function (productIDs) {
+
+          if (!productIDs || productIDs == null || productIDs.length < 1) {
+            loadProducts(true);
+          }
+          else {
+            var products = top.Ts.Cache.getProducts();
+            $('.newticket-product option').remove();
+            for (var i = 0; i < products.length; i++) {
+              for (var j = 0; j < productIDs.length; j++) {
+                if (productIDs[j] == products[i].ProductID) {
+                  var option = $('<option>').attr('value', products[i].ProductID).text(products[i].Name).appendTo('.newticket-product').data('o', products[i]);
+                }
+              }
+            }
+
+            $('<option>').attr('value', -1).text('Unassigned').data('o', null).prependTo('.newticket-product');
+          }
         });
       }
     });
   }
 
-  var products = top.Ts.Cache.getProducts();
-  for (var i = 0; i < products.length; i++) {
-    $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('.newticket-product');
-  }
 
-  addUnassignedComboItem($('.newticket-product').combobox({ selected: function (e, ui) { loadVersions(); } }));
-  loadProducts();
+  loadProducts(true);
+  $('.newticket-product').combobox({ selected: function (e, ui) { loadVersions(); } }).combobox('setValue', -1);
 
 
   $('.newticket-resolved').combobox();
@@ -338,7 +377,7 @@ $(document).ready(function () {
       theme_advanced_resizing: true,
       autoresize_bottom_margin: 10,
       autoresize_on_init: true,
-      spellchecker_rpc_url: "TinyMCEHandler.aspx?module=SpellChecker",
+      spellchecker_rpc_url: "../../../TinyMCEHandler.aspx?module=SpellChecker",
       gecko_spellcheck: true,
       extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
       convert_urls: true,
@@ -1027,53 +1066,63 @@ $(document).ready(function () {
       );
     });
 
-  function isFormValid() {
-    var result = true;
+  function isFormValid(callback) {
+    top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
+      var result = true;
 
-    $('.newticket-name').parent().removeClass('ui-corner-all ui-state-error');
-    if ($.trim($('.newticket-name').val()) == '') {
-      $('.newticket-name').parent().addClass('ui-corner-all ui-state-error');
-      result = false;
-    }
+      $('.newticket-name').parent().removeClass('ui-corner-all ui-state-error');
+      if ($.trim($('.newticket-name').val()) == '') {
+        $('.newticket-name').parent().addClass('ui-corner-all ui-state-error');
+        result = false;
+      }
 
 
-    $('.newticket-custom-field').removeClass('ui-state-error ui-corner-all');
-    $('.newticket-custom-field:visible').each(function () {
-      var field = $(this).data('o');
-      if (field.IsRequired) {
-        switch (field.FieldType) {
-          case top.Ts.CustomFieldType.Text:
-            if ($.trim($(this).find('input').val()) == '') {
-              $(this).addClass('ui-state-error ui-corner-all');
-              result = false;
-            }
-            break;
-          case top.Ts.CustomFieldType.DateTime:
-            if ($.trim($(this).find('input').val()) == '') {
-              $(this).addClass('ui-state-error ui-corner-all');
-              result = false;
-            }
-            break;
-          case top.Ts.CustomFieldType.Number:
-            if ($.trim($(this).find('input').val()) == '') {
-              $(this).addClass('ui-state-error ui-corner-all');
-              result = false;
-            }
-            break;
-          case top.Ts.CustomFieldType.PickList:
-            if (field.IsFirstIndexSelect == true && $(this).find('select option:selected').index() < 1) {
-              $(this).addClass('ui-state-error ui-corner-all');
-              result = false;
-            }
-            break;
-          default:
+      $('.newticket-custom-field').removeClass('ui-state-error ui-corner-all');
+      $('.newticket-custom-field:visible').each(function () {
+        var field = $(this).data('o');
+        if (field.IsRequired) {
+          switch (field.FieldType) {
+            case top.Ts.CustomFieldType.Text:
+              if ($.trim($(this).find('input').val()) == '') {
+                $(this).addClass('ui-state-error ui-corner-all');
+                result = false;
+              }
+              break;
+            case top.Ts.CustomFieldType.DateTime:
+              if ($.trim($(this).find('input').val()) == '') {
+                $(this).addClass('ui-state-error ui-corner-all');
+                result = false;
+              }
+              break;
+            case top.Ts.CustomFieldType.Number:
+              if ($.trim($(this).find('input').val()) == '') {
+                $(this).addClass('ui-state-error ui-corner-all');
+                result = false;
+              }
+              break;
+            case top.Ts.CustomFieldType.PickList:
+              if (field.IsFirstIndexSelect == true && $(this).find('select option:selected').index() < 1) {
+                $(this).addClass('ui-state-error ui-corner-all');
+                result = false;
+              }
+              break;
+            default:
+          }
+        }
+      });
+
+      $('.ticket-widget-customers').removeClass('ui-corner-all ui-state-error');
+      if (requireNewTicketCustomer == "True") {
+        var customerCount = $('.ticket-customer-company').length + $('.ticket-customer-contact').length;
+        if (customerCount < 1) {
+          $('.ticket-widget-customers').addClass('ui-corner-all ui-state-error');
+          result = false;
         }
       }
+
+
+      callback(result);
     });
-
-    // check for customer option...
-
-    return result;
   }
 
   setInitialValue();
@@ -1225,125 +1274,127 @@ $(document).ready(function () {
   $('.newticket-save').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    if (isFormValid() == false) return;
-    $('.new-ticket-save-buttons').addClass('saving');
-    //setTimeout(function () { $('.new-ticket-save-buttons').removeClass('saving'); }, 2000); return;
+    isFormValid(function (isValid) {
+      if (isValid == false) return;
+      $('.new-ticket-save-buttons').addClass('saving');
+      //setTimeout(function () { $('.new-ticket-save-buttons').removeClass('saving'); }, 2000); return;
 
-    var info = new Object();
-    info.Name = $('.newticket-name').val();
-    info.TicketTypeID = $('.newticket-type').val();
-    info.TicketStatusID = $('.newticket-status').val();
-    info.TicketSeverityID = $('.newticket-severity').val();
-    info.UserID = $('.newticket-user').val();
-    info.GroupID = $('.newticket-group').val();
-    info.ProductID = $('.newticket-product').val();
-    info.ReportedID = $('.newticket-reported').val();
-    info.ResolvedID = $('.newticket-resolved').val();
-    info.IsVisibleOnPortal = $('.newticket-portal').prop('checked')
-    info.IsKnowledgebase = $('.newticket-kb').prop('checked');
-    info.Description = $('.newticket-desc').html();
+      var info = new Object();
+      info.Name = $('.newticket-name').val();
+      info.TicketTypeID = $('.newticket-type').val();
+      info.TicketStatusID = $('.newticket-status').val();
+      info.TicketSeverityID = $('.newticket-severity').val();
+      info.UserID = $('.newticket-user').val();
+      info.GroupID = $('.newticket-group').val();
+      info.ProductID = $('.newticket-product').val();
+      info.ReportedID = $('.newticket-reported').val();
+      info.ResolvedID = $('.newticket-resolved').val();
+      info.IsVisibleOnPortal = $('.newticket-portal').prop('checked')
+      info.IsKnowledgebase = $('.newticket-kb').prop('checked');
+      info.Description = $('.newticket-desc').html();
 
-    // Custom Values
-    info.Fields = new Array();
-    $('.newticket-custom-field').each(function () {
-      var field = new Object();
-      field.CustomFieldID = $(this).data('o').CustomFieldID;
-      switch ($(this).data('o').FieldType) {
-        case top.Ts.CustomFieldType.Boolean:
-          field.Value = $(this).find('input').prop('checked');
-          break;
-        case top.Ts.CustomFieldType.PickList:
-          field.Value = $(this).find('select').val();
-          break;
-        case top.Ts.CustomFieldType.DateTime:
-          //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
-          var dt = $(this).find('input').datetimepicker('getDate');
-          field.Value = dt == null ? null : dt.toUTCString();
-          //field.Value = $(this).find('input').datetimepicker('getDate');
-          break;
-        default:
-          field.Value = $(this).find('input').val();
+      // Custom Values
+      info.Fields = new Array();
+      $('.newticket-custom-field').each(function () {
+        var field = new Object();
+        field.CustomFieldID = $(this).data('o').CustomFieldID;
+        switch ($(this).data('o').FieldType) {
+          case top.Ts.CustomFieldType.Boolean:
+            field.Value = $(this).find('input').prop('checked');
+            break;
+          case top.Ts.CustomFieldType.PickList:
+            field.Value = $(this).find('select').val();
+            break;
+          case top.Ts.CustomFieldType.DateTime:
+            //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+            var dt = $(this).find('input').datetimepicker('getDate');
+            field.Value = dt == null ? null : dt.toUTCString();
+            //field.Value = $(this).find('input').datetimepicker('getDate');
+            break;
+          default:
+            field.Value = $(this).find('input').val();
+        }
+        info.Fields[info.Fields.length] = field;
+      });
+
+      // Parent Ticket
+      var parentTicket = $('#divRelated .ts-icon-ticket-parent').closest('.ticket-related').data('data');
+      if (parentTicket && parentTicket != null) info.ParentTicketID = parentTicket.TicketID;
+
+      // Child Tickets
+      info.ChildTickets = new Array();
+      $('#divRelated .ts-icon-ticket-child').each(function () {
+        info.ChildTickets[info.ChildTickets.length] = $(this).closest('.ticket-related').data('data').TicketID;
+      });
+
+      // Related Tickets
+      info.RelatedTickets = new Array();
+      $('#divRelated .ts-icon-ticket-related').each(function () {
+        info.RelatedTickets[info.RelatedTickets.length] = $(this).closest('.ticket-related').data('data').TicketID;
+      });
+
+      info.Tags = new Array();
+      $('.ticket-tag').each(function () {
+        info.Tags[info.Tags.length] = $(this).data('data');
+      });
+
+      info.Subscribers = new Array();
+      $('.ticket-subscriber').each(function () {
+        info.Subscribers[info.Subscribers.length] = $(this).data('data').UserID;
+      });
+
+      info.Reminders = new Array();
+      $('.ticket-reminder').each(function () {
+        info.Reminders[info.Reminders.length] = $(this).data('o');
+      });
+
+
+      info.Queuers = new Array();
+      $('.ticket-queue').each(function () {
+        info.Queuers[info.Queuers.length] = $(this).data('data').UserID;
+      });
+
+      info.Customers = new Array();
+      $('.ticket-customer-company').each(function () {
+        info.Customers[info.Customers.length] = $(this).data('data').OrganizationID;
+      });
+
+      info.Contacts = new Array();
+      $('.ticket-customer-contact').each(function () {
+        info.Contacts[info.Contacts.length] = $(this).data('data').UserID;
+      });
+
+      var chatID = top.Ts.Utils.getQueryValue('chatid', window)
+      if (chatID && chatID != null) {
+        info.ChatID = chatID;
       }
-      info.Fields[info.Fields.length] = field;
-    });
 
-    // Parent Ticket
-    var parentTicket = $('#divRelated .ts-icon-ticket-parent').closest('.ticket-related').data('data');
-    if (parentTicket && parentTicket != null) info.ParentTicketID = parentTicket.TicketID;
+      top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
 
-    // Child Tickets
-    info.ChildTickets = new Array();
-    $('#divRelated .ts-icon-ticket-child').each(function () {
-      info.ChildTickets[info.ChildTickets.length] = $(this).closest('.ticket-related').data('data').TicketID;
-    });
+        if (result == null) {
+          alert('There was an error saving your ticket.  Please try again.');
+          $('.new-ticket-save-buttons').removeClass('saving');
+          return;
+        }
+        _ticketID = result[0];
+        if ($('.upload-queue li').length > 0) {
+          $('.upload-queue li').each(function (i, o) {
+            var data = $(o).data('data');
+            data.url = '../../../Upload/Actions/' + result[1];
+            data.jqXHR = data.submit();
+            $(o).data('data', data);
+          });
+        }
+        else {
+          if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
+          top.Ts.MainPage.closeNewTicketTab();
+        }
 
-    // Related Tickets
-    info.RelatedTickets = new Array();
-    $('#divRelated .ts-icon-ticket-related').each(function () {
-      info.RelatedTickets[info.RelatedTickets.length] = $(this).closest('.ticket-related').data('data').TicketID;
-    });
-
-    info.Tags = new Array();
-    $('.ticket-tag').each(function () {
-      info.Tags[info.Tags.length] = $(this).data('data');
-    });
-
-    info.Subscribers = new Array();
-    $('.ticket-subscriber').each(function () {
-      info.Subscribers[info.Subscribers.length] = $(this).data('data').UserID;
-    });
-
-    info.Reminders = new Array();
-    $('.ticket-reminder').each(function () {
-      info.Reminders[info.Reminders.length] = $(this).data('o');
-    });
-
-
-    info.Queuers = new Array();
-    $('.ticket-queue').each(function () {
-      info.Queuers[info.Queuers.length] = $(this).data('data').UserID;
-    });
-
-    info.Customers = new Array();
-    $('.ticket-customer-company').each(function () {
-      info.Customers[info.Customers.length] = $(this).data('data').OrganizationID;
-    });
-
-    info.Contacts = new Array();
-    $('.ticket-customer-contact').each(function () {
-      info.Contacts[info.Contacts.length] = $(this).data('data').UserID;
-    });
-
-    var chatID = top.Ts.Utils.getQueryValue('chatid', window)
-    if (chatID && chatID != null) {
-      info.ChatID = chatID;
-    }
-
-    top.Ts.Services.Tickets.NewTicket(top.JSON.stringify(info), function (result) {
-
-      if (result == null) {
+      }, function () {
         alert('There was an error saving your ticket.  Please try again.');
         $('.new-ticket-save-buttons').removeClass('saving');
-        return;
-      }
-      _ticketID = result[0];
-      if ($('.upload-queue li').length > 0) {
-        $('.upload-queue li').each(function (i, o) {
-          var data = $(o).data('data');
-          data.url = '../../../Upload/Actions/' + result[1];
-          data.jqXHR = data.submit();
-          $(o).data('data', data);
-        });
-      }
-      else {
-        if (_doClose != true) top.Ts.MainPage.openTicketByID(result[0]);
-        top.Ts.MainPage.closeNewTicketTab();
-      }
-
-    }, function () {
-      alert('There was an error saving your ticket.  Please try again.');
-      $('.new-ticket-save-buttons').removeClass('saving');
-    });
+      })
+    })
   });
 
 

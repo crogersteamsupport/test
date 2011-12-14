@@ -551,6 +551,16 @@
     <IsDBReadOnly>false</IsDBReadOnly>
   </TableNames>
   <TableNames>
+    <Include>false</Include>
+    <TableName>ArticleStats</TableName>
+    <ItemName>ArticleStat</ItemName>
+    <CollectionName>ArticleStats</CollectionName>
+    <BaseItemClass>BaseItem</BaseItemClass>
+    <BaseCollectionClass>BaseCollection</BaseCollectionClass>
+    <Conditions />
+    <IsDBReadOnly>false</IsDBReadOnly>
+  </TableNames>
+  <TableNames>
     <Include>true</Include>
     <TableName>EmailTemplateTables</TableName>
     <ItemName>EmailTemplateTable</ItemName>
@@ -3766,6 +3776,40 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>Users</TableName>
+    <FieldName>IsClassicView</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Users</TableName>
+    <FieldName>SubscribeToNewActions</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>CRMLinkFields</TableName>
     <FieldName>CRMFieldID</FieldName>
     <CustomType>int</CustomType>
@@ -6403,6 +6447,23 @@
   <Fields>
     <TableName>Organizations</TableName>
     <FieldName>IsPublicArticles</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>UseForums</FieldName>
     <CustomType>bool</CustomType>
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>false</AllowDBNull>
@@ -12352,6 +12413,40 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>TicketsView</TableName>
+    <FieldName>ForumCategory</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>TicketsView</TableName>
+    <FieldName>CategoryName</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>nvarchar</DBType>
+    <SqlDbType>SqlDbType.NVarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>100</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>SourceCommitLog</TableName>
     <FieldName>CommitID</FieldName>
     <CustomType>int</CustomType>
@@ -13302,6 +13397,91 @@
     <Size>8</Size>
     <Precision>23</Precision>
     <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ArticleStats</TableName>
+    <FieldName>ArticleViewID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsIdentity>true</IsIdentity>
+    <IsAutoInc>true</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ArticleStats</TableName>
+    <FieldName>OrganizationID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ArticleStats</TableName>
+    <FieldName>ArticleID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ArticleStats</TableName>
+    <FieldName>ViewDateTime</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ArticleStats</TableName>
+    <FieldName>ViewIP</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>100</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
   </Fields>
   <Fields>
     <TableName>EmailTemplateTables</TableName>

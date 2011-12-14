@@ -247,6 +247,12 @@ Ts.Services = {};
   Ts.Settings.Organization =  new TsOrgSettings();
   Ts.Settings.Session =  new TsSessionSettings();
   Ts.Settings.System =  new TsSystemSettings();
+  Ts.Settings.clearCache = function() { 
+    Ts.Settings.User._cache = new Array();
+    Ts.Settings.Organization._cache = new Array();
+    Ts.Settings.Session._cache = new Array();
+    Ts.Settings.System._cache = new Array();
+  }
 
   Ts.ReferenceTypes = {}
   Ts.ReferenceTypes.None = -1;

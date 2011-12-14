@@ -39,7 +39,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT cv.* FROM ContactsView cv LEFT JOIN UserTickets ut ON ut.UserID = cv.UserID WHERE ut.TicketID = @TicketID ORDER BY LastName, FirstName ";
+        command.CommandText = "SELECT cv.* FROM ContactsView cv LEFT JOIN UserTickets ut ON ut.UserID = cv.UserID WHERE ut.TicketID = @TicketID AND (cv.MarkDeleted = 0) ORDER BY LastName, FirstName ";
         command.CommandText = InjectCustomFields(command.CommandText, "cv.UserID", ReferenceType.Contacts);
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@TicketID", ticketID);

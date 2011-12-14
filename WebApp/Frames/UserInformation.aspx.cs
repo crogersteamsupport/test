@@ -98,7 +98,8 @@ public partial class Frames_UserInformation : BaseFramePage
       table.Rows.Add(new string[] { "Title:", user.Title });
       table.Rows.Add(new string[] { "Active:", user.IsActive.ToString() });
       table.Rows.Add(new string[] { "Email Ticket Notifications:", user.ReceiveTicketNotifications.ToString() });
-      table.Rows.Add(new string[] { "Automatically Subscribe to New Tickets:", user.SubscribeToNewTickets.ToString() });
+      table.Rows.Add(new string[] { "Automatically subscribe to new tickets I post:", user.SubscribeToNewTickets.ToString() });
+      table.Rows.Add(new string[] { "Automatically subscribe to tickets when I post an action:", user.SubscribeToNewActions.ToString() });
       table.Rows.Add(new string[] { "Do not subscribe to tickets when cc'd on email:", user.DoNotAutoSubscribe.ToString() });
       table.Rows.Add(new string[] { "Receive Assigned Group Notifications:", user.ReceiveAllGroupNotifications.ToString() });
 

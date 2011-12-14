@@ -76,7 +76,7 @@
         <table border="0" cellpadding="0" cellspacing="10">
           <tr>
             <td>
-              <asp:Button ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" OnClientClick="top.Ts.Cache.checkAll();" />
+              <asp:Button ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" OnClientClick="clearCache();" />
             </td>
             <td>
               <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClientClick="Close(); return false;" />
@@ -92,6 +92,11 @@
   
   <telerik:RadCodeBlock ID="RadCodeBlock1" runat="server">
     <script language="javascript" type="text/javascript">
+      function clearCache() {
+        top.Ts.Cache.checkAll();
+        top.Ts.Settings.clearCache();
+      }
+
       function GetRadWindow() {
         if (window.radWindow) {
           return window.radWindow;

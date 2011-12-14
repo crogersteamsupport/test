@@ -743,7 +743,7 @@ $(document).ready(function () {
       theme_advanced_resizing: true,
       autoresize_bottom_margin: 10,
       autoresize_on_init: true,
-      spellchecker_rpc_url: "TinyMCEHandler.aspx?module=SpellChecker",
+      spellchecker_rpc_url: "../../../TinyMCEHandler.aspx?module=SpellChecker",
       gecko_spellcheck: true,
       extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
       convert_urls: true,
@@ -1029,6 +1029,10 @@ $(document).ready(function () {
       callback(result)
     }, function (error) {
       callback(null);
+    });
+
+    top.Ts.Services.Tickets.GetSubscribers(_ticketID, function (subscribers) {
+      appendSubscribers(subscribers);
     });
   }
 
@@ -1647,7 +1651,7 @@ $(document).ready(function () {
             var option = $('<option>').text(products[i].Name).appendTo(select).data('product', products[i]);
             if ($('#product').text() === products[i].Name) {
               option.attr('selected', 'selected');
-            } 
+            }
           }
         }
       }
@@ -1909,7 +1913,7 @@ $(document).ready(function () {
   addToolbarButton('btnPrint', 'ts-icon-print', 'Print', function (e) {
     e.preventDefault();
     e.stopPropagation();
-    window.open('../../TicketPrint.aspx?ticketid=' + _ticketID, 'TSPrint' + _ticketID);
+    window.open('../../../TicketPrint.aspx?ticketid=' + _ticketID, 'TSPrint' + _ticketID);
   });
 
   addToolbarButton('btnEmail', 'ts-icon-compose-email', 'Email', function (e) {

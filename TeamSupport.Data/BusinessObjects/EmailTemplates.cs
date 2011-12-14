@@ -405,7 +405,7 @@ namespace TeamSupport.Data
     {
       EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 22);
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Ticket", ticket);
-      template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", DataUtils.DateToLocal(loginUser, reminder.DueDate).ToString("g", loginUser.OrganizationCulture));
+      template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
       template.ReplaceActions(ticket, false);
       return template.GetMessage();
     }
@@ -414,7 +414,7 @@ namespace TeamSupport.Data
     {
       EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 23);
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Company", company);
-      template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", DataUtils.DateToLocal(loginUser, reminder.DueDate).ToString("g", loginUser.OrganizationCulture));
+      template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
       return template.GetMessage();
     }
 
@@ -422,7 +422,7 @@ namespace TeamSupport.Data
     {
       EmailTemplate template = GetTemplate(loginUser, reminder.OrganizationID, 24);
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Contact", contact);
-      template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", DataUtils.DateToLocal(loginUser, reminder.DueDate).ToString("g", loginUser.OrganizationCulture));
+      template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
       return template.GetMessage();
     }
 

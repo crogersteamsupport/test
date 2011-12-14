@@ -81,6 +81,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .label { font-weight:bold; display:block; margin-bottom: .25em; white-space:nowrap; }
 .label-block { float:left; margin: .25em .25em .25em 0; padding: .25em .25em; display:inline; height: 40px; border: 1px solid #fcfdfd; }
 .label-block-nofloat {float: none; display: block; clear:both;}
+.label-description { display:block; margin-bottom: .5em;}
 
 .checkbox.label-block { line-height: 40px; height:40px; }
 .checkbox.label-block label { vertical-align: middle; margin: 0px; top:0; font-weight:bold; padding-left: .5em;}    

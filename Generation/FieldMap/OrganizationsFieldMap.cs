@@ -75,6 +75,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("AddAdditionalContacts", "AddAdditionalContacts", false, false, false);
       _fieldMap.AddMap("ChangeStatusIfClosed", "ChangeStatusIfClosed", false, false, false);
       _fieldMap.AddMap("IsPublicArticles", "IsPublicArticles", false, false, false);
+      _fieldMap.AddMap("UseForums", "UseForums", false, false, false);
             
     }
   }
