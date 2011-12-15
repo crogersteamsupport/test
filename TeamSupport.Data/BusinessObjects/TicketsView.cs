@@ -658,7 +658,7 @@ namespace TeamSupport.Data
                                     ORDER BY TicketNumber";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@OrganizationID", organizationID);
-            command.Parameters.AddWithValue("@LastMod", lastModified.HasValue ? lastModified.Value.AddMinutes(-30) : new DateTime(1900,1,1));
+            command.Parameters.AddWithValue("@LastMod", lastModified.HasValue ? lastModified.Value.AddMinutes(-15) : new DateTime(1900,1,1));
             Fill(command);
         }
     }
