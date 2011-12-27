@@ -52,6 +52,7 @@
         <telerik:RadTreeView ID="reportTree" runat="server" BorderWidth="0px" PersistLoadOnDemandNodes="true" LoadingStatusPosition="BelowNodeText" OnClientNodeClicked="NodeClicked" OnClientNodeCollapsed="NodeCollapsed" EnableViewState="false" Width="100%" Height="100%">
             <Nodes>
                 <telerik:RadTreeNode runat="server" Text="Stock Reports" ExpandMode="WebService" Value="0"></telerik:RadTreeNode>
+                <telerik:RadTreeNode runat="server" Text="Graphical Reports" ExpandMode="WebService" Value="3" />
                 <telerik:RadTreeNode runat="server" Text="Custom Reports" ExpandMode="WebService" Value="1"></telerik:RadTreeNode>
                 <telerik:RadTreeNode runat="server" Text="My Favorites" ExpandMode="WebService" Value="2" />
                </Nodes>
@@ -236,11 +237,16 @@
         var id = GetSelectedReportID();
         var frame = $get("<%=frmReport.ClientID %>");
 
-        if (id < 3) { //this tells us it's a report type
+        if (id < 4) { //this tells us it's a report type
             frame.setAttribute('src', '');
         }
-        else{
-            frame.setAttribute('src', GetSelectedExternalURL() + '?ReportID=' + id);
+        else {
+            if (GetSelectedExternalURL().indexOf('?') > 0) {
+                frame.setAttribute('src', GetSelectedExternalURL() + '&ReportID=' + id);
+            }
+            else {
+                frame.setAttribute('src', GetSelectedExternalURL() + '?ReportID=' + id);
+            }
         }
 
         hideLoadingPanel("<%=frmReport.ClientID %>");

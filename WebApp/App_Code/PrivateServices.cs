@@ -344,8 +344,11 @@ namespace TeamSupport.Services
             case ReportType.Standard:
                 _reports.LoadStandard();
                 break;
+            case ReportType.Graphical:
+                _reports.LoadGraphical(UserSession.CurrentUser.OrganizationID);
+                break;
             case ReportType.Favorite:
-                _reports.LoadFavorites(UserSession.CurrentUser.UserID);
+                _reports.LoadFavorites();
                 break;
             default:
                 _reports.LoadCustom(UserSession.CurrentUser.OrganizationID);

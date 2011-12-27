@@ -173,8 +173,17 @@ namespace TeamSupport.Data
     public void LoadStandard() {
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = "SELECT * FROM Reports WHERE OrganizationID IS NULL ORDER BY Name";
+            command.CommandText = "SELECT * FROM Reports WHERE OrganizationID IS NULL AND ExternalURL IS NULL ORDER BY Name";
             command.CommandType = CommandType.Text;
+            Fill(command);
+        }
+    }
+
+    public void LoadGraphical(int organizationID) {
+        using (SqlCommand command = new SqlCommand()) {
+            command.CommandText = "SELECT * FROM Reports WHERE ISNULL(OrganizationID,@OrganizationID) = @OrganizationID AND ExternalURL IS NOT NULL ORDER BY NAME";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
             Fill(command);
         }
     }
@@ -183,21 +192,22 @@ namespace TeamSupport.Data
     {
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = "SELECT * FROM Reports WHERE OrganizationID = @OrganizationID ORDER BY Name";
+            command.CommandText = "SELECT * FROM Reports WHERE OrganizationID = @OrganizationID AND ExternalURL IS NULL ORDER BY Name";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@OrganizationID", organizationID);
             Fill(command);
         }
     }
 
-    public void LoadFavorites(int userID) {
+    public void LoadFavorites() {
         if (UserSettings.ReadString(LoginUser, "FavoriteReport", "") != "")
         {
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"SELECT * FROM Reports WHERE ReportID IN (" + UserSettings.ReadString(LoginUser, "FavoriteReport", "").Trim(',') +
-                                        ") ORDER BY Name";
+                                        ") AND OrganizationID = @OrganizationID ORDER BY Name";
                 command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
                     Fill(command);
             }
         }

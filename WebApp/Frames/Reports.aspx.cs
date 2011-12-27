@@ -48,18 +48,20 @@ public partial class Frames_Reports : BaseFramePage
     {
         ReportType repType = (ReportType)Enum.Parse(typeof(ReportType), Settings.UserDB.ReadInt("SelectedReportTypeID").ToString());
 
-        ExpandNode(repType, id);
+        if (ExpandNode(repType, id))
+        {
 
-        string url = string.IsNullOrEmpty(report.ExternalURL) ? "ReportResults.aspx" : report.ExternalURL;
-        frmReport.Attributes["src"] = url + "?ReportID=" + id.ToString();
+            string url = string.IsNullOrEmpty(report.ExternalURL) ? "ReportResults.aspx" : report.ExternalURL;
+            frmReport.Attributes["src"] = url + "?ReportID=" + id.ToString();
 
-        tbUser.Items[1].Enabled = UserSession.CurrentUser.IsSystemAdmin && report.OrganizationID != null && report.OrganizationID == UserSession.LoginUser.OrganizationID;
-        tbUser.Items[2].Enabled = tbUser.Items[1].Enabled && repType != ReportType.Favorite;
-        tbUser.Items[3].Enabled = true;
-        tbUser.Items[5].Enabled = true;
-        tbUser.Items[6].Enabled = true;
+            tbUser.Items[1].Enabled = UserSession.CurrentUser.IsSystemAdmin && report.OrganizationID != null && report.OrganizationID == UserSession.LoginUser.OrganizationID;
+            tbUser.Items[2].Enabled = tbUser.Items[1].Enabled && repType != ReportType.Favorite;
+            tbUser.Items[3].Enabled = true;
+            tbUser.Items[5].Enabled = true;
+            tbUser.Items[6].Enabled = true;
 
-        tbUser.Items[6].Text = report.IsFavorite ? "Remove Favorite" : tbUser.Items[6].Text;
+            tbUser.Items[6].Text = report.IsFavorite ? "Remove Favorite" : tbUser.Items[6].Text;
+        }
     }
   }
     
@@ -76,40 +78,47 @@ public partial class Frames_Reports : BaseFramePage
       return reportID;
   }
 
-  private void ExpandNode(ReportType type) {
-      ExpandNode(type, -1);
-  }
-
-  private void ExpandNode(ReportType type, int valNodeToSelect) {
+  private bool ExpandNode(ReportType type, int valNodeToSelect) {
       RadTreeNode typeNode = reportTree.FindNodeByValue(((int)type).ToString());
 
-      Reports _reports = new Reports(UserSession.LoginUser);
-      switch (type)
-      {
-          case ReportType.Standard:
-              _reports.LoadStandard();
-              break;
-          case ReportType.Favorite:
-              _reports.LoadFavorites(UserSession.CurrentUser.UserID);
-              break;
-          default:
-              _reports.LoadCustom(UserSession.CurrentUser.OrganizationID);
-              break;
+      if (typeNode == null) {
+          return false;
       }
-
-      foreach (Report rep in _reports)
+      else
       {
-          RadTreeNode newNode = new RadTreeNode();
-          newNode.Text = rep.Name;
-          newNode.Value = rep.ReportID.ToString();
-          newNode.Attributes.Add("ExternalURL", rep.ExternalURL);
+          Reports _reports = new Reports(UserSession.LoginUser);
+          switch (type)
+          {
+              case ReportType.Standard:
+                  _reports.LoadStandard();
+                  break;
+              case ReportType.Graphical:
+                  _reports.LoadGraphical(UserSession.CurrentUser.OrganizationID);
+                  break;
+              case ReportType.Favorite:
+                  _reports.LoadFavorites();
+                  break;
+              default:
+                  _reports.LoadCustom(UserSession.CurrentUser.OrganizationID);
+                  break;
+          }
 
-          if (newNode.Value == valNodeToSelect.ToString()) { newNode.Selected = true; }
-          typeNode.Nodes.Add(newNode);
+          foreach (Report rep in _reports)
+          {
+              RadTreeNode newNode = new RadTreeNode();
+              newNode.Text = rep.Name;
+              newNode.Value = rep.ReportID.ToString();
+              newNode.Attributes.Add("ExternalURL", rep.ExternalURL);
+
+              if (newNode.Value == valNodeToSelect.ToString()) { newNode.Selected = true; }
+              typeNode.Nodes.Add(newNode);
+          }
+
+          typeNode.Expanded = true;
+          typeNode.ExpandMode = TreeNodeExpandMode.WebService;
+
+          return true;
       }
-
-      typeNode.Expanded = true;
-      typeNode.ExpandMode = TreeNodeExpandMode.WebService;
   }
   
   [WebMethod(true)]

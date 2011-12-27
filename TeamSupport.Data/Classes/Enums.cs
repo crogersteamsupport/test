@@ -143,7 +143,8 @@ namespace TeamSupport.Data
   public enum ReportType { 
       Standard = 0,
       Custom,
-      Favorite
+      Favorite,
+      Graphical
   }
 
   public class Enums
