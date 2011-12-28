@@ -43,6 +43,7 @@ namespace TeamSupport.Data
     [DataMember] public bool DisplayProductVersion { get; set; }
     [DataMember] public string LandingPageHtml { get; set; }
     [DataMember] public bool DisplayLandingPage { get; set; }
+    [DataMember] public bool EnableScreenr { get; set; }
           
   }
   
@@ -51,6 +52,7 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.EnableScreenr = this.EnableScreenr;
       result.DisplayLandingPage = this.DisplayLandingPage;
       result.LandingPageHtml = this.LandingPageHtml;
       result.DisplayProductVersion = this.DisplayProductVersion;

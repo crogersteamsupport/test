@@ -355,6 +355,7 @@ namespace TeamSupport.Data
 
     public virtual void Save()
     {
+      
       using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
       {
         connection.Open();

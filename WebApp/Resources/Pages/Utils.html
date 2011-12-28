@@ -62,14 +62,8 @@
 
       $('#btnTest').click(function (e) {
         e.preventDefault();
-        top.Ts.Settings.User.read('kevin', 'val', function (r) {
-          alert(r);
-          top.Ts.Settings.User.read('kevin', 'val2', function (r2) {
-            alert(r2);
-            top.Ts.Settings.User.write('kevin', 'valb', function () {
-              top.Ts.Settings.User.read('kevin', 'val3', function (r3) { alert(r3); });
-            });
-          });
+        top.Ts.Services.Organizations.ReadServiceSettings(function (result) {
+          $('.test-results').html(result);
         });
       });
 
@@ -143,6 +137,11 @@
   <div class="utils-content ui-widget ui-widget-content">
     <input class="text ui-corner-all ui-widget-content" type="text" id="textQuick" style="width: 250px;" />
   </div>
+
+  <div class="test-results">
+  
+  </div>
+
 
   
   </div>

@@ -45,7 +45,15 @@ namespace TeamSupport.ServiceLibrary
       }
 
 
-      RemoveOldTicketIndexes(LoginUser, path);
+      try
+      {
+        RemoveOldTicketIndexes(LoginUser, path);
+      }
+      catch (Exception ex)
+      {
+        ExceptionLogs.LogException(LoginUser, ex, "Indexer.RemoveOldTicketIndexes"); 
+      }
+
      // CompressTicketIndexes(LoginUser, path);
 
       Options options = new Options();

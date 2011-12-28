@@ -143,6 +143,14 @@
               <asp:CheckBox ID="cbDeflection" runat="server" />
             </td>
           </tr>
+          <tr>
+            <td>
+              Enable Screen Recording:
+            </td>
+            <td>
+              <asp:CheckBox ID="cbScreenr" runat="server" />
+            </td>
+          </tr>
         </table>
       </div>
       <br />

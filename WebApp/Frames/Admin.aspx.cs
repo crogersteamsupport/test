@@ -24,7 +24,10 @@ public partial class Frames_Admin : BaseFramePage
       tsMain.SelectedIndex = Settings.UserDB.ReadInt("SelectedAdminTabIndex", 0);
       if (tsMain.SelectedTab == null) tsMain.SelectedIndex = 0;
       frmAdmin.Attributes["src"] = tsMain.SelectedTab.Value;
-      //tsMain.FindTabByText("Ticket Automation").Visible = UserSession.LoginUser.OrganizationID == 1078 || UserSession.LoginUser.OrganizationID == 13679 || UserSession.LoginUser.OrganizationID == 1088 || UserSession.LoginUser.OrganizationID == 2706 || UserSession.LoginUser.OrganizationID == 294204 || UserSession.LoginUser.OrganizationID == 362372;
+      if (UserSession.LoginUser.UserID == 34)
+      {
+        tsMain.FindTabByText("My Portal").Value = "../vcr/140/Pages/Admin_Portal.html";
+      }
     }
 
     //tsMain.Tabs[1].Visible = UserSession.CurrentUser.IsFinanceAdmin;

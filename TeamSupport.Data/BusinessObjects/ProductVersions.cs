@@ -21,6 +21,7 @@ namespace TeamSupport.Data
 
     public ProductVersion FindByImportID(string importID, int? productID)
     {
+      importID = importID.Trim().ToLower();
       foreach (ProductVersion productVersion in this)
       {
         if (productID == null || productVersion.ProductID == (int)productID)

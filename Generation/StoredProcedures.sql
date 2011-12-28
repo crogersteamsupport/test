@@ -10326,7 +10326,8 @@ AS
     [DisplayAdvKB],
     [DisplayProductVersion],
     [LandingPageHtml],
-    [DisplayLandingPage]
+    [DisplayLandingPage],
+    [EnableScreenr]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -10367,6 +10368,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
+  @EnableScreenr bit,
   @Identity int OUT
 )
 AS
@@ -10402,7 +10404,8 @@ AS
     [DisplayAdvKB],
     [DisplayProductVersion],
     [LandingPageHtml],
-    [DisplayLandingPage])
+    [DisplayLandingPage],
+    [EnableScreenr])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -10433,7 +10436,8 @@ AS
     @DisplayAdvKB,
     @DisplayProductVersion,
     @LandingPageHtml,
-    @DisplayLandingPage)
+    @DisplayLandingPage,
+    @EnableScreenr)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -10473,7 +10477,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayAdvKB bit,
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
-  @DisplayLandingPage bit
+  @DisplayLandingPage bit,
+  @EnableScreenr bit
 )
 AS
   SET NOCOUNT OFF;
@@ -10507,7 +10512,8 @@ AS
     [DisplayAdvKB] = @DisplayAdvKB,
     [DisplayProductVersion] = @DisplayProductVersion,
     [LandingPageHtml] = @LandingPageHtml,
-    [DisplayLandingPage] = @DisplayLandingPage
+    [DisplayLandingPage] = @DisplayLandingPage,
+    [EnableScreenr] = @EnableScreenr
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -22291,7 +22297,8 @@ AS
     [DisplayAdvKB],
     [DisplayProductVersion],
     [LandingPageHtml],
-    [DisplayLandingPage]
+    [DisplayLandingPage],
+    [EnableScreenr]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -22332,6 +22339,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
+  @EnableScreenr bit,
   @Identity int OUT
 )
 AS
@@ -22367,7 +22375,8 @@ AS
     [DisplayAdvKB],
     [DisplayProductVersion],
     [LandingPageHtml],
-    [DisplayLandingPage])
+    [DisplayLandingPage],
+    [EnableScreenr])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -22398,7 +22407,8 @@ AS
     @DisplayAdvKB,
     @DisplayProductVersion,
     @LandingPageHtml,
-    @DisplayLandingPage)
+    @DisplayLandingPage,
+    @EnableScreenr)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -22438,7 +22448,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayAdvKB bit,
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
-  @DisplayLandingPage bit
+  @DisplayLandingPage bit,
+  @EnableScreenr bit
 )
 AS
   SET NOCOUNT OFF;
@@ -22472,7 +22483,8 @@ AS
     [DisplayAdvKB] = @DisplayAdvKB,
     [DisplayProductVersion] = @DisplayProductVersion,
     [LandingPageHtml] = @LandingPageHtml,
-    [DisplayLandingPage] = @DisplayLandingPage
+    [DisplayLandingPage] = @DisplayLandingPage,
+    [EnableScreenr] = @EnableScreenr
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -34256,7 +34268,8 @@ AS
     [DisplayAdvKB],
     [DisplayProductVersion],
     [LandingPageHtml],
-    [DisplayLandingPage]
+    [DisplayLandingPage],
+    [EnableScreenr]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -34297,6 +34310,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
+  @EnableScreenr bit,
   @Identity int OUT
 )
 AS
@@ -34332,7 +34346,8 @@ AS
     [DisplayAdvKB],
     [DisplayProductVersion],
     [LandingPageHtml],
-    [DisplayLandingPage])
+    [DisplayLandingPage],
+    [EnableScreenr])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -34363,7 +34378,8 @@ AS
     @DisplayAdvKB,
     @DisplayProductVersion,
     @LandingPageHtml,
-    @DisplayLandingPage)
+    @DisplayLandingPage,
+    @EnableScreenr)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -34403,7 +34419,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayAdvKB bit,
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
-  @DisplayLandingPage bit
+  @DisplayLandingPage bit,
+  @EnableScreenr bit
 )
 AS
   SET NOCOUNT OFF;
@@ -34437,7 +34454,8 @@ AS
     [DisplayAdvKB] = @DisplayAdvKB,
     [DisplayProductVersion] = @DisplayProductVersion,
     [LandingPageHtml] = @LandingPageHtml,
-    [DisplayLandingPage] = @DisplayLandingPage
+    [DisplayLandingPage] = @DisplayLandingPage,
+    [EnableScreenr] = @EnableScreenr
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -46221,7 +46239,8 @@ AS
     [DisplayAdvKB],
     [DisplayProductVersion],
     [LandingPageHtml],
-    [DisplayLandingPage]
+    [DisplayLandingPage],
+    [EnableScreenr]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -46262,6 +46281,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
+  @EnableScreenr bit,
   @Identity int OUT
 )
 AS
@@ -46297,7 +46317,8 @@ AS
     [DisplayAdvKB],
     [DisplayProductVersion],
     [LandingPageHtml],
-    [DisplayLandingPage])
+    [DisplayLandingPage],
+    [EnableScreenr])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -46328,7 +46349,8 @@ AS
     @DisplayAdvKB,
     @DisplayProductVersion,
     @LandingPageHtml,
-    @DisplayLandingPage)
+    @DisplayLandingPage,
+    @EnableScreenr)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -46368,7 +46390,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayAdvKB bit,
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
-  @DisplayLandingPage bit
+  @DisplayLandingPage bit,
+  @EnableScreenr bit
 )
 AS
   SET NOCOUNT OFF;
@@ -46402,7 +46425,8 @@ AS
     [DisplayAdvKB] = @DisplayAdvKB,
     [DisplayProductVersion] = @DisplayProductVersion,
     [LandingPageHtml] = @LandingPageHtml,
-    [DisplayLandingPage] = @DisplayLandingPage
+    [DisplayLandingPage] = @DisplayLandingPage,
+    [EnableScreenr] = @EnableScreenr
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -58186,7 +58210,8 @@ AS
     [DisplayAdvKB],
     [DisplayProductVersion],
     [LandingPageHtml],
-    [DisplayLandingPage]
+    [DisplayLandingPage],
+    [EnableScreenr]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -58227,6 +58252,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
+  @EnableScreenr bit,
   @Identity int OUT
 )
 AS
@@ -58262,7 +58288,8 @@ AS
     [DisplayAdvKB],
     [DisplayProductVersion],
     [LandingPageHtml],
-    [DisplayLandingPage])
+    [DisplayLandingPage],
+    [EnableScreenr])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -58293,7 +58320,8 @@ AS
     @DisplayAdvKB,
     @DisplayProductVersion,
     @LandingPageHtml,
-    @DisplayLandingPage)
+    @DisplayLandingPage,
+    @EnableScreenr)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -58333,7 +58361,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayAdvKB bit,
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
-  @DisplayLandingPage bit
+  @DisplayLandingPage bit,
+  @EnableScreenr bit
 )
 AS
   SET NOCOUNT OFF;
@@ -58367,7 +58396,8 @@ AS
     [DisplayAdvKB] = @DisplayAdvKB,
     [DisplayProductVersion] = @DisplayProductVersion,
     [LandingPageHtml] = @LandingPageHtml,
-    [DisplayLandingPage] = @DisplayLandingPage
+    [DisplayLandingPage] = @DisplayLandingPage,
+    [EnableScreenr] = @EnableScreenr
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 

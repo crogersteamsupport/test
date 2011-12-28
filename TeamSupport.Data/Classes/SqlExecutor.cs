@@ -73,6 +73,7 @@ namespace TeamSupport.Data
         return o;
       }
     }
+
     
     public static void ExecuteNonQuery(LoginUser loginUser, SqlCommand command)
     {

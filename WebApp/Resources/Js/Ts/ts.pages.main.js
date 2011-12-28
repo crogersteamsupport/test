@@ -313,7 +313,7 @@ Ts.Pages.Main.prototype =
         spacing_open: 2,
         minSize: 150,
         maxSize: 300,
-        size: 185,
+        size: 150,
         closable: false
 
       }

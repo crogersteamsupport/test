@@ -93,6 +93,7 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
     cbHideGroupAssignedTo.Checked = portalOption.HideGroupAssignedTo == null ? false : (bool)portalOption.HideGroupAssignedTo;
     cbHideUserAssignedTo.Checked = portalOption.HideUserAssignedTo == null ? false : (bool)portalOption.HideUserAssignedTo;
     cbRecaptcha.Checked = portalOption.UseRecaptcha == null ? true : (bool)portalOption.UseRecaptcha;
+    cbScreenr.Checked = portalOption.EnableScreenr;
     cbLanding.Checked = portalOption.DisplayLandingPage;
     cbDeflection.Checked = portalOption.DeflectionEnabled == null ? false : (bool)portalOption.DeflectionEnabled;
     textPortalName.Text = portalOption.PortalName;
@@ -141,6 +142,7 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
     portalOption.HideUserAssignedTo = cbHideUserAssignedTo.Checked;
     portalOption.HideGroupAssignedTo = cbHideGroupAssignedTo.Checked;
     portalOption.UseRecaptcha = cbRecaptcha.Checked;
+    portalOption.EnableScreenr = cbScreenr.Checked;
     portalOption.DisplayLandingPage = cbLanding.Checked;
     portalOption.DeflectionEnabled = cbDeflection.Checked;
     portalOption.KBAccess = cbKb.Checked;

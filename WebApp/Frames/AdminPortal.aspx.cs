@@ -164,6 +164,10 @@ public partial class Frames_AdminPortal : BaseFramePage
       builder.Append("<tr><td><strong>Ticket Deflection Enabled:</strong></td><td>");
       builder.Append(portalOption.DeflectionEnabled == null ? "False" : ((bool)portalOption.DeflectionEnabled).ToString());
       builder.Append("</td></tr>");
+
+      builder.Append("<tr><td><strong>Enable Screen Recording:</strong></td><td>");
+      builder.Append(portalOption.EnableScreenr.ToString());
+      builder.Append("</td></tr>");
       /*
             builder.Append("<tr><td><strong>Portal Header HTML/CSS:</strong></td><td>");
             if (portalOption != null)

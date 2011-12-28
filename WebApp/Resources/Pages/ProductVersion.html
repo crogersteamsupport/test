@@ -18,32 +18,54 @@
   <link href="ProductVersion.css" rel="stylesheet" type="text/css" />
 
   <script src="../Js/jquery-1.6.2.min.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.bgiframe-2.1.2.js" type="text/javascript"></script>
+
   <script src="../Js/jquery-ui-1.9.5.min.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.hoverIntent.min.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.cluetip.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.ui.timepicker.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.numeric.js" type="text/javascript"></script>
+
   <script src="../tiny_mce_3.4.4/tiny_mce.js" type="text/javascript"></script>
+
   <script src="../tiny_mce_3.4.4/jquery.tinymce.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
+
   <script src="ProductVersion.js" type="text/javascript"></script>
 
   <style>
+    /*
+    #divUploadProgress { padding-top: 1em; }
+    #divProgressBar { width: 250px; float: left; }*/
+    #divAttachments .ts-icon, #divAttachments .ui-icon, #divAttachments a { float: left; }
+    #divAttachments .ts-icon { margin-right: .5em; }
+    #divAttachments .ui-icon { cursor: pointer; }
+    #divAttachments ul { margin: 0; clear: both; padding-bottom: 1em; }
+    #divAttachments li { list-style: none; margin-left: 0; clear: both; line-height: 16px; padding: .5em 0; }
+    #lnkAddAttachment { font-weight: bold; line-height: 2em; text-align: center; cursor: pointer; }
+    
     form.file-upload { position: relative; overflow: hidden; direction: ltr; cursor: pointer; color: #333; width: 15em; height: 2.5em; line-height: 2.5em; }
     form.file-upload input { position: absolute; top: 0; right: 0; margin: 0; border: 300px solid transparent; opacity: 0; -ms-filter: 'alpha(opacity=0)'; filter: alpha(opacity=0); -o-transform: translate(-300px, -300px) scale(10); -moz-transform: translate(-800px, 0) scale(10); cursor: pointer; height: 100%; }
     :root form.file-upload input { height: auto; }
-    #divUploadProgress { padding-top: 1em; }
-    #divProgressBar { width: 250px; float: left; }
-    #divAttachments .ts-icon, #divAttachments .ui-icon, #divAttachments a { float:left; }
-    #divAttachments .ts-icon { margin-right: .5em; }
-    #divAttachments .ui-icon { cursor:pointer; }
-    #divAttachments ul { margin:0; clear:both; padding-bottom: 1em;}
-    #divAttachments li { list-style:none; margin-left: 0; clear:both; line-height: 16px; padding: .5em 0; }
-    #lnkAddAttachment { font-weight:bold; line-height: 2em; text-align:center; cursor:pointer;}
+    .upload-queue { list-style: none; padding: .5em 0 1em 0; margin: 0; }
+    .upload-queue li { padding: 0; margin: 0; clear: both; padding: .5em 0; line-height: 16px; }
+    .upload-queue .ts-color-bg-accent { margin-bottom: .25em; padding: .25em .25em; float: left; }
+    .upload-queue li .filename { line-height: 16px; float: left; }
+    .upload-queue li .progress { height: 7px; width: 100px; float: left; margin: 4px .25em 0 1em; }
+    .upload-queue li .ui-icon { float: left; padding: 0; cursor: pointer; margin-left: .25em; }
+    
     #divDescription { padding: 1em 0; }
   </style>
 </head>
@@ -66,20 +88,31 @@
           <h2>Attachments</h2>
           <div class="ts-separator">
           </div>
-          <div id="divAttachments"></div>
-          <div style="clear:both;">
-          <form id="file-upload" class="file-upload" action="Upload/Products/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
-          <input type="file" name="file[]">
-          <div class="ui-widget-content ui-corner-all ui-state-default" id="lnkAddAttachment" title="You can drag and drop your attachments here.">Add Attachment</div>
-          </form>
+          <div id="divAttachments">
           </div>
-          <div id="divUploadProgress" class="ui-helper-hidden">
-            <div>Uploading</div>
-            <div id="divProgressBar"></div>
+          <div style="clear: both;">
+          </div>
+          <div class="upload-queue">
+          </div>
+          <div style="clear: both;">
+          </div>
+          <form id="file-upload" class="file-upload" action="Upload/Products/555" method="POST"
+          enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+          <input type="file" name="file[]">
+          <div class="ui-widget-content ui-corner-all ui-state-default" id="lnkAddAttachment"
+            title="You can drag and drop your attachments here.">
+            Add Attachment</div>
+          </form>
+        </div>
+        <div id="divUploadProgress" class="ui-helper-hidden">
+          <div>
+            Uploading</div>
+          <div id="divProgressBar">
           </div>
         </div>
       </div>
     </div>
+  </div>
   </div>
 </body>
 </html>

@@ -41,6 +41,7 @@ namespace TeamSupport.Data
   public class Importer
   {
     const int BULK_LIMIT = 1000;
+    bool _IsBulk = false;
 
     class ImportCustomInfo
     {
@@ -845,7 +846,7 @@ namespace TeamSupport.Data
         user.ReceiveTicketNotifications = true;
         user.Title = row["Title"].ToString().Trim();
       }
-      users.BulkSave();
+      if (_IsBulk == true) users.BulkSave(); else users.Save();
       _log.AppendMessage(users.Count.ToString() + " Users Imported.");
 
     }
@@ -878,7 +879,7 @@ namespace TeamSupport.Data
         }
 
       }
-      groups.BulkSave();
+      if (_IsBulk == true) groups.BulkSave(); else groups.Save();
       _log.AppendMessage(groups.Count.ToString() + " Groups Imported.");
 
     }
@@ -945,13 +946,13 @@ namespace TeamSupport.Data
         organization.SAExpirationDate = GetDBDate(row["ServiceExpiration"], true);
         if (++count % BULK_LIMIT == 0)
         {
-          organizations.BulkSave();
+          if (_IsBulk == true) organizations.BulkSave(); else organizations.Save();
           organizations = new Organizations(_loginUser);
           GC.WaitForPendingFinalizers();
         }
       }
 
-      organizations.BulkSave();
+      if (_IsBulk == true) organizations.BulkSave(); else organizations.Save();
       _log.AppendMessage(count.ToString() + " Customers Imported.");
     }
 
@@ -1001,14 +1002,14 @@ namespace TeamSupport.Data
         user.Title = row["Title"].ToString().Trim();
         if (++count % BULK_LIMIT == 0)
         {
-          users.BulkSave();
+          if (_IsBulk == true) users.BulkSave(); else users.Save();
           users = new Users(_loginUser);
           GC.WaitForPendingFinalizers();
         }
 
       }
       _log.AppendMessage(count.ToString() + " Contacts Imported.");
-      users.BulkSave();
+      if (_IsBulk == true) users.BulkSave(); else users.Save();
     }
 
     private void ImportPrimaryContacts()
@@ -1065,7 +1066,7 @@ namespace TeamSupport.Data
         }
       }
 
-      products.BulkSave();
+      if (_IsBulk == true) products.BulkSave(); else products.Save();
       _log.AppendMessage(products.Count.ToString() + " Products Imported.");
     }
 
@@ -1103,7 +1104,7 @@ namespace TeamSupport.Data
         productVersion.VersionNumber = row["VersionNumber"].ToString().Trim();
       }
 
-      productVersions.BulkSave();
+      if (_IsBulk == true) productVersions.BulkSave(); else productVersions.Save();
       _log.AppendMessage(productVersions.Count.ToString() + " Versions Imported.");
     }
 
@@ -1199,13 +1200,13 @@ namespace TeamSupport.Data
 
         if (++count % BULK_LIMIT == 0)
         {
-          assets.BulkSave();
+          if (_IsBulk == true) assets.BulkSave(); else assets.Save();
           assets = new Assets(_loginUser);
           GC.WaitForPendingFinalizers();
 
         }
       }
-      assets.BulkSave();
+      if (_IsBulk == true) assets.BulkSave(); else assets.Save();
 
       _log.AppendMessage(count.ToString() + " Assets Imported.");
 
@@ -1317,13 +1318,13 @@ namespace TeamSupport.Data
 
         if (++count % BULK_LIMIT == 0)
         {
-          tickets.BulkSave();
+          if (_IsBulk == true) tickets.BulkSave(); else tickets.Save();
           tickets = new Tickets(_loginUser);
           GC.WaitForPendingFinalizers();
 
         }
       }
-      tickets.BulkSave();
+      if (_IsBulk == true) tickets.BulkSave(); else tickets.Save();
       EmailPosts.DeleteImportEmails(_loginUser);
 
       _log.AppendMessage(count.ToString() + " " + ticketType.Name + " Imported.");
@@ -1384,7 +1385,7 @@ namespace TeamSupport.Data
         {
           tickets.Save();
           EmailPosts.DeleteImportEmails(_loginUser);
-          actions.BulkSave();
+          if (_IsBulk == true) actions.BulkSave(); else actions.Save();
           actions = new Actions(_loginUser);
           GC.WaitForPendingFinalizers();
 
@@ -1393,7 +1394,7 @@ namespace TeamSupport.Data
       }
       tickets.Save();
       EmailPosts.DeleteImportEmails(_loginUser);
-      actions.BulkSave();
+      if (_IsBulk == true) actions.BulkSave(); else actions.Save();
       _log.AppendMessage(count.ToString() + " Actions Imported.");
     }
 
@@ -1481,7 +1482,7 @@ namespace TeamSupport.Data
 
         }
       }
-      attachments.BulkSave();
+      if (_IsBulk == true) attachments.BulkSave(); else attachments.Save();
       _log.AppendMessage(attachments.Count.ToString() + " Attachments Imported.");
 
     }
@@ -1620,14 +1621,14 @@ namespace TeamSupport.Data
 
         if (++count % BULK_LIMIT == 0)
         {
-          addresses.BulkSave();
+          if (_IsBulk == true) addresses.BulkSave(); else addresses.Save();
           addresses = new Addresses(_loginUser);
           GC.WaitForPendingFinalizers();
         }
 
       }
 
-      addresses.BulkSave();
+      if (_IsBulk == true) addresses.BulkSave(); else addresses.Save();
       _log.AppendMessage(count.ToString() + " Addresses Imported.");
 
     }
@@ -1702,14 +1703,14 @@ namespace TeamSupport.Data
 
         if (++count % BULK_LIMIT == 0)
         {
-          phoneNumbers.BulkSave();
+          if (_IsBulk == true) phoneNumbers.BulkSave(); else phoneNumbers.Save();
           phoneNumbers = new PhoneNumbers(_loginUser);
           GC.WaitForPendingFinalizers();
         }
 
       }
 
-      phoneNumbers.BulkSave();
+      if (_IsBulk == true) phoneNumbers.BulkSave(); else phoneNumbers.Save();
       _log.AppendMessage(count.ToString() + " Phone Numbers Imported.");
     }
 
@@ -1747,7 +1748,7 @@ namespace TeamSupport.Data
         note.Title = row["Title"].ToString().Trim();
       }
 
-      notes.BulkSave();
+      if (_IsBulk == true) notes.BulkSave(); else notes.Save();
       _log.AppendMessage(notes.Count.ToString() + " Notes Imported.");
 
     }
@@ -1800,7 +1801,7 @@ namespace TeamSupport.Data
         organizationProduct.ProductID = product.ProductID;
         organizationProduct.ProductVersionID = version == null ? null : (int?)version.ProductVersionID;
       }
-      organizationProducts.BulkSave();
+      if (_IsBulk == true) organizationProducts.BulkSave(); else organizationProducts.Save();
 
       _log.AppendMessage(organizationProducts.Count.ToString() + " Customer Products Imported.");
 
@@ -1956,7 +1957,13 @@ namespace TeamSupport.Data
                 }
                 catch (Exception ex)
                 {
-                  _log.AppendError(value.Row, ex.Message + ex.StackTrace);
+                  _log.AppendError(row, string.Format("CustomField Skippedskipped. [Table={0}  CustomFieldID={1}  RefID={2}  Error={3}  Stack={4}",
+                              tableName,
+                              importField.TSFieldID.ToString(),
+                              id.ToString(),
+                              ex.Message,
+                              ex.StackTrace
+                              )); 
                 }
 
                 /*if (++count % BULK_LIMIT == 0)

@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
+using dtSearch.Engine;
 
 namespace TSWebServices
 {
@@ -435,6 +436,66 @@ namespace TSWebServices
       }
 
       return list.ToArray();
+    }
+
+    [WebMethod]
+    public string ReadServiceSettings()
+    {
+      if (TSAuthentication.UserID != 34) return "";
+      
+      SqlCommand command = new SqlCommand();
+      return Settings.SystemDB.ReadString("Tickets Index Path", "c:\\Indexes\\Tickets");
+      command.CommandText = "UPDATE Services SET Enabled = 0 WHERE ServiceID=13";
+      SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), command);
+      command.CommandText = "SELECT Count(*) FROM Tickets where needsindexing > 0";
+      DataTable table = SqlExecutor.ExecuteQuery(TSAuthentication.GetLoginUser(), command);
+      return DataTableToHTMLTable(table);
+    }
+
+
+
+    public string DataTableToHTMLTable(DataTable inTable)
+    {
+      StringBuilder dString = new StringBuilder();
+      dString.Append("<table>");
+      dString.Append(GetHeader(inTable));
+      dString.Append(GetBody(inTable));
+      dString.Append("</table>");
+      return dString.ToString();
+    }
+
+    private string GetHeader(DataTable dTable)
+    {
+      StringBuilder dString = new StringBuilder();
+
+      dString.Append("<thead><tr>");
+      foreach (DataColumn dColumn in dTable.Columns)
+      {
+        dString.AppendFormat("<th>{0}</th>", dColumn.ColumnName);
+      }
+      dString.Append("</tr></thead>");
+
+      return dString.ToString();
+    }
+
+    private string GetBody(DataTable dTable)
+    {
+      StringBuilder dString = new StringBuilder();
+
+      dString.Append("<tbody>");
+
+      foreach (DataRow dRow in dTable.Rows)
+      {
+        dString.Append("<tr>");
+        for (int dCount = 0; dCount <= dTable.Columns.Count - 1; dCount++)
+        {
+          dString.AppendFormat("<td>{0}</td>", dRow[dCount]);
+        }
+        dString.Append("</tr>");
+      }
+      dString.Append("</tbody>");
+
+      return dString.ToString();
     }
 
   }

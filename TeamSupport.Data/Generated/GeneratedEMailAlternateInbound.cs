@@ -53,6 +53,12 @@ namespace TeamSupport.Data
       set { Row["ProductID"] = CheckNull(value); }
     }
     
+    public string SendingEMailAddress
+    {
+      get { return Row["SendingEMailAddress"] != DBNull.Value ? (string)Row["SendingEMailAddress"] : null; }
+      set { Row["SendingEMailAddress"] = CheckNull(value); }
+    }
+    
 
     
     public int OrganizationID
@@ -170,7 +176,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[EMailAlternateInbound] SET     [OrganizationID] = @OrganizationID,    [Description] = @Description,    [GroupToAssign] = @GroupToAssign,    [DefaultTicketType] = @DefaultTicketType,    [ProductID] = @ProductID  WHERE ([SystemEMailID] = @SystemEMailID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[EMailAlternateInbound] SET     [OrganizationID] = @OrganizationID,    [Description] = @Description,    [GroupToAssign] = @GroupToAssign,    [DefaultTicketType] = @DefaultTicketType,    [ProductID] = @ProductID,    [SendingEMailAddress] = @SendingEMailAddress  WHERE ([SystemEMailID] = @SystemEMailID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("SystemEMailID", SqlDbType.UniqueIdentifier, 16);
@@ -215,13 +221,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("SendingEMailAddress", SqlDbType.VarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[EMailAlternateInbound] (    [SystemEMailID],    [OrganizationID],    [Description],    [GroupToAssign],    [DefaultTicketType],    [ProductID]) VALUES ( @SystemEMailID, @OrganizationID, @Description, @GroupToAssign, @DefaultTicketType, @ProductID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[EMailAlternateInbound] (    [SystemEMailID],    [OrganizationID],    [Description],    [GroupToAssign],    [DefaultTicketType],    [ProductID],    [SendingEMailAddress]) VALUES ( @SystemEMailID, @OrganizationID, @Description, @GroupToAssign, @DefaultTicketType, @ProductID, @SendingEMailAddress); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("SendingEMailAddress", SqlDbType.VarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -353,6 +373,7 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
+
     public virtual EMailAlternateInboundItem AddNewEMailAlternateInboundItem()
     {
       if (Table.Columns.Count < 1) LoadColumns("EMailAlternateInbound");
@@ -365,7 +386,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [SystemEMailID], [OrganizationID], [Description], [GroupToAssign], [DefaultTicketType], [ProductID] FROM [dbo].[EMailAlternateInbound] WHERE ([SystemEMailID] = @SystemEMailID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [SystemEMailID], [OrganizationID], [Description], [GroupToAssign], [DefaultTicketType], [ProductID], [SendingEMailAddress] FROM [dbo].[EMailAlternateInbound] WHERE ([SystemEMailID] = @SystemEMailID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("SystemEMailID", systemEMailID);
         Fill(command);

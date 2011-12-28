@@ -222,59 +222,67 @@ namespace TSWebServices
     [WebMethod]
     public AutocompleteItem[] SearchTickets(string searchTerm, TicketLoadFilter filter)
     {
-      Options options = new Options();
-      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
-
-      using (SearchJob job = new SearchJob())
+      try
       {
-        searchTerm = searchTerm.Trim();
-        job.Request = searchTerm;
-        job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+        Options options = new Options();
+        options.TextFlags = TextFlags.dtsoTfRecognizeDates;
 
-        StringBuilder conditions = new StringBuilder();
-        conditions.Append("(OrganizationID::" + TSAuthentication.OrganizationID.ToString() + ")");
-        if (filter != null)
+        using (SearchJob job = new SearchJob())
         {
-          conditions.Append(" AND (");
-          if (filter.IsKnowledgeBase != null)
-          conditions.Append("IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString());
-          conditions.Append(")");
+          searchTerm = searchTerm.Trim();
+          job.Request = searchTerm;
+          job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+
+          StringBuilder conditions = new StringBuilder();
+          conditions.Append("(OrganizationID::" + TSAuthentication.OrganizationID.ToString() + ")");
+          if (filter != null)
+          {
+            conditions.Append(" AND (");
+            if (filter.IsKnowledgeBase != null)
+              conditions.Append("IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString());
+            conditions.Append(")");
+          }
+
+          job.BooleanConditions = conditions.ToString();
+          job.MaxFilesToRetrieve = 25;
+          job.AutoStopLimit = 100000;
+          job.TimeoutSeconds = 10;
+          job.SearchFlags =
+            SearchFlags.dtsSearchStemming |
+            SearchFlags.dtsSearchDelayDocInfo;
+
+          int num = 0;
+          if (!int.TryParse(searchTerm, out num))
+          {
+            job.Fuzziness = 1;
+            job.Request = job.Request + "*";
+            job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
+            //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
+          }
+
+          if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+          job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
+          job.Execute();
+          SearchResults results = job.Results;
+
+
+          List<AutocompleteItem> items = new List<AutocompleteItem>();
+          //for (int i = 0; i < job.Errors.Count; i++) { items.Add(new AutocompleteItem(job.Errors.Message(i), "")); }
+
+          for (int i = 0; i < results.Count; i++)
+          {
+            results.GetNthDoc(i);
+
+            items.Add(new AutocompleteItem(results.CurrentItem.DisplayName, results.CurrentItem.UserFields["TicketNumber"].ToString(), results.CurrentItem.UserFields["TicketID"].ToString()));
+          }
+          return items.ToArray();
         }
-
-        job.BooleanConditions = conditions.ToString();
-        job.MaxFilesToRetrieve = 25;
-        job.AutoStopLimit = 100000;
-        job.TimeoutSeconds = 10;
-        job.SearchFlags =
-          SearchFlags.dtsSearchStemming |
-          SearchFlags.dtsSearchDelayDocInfo;
-
-        int num = 0;
-        if (!int.TryParse(searchTerm, out num))
-        {
-          job.Fuzziness = 1;
-          job.Request = job.Request + "*";
-          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
-          //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
-        }
-
-        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
-        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
-        job.Execute();
-        SearchResults results = job.Results;
-
-
-        List<AutocompleteItem> items = new List<AutocompleteItem>();
-        //for (int i = 0; i < job.Errors.Count; i++) { items.Add(new AutocompleteItem(job.Errors.Message(i), "")); }
-
-        for (int i = 0; i < results.Count; i++)
-        {
-          results.GetNthDoc(i);
-
-          items.Add(new AutocompleteItem(results.CurrentItem.DisplayName, results.CurrentItem.UserFields["TicketNumber"].ToString(), results.CurrentItem.UserFields["TicketID"].ToString()));
-        }
-        return items.ToArray();
       }
+      catch (Exception ex)
+      {
+        ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "TicketService.SearchTickets");
+      }
+      return null;
     }
 
     /*
