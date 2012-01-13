@@ -145,6 +145,11 @@ namespace TSWebServices
       else
       {
         item = CRMLinkTable.GetCRMLinkTableItem(TSAuthentication.GetLoginUser(), crmLinkID);
+
+        if (item.TypeFieldMatch != tag && (crmType == "Batchbook" || crmType == "Highrise" || crmType == "Salesforce" || crmType == "ZohoCrm"))
+        {
+              item.LastLink = null;
+          }
         if (item.OrganizationID != TSAuthentication.OrganizationID) return null;
       }
 
