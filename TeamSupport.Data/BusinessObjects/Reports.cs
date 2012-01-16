@@ -205,7 +205,7 @@ namespace TeamSupport.Data
             using (SqlCommand command = new SqlCommand())
             {
                 command.CommandText = @"SELECT * FROM Reports WHERE ReportID IN (" + UserSettings.ReadString(LoginUser, "FavoriteReport", "").Trim(',') +
-                                        ") AND OrganizationID = @OrganizationID ORDER BY Name";
+                                        ") AND ISNULL(OrganizationID,@OrganizationID) = @OrganizationID ORDER BY Name";
                 command.CommandType = CommandType.Text;
                 command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
                     Fill(command);
