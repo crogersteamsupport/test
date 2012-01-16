@@ -52,6 +52,12 @@ namespace TSWebServices
       user.IsClassicView = value;
       user.Collection.Save();
     }
+      
+      //tells us whether the logged in user can edit the specified user's account
+    [WebMethod]
+    public bool AllowUserEdit(int userID) {
+        return userID == TSAuthentication.GetLoginUser().UserID;
+    }
 
     [WebMethod]
     public UserProxy GetUser(int userID)
@@ -60,6 +66,58 @@ namespace TSWebServices
       if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
       return user.GetProxy();
     }
+
+    [WebMethod]
+    public string GetUserPhoto(int userID) {
+        string path;
+        return Attachments.GetAttachmentPath(TSAuthentication.GetLoginUser(), ReferenceType.Users, userID);
+
+        Attachments att = new Attachments(TSAuthentication.GetLoginUser());
+        att.LoadByReference(ReferenceType.Users, userID);
+
+        if (att.Count > 0) {
+            path = att[0].Path;
+        }
+        return path;
+
+        //TODO: ask Kevin how this should work
+    }
+
+      [WebMethod]
+    public AddressProxy[] GetUserAddresses(int userID)     {
+        List<AddressProxy> addresses = new List<AddressProxy>();
+
+        Addresses addrs = new Addresses(TSAuthentication.GetLoginUser());
+        addrs.LoadByID(userID, ReferenceType.Users);
+
+        foreach (Address address in addrs){
+            addresses.Add(address.GetProxy());
+        }
+
+        return addresses.ToArray();
+    }
+
+      [WebMethod]
+      public PhoneNumberProxy[] GetUserPhoneNumbers(int userID) {
+          List<PhoneNumberProxy> phones = new List<PhoneNumberProxy>();
+
+          PhoneNumbers numbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
+          numbers.LoadByID(userID, ReferenceType.Users);
+
+          foreach (PhoneNumber phone in numbers) {
+              phones.Add(phone.GetProxy());
+          }
+
+          return phones.ToArray();
+      }
+
+      [WebMethod]
+      public GroupProxy[] GetUserGroups(int userID)
+      {
+          Groups groups = new Groups(TSAuthentication.GetLoginUser());
+          groups.LoadByUserID(userID);
+          return groups.GetGroupProxies();
+      }
 
     [WebMethod]
     public bool UpdateUserStatus(bool value)

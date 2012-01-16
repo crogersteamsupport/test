@@ -21,15 +21,46 @@
 <body>
   <div class="ui-widget frame-content ts-color-bg-accent ui-widget" style="position: relative;">
     <div class="ts-section ui-widget-content ui-corner-all loading-section">
-      <div class="ts-loading">
-      </div>
+      <div class="ts-loading"></div>
     </div>
     <div class="ui-helper-hidden">
-      <div class="ts-section ui-widget-content ui-corner-all">
-        <h1 class="user-displayname"></h1>
-        <div class="ts-seperator ui-widget-content"></div>
-      </div>
+          <div class="ts-section ui-widget-content ui-corner-all">
+            <!--<span class="ts-icon ts-icon-edit user-profile-edit" title="Edit user profile."></span>-->
+            <h1 class="user-displayname"></h1>
+            <div class="ts-seperator ui-widget-content"></div>
+            <div id="ts-user-rail">
+            <div id="userPhoto" class="user-photo"></div>
+            <div id="userAddressList"><a href="#" class="ts-add user-address-add">Add</a></div>
+            <div id="userPhoneList"><a href="#" class="ts-add user-info-add user-phone-add">Add</a></div>
+            </div>
+                                <div id="userProfile">
+            <div class="user-name-value"><span class="property">Email:</span><span class="value" id="userEmail"></span></div>
+            <div class="user-name-value"><span class="property">Title:</span><span class="value" id="userTitle"></span></div>
+            <div class="user-name-value"><span class="property">Time Zone:</span><span class="value" id="userTimeZone"></span></div>
+            <div class="user-name-value"><span class="property">Last Logged In:</span><span class="value" id="userLastLogin"></span></div>
+            <div id="userGroupsList"><h3>Groups</h3></div>
+            <div id="userInformation"><h3>User Information</h3></div>
+        </div>
+            <div class="clearfix"></div>
+        </div>
 
+        <div class="ts-section ui-widget-content ui-corner-all">
+            <span class="ts-icon ts-icon-edit user-profile-edit" title="Edit user properties."></span>
+            <h2 class="collapsable">User Properties</h2>
+            <div id="userProperties" style="display: none;">
+                <div class="user-name-value"><span class="property">Active:</span><span class="value" id="userActive"></span></div>
+                <div class="user-name-value"><span class="property">Email Ticket Notifications:</span><span class="value" id="userEmailNotify"></span></div>
+                <div class="user-name-value"><span class="property">Automatically subscribe to new tickets I post:</span><span class="value" id="userSubscribeTickets"></span></div>
+                <div class="user-name-value"><span class="property">Automatically subscribe to tickets when I post an action:</span><span class="value" id="userSubscribeActions"></span></div>
+                <div class="user-name-value"><span class="property">Do not subscribe to tickets when cc'd on email:</span><span class="value" id="userAutoSubscribe"></span></div>
+                <div class="user-name-value"><span class="property">Receive Assigned Group Notifications:</span><span class="value" id="userGroupNotify"></span></div>
+                <div class="user-name-value"><span class="property">Date Format:</span><span class="value" id="userDateFormat"></span></div>
+                <div class="user-name-value"><span class="property">System Administrator:</span><span class="value" id="userSysAdmin"></span></div>
+                <div class="user-name-value"><span class="property">Financial Administrator:</span><span class="value" id="userFinanceAdmin"></span></div>
+            </div>
+            
+            <div class="clearfix"></div>
+        </div>
     </div>
     <button id="btnRefresh" style="display: none; margin-left:1em;">Refresh (This is here for development)</button>
   </div>
