@@ -64,9 +64,9 @@ namespace TeamSupport.DataManager.UserControls
         Cursor.Current = Cursors.WaitCursor;
         
         if (cbNewOrg.Checked)
-          MessageBox.Show(_importer.Import(textOrganizationName.Text));
+          MessageBox.Show(_importer.Import(textOrganizationName.Text, cbCustomFieldsOnly.Checked));
         else
-          MessageBox.Show(_importer.Import(OrganizationID));
+          MessageBox.Show(_importer.Import(OrganizationID, cbCustomFieldsOnly.Checked));
 
       }
       finally

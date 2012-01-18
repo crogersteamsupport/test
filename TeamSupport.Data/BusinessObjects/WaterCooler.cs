@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 
+
 namespace TeamSupport.Data
 {
   public partial class WaterCoolerItem
@@ -84,6 +85,7 @@ AND (ISNULL(GroupFor,0) = 0
       if (cooler.IsEmpty) return -1;
       return cooler[0].MessageID;
     }
+
   }
   
 }

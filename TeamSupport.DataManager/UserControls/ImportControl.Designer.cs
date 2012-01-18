@@ -41,6 +41,7 @@
       this.lbSummary = new System.Windows.Forms.ListBox();
       this.tpMessages = new System.Windows.Forms.TabPage();
       this.lbMessages = new System.Windows.Forms.ListBox();
+      this.cbCustomFieldsOnly = new System.Windows.Forms.CheckBox();
       this.panel1.SuspendLayout();
       this.tabControl.SuspendLayout();
       this.tpSummary.SuspendLayout();
@@ -88,6 +89,7 @@
       // 
       // panel1
       // 
+      this.panel1.Controls.Add(this.cbCustomFieldsOnly);
       this.panel1.Controls.Add(this.cbNewOrg);
       this.panel1.Controls.Add(this.label2);
       this.panel1.Controls.Add(this.textOrganizationName);
@@ -98,7 +100,7 @@
       this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
       this.panel1.Location = new System.Drawing.Point(0, 0);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(743, 49);
+      this.panel1.Size = new System.Drawing.Size(743, 84);
       this.panel1.TabIndex = 4;
       // 
       // cbNewOrg
@@ -136,10 +138,10 @@
       this.tabControl.Controls.Add(this.tpSummary);
       this.tabControl.Controls.Add(this.tpMessages);
       this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.tabControl.Location = new System.Drawing.Point(0, 49);
+      this.tabControl.Location = new System.Drawing.Point(0, 84);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedIndex = 0;
-      this.tabControl.Size = new System.Drawing.Size(743, 542);
+      this.tabControl.Size = new System.Drawing.Size(743, 507);
       this.tabControl.TabIndex = 5;
       // 
       // tpSummary
@@ -148,7 +150,7 @@
       this.tpSummary.Location = new System.Drawing.Point(4, 22);
       this.tpSummary.Name = "tpSummary";
       this.tpSummary.Padding = new System.Windows.Forms.Padding(3);
-      this.tpSummary.Size = new System.Drawing.Size(735, 516);
+      this.tpSummary.Size = new System.Drawing.Size(735, 481);
       this.tpSummary.TabIndex = 0;
       this.tpSummary.Text = "Summary";
       this.tpSummary.UseVisualStyleBackColor = true;
@@ -160,7 +162,7 @@
       this.lbSummary.Location = new System.Drawing.Point(3, 3);
       this.lbSummary.Name = "lbSummary";
       this.lbSummary.ScrollAlwaysVisible = true;
-      this.lbSummary.Size = new System.Drawing.Size(729, 498);
+      this.lbSummary.Size = new System.Drawing.Size(729, 475);
       this.lbSummary.TabIndex = 0;
       // 
       // tpMessages
@@ -180,8 +182,18 @@
       this.lbMessages.FormattingEnabled = true;
       this.lbMessages.Location = new System.Drawing.Point(3, 3);
       this.lbMessages.Name = "lbMessages";
-      this.lbMessages.Size = new System.Drawing.Size(729, 498);
+      this.lbMessages.Size = new System.Drawing.Size(729, 510);
       this.lbMessages.TabIndex = 1;
+      // 
+      // cbCustomFieldsOnly
+      // 
+      this.cbCustomFieldsOnly.AutoSize = true;
+      this.cbCustomFieldsOnly.Location = new System.Drawing.Point(7, 49);
+      this.cbCustomFieldsOnly.Name = "cbCustomFieldsOnly";
+      this.cbCustomFieldsOnly.Size = new System.Drawing.Size(115, 17);
+      this.cbCustomFieldsOnly.TabIndex = 7;
+      this.cbCustomFieldsOnly.Text = "Custom Fields Only";
+      this.cbCustomFieldsOnly.UseVisualStyleBackColor = true;
       // 
       // ImportControl
       // 
@@ -215,5 +227,6 @@
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.TextBox textOrganizationName;
     private System.Windows.Forms.CheckBox cbNewOrg;
+    private System.Windows.Forms.CheckBox cbCustomFieldsOnly;
   }
 }

@@ -139,7 +139,13 @@ namespace TSWebServices
         }
 
         if (org.ProductType != ProductType.Express)
+        {
           items.Add(new TsMenuItem("wc", "mniWC", "Water Cooler", "vcr/140/images/nav/16/watercooler.png", string.Format(data, "WaterCooler/WaterCooler.aspx", "vcr/140/PaneInfo/WaterCooler.html")));
+          //if (TSAuthentication.OrganizationID == 1078 || TSAuthentication.OrganizationID == 13679)
+          if (TSAuthentication.UserID == 34 || TSAuthentication.OrganizationID == 13679) // you can put your personal UserID here until released
+          items.Add(new TsMenuItem("wc2", "mniWC2", "New Water Cooler", "vcr/140/images/nav/16/watercooler.png", string.Format(data, "vcr/140/Pages/WaterCooler.html", "vcr/140/PaneInfo/WaterCooler.html")));
+        }
+
         items.Add(new TsMenuItem("users", "mniUsers", "Users", "vcr/140/images/nav/16/users.png", string.Format(data, "Frames/Users.aspx", "vcr/140/PaneInfo/Users.html")));
         items.Add(new TsMenuItem("groups", "mniGroups", "Groups", "vcr/140/images/nav/16/groups.png", string.Format(data, "Frames/Groups.aspx", "vcr/140/PaneInfo/Groups.html")));
         if (org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.HelpDesk)

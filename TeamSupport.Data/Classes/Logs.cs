@@ -5,120 +5,81 @@ using System.Text;
 using System.Data;
 using System.Data.Sql;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace TeamSupport.Data
 {
   public class Logs
   {
-    private LoginUser _loginUser;
-    private string _connectionString;
-    private string _application;
-    private string _category;
-    private int _failures;
-    private bool _doesExist = false;
 
-    public static string GetConnectionString(LoginUser loginUser)
+    string _category = null;
+
+    public string Category
     {
-      SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(loginUser.ConnectionString);
-      builder.InitialCatalog = "TeamSupportAudit";
-      return builder.ConnectionString;
-    }
-
-    public Logs(LoginUser loginUser, string application, string category)
-    {
-      _loginUser = loginUser;
-      _application = application;
-      _category = category;
-      _connectionString = GetConnectionString(loginUser);
-      _failures = 0;
-
-      try
+      get
       {
-        using (SqlConnection connection = new SqlConnection(_connectionString))
+        lock (this)
         {
-          connection.Open();
-          connection.Close();
-        }
-      }
-      catch (Exception ex)
-      {
-        _doesExist = false;
+          return _category;
+        } 
       }
     }
 
-    public void Log(string text)
+    public Logs() { }
+
+    public Logs(string category)
     {
-      Log(text, null, null, null);
+      this._category = category;
     }
 
-    public void Log(string text, int? userID)
+    public void WriteException(Exception ex)
     {
-      Log(text, null);
+      WriteException(ex, null);
     }
 
-    public void Log(string text, ReferenceType? refType, int? refID)
+    public void WriteException(Exception ex, DataRow row)
     {
-      Log(text, null, refType, refID);
+      WriteEvent("EXCEPTION:");
+      WriteEvent("Message: ");
+      WriteEvent(ex.Message);
+      WriteEvent("Stack Trace: ");
+      WriteEvent(ex.StackTrace);
+
+      if (row != null) { WriteData(row); }
     }
 
-    public void Log(string text, int? userID, ReferenceType? refType, int? refID)
+    public void WriteData(DataRow row)
     {
-      if (!_doesExist) return;
-      if (_failures > 3) return;
-      try
+      WriteEvent("Data Row:");
+      WriteEvent(DataUtils.DataRowToString(row));
+    }
+
+    public void WriteEvent(string message)
+    {
+      lock (this)
       {
-        SqlCommand command = new SqlCommand();
-        command.CommandText =
-  @"INSERT INTO [Logs]
-             ([Application]
-             ,[Category]
-             ,[RefType]
-             ,[RefID]
-             ,[LogText]
-             ,[CreatorID])
-       VALUES
-             (@Application
-             ,@Category
-             ,@RefType
-             ,@RefID
-             ,@LogText
-             ,@CreatorID)";
+        string name = Path.ChangeExtension(System.AppDomain.CurrentDomain.FriendlyName, "");
 
-        command.Parameters.AddWithValue("Application", _application);
-        command.Parameters.AddWithValue("Category", _category);
-        command.Parameters.AddWithValue("RefType", (int?)refType ?? -1);
-        command.Parameters.AddWithValue("RefID", refID ?? -1);
-        command.Parameters.AddWithValue("LogText", text);
-        command.Parameters.AddWithValue("CreatorID", userID ?? -1);
-        command.CommandType = CommandType.Text;
+        if (!string.IsNullOrEmpty(Category)) { name = name + " [" + Category + "]"; }
 
-        using (SqlConnection connection = new SqlConnection(_connectionString))
+        string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
+
+        if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
+
+        string path = Path.Combine(logPath,
+            string.Format("{0} {1:yyyy-MM-dd}.txt", name, DateTime.Now));
+
+        message = string.Format("[{0:hh:mm:ss tt}] {1}", DateTime.Now, message);
+
+        //TextWriter writer = TextWriter.Synchronized(!File.Exists(path) ? File.CreateText(path) : File.AppendText(path));
+
+        using (StreamWriter writer = !File.Exists(path) ? File.CreateText(path) : File.AppendText(path))
         {
-          command.Connection = connection;
-          connection.Open();
-          try
-          {
-            command.ExecuteNonQuery();
-          }
-          finally
-          {
-            connection.Close();
-          }
+          writer.WriteLine(message);
         }
-        _failures = 0;
-      }
-      catch (Exception ex)
-      {
-        _failures++;
-        ExceptionLogs.LogException(_loginUser, ex, "Logs", _connectionString);
+
       }
     }
 
-
-    public static void Log(LoginUser loginUser, string application, string category, string text, int? userID, ReferenceType? refType, int? refID)
-    {
-      Logs logs = new Logs(loginUser, application, category);
-      logs.Log(text, userID, refType, refID);
-    }
   }
 }

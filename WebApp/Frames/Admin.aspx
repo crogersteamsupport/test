@@ -11,12 +11,10 @@
           OnClientTabSelected="TabSelected" PerTabScrolling="True" 
           ScrollChildren="True">
          <Tabs>
-           <telerik:RadTab runat="server" Text="My Company" 
-             Value="AdminCompany.aspx"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="My Company" Value="AdminCompany.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="My Portal" Value="AdminPortal.aspx" Visible="true"></telerik:RadTab>
            <telerik:RadTab runat="server" Selected="True" Text="Custom Fields" Value="../vcr/140/Pages/Admin_CustomFields.html"></telerik:RadTab>
-           <telerik:RadTab runat="server" Text="Custom Properties" 
-             Value="AdminCustomProperties.aspx"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="Custom Properties" Value="AdminCustomProperties.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="SLA" Value="AdminSla.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Workflow" Value="AdminWorkflow.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Email" Value="AdminEmails.aspx"></telerik:RadTab>

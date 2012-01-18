@@ -278,5 +278,45 @@ ORDER BY cf.Position";
       }
         
     }
+
+    public static void UpdateValue(LoginUser loginUser, int customFieldID, int refID, string value)
+    {
+      if (value == null) value = "";
+      value = value.Trim();
+      SqlCommand command = new SqlCommand();
+      command.CommandText = @"
+IF EXISTS (SELECT * FROM CustomValues WHERE RefID = @RefID AND CustomFieldID=@CustomFieldID)
+BEGIN
+  UPDATE CustomValues SET CustomValue = @CustomValue WHERE RefID = @RefID AND CustomFieldID=@CustomFieldID
+END
+ELSE
+BEGIN
+  INSERT INTO CustomValues
+           ([CustomFieldID]
+           ,[RefID]
+           ,[CustomValue]
+           ,[DateCreated]
+           ,[DateModified]
+           ,[CreatorID]
+           ,[ModifierID])
+     VALUES
+           (@CustomFieldID
+           ,@RefID
+           ,@CustomValue
+           ,GETUTCDATE()
+           ,GETUTCDATE()
+           ,-1
+           ,-1)
+END";
+
+      command.Parameters.AddWithValue("CustomFieldID", customFieldID);
+      command.Parameters.AddWithValue("RefID", refID);
+      command.Parameters.AddWithValue("CustomValue", value);
+
+      SqlExecutor.ExecuteNonQuery(loginUser, command);
+      
+    
+    
+    }
   }
 }

@@ -53,7 +53,7 @@ $(document).ready(function () {
 
       for (var i = 0; i < attachments.length; i++) {
         $('<li>')
-          .html('<span class="ts-icon ts-icon-attachment"></span><a href="../../dc/attachments/' + attachments[i].AttachmentID + '/" target="_blank">' + attachments[i].FileName + '</a><span class="ui-icon ui-icon-close"></span>')
+          .html('<span class="ts-icon ts-icon-attachment"></span><a href="../../../dc/attachments/' + attachments[i].AttachmentID + '/" target="_blank">' + attachments[i].FileName + '</a><span class="ui-icon ui-icon-close"></span>')
           .data('id', attachments[i].AttachmentID)
           .data('fileName', attachments[i].FileName)
           .appendTo(list)

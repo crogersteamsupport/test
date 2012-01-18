@@ -136,24 +136,48 @@ namespace TeamSupport.Data
     public void UpdateForOrganization(int organizationID)
     {
       _organizationID = organizationID;
-      OrganizationEmails emails = new OrganizationEmails(BaseCollection.LoginUser);
-      emails.LoadByTemplate(_organizationID, EmailTemplateID);
-      if (!emails.IsEmpty)
+      if (IsTSOnly == true)
       {
-        Body = emails[0].Body;
-        IsHtml = emails[0].IsHtml;
-        Subject = emails[0].Subject;
-        Footer = emails[0].Footer;
-        Header = emails[0].Header;
-        UseGlobalTemplate = emails[0].UseGlobalTemplate;
+        if (IsEmail && UseGlobalTemplate)
+        {
+          EmailTemplate global = GetGlobalTemplate(BaseCollection.LoginUser, 1078);
 
+          string content = Body;
+          Body = global.Body;
+          ReplaceParameter("Header", Header);
+          ReplaceParameter("Footer", Footer);
+          ReplaceParameter("Body", content);
+        } 
       }
+      else
+      {
+        OrganizationEmails emails = new OrganizationEmails(BaseCollection.LoginUser);
+        emails.LoadByTemplate(organizationID, EmailTemplateID);
+        if (!emails.IsEmpty)
+        {
+          Body = emails[0].Body;
+          IsHtml = emails[0].IsHtml;
+          Subject = emails[0].Subject;
+          Footer = emails[0].Footer;
+          Header = emails[0].Header;
+          UseGlobalTemplate = emails[0].UseGlobalTemplate;
+        }
 
-      if (IsEmail && UseGlobalTemplate) Body = GetBuiltBody(_organizationID);
+        if (IsEmail && UseGlobalTemplate)
+        {
+          EmailTemplate global = GetGlobalTemplate(BaseCollection.LoginUser, organizationID);
+
+          string content = Body;
+          Body = global.Body;
+          ReplaceParameter("Header", Header);
+          ReplaceParameter("Footer", Footer);
+          ReplaceParameter("Body", content);
+        }
+      }
 
       if (IncludeDelimiter)
       {
-        Organization organization = Organizations.GetOrganization(BaseCollection.LoginUser, organizationID);
+        Organization organization = Organizations.GetOrganization(BaseCollection.LoginUser, _organizationID);
         string delimiter;
         if (IsHtml) delimiter = string.IsNullOrEmpty(organization.EmailDelimiter) ? "<div style=\"margin:0px auto;text-align:center;font-size:12px;color:#a4a4a4; padding-bottom:7px\">--- Please reply above this line ---</div>" : organization.EmailDelimiter;
         else delimiter = string.IsNullOrEmpty(organization.EmailDelimiter) ? "--- Please reply above this line ---" : organization.EmailDelimiter;
@@ -180,18 +204,6 @@ namespace TeamSupport.Data
       emails.LoadByTemplate(organizationID, 18);
       if (!emails.IsEmpty) template.Body = emails[0].Body;
       return template;
-    }
-
-    private string GetBuiltBody(int organizationID)
-    {
-      EmailTemplate global = GetGlobalTemplate(BaseCollection.LoginUser, organizationID);
-
-      string content = Body;
-      Body = global.Body;
-      ReplaceParameter("Header", Header);
-      ReplaceParameter("Footer", Footer);
-      ReplaceParameter("Body", content);
-      return Body;
     }
 
   }
@@ -335,7 +347,7 @@ namespace TeamSupport.Data
 
     public static MailMessage GetWelcomeTSUser(LoginUser loginUser, UsersViewItem user, string password)
     {
-      EmailTemplate template = GetTemplate(loginUser, 1078, 9);
+      EmailTemplate template = GetTemplate(loginUser, user.OrganizationID, 9);
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceParameter("Password", password);
       return template.GetMessage();
     }
@@ -362,7 +374,7 @@ namespace TeamSupport.Data
 
     public static MailMessage GetChangedPasswordTS(LoginUser loginUser, UsersViewItem user)
     {
-      EmailTemplate template = GetTemplate(loginUser, 1078, 12);
+      EmailTemplate template = GetTemplate(loginUser, user.OrganizationID, 12);
       template.ReplaceCommonParameters().ReplaceFields("User", user);
       return template.GetMessage();
     }

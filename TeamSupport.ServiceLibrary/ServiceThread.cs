@@ -69,6 +69,12 @@ namespace TeamSupport.ServiceLibrary
       get { return _loginUser; }
     }
 
+    protected Logs _logs;
+    protected Logs Logs
+    {
+      get { return _logs; }
+    }
+
     public virtual void Stop()
     {
       lock (this) { _isStopped = true; }
@@ -100,7 +106,7 @@ namespace TeamSupport.ServiceLibrary
         service.LastResult = "";
         service.Collection.Save();
       }
-
+      _logs = new Data.Logs(ServiceName);
       _thread.Start();
     }
 

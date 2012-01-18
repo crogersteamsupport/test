@@ -11,19 +11,19 @@ namespace TeamSupport.ServiceLibrary
 {
   public class Indexer : ServiceThread
   {
-    private Logs logs;
-
     public override void Run()
     {
-      logs = new Logs(LoginUser, ServiceName, "Tickets");
+      Logs.WriteEvent("Started Indexing");
       try
       {
         ProcessTicketIndex();
       }
       catch (Exception ex)
       {
+        Logs.WriteException(ex);
         ExceptionLogs.LogException(LoginUser, ex, "Indexer"); 
       }
+      Logs.WriteEvent("Finished Indexing");
 
 
     }
@@ -35,14 +35,13 @@ namespace TeamSupport.ServiceLibrary
 
     private void ProcessTicketIndex()
     {
-      logs.Log("Starting Ticket Index");
+      Logs.WriteEvent("Starting Ticket Index");
 
       string path = Settings.ReadString("Tickets Index Path", "c:\\Indexes\\Tickets");
+      Logs.WriteEvent("Path: " + path);
+      bool isNew = !System.IO.Directory.Exists(path);
 
-      if (!Directory.Exists(path)) {
-        ExceptionLogs.AddLog(LoginUser, "Invalid Path", path + " does not exist", "Ticket Indexer", "", "", "");
-        return;
-      }
+      if (isNew) { Directory.CreateDirectory(path); }
 
 
       try
@@ -51,10 +50,9 @@ namespace TeamSupport.ServiceLibrary
       }
       catch (Exception ex)
       {
+        Logs.WriteException(ex);
         ExceptionLogs.LogException(LoginUser, ex, "Indexer.RemoveOldTicketIndexes"); 
       }
-
-     // CompressTicketIndexes(LoginUser, path);
 
       Options options = new Options();
       options.TextFlags = TextFlags.dtsoTfRecognizeDates;
@@ -63,10 +61,10 @@ namespace TeamSupport.ServiceLibrary
       {
         TicketIndexDataSource dataSource = new TicketIndexDataSource();
         dataSource.LoginUser = LoginUser;
+        dataSource.Logs = Logs;
         dataSource.MaxCount = Settings.ReadInt("Max Records", 1000);
         job.DataSourceToIndex = dataSource;
         
-        bool isNew = !System.IO.Directory.Exists(path);
         job.IndexPath = path;
         job.ActionCreate = isNew;
         job.ActionAdd = true;
@@ -80,13 +78,13 @@ namespace TeamSupport.ServiceLibrary
         ExecuteJob(job, "IndexerTicketsStatus");
         UpdateTickets(dataSource);
       }
+      Logs.WriteEvent("Finished Ticket Index");
     }
 
     private void UpdateTickets(TicketIndexDataSource dataSource)
     {
-      logs.Log("Started Updating Ticket Indexes Statuses");
-
       if (dataSource.UpdatedTickets.Count < 1) return;
+      Logs.WriteEvent("Started Updating Ticket Indexes Statuses");
 
       StringBuilder builder = new StringBuilder();
       foreach (KeyValuePair<int, int> item in dataSource.UpdatedTickets)
@@ -100,12 +98,12 @@ namespace TeamSupport.ServiceLibrary
       command.CommandType = System.Data.CommandType.Text;
 
       SqlExecutor.ExecuteNonQuery(dataSource.LoginUser, command);
-      logs.Log("Finished Updating Ticket Indexes Statuses");
+      Logs.WriteEvent("Finished Updating Ticket Indexes Statuses");
     }
 
     private void RemoveOldTicketIndexes(LoginUser loginUser, string indexPath)
     {
-      logs.Log("Started Removing Old Ticket Indexes");
+      Logs.WriteEvent("Started Removing Old Ticket Indexes");
       if (!Directory.Exists(indexPath)) return;
       DeletedIndexItems items = new DeletedIndexItems(loginUser);
       items.LoadByReferenceType(ReferenceType.Tickets);
@@ -139,7 +137,7 @@ namespace TeamSupport.ServiceLibrary
 
       items.DeleteAll();
       items.Save();
-      logs.Log("Finished Removing Old Ticket Indexes");
+      Logs.WriteEvent("Finished Removing Old Ticket Indexes");
     }
     /*
     private void CompressTicketIndexes(LoginUser loginUser, string indexPath)
@@ -154,13 +152,13 @@ namespace TeamSupport.ServiceLibrary
       }
       else
       {
-        logs.Log("Forced Compress");
+        Logs.WriteEvent("Forced Compress");
         Settings.WriteBool("Force Compress", false);
       }
 
 
 
-      logs.Log("Starting Compression Job");
+      Logs.WriteEvent("Starting Compression Job");
 
       using (IndexJob job = new IndexJob())
       {
@@ -199,7 +197,7 @@ namespace TeamSupport.ServiceLibrary
           Settings.WriteString("Last Compressed", DateTime.Now.ToString());
           Settings.WriteInt("Last Compress Time", (int)DateTime.Now.Subtract(start).TotalSeconds);
         }
-        logs.Log("Finished Compressing Ticket Indexes");
+        Logs.WriteEvent("Finished Compressing Ticket Indexes");
         Settings.WriteBool("Force Compress", false);
 
       }
@@ -208,16 +206,27 @@ namespace TeamSupport.ServiceLibrary
 
     private void ExecuteJob(IndexJob job, string statusKey)
     {
-      job.ExecuteInThread();
-      
-      // Monitor the job execution thread as it progresses
-      IndexProgressInfo status = new IndexProgressInfo();
-      while (job.IsThreadDone(500, status) == false)
+      Logs.WriteEvent("Starting Index Job");
+      try
       {
-        if (IsStopped) { job.AbortThread(); }
-      }
-      logs.Log("Finished Ticket Index");
+        job.Execute();
+        /*
+        job.ExecuteInThread();
 
+        // Monitor the job execution thread as it progresses
+        IndexProgressInfo status = new IndexProgressInfo();
+        while (job.IsThreadDone(500, status) == false)
+        {
+          if (IsStopped) { job.AbortThread(); }
+        }*/
+      }
+      catch (Exception ex)
+      {
+        ExceptionLogs.LogException(LoginUser, ex, "Index Job Processor");
+        Logs.WriteException(ex);
+        throw;
+      }
+      Logs.WriteEvent("Finished Index Job");
     }
 
   }

@@ -15,7 +15,6 @@ namespace TeamSupport.ServiceLibrary
 
     public override void Run()
     {
-      logs = new Logs(LoginUser, ServiceName, "ReminderProcessor");
       try
       {
         Reminders reminders = new Reminders(LoginUser);

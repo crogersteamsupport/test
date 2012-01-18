@@ -38,6 +38,13 @@ namespace TeamSupport.ServiceLibrary
       set { _loginUser = value; }
     }
 
+    private Logs _logs = null;
+    public Logs Logs
+    {
+      get { return _logs; }
+      set { _logs = value; }
+    }
+
     public TicketIndexDataSource()
     {
       DocName = "";
@@ -56,6 +63,7 @@ namespace TeamSupport.ServiceLibrary
     {
       try
       {
+        Logs.WriteEvent("Getting next ticket");
         if (_reader == null) { Rewind(); }
 
         if (_lastTicketID != null)
@@ -63,12 +71,17 @@ namespace TeamSupport.ServiceLibrary
           _updatedTickets.Add((int)_lastTicketID, DocId);
         }
 
-        if (_count >= _maxCount) return false;
+        if (_count >= _maxCount) {
+          Logs.WriteEvent("Max has been reached.");
+          return false; 
+        }
+
         if (!_reader.HasRows || !_reader.Read())
         {
           try
           {
             if (!_reader.IsClosed) _reader.Close();
+            Logs.WriteEvent("No more tickets to process.");
             return false;
           }
           catch (Exception)
@@ -85,6 +98,7 @@ namespace TeamSupport.ServiceLibrary
         DocFields = "";
         DocName = _reader["TicketID"].ToString();
         DocDisplayName = string.Format("{0}: {1}", _reader["TicketNumber"].ToString(), _reader["Name"].ToString());
+        Logs.WriteEvent("Processing [" + _count.ToString() + "] " + DocDisplayName);
         _lastTicketID = (int)_reader["TicketID"];
         for (int i = 0; i < _reader.FieldCount; i++)
         {
@@ -105,6 +119,7 @@ namespace TeamSupport.ServiceLibrary
       catch (Exception ex)
       {
         ExceptionLogs.LogException(LoginUser, ex, "TicketIndexDataSource");
+        Logs.WriteException(ex);
         throw;
       }
     }
@@ -113,7 +128,7 @@ namespace TeamSupport.ServiceLibrary
     {
       try
       {
-
+        Logs.WriteEvent("Rewinding Tickets Source");
         _fieldAliases.Clear();
         ReportTableFields fields = new ReportTableFields(LoginUser);
         fields.LoadByReportTableID(10);
@@ -153,11 +168,13 @@ namespace TeamSupport.ServiceLibrary
         _reader = command.ExecuteReader(CommandBehavior.CloseConnection);
         _lastTicketID = null;
         _count = 0;
+        Logs.WriteEvent("Tickets Source Rewound");
 
       }
       catch (Exception ex)
       {
         ExceptionLogs.LogException(LoginUser, ex, "TicketIndexDataSource Rewind");
+        Logs.WriteException(ex);
         throw;
       }
       return true;

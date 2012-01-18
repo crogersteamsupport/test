@@ -273,7 +273,7 @@ namespace TeamSupport.Data
       _ticketTypeNames = ticketTypeNames.ToArray();
     }
 
-    public string Import(int organizationID)
+    public string Import(int organizationID, bool importOnlyCustomFields)
     {
       using (_log = new ImportLog(Path.ChangeExtension(_fileName, ".log")))
       {
@@ -292,46 +292,48 @@ namespace TeamSupport.Data
 
           try
           {
-
-            GC.WaitForPendingFinalizers();
-            ImportUsers();
-            GC.WaitForPendingFinalizers();
-            ImportGroups();
-            GC.WaitForPendingFinalizers();
-            ImportUserGroups();
-            GC.WaitForPendingFinalizers();
-            ImportCustomers();
-            GC.WaitForPendingFinalizers();
-            ImportContacts();
-            GC.WaitForPendingFinalizers();
-            ImportPrimaryContacts();
-            GC.WaitForPendingFinalizers();
-            ImportProducts();
-            GC.WaitForPendingFinalizers();
-            ImportProductVersions();
-            GC.WaitForPendingFinalizers();
-            ImportAssets();
-            GC.WaitForPendingFinalizers();
-            ImportTickets();
-            GC.WaitForPendingFinalizers();
-            ImportActions();
-            GC.WaitForPendingFinalizers();
-            ImportAttachments();
-            GC.WaitForPendingFinalizers();
-            ImportAddresses();
-            GC.WaitForPendingFinalizers();
-            ImportPhoneNumbers();
-            GC.WaitForPendingFinalizers();
-            ImportNotes();
-            GC.WaitForPendingFinalizers();
-            ImportCustomerProducts();
-            GC.WaitForPendingFinalizers();
-            ImportCustomerTickets();
-            GC.WaitForPendingFinalizers();
-            ImportContactTickets();
-            GC.WaitForPendingFinalizers();
-            ImportWiki();
-            GC.WaitForPendingFinalizers();
+            if (!importOnlyCustomFields)
+            {
+              GC.WaitForPendingFinalizers();
+              ImportUsers();
+              GC.WaitForPendingFinalizers();
+              ImportGroups();
+              GC.WaitForPendingFinalizers();
+              ImportUserGroups();
+              GC.WaitForPendingFinalizers();
+              ImportCustomers();
+              GC.WaitForPendingFinalizers();
+              ImportContacts();
+              GC.WaitForPendingFinalizers();
+              ImportPrimaryContacts();
+              GC.WaitForPendingFinalizers();
+              ImportProducts();
+              GC.WaitForPendingFinalizers();
+              ImportProductVersions();
+              GC.WaitForPendingFinalizers();
+              ImportAssets();
+              GC.WaitForPendingFinalizers();
+              ImportTickets();
+              GC.WaitForPendingFinalizers();
+              ImportActions();
+              GC.WaitForPendingFinalizers();
+              ImportAttachments();
+              GC.WaitForPendingFinalizers();
+              ImportAddresses();
+              GC.WaitForPendingFinalizers();
+              ImportPhoneNumbers();
+              GC.WaitForPendingFinalizers();
+              ImportNotes();
+              GC.WaitForPendingFinalizers();
+              ImportCustomerProducts();
+              GC.WaitForPendingFinalizers();
+              ImportCustomerTickets();
+              GC.WaitForPendingFinalizers();
+              ImportContactTickets();
+              GC.WaitForPendingFinalizers();
+              ImportWiki();
+              GC.WaitForPendingFinalizers();
+            }
             ImportCustomFields();
             GC.WaitForPendingFinalizers();
           }
@@ -353,9 +355,9 @@ namespace TeamSupport.Data
 
     }
 
-    public string Import(string organizationName)
+    public string Import(string organizationName, bool importOnlyCustomFields)
     {
-      return Import(CreateOrganization(organizationName));
+      return Import(CreateOrganization(organizationName), importOnlyCustomFields);
     }
 
     #region Type Import Methods
@@ -1947,13 +1949,15 @@ namespace TeamSupport.Data
               int id;
               if (idList.TryGetValue(idPrefix + row[fieldName].ToString().Trim().ToLower(), out id))
               {
-                  CustomValue value = values.AddNewCustomValue();
-                  value.CustomFieldID = importField.TSFieldID;
-                  value.Value = itemValue;
-                  value.RefID = id;
+
+                /*CustomValue value = values.AddNewCustomValue();
+                value.CustomFieldID = importField.TSFieldID;
+                value.Value = itemValue;
+                value.RefID = id;*/
                 try
                 {
-                  values.Save();
+                  CustomValues.UpdateValue(_loginUser, importField.TSFieldID, id, itemValue);
+                  //values.Save();
                 }
                 catch (Exception ex)
                 {
@@ -1965,8 +1969,9 @@ namespace TeamSupport.Data
                               ex.StackTrace
                               )); 
                 }
+                count++;
 
-                /*if (++count % BULK_LIMIT == 0)
+                /*if (count % BULK_LIMIT == 0)
                 {
                   values.BulkSave();
                   values = new CustomValues(_loginUser);

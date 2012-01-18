@@ -20,10 +20,18 @@ public partial class ServiceStatus : System.Web.UI.Page
         Service service = Services.GetService(LoginUser.Anonymous, Request["ServiceName"], false);
         if (service == null)
         {
-          Response.Write("Service not found");
+          Response.Write("Service not found.");
           Response.End();
           return;
         }
+
+        if (!service.Enabled)
+        {
+          Response.Write("Service is disabled.");
+          Response.End();
+          return;
+        }
+
         name = service.Name + " service is ";
         if (service.LastStartTime != null) 
         {
@@ -40,7 +48,7 @@ public partial class ServiceStatus : System.Web.UI.Page
         flag = true;
         foreach (Service service in services)
         {
-          if (service.LastStartTime == null) continue;
+          if (service.LastStartTime == null || !service.Enabled) continue;
           if (DateTime.Now.Subtract((DateTime)service.Row["LastStartTime"]).TotalMinutes > delay)
           {
             flag = false;

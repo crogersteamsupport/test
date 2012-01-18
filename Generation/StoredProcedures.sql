@@ -10112,6 +10112,126 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+
+(
+  @MessageID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [GroupFor],
+    [ReplyTo],
+    [Message],
+    [MessageType],
+    [UserName],
+    [GroupName]
+  FROM [dbo].[WaterCoolerView]
+  WHERE ([MessageID] = @MessageID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
+
+(
+  @MessageID int,
+  @UserID int,
+  @OrganizationID int,
+  @TimeStamp datetime,
+  @GroupFor int,
+  @ReplyTo int,
+  @Message text,
+  @MessageType varchar(50),
+  @UserName varchar(201),
+  @GroupName varchar(255),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[WaterCoolerView]
+  (
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [GroupFor],
+    [ReplyTo],
+    [Message],
+    [MessageType],
+    [UserName],
+    [GroupName])
+  VALUES (
+    @MessageID,
+    @UserID,
+    @OrganizationID,
+    @TimeStamp,
+    @GroupFor,
+    @ReplyTo,
+    @Message,
+    @MessageType,
+    @UserName,
+    @GroupName)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
+
+(
+  @MessageID int,
+  @UserID int,
+  @OrganizationID int,
+  @TimeStamp datetime,
+  @GroupFor int,
+  @ReplyTo int,
+  @Message text,
+  @MessageType varchar(50),
+  @UserName varchar(201),
+  @GroupName varchar(255)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[WaterCoolerView]
+  SET
+    [UserID] = @UserID,
+    [OrganizationID] = @OrganizationID,
+    [TimeStamp] = @TimeStamp,
+    [GroupFor] = @GroupFor,
+    [ReplyTo] = @ReplyTo,
+    [Message] = @Message,
+    [MessageType] = @MessageType,
+    [UserName] = @UserName,
+    [GroupName] = @GroupName
+  WHERE ([MessageID] = @MessageID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
+
+(
+  @MessageID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[WaterCoolerView]
+  WHERE ([MessageID] = @MessageID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSystemSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSystemSetting
 GO
 
@@ -10327,7 +10447,9 @@ AS
     [DisplayProductVersion],
     [LandingPageHtml],
     [DisplayLandingPage],
-    [EnableScreenr]
+    [EnableScreenr],
+    [PublicLandingPageHeader],
+    [PublicLandingPageBody]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -10369,6 +10491,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
   @EnableScreenr bit,
+  @PublicLandingPageHeader varchar(MAX),
+  @PublicLandingPageBody varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -10405,7 +10529,9 @@ AS
     [DisplayProductVersion],
     [LandingPageHtml],
     [DisplayLandingPage],
-    [EnableScreenr])
+    [EnableScreenr],
+    [PublicLandingPageHeader],
+    [PublicLandingPageBody])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -10437,7 +10563,9 @@ AS
     @DisplayProductVersion,
     @LandingPageHtml,
     @DisplayLandingPage,
-    @EnableScreenr)
+    @EnableScreenr,
+    @PublicLandingPageHeader,
+    @PublicLandingPageBody)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -10478,7 +10606,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
-  @EnableScreenr bit
+  @EnableScreenr bit,
+  @PublicLandingPageHeader varchar(MAX),
+  @PublicLandingPageBody varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -10513,7 +10643,9 @@ AS
     [DisplayProductVersion] = @DisplayProductVersion,
     [LandingPageHtml] = @LandingPageHtml,
     [DisplayLandingPage] = @DisplayLandingPage,
-    [EnableScreenr] = @EnableScreenr
+    [EnableScreenr] = @EnableScreenr,
+    [PublicLandingPageHeader] = @PublicLandingPageHeader,
+    [PublicLandingPageBody] = @PublicLandingPageBody
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -22083,6 +22215,126 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+
+(
+  @MessageID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [GroupFor],
+    [ReplyTo],
+    [Message],
+    [MessageType],
+    [UserName],
+    [GroupName]
+  FROM [dbo].[WaterCoolerView]
+  WHERE ([MessageID] = @MessageID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
+
+(
+  @MessageID int,
+  @UserID int,
+  @OrganizationID int,
+  @TimeStamp datetime,
+  @GroupFor int,
+  @ReplyTo int,
+  @Message text,
+  @MessageType varchar(50),
+  @UserName varchar(201),
+  @GroupName varchar(255),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[WaterCoolerView]
+  (
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [GroupFor],
+    [ReplyTo],
+    [Message],
+    [MessageType],
+    [UserName],
+    [GroupName])
+  VALUES (
+    @MessageID,
+    @UserID,
+    @OrganizationID,
+    @TimeStamp,
+    @GroupFor,
+    @ReplyTo,
+    @Message,
+    @MessageType,
+    @UserName,
+    @GroupName)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
+
+(
+  @MessageID int,
+  @UserID int,
+  @OrganizationID int,
+  @TimeStamp datetime,
+  @GroupFor int,
+  @ReplyTo int,
+  @Message text,
+  @MessageType varchar(50),
+  @UserName varchar(201),
+  @GroupName varchar(255)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[WaterCoolerView]
+  SET
+    [UserID] = @UserID,
+    [OrganizationID] = @OrganizationID,
+    [TimeStamp] = @TimeStamp,
+    [GroupFor] = @GroupFor,
+    [ReplyTo] = @ReplyTo,
+    [Message] = @Message,
+    [MessageType] = @MessageType,
+    [UserName] = @UserName,
+    [GroupName] = @GroupName
+  WHERE ([MessageID] = @MessageID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
+
+(
+  @MessageID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[WaterCoolerView]
+  WHERE ([MessageID] = @MessageID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSystemSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSystemSetting
 GO
 
@@ -22298,7 +22550,9 @@ AS
     [DisplayProductVersion],
     [LandingPageHtml],
     [DisplayLandingPage],
-    [EnableScreenr]
+    [EnableScreenr],
+    [PublicLandingPageHeader],
+    [PublicLandingPageBody]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -22340,6 +22594,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
   @EnableScreenr bit,
+  @PublicLandingPageHeader varchar(MAX),
+  @PublicLandingPageBody varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -22376,7 +22632,9 @@ AS
     [DisplayProductVersion],
     [LandingPageHtml],
     [DisplayLandingPage],
-    [EnableScreenr])
+    [EnableScreenr],
+    [PublicLandingPageHeader],
+    [PublicLandingPageBody])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -22408,7 +22666,9 @@ AS
     @DisplayProductVersion,
     @LandingPageHtml,
     @DisplayLandingPage,
-    @EnableScreenr)
+    @EnableScreenr,
+    @PublicLandingPageHeader,
+    @PublicLandingPageBody)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -22449,7 +22709,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
-  @EnableScreenr bit
+  @EnableScreenr bit,
+  @PublicLandingPageHeader varchar(MAX),
+  @PublicLandingPageBody varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -22484,7 +22746,9 @@ AS
     [DisplayProductVersion] = @DisplayProductVersion,
     [LandingPageHtml] = @LandingPageHtml,
     [DisplayLandingPage] = @DisplayLandingPage,
-    [EnableScreenr] = @EnableScreenr
+    [EnableScreenr] = @EnableScreenr,
+    [PublicLandingPageHeader] = @PublicLandingPageHeader,
+    [PublicLandingPageBody] = @PublicLandingPageBody
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -34054,6 +34318,126 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+
+(
+  @MessageID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [GroupFor],
+    [ReplyTo],
+    [Message],
+    [MessageType],
+    [UserName],
+    [GroupName]
+  FROM [dbo].[WaterCoolerView]
+  WHERE ([MessageID] = @MessageID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
+
+(
+  @MessageID int,
+  @UserID int,
+  @OrganizationID int,
+  @TimeStamp datetime,
+  @GroupFor int,
+  @ReplyTo int,
+  @Message text,
+  @MessageType varchar(50),
+  @UserName varchar(201),
+  @GroupName varchar(255),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[WaterCoolerView]
+  (
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [GroupFor],
+    [ReplyTo],
+    [Message],
+    [MessageType],
+    [UserName],
+    [GroupName])
+  VALUES (
+    @MessageID,
+    @UserID,
+    @OrganizationID,
+    @TimeStamp,
+    @GroupFor,
+    @ReplyTo,
+    @Message,
+    @MessageType,
+    @UserName,
+    @GroupName)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
+
+(
+  @MessageID int,
+  @UserID int,
+  @OrganizationID int,
+  @TimeStamp datetime,
+  @GroupFor int,
+  @ReplyTo int,
+  @Message text,
+  @MessageType varchar(50),
+  @UserName varchar(201),
+  @GroupName varchar(255)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[WaterCoolerView]
+  SET
+    [UserID] = @UserID,
+    [OrganizationID] = @OrganizationID,
+    [TimeStamp] = @TimeStamp,
+    [GroupFor] = @GroupFor,
+    [ReplyTo] = @ReplyTo,
+    [Message] = @Message,
+    [MessageType] = @MessageType,
+    [UserName] = @UserName,
+    [GroupName] = @GroupName
+  WHERE ([MessageID] = @MessageID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
+
+(
+  @MessageID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[WaterCoolerView]
+  WHERE ([MessageID] = @MessageID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSystemSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSystemSetting
 GO
 
@@ -34269,7 +34653,9 @@ AS
     [DisplayProductVersion],
     [LandingPageHtml],
     [DisplayLandingPage],
-    [EnableScreenr]
+    [EnableScreenr],
+    [PublicLandingPageHeader],
+    [PublicLandingPageBody]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -34311,6 +34697,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
   @EnableScreenr bit,
+  @PublicLandingPageHeader varchar(MAX),
+  @PublicLandingPageBody varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -34347,7 +34735,9 @@ AS
     [DisplayProductVersion],
     [LandingPageHtml],
     [DisplayLandingPage],
-    [EnableScreenr])
+    [EnableScreenr],
+    [PublicLandingPageHeader],
+    [PublicLandingPageBody])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -34379,7 +34769,9 @@ AS
     @DisplayProductVersion,
     @LandingPageHtml,
     @DisplayLandingPage,
-    @EnableScreenr)
+    @EnableScreenr,
+    @PublicLandingPageHeader,
+    @PublicLandingPageBody)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -34420,7 +34812,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
-  @EnableScreenr bit
+  @EnableScreenr bit,
+  @PublicLandingPageHeader varchar(MAX),
+  @PublicLandingPageBody varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -34455,7 +34849,9 @@ AS
     [DisplayProductVersion] = @DisplayProductVersion,
     [LandingPageHtml] = @LandingPageHtml,
     [DisplayLandingPage] = @DisplayLandingPage,
-    [EnableScreenr] = @EnableScreenr
+    [EnableScreenr] = @EnableScreenr,
+    [PublicLandingPageHeader] = @PublicLandingPageHeader,
+    [PublicLandingPageBody] = @PublicLandingPageBody
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -46025,6 +46421,126 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+
+(
+  @MessageID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [GroupFor],
+    [ReplyTo],
+    [Message],
+    [MessageType],
+    [UserName],
+    [GroupName]
+  FROM [dbo].[WaterCoolerView]
+  WHERE ([MessageID] = @MessageID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
+
+(
+  @MessageID int,
+  @UserID int,
+  @OrganizationID int,
+  @TimeStamp datetime,
+  @GroupFor int,
+  @ReplyTo int,
+  @Message text,
+  @MessageType varchar(50),
+  @UserName varchar(201),
+  @GroupName varchar(255),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[WaterCoolerView]
+  (
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [GroupFor],
+    [ReplyTo],
+    [Message],
+    [MessageType],
+    [UserName],
+    [GroupName])
+  VALUES (
+    @MessageID,
+    @UserID,
+    @OrganizationID,
+    @TimeStamp,
+    @GroupFor,
+    @ReplyTo,
+    @Message,
+    @MessageType,
+    @UserName,
+    @GroupName)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
+
+(
+  @MessageID int,
+  @UserID int,
+  @OrganizationID int,
+  @TimeStamp datetime,
+  @GroupFor int,
+  @ReplyTo int,
+  @Message text,
+  @MessageType varchar(50),
+  @UserName varchar(201),
+  @GroupName varchar(255)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[WaterCoolerView]
+  SET
+    [UserID] = @UserID,
+    [OrganizationID] = @OrganizationID,
+    [TimeStamp] = @TimeStamp,
+    [GroupFor] = @GroupFor,
+    [ReplyTo] = @ReplyTo,
+    [Message] = @Message,
+    [MessageType] = @MessageType,
+    [UserName] = @UserName,
+    [GroupName] = @GroupName
+  WHERE ([MessageID] = @MessageID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
+
+(
+  @MessageID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[WaterCoolerView]
+  WHERE ([MessageID] = @MessageID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSystemSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSystemSetting
 GO
 
@@ -46240,7 +46756,9 @@ AS
     [DisplayProductVersion],
     [LandingPageHtml],
     [DisplayLandingPage],
-    [EnableScreenr]
+    [EnableScreenr],
+    [PublicLandingPageHeader],
+    [PublicLandingPageBody]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -46282,6 +46800,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
   @EnableScreenr bit,
+  @PublicLandingPageHeader varchar(MAX),
+  @PublicLandingPageBody varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -46318,7 +46838,9 @@ AS
     [DisplayProductVersion],
     [LandingPageHtml],
     [DisplayLandingPage],
-    [EnableScreenr])
+    [EnableScreenr],
+    [PublicLandingPageHeader],
+    [PublicLandingPageBody])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -46350,7 +46872,9 @@ AS
     @DisplayProductVersion,
     @LandingPageHtml,
     @DisplayLandingPage,
-    @EnableScreenr)
+    @EnableScreenr,
+    @PublicLandingPageHeader,
+    @PublicLandingPageBody)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -46391,7 +46915,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
-  @EnableScreenr bit
+  @EnableScreenr bit,
+  @PublicLandingPageHeader varchar(MAX),
+  @PublicLandingPageBody varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -46426,7 +46952,9 @@ AS
     [DisplayProductVersion] = @DisplayProductVersion,
     [LandingPageHtml] = @LandingPageHtml,
     [DisplayLandingPage] = @DisplayLandingPage,
-    [EnableScreenr] = @EnableScreenr
+    [EnableScreenr] = @EnableScreenr,
+    [PublicLandingPageHeader] = @PublicLandingPageHeader,
+    [PublicLandingPageBody] = @PublicLandingPageBody
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -57996,6 +58524,126 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+
+(
+  @MessageID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [GroupFor],
+    [ReplyTo],
+    [Message],
+    [MessageType],
+    [UserName],
+    [GroupName]
+  FROM [dbo].[WaterCoolerView]
+  WHERE ([MessageID] = @MessageID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
+
+(
+  @MessageID int,
+  @UserID int,
+  @OrganizationID int,
+  @TimeStamp datetime,
+  @GroupFor int,
+  @ReplyTo int,
+  @Message text,
+  @MessageType varchar(50),
+  @UserName varchar(201),
+  @GroupName varchar(255),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[WaterCoolerView]
+  (
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [GroupFor],
+    [ReplyTo],
+    [Message],
+    [MessageType],
+    [UserName],
+    [GroupName])
+  VALUES (
+    @MessageID,
+    @UserID,
+    @OrganizationID,
+    @TimeStamp,
+    @GroupFor,
+    @ReplyTo,
+    @Message,
+    @MessageType,
+    @UserName,
+    @GroupName)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
+
+(
+  @MessageID int,
+  @UserID int,
+  @OrganizationID int,
+  @TimeStamp datetime,
+  @GroupFor int,
+  @ReplyTo int,
+  @Message text,
+  @MessageType varchar(50),
+  @UserName varchar(201),
+  @GroupName varchar(255)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[WaterCoolerView]
+  SET
+    [UserID] = @UserID,
+    [OrganizationID] = @OrganizationID,
+    [TimeStamp] = @TimeStamp,
+    [GroupFor] = @GroupFor,
+    [ReplyTo] = @ReplyTo,
+    [Message] = @Message,
+    [MessageType] = @MessageType,
+    [UserName] = @UserName,
+    [GroupName] = @GroupName
+  WHERE ([MessageID] = @MessageID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
+
+(
+  @MessageID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[WaterCoolerView]
+  WHERE ([MessageID] = @MessageID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSystemSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSystemSetting
 GO
 
@@ -58211,7 +58859,9 @@ AS
     [DisplayProductVersion],
     [LandingPageHtml],
     [DisplayLandingPage],
-    [EnableScreenr]
+    [EnableScreenr],
+    [PublicLandingPageHeader],
+    [PublicLandingPageBody]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -58253,6 +58903,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
   @EnableScreenr bit,
+  @PublicLandingPageHeader varchar(MAX),
+  @PublicLandingPageBody varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -58289,7 +58941,9 @@ AS
     [DisplayProductVersion],
     [LandingPageHtml],
     [DisplayLandingPage],
-    [EnableScreenr])
+    [EnableScreenr],
+    [PublicLandingPageHeader],
+    [PublicLandingPageBody])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -58321,7 +58975,9 @@ AS
     @DisplayProductVersion,
     @LandingPageHtml,
     @DisplayLandingPage,
-    @EnableScreenr)
+    @EnableScreenr,
+    @PublicLandingPageHeader,
+    @PublicLandingPageBody)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -58362,7 +59018,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayProductVersion bit,
   @LandingPageHtml varchar(MAX),
   @DisplayLandingPage bit,
-  @EnableScreenr bit
+  @EnableScreenr bit,
+  @PublicLandingPageHeader varchar(MAX),
+  @PublicLandingPageBody varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -58397,7 +59055,9 @@ AS
     [DisplayProductVersion] = @DisplayProductVersion,
     [LandingPageHtml] = @LandingPageHtml,
     [DisplayLandingPage] = @DisplayLandingPage,
-    [EnableScreenr] = @EnableScreenr
+    [EnableScreenr] = @EnableScreenr,
+    [PublicLandingPageHeader] = @PublicLandingPageHeader,
+    [PublicLandingPageBody] = @PublicLandingPageBody
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 

@@ -14,6 +14,8 @@ using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
 using dtSearch.Engine;
+using System.Net;
+using System.IO;
 
 namespace TSWebServices
 {
@@ -447,14 +449,35 @@ namespace TSWebServices
     public string ReadServiceSettings()
     {
       if (TSAuthentication.UserID != 34) return "";
-      
-      SqlCommand command = new SqlCommand();
-      return Settings.SystemDB.ReadString("Tickets Index Path", "c:\\Indexes\\Tickets");
-      command.CommandText = "UPDATE Services SET Enabled = 0 WHERE ServiceID=13";
-      SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), command);
-      command.CommandText = "SELECT Count(*) FROM Tickets where needsindexing > 0";
-      DataTable table = SqlExecutor.ExecuteQuery(TSAuthentication.GetLoginUser(), command);
-      return DataTableToHTMLTable(table);
+
+
+      try
+      {
+        WebRequest request = WebRequest.Create("https://supporttickets.infinity.com/api/xml/tickets");
+        //request.Headers.Add("Authorization", "1086:5d18b0ce-36dc-42da-b527-ca6c4d625e32");
+        request.Credentials = new NetworkCredential("1086", "5d18b0ce-36dc-42da-b527-ca6c4d625e32");
+        WebResponse response = request.GetResponse();
+
+        Stream stream = response.GetResponseStream();
+        StringBuilder sb = new StringBuilder();
+        byte[] buf = new byte[8192];
+        int count = 0;
+        do
+        {
+          count = stream.Read(buf, 0, buf.Length);
+          if (count != 0)
+          {
+            sb.Append(Encoding.ASCII.GetString(buf, 0, count));
+          }
+
+        } while (count > 0);
+        return sb.ToString();
+      }
+      catch (Exception ex)
+      {
+        
+        throw;
+      }
     }
 
 

@@ -70,6 +70,10 @@ Ts.Services = {};
     Ts.Services.CustomFields = new TSWebServices.CustomFieldsService();
     Ts.Services.CustomFields.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.CustomFields.set_defaultFailedCallback(defaultFailedCallback);
+
+    Ts.Services.WaterCooler = new TSWebServices.WaterCoolerService();
+    Ts.Services.WaterCooler.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.WaterCooler.set_defaultFailedCallback(defaultFailedCallback);
     callback();
   }
 

@@ -11,11 +11,9 @@ namespace TeamSupport.ServiceLibrary
 {
   public class IndexMaintenance : ServiceThread
   {
-    private Logs logs;
-
     public override void Run()
     {
-      logs = new Logs(LoginUser, ServiceName, "Tickets");
+      return;
       try
       {
         string ticketPath = Settings.ReadString("Tickets Index Path", "c:\\Indexes\\Tickets");
@@ -25,8 +23,6 @@ namespace TeamSupport.ServiceLibrary
       {
         ExceptionLogs.LogException(LoginUser, ex, "IndexMaintenance"); 
       }
-
-      logs.Log("Finished Compressing Indexes");
     }
 
     public override string ServiceName
@@ -52,11 +48,8 @@ namespace TeamSupport.ServiceLibrary
       }
       else
       {
-        logs.Log("Forced Compress");
         Settings.WriteBool("Force Compress - " + indexName, false);
       }
-
-      logs.Log("Starting Compression [" + indexPath + "]");
 
       using (IndexJob job = new IndexJob())
       {
@@ -96,8 +89,6 @@ namespace TeamSupport.ServiceLibrary
           Settings.WriteString("Last Compressed - " + indexName, DateTime.Now.ToString());
           Settings.WriteInt("Last Compress Time - " + indexName, (int)DateTime.Now.Subtract(start).TotalSeconds);
         }
-        logs.Log("Finished Compressing " + indexName);
-
       }
     }
 

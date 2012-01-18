@@ -199,6 +199,7 @@
     <Compile Include="BusinessObjects\TicketTemplates.cs" />
     <Compile Include="BusinessObjects\Translate.cs" />
     <Compile Include="BusinessObjects\UserTicketStatuses.cs" />
+    <Compile Include="BusinessObjects\WaterCoolerView.cs" />
     <Compile Include="Classes\AttachmentPath.cs" />
     <Compile Include="Classes\CheckSums.cs" />
     <Compile Include="Classes\HtmlUtility.cs" />
@@ -243,6 +244,7 @@
     <Compile Include="FieldMaps\TicketTemplatesFieldMap.cs" />
     <Compile Include="FieldMaps\TranslateFieldMap.cs" />
     <Compile Include="FieldMaps\UserTicketStatusesFieldMap.cs" />
+    <Compile Include="FieldMaps\WaterCoolerViewFieldMap.cs" />
     <Compile Include="Generated\GeneratedAssetHistory.cs" />
     <Compile Include="Generated\GeneratedAssets.cs" />
     <Compile Include="Generated\GeneratedAttachmentDownloads.cs" />
@@ -485,6 +487,7 @@
     <Compile Include="Generated\GeneratedUsersView.cs" />
     <Compile Include="Generated\GeneratedUserTicketStatuses.cs" />
     <Compile Include="Generated\GeneratedWaterCooler.cs" />
+    <Compile Include="Generated\GeneratedWaterCoolerView.cs" />
     <Compile Include="Generated\GeneratedWikiArticles.cs" />
     <Compile Include="Generated\GeneratedWikiArticlesView.cs" />
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
@@ -600,6 +603,7 @@
     <Compile Include="Proxies\UsersViewProxy.cs" />
     <Compile Include="Proxies\UserTicketStatusesProxy.cs" />
     <Compile Include="Proxies\WaterCoolerProxy.cs" />
+    <Compile Include="Proxies\WaterCoolerViewProxy.cs" />
     <Compile Include="Proxies\WikiArticlesProxy.cs" />
     <Compile Include="Proxies\WikiArticlesViewProxy.cs" />
     <Compile Include="Proxies\WikiHistoryCollectionProxy.cs" />
