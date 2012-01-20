@@ -20,6 +20,11 @@ Namespace TeamSupport
 
             Public MustOverride Overrides Function PerformSync() As Boolean
 
+            ''' <summary>
+            ''' To sync with Zoho, we need to generate a ticket by logging in each time, and then passing along that ticket with each request.
+            ''' </summary>
+            ''' <returns>Whether or not the ticket was generated successfully</returns>
+            ''' <remarks>Ticket value is saved to the APITicket field</remarks>
             Protected Function GenerateTicket() As Boolean
                 Log.Write("Generating new ticket...")
                 Dim ZohoUri As New Uri(String.Format("https://accounts.zoho.com/login?servicename={2}&FROM_AGENT=true&LOGIN_ID={0}&PASSWORD={1}", _
@@ -41,6 +46,10 @@ Namespace TeamSupport
                 Return True
             End Function
 
+            ''' <summary>
+            ''' Logs out after a sync is performed.
+            ''' </summary>
+            ''' <remarks></remarks>
             Protected Sub Logout()
                 Log.Write("Logging out.")
                 Dim ZohoUri As New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&ticket=" & APITicket)
@@ -128,7 +137,7 @@ Namespace TeamSupport
                         Dim add As Boolean = False
 
                         With thisCustomer
-                            'Zoho's XML is really ugly so we have to parse it in a really ugly way
+                            'Zoho's XML is really ugly so we have to parse it like this
                             For Each dataitem As XElement In company.Descendants("FL")
                                 Select Case dataitem.Attribute("val").Value
                                     Case "ACCOUNTID"
@@ -200,7 +209,7 @@ Namespace TeamSupport
                     Dim thisPerson As New EmployeeData()
 
                     With thisPerson
-                        'see above re: xml formatting/processing
+                        'see above re: xml formatting/processing (it's done this way because this is how zoho formats it)
                         For Each dataitem As XElement In person.Descendants("FL")
                             Select Case dataitem.Attribute("val").Value
                                 Case "First Name"
@@ -232,6 +241,13 @@ Namespace TeamSupport
                 Return GetZohoCompanyXML(1, 200)
             End Function
 
+            ''' <summary>
+            ''' Gets an XML document from Zoho containing data about Companies
+            ''' </summary>
+            ''' <param name="from">the starting index</param>
+            ''' <param name="_to">the ending index</param>
+            ''' <returns></returns>
+            ''' <remarks>The maximum allowed difference between start and end is 200 (Zoho will only return 200 records at a time)</remarks>
             Private Function GetZohoCompanyXML(ByVal from As Short, ByVal _to As Short) As XmlDocument
                 Dim ZohoPath As String = "Accounts/getRecords?newFormat=1&fromIndex=" & from.ToString() & "&toIndex=" & _to.ToString()
 
@@ -276,12 +292,14 @@ Namespace TeamSupport
             Public Sub New(ByVal crmLinkOrg As CRMLinkTableItem, ByVal crmLog As SyncLog, ByVal thisUser As LoginUser, ByVal thisProcessor As CrmProcessor)
                 MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.ZohoReports)
 
+                'this is perhaps not the best way to do it, but each dictionary entry contains the report name|primary key, date field (for checking if there is new data), and then the sql query.
                 reportsToSend = New Dictionary(Of String, String)()
                 reportsToSend.Add("KnowledgeBaseTraffic|ViewingIP,DateAndTime", "select k.viewdatetime as 'DateAndTime', t.name as 'ArticleTitle',  searchterm as 'SearchTermUsed', viewip as 'ViewingIP' from KBStats as k, organizations as o, tickets as t where k.organizationid = @OrganizationID and k.organizationid = o.organizationid and k.kbarticleid = t.ticketid AND k.viewdatetime > @LastModified")
                 reportsToSend.Add("ChatRequests|ChatRequestor,DateAndTime", "select cr.datecreated as 'DateAndTime', cc.lastname+', '+cc.firstname as 'ChatRequestor', cc.email as 'RequestorsEmail',cr.message as 'Question', cr.isaccepted as 'ChatAccepted' from chatrequests as cr, organizations as o, chatclients as cc where cr.organizationid = o.organizationid and cc.chatclientid = cr.requestorid and o.organizationid = @OrganizationID AND cr.datecreated > @LastModified")
                 reportsToSend.Add("TicketStatusHistory|User_Who_Changed,Time_Status_Changed", "select t.ticketnumber as Ticket_Number, t.name as Ticket_Name,  ts_old.name as Old_Status, ts_new.name as New_Status, StatusChangeTime as Time_Status_Changed, datediff(mi,'1900-01-01', sh.timeinoldstatus) as Time_In_Old_Status, u.lastname+', '+u.firstname as User_Who_Changed from statushistory as sh left outer join ticketstatuses as ts_old on sh.oldstatus = ts_old.ticketstatusid left outer join ticketstatuses as ts_new on sh.newstatus = ts_new.ticketstatusid,tickets as t, users as u where sh.ticketid = t.ticketid and sh.modifierid = u.userid and sh.organizationid = @OrganizationID AND StatusChangeTime > @LastModified")
                 reportsToSend.Add("PortalLoginHistory|Username,LoginDateTime", "select Username, Success, LoginDateTime, IPAddress from portalloginhistory where OrganizationID = @OrganizationID AND LoginDateTime > @LastModified")
 
+                'if they are not useing the default database name (TeamSupport), they can specify the name in CrmLinkRow.TypeFieldMatch
                 If CRMLinkRow.TypeFieldMatch IsNot Nothing AndAlso CRMLinkRow.TypeFieldMatch <> "" Then
                     databaseName = CRMLinkRow.TypeFieldMatch
                 End If
@@ -320,6 +338,11 @@ Namespace TeamSupport
                 Return Success
             End Function
 
+            ''' <summary>
+            ''' Sends report data over to Zoho Reports
+            ''' </summary>
+            ''' <returns>Whether or not data was sent successfully</returns>
+            ''' <remarks></remarks>
             Private Function SendReportData() As Boolean
                 Dim thisSettings As New ServiceLibrary.Settings(User, Processor.ServiceName)
 

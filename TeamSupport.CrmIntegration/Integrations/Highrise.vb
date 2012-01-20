@@ -183,6 +183,7 @@ Namespace TeamSupport
 
             End Function
 
+            'TODO: this should be rewritten to take advantage of the GetXML function
             Private Function GetHighriseXML(ByVal Token As String, ByVal CompanyName As String, ByVal URL As String) As XmlDocument
                 Dim request As HttpWebRequest
                 Dim response As HttpWebResponse = Nothing
@@ -248,6 +249,7 @@ Namespace TeamSupport
                 Return Nothing
             End Function
 
+            'TODO: rewrite to use PostXML function
             Private Function CreateNote(ByVal AccountID As String, ByVal thisTicket As Ticket) As Boolean
                 Dim authorName As String = Nothing
                 Using findAuthor As New Users(User)
@@ -337,12 +339,18 @@ Namespace TeamSupport
 
             End Function
 
-
+            ''' <summary>
+            ''' We use Tags in Highrise to identify the companies we want synced from HR to TS.
+            ''' This tag shows up as a string in HR, and we need to figure out what the ID of that tag is.
+            ''' This routine takes a text tag name and returns the (integer) id.
+            ''' </summary>
+            ''' <param name="token"></param>
+            ''' <param name="companyname"></param>
+            ''' <param name="TagString"></param>
+            ''' <param name="parentorgid"></param>
+            ''' <returns></returns>
+            ''' <remarks></remarks>
             Private Function GetTagID(ByVal token As String, ByVal companyname As String, ByVal TagString As String, ByVal parentorgid As String) As String
-                'We use Tags in Highrise to identify the companies we want synced from HR to TS.
-                '  This tag shows up as a string in HR, and we need to figure out what the ID of that tag is.
-                '  This routine takes a text tag name and returns the (integer) id.
-
                 Dim MyXML As XmlDocument
                 Dim TagID As String = Nothing
                 Dim TagName As String

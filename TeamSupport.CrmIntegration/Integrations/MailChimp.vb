@@ -127,6 +127,11 @@ Namespace TeamSupport
                 Return True
             End Function
 
+            ''' <summary>
+            ''' Gets the MailChimp list ID for the list with a name matching the CRMLinkRow.UserName value
+            ''' </summary>
+            ''' <returns>a MailChimp-specific list ID</returns>
+            ''' <remarks></remarks>
             Private Function GetImportListID() As String
                 Dim returnID As String = Nothing
 
