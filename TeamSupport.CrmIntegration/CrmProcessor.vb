@@ -50,18 +50,24 @@ Namespace TeamSupport
                     ExceptionLogs.LogException(LoginUser, ex, "Service - " & ServiceName, CrmLinkRow.Row)
                 End Try
 
+                'update last processed date/time
                 CrmLinkRow.LastProcessed = DateTime.UtcNow
                 CrmLinkRow.Collection.Save()
 
             End Sub
 
-
+            ''' <summary>
+            ''' Process a given integration
+            ''' </summary>
+            ''' <param name="CRMLinkTableItem">A row from CRMLinkTable, which maps to a single integration for a given company</param>
+            ''' <remarks></remarks>
             Public Sub ProcessCrmLink(ByVal CRMLinkTableItem As CRMLinkTableItem)
                 If IsStopped Then
                     Return
                 End If
 
                 Try
+                    'CrmLinkTableItem.CRMType should match up with one of the items in the IntegrationType enumeration
                     Dim CRMType As IntegrationType = [Enum].Parse(GetType(IntegrationType), CRMLinkTableItem.CRMType, True)
 
                     'set up log per crm link item
@@ -111,6 +117,7 @@ Namespace TeamSupport
                         Log.Write(String.Format("Begin processing {0} sync.", CRMType.ToString()))
 
                         Try
+                            'if sync processed successfully, log that message. otherwise log an error
                             If CRM.PerformSync() Then
                                 CRMLinkTableItem.LastLink = DateTime.UtcNow
                                 CRMLinkTableItem.Collection.Save()

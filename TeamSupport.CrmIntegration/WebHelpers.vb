@@ -1,12 +1,20 @@
-﻿'via http://stackoverflow.com/questions/219827/multipart-forms-from-c-sharp-client
-Imports System.Net
+﻿Imports System.Net
 Imports System.IO
 Imports System.Text
 
+'the code contained herein is adapted from  http://stackoverflow.com/questions/219827/multipart-forms-from-c-sharp-client
 Public Module WebHelpers
 
     Private encoding As Encoding = encoding.UTF8
 
+    ''' <summary>
+    ''' Post a group of multipart parameters to a url.
+    ''' </summary>
+    ''' <param name="postUrl">the url to post to</param>
+    ''' <param name="userAgent">the useragent to use for the post</param>
+    ''' <param name="postParameters">the parameters to post</param>
+    ''' <returns>the HTTP response code from the post</returns>
+    ''' <remarks></remarks>
     Public Function MultipartFormDataPost(ByVal postUrl As Uri, ByVal userAgent As String, ByVal postParameters As Dictionary(Of String, Object)) As HttpWebResponse
         Dim formDataBoundary As String = Guid.NewGuid.ToString()
         Dim contentType As String = "multipart/form-data; boundary=" & formDataBoundary
@@ -17,7 +25,15 @@ Public Module WebHelpers
         Return PostForm(postUrl, userAgent, contentType, formData)
     End Function
 
-    'Post a form
+    ''' <summary>
+    ''' Post a group of multipart parameters to a url mimicking the way it is done by a html form
+    ''' </summary>
+    ''' <param name="postUrl"></param>
+    ''' <param name="userAgent"></param>
+    ''' <param name="contentType"></param>
+    ''' <param name="formData"></param>
+    ''' <returns>the HTTP response code from the post</returns>
+    ''' <remarks>used by MultipartFormDataPost</remarks>
     Private Function PostForm(ByVal postUrl As Uri, ByVal userAgent As String, ByVal contentType As String, ByVal formData As Byte()) As HttpWebResponse
         Dim request As HttpWebRequest = WebRequest.Create(postUrl)
 
@@ -39,6 +55,13 @@ Public Module WebHelpers
         Return request.GetResponse()
     End Function
 
+    ''' <summary>
+    ''' Converts a list of parameters to a byte array for posting
+    ''' </summary>
+    ''' <param name="postParameters">the parameters</param>
+    ''' <param name="boundary">a multipart form boundary</param>
+    ''' <returns>a byte array containing the parameter data</returns>
+    ''' <remarks></remarks>
     Private Function GetMultipartFormData(ByVal postParameters As Dictionary(Of String, Object), ByVal boundary As String) As Byte()
         Dim formDataStream As Stream = New MemoryStream()
 

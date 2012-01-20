@@ -17,7 +17,7 @@ Namespace TeamSupport
 
             'tracks global errors so we can not update the sync date if there's a problem
             Public Property SyncError As Boolean
-            Public Property ErrorCode As IntegrationError = IntegrationError.None
+            Public Property ErrorCode As IntegrationError = IntegrationError.None 'should be deprecated in favor of IntegrationException
             Public ReadOnly Property Exception As IntegrationException
                 Get
                     Return _exception
@@ -40,6 +40,15 @@ Namespace TeamSupport
             Protected Delegate Function GetPeopleXML(ByVal AccountID As String) As XmlDocument
             Protected Delegate Function ParsePeopleXML(ByVal PeopleToSync As XmlDocument) As List(Of EmployeeData)
 
+            ''' <summary>
+            ''' Sync company and customer data from an outside CRM into TeamSupport
+            ''' </summary>
+            ''' <param name="GetCompanyXML">A function returning the XML containing company data from the CRM</param>
+            ''' <param name="ParseCompanyXML">A function that will parse the XML company data into a list of companydata</param>
+            ''' <param name="GetPeopleXML">A function returning the XML containing customer data from the CRM</param>
+            ''' <param name="ParsePeopleXML">A function that will parse the XML customer data into a list of employeedata</param>
+            ''' <returns>Whether or not the sync processed successfully</returns>
+            ''' <remarks>This should be used for all new integrations and older integrations can be updated to use it as time permits</remarks>
             Protected Function NewSyncAccounts(ByVal GetCompanyXML As GetCompanyXML, ByVal ParseCompanyXML As ParseCompanyXML, ByVal GetPeopleXML As GetPeopleXML, ByVal ParsePeopleXML As ParsePeopleXML) As Boolean
                 Dim CompaniesToSync As XmlDocument
                 Dim CompanySyncData As List(Of CompanyData) = Nothing
@@ -47,6 +56,7 @@ Namespace TeamSupport
                 'retrieve company data
                 CompaniesToSync = GetCompanyXML()
 
+                'parse company data
                 If CompaniesToSync IsNot Nothing Then
                     CompanySyncData = ParseCompanyXML(CompaniesToSync)
                 End If
@@ -54,6 +64,7 @@ Namespace TeamSupport
                 If CompanySyncData IsNot Nothing Then
                     Log.Write(String.Format("Processed {0} accounts.", CompanySyncData.Count))
 
+                    'update info for organizations
                     For Each company As CompanyData In CompanySyncData
                         UpdateOrgInfo(company, CRMLinkRow.OrganizationID)
                     Next
@@ -62,6 +73,7 @@ Namespace TeamSupport
                     Log.Write("Updating people information...")
 
                     For Each company As CompanyData In CompanySyncData
+                        'get customer data for each company
                         Dim PeopleToSync As XmlDocument = GetPeopleXML(company.AccountID)
 
                         If PeopleToSync IsNot Nothing Then
@@ -69,6 +81,7 @@ Namespace TeamSupport
 
                             If PeopleSyncData IsNot Nothing Then
                                 For Each person As EmployeeData In PeopleSyncData
+                                    'update info for customers
                                     UpdateContactInfo(person, company.AccountID, CRMLinkRow.OrganizationID)
                                 Next
 
@@ -84,6 +97,12 @@ Namespace TeamSupport
 
             Protected Delegate Function CreateCRMNote(ByVal accountid As String, ByVal thisTicket As Ticket) As Boolean
 
+            ''' <summary>
+            ''' Save newly created tickets into the notes (or equivalent) field in the CRM system
+            ''' </summary>
+            ''' <param name="CreateCRMNote">A function that handles the creating of a note for the specific integration</param>
+            ''' <returns>Whether or not all notes were created successfully</returns>
+            ''' <remarks></remarks>
             Protected Function SendTicketData(ByVal CreateCRMNote As CreateCRMNote) As Boolean
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
 
@@ -101,6 +120,7 @@ Namespace TeamSupport
                                     Return False
                                 End If
 
+                                'get a list of customers associated to the ticket
                                 Dim customers As New OrganizationsView(User)
                                 customers.LoadByTicketID(thisTicket.TicketID)
 
@@ -134,6 +154,12 @@ Namespace TeamSupport
 
             End Function
 
+            ''' <summary>
+            ''' Updates information about a company (Organization) in TeamSupport
+            ''' </summary>
+            ''' <param name="company">information about the company</param>
+            ''' <param name="ParentOrgID">the parent Organization</param>
+            ''' <remarks></remarks>
             Protected Sub UpdateOrgInfo(ByVal company As CompanyData, ByVal ParentOrgID As String)
                 If Processor.IsStopped Then
                     Return
@@ -243,6 +269,13 @@ Namespace TeamSupport
                 Log.Write("Updated w/ Address:" & company.AccountName)
             End Sub
 
+            ''' <summary>
+            ''' Updates information about a customer (User) in TeamSupport
+            ''' </summary>
+            ''' <param name="person">information about the customer to update</param>
+            ''' <param name="companyID">the CRM-specific ID of the company to which the customer belongs</param>
+            ''' <param name="ParentOrgID">the parent Organization</param>
+            ''' <remarks></remarks>
             Protected Sub UpdateContactInfo(ByVal person As EmployeeData, ByVal companyID As String, ByVal ParentOrgID As String)
                 ParentOrgID = CRMLinkRow.OrganizationID
 
@@ -362,10 +395,12 @@ Namespace TeamSupport
 
             End Sub
 
+            'helper method, should be moved to WebHelpers.vb
             Protected Function GetXML(ByVal Address As Uri) As XmlDocument
                 Return GetXML(Address, Nothing)
             End Function
 
+            'helper method, should be moved to WebHelpers.vb
             Protected Function GetXML(ByVal Address As Uri, ByVal Key As NetworkCredential) As XmlDocument
                 Dim returnXML As XmlDocument = Nothing
 
@@ -397,6 +432,7 @@ Namespace TeamSupport
                 Return returnXML
             End Function
 
+            'helper method, should be moved to WebHelpers.vb
             Protected Function GetHTTPData(ByVal key As NetworkCredential, ByVal address As Uri) As String
                 If address IsNot Nothing Then
                     Dim request As HttpWebRequest = WebRequest.Create(address)
@@ -428,6 +464,7 @@ Namespace TeamSupport
                 Return Nothing
             End Function
 
+            'helper method, should be moved to WebHelpers.vb
             Protected Function PostXML(ByVal Key As NetworkCredential, ByVal Address As Uri, ByVal Content As String) As HttpStatusCode
                 Dim returnStatus As HttpStatusCode = Nothing
 
@@ -456,6 +493,7 @@ Namespace TeamSupport
                 Return returnStatus
             End Function
 
+            'helper method, should be moved to WebHelpers.vb
             Protected Function PostQueryString(ByVal key As NetworkCredential, ByVal Address As Uri, ByVal Content As String) As HttpStatusCode
                 If Processor.IsStopped Then
                     Return Nothing
@@ -505,10 +543,22 @@ Namespace TeamSupport
                 Return returnStatus
             End Function
 
+            ''' <summary>
+            ''' Logs a result to the CRMLinkResults table (which can be viewed by the end user)
+            ''' </summary>
+            ''' <param name="ResultText">the message to log</param>
+            ''' <remarks></remarks>
             Public Sub LogSyncResult(ByVal ResultText As String)
                 LogSyncResult(ResultText, CRMLinkRow.OrganizationID, User)
             End Sub
 
+            ''' <summary>
+            ''' Logs a result to the CRMLinkResults table (which can be viewed by the end user)
+            ''' </summary>
+            ''' <param name="ResultText">the message to log</param>
+            ''' <param name="OrgID">the Organization ID</param>
+            ''' <param name="User">the login user to log the message as</param>
+            ''' <remarks></remarks>
             Public Shared Sub LogSyncResult(ByVal ResultText As String, ByVal OrgID As String, ByVal User As LoginUser)
                 Dim result As CRMLinkResult
                 result = (New CRMLinkResults(User)).AddNewCRMLinkResult()
@@ -518,6 +568,13 @@ Namespace TeamSupport
                 result.Collection.Save()
             End Sub
 
+            ''' <summary>
+            ''' updates the value of a custom field in TeamSupport
+            ''' </summary>
+            ''' <param name="customFieldID">the ID of the field to update</param>
+            ''' <param name="RefID">the ID of the object the field is linked to</param>
+            ''' <param name="Value">the value to set</param>
+            ''' <remarks></remarks>
             Protected Sub UpdateCustomValue(ByVal customFieldID As Integer, ByVal RefID As Integer, ByVal Value As String)
                 Dim findCustom As New CustomValues(User)
                 Dim thisCustom As CustomValue
@@ -537,12 +594,17 @@ Namespace TeamSupport
             End Sub
         End Class
 
+        'to be deprecated in favor of integrationException (below)
         Public Enum IntegrationError
             None
             Unknown
             InvalidLogin
         End Enum
 
+        ''' <summary>
+        ''' Contains information about an exception that occurred while syncing
+        ''' </summary>
+        ''' <remarks>use this object to be able to log meaningful error messages for the end user when an error occurs</remarks>
         Public Class IntegrationException
             Inherits Exception
 
@@ -595,6 +657,10 @@ Namespace TeamSupport
             Property Fax As String
         End Class
 
+        ''' <summary>
+        ''' Contains logging functionality for the integrations
+        ''' </summary>
+        ''' <remarks>This log is not available to the end user and can be used to log debugging messages as necessary</remarks>
         Public Class SyncLog
             Private LogPath As String
             Private FileName As String
@@ -609,7 +675,7 @@ Namespace TeamSupport
             End Sub
 
             Public Sub Write(ByVal Text As String)
-                ' the very first time we write to this file, prune old files
+                ' the very first time we write to this file (once each day), prune old files
                 If Not File.Exists(LogPath & "\" & FileName) Then
                     For Each oldFileName As String In Directory.GetFiles(LogPath)
                         If File.GetLastWriteTime(oldFileName).AddDays(7) < Today Then
