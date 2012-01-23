@@ -24,12 +24,6 @@ public partial class Frames_Admin : BaseFramePage
       tsMain.SelectedIndex = Settings.UserDB.ReadInt("SelectedAdminTabIndex", 0);
       if (tsMain.SelectedTab == null) tsMain.SelectedIndex = 0;
       frmAdmin.Attributes["src"] = tsMain.SelectedTab.Value;
-      if (UserSession.LoginUser.UserID == 34)
-      {
-        tsMain.FindTabByText("My Portal").Value = "../vcr/140/Pages/Admin_Portal.html";
-      }
     }
-
-    //tsMain.Tabs[1].Visible = UserSession.CurrentUser.IsFinanceAdmin;
   }
 }

@@ -74,6 +74,10 @@ Ts.Services = {};
     Ts.Services.WaterCooler = new TSWebServices.WaterCoolerService();
     Ts.Services.WaterCooler.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.WaterCooler.set_defaultFailedCallback(defaultFailedCallback);
+
+    Ts.Services.Admin = new TSWebServices.AdminService();
+    Ts.Services.Admin.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.Admin.set_defaultFailedCallback(defaultFailedCallback);
     callback();
   }
 
@@ -296,6 +300,7 @@ Ts.Services = {};
   Ts.ReferenceTypes.Chat = 33;
   Ts.ReferenceTypes.Assets = 34;
   Ts.ReferenceTypes.EmailPost = 35;
+  Ts.ReferenceTypes.ForumCategories = 35;
 
   Ts.SystemActionTypes = {}
   Ts.SystemActionTypes.Custom = 0;

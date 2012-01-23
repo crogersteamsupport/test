@@ -14,6 +14,27 @@ namespace TeamSupport.Data
     {
       return TicketsView.GetTicketsViewItem(BaseCollection.LoginUser, TicketID);
     }
+
+    public void RemoveCommunityTicket()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "DELETE FROM ForumTickets WHERE (TicketID = @TicketID)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", TicketID);
+        Collection.ExecuteNonQuery(command, "ForumTickets");
+      }
+    }
+
+    public void AddCommunityTicket(int forumCategoryID)
+    {
+      RemoveCommunityTicket();
+
+      ForumTicket ft = (new ForumTickets(Collection.LoginUser)).AddNewForumTicket();
+      ft.TicketID = TicketID;
+      ft.ForumCategory = forumCategoryID;
+      ft.Collection.Save();
+    }
   }
 
   public partial class Tickets 

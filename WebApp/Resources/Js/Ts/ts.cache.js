@@ -13,6 +13,7 @@
     this._ticketStatuses = null;
     this._ticketNextStatuses = null;
     this._ticketSeverities = null;
+    this._forumCategories = null;
     this._actionTypes = null;
   }
 
@@ -32,6 +33,7 @@
       this.getTicketStatuses();
       this.getTicketTypes();
       this.getActionTypes();
+      this.getForumCategories();
     },
     getUsers: function () {
       var self = this;
@@ -129,6 +131,18 @@
         }
       });
       return self._ticketSeverities;
+    },
+    getForumCategories: function () {
+      var self = this;
+      Ts.Services.System.GetCheckSum(Ts.ReferenceTypes.ForumCategories, function (checksum) {
+        if (!self._ticketSeverities || !self._forumCategories.CheckSum || checksum != self._forumCategories.CheckSum) {
+          Ts.Services.Admin.GetForumCategories(function (result) {
+            self._forumCategories = result;
+            self._forumCategories.CheckSum = checksum;
+          });
+        }
+      });
+      return self._forumCategories;
     },
     getProducts: function () {
       var self = this;

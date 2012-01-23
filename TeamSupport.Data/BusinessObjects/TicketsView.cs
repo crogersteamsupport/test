@@ -32,6 +32,7 @@ namespace TeamSupport.Data
     [DataMember] public int? UserID { get; set; }
     [DataMember] public int? GroupID { get; set; }
     [DataMember] public int? CustomerID { get; set; }
+    [DataMember] public int? ForumCategoryID { get; set; }
     [DataMember] public bool? IsVisibleOnPortal { get; set; }
     [DataMember] public bool? IsKnowledgeBase { get; set; }
     [DataMember] public DateTime? DateCreatedBegin { get; set; }
@@ -442,6 +443,8 @@ namespace TeamSupport.Data
         ,tv.[SlaViolationDate]
         ,tv.[SlaWarningDate]
         ,tv.[TicketSource]
+        ,tv.[ForumCategory]
+        ,tv.[CategoryName]
         ,CAST(0 AS dec(24,6)) AS [SlaViolationHours]
         ,CAST(0 AS dec(24,6)) AS [SlaWarningHours]
         ,tv.ViewerID
@@ -510,6 +513,11 @@ namespace TeamSupport.Data
       AddTicketParameter("DateModified", "DateModifiedBegin", filter.DateModifiedBegin, ">=", builder, command);
       AddTicketParameter("DateModified", "DateModifiedEnd", filter.DateModifiedEnd, "<=", builder, command);
       AddTicketParameter("ViewerID", loginUser.UserID, false, builder, command);
+
+      if (filter.ForumCategoryID != null && filter.ForumCategoryID == -1)
+      {
+        builder.Append(" AND (tv.ForumCategory IS NOT NULL)");
+      }
 
       if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -1)
       {

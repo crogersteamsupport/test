@@ -659,7 +659,8 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions]
+    [SubscribeToNewActions],
+    [Information]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -709,6 +710,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
   @SubscribeToNewActions bit,
+  @Information varchar(500),
   @Identity int OUT
 )
 AS
@@ -753,7 +755,8 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions])
+    [SubscribeToNewActions],
+    [Information])
   VALUES (
     @Email,
     @FirstName,
@@ -793,7 +796,8 @@ AS
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
     @IsClassicView,
-    @SubscribeToNewActions)
+    @SubscribeToNewActions,
+    @Information)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -841,7 +845,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
-  @SubscribeToNewActions bit
+  @SubscribeToNewActions bit,
+  @Information varchar(500)
 )
 AS
   SET NOCOUNT OFF;
@@ -883,7 +888,8 @@ AS
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
     [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions
+    [SubscribeToNewActions] = @SubscribeToNewActions,
+    [Information] = @Information
   WHERE ([UserID] = @UserID)
 GO
 
@@ -10134,100 +10140,6 @@ AS
     [UserName],
     [GroupName]
   FROM [dbo].[WaterCoolerView]
-  WHERE ([MessageID] = @MessageID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
-
-(
-  @MessageID int,
-  @UserID int,
-  @OrganizationID int,
-  @TimeStamp datetime,
-  @GroupFor int,
-  @ReplyTo int,
-  @Message text,
-  @MessageType varchar(50),
-  @UserName varchar(201),
-  @GroupName varchar(255),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[WaterCoolerView]
-  (
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [GroupFor],
-    [ReplyTo],
-    [Message],
-    [MessageType],
-    [UserName],
-    [GroupName])
-  VALUES (
-    @MessageID,
-    @UserID,
-    @OrganizationID,
-    @TimeStamp,
-    @GroupFor,
-    @ReplyTo,
-    @Message,
-    @MessageType,
-    @UserName,
-    @GroupName)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
-
-(
-  @MessageID int,
-  @UserID int,
-  @OrganizationID int,
-  @TimeStamp datetime,
-  @GroupFor int,
-  @ReplyTo int,
-  @Message text,
-  @MessageType varchar(50),
-  @UserName varchar(201),
-  @GroupName varchar(255)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[WaterCoolerView]
-  SET
-    [UserID] = @UserID,
-    [OrganizationID] = @OrganizationID,
-    [TimeStamp] = @TimeStamp,
-    [GroupFor] = @GroupFor,
-    [ReplyTo] = @ReplyTo,
-    [Message] = @Message,
-    [MessageType] = @MessageType,
-    [UserName] = @UserName,
-    [GroupName] = @GroupName
-  WHERE ([MessageID] = @MessageID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
-
-(
-  @MessageID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[WaterCoolerView]
   WHERE ([MessageID] = @MessageID)
 GO
 
@@ -12762,7 +12674,8 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions]
+    [SubscribeToNewActions],
+    [Information]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -12812,6 +12725,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
   @SubscribeToNewActions bit,
+  @Information varchar(500),
   @Identity int OUT
 )
 AS
@@ -12856,7 +12770,8 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions])
+    [SubscribeToNewActions],
+    [Information])
   VALUES (
     @Email,
     @FirstName,
@@ -12896,7 +12811,8 @@ AS
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
     @IsClassicView,
-    @SubscribeToNewActions)
+    @SubscribeToNewActions,
+    @Information)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -12944,7 +12860,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
-  @SubscribeToNewActions bit
+  @SubscribeToNewActions bit,
+  @Information varchar(500)
 )
 AS
   SET NOCOUNT OFF;
@@ -12986,7 +12903,8 @@ AS
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
     [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions
+    [SubscribeToNewActions] = @SubscribeToNewActions,
+    [Information] = @Information
   WHERE ([UserID] = @UserID)
 GO
 
@@ -22237,100 +22155,6 @@ AS
     [UserName],
     [GroupName]
   FROM [dbo].[WaterCoolerView]
-  WHERE ([MessageID] = @MessageID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
-
-(
-  @MessageID int,
-  @UserID int,
-  @OrganizationID int,
-  @TimeStamp datetime,
-  @GroupFor int,
-  @ReplyTo int,
-  @Message text,
-  @MessageType varchar(50),
-  @UserName varchar(201),
-  @GroupName varchar(255),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[WaterCoolerView]
-  (
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [GroupFor],
-    [ReplyTo],
-    [Message],
-    [MessageType],
-    [UserName],
-    [GroupName])
-  VALUES (
-    @MessageID,
-    @UserID,
-    @OrganizationID,
-    @TimeStamp,
-    @GroupFor,
-    @ReplyTo,
-    @Message,
-    @MessageType,
-    @UserName,
-    @GroupName)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
-
-(
-  @MessageID int,
-  @UserID int,
-  @OrganizationID int,
-  @TimeStamp datetime,
-  @GroupFor int,
-  @ReplyTo int,
-  @Message text,
-  @MessageType varchar(50),
-  @UserName varchar(201),
-  @GroupName varchar(255)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[WaterCoolerView]
-  SET
-    [UserID] = @UserID,
-    [OrganizationID] = @OrganizationID,
-    [TimeStamp] = @TimeStamp,
-    [GroupFor] = @GroupFor,
-    [ReplyTo] = @ReplyTo,
-    [Message] = @Message,
-    [MessageType] = @MessageType,
-    [UserName] = @UserName,
-    [GroupName] = @GroupName
-  WHERE ([MessageID] = @MessageID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
-
-(
-  @MessageID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[WaterCoolerView]
   WHERE ([MessageID] = @MessageID)
 GO
 
@@ -24865,7 +24689,8 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions]
+    [SubscribeToNewActions],
+    [Information]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -24915,6 +24740,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
   @SubscribeToNewActions bit,
+  @Information varchar(500),
   @Identity int OUT
 )
 AS
@@ -24959,7 +24785,8 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions])
+    [SubscribeToNewActions],
+    [Information])
   VALUES (
     @Email,
     @FirstName,
@@ -24999,7 +24826,8 @@ AS
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
     @IsClassicView,
-    @SubscribeToNewActions)
+    @SubscribeToNewActions,
+    @Information)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -25047,7 +24875,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
-  @SubscribeToNewActions bit
+  @SubscribeToNewActions bit,
+  @Information varchar(500)
 )
 AS
   SET NOCOUNT OFF;
@@ -25089,7 +24918,8 @@ AS
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
     [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions
+    [SubscribeToNewActions] = @SubscribeToNewActions,
+    [Information] = @Information
   WHERE ([UserID] = @UserID)
 GO
 
@@ -34340,100 +34170,6 @@ AS
     [UserName],
     [GroupName]
   FROM [dbo].[WaterCoolerView]
-  WHERE ([MessageID] = @MessageID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
-
-(
-  @MessageID int,
-  @UserID int,
-  @OrganizationID int,
-  @TimeStamp datetime,
-  @GroupFor int,
-  @ReplyTo int,
-  @Message text,
-  @MessageType varchar(50),
-  @UserName varchar(201),
-  @GroupName varchar(255),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[WaterCoolerView]
-  (
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [GroupFor],
-    [ReplyTo],
-    [Message],
-    [MessageType],
-    [UserName],
-    [GroupName])
-  VALUES (
-    @MessageID,
-    @UserID,
-    @OrganizationID,
-    @TimeStamp,
-    @GroupFor,
-    @ReplyTo,
-    @Message,
-    @MessageType,
-    @UserName,
-    @GroupName)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
-
-(
-  @MessageID int,
-  @UserID int,
-  @OrganizationID int,
-  @TimeStamp datetime,
-  @GroupFor int,
-  @ReplyTo int,
-  @Message text,
-  @MessageType varchar(50),
-  @UserName varchar(201),
-  @GroupName varchar(255)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[WaterCoolerView]
-  SET
-    [UserID] = @UserID,
-    [OrganizationID] = @OrganizationID,
-    [TimeStamp] = @TimeStamp,
-    [GroupFor] = @GroupFor,
-    [ReplyTo] = @ReplyTo,
-    [Message] = @Message,
-    [MessageType] = @MessageType,
-    [UserName] = @UserName,
-    [GroupName] = @GroupName
-  WHERE ([MessageID] = @MessageID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
-
-(
-  @MessageID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[WaterCoolerView]
   WHERE ([MessageID] = @MessageID)
 GO
 
@@ -36968,7 +36704,8 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions]
+    [SubscribeToNewActions],
+    [Information]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -37018,6 +36755,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
   @SubscribeToNewActions bit,
+  @Information varchar(500),
   @Identity int OUT
 )
 AS
@@ -37062,7 +36800,8 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions])
+    [SubscribeToNewActions],
+    [Information])
   VALUES (
     @Email,
     @FirstName,
@@ -37102,7 +36841,8 @@ AS
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
     @IsClassicView,
-    @SubscribeToNewActions)
+    @SubscribeToNewActions,
+    @Information)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -37150,7 +36890,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
-  @SubscribeToNewActions bit
+  @SubscribeToNewActions bit,
+  @Information varchar(500)
 )
 AS
   SET NOCOUNT OFF;
@@ -37192,7 +36933,8 @@ AS
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
     [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions
+    [SubscribeToNewActions] = @SubscribeToNewActions,
+    [Information] = @Information
   WHERE ([UserID] = @UserID)
 GO
 
@@ -46443,100 +46185,6 @@ AS
     [UserName],
     [GroupName]
   FROM [dbo].[WaterCoolerView]
-  WHERE ([MessageID] = @MessageID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
-
-(
-  @MessageID int,
-  @UserID int,
-  @OrganizationID int,
-  @TimeStamp datetime,
-  @GroupFor int,
-  @ReplyTo int,
-  @Message text,
-  @MessageType varchar(50),
-  @UserName varchar(201),
-  @GroupName varchar(255),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[WaterCoolerView]
-  (
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [GroupFor],
-    [ReplyTo],
-    [Message],
-    [MessageType],
-    [UserName],
-    [GroupName])
-  VALUES (
-    @MessageID,
-    @UserID,
-    @OrganizationID,
-    @TimeStamp,
-    @GroupFor,
-    @ReplyTo,
-    @Message,
-    @MessageType,
-    @UserName,
-    @GroupName)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
-
-(
-  @MessageID int,
-  @UserID int,
-  @OrganizationID int,
-  @TimeStamp datetime,
-  @GroupFor int,
-  @ReplyTo int,
-  @Message text,
-  @MessageType varchar(50),
-  @UserName varchar(201),
-  @GroupName varchar(255)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[WaterCoolerView]
-  SET
-    [UserID] = @UserID,
-    [OrganizationID] = @OrganizationID,
-    [TimeStamp] = @TimeStamp,
-    [GroupFor] = @GroupFor,
-    [ReplyTo] = @ReplyTo,
-    [Message] = @Message,
-    [MessageType] = @MessageType,
-    [UserName] = @UserName,
-    [GroupName] = @GroupName
-  WHERE ([MessageID] = @MessageID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
-
-(
-  @MessageID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[WaterCoolerView]
   WHERE ([MessageID] = @MessageID)
 GO
 
@@ -49071,7 +48719,8 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions]
+    [SubscribeToNewActions],
+    [Information]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -49121,6 +48770,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
   @SubscribeToNewActions bit,
+  @Information varchar(500),
   @Identity int OUT
 )
 AS
@@ -49165,7 +48815,8 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions])
+    [SubscribeToNewActions],
+    [Information])
   VALUES (
     @Email,
     @FirstName,
@@ -49205,7 +48856,8 @@ AS
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
     @IsClassicView,
-    @SubscribeToNewActions)
+    @SubscribeToNewActions,
+    @Information)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -49253,7 +48905,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
-  @SubscribeToNewActions bit
+  @SubscribeToNewActions bit,
+  @Information varchar(500)
 )
 AS
   SET NOCOUNT OFF;
@@ -49295,7 +48948,8 @@ AS
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
     [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions
+    [SubscribeToNewActions] = @SubscribeToNewActions,
+    [Information] = @Information
   WHERE ([UserID] = @UserID)
 GO
 
@@ -58546,100 +58200,6 @@ AS
     [UserName],
     [GroupName]
   FROM [dbo].[WaterCoolerView]
-  WHERE ([MessageID] = @MessageID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertWaterCoolerViewItem
-
-(
-  @MessageID int,
-  @UserID int,
-  @OrganizationID int,
-  @TimeStamp datetime,
-  @GroupFor int,
-  @ReplyTo int,
-  @Message text,
-  @MessageType varchar(50),
-  @UserName varchar(201),
-  @GroupName varchar(255),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[WaterCoolerView]
-  (
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [GroupFor],
-    [ReplyTo],
-    [Message],
-    [MessageType],
-    [UserName],
-    [GroupName])
-  VALUES (
-    @MessageID,
-    @UserID,
-    @OrganizationID,
-    @TimeStamp,
-    @GroupFor,
-    @ReplyTo,
-    @Message,
-    @MessageType,
-    @UserName,
-    @GroupName)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateWaterCoolerViewItem
-
-(
-  @MessageID int,
-  @UserID int,
-  @OrganizationID int,
-  @TimeStamp datetime,
-  @GroupFor int,
-  @ReplyTo int,
-  @Message text,
-  @MessageType varchar(50),
-  @UserName varchar(201),
-  @GroupName varchar(255)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[WaterCoolerView]
-  SET
-    [UserID] = @UserID,
-    [OrganizationID] = @OrganizationID,
-    [TimeStamp] = @TimeStamp,
-    [GroupFor] = @GroupFor,
-    [ReplyTo] = @ReplyTo,
-    [Message] = @Message,
-    [MessageType] = @MessageType,
-    [UserName] = @UserName,
-    [GroupName] = @GroupName
-  WHERE ([MessageID] = @MessageID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteWaterCoolerViewItem
-
-(
-  @MessageID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[WaterCoolerView]
   WHERE ([MessageID] = @MessageID)
 GO
 

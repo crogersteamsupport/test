@@ -85,6 +85,7 @@ public partial class Dialogs_PortalOptions : BaseDialogPage
     Organization organization = (Organization)Organizations.GetOrganization(UserSession.LoginUser, organizationID);
     PortalOption portalOption = (PortalOption)PortalOptions.GetPortalOption(UserSession.LoginUser, organizationID);
     if (portalOption == null || organization == null) return;
+
     textFooter.Text = portalOption.PortalHTMLFooter;
     textLanding.Text = portalOption.LandingPageHtml;
     textHeader.Text = portalOption.PortalHTMLHeader;

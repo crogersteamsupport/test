@@ -237,6 +237,7 @@ TicketGrid = function () {
     { id: "Customers", name: "Customers", field: "Customers", width: 125, sortable: true },
     { id: "Contacts", name: "Contacts", field: "Contacts", width: 125, sortable: true },
     { id: "ProductName", name: "Product", field: "ProductName", width: 150, sortable: true },
+    { id: "CategoryName", name: "Forum Category", field: "CategoryName", width: 150, sortable: true },
     { id: "ReportedVersion", name: "Reported", field: "ReportedVersion", width: 100, sortable: true },
     { id: "SolvedVersion", name: "Resolved", field: "SolvedVersion", width: 100, sortable: true },
     { id: "GroupName", name: "Group", field: "GroupName", width: 125, sortable: true },
@@ -448,7 +449,7 @@ TicketGrid = function () {
     grid.updateRowCount();
     grid.render();
 
-    parent.setGridCount(loader.data.length);
+    if (parent.setGridCount != null) parent.setGridCount(loader.data.length);
     grid.setSortColumn(ticketLoadFilter.SortColumn, ticketLoadFilter.SortAsc);
     //$(element).parents('.tickets-layout').find('.tickets-panel-footer .ticket-grid-count').text();
     self.hideLoadingIndicator();

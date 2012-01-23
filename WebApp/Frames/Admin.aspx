@@ -12,7 +12,8 @@
           ScrollChildren="True">
          <Tabs>
            <telerik:RadTab runat="server" Text="My Company" Value="AdminCompany.aspx"></telerik:RadTab>
-           <telerik:RadTab runat="server" Text="My Portal" Value="AdminPortal.aspx" Visible="true"></telerik:RadTab>
+           
+           <telerik:RadTab runat="server" Text="My Portal" Value="../vcr/140/Pages/Admin_Portal.html" Visible="true"></telerik:RadTab>
            <telerik:RadTab runat="server" Selected="True" Text="Custom Fields" Value="../vcr/140/Pages/Admin_CustomFields.html"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Custom Properties" Value="AdminCustomProperties.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="SLA" Value="AdminSla.aspx"></telerik:RadTab>
@@ -22,6 +23,7 @@
            <telerik:RadTab runat="server" Text="Ticket Templates" Value="AdminTicketTemplates.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Ticket Automation" Value="../vcr/140/Pages/Admin_Automation.html" Visible="true"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Chat" Value="AdminChat.aspx" Visible="false"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="My Portalx" Value="AdminPortal.aspx" Visible="true"></telerik:RadTab>
          </Tabs>
         </telerik:RadTabStrip>
        </div>

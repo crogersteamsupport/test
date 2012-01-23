@@ -64,6 +64,10 @@ UserPage = function () {
     top.Ts.Services.Users.GetUserAddresses(userID, function (addresses) {
         var addresslist = '';
 
+        if (addresses.length === 0) {
+            addresslist = '<div>There are no addresses to display.</div>';
+        }
+
         for (var i = 0; i < addresses.length; i++) {
             addresslist += '<div class="user-address">';
             addresslist += '<h3 class="user-address-desc">' + addresses[i].Description + '</h3>';
@@ -81,6 +85,9 @@ UserPage = function () {
     top.Ts.Services.Users.GetUserPhoneNumbers(userID, function (phones) {
         var phonelist = '';
 
+        if (phones.length === 0) {
+            phonelist = '<div>There are no phone numbers to display.</div>';
+        }
         for (var i = 0; i < phones.length; i++) {
             phonelist += '<div class="user-phone"><span class="property">' + phones[i].PhoneTypeName + ':</span>';
             phonelist += '<span class="value">' + phones[i].Number + '</span></div>';
@@ -100,7 +107,7 @@ UserPage = function () {
             }
         }
 
-        $('#userGroupsList').append(groupslist);
+        $('#userGroups').html(groupslist);
     });
 
     $('.ts-section').hover(function (e) {
@@ -145,6 +152,12 @@ UserPage = function () {
             e.preventDefault();
             e.stopPropagation();
             ShowDialog(top.GetPhoneDialog(userID, 22));
+        });
+
+        $('.user-group-add').click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            ShowDialog(top.GetSelectGroupDialog(userID, 22));
         });
     }
     else {

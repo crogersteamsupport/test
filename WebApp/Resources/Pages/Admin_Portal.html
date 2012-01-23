@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+  <meta http-equiv="Pragma" content="no-cache">
   <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.panel.css" rel="stylesheet" type="text/css" />
@@ -9,88 +9,490 @@
   <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
   <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="vcr/140/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/140/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <!--[if IE 7]><link href="vcr/140/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <!--[if IE 8]><link href="vcr/140/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="Admin_Portal.css" rel="stylesheet" type="text/css" />
 
-  <script src="../Js/jquery-1.5.1.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-1.6.2.min.js" type="text/javascript"></script>
+
   <script src="../Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.ui.panel.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.color.js" type="text/javascript"></script>
+
   <script src="../Js/jquery.ui.timepicker.js" type="text/javascript"></script>
 
   <script src="../Js/Ts/ts.style.js" type="text/javascript"></script>
+
   <script src="../Js/Ts/ts.utils.js" type="text/javascript"></script>
+
   <script src="Admin_Portal.js" type="text/javascript"></script>
 
   <style type="text/css">
-    .portal-general-description h1 { padding: 0 0 .5em 0; font-size: 1.5em; font-weight: bold;}
-    .portal-general-description h2 { font-weight:normal; font-size: 1.2em; margin-left: .5em;}
-    .portal-general-description h3 { opacity: .5; padding:0; font-size: 1.2em; margin-left: 1em;}
-    .portal-general-description a { margin-left: 1em;}
-    .portal-admin .label { font-size: 1.5em; margin-top: .75em;}
-    .portal-admin .label-block { height:auto; }
-    textarea { height: 100px; width: 100%;}
+    .ts-rail-right { margin-top: 1.5em; }
+    textarea { height: 100px; width: 97%; }
+    .portal-content { margin: 1em 1em; }
     
+    .ui-tabs.ui-widget-content { background: none; }
+    .ui-tabs li.ui-state-default { background: none; border: none; }
+    .ui-tabs li.ui-state-active { background: #fcfdfd; border: none; }
+    .ui-tabs li a { font-weight: bold; }
+    .ui-tabs .ui-tabs-panel { background: #fcfdfd; }
+    
+    .portal-save-panel { text-align: right; }
+    .portal-save-panel button { margin-left: 1em; }
+    
+    .com-cat-container { margin: 1em 0; border-top: 0; border-bottom: 0; border-left: 0; border-right: 0; }
+    #tabs-community h1.ui-widget-content { opacity: .75; margin-right: 1em; border-top: 0; border-right: 0; border-left: 0; }
+    #tabs-community .com-cats { margin-bottom: 1em; }
+    #tabs-community .com-cat-container a.com-new-sub { margin-left: 2.5em; line-height: 2em; }
+    #tabs-community .com-cat-container a.com-new-cat { margin-left: 1.5em; line-height: 2em; }
+    .com-cat { cursor: pointer; border: 1px solid transparent; font-size: 1em; padding: .25em 0 .25em .5em; margin: 0 1em; }
+    #tabs-community .com-cat-main { font-weight: bold; }
+    #tabs-community .com-cat-sub { margin-left: 2em; }
+    #tabs-community .ts-setting-field.two-column .ts-setting-field-content { margin-left: 170px; }
+    #tabs-community .ts-setting-field.two-column .ts-setting-field-description { width: 150px; }
+    #tabs-community .ts-setting-field { border-style: dotted; }
+    #tabs-community .com-cat-save-panel { margin: 2em auto; text-align: center; display: none; }
+    #tabs-community .com-cat-properties { float: left; }
+    #tabs-community .com-cat-properties textarea { width: 400px; height: 75px; }
+    #tabs-community .com-delete-cat { line-height: 2em; }
+    .ui-state-highlight.com-cat-sub { min-height: 2em; }
+    .ui-state-highlight.com-cats { min-height: 5em; }
   </style>
   <title></title>
 </head>
 <body>
-  <div class="portal-admin ui-widget frame-content ts-color-bg-accent ui-widget" style="position: relative;">
+  <div class="portal-admin ui-widget ts-color-bg-accent ui-widget frame-content">
     <div class="ts-section ui-widget-content ui-corner-all loading-section">
       <div class="ts-loading">
       </div>
     </div>
-    <div class="ui-helper-hidden">
-      <div class="ts-section ui-widget-content ui-corner-all">
-        <p class="portal-general-description ui-helper-hidden">Please Note: Our portals are
-          designed to fit within you existing website. To learn more about how to accomplish
-          this, see <a href="http://help.teamsupport.com/customer-portal/integrating-the-portal-into-your-website"
-            target="_blank">here</a>. You are welcome to use the URL’s as their own page.
-          If you would like to do this and customize the CSS of the individual pages, see
-          <a href="http://help.teamsupport.com/customer-portal/editing-the-portal-css" target="_blank">
-            here</a>.</p>
-        <div class="portal-general-description">
-          <h1>Our portals are designed to be:</h1>
-          <h2>- embedded into your existing website.<a class="ts-link ui-state-default" href="http://help.teamsupport.com/customer-portal/integrating-the-portal-into-your-website"
-            target="_blank">Learn More >></a></h2>
-          <h3>OR </h3>
-          <h2>- used as a standalone website.<a class="ts-link ui-state-default" href="http://help.teamsupport.com/customer-portal/editing-the-portal-css"
-            target="_blank">Learn More >></a></h2>
+    <div class="portal-page" style="display: none;">
+      <div class="ts-content-wrapper-leftx">
+        <div class="ts-content-leftx">
+          <div class="portal-content">
+            <div id="tabs">
+              <ul>
+                <li><a href="#tabs-general">General</a></li>
+                <li><a href="#tabs-advanced">Advanced Portal</a></li>
+                <li><a href="#tabs-basic">Public Portal</a></li>
+                <li><a href="#tabs-community">Community</a></li>
+              </ul>
+              <div id="tabs-general" class="tabs-modifiable">
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Portal Name</div>
+                  <div class="ts-setting-field-content">
+                    <input type="text" id="portal_name" class="ui-widget-content ui-corner-all text" />
+                    <p></p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Ticket Deflection</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_deflection" /><label class="checkbox"
+                      for="portal_deflection">Enabled</label>
+                    <div class="ts-clearfix">
+                      &nbsp</div>
+                    <p>In an effort to reduce the number of tickets your customers send your way via the
+                      portal, you can use KB Tickets and Tagging to display suggested tickets to your
+                      customers in hopes they will find the answer to their question before actually submitting
+                      a ticket. See how it works <a href="http://help.teamsupport.com/customer-portal/ticket-deflection"
+                        target="_blank">here</a></p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Default Portal Group</div>
+                  <div class="ts-setting-field-content">
+                    <select id="portal_def_group"></select>
+                    <div class="ts-clearfix">
+                      &nbsp</div>
+                    <p>Assigns a new ticket to one of your defined groups. In addition, this setting may
+                      be overridden on a per customer basis so that when one of your specific customer
+                      creates a ticket, you can have the ticket auto assign to a specific TeamSupport
+                      user and/or a Group. The Customer override setting is located in the Customers section->Details
+                      Tab.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Display Group Selection</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_show_grouplist" /><label class="checkbox"
+                      for="portal_show_grouplist">Enabled</label>
+                    <div class="ts-clearfix">
+                      &nbsp</div>
+                    <p>This will allow your customers to assign their ticket to a Group you have defined
+                      in your account and override the Default Portal Group.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Display Product Selection</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_show_product" /><label class="checkbox"
+                      for="portal_show_product">Enabled</label>
+                    <div class="ts-clearfix">
+                      &nbsp</div>
+                    <p>For our Enterprise edition customers only - you can show or hide product and product
+                      version fields when customers are creating a new ticket. This data is also shown
+                      to your customers when they are looking at existing tickets.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Display Version Selection</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_show_version" /><label class="checkbox"
+                      for="portal_show_version">Enabled</label>
+                    <div class="ts-clearfix">
+                      &nbsp</div>
+                    <p>For our Enterprise edition customers only - you can show or hide product and product
+                      version fields when customers are creating a new ticket. This data is also shown
+                      to your customers when they are looking at existing tickets.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Theme</div>
+                  <div class="ts-setting-field-content">
+                    <select id="portal_theme">
+                      <option value="Default">Gray</option>
+                      <option value="Web20">Blue</option>
+                      <option value="Hay">Green</option>
+                      <option value="Sunset">Orange</option>
+                      <option value="Beta">Beta</option>
+                    </select>
+                    <div class="ts-clearfix">
+                      &nbsp</div>
+                    <p>We have included some pre-built color skins for the portals. You are welcome to
+                      use these, or you can customize the CSS. </p>
+                  </div>
+                </div>
+                <div class="ts-setting-field ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Portal Header HTML / CSS</div>
+                  <div class="ts-setting-field-content">
+                    <p>Allows you to insert your own custom html/css and is also where you would insert
+                      your “imgsrc” to include your logo. <a class="ts-link ui-state-default" href="http://help.teamsupport.com/customer-portal/editing-the-portal-css"
+                        target="_blank">Learn More >></a></p>
+                    <textarea id="portal_header" class="ui-corner-all ui-widget-content"></textarea>
+                  </div>
+                </div>
+                <div class="ts-setting-field ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Portal Footer</div>
+                  <div class="ts-setting-field-content">
+                    <p>Allows you to add a custom footer to your page, such as a copyright message, date,
+                      address, and so on.</p>
+                    <textarea id="portal_footer" class="ui-corner-all ui-widget-content"></textarea>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content last">
+                  <div class="ts-setting-field-description">
+                    Screen Recording</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_screen_rec" /><label class="checkbox"
+                      for="portal_screen_rec">Enabled</label>
+                    <p></p>
+                  </div>
+                </div>
+              </div>
+              <div id="tabs-advanced" class="tabs-modifiable">
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Advanced Portal URL</div>
+                  <div class="ts-setting-field-content">
+                    <a href="#" target="_blank" id="portal_adv_url" class="ui-state-default ts-link">URL
+                      goes here</a>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Landing Page</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_landing_enabled" /><label class="checkbox"
+                      for="portal_landing_enabled">Enabled</label>
+                    <p>Enables a landing page that allows you to highlight recent KB’s, Wiki’s, Community
+                      and a customers recent tickets.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Landing Page HTML</div>
+                  <div class="ts-setting-field-content">
+                    <p>Allows you to customize the look and content displayed in your landing page.</p>
+                    <textarea id="portal_landing_html" class="ui-corner-all ui-widget-content"></textarea>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    External Portal Link</div>
+                  <div class="ts-setting-field-content">
+                    <input type="text" id="portal_external_link" class="ui-widget-content ui-corner-all text" />
+                    <p>If you are embedding your portal into an iFrame on your site, you can identify
+                      the External portal link location. This may be something like:http://www.your-company-website.com/support.aspx</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Width</div>
+                  <div class="ts-setting-field-content">
+                    <input type="text" id="portal_adv_width" class="ui-widget-content ui-corner-all text" />
+                    <p>Defines the width of your advanced portal.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Show Assigned User</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_show_user" /><label class="checkbox"
+                      for="portal_show_user">Enabled</label>
+                    <p>When your customers are viewing tickets, they also have the option to see which
+                      agent or group within your company is actually working on the ticket.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content last">
+                  <div class="ts-setting-field-description">
+                    Show Assigned Group</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_show_group" /><label class="checkbox"
+                      for="portal_show_group">Enabled</label>
+                    <p>When your customers are viewing tickets, they also have the option to see which
+                      agent or group within your company is actually working on the ticket.</p>
+                  </div>
+                </div>
+              </div>
+              <div id="tabs-basic" class="tabs-modifiable">
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Captcha</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_captcha" /><label class="checkbox"
+                      for="portal_captcha">Enabled</label>
+                    <p>Because the Ticket Submission Form does not require customer login, you can help
+                      avoid spammers by turning on the Recaptcha.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Page Header</div>
+                  <div class="ts-setting-field-content">
+                    <input type="text" id="portal_basic_header" class="ui-widget-content ui-corner-all text" />
+                    <p>Allows you to deﬁne a welcome message on the public portal page.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Page Width</div>
+                  <div class="ts-setting-field-content">
+                    <input type="text" id="portal_basic_width" class="ui-widget-content ui-corner-all text" />
+                    <p>Deﬁnes the width of all public portals</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Ticket Submission URL</div>
+                  <div class="ts-setting-field-content">
+                    <a href="#" target="_blank" id="portal_ticket_url" class="ui-state-default ts-link">
+                      URL goes here</a>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Use Company</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_use_company" /><label class="checkbox"
+                      for="portal_use_company">Enabled</label>
+                    <p>Allows you to show or hide the company/department field on the Ticket Submission
+                      Form. (Support Desk/Enterprise Editions only)</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Company Required</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_company_required" /><label class="checkbox"
+                      for="portal_company_required">Enabled</label>
+                    <p>Makes the company required.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Knowledgebase URL</div>
+                  <div class="ts-setting-field-content">
+                    <a href="#" target="_blank" id="portal_kb_url" class="ui-state-default ts-link">URL
+                      goes here</a>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Allow Access to Knowledgebase</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_allow_kb" /><label class="checkbox"
+                      for="portal_allow_kb">Enabled</label>
+                    <p>When a ticket is marked "visible to customers" and "knowledgebase", the ticket
+                      added to the public knowledgebase where customers can search. In some cases, companies
+                      do not want or need this ability since it is non-authenticated . If you do not want
+                      or have a need for this, you can turn off the public knowledgebase.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Wiki Documents URL</div>
+                  <div class="ts-setting-field-content">
+                    <a href="#" target="_blank" id="portal_wiki_url" class="ui-state-default ts-link">
+                      URL goes here</a>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content last">
+                  <div class="ts-setting-field-description">
+                    Allow Access to Wiki Documents</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_allow_wiki" /><label class="checkbox"
+                      for="portal_allow_wiki">Enabled</label>
+                    <p>When a Wiki document is marked "visible on advanced portal, the document can be
+                      viewed on this portal. In some cases, companies do not want or need this ability
+                      since it is non-authenticated. If you do not want or have a need for this, you can
+                      turn off the public Wiki portal.</p>
+                  </div>
+                </div>
+              </div>
+              <div id="tabs-community">
+                <div class="ts-rail-left">
+                  <h1 class="ui-widget-content">Categories</h1>
+                  <div class="com-cat-container ui-widget-content">
+                    <div class="com-cat-list">
+                      <div class="com-cats">
+                        <div class="com-cat com-cat-main">
+                          General Discussion</div>
+                        <div class="com-cat com-cat-sub ui-state-active ui-corner-all">
+                          Sub 1</div>
+                        <div class="com-cat com-cat-sub">
+                          Sub 2</div>
+                        <div>
+                          <a href="#" class="ui-state-default ts-link com-new-sub">Add a new subcategory</a></div>
+                      </div>
+                      <div class="com-cats">
+                        <div class="com-cat com-cat-main ui-state-active ui-corner-all">
+                          General Discussion</div>
+                        <div class="com-cat com-cat-sub ui-corner-all">
+                          Sub 1</div>
+                        <div class="com-cat com-cat-sub">
+                          Sub 2</div>
+                        <div>
+                          <a href="#" class="ui-state-default ts-link com-new-sub">Add a new subcategory</a></div>
+                      </div>
+                    </div>
+                    <div>
+                      <a href="#" class="ui-state-default ts-link com-new-cat">Add a new category</a></div>
+                  </div>
+                  <p style="opacity: .5;">* Drag and drop categories to reorder them as they appear
+                    in the community.</p>
+                </div>
+                <div class="ts-content-right">
+                  <h1 class="ui-widget-content">Properties</h1>
+                  <div class="com-cat-properties">
+                    <div>
+                      <a href="#" class="ui-state-default ts-link com-delete-cat">Delete this category</a></div>
+                    <div class="ts-setting-field two-column ui-widget-content">
+                      <div class="ts-setting-field-description">
+                        Name</div>
+                      <div class="ts-setting-field-content">
+                        <input type="text" id="com_cat_name" class="ui-widget-content ui-corner-all text" />
+                        <p>The name of the category to appear in the community.</p>
+                      </div>
+                    </div>
+                    <div class="ts-setting-field two-column ui-widget-content">
+                      <div class="ts-setting-field-description">
+                        Description</div>
+                      <div class="ts-setting-field-content">
+                        <textarea id="com_cat_description" class="ui-corner-all ui-widget-content"></textarea>
+                        <p></p>
+                      </div>
+                    </div>
+                    <div class="ts-setting-field two-column ui-widget-content">
+                      <div class="ts-setting-field-description">
+                        Ticket Type</div>
+                      <div class="ts-setting-field-content">
+                        <select id="com_cat_tickettype"></select>
+                        <div class="ts-clearfix">
+                        </div>
+                        <p>Select a ticket type to be assigned to the ticket created in this category.</p>
+                      </div>
+                    </div>
+                    <div class="ts-setting-field two-column ui-widget-content">
+                      <div class="ts-setting-field-description">
+                        Group</div>
+                      <div class="ts-setting-field-content">
+                        <select id="com_cat_group"></select>
+                        <div class="ts-clearfix">
+                        </div>
+                        <p>Select a group to be assigned to the ticket created in this category.</p>
+                      </div>
+                    </div>
+                    <div class="ts-setting-field two-column ui-widget-content">
+                      <div class="ts-setting-field-description">
+                        Product</div>
+                      <div class="ts-setting-field-content">
+                        <select id="com_cat_product"></select>
+                        <div class="ts-clearfix">
+                        </div>
+                        <p>Select a product to be assigned to the ticket created in this category.</p>
+                      </div>
+                    </div>
+                    <div class="ts-setting-field two-column ui-widget-content ui-helper-hidden">
+                      <div class="ts-setting-field-description">
+                        Filters</div>
+                      <div class="ts-setting-field-content">
+                        <input type="text" id="com_cat_description" class="ui-widget-content ui-corner-all text" />
+                        <p>Type a user or organizaton to add to this list. Users and organizations will be
+                          blocked from this category.</p>
+                      </div>
+                    </div>
+                    <div class="com-cat-save-panel">
+                      <button class="com-save-cat">Save Category</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="ts-clearfix">
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="ts-section ui-widget-content ui-corner-all">
-        <div class="label-block label-block-nofloat">
-          <span class="label">Theme</span> <span class="label-description">We have included
-            some pre-built color skins for the portals. You are welcome to use these, or you
-            can customize the CSS.</span>
-          <select class="portal-theme">
-            <option value="Default">Gray</option>
-            <option value="Web20">Blue</option>
-            <option value="Hay">Green</option>
-            <option value="Sunset">Orange</option>
-            <option value="Beta">Beta</option>
-          </select>
-        </div>
-        <div class="label-block label-block-nofloat">
-          <span class="label">Portal Header HTML/CSS</span> <span class="label-description">
-            Allows you to insert your own custom html/css and is also where you would insert
-            your “imgsrc” to include your logo. <a class="ts-link ui-state-default" href="http://help.teamsupport.com/customer-portal/editing-the-portal-css"
-              target="_blank">Learn More >></a></span>
-          <textarea class="ui-corner-all ui-widget-content"></textarea>
-        </div>
-        <div class="label-block label-block-nofloat">
-          <span class="label">Portal Footer</span> <span class="label-description">Allows you
-            to add a custom footer to your page, such as a copyright message, date, address,
-            and so on.</span>
-          <textarea class="ui-corner-all ui-widget-content"></textarea>
-        </div>
-        <div class="ts-clearfix">
+      <div class="ts-rail-wrapper-rightx ui-helper-hidden">
+        <div class="ts-rail-right">
+          <div class="ts-section ui-widget-content ui-corner-all">
+            <p class="portal-general-description ui-helper-hidden">Please Note: Our portals are
+              designed to fit within you existing website. To learn more about how to accomplish
+              this, see <a href="http://help.teamsupport.com/customer-portal/integrating-the-portal-into-your-website"
+                target="_blank">here</a>. You are welcome to use the URL’s as their own page.
+              If you would like to do this and customize the CSS of the individual pages, see
+              <a href="http://help.teamsupport.com/customer-portal/editing-the-portal-css" target="_blank">
+                here</a>.</p>
+            <div class="portal-general-description">
+              <h1>Your portal is designed to be:</h1>
+              <h2>- embedded into your existing website.<a class="ts-link ui-state-default" href="http://help.teamsupport.com/customer-portal/integrating-the-portal-into-your-website"
+                target="_blank">Learn More >></a></h2>
+              <h3>OR </h3>
+              <h2>- used as a standalone website.<a class="ts-link ui-state-default" href="http://help.teamsupport.com/customer-portal/editing-the-portal-css"
+                target="_blank">Learn More >></a></h2>
+            </div>
+          </div>
         </div>
       </div>
+      <button id="btnRefresh" style="display: none; margin-left: 1em;">Refresh</button>
     </div>
-    <button id="btnRefresh" style="display: none; margin-left: 1em;">Refresh</button>
   </div>
 </body>
 </html>

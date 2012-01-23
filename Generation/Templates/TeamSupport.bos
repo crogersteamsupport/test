@@ -3840,6 +3840,23 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>Users</TableName>
+    <FieldName>Information</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>500</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>CRMLinkFields</TableName>
     <FieldName>CRMFieldID</FieldName>
     <CustomType>int</CustomType>

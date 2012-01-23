@@ -53,6 +53,7 @@ namespace TeamSupport.Data
     [DataMember] public bool DoNotAutoSubscribe { get; set; }
     [DataMember] public bool IsClassicView { get; set; }
     [DataMember] public bool SubscribeToNewActions { get; set; }
+    [DataMember] public string Information { get; set; }
           
   }
   
@@ -61,6 +62,7 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.Information = this.Information;
       result.SubscribeToNewActions = this.SubscribeToNewActions;
       result.IsClassicView = this.IsClassicView;
       result.DoNotAutoSubscribe = this.DoNotAutoSubscribe;

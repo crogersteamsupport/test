@@ -121,7 +121,7 @@ namespace TSWebServices
 
         if (org.UseForums == true && TSAuthentication.UserID == 34)
         {
-          items.Add(new TsMenuItem("forum", "mniForum", "Community", "vcr/140/images/nav/16/forum.png", string.Format(data, "vcr/140/Pages/Tickets.html", "vcr/140/PaneInfo/Forum.html")));
+          items.Add(new TsMenuItem("forum", "mniForum", "Community", "vcr/140/images/nav/16/forum.png", string.Format(data, "vcr/140/Pages/TicketGrid.html?tf_ForumCategoryID=-1", "vcr/140/PaneInfo/Forum.html")));
         }
 
         if (org.ProductType != ProductType.Express)

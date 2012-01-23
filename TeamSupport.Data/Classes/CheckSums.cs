@@ -58,6 +58,9 @@ namespace TeamSupport.Data
         case ReferenceType.TicketNextStatuses:
           sql = "SELECT CHECKSUM_AGG(CHECKSUM(*)) FROM TicketNextStatuses tns LEFT JOIN TicketStatuses ts ON ts.TicketStatusID = tns.CurrentStatusID WHERE ts.OrganizationID = " + loginUser.OrganizationID.ToString();
           break;
+        case ReferenceType.ForumCategories:
+          sql = string.Format(sql, "ForumCategories");
+          break;
         default:
           return 0;
       }

@@ -141,6 +141,19 @@ $(document).ready(function () {
   }
   addUnassignedComboItem($('.newticket-group').combobox());
 
+  var categories = top.Ts.Cache.getForumCategories();
+  var option = $('<option>').text('Unassigned').attr('value', -1).appendTo('.newticket-community').data('o', null).attr('selected', 'selected');
+  for (var i = 0; i < categories.length; i++) {
+    var cat = categories[i].Category;
+    option = $('<option>').text(cat.CategoryName).attr('value', cat.CategoryID).appendTo('.newticket-community').data('o', cat);
+    for (var j = 0; j < categories[i].Subcategories.length; j++) {
+      var sub = categories[i].Subcategories[j];
+      option = $('<option>').text(cat.CategoryName + ' -> ' + sub.CategoryName).attr('value', cat.CategoryID).appendTo('.newticket-community').data('o', sub);
+    }
+  }
+
+  $('.newticket-community').combobox();
+
   function loadProducts(doAll) {
     if (doAll != undefined && doAll == true) {
       var products = top.Ts.Cache.getProducts();
@@ -1286,6 +1299,7 @@ $(document).ready(function () {
       info.TicketSeverityID = $('.newticket-severity').val();
       info.UserID = $('.newticket-user').val();
       info.GroupID = $('.newticket-group').val();
+      info.CategoryID = $('.newticket-community').val();
       info.ProductID = $('.newticket-product').val();
       info.ReportedID = $('.newticket-reported').val();
       info.ResolvedID = $('.newticket-resolved').val();

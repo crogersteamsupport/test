@@ -732,7 +732,7 @@ $(document).ready(function () {
       theme: "advanced",
       skin: "o2k7",
       plugins: "autoresize,paste,table,spellchecker,inlinepopups,table",
-      theme_advanced_buttons1: "insertTicket,insertKb,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
+      theme_advanced_buttons1: "insertTicket,insertKb,recordScreen,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
       theme_advanced_buttons2: "forecolor,backcolor,fontselect,fontsizeselect,bold,italic,underline,strikethrough,blockquote,|,spellchecker",
       //theme_advanced_buttons3: "tablecontrols",
       theme_advanced_buttons3: "",
@@ -775,9 +775,46 @@ $(document).ready(function () {
             });
           }
         });
+
         ed.addButton('insertKb', {
           title: 'Insert Knowledgebase',
           image: '../images/nav/16/knowledge.png',
+          onclick: function () {
+            filter = new top.TeamSupport.Data.TicketLoadFilter();
+            filter.IsKnowledgeBase = true;
+            top.Ts.MainPage.selectTicket(filter, function (ticketID) {
+              top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
+                if (result === null) {
+                  alert('There was an error inserting your knowledgebase ticket.');
+                  return;
+                }
+                var ticket = result[0];
+                var actions = result[1];
+
+                var html = '<div><h2>' + ticket.Name + '</h2>';
+
+                for (var i = 0; i < actions.length; i++) {
+                  html = html + '<div>' + actions[i].Description + '</div></br>';
+                }
+                html = html + '</div>';
+
+                ed.focus();
+                ed.selection.setContent(html);
+                ed.execCommand('mceAutoResize');
+                ed.focus();
+
+                //needs to resize or go to end
+
+              }, function () {
+                alert('There was an error inserting your knowledgebase ticket.');
+              });
+            });
+          }
+        });
+
+        ed.addButton('recordScreen', {
+          title: 'Record Screen',
+          image: '../images/icons/Symbol_Record.png',
           onclick: function () {
             filter = new top.TeamSupport.Data.TicketLoadFilter();
             filter.IsKnowledgeBase = true;
@@ -1489,6 +1526,52 @@ $(document).ready(function () {
     });
 
 
+  $('#ticketCommunity')
+    .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+    .click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      removeComboBoxes();
+      var parent = $(this).closest('.ticket-name-value').hide();
+      var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+      var select = $('<select>').appendTo(container);
+
+      var option = $('<option>').text('Unassigned').appendTo(select).data('o', null);
+
+      var categories = top.Ts.Cache.getForumCategories();
+      for (var i = 0; i < categories.length; i++) {
+        var cat = categories[i].Category;
+        var option = $('<option>').text(cat.CategoryName).appendTo(select).data('o', cat);
+        if ($(this).text() === cat.CategoryName) { option.attr('selected', 'selected'); }
+
+        for (var j = 0; j < categories[i].Subcategories.length; j++) {
+          var sub = categories[i].Subcategories[j];
+          var optionSub = $('<option>').text(cat.CategoryName + ' -> ' + sub.CategoryName).appendTo(select).data('o', sub);
+          if ($(this).text() === sub.CategoryName) { option.attr('selected', 'selected'); }
+        }
+      }
+
+      select.combobox({
+        selected: function (e, ui) {
+          parent.show().find('img').show();
+          var category = $(ui.item).data('o');
+          top.Ts.Services.Tickets.SetTicketCommunity(_ticketID, category == null ? null : category.CategoryID, function (result) {
+            $('#ticketCommunity').text(result == null ? 'Unassigned' : result.CategoryName);
+            parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+          },
+          function (error) {
+            parent.show().find('img').hide();
+            alert('There was an error setting your ticket community.');
+          });
+          container.remove();
+        },
+        close: function (e, ui) {
+          removeComboBoxes();
+        }
+      });
+      select.combobox('search', '');
+    });
+
   function setUserName(user, userID) {
     var isAssigned = user !== null && user !== "";
     var id = -1;
@@ -1991,6 +2074,7 @@ $(document).ready(function () {
       //$('.ticket-dateCreated').text(info.Ticket.DateCreated.localeFormat(top.Ts.Utils.getDateTimePattern()));
       $('#isTicketPortal').text((info.Ticket.IsVisibleOnPortal == true ? 'Yes' : 'No'));
       $('#isTicketKB').text((info.Ticket.IsKnowledgeBase == true ? 'Yes' : 'No'));
+      $('#ticketCommunity').text((info.Ticket.CategoryName == null ? 'Unassigned' : info.Ticket.CategoryName));
       $('#ticketType').html(info.Ticket.TicketTypeName);
       $('#ticketStatus')
       .text(info.Ticket.Status)

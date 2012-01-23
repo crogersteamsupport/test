@@ -102,6 +102,92 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public PortalOptionProxy GetPortalOption(int organizationID)
+    {
+      Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);
+      if (organization.OrganizationID != TSAuthentication.OrganizationID || !TSAuthentication.IsSystemAdmin) return null;
+      PortalOption result = PortalOptions.GetPortalOption(organization.Collection.LoginUser, organizationID);
+
+      if (result == null)
+      {
+        result = (new PortalOptions(organization.Collection.LoginUser).AddNewPortalOption());
+        result.OrganizationID = organizationID;
+        result.Collection.Save();
+      }
+
+
+      return result.GetProxy();
+    }
+
+    [WebMethod]
+    public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles, int? groupID)
+    {
+      Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
+      if (organization.OrganizationID != TSAuthentication.OrganizationID || !TSAuthentication.IsSystemAdmin) return null;
+      
+
+
+      PortalOption option = PortalOptions.GetPortalOption(organization.Collection.LoginUser, proxy.OrganizationID);
+      
+      option.PortalName = PortalOptions.ValidatePortalNameChars(proxy.PortalName);
+      PortalOptions options = new PortalOptions(organization.Collection.LoginUser);
+      options.LoadByPortalName(option.PortalName);
+      if (options.Count > 0)
+      {
+        if (options.Count > 1 || options[0].OrganizationID != TSAuthentication.OrganizationID)
+        {
+          return "That portal name is already taken.  Please choose a different portal name.";
+        }
+      }
+      
+      option.PublicLandingPageBody = proxy.PublicLandingPageBody;
+      option.PublicLandingPageHeader = proxy.PublicLandingPageHeader;
+      option.EnableScreenr = proxy.EnableScreenr;
+      option.DisplayLandingPage = proxy.DisplayLandingPage;
+      option.LandingPageHtml = proxy.LandingPageHtml;
+      option.DisplayProductVersion = proxy.DisplayProductVersion;
+      option.DisplayAdvKB = proxy.DisplayAdvKB;
+      option.DisplayAdvProducts = proxy.DisplayAdvProducts;
+      option.DisplayPortalPhone = proxy.DisplayPortalPhone;
+      option.DisplayFooter = proxy.DisplayFooter;
+      option.DisplayForum = proxy.DisplayForum;
+      option.DeflectionEnabled = proxy.DeflectionEnabled;
+      option.BasicPortalDirections = proxy.BasicPortalDirections;
+      option.AdvPortalWidth = proxy.AdvPortalWidth;
+      option.Theme = proxy.Theme;
+      option.HideCloseButton = proxy.HideCloseButton;
+      option.HonorSupportExpiration = proxy.HonorSupportExpiration;
+      option.DisplayProducts = proxy.DisplayProducts;
+      option.KBAccess = proxy.KBAccess;
+      //option.PortalName = proxy.PortalName;
+      option.DisplayGroups = proxy.DisplayGroups;
+      option.BasicPortalColumnWidth = proxy.BasicPortalColumnWidth;
+      option.HideGroupAssignedTo = proxy.HideGroupAssignedTo;
+      option.HideUserAssignedTo = proxy.HideUserAssignedTo;
+      option.CompanyRequiredInBasic = proxy.CompanyRequiredInBasic;
+      option.UseCompanyInBasic = proxy.UseCompanyInBasic;
+      option.PageBackgroundColor = proxy.PageBackgroundColor;
+      //option.FontColor = proxy.FontColor;
+      //option.FontFamily = proxy.FontFamily;
+      option.UseRecaptcha = proxy.UseRecaptcha;
+      option.PortalHTMLFooter = proxy.PortalHTMLFooter;
+      option.PortalHTMLHeader = proxy.PortalHTMLHeader;
+      //option.OrganizationID = proxy.OrganizationID;
+
+      option.Collection.Save();
+
+      organization.IsPublicArticles = isPublicArticles;
+      organization.DefaultPortalGroupID = groupID;
+      organization.Collection.Save();
+
+      externalLink = externalLink.Trim();
+      if (externalLink.IndexOf("http") < 0 && externalLink != "") externalLink = "http://" + externalLink;
+      Settings.OrganizationDB.WriteString("ExternalPortalLink", externalLink);
+
+      return null;
+    }
+
+    [WebMethod]
     public CRMLinkTableItemProxy[] AdminGetCrmLinks(int organizationID)
     {
       if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
@@ -449,35 +535,12 @@ namespace TSWebServices
     public string ReadServiceSettings()
     {
       if (TSAuthentication.UserID != 34) return "";
+      string text = "DELETE FROM Reports WHERE ReportID = ";
+      SqlCommand command = new SqlCommand(text);
+      SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), command);
 
 
-      try
-      {
-        WebRequest request = WebRequest.Create("https://supporttickets.infinity.com/api/xml/tickets");
-        //request.Headers.Add("Authorization", "1086:5d18b0ce-36dc-42da-b527-ca6c4d625e32");
-        request.Credentials = new NetworkCredential("1086", "5d18b0ce-36dc-42da-b527-ca6c4d625e32");
-        WebResponse response = request.GetResponse();
-
-        Stream stream = response.GetResponseStream();
-        StringBuilder sb = new StringBuilder();
-        byte[] buf = new byte[8192];
-        int count = 0;
-        do
-        {
-          count = stream.Read(buf, 0, buf.Length);
-          if (count != 0)
-          {
-            sb.Append(Encoding.ASCII.GetString(buf, 0, count));
-          }
-
-        } while (count > 0);
-        return sb.ToString();
-      }
-      catch (Exception ex)
-      {
-        
-        throw;
-      }
+      return "";
     }
 
 

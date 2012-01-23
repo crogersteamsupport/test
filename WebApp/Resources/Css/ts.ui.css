@@ -47,8 +47,8 @@ blockquote, q {
 
 body { font-size: 12px;}
 h1 { font-size: 1.5em; padding: .5em 0; }
-h2 { font-size: 1.3em; font-weight:bold; padding: .5em 0;}
-h3 { font-size: 1.2em; font-weight:bold; padding: .5em 0;}
+h2 { font-size: 1.3em; padding: .5em 0;}
+h3 { font-size: 1.2em; padding: .5em 0;}
 td, th { padding: .5em .5em;}
 thead th, tfoot td { font-weight:bold; }
 p { padding: 0 0;}
@@ -79,7 +79,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .label-block { float:left; margin: 1em 1em 0 1em; display:inline; min-height: 4em;}
 */
 .label { font-weight:bold; display:block; margin-bottom: .25em; white-space:nowrap; }
-.label-block { float:left; margin: .25em .25em .25em 0; padding: .25em .25em; display:inline; height: 40px; border: 1px solid #fcfdfd; }
+.label-block { float:left; margin: .25em .25em .25em 0; padding: .25em .25em; display:inline; height: 40px; border: 1px solid transparent; }
 .label-block-nofloat {float: none; display: block; clear:both;}
 .label-description { display:block; margin-bottom: .5em;}
 
@@ -87,8 +87,28 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .checkbox.label-block label { vertical-align: middle; margin: 0px; top:0; font-weight:bold; padding-left: .5em;}    
 .checkbox.label-block input { vertical-align: middle; margin: 0px; top:0;  }
 
-
 .ts-loading { background-color: transparent; background-image: url('../images/loading/loading2.gif'); background-repeat: no-repeat;  background-position: 50% 25%; height:100%; min-height: 200px; }
+.loading-indicator label {padding-left: 20px;	background: url('../images/ajax-loader-small.gif') no-repeat center left; }
+
+.ts-rail-wrapper-right {float: left; width: 300px; margin-left: -300px;}
+.ts-rail-right { border-top: none; border-bottom: none; border-right: none; margin-top: 0; padding: 0 .5em 1em 0; line-height: 1.5em; }
+.ts-content-left { margin-right: 300px; padding: 0 1em 1em 1em; }
+.ts-content-wrapper-left { float: left; width: 100%; }
+
+.ts-rail-left { float: left; width: 300px; }
+.ts-content-right { margin-left: 320px; }
+
+.ts-setting-field { padding: 1em 0; border-top: 0; border-left: 0; border-right: 0;  border-style: dotted;}
+.ts-setting-field.last { border: 0; }
+.ts-setting-field.two-column .ts-setting-field-content { margin-left: 220px; }
+.ts-setting-field.two-column .ts-setting-field-description { float: left; width: 200px; }
+.ts-setting-field .ts-setting-field-description { font-weight: bold; font-size: 1.2em; }
+.ts-setting-field p { padding: .5em 0 0 0; line-height: 1.25em; }
+.ts-setting-field input.text { width: 250px;}
+.ts-setting-field label.checkbox { margin-left: .25em; }
+.ts-setting-field-content {}
+.ts-setting-field-description { opacity: .65;}
+
 
 .mceLayout .mceIframeContainer { background: #fff;}
 .mceLayout td.mceIframeContainer { vertical-align:top;}
@@ -105,8 +125,12 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .ui-widget-content a.ts-link { border: none; background:none; cursor: pointer;}
 .ts-color-bg-accent, .ui-widget-content.ts-color-bg-accent { background-color:#D5E5F7; /* #E3EEFC;*/ background-image: none;}
 .ui-widget-content.ts-separator { height: 1px; border-bottom: none; border-left:none; border-right:none; margin-bottom: .5em; clear:both; }
-.ts-section { margin: 1em 1em; padding: 1em .75em; border: none; clear:both;}
 .ts-content { background-image:none; border:none; overflow:auto; } 
+.ts-section { margin: 1em 1em; padding: 1em .75em; border: none; clear:both;}
+.ts-section h1, .ts-section h2, .ts-section h3 { color: #555; font-weight: normal; }
+.ts-section h1 { font-size: 1.5em; margin: .5em 0; }
+.ts-section h2 { font-size: 1.3em; margin: .5em 0; }
+.ts-section h3 { font-size: 1.2em; margin: .5em 0; }
 
 
 /* Old, but used in automation admin
@@ -266,6 +290,4 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .ui-cluetip-content dt { float:left; width: 25%; font-weight:bold; clear:both;} 
 .ui-cluetip-content dd { float:left; width: 70%;} 
 .ui-cluetip-content { padding: 1em 1em;  border:none;}
-
-.loading-indicator label {padding-left: 20px;	background: url('../images/ajax-loader-small.gif') no-repeat center left; }
 

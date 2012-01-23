@@ -46,7 +46,8 @@ namespace TeamSupport.Data
      Contacts = 32,
      Chat = 33,
      Assets = 34,
-     EmailPost = 35
+     EmailPost = 35,
+     ForumCategories = 36
   };
 
   public enum SystemUser

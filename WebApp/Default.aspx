@@ -20,6 +20,7 @@
 
   <script src="vcr/140/Js/jquery-1.5.1.min.js" type="text/javascript"></script>
   <script src="vcr/140/Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+  
 
   <script type="text/javascript" language="javascript">
 
@@ -40,7 +41,19 @@
       g_PrivateServices.set_defaultFailedCallback(function (error, userContext, methodName) {
         //if (error !== null) { alert("An error occurred: " + error.get_message()) };
       });
+      //document.write(unescape("%3Cscript charset='utf-8' id='screenr_recorder' src='https://teamsupport.viewscreencasts.com/api/recorder' type='text/javascript'%3E%3C/script%3E"));
+      $.getScript('https://teamsupport.viewscreencasts.com/api/recorder', function () {
+        alert('loaded');
+        var recorder = Screenr.Recorder({ id: "b67bdeab7c084032bc4f37e5308eae1e", hideAllFields: true, maxTimeLimit: 300 });
+        recorder.record();
+      });
+      
+
+      
     }
+
+    
+
   </script>
 
   <style type="text/css">

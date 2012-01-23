@@ -540,6 +540,24 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public ForumCategoryProxy SetTicketCommunity(int ticketID, int? categoryID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return  null;
+      if (categoryID == null)
+      {
+        ticket.RemoveCommunityTicket();
+      }
+      else
+      {
+        ticket.AddCommunityTicket((int)categoryID);
+        return ForumCategories.GetForumCategory(ticket.Collection.LoginUser, (int)categoryID).GetProxy();
+      }
+      return null;
+    }
+    
+
+    [WebMethod]
     public UserInfo SetTicketUser(int ticketID, int? userID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -1505,6 +1523,8 @@ namespace TSWebServices
       ticket.ParentID = info.ParentTicketID;
       ticket.Collection.Save();
 
+      if (info.CategoryID != null) ticket.AddCommunityTicket((int)info.CategoryID);
+
       TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
       action.ActionTypeID = null;
       action.Name = "Description";
@@ -1718,6 +1738,7 @@ namespace TSWebServices
     [DataMember] public bool IsKnowledgebase { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int? ChatID { get; set; }
+    [DataMember] public int? CategoryID { get; set; }
     [DataMember] public int? ParentTicketID { get; set; }
     [DataMember] public List<int> RelatedTickets { get; set; }
     [DataMember] public List<int> ChildTickets { get; set; }

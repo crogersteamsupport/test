@@ -1015,5 +1015,8 @@ Ts.Pages.Main.prototype =
     //$('.reminder-description').val((params.Description ? params.Description : ''));
   }
 
+
+  $('<iframe>', { id: 'wndScreenR', name: 'wndScreenR'}).appendTo('body');
+
 };
 
