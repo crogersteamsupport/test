@@ -117,6 +117,9 @@
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\HtmlAgilityPack\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json.Net20">
+      <HintPath>..\Json.NET\Bin\DotNet20\Newtonsoft.Json.Net20.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">

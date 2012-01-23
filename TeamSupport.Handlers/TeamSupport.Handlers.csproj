@@ -98,6 +98,9 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json.Net20">
+      <HintPath>..\Json.NET\Bin\DotNet20\Newtonsoft.Json.Net20.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -130,10 +133,6 @@
     <Compile Include="UploadHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Json.NET\Source\Src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json.Net20</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SharpZipLib\SharpZipLib.csproj">
       <Project>{53D27B3B-92A1-4246-94D9-390124F447EC}</Project>
       <Name>SharpZipLib</Name>
