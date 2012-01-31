@@ -46,6 +46,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnableScreenr", "EnableScreenr", false, false, false);
       _fieldMap.AddMap("PublicLandingPageHeader", "PublicLandingPageHeader", false, false, false);
       _fieldMap.AddMap("PublicLandingPageBody", "PublicLandingPageBody", false, false, false);
+      _fieldMap.AddMap("TwoColumnFields", "TwoColumnFields", false, false, false);
+      _fieldMap.AddMap("DisplayAdvArticles", "DisplayAdvArticles", false, false, false);
             
     }
   }

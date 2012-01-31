@@ -87,7 +87,7 @@
                   <telerik:RadTab runat="server" Value="Tickets.aspx?UserID=" Text="All Tickets"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="TicketQueue.aspx?UserID=" Text="Ticket Queue"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="History.aspx?RefType=22&RefID=" Text="User History"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="../Resources/Pages/User.html?UserID=" Selected="True" Text="User Information"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../Resources/Pages/User.html?UserID=" Text="NEW" Visible="false"></telerik:RadTab>
                 </Tabs>
               </telerik:RadTabStrip>
               </div>

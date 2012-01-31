@@ -32,11 +32,21 @@ AdminCustomFields = function () {
     var select = $('.admin-cf-type');
     $('<option>').text('Ticket').attr('value', 17).appendTo(select);
     $('<option>').text('User').attr('value', 22).appendTo(select);
-    $('<option>').text('Product').attr('value', 13).appendTo(select);
-    $('<option>').text('Product Version').attr('value', 14).appendTo(select);
-    $('<option>').text('Customer').attr('value', 9).appendTo(select);
-    $('<option>').text('Customer Product').attr('value', 8).appendTo(select);
-    $('<option>').text('Customer Contact').attr('value', 32).appendTo(select);
+
+    if (top.Ts.System.Organization.ProductType != top.Ts.ProductType.Express) {
+
+      if (top.Ts.System.Organization.ProductType != top.Ts.ProductType.HelpDesk) {
+        $('<option>').text('Product').attr('value', 13).appendTo(select);
+        $('<option>').text('Product Version').attr('value', 14).appendTo(select);
+      }
+      $('<option>').text('Customer').attr('value', 9).appendTo(select);
+
+      if (top.Ts.System.Organization.ProductType != top.Ts.ProductType.HelpDesk) {
+        $('<option>').text('Customer Product').attr('value', 8).appendTo(select);
+      }
+      $('<option>').text('Customer Contact').attr('value', 32).appendTo(select);
+    }
+
     select.combobox({ selected: function (e, ui) {
       $('.admin-cf-tickettype').parent().toggle($(ui.item).val() == 17);
       loadData();

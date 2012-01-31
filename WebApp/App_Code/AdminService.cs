@@ -60,7 +60,7 @@ namespace TSWebServices
     {
       if (!TSAuthentication.IsSystemAdmin) return null;
       ForumCategory cat = ForumCategories.GetForumCategory(TSAuthentication.GetLoginUser(), categoryID);
-      if (int.Parse(cat.OrganizationID) != TSAuthentication.OrganizationID) return null;
+      if (cat.OrganizationID != TSAuthentication.OrganizationID) return null;
       cat.CategoryName = name;
       cat.CategoryDesc = description;
       cat.TicketType = ticketTypeID;
@@ -77,7 +77,7 @@ namespace TSWebServices
 
      
       ForumCategory cat = (new ForumCategories(TSAuthentication.GetLoginUser())).AddNewForumCategory();
-      cat.OrganizationID = TSAuthentication.OrganizationID.ToString();
+      cat.OrganizationID = TSAuthentication.OrganizationID;
       cat.CategoryName = parentID == null ? "Untitled Category" : "Untitled Subcategory";
       cat.ParentID = parentID ?? -1;
       cat.Position = GetForumCategoryMaxPosition(parentID) + 1;
@@ -108,7 +108,7 @@ namespace TSWebServices
     {
       if (!TSAuthentication.IsSystemAdmin) return false;
       ForumCategory cat = ForumCategories.GetForumCategory(TSAuthentication.GetLoginUser(), categoryID);
-      if (int.Parse(cat.OrganizationID) != TSAuthentication.OrganizationID) return false;
+      if (cat.OrganizationID != TSAuthentication.OrganizationID) return false;
 
       if (cat.ParentID < 0)
       {

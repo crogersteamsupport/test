@@ -816,34 +816,11 @@ $(document).ready(function () {
           title: 'Record Screen',
           image: '../images/icons/Symbol_Record.png',
           onclick: function () {
-            filter = new top.TeamSupport.Data.TicketLoadFilter();
-            filter.IsKnowledgeBase = true;
-            top.Ts.MainPage.selectTicket(filter, function (ticketID) {
-              top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
-                if (result === null) {
-                  alert('There was an error inserting your knowledgebase ticket.');
-                  return;
-                }
-                var ticket = result[0];
-                var actions = result[1];
-
-                var html = '<div><h2>' + ticket.Name + '</h2>';
-
-                for (var i = 0; i < actions.length; i++) {
-                  html = html + '<div>' + actions[i].Description + '</div></br>';
-                }
-                html = html + '</div>';
-
-                ed.focus();
-                ed.selection.setContent(html);
-                ed.execCommand('mceAutoResize');
-                ed.focus();
-
-                //needs to resize or go to end
-
-              }, function () {
-                alert('There was an error inserting your knowledgebase ticket.');
-              });
+            top.Ts.MainPage.recordScreen(null, function (result) {
+              var html = '<div>' + result.embed + '</div>';
+              ed.selection.setContent(html);
+              ed.execCommand('mceAutoResize');
+              ed.focus();
             });
           }
         });
@@ -1541,8 +1518,8 @@ $(document).ready(function () {
       var categories = top.Ts.Cache.getForumCategories();
       for (var i = 0; i < categories.length; i++) {
         var cat = categories[i].Category;
-        var option = $('<option>').text(cat.CategoryName).appendTo(select).data('o', cat);
-        if ($(this).text() === cat.CategoryName) { option.attr('selected', 'selected'); }
+        //option = $('<option>').text(cat.CategoryName).appendTo(select).data('o', cat);
+        //if ($(this).text() === cat.CategoryName) { option.attr('selected', 'selected'); }
 
         for (var j = 0; j < categories[i].Subcategories.length; j++) {
           var sub = categories[i].Subcategories[j];
@@ -1907,6 +1884,9 @@ $(document).ready(function () {
   if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express || top.Ts.System.Organization.ProductType === top.Ts.ProductType.HelpDesk) {
     $('.ticket-widget-products').hide();
   }
+  if (top.Ts.System.Organization.UseForums != true) {
+    $('#ticketCommunity').closest('.ticket-name-value').hide();
+  }
 
 
   if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === _ticketCreatorID) {
@@ -2093,7 +2073,7 @@ $(document).ready(function () {
       if (info.Ticket.IsFlagged === true) $('#btnFlag .ts-toolbar-caption').text('Unflag');
 
       $('.ticket-source').css('backgroundImage', "url('../" + top.Ts.Utils.getTicketSourceIcon(info.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (info.Ticket.TicketSource == null ? 'Agent' : info.Ticket.TicketSource));
-      var ticketUrl = window.location.href.replace('vcr/140/Pages/Ticket.html', '');
+      var ticketUrl = window.location.href.replace('vcr/141/Pages/Ticket.html', '');
       $('<a>')
       .attr('href', ticketUrl)
       .attr('target', '_blank')

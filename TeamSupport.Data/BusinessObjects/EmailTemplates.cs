@@ -136,43 +136,27 @@ namespace TeamSupport.Data
     public void UpdateForOrganization(int organizationID)
     {
       _organizationID = organizationID;
-      if (IsTSOnly == true)
+      OrganizationEmails emails = new OrganizationEmails(BaseCollection.LoginUser);
+      emails.LoadByTemplate(organizationID, EmailTemplateID);
+      if (!emails.IsEmpty)
       {
-        if (IsEmail && UseGlobalTemplate)
-        {
-          EmailTemplate global = GetGlobalTemplate(BaseCollection.LoginUser, 1078);
-
-          string content = Body;
-          Body = global.Body;
-          ReplaceParameter("Header", Header);
-          ReplaceParameter("Footer", Footer);
-          ReplaceParameter("Body", content);
-        } 
+        Body = emails[0].Body;
+        IsHtml = emails[0].IsHtml;
+        Subject = emails[0].Subject;
+        Footer = emails[0].Footer;
+        Header = emails[0].Header;
+        UseGlobalTemplate = emails[0].UseGlobalTemplate;
       }
-      else
+
+      if (IsEmail && UseGlobalTemplate)
       {
-        OrganizationEmails emails = new OrganizationEmails(BaseCollection.LoginUser);
-        emails.LoadByTemplate(organizationID, EmailTemplateID);
-        if (!emails.IsEmpty)
-        {
-          Body = emails[0].Body;
-          IsHtml = emails[0].IsHtml;
-          Subject = emails[0].Subject;
-          Footer = emails[0].Footer;
-          Header = emails[0].Header;
-          UseGlobalTemplate = emails[0].UseGlobalTemplate;
-        }
+        EmailTemplate global = GetGlobalTemplate(BaseCollection.LoginUser, organizationID);
 
-        if (IsEmail && UseGlobalTemplate)
-        {
-          EmailTemplate global = GetGlobalTemplate(BaseCollection.LoginUser, organizationID);
-
-          string content = Body;
-          Body = global.Body;
-          ReplaceParameter("Header", Header);
-          ReplaceParameter("Footer", Footer);
-          ReplaceParameter("Body", content);
-        }
+        string content = Body;
+        Body = global.Body;
+        ReplaceParameter("Header", Header);
+        ReplaceParameter("Footer", Footer);
+        ReplaceParameter("Body", content);
       }
 
       if (IncludeDelimiter)

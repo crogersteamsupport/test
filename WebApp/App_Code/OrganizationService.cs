@@ -172,12 +172,16 @@ namespace TSWebServices
       option.UseRecaptcha = proxy.UseRecaptcha;
       option.PortalHTMLFooter = proxy.PortalHTMLFooter;
       option.PortalHTMLHeader = proxy.PortalHTMLHeader;
+      option.DisplayAdvArticles = proxy.DisplayAdvArticles;
       //option.OrganizationID = proxy.OrganizationID;
+      option.TwoColumnFields = proxy.TwoColumnFields;
+      option.DisplayForum = proxy.DisplayForum;
 
       option.Collection.Save();
 
       organization.IsPublicArticles = isPublicArticles;
       organization.DefaultPortalGroupID = groupID;
+      organization.UseForums = proxy.DisplayForum == null ? false : (bool)proxy.DisplayForum;
       organization.Collection.Save();
 
       externalLink = externalLink.Trim();
@@ -185,6 +189,16 @@ namespace TSWebServices
       Settings.OrganizationDB.WriteString("ExternalPortalLink", externalLink);
 
       return null;
+    }
+
+    [WebMethod]
+    public bool? UpdateUseCommunity(bool value) 
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+      Organization org = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+      org.UseForums = value;
+      org.Collection.Save();
+      return value;
     }
 
     [WebMethod]

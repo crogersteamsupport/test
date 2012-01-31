@@ -3840,23 +3840,6 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
-    <TableName>Users</TableName>
-    <FieldName>Information</FieldName>
-    <CustomType>string</CustomType>
-    <IsReadOnly>false</IsReadOnly>
-    <AllowDBNull>true</AllowDBNull>
-    <IsNullable>false</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
-    <IsIdentity>false</IsIdentity>
-    <IsAutoInc>false</IsAutoInc>
-    <DBType>varchar</DBType>
-    <SqlDbType>SqlDbType.VarChar</SqlDbType>
-    <SystemType>System.String</SystemType>
-    <Size>500</Size>
-    <Precision>255</Precision>
-    <Scale>255</Scale>
-  </Fields>
-  <Fields>
     <TableName>CRMLinkFields</TableName>
     <FieldName>CRMFieldID</FieldName>
     <CustomType>int</CustomType>
@@ -20146,18 +20129,18 @@
   <Fields>
     <TableName>ForumCategories</TableName>
     <FieldName>OrganizationID</FieldName>
-    <CustomType>string</CustomType>
+    <CustomType>int</CustomType>
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>false</AllowDBNull>
     <IsNullable>false</IsNullable>
     <IsPrimaryKey>false</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
-    <DBType>nvarchar</DBType>
-    <SqlDbType>SqlDbType.NVarChar</SqlDbType>
-    <SystemType>System.String</SystemType>
-    <Size>50</Size>
-    <Precision>255</Precision>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
     <Scale>255</Scale>
   </Fields>
   <Fields>
@@ -24190,6 +24173,40 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>UserTicketsView</TableName>
+    <FieldName>ForumCategory</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>UserTicketsView</TableName>
+    <FieldName>CategoryName</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>nvarchar</DBType>
+    <SqlDbType>SqlDbType.NVarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>100</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>Emails</TableName>
     <FieldName>EmailID</FieldName>
     <CustomType>int</CustomType>
@@ -27671,6 +27688,40 @@
     <SqlDbType>SqlDbType.VarChar</SqlDbType>
     <SystemType>System.String</SystemType>
     <Size>-1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>PortalOptions</TableName>
+    <FieldName>TwoColumnFields</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>PortalOptions</TableName>
+    <FieldName>DisplayAdvArticles</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
     <Precision>255</Precision>
     <Scale>255</Scale>
   </Fields>

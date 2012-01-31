@@ -328,483 +328,487 @@ namespace TeamSupport.Data
 
       #endregion
 
-      #region Defects
-      ticketStatuses = new TicketStatuses(loginUser);
-
-      ticketType = ticketTypes.AddNewTicketType();
-      ticketType.Name = "Defects";
-      ticketType.Description = "Defects";
-      ticketType.OrganizationID = organization.OrganizationID;
-      ticketType.IconUrl = "Images/TicketTypes/Bugs.png";
-      ticketType.Position = 1;
-      ticketTypes.Save();
-
-      if (createTypes)
+      if (organization.ProductType == ProductType.Enterprise)
       {
 
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "New";
-        ticketStatus.Description = "New";
-        ticketStatus.Position = 0;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
+        #region Defects
+        ticketStatuses = new TicketStatuses(loginUser);
 
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Under Review";
-        ticketStatus.Description = "Under Review";
-        ticketStatus.Position = 1;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
+        ticketType = ticketTypes.AddNewTicketType();
+        ticketType.Name = "Defects";
+        ticketType.Description = "Defects";
+        ticketType.OrganizationID = organization.OrganizationID;
+        ticketType.IconUrl = "Images/TicketTypes/Bugs.png";
+        ticketType.Position = 1;
+        ticketTypes.Save();
 
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Need More Info";
-        ticketStatus.Description = "Need More Info";
-        ticketStatus.Position = 2;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Waiting on Customer";
-        ticketStatus.Description = "Waiting on Customer";
-        ticketStatus.Position = 3;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Customer Responded";
-        ticketStatus.Description = "Customer Responded";
-        ticketStatus.IsEmailResponse = true;
-        ticketStatus.Position = 4;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "On Hold";
-        ticketStatus.Description = "On Hold";
-        ticketStatus.Position = 5;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "In Engineering";
-        ticketStatus.Description = "In Engineering";
-        ticketStatus.Position = 6;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "In QA";
-        ticketStatus.Description = "In QA";
-        ticketStatus.Position = 7;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Inform Customer";
-        ticketStatus.Description = "Inform Customer";
-        ticketStatus.Position = 8;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Closed";
-        ticketStatus.Description = "Closed";
-        ticketStatus.Position = 9;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = true;
-
-        ticketStatuses.Save();
-
-        if (createWorkflow)
+        if (createTypes)
         {
 
-          ticketNextStatuses = new TicketNextStatuses(loginUser);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[1], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[2], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[3], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[4], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[5], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[9], 8);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "New";
+          ticketStatus.Description = "New";
+          ticketStatus.Position = 0;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[2], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[3], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[4], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[5], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[9], 8);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Under Review";
+          ticketStatus.Description = "Under Review";
+          ticketStatus.Position = 1;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[3], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[4], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[5], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[9], 8);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Need More Info";
+          ticketStatus.Description = "Need More Info";
+          ticketStatus.Position = 2;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[4], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[5], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[9], 8);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Waiting on Customer";
+          ticketStatus.Description = "Waiting on Customer";
+          ticketStatus.Position = 3;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[5], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[9], 8);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Customer Responded";
+          ticketStatus.Description = "Customer Responded";
+          ticketStatus.IsEmailResponse = true;
+          ticketStatus.Position = 4;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
+
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "On Hold";
+          ticketStatus.Description = "On Hold";
+          ticketStatus.Position = 5;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[9], 8);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "In Engineering";
+          ticketStatus.Description = "In Engineering";
+          ticketStatus.Position = 6;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
+
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "In QA";
+          ticketStatus.Description = "In QA";
+          ticketStatus.Position = 7;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
+
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Inform Customer";
+          ticketStatus.Description = "Inform Customer";
+          ticketStatus.Position = 8;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
+
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Closed";
+          ticketStatus.Description = "Closed";
+          ticketStatus.Position = 9;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = true;
+
+          ticketStatuses.Save();
+
+          if (createWorkflow)
+          {
+
+            ticketNextStatuses = new TicketNextStatuses(loginUser);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[1], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[2], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[3], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[4], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[5], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[9], 8);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[2], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[3], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[4], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[5], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[9], 8);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[3], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[4], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[5], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[9], 8);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[4], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[5], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[9], 8);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[5], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[9], 8);
 
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[5], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[9], 8);
 
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[5], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[6], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[5], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[9], 8);
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[5], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[6], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[7], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[9], 8);
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[5], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[6], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[7], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[8], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[5], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[6], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[9], 8);
 
-          //ticketNextStatuses.Save();
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[5], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[6], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[7], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[9], 8);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[5], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[6], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[7], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[8], 8);
+
+            //ticketNextStatuses.Save();
+          }
         }
-      }
 
-      #endregion
+        #endregion
 
-      #region Features
-      ticketStatuses = new TicketStatuses(loginUser);
+        #region Features
+        ticketStatuses = new TicketStatuses(loginUser);
 
-      ticketType = ticketTypes.AddNewTicketType();
-      ticketType.Name = "Features";
-      ticketType.Description = "Features";
-      ticketType.OrganizationID = organization.OrganizationID;
-      ticketType.IconUrl = "Images/TicketTypes/Features.png";
-      ticketType.Position = 2;
-      ticketTypes.Save();
+        ticketType = ticketTypes.AddNewTicketType();
+        ticketType.Name = "Features";
+        ticketType.Description = "Features";
+        ticketType.OrganizationID = organization.OrganizationID;
+        ticketType.IconUrl = "Images/TicketTypes/Features.png";
+        ticketType.Position = 2;
+        ticketTypes.Save();
 
-      if (createTypes)
-      {
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "New";
-        ticketStatus.Description = "New";
-        ticketStatus.Position = 0;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Waiting Approval";
-        ticketStatus.Description = "Waiting Approval";
-        ticketStatus.Position = 1;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Need More Info";
-        ticketStatus.Description = "Need More Info";
-        ticketStatus.Position = 2;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Waiting on Customer";
-        ticketStatus.Description = "Waiting on Customer";
-        ticketStatus.Position = 3;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Customer Responded";
-        ticketStatus.Description = "Customer Responded";
-        ticketStatus.IsEmailResponse = true;
-        ticketStatus.Position = 4;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "On Hold";
-        ticketStatus.Description = "On Hold";
-        ticketStatus.Position = 5;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Approved";
-        ticketStatus.Description = "Approved";
-        ticketStatus.Position = 6;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Rejected";
-        ticketStatus.Description = "Rejected";
-        ticketStatus.Position = 7;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "In Engineering";
-        ticketStatus.Description = "In Engineering";
-        ticketStatus.Position = 8;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "In QA";
-        ticketStatus.Description = "In QA";
-        ticketStatus.Position = 9;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Inform Customer";
-        ticketStatus.Description = "Inform Customer";
-        ticketStatus.Position = 10;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false;
-
-        ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name = "Closed";
-        ticketStatus.Description = "Closed";
-        ticketStatus.Position = 11;
-        ticketStatus.OrganizationID = organization.OrganizationID;
-        ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = true;
-
-
-        ticketStatuses.Save();
-        if (createWorkflow)
+        if (createTypes)
         {
-          ticketNextStatuses = new TicketNextStatuses(loginUser);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "New";
+          ticketStatus.Description = "New";
+          ticketStatus.Position = 0;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[1], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[2], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[3], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[4], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[5], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[9], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[10], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[11], 10);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Waiting Approval";
+          ticketStatus.Description = "Waiting Approval";
+          ticketStatus.Position = 1;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[2], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[3], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[4], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[5], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[9], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[10], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[11], 10);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Need More Info";
+          ticketStatus.Description = "Need More Info";
+          ticketStatus.Position = 2;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[3], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[4], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[5], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[9], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[10], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[11], 10);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Waiting on Customer";
+          ticketStatus.Description = "Waiting on Customer";
+          ticketStatus.Position = 3;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[4], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[5], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[9], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[10], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[11], 10);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Customer Responded";
+          ticketStatus.Description = "Customer Responded";
+          ticketStatus.IsEmailResponse = true;
+          ticketStatus.Position = 4;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[5], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[9], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[10], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[11], 10);
-
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[6], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[9], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[10], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[11], 10);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "On Hold";
+          ticketStatus.Description = "On Hold";
+          ticketStatus.Position = 5;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[5], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[7], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[9], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[10], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[11], 10);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Approved";
+          ticketStatus.Description = "Approved";
+          ticketStatus.Position = 6;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[5], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[6], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[8], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[9], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[10], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[11], 10);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Rejected";
+          ticketStatus.Description = "Rejected";
+          ticketStatus.Position = 7;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[5], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[6], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[7], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[9], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[10], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[11], 10);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "In Engineering";
+          ticketStatus.Description = "In Engineering";
+          ticketStatus.Position = 8;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[5], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[6], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[7], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[8], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[10], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[11], 10);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "In QA";
+          ticketStatus.Description = "In QA";
+          ticketStatus.Position = 9;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[5], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[6], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[7], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[8], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[9], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[11], 10);
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Inform Customer";
+          ticketStatus.Description = "Inform Customer";
+          ticketStatus.Position = 10;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = false;
 
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[0], 0);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[1], 1);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[2], 2);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[3], 3);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[4], 4);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[5], 5);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[6], 6);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[7], 7);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[8], 8);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[9], 9);
-          //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[10], 10);
-          //ticketNextStatuses.Save();
+          ticketStatus = ticketStatuses.AddNewTicketStatus();
+          ticketStatus.Name = "Closed";
+          ticketStatus.Description = "Closed";
+          ticketStatus.Position = 11;
+          ticketStatus.OrganizationID = organization.OrganizationID;
+          ticketStatus.TicketTypeID = ticketType.TicketTypeID;
+          ticketStatus.IsClosed = true;
+
+
+          ticketStatuses.Save();
+          if (createWorkflow)
+          {
+            ticketNextStatuses = new TicketNextStatuses(loginUser);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[1], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[2], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[3], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[4], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[5], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[10], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[11], 10);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[2], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[3], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[4], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[5], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[10], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[1], ticketStatuses[11], 10);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[3], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[4], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[5], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[10], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[2], ticketStatuses[11], 10);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[4], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[5], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[10], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[3], ticketStatuses[11], 10);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[5], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[10], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[4], ticketStatuses[11], 10);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[6], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[10], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[5], ticketStatuses[11], 10);
+
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[5], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[7], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[10], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[6], ticketStatuses[11], 10);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[5], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[6], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[8], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[10], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[7], ticketStatuses[11], 10);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[5], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[6], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[7], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[9], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[10], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[8], ticketStatuses[11], 10);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[5], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[6], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[7], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[8], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[10], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[9], ticketStatuses[11], 10);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[5], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[6], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[7], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[8], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[9], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[10], ticketStatuses[11], 10);
+
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[0], 0);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[1], 1);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[2], 2);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[3], 3);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[4], 4);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[5], 5);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[6], 6);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[7], 7);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[8], 8);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[9], 9);
+            //ticketNextStatuses.AddNextStatus(ticketStatuses[11], ticketStatuses[10], 10);
+            //ticketNextStatuses.Save();
+          }
         }
-      }
-      #endregion
+        #endregion
 
+      }
       #region Tasks
       ticketStatuses = new TicketStatuses(loginUser);
 

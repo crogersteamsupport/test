@@ -114,11 +114,9 @@
       <HintPath>C:\Program Files (x86)\dtSearch Developer\bin64\dtSearchNetApi3.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="HtmlAgilityPack">
-      <HintPath>..\HtmlAgilityPack\HtmlAgilityPack.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json.Net20">
-      <HintPath>..\Json.NET\Bin\DotNet20\Newtonsoft.Json.Net20.dll</HintPath>
+    <Reference Include="Newtonsoft.Json.Net20, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Json.NET\Newtonsoft.Json.Net20.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -622,6 +620,10 @@
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HtmlAgilityPack\HtmlAgilityPack\HtmlAgilityPack.csproj">
+      <Project>{193BB801-054F-4729-9D5D-FCE1E32594BF}</Project>
+      <Name>HtmlAgilityPack</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TidyNet\TidyNet.csproj">
       <Project>{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}</Project>
       <Name>TidyNet</Name>

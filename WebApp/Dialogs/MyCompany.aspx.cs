@@ -125,7 +125,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     textDomains.Text = organization.CompanyDomains;
     textDescription.Text = organization.Description;
     cbDisableStatusNotifications.Checked = Settings.OrganizationDB.ReadBool("DisableStatusNotification", false);
-    cbCommunity.Checked = organization.UseForums;
+   // cbCommunity.Checked = organization.UseForums;
     cbRequireCustomer.Checked = Settings.OrganizationDB.ReadBool("RequireNewTicketCustomer", false);
     cbAdminCustomers.Checked = organization.AdminOnlyCustomers;
     cbTimeRequired.Checked = organization.TimedActionsRequired;
@@ -182,7 +182,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     else
       organization.InternalSlaLevelID = int.Parse(cmbSla.SelectedValue);
     Settings.OrganizationDB.WriteBool("DisableStatusNotification", cbDisableStatusNotifications.Checked);
-    organization.UseForums = cbCommunity.Checked;
+    //organization.UseForums = cbCommunity.Checked;
     Settings.OrganizationDB.WriteBool("RequireNewTicketCustomer", cbRequireCustomer.Checked);
     organization.AdminOnlyCustomers = cbAdminCustomers.Checked;
     organization.TimedActionsRequired = cbTimeRequired.Checked;

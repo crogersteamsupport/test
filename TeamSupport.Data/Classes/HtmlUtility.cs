@@ -263,6 +263,23 @@ namespace TeamSupport.Data
           return "";
         }
 
+        public static string CheckScreenR(LoginUser loginUser, string text)
+        {
+          if (SystemSettings.ReadString(loginUser, "KillScreenR", false.ToString()).ToLower().IndexOf("t") < 0) return text;
+          HtmlDocument doc = new HtmlDocument();
+          doc.LoadHtml(text);
+          //http://htmlagilitypack.codeplex.com/discussions/24346
+          HtmlNodeCollection nc = doc.DocumentNode.SelectNodes("//iframe[starts-with(translate(@src, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'https://teamsupport.viewscreencasts.com')]");
+          if (nc != null)
+          {
+            foreach (HtmlNode node in nc)
+            {
+              node.ParentNode.RemoveChild(node, false);
+            }
+          }
+          return doc.DocumentNode.WriteTo();
+        }
+
         public static string Sanitize(string text)
         {
           HtmlDocument doc = new HtmlDocument();

@@ -29,10 +29,14 @@ namespace TeamSupport.Data
     public void AddCommunityTicket(int forumCategoryID)
     {
       RemoveCommunityTicket();
+      ForumCategory cat = ForumCategories.GetForumCategory(Collection.LoginUser, forumCategoryID);
+      if (cat == null) return;
+      if (cat.OrganizationID != Collection.LoginUser.OrganizationID) return;
 
       ForumTicket ft = (new ForumTickets(Collection.LoginUser)).AddNewForumTicket();
       ft.TicketID = TicketID;
       ft.ForumCategory = forumCategoryID;
+      ft.ViewCount = 0;
       ft.Collection.Save();
     }
   }
@@ -1211,3 +1215,4 @@ ORDER BY DateModified
 
   }
 }
+

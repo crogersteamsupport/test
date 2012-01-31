@@ -49,6 +49,10 @@ $(document).ready(function () {
     if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.HelpDesk) {
       $('.no-helpdesk').hide();
     }
+
+    if (top.Ts.System.Organization.UseForums != true) {
+      $('.newticket-community').parent().hide();
+    }
   }
   setupProductType();
 
@@ -145,10 +149,10 @@ $(document).ready(function () {
   var option = $('<option>').text('Unassigned').attr('value', -1).appendTo('.newticket-community').data('o', null).attr('selected', 'selected');
   for (var i = 0; i < categories.length; i++) {
     var cat = categories[i].Category;
-    option = $('<option>').text(cat.CategoryName).attr('value', cat.CategoryID).appendTo('.newticket-community').data('o', cat);
+    //option = $('<option>').text(cat.CategoryName).attr('value', cat.CategoryID).appendTo('.newticket-community').data('o', cat);
     for (var j = 0; j < categories[i].Subcategories.length; j++) {
       var sub = categories[i].Subcategories[j];
-      option = $('<option>').text(cat.CategoryName + ' -> ' + sub.CategoryName).attr('value', cat.CategoryID).appendTo('.newticket-community').data('o', sub);
+      option = $('<option>').text(cat.CategoryName + ' -> ' + sub.CategoryName).attr('value', sub.CategoryID).appendTo('.newticket-community').data('o', sub);
     }
   }
 
@@ -379,7 +383,7 @@ $(document).ready(function () {
       theme: "advanced",
       skin: "o2k7",
       plugins: "autoresize,paste,table,spellchecker,inlinepopups,table",
-      theme_advanced_buttons1: "insertTicket,insertKb,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
+      theme_advanced_buttons1: "insertTicket,insertKb,recordScreen,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
       theme_advanced_buttons2: "forecolor,backcolor,fontselect,fontsizeselect,bold,italic,underline,strikethrough,blockquote,|,spellchecker",
       //theme_advanced_buttons3: "tablecontrols",
       theme_advanced_buttons3: "",
@@ -457,6 +461,20 @@ $(document).ready(function () {
             });
           }
         });
+
+        ed.addButton('recordScreen', {
+          title: 'Record Screen',
+          image: '../images/icons/Symbol_Record.png',
+          onclick: function () {
+            top.Ts.MainPage.recordScreen(null, function (result) {
+              var html = '<div>' + result.embed + '</div>';
+              ed.selection.setContent(html);
+              ed.execCommand('mceAutoResize');
+              ed.focus();
+            });
+          }
+        });
+
       }
     , oninit: init
     };

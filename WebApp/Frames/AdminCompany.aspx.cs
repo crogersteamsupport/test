@@ -151,7 +151,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Require a known email address for emails:", organization.RequireKnownUserForNewEmail.ToString() });
     */
 
-    table.Rows.Add(new string[] { "Use Community:", organization.UseForums.ToString() });
+    //table.Rows.Add(new string[] { "Use Community:", organization.UseForums.ToString() });
     WikiArticle defArticle = organization.DefaultWikiArticleID == null ? null : WikiArticles.GetWikiArticle(UserSession.LoginUser, (int)organization.DefaultWikiArticleID);
     table.Rows.Add(new string[] { "Default Wiki Article:", defArticle == null ? "[None Assigned]" : defArticle.ArticleName });
     

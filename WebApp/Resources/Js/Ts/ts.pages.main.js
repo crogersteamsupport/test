@@ -12,6 +12,7 @@ Ts.Pages.Main = function () {
   this.MainLayout = null;
   this.MainTabs = null;
   this.MainMenu = null;
+  this.WndScreenR = null;
 };
 
 Ts.Pages.Main.prototype =
@@ -329,7 +330,7 @@ Ts.Pages.Main.prototype =
       $('.menu-help-switch').text('Switch to the new view.');
       if (Ts.System.User.Email.toLowerCase().indexOf('kjones') > -1 ||
            Ts.System.User.Email.toLowerCase().indexOf('eharrington') - 1 ||
-           Ts.System.User.Email.toLowerCase().indexOf('jharada') - 1 ||  
+           Ts.System.User.Email.toLowerCase().indexOf('jharada') - 1 ||
            true) {
         $('.old-header-links').hide().next().show();
       }
@@ -686,12 +687,12 @@ Ts.Pages.Main.prototype =
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
               .appendTo(div)
-              .attr('src', 'vcr/140/Pages/Ticket.html?TicketNumber=' + tab.getId());
+              .attr('src', 'vcr/141/Pages/Ticket.html?TicketNumber=' + tab.getId());
           }
           else {
             div.show();
           }
-          $('.main-info-content').load('vcr/140/PaneInfo/ticket.html');
+          $('.main-info-content').load('vcr/141/PaneInfo/ticket.html');
 
           break;
         case Ts.Ui.Tabs.Tab.Type.NewTicket:
@@ -707,13 +708,13 @@ Ts.Pages.Main.prototype =
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
               .appendTo(div)
-              .attr('src', 'vcr/140/Pages/NewTicket.html' + query);
+              .attr('src', 'vcr/141/Pages/NewTicket.html' + query);
             //.attr('src', 'frames/newticket.aspx' + query);
           }
           else {
             div.show();
           }
-          $('.main-info-content').load('vcr/140/PaneInfo/newticket.html');
+          $('.main-info-content').load('vcr/141/PaneInfo/newticket.html');
           break;
         default:
 
@@ -796,7 +797,31 @@ Ts.Pages.Main.prototype =
 
     });
 
+    this.WndScreenR = $('<iframe>', { id: 'wndScreenR', name: 'wndScreenR', src: 'ScreenR.html', width: '0', height: '0', frameborder: '0', scrolling: 'no' }).appendTo('body')[0];
+
+
   }, // end init
+
+  recordScreen: function (params, onComplete, onCancel) {
+    if (!params) {
+      params = new Object();
+      params.userName = top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName;
+      params.userEmail = top.Ts.System.User.Email;
+      params.hideAllFields = true;
+      params.maxTimeLimit = 300;
+    }
+
+    params.id = "b67bdeab7c084032bc4f37e5308eae1e";
+
+    var recorder = this.WndScreenR.contentWindow.Screenr.Recorder({ id: "b67bdeab7c084032bc4f37e5308eae1e", hideAllFields: true, maxTimeLimit: 300 }); // this.WndScreenR.contentWindow.Screenr.Recorder(params);
+    if (onComplete) recorder.setOnComplete(onComplete);
+    if (onCancel) recorder.setOnCancel(onCancel);
+
+
+    recorder.record();
+
+
+  },
 
   openTicketByID: function (ticketID, doSelect) {
     var self = this;
@@ -1016,7 +1041,7 @@ Ts.Pages.Main.prototype =
   }
 
 
-  $('<iframe>', { id: 'wndScreenR', name: 'wndScreenR'}).appendTo('body');
+
 
 };
 

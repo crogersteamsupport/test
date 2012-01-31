@@ -84,7 +84,6 @@
             <asp:CheckBox ID="cbDisableStatusNotifications" runat="server" Text="Disable ticket status update emails"/>
           </td>
           <td class="labelColTD" colspan="2">
-            <asp:CheckBox ID="cbCommunity" runat="server" Text="Use community"/>
           </td>
         </tr>
         <tr>

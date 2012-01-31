@@ -155,7 +155,7 @@ WaterCoolerPage = function () {
       theme: "advanced",
       skin: "o2k7",
       plugins: "autoresize,paste,table,spellchecker,inlinepopups,table",
-      theme_advanced_buttons1: "insertTicket,insertKb,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
+      theme_advanced_buttons1: "insertTicket,insertKb,recordScreen,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
       theme_advanced_buttons2: "forecolor,backcolor,fontselect,fontsizeselect,bold,italic,underline,strikethrough,blockquote,|,spellchecker",
       theme_advanced_buttons3: "",
       theme_advanced_buttons4: "",
@@ -197,6 +197,21 @@ WaterCoolerPage = function () {
             });
           }
         });
+
+        ed.addButton('recordScreen', {
+          title: 'Record Screen',
+          image: '../images/icons/Symbol_Record.png',
+          onclick: function () {
+            top.Ts.MainPage.recordScreen(null, function (result) {
+              var html = '<div>' + result.embed + '</div>';
+              ed.selection.setContent(html);
+              ed.execCommand('mceAutoResize');
+              ed.focus();
+            });
+          }
+        });
+
+
         ed.addButton('insertKb', {
           title: 'Insert Knowledgebase',
           image: '../images/nav/16/knowledge.png',

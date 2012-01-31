@@ -46,6 +46,8 @@ namespace TeamSupport.Data
     [DataMember] public bool EnableScreenr { get; set; }
     [DataMember] public string PublicLandingPageHeader { get; set; }
     [DataMember] public string PublicLandingPageBody { get; set; }
+    [DataMember] public bool TwoColumnFields { get; set; }
+    [DataMember] public bool DisplayAdvArticles { get; set; }
           
   }
   
@@ -54,6 +56,8 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.DisplayAdvArticles = this.DisplayAdvArticles;
+      result.TwoColumnFields = this.TwoColumnFields;
       result.PublicLandingPageBody = this.PublicLandingPageBody;
       result.PublicLandingPageHeader = this.PublicLandingPageHeader;
       result.EnableScreenr = this.EnableScreenr;

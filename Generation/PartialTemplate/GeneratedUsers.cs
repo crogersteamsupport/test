@@ -88,12 +88,6 @@ namespace TeamSupport.Data
       set { Row["OrgsUserCanSeeOnPortal"] = CheckNull(value); }
     }
     
-    public string Information
-    {
-      get { return Row["Information"] != DBNull.Value ? (string)Row["Information"] : null; }
-      set { Row["Information"] = CheckNull(value); }
-    }
-    
 
     
     public bool SubscribeToNewActions
@@ -414,7 +408,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,    [IsClassicView] = @IsClassicView,    [SubscribeToNewActions] = @SubscribeToNewActions,    [Information] = @Information  WHERE ([UserID] = @UserID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,    [IsClassicView] = @IsClassicView,    [SubscribeToNewActions] = @SubscribeToNewActions  WHERE ([UserID] = @UserID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
@@ -683,27 +677,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Information", SqlDbType.VarChar, 500);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Users] (    [Email],    [FirstName],    [MiddleName],    [LastName],    [Title],    [CryptedPassword],    [IsActive],    [MarkDeleted],    [TimeZoneID],    [CultureName],    [LastLogin],    [LastActivity],    [LastPing],    [LastWaterCoolerID],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [IsChatUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ReceiveTicketNotifications],    [ReceiveAllGroupNotifications],    [SubscribeToNewTickets],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [LastVersion],    [SessionID],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrgsUserCanSeeOnPortal],    [DoNotAutoSubscribe],    [IsClassicView],    [SubscribeToNewActions],    [Information]) VALUES ( @Email, @FirstName, @MiddleName, @LastName, @Title, @CryptedPassword, @IsActive, @MarkDeleted, @TimeZoneID, @CultureName, @LastLogin, @LastActivity, @LastPing, @LastWaterCoolerID, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @IsChatUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ReceiveTicketNotifications, @ReceiveAllGroupNotifications, @SubscribeToNewTickets, @ActivatedOn, @DeactivatedOn, @OrganizationID, @LastVersion, @SessionID, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrgsUserCanSeeOnPortal, @DoNotAutoSubscribe, @IsClassicView, @SubscribeToNewActions, @Information); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Users] (    [Email],    [FirstName],    [MiddleName],    [LastName],    [Title],    [CryptedPassword],    [IsActive],    [MarkDeleted],    [TimeZoneID],    [CultureName],    [LastLogin],    [LastActivity],    [LastPing],    [LastWaterCoolerID],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [IsChatUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ReceiveTicketNotifications],    [ReceiveAllGroupNotifications],    [SubscribeToNewTickets],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [LastVersion],    [SessionID],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrgsUserCanSeeOnPortal],    [DoNotAutoSubscribe],    [IsClassicView],    [SubscribeToNewActions]) VALUES ( @Email, @FirstName, @MiddleName, @LastName, @Title, @CryptedPassword, @IsActive, @MarkDeleted, @TimeZoneID, @CultureName, @LastLogin, @LastActivity, @LastPing, @LastWaterCoolerID, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @IsChatUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ReceiveTicketNotifications, @ReceiveAllGroupNotifications, @SubscribeToNewTickets, @ActivatedOn, @DeactivatedOn, @OrganizationID, @LastVersion, @SessionID, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrgsUserCanSeeOnPortal, @DoNotAutoSubscribe, @IsClassicView, @SubscribeToNewActions); SET @Identity = SCOPE_IDENTITY();";
 
-		
-		tempParameter = insertCommand.Parameters.Add("Information", SqlDbType.VarChar, 500);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("SubscribeToNewActions", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -1090,7 +1070,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [UserID], [Email], [FirstName], [MiddleName], [LastName], [Title], [CryptedPassword], [IsActive], [MarkDeleted], [TimeZoneID], [CultureName], [LastLogin], [LastActivity], [LastPing], [LastWaterCoolerID], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [IsChatUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ReceiveTicketNotifications], [ReceiveAllGroupNotifications], [SubscribeToNewTickets], [ActivatedOn], [DeactivatedOn], [OrganizationID], [LastVersion], [SessionID], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrgsUserCanSeeOnPortal], [DoNotAutoSubscribe], [IsClassicView], [SubscribeToNewActions], [Information] FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [UserID], [Email], [FirstName], [MiddleName], [LastName], [Title], [CryptedPassword], [IsActive], [MarkDeleted], [TimeZoneID], [CultureName], [LastLogin], [LastActivity], [LastPing], [LastWaterCoolerID], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [IsChatUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ReceiveTicketNotifications], [ReceiveAllGroupNotifications], [SubscribeToNewTickets], [ActivatedOn], [DeactivatedOn], [OrganizationID], [LastVersion], [SessionID], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrgsUserCanSeeOnPortal], [DoNotAutoSubscribe], [IsClassicView], [SubscribeToNewActions] FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("UserID", userID);
         Fill(command);

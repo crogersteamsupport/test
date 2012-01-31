@@ -27,9 +27,16 @@ AdminPortal = function () {
   })
   .toggle(window.location.hostname.indexOf('127.0.0.1') > -1);
 
-  $('button').button();
+  if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express) {
+    $('#tab-community').remove();
+    $('#tabs-community').hide();
+    $('#tab-advanced').remove();
+    $('#tabs-advanced').hide();
+  }
+
 
   //$('a').addClass('ui-state-default ts-link');
+  $('button').button();
   $('#tabs').tabs().find('.ui-tabs-panel').addClass('ui-corner-all');
   $('.loading-section').hide().next().show();
 
@@ -41,28 +48,26 @@ AdminPortal = function () {
     $('.com-cat-save-panel').show();
   });
 
-  createSavePanel();
-  function createSavePanel() {
-    var savePanels = $('<div>').addClass('portal-save-panel').appendTo('.ui-tabs-panel').hide();
-    $('<button>')
-    .addClass('portal-save')
-    .text('Save')
-    .appendTo(savePanels)
-    .button()
-    .click(function (e) {
-      saveValues(_portalOption);
+  var enablingCommunity = false;
+  $('.com-enable').click(function (e) {
+    e.preventDefault();
+    if (enablingCommunity) return;
+    enablingCommunity = true;
+    top.Ts.Services.Organizations.UpdateUseCommunity($(this).text().indexOf('Enable') > -1, function (result) {
+      if (result != null) {
+        $('.com-enable').button('option', 'label', (result == true ? "Disable Community" : "Enable Community"));
+      }
+      enablingCommunity = false;
     });
+  });
 
-    $('<button>')
-    .addClass('portal-cancel')
-    .text('Cancel')
-    .appendTo(savePanels)
-    .button()
-    .click(function (e) {
-      e.preventDefault();
-      getData();
-    });
-  }
+  $('.portal-save-panel').hide();
+  $('.portal-save').click(function (e) { saveValues(_portalOption); });
+  $('.portal-cancel').click(function (e) {
+    e.preventDefault();
+    $('.portal-save-panel').hide();
+    getData();
+  });
 
 
   loadCombos();
@@ -83,7 +88,7 @@ AdminPortal = function () {
     $('#com_cat_group').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
 
     var ticketTypes = top.Ts.Cache.getTicketTypes();
-    $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_tickettype');
+    //$('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_tickettype');
     for (var i = 0; i < ticketTypes.length; i++) {
       $('<option>').attr('value', ticketTypes[i].TicketTypeID).text(ticketTypes[i].Name).data('o', ticketTypes[i]).appendTo('#com_cat_tickettype');
     }
@@ -129,6 +134,7 @@ AdminPortal = function () {
     $('#portal_header').val(portalOption.PortalHTMLHeader);
     $('#portal_footer').val(portalOption.PortalHTMLFooter);
     $('#portal_screen_rec').prop('checked', portalOption.EnableScreenr);
+    $('#portal_twocolumn').prop('checked', portalOption.TwoColumnFields);
 
     $('#portal_adv_url').text('https://portal.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://portal.teamsupport.com/' + portalOption.PortalName);
     $('#portal_landing_enabled').prop('checked', portalOption.DisplayLandingPage);
@@ -137,6 +143,9 @@ AdminPortal = function () {
     $('#portal_adv_width').val(portalOption.AdvPortalWidth);
     $('#portal_show_user').prop('checked', portalOption.HideUserAssignedTo == null ? true : !portalOption.HideUserAssignedTo);
     $('#portal_show_group').prop('checked', portalOption.HideGroupAssignedTo == null ? true : !portalOption.HideGroupAssignedTo);
+    $('#portal_adv_kb').prop('checked', portalOption.DisplayAdvKB == true);
+    $('#portal_adv_wiki').prop('checked', portalOption.DisplayAdvArticles == true);
+
 
     $('#portal_captcha').prop('checked', portalOption.UseRecaptcha == null ? false : portalOption.UseRecaptcha);
     $('#portal_basic_header').val(portalOption.BasicPortalDirections);
@@ -148,6 +157,14 @@ AdminPortal = function () {
     $('#portal_allow_kb').prop('checked', portalOption.KBAccess == null ? false : portalOption.KBAccess);
     $('#portal_wiki_url').text('https://articles.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://articles.teamsupport.com/' + portalOption.PortalName);
     $('#portal_allow_wiki').prop('checked', organization.IsPublicArticles);
+    $('#portal_landing_url').text('https://publicportal.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://publicportal.teamsupport.com/' + portalOption.PortalName);
+    $('#portal_public_landing_body').val(portalOption.PublicLandingPageBody);
+    $('#portal_public_landing_header').val(portalOption.PublicLandingPageHeader);
+
+    $('#portal_com_enabled').prop('checked', portalOption.DisplayForum == null ? false : portalOption.DisplayForum);
+
+    $('.com-enable').button('option', 'label', (portalOption.DisplayForum == true ? "Disable Community" : "Enable Community"));
+
   }
 
   function saveValues(portalOption) {
@@ -161,6 +178,7 @@ AdminPortal = function () {
     portalOption.PortalHTMLHeader = $('#portal_header').val();
     portalOption.PortalHTMLFooter = $('#portal_footer').val();
     portalOption.EnableScreenr = $('#portal_screen_rec').prop('checked');
+    portalOption.TwoColumnFields = $('#portal_twocolumn').prop('checked');
 
     portalOption.DisplayLandingPage = $('#portal_landing_enabled').prop('checked');
     portalOption.LandingPageHtml = $('#portal_landing_html').val();
@@ -168,6 +186,8 @@ AdminPortal = function () {
     portalOption.AdvPortalWidth = $('#portal_adv_width').val();
     portalOption.HideUserAssignedTo = !$('#portal_show_user').prop('checked');
     portalOption.HideGroupAssignedTo = !$('#portal_show_group').prop('checked');
+    portalOption.DisplayAdvKB = $('#portal_adv_kb').prop('checked');
+    portalOption.DisplayAdvArticles = $('#portal_adv_wiki').prop('checked');
 
     portalOption.UseRecaptcha = $('#portal_captcha').prop('checked');
     portalOption.BasicPortalDirections = $('#portal_basic_header').val();
@@ -176,8 +196,14 @@ AdminPortal = function () {
     portalOption.CompanyRequiredInBasic = $('#portal_company_required').prop('checked');
     portalOption.KBAccess = $('#portal_allow_kb').prop('checked');
     //organization.IsPublicArticles = $('#portal_allow_wiki').prop('checked');
-
+    portalOption.PublicLandingPageBody = $('#portal_public_landing_body').val();
+    portalOption.PublicLandingPageHeader = $('#portal_public_landing_header').val();
+    portalOption.DisplayForum = $('#portal_com_enabled').prop('checked');
     // show some indicator
+
+
+
+
     top.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), function (result) {
       if (result != null) {
         alert(result);
@@ -201,7 +227,14 @@ AdminPortal = function () {
           createSubCategory(sub);
         }
       }
-      $('.com-cat:first').click();
+      if ($('.com-cat').length < 1) {
+        $('.no-cat').show().next().hide();
+      }
+      else {
+        $('.no-cat').hide().next().show();
+        $('.com-cat:first').click();
+      }
+
     });
   }
 
@@ -260,9 +293,11 @@ AdminPortal = function () {
 
     if (cat.ParentID < 0) {
       $('.com-delete-cat').text('Delete this category and all its subcategories');
+      $('.com-sub-only').hide();
     }
     else {
       $('.com-delete-cat').text('Delete this subcategory');
+      $('.com-sub-only').show();
     }
   });
 
@@ -291,7 +326,15 @@ AdminPortal = function () {
         el.remove();
       }
 
-      $('.com-cat:first').click();
+
+      if ($('.com-cat').length < 1) {
+        $('.no-cat').show().next().hide();
+      }
+      else {
+        $('.no-cat').hide().next().show();
+        $('.com-cat:first').click();
+      }
+
 
     });
   });
@@ -329,6 +372,7 @@ AdminPortal = function () {
       if (result != null) {
         var el = createCategory(result);
         el.click();
+        $('.no-cat').hide().next().show();
       }
     });
   });
@@ -340,6 +384,9 @@ AdminPortal = function () {
       if (result != null) {
         var el = createSubCategory(result);
         el.click();
+        $('.no-cat').hide().next().show();
+        $('.com-cat-save-panel').show();
+        $('#com_cat_name').focus().select();
       }
     });
   });
@@ -360,7 +407,7 @@ AdminPortal = function () {
     var orders = new top.Array();
     $('.com-cats').each(function () {
 
-      var item = new Object();// top.TSWebServices.ForumCategoryOrder();
+      var item = new Object(); // top.TSWebServices.ForumCategoryOrder();
       item.CategoryIDs = new top.Array();
       orders[orders.length] = item;
 

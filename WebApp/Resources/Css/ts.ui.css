@@ -114,7 +114,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .mceLayout td.mceIframeContainer { vertical-align:top;}
 .mceLayout td.mceIframeContainer iframe { min-height: 75px;}
 .mceContentBody { border: none; padding: .5em .5em;}
-.o2k7Skin a.mce_insertTicket img.mceIcon, .o2k7Skin a.mce_insertKb img.mceIcon { height: 16px; width: 16px; padding: 3px 0 0 2px; }
+.o2k7Skin a.mce_insertTicket img.mceIcon, .o2k7Skin a.mce_insertKb img.mceIcon,  .o2k7Skin a.mce_recordScreen img.mceIcon { height: 16px; width: 16px; padding: 3px 0 0 2px; }
 
 /*
 .ts-separator { height: 1px; background-color:#D7E6F9;}

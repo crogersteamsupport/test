@@ -66,9 +66,9 @@ namespace TeamSupport.Data
     
 
     
-    public string OrganizationID
+    public int OrganizationID
     {
-      get { return (string)Row["OrganizationID"]; }
+      get { return (int)Row["OrganizationID"]; }
       set { Row["OrganizationID"] = CheckNull(value); }
     }
     
@@ -218,11 +218,11 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.NVarChar, 50);
+		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
 		}
 		
 		tempParameter = updateCommand.Parameters.Add("Position", SqlDbType.Int, 4);
@@ -289,11 +289,11 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.NVarChar, 50);
+		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("CategoryDesc", SqlDbType.NVarChar, 250);

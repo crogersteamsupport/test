@@ -17,7 +17,7 @@ namespace TeamSupport.Data
     [DataMember] public int ParentID { get; set; }
     [DataMember] public string CategoryName { get; set; }
     [DataMember] public string CategoryDesc { get; set; }
-    [DataMember] public string OrganizationID { get; set; }
+    [DataMember] public int OrganizationID { get; set; }
     [DataMember] public int? Position { get; set; }
     [DataMember] public int? TicketType { get; set; }
     [DataMember] public int? GroupID { get; set; }

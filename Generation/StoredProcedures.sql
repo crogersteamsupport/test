@@ -659,8 +659,7 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions],
-    [Information]
+    [SubscribeToNewActions]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -710,7 +709,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
   @SubscribeToNewActions bit,
-  @Information varchar(500),
   @Identity int OUT
 )
 AS
@@ -755,8 +753,7 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions],
-    [Information])
+    [SubscribeToNewActions])
   VALUES (
     @Email,
     @FirstName,
@@ -796,8 +793,7 @@ AS
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
     @IsClassicView,
-    @SubscribeToNewActions,
-    @Information)
+    @SubscribeToNewActions)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -845,8 +841,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @Information varchar(500)
+  @SubscribeToNewActions bit
 )
 AS
   SET NOCOUNT OFF;
@@ -888,8 +883,7 @@ AS
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
     [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions,
-    [Information] = @Information
+    [SubscribeToNewActions] = @SubscribeToNewActions
   WHERE ([UserID] = @UserID)
 GO
 
@@ -7380,7 +7374,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertForumCategory
   @ParentID int,
   @CategoryName nvarchar(100),
   @CategoryDesc nvarchar(250),
-  @OrganizationID nvarchar(50),
+  @OrganizationID int,
   @Position int,
   @TicketType int,
   @GroupID int,
@@ -7422,7 +7416,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateForumCategory
   @ParentID int,
   @CategoryName nvarchar(100),
   @CategoryDesc nvarchar(250),
-  @OrganizationID nvarchar(50),
+  @OrganizationID int,
   @Position int,
   @TicketType int,
   @GroupID int,
@@ -10361,7 +10355,9 @@ AS
     [DisplayLandingPage],
     [EnableScreenr],
     [PublicLandingPageHeader],
-    [PublicLandingPageBody]
+    [PublicLandingPageBody],
+    [TwoColumnFields],
+    [DisplayAdvArticles]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -10405,6 +10401,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @EnableScreenr bit,
   @PublicLandingPageHeader varchar(MAX),
   @PublicLandingPageBody varchar(MAX),
+  @TwoColumnFields bit,
+  @DisplayAdvArticles bit,
   @Identity int OUT
 )
 AS
@@ -10443,7 +10441,9 @@ AS
     [DisplayLandingPage],
     [EnableScreenr],
     [PublicLandingPageHeader],
-    [PublicLandingPageBody])
+    [PublicLandingPageBody],
+    [TwoColumnFields],
+    [DisplayAdvArticles])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -10477,7 +10477,9 @@ AS
     @DisplayLandingPage,
     @EnableScreenr,
     @PublicLandingPageHeader,
-    @PublicLandingPageBody)
+    @PublicLandingPageBody,
+    @TwoColumnFields,
+    @DisplayAdvArticles)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -10520,7 +10522,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayLandingPage bit,
   @EnableScreenr bit,
   @PublicLandingPageHeader varchar(MAX),
-  @PublicLandingPageBody varchar(MAX)
+  @PublicLandingPageBody varchar(MAX),
+  @TwoColumnFields bit,
+  @DisplayAdvArticles bit
 )
 AS
   SET NOCOUNT OFF;
@@ -10557,7 +10561,9 @@ AS
     [DisplayLandingPage] = @DisplayLandingPage,
     [EnableScreenr] = @EnableScreenr,
     [PublicLandingPageHeader] = @PublicLandingPageHeader,
-    [PublicLandingPageBody] = @PublicLandingPageBody
+    [PublicLandingPageBody] = @PublicLandingPageBody,
+    [TwoColumnFields] = @TwoColumnFields,
+    [DisplayAdvArticles] = @DisplayAdvArticles
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -12674,8 +12680,7 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions],
-    [Information]
+    [SubscribeToNewActions]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -12725,7 +12730,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
   @SubscribeToNewActions bit,
-  @Information varchar(500),
   @Identity int OUT
 )
 AS
@@ -12770,8 +12774,7 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions],
-    [Information])
+    [SubscribeToNewActions])
   VALUES (
     @Email,
     @FirstName,
@@ -12811,8 +12814,7 @@ AS
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
     @IsClassicView,
-    @SubscribeToNewActions,
-    @Information)
+    @SubscribeToNewActions)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -12860,8 +12862,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @Information varchar(500)
+  @SubscribeToNewActions bit
 )
 AS
   SET NOCOUNT OFF;
@@ -12903,8 +12904,7 @@ AS
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
     [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions,
-    [Information] = @Information
+    [SubscribeToNewActions] = @SubscribeToNewActions
   WHERE ([UserID] = @UserID)
 GO
 
@@ -19395,7 +19395,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertForumCategory
   @ParentID int,
   @CategoryName nvarchar(100),
   @CategoryDesc nvarchar(250),
-  @OrganizationID nvarchar(50),
+  @OrganizationID int,
   @Position int,
   @TicketType int,
   @GroupID int,
@@ -19437,7 +19437,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateForumCategory
   @ParentID int,
   @CategoryName nvarchar(100),
   @CategoryDesc nvarchar(250),
-  @OrganizationID nvarchar(50),
+  @OrganizationID int,
   @Position int,
   @TicketType int,
   @GroupID int,
@@ -22376,7 +22376,9 @@ AS
     [DisplayLandingPage],
     [EnableScreenr],
     [PublicLandingPageHeader],
-    [PublicLandingPageBody]
+    [PublicLandingPageBody],
+    [TwoColumnFields],
+    [DisplayAdvArticles]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -22420,6 +22422,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @EnableScreenr bit,
   @PublicLandingPageHeader varchar(MAX),
   @PublicLandingPageBody varchar(MAX),
+  @TwoColumnFields bit,
+  @DisplayAdvArticles bit,
   @Identity int OUT
 )
 AS
@@ -22458,7 +22462,9 @@ AS
     [DisplayLandingPage],
     [EnableScreenr],
     [PublicLandingPageHeader],
-    [PublicLandingPageBody])
+    [PublicLandingPageBody],
+    [TwoColumnFields],
+    [DisplayAdvArticles])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -22492,7 +22498,9 @@ AS
     @DisplayLandingPage,
     @EnableScreenr,
     @PublicLandingPageHeader,
-    @PublicLandingPageBody)
+    @PublicLandingPageBody,
+    @TwoColumnFields,
+    @DisplayAdvArticles)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -22535,7 +22543,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayLandingPage bit,
   @EnableScreenr bit,
   @PublicLandingPageHeader varchar(MAX),
-  @PublicLandingPageBody varchar(MAX)
+  @PublicLandingPageBody varchar(MAX),
+  @TwoColumnFields bit,
+  @DisplayAdvArticles bit
 )
 AS
   SET NOCOUNT OFF;
@@ -22572,7 +22582,9 @@ AS
     [DisplayLandingPage] = @DisplayLandingPage,
     [EnableScreenr] = @EnableScreenr,
     [PublicLandingPageHeader] = @PublicLandingPageHeader,
-    [PublicLandingPageBody] = @PublicLandingPageBody
+    [PublicLandingPageBody] = @PublicLandingPageBody,
+    [TwoColumnFields] = @TwoColumnFields,
+    [DisplayAdvArticles] = @DisplayAdvArticles
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -24689,8 +24701,7 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions],
-    [Information]
+    [SubscribeToNewActions]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -24740,7 +24751,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
   @SubscribeToNewActions bit,
-  @Information varchar(500),
   @Identity int OUT
 )
 AS
@@ -24785,8 +24795,7 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions],
-    [Information])
+    [SubscribeToNewActions])
   VALUES (
     @Email,
     @FirstName,
@@ -24826,8 +24835,7 @@ AS
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
     @IsClassicView,
-    @SubscribeToNewActions,
-    @Information)
+    @SubscribeToNewActions)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -24875,8 +24883,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @Information varchar(500)
+  @SubscribeToNewActions bit
 )
 AS
   SET NOCOUNT OFF;
@@ -24918,8 +24925,7 @@ AS
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
     [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions,
-    [Information] = @Information
+    [SubscribeToNewActions] = @SubscribeToNewActions
   WHERE ([UserID] = @UserID)
 GO
 
@@ -31410,7 +31416,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertForumCategory
   @ParentID int,
   @CategoryName nvarchar(100),
   @CategoryDesc nvarchar(250),
-  @OrganizationID nvarchar(50),
+  @OrganizationID int,
   @Position int,
   @TicketType int,
   @GroupID int,
@@ -31452,7 +31458,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateForumCategory
   @ParentID int,
   @CategoryName nvarchar(100),
   @CategoryDesc nvarchar(250),
-  @OrganizationID nvarchar(50),
+  @OrganizationID int,
   @Position int,
   @TicketType int,
   @GroupID int,
@@ -34391,7 +34397,9 @@ AS
     [DisplayLandingPage],
     [EnableScreenr],
     [PublicLandingPageHeader],
-    [PublicLandingPageBody]
+    [PublicLandingPageBody],
+    [TwoColumnFields],
+    [DisplayAdvArticles]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -34435,6 +34443,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @EnableScreenr bit,
   @PublicLandingPageHeader varchar(MAX),
   @PublicLandingPageBody varchar(MAX),
+  @TwoColumnFields bit,
+  @DisplayAdvArticles bit,
   @Identity int OUT
 )
 AS
@@ -34473,7 +34483,9 @@ AS
     [DisplayLandingPage],
     [EnableScreenr],
     [PublicLandingPageHeader],
-    [PublicLandingPageBody])
+    [PublicLandingPageBody],
+    [TwoColumnFields],
+    [DisplayAdvArticles])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -34507,7 +34519,9 @@ AS
     @DisplayLandingPage,
     @EnableScreenr,
     @PublicLandingPageHeader,
-    @PublicLandingPageBody)
+    @PublicLandingPageBody,
+    @TwoColumnFields,
+    @DisplayAdvArticles)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -34550,7 +34564,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayLandingPage bit,
   @EnableScreenr bit,
   @PublicLandingPageHeader varchar(MAX),
-  @PublicLandingPageBody varchar(MAX)
+  @PublicLandingPageBody varchar(MAX),
+  @TwoColumnFields bit,
+  @DisplayAdvArticles bit
 )
 AS
   SET NOCOUNT OFF;
@@ -34587,7 +34603,9 @@ AS
     [DisplayLandingPage] = @DisplayLandingPage,
     [EnableScreenr] = @EnableScreenr,
     [PublicLandingPageHeader] = @PublicLandingPageHeader,
-    [PublicLandingPageBody] = @PublicLandingPageBody
+    [PublicLandingPageBody] = @PublicLandingPageBody,
+    [TwoColumnFields] = @TwoColumnFields,
+    [DisplayAdvArticles] = @DisplayAdvArticles
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -36704,8 +36722,7 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions],
-    [Information]
+    [SubscribeToNewActions]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -36755,7 +36772,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
   @SubscribeToNewActions bit,
-  @Information varchar(500),
   @Identity int OUT
 )
 AS
@@ -36800,8 +36816,7 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions],
-    [Information])
+    [SubscribeToNewActions])
   VALUES (
     @Email,
     @FirstName,
@@ -36841,8 +36856,7 @@ AS
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
     @IsClassicView,
-    @SubscribeToNewActions,
-    @Information)
+    @SubscribeToNewActions)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -36890,8 +36904,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @Information varchar(500)
+  @SubscribeToNewActions bit
 )
 AS
   SET NOCOUNT OFF;
@@ -36933,8 +36946,7 @@ AS
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
     [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions,
-    [Information] = @Information
+    [SubscribeToNewActions] = @SubscribeToNewActions
   WHERE ([UserID] = @UserID)
 GO
 
@@ -43425,7 +43437,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertForumCategory
   @ParentID int,
   @CategoryName nvarchar(100),
   @CategoryDesc nvarchar(250),
-  @OrganizationID nvarchar(50),
+  @OrganizationID int,
   @Position int,
   @TicketType int,
   @GroupID int,
@@ -43467,7 +43479,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateForumCategory
   @ParentID int,
   @CategoryName nvarchar(100),
   @CategoryDesc nvarchar(250),
-  @OrganizationID nvarchar(50),
+  @OrganizationID int,
   @Position int,
   @TicketType int,
   @GroupID int,
@@ -46406,7 +46418,9 @@ AS
     [DisplayLandingPage],
     [EnableScreenr],
     [PublicLandingPageHeader],
-    [PublicLandingPageBody]
+    [PublicLandingPageBody],
+    [TwoColumnFields],
+    [DisplayAdvArticles]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -46450,6 +46464,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @EnableScreenr bit,
   @PublicLandingPageHeader varchar(MAX),
   @PublicLandingPageBody varchar(MAX),
+  @TwoColumnFields bit,
+  @DisplayAdvArticles bit,
   @Identity int OUT
 )
 AS
@@ -46488,7 +46504,9 @@ AS
     [DisplayLandingPage],
     [EnableScreenr],
     [PublicLandingPageHeader],
-    [PublicLandingPageBody])
+    [PublicLandingPageBody],
+    [TwoColumnFields],
+    [DisplayAdvArticles])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -46522,7 +46540,9 @@ AS
     @DisplayLandingPage,
     @EnableScreenr,
     @PublicLandingPageHeader,
-    @PublicLandingPageBody)
+    @PublicLandingPageBody,
+    @TwoColumnFields,
+    @DisplayAdvArticles)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -46565,7 +46585,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayLandingPage bit,
   @EnableScreenr bit,
   @PublicLandingPageHeader varchar(MAX),
-  @PublicLandingPageBody varchar(MAX)
+  @PublicLandingPageBody varchar(MAX),
+  @TwoColumnFields bit,
+  @DisplayAdvArticles bit
 )
 AS
   SET NOCOUNT OFF;
@@ -46602,7 +46624,9 @@ AS
     [DisplayLandingPage] = @DisplayLandingPage,
     [EnableScreenr] = @EnableScreenr,
     [PublicLandingPageHeader] = @PublicLandingPageHeader,
-    [PublicLandingPageBody] = @PublicLandingPageBody
+    [PublicLandingPageBody] = @PublicLandingPageBody,
+    [TwoColumnFields] = @TwoColumnFields,
+    [DisplayAdvArticles] = @DisplayAdvArticles
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -48719,8 +48743,7 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions],
-    [Information]
+    [SubscribeToNewActions]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -48770,7 +48793,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
   @SubscribeToNewActions bit,
-  @Information varchar(500),
   @Identity int OUT
 )
 AS
@@ -48815,8 +48837,7 @@ AS
     [OrgsUserCanSeeOnPortal],
     [DoNotAutoSubscribe],
     [IsClassicView],
-    [SubscribeToNewActions],
-    [Information])
+    [SubscribeToNewActions])
   VALUES (
     @Email,
     @FirstName,
@@ -48856,8 +48877,7 @@ AS
     @OrgsUserCanSeeOnPortal,
     @DoNotAutoSubscribe,
     @IsClassicView,
-    @SubscribeToNewActions,
-    @Information)
+    @SubscribeToNewActions)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -48905,8 +48925,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @OrgsUserCanSeeOnPortal varchar(200),
   @DoNotAutoSubscribe bit,
   @IsClassicView bit,
-  @SubscribeToNewActions bit,
-  @Information varchar(500)
+  @SubscribeToNewActions bit
 )
 AS
   SET NOCOUNT OFF;
@@ -48948,8 +48967,7 @@ AS
     [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,
     [DoNotAutoSubscribe] = @DoNotAutoSubscribe,
     [IsClassicView] = @IsClassicView,
-    [SubscribeToNewActions] = @SubscribeToNewActions,
-    [Information] = @Information
+    [SubscribeToNewActions] = @SubscribeToNewActions
   WHERE ([UserID] = @UserID)
 GO
 
@@ -55440,7 +55458,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertForumCategory
   @ParentID int,
   @CategoryName nvarchar(100),
   @CategoryDesc nvarchar(250),
-  @OrganizationID nvarchar(50),
+  @OrganizationID int,
   @Position int,
   @TicketType int,
   @GroupID int,
@@ -55482,7 +55500,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateForumCategory
   @ParentID int,
   @CategoryName nvarchar(100),
   @CategoryDesc nvarchar(250),
-  @OrganizationID nvarchar(50),
+  @OrganizationID int,
   @Position int,
   @TicketType int,
   @GroupID int,
@@ -58421,7 +58439,9 @@ AS
     [DisplayLandingPage],
     [EnableScreenr],
     [PublicLandingPageHeader],
-    [PublicLandingPageBody]
+    [PublicLandingPageBody],
+    [TwoColumnFields],
+    [DisplayAdvArticles]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -58465,6 +58485,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @EnableScreenr bit,
   @PublicLandingPageHeader varchar(MAX),
   @PublicLandingPageBody varchar(MAX),
+  @TwoColumnFields bit,
+  @DisplayAdvArticles bit,
   @Identity int OUT
 )
 AS
@@ -58503,7 +58525,9 @@ AS
     [DisplayLandingPage],
     [EnableScreenr],
     [PublicLandingPageHeader],
-    [PublicLandingPageBody])
+    [PublicLandingPageBody],
+    [TwoColumnFields],
+    [DisplayAdvArticles])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -58537,7 +58561,9 @@ AS
     @DisplayLandingPage,
     @EnableScreenr,
     @PublicLandingPageHeader,
-    @PublicLandingPageBody)
+    @PublicLandingPageBody,
+    @TwoColumnFields,
+    @DisplayAdvArticles)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -58580,7 +58606,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayLandingPage bit,
   @EnableScreenr bit,
   @PublicLandingPageHeader varchar(MAX),
-  @PublicLandingPageBody varchar(MAX)
+  @PublicLandingPageBody varchar(MAX),
+  @TwoColumnFields bit,
+  @DisplayAdvArticles bit
 )
 AS
   SET NOCOUNT OFF;
@@ -58617,7 +58645,9 @@ AS
     [DisplayLandingPage] = @DisplayLandingPage,
     [EnableScreenr] = @EnableScreenr,
     [PublicLandingPageHeader] = @PublicLandingPageHeader,
-    [PublicLandingPageBody] = @PublicLandingPageBody
+    [PublicLandingPageBody] = @PublicLandingPageBody,
+    [TwoColumnFields] = @TwoColumnFields,
+    [DisplayAdvArticles] = @DisplayAdvArticles
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 

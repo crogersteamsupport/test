@@ -78,6 +78,7 @@ public partial class SignUp : System.Web.UI.Page
       return;
     }
 
+
     Organizations organizations = new Organizations(loginUser);
     organizations.LoadTeamSupport();
     if (organizations.IsEmpty) return;
@@ -122,13 +123,6 @@ public partial class SignUp : System.Web.UI.Page
     organizations.Save();
 
 
-    PhoneNumber phoneNumber = (new PhoneNumbers(loginUser)).AddNewPhoneNumber();
-    phoneNumber.Number = Ecom_BillTo_Telecom_Phone_Number.Text;
-    phoneNumber.Extension = "";
-    phoneNumber.RefID = organization.OrganizationID;
-    phoneNumber.RefType = ReferenceType.Organizations;
-    phoneNumber.Collection.Save();
-
     Users users = new Users(loginUser);
     User user = users.AddNewUser();
     user.ActivatedOn = DateTime.UtcNow;
@@ -150,6 +144,18 @@ public partial class SignUp : System.Web.UI.Page
     user.OrganizationID = organization.OrganizationID;
     user.ReceiveTicketNotifications = true;
     user.Collection.Save();
+
+    loginUser = new LoginUser(UserSession.ConnectionString, user.UserID, user.OrganizationID, null);
+
+    OrganizationSettings.WriteString(loginUser, "DisableStatusNotification", true.ToString());
+
+
+    PhoneNumber phoneNumber = (new PhoneNumbers(loginUser)).AddNewPhoneNumber();
+    phoneNumber.Number = Ecom_BillTo_Telecom_Phone_Number.Text;
+    phoneNumber.Extension = "";
+    phoneNumber.RefID = organization.OrganizationID;
+    phoneNumber.RefType = ReferenceType.Organizations;
+    phoneNumber.Collection.Save();
 
     WikiArticle wiki = (new WikiArticles(loginUser)).AddNewWikiArticle();
     wiki.ArticleName = "What is TeamSupport?";
@@ -212,7 +218,98 @@ the loop - including the customer base - and dramatically increases customer sat
     portalOption.DisplayProductVersion = true;
     portalOption.DisplayAdvKB = true;
     portalOption.DisplayLandingPage = true;
-    portalOption.LandingPageHtml = "<div style=\"margin: 0 auto;font: 12px arial\"><h1 style=\"font-size:20px;font-weight:bold;color:#666;margin:0px\">Support Center</h1>Welcome our Customer Portal!<br /><div class=\"widgetcontainer\"><div class=\"LandingPageContent\"><h3 style=\"color:#3079c6\">Recent KnowledgeBase Articles</h3><div class=\"LandingPageInnerContent\"><ts_latestknowledgebase,5,../Images/bulb.png></div><h3 style=\"color:#3079c6\">Popular KnowledgeBase Articles</h3><div class=\"LandingPageInnerContent\"><ts_knowledgebase,5,../Images/bulb.png></div><h3 style=\"color:#3079c6\">Recent Tickets</h3><div class=\"LandingPageInnerContent\"><ts_alltickets,5,../Images/file.png></div></div></div></div>";
+    portalOption.EnableScreenr = true;
+    portalOption.DeflectionEnabled = true;
+    portalOption.LandingPageHtml = @"
+<div style=""margin: 0 auto;font: 12px arial"">
+	<h1 style=""font-size:20px;font-weight:bold;color:#666;margin:0px"">
+		Support Center</h1>Welcome our Customer Portal!
+		<br />
+	<div class=""widgetcontainer"">
+		<div class=""LandingPageContent"">
+			<h3 style=""color:#3079c6"">
+			Recent KnowledgeBase Articles
+			</h3>
+			<div class=""LandingPageInnerContent"">
+				<ts_latestknowledgebase,5,../Images/bulb.png>
+			</div>
+			<h3 style=""color:#3079c6"">
+			Popular KnowledgeBase Articles
+			</h3>
+			<div class=""LandingPageInnerContent"">
+				<ts_knowledgebase,5,../Images/bulb.png>
+			</div>
+			<h3 style=""color:#3079c6"">
+			Recent Tickets
+			</h3>
+			<div class=""LandingPageInnerContent"">
+				<ts_alltickets,5,../Images/file.png>
+			</div>
+    </div>
+	</div>
+</div>
+";
+    portalOption.PublicLandingPageBody = @"<div style=""width:1000px;margin: 0 auto;font: 12px arial"">
+	<div class=""widgetcontainer"">
+		<div class=""LandingPageContent"">
+			<h3 style=""color:#3079c6"">Popular KnowledgeBase Articles</h3>
+			<div class=""LandingPageInnerContent"">
+				<ts_knowledgebase,5,Images/file.png>
+			</div>
+			<h3 style=""color:#3079c6"">Recent KnowledgeBase Articles</h3>
+			<div class=""LandingPageInnerContent"">
+				<ts_latestknowledgebase,5,Images/file.png>
+			</div>
+		</div>
+	</div>
+</div>
+";
+    portalOption.PublicLandingPageHeader =  @"<div style=""width:1000px;margin:0 auto;"">
+    	<div style=""font: 20px arial;text-align:center;color:#666"">
+		Welcome to our customer support center!
+		<br />
+		<div style=""width:1000px;margin:0 auto;"">
+		<ul class=""icon"">
+			<li>
+			<a title=""Home"" href=""<ts_home>"">
+				<img alt="""" src=""Images/plp_home.png"" />
+				<span>Home</span>
+			</a>
+			</li>
+			<li>
+			<a title=""Create New Ticket"" href=""<ts_newticketlink>"">
+				<img alt="""" src=""Images/ico-newticket1.png"" />
+				<span>New Ticket</span>
+			</a>
+			</li>
+			<li>
+			<a title=""KnowledgeBase"" href=""<ts_knowlegebaselink>"">
+				<img alt="""" src=""Images/ico-kb.png"" />
+				<span>Knowledgebase</span>
+			</a>
+			</li>
+			<li style=""display:none;"">
+			<a title=""Articles"" href=""<ts_articlelink>"">
+				<img alt="""" src=""Images/ico-articles1.png"" />
+				<span>Articles</span>
+			</a>
+			</li>
+			<li>
+			<ts_chatlink>
+				<img alt="""" src=""Images/ico-chat2.png"" />
+				<span>Chat</span>
+			</a>
+			</li>
+			<li>
+			<a title=""My Tickets"" href=""#"" id=""button"">
+				<img alt="""" src=""Images/mytickets.png"" />
+				<span>My Tickets</span>
+			</a>
+			</li>
+			</ul>
+		</div> 
+	</div>
+</div>";
     portalOptions.Save();
 
     EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, password);

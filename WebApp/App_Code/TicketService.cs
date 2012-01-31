@@ -1120,7 +1120,7 @@ namespace TSWebServices
       if (!includeDescription) actionInfo.Action.Description = null;
       if (actionInfo.Action.Description != null)
       {
-        actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), HtmlUtility.Sanitize(actionInfo.Action.Description));
+        actionInfo.Action.Description = HtmlUtility.TagHtml(TSAuthentication.GetLoginUser(), HtmlUtility.Sanitize(HtmlUtility.CheckScreenR(loginUser, actionInfo.Action.Description)));
       }
 
       UsersViewItem creator = UsersView.GetUsersViewItem(loginUser, action.CreatorID);
@@ -1523,7 +1523,7 @@ namespace TSWebServices
       ticket.ParentID = info.ParentTicketID;
       ticket.Collection.Save();
 
-      if (info.CategoryID != null) ticket.AddCommunityTicket((int)info.CategoryID);
+      if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
 
       TeamSupport.Data.Action action = (new Actions(ticket.Collection.LoginUser)).AddNewAction();
       action.ActionTypeID = null;

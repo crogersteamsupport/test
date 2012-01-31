@@ -46,8 +46,7 @@ public partial class Charts_TicketsByUser : System.Web.UI.Page
         }
 
 
-        //return result.OrderBy(ticketcount => ticketcount.Name).ToArray();
-        return result.ToArray();
-
+        return result.OrderBy(ticketcount => ticketcount.Name).ToArray();
+        
     }
 }
