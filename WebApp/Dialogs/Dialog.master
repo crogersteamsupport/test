@@ -8,6 +8,9 @@
   <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
   <!--[if IE 7]><link href="css_5/ui-ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="css_5/ui-ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="../css_5/dialog.css" rel="stylesheet" type="text/css" />
+  <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
+  <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
+  <link href="../css_5/jquery.Jcrop.css" type="text/css" rel="stylesheet" />
   <style type="text/css">
     html, body, form
     {

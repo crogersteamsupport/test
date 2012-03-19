@@ -13,6 +13,7 @@ using System.Text;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
+using System.Globalization;
 
 namespace TSWebServices
 {
@@ -70,17 +71,19 @@ namespace TSWebServices
     [WebMethod]
     public string GetUserPhoto(int userID) {
         string path;
-        return Attachments.GetAttachmentPath(TSAuthentication.GetLoginUser(), ReferenceType.Users, userID);
+        //return Attachments.GetAttachmentPath(TSAuthentication.GetLoginUser(), ReferenceType.UserPhoto, userID);
 
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
         Attachments att = new Attachments(TSAuthentication.GetLoginUser());
-        att.LoadByReference(ReferenceType.Users, userID);
+        att.LoadByReference(ReferenceType.UserPhoto, userID);
 
-        if (att.Count > 0) {
-            path = att[0].Path;
+        if (att.Count > 0)
+        {
+            path = String.Format("../dc/{0}/avatar/{1}", user.OrganizationID, att[0].AttachmentID); ;//att[0].Path;
         }
+        else
+            path = "../../images/blank_avatar.png";
         return path;
-
-        //TODO: ask Kevin how this should work
     }
 
       [WebMethod]
@@ -222,6 +225,224 @@ namespace TSWebServices
 
       return false;
     
+    }
+
+
+
+    [WebMethod]
+    public string SaveUserName(int userID, string firstName, string middleName, string lastName)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
+
+        user.FirstName = firstName;
+        user.MiddleName = middleName;
+        user.LastName = lastName;
+        user.Collection.Save();
+        return firstName + ' ' + lastName;
+    }
+
+    [WebMethod]
+    public string SaveUserInfo(int userID, string info)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
+        user.UserInformation = info;
+        user.Collection.Save();
+        return info;
+    }
+
+    [WebMethod]
+    public string SaveUserTitle(int userID, string title)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
+        user.Title = title;
+        user.Collection.Save();
+        return title;
+    }
+
+    [WebMethod]
+    public string SaveUserEmail(int userID, string email)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
+
+        if (email.Length < 1 || email.IndexOf('@') < 0 || email.IndexOf('.') < 0)
+            return "_error";
+
+
+        user.Email = email;
+        user.Collection.Save();
+        return user.Email;
+    }
+
+    [WebMethod]
+    public bool SetIsActive(int userID, bool value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+        if (!TSAuthentication.IsSystemAdmin) return !value;
+        
+        user.IsActive = value;
+        user.Collection.Save();
+        return user.IsActive;
+    }
+
+    [WebMethod]
+    public bool SetEmailNotify(int userID, bool value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+        user.ReceiveTicketNotifications = value;
+        user.Collection.Save();
+        return user.ReceiveTicketNotifications;
+    }
+
+    [WebMethod]
+    public bool SetSubscribeTickets(int userID, bool value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+        user.SubscribeToNewTickets = value;
+        user.Collection.Save();
+        return user.SubscribeToNewTickets;
+    }
+
+    [WebMethod]
+    public bool SetSubscribeActions(int userID, bool value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+        user.SubscribeToNewActions = value;
+        user.Collection.Save();
+        return user.SubscribeToNewActions;
+    }
+
+    [WebMethod]
+    public bool SetAutoSubscribe(int userID, bool value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+        user.DoNotAutoSubscribe = value;
+        user.Collection.Save();
+        return user.DoNotAutoSubscribe;
+    }
+
+    [WebMethod]
+    public bool SetGroupNotify(int userID, bool value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+        user.ReceiveAllGroupNotifications = value;
+        user.Collection.Save();
+        return user.ReceiveAllGroupNotifications;
+    }
+
+    [WebMethod]
+    public bool SetSysAdmin(int userID, bool value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+        if (!TSAuthentication.IsSystemAdmin) return !value;
+
+        user.IsSystemAdmin = value;
+        user.Collection.Save();
+        return user.IsSystemAdmin;
+    }
+
+    [WebMethod]
+    public bool SetChatUser(int userID, bool value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+        if (!TSAuthentication.IsSystemAdmin) return !value;
+
+        if (value && Organizations.GetChatCount(loginUser, loginUser.OrganizationID) >= organization.ChatSeats)
+            return !value;
+
+        user.IsChatUser = value;
+        user.Collection.Save();
+        return user.IsChatUser;
+    }
+
+    [WebMethod]
+    public string SetTimezone(int userID, string value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        TimeZoneInfo tzinfo;
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+        user.TimeZoneID = value;
+        user.Collection.Save();
+        try
+        {
+            tzinfo = TimeZoneInfo.FindSystemTimeZoneById(value);
+        }
+        catch (Exception)
+        {
+            tzinfo = null;
+        }
+
+        return tzinfo.DisplayName;
+    }
+
+    [WebMethod]
+    public string[] GetTimezone()
+    {
+        List<string> list = new List<string>();
+        System.Collections.ObjectModel.ReadOnlyCollection<TimeZoneInfo> timeZones = TimeZoneInfo.GetSystemTimeZones();
+        foreach (TimeZoneInfo info in timeZones)
+        {
+            list.Add(info.DisplayName);
+            list.Add(info.Id);
+        }
+        return list.ToArray();
+    }
+
+    [WebMethod]
+    public string SetCulture(int userID, string value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+        user.CultureName = value;
+        user.Collection.Save();
+        return value;
+    }
+
+    [WebMethod]
+    public string[] GetCultures()
+    {
+        List<string> list = new List<string>();
+        foreach (CultureInfo info in CultureInfo.GetCultures(CultureTypes.AllCultures))
+        {
+            if (!info.IsNeutralCulture)
+            {
+                list.Add(info.DisplayName);
+                list.Add(info.Name);
+            }
+        }
+        //list.Sort();
+        return list.ToArray();
+    }
+
+    [WebMethod]
+    public string SetUserInformation(int userID, string value)
+    {
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+        user.UserInformation = value;
+        user.Collection.Save();
+        return user.UserInformation;
     }
 
     [DataContract]

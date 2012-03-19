@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using System.Globalization;
 
 namespace TeamSupport.Data
 {
@@ -39,6 +40,7 @@ namespace TeamSupport.Data
     [DataMember] public bool ReceiveTicketNotifications { get; set; }
     [DataMember] public bool ReceiveAllGroupNotifications { get; set; }
     [DataMember] public bool SubscribeToNewTickets { get; set; }
+    [DataMember] public bool SubscribeToNewActions { get; set; }
     [DataMember] public DateTime ActivatedOn { get; set; }
     [DataMember] public DateTime? DeactivatedOn { get; set; }
     [DataMember] public int OrganizationID { get; set; }
@@ -52,14 +54,18 @@ namespace TeamSupport.Data
     [DataMember] public string OrgsUserCanSeeOnPortal { get; set; }
     [DataMember] public bool DoNotAutoSubscribe { get; set; }
     [DataMember] public bool IsClassicView { get; set; }
-          
+    [DataMember] public string timeZoneDisplay { get; set; }
+    [DataMember] public string CultureDisplay { get; set; }
+    [DataMember] public string UserInformation { get; set; }   
   }
   
   public partial class User : BaseItem
   {
     public UserProxy GetProxy()
     {
+
       UserProxy result = new UserProxy();
+ 
       result.IsClassicView = this.IsClassicView;
       result.DoNotAutoSubscribe = this.DoNotAutoSubscribe;
       result.OrgsUserCanSeeOnPortal = this.OrgsUserCanSeeOnPortal;
@@ -70,6 +76,7 @@ namespace TeamSupport.Data
       result.LastVersion = this.LastVersion;
       result.OrganizationID = this.OrganizationID;
       result.SubscribeToNewTickets = this.SubscribeToNewTickets;
+      result.SubscribeToNewActions = this.SubscribeToNewActions;
       result.ReceiveAllGroupNotifications = this.ReceiveAllGroupNotifications;
       result.ReceiveTicketNotifications = this.ReceiveTicketNotifications;
       result.InOfficeComment = this.InOfficeComment;
@@ -100,8 +107,12 @@ namespace TeamSupport.Data
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
       result.DeactivatedOn = this.DeactivatedOnUtc == null ? this.DeactivatedOnUtc : DateTime.SpecifyKind((DateTime)this.DeactivatedOnUtc, DateTimeKind.Utc); 
-      result.LastPing = this.LastPingUtc == null ? this.LastPingUtc : DateTime.SpecifyKind((DateTime)this.LastPingUtc, DateTimeKind.Utc); 
-       
+      result.LastPing = this.LastPingUtc == null ? this.LastPingUtc : DateTime.SpecifyKind((DateTime)this.LastPingUtc, DateTimeKind.Utc);
+
+      result.timeZoneDisplay = TimeZoneInfo.FindSystemTimeZoneById(this.TimeZoneID).DisplayName;
+      result.CultureDisplay = new CultureInfo(this.CultureName).DisplayName;
+      result.UserInformation = this.UserInformation;
+
       return result;
     }	
   }

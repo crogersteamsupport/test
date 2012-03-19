@@ -396,3 +396,16 @@ function GetCustomFieldDialog(customFieldID, refType, auxID, catID) {
     return wnd;
 
 }
+
+function GetProfileImageDialog(organizationID, userID) {
+    var manager = GetRadWindowManager();
+    var wnd = manager.getWindowByName('wndUser');
+    var url = 'Dialogs/ProfileImage.aspx?OrganizationID=' + organizationID;
+    if (userID != null) {
+        url = url + '&UserID=' + userID;
+    }
+    wnd.setSize(500, 600);
+
+    wnd.setUrl(url);
+    return wnd;
+}

@@ -24,6 +24,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public string PhoneTypeName { get; set; }
           
   }
   
@@ -41,6 +42,7 @@ namespace TeamSupport.Data
       result.RefID = this.RefID;
       result.PhoneTypeID = this.PhoneTypeID;
       result.PhoneID = this.PhoneID;
+      result.PhoneTypeName = this.PhoneTypeName;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);

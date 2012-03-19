@@ -138,6 +138,9 @@ namespace TeamSupport.Data
           break;
         case ReferenceType.Contacts:
           break;
+        case ReferenceType.UserPhoto:
+          type = "UserPhoto";
+          break;
         default:
           break;
       }

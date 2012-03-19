@@ -180,7 +180,7 @@ public partial class Dialogs_User : BaseDialogPage
   public override bool Save()
   {
     User user;
-    Users users = new Users(UserSession.LoginUser); ;
+    Users users = new Users(UserSession.LoginUser);
 
     Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
 

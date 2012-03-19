@@ -60,6 +60,7 @@ namespace TeamSupport.Handlers
             case "reports": ProcessReport(context, int.Parse(segments[2])); break;
             case "ticketexport": ProcessTicketExport(context); break;
             case "attachments": ProcessAttachment(context, int.Parse(segments[2])); break;
+            case "avatar": ProcessAvatar(context, segments.ToArray(), organizationID); break;
             default: context.Response.End(); break;
           }
         }
@@ -131,6 +132,42 @@ namespace TeamSupport.Handlers
         string fileName = AttachmentPath.FindImageFileName(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ChatImages, "chat_logo");
         WriteImage(context, fileName);
       }
+    }
+
+    private void ProcessAvatar(HttpContext context, string[] segments, int organizationID)
+    {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 2; i < segments.Length; i++)
+        {
+            if (i != 2) builder.Append("\\");
+            builder.Append(segments[i]);
+        }
+        string path = builder.ToString();
+
+        Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, Int32.Parse(path));
+
+        path = attachment.FileName;
+
+        string fileName = "";
+        if (Path.GetExtension(path) == "")
+        {
+            path = Path.ChangeExtension(path, ".jpg");
+            string imageFile = Path.GetFileName(path);
+            path = Path.GetDirectoryName(path);
+            string imagePath = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), path);
+            fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
+            if (!File.Exists(fileName))
+            {
+                imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.ProfileImages), path);
+                fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
+            }
+
+        }
+        else
+        {
+            fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.ProfileImages), path);
+        }
+        if (File.Exists(fileName)) WriteImage(context, fileName);
     }
 
     private void ProcessAttachment(HttpContext context, int attachmentID)
