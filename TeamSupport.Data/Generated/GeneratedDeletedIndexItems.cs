@@ -48,6 +48,12 @@ namespace TeamSupport.Data
       set { Row["RefID"] = CheckNull(value); }
     }
     
+    public int OrganizationID
+    {
+      get { return (int)Row["OrganizationID"]; }
+      set { Row["OrganizationID"] = CheckNull(value); }
+    }
+    
 
     /* DateTime */
     
@@ -162,10 +168,17 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[DeletedIndexItems] SET     [RefID] = @RefID,    [RefType] = @RefType,    [DateDeleted] = @DateDeleted  WHERE ([DeletedIndexID] = @DeletedIndexID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[DeletedIndexItems] SET     [OrganizationID] = @OrganizationID,    [RefID] = @RefID,    [RefType] = @RefType,    [DateDeleted] = @DateDeleted  WHERE ([DeletedIndexID] = @DeletedIndexID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("DeletedIndexID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -198,7 +211,7 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[DeletedIndexItems] (    [RefID],    [RefType],    [DateDeleted]) VALUES ( @RefID, @RefType, @DateDeleted); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[DeletedIndexItems] (    [OrganizationID],    [RefID],    [RefType],    [DateDeleted]) VALUES ( @OrganizationID, @RefID, @RefType, @DateDeleted); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("DateDeleted", SqlDbType.DateTime, 8);
@@ -216,6 +229,13 @@ namespace TeamSupport.Data
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("RefID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
@@ -334,7 +354,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [DeletedIndexID], [RefID], [RefType], [DateDeleted] FROM [dbo].[DeletedIndexItems] WHERE ([DeletedIndexID] = @DeletedIndexID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [DeletedIndexID], [OrganizationID], [RefID], [RefType], [DateDeleted] FROM [dbo].[DeletedIndexItems] WHERE ([DeletedIndexID] = @DeletedIndexID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("DeletedIndexID", deletedIndexID);
         Fill(command);

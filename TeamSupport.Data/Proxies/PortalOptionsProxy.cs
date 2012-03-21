@@ -48,6 +48,10 @@ namespace TeamSupport.Data
     [DataMember] public string PublicLandingPageBody { get; set; }
     [DataMember] public bool TwoColumnFields { get; set; }
     [DataMember] public bool DisplayAdvArticles { get; set; }
+    [DataMember] public bool DisplayTandC { get; set; }
+    [DataMember] public string TermsAndConditions { get; set; }
+    [DataMember] public int? RequestType { get; set; }
+    [DataMember] public int? RequestGroup { get; set; }
           
   }
   
@@ -56,6 +60,10 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.RequestGroup = this.RequestGroup;
+      result.RequestType = this.RequestType;
+      result.TermsAndConditions = this.TermsAndConditions;
+      result.DisplayTandC = this.DisplayTandC;
       result.DisplayAdvArticles = this.DisplayAdvArticles;
       result.TwoColumnFields = this.TwoColumnFields;
       result.PublicLandingPageBody = this.PublicLandingPageBody;

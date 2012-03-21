@@ -120,6 +120,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ReportSender.cs" />
     <Compile Include="ReminderProcessor.cs" />
     <Compile Include="IndexMaintenance.cs" />
     <Compile Include="TransLocks.cs" />
@@ -135,6 +136,10 @@
     <Compile Include="TicketIndexDataSource.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SharpZipLib\SharpZipLib.csproj">
+      <Project>{53D27B3B-92A1-4246-94D9-390124F447EC}</Project>
+      <Name>SharpZipLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
       <Project>{1943AC11-1F2D-4B85-9F0F-4D67284814BE}</Project>
       <Name>TeamSupport.Data</Name>

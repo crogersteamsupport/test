@@ -599,9 +599,7 @@ namespace TeamSupport.ServiceLibrary
     public void ProcessSignUpNotification(int userID)
     {
       User user = Users.GetUser(LoginUser, userID);
-
       Organization organization = Organizations.GetOrganization(LoginUser, user.OrganizationID);
-
       MailMessage message = EmailTemplates.GetSignUpNotification(LoginUser, user);
       message.To.Add(new MailAddress("kjones@teamsupport.com"));
       message.To.Add(new MailAddress("rjohnson@teamsupport.com"));
@@ -610,6 +608,7 @@ namespace TeamSupport.ServiceLibrary
       message.To.Add(new MailAddress("jharada@teamsupport.com"));
       AddMessage(1078, "New Internal Sign Up", message);
     }
+
 
     public void ProcessWelcomeNewSignup(int userID, string password)
     {

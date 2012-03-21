@@ -264,6 +264,29 @@ namespace TeamSupport.Data
       return "";
     }
 
+    public void CopyRowData(BaseItem item)
+    {
+      CopyRowData(item.Row);
+    }
+
+    public void CopyRowData(DataRow source)
+    {
+      foreach (DataColumn col in Row.Table.Columns)
+      {
+        switch (col.ColumnName)
+        {
+          case "ModifierID": Row[col.ColumnName] = BaseCollection.LoginUser.UserID; break;
+          case "CreatorID": Row[col.ColumnName] = BaseCollection.LoginUser.UserID; break;
+          case "DateModified": Row[col.ColumnName] = DateTime.UtcNow; break;
+          case "DateCreated": Row[col.ColumnName] = DateTime.UtcNow; break;
+          default: Row[col.ColumnName] = source[col.ColumnName]; break;
+        }
+      }
+    
+    
+    
+    }
+
     #region Properties
 
     private DataRow _row;

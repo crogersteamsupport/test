@@ -80,5 +80,10 @@ namespace TeamSupport.DataManager.UserControls
     {
       textOrganizationName.Enabled = cbNewOrg.Checked;
     }
+
+    private void btnClone_Click(object sender, EventArgs e)
+    {
+      AccountClone.Clone(new LoginUser(LoginSession.LoginUser.ConnectionString, -1, -1, null), OrganizationID, textOrganizationName.Text);
+    }
   }
 }

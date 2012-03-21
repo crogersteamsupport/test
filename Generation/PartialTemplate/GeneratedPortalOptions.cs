@@ -179,7 +179,31 @@ namespace TeamSupport.Data
       set { Row["PublicLandingPageBody"] = CheckNull(value); }
     }
     
+    public int? RequestType
+    {
+      get { return Row["RequestType"] != DBNull.Value ? (int?)Row["RequestType"] : null; }
+      set { Row["RequestType"] = CheckNull(value); }
+    }
+    
+    public int? RequestGroup
+    {
+      get { return Row["RequestGroup"] != DBNull.Value ? (int?)Row["RequestGroup"] : null; }
+      set { Row["RequestGroup"] = CheckNull(value); }
+    }
+    
 
+    
+    public string TermsAndConditions
+    {
+      get { return (string)Row["TermsAndConditions"]; }
+      set { Row["TermsAndConditions"] = CheckNull(value); }
+    }
+    
+    public bool DisplayTandC
+    {
+      get { return (bool)Row["DisplayTandC"]; }
+      set { Row["DisplayTandC"] = CheckNull(value); }
+    }
     
     public bool DisplayAdvArticles
     {
@@ -344,7 +368,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[PortalOptions] SET     [PortalHTMLHeader] = @PortalHTMLHeader,    [PortalHTMLFooter] = @PortalHTMLFooter,    [UseRecaptcha] = @UseRecaptcha,    [FontFamily] = @FontFamily,    [FontColor] = @FontColor,    [PageBackgroundColor] = @PageBackgroundColor,    [UseCompanyInBasic] = @UseCompanyInBasic,    [CompanyRequiredInBasic] = @CompanyRequiredInBasic,    [HideUserAssignedTo] = @HideUserAssignedTo,    [HideGroupAssignedTo] = @HideGroupAssignedTo,    [BasicPortalColumnWidth] = @BasicPortalColumnWidth,    [DisplayGroups] = @DisplayGroups,    [PortalName] = @PortalName,    [KBAccess] = @KBAccess,    [DisplayProducts] = @DisplayProducts,    [HonorSupportExpiration] = @HonorSupportExpiration,    [HideCloseButton] = @HideCloseButton,    [Theme] = @Theme,    [AdvPortalWidth] = @AdvPortalWidth,    [BasicPortalDirections] = @BasicPortalDirections,    [DeflectionEnabled] = @DeflectionEnabled,    [DisplayForum] = @DisplayForum,    [DisplayFooter] = @DisplayFooter,    [DisplayPortalPhone] = @DisplayPortalPhone,    [DisplayAdvProducts] = @DisplayAdvProducts,    [DisplayAdvKB] = @DisplayAdvKB,    [DisplayProductVersion] = @DisplayProductVersion,    [LandingPageHtml] = @LandingPageHtml,    [DisplayLandingPage] = @DisplayLandingPage,    [EnableScreenr] = @EnableScreenr,    [PublicLandingPageHeader] = @PublicLandingPageHeader,    [PublicLandingPageBody] = @PublicLandingPageBody,    [TwoColumnFields] = @TwoColumnFields,    [DisplayAdvArticles] = @DisplayAdvArticles  WHERE ([OrganizationID] = @OrganizationID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[PortalOptions] SET     [PortalHTMLHeader] = @PortalHTMLHeader,    [PortalHTMLFooter] = @PortalHTMLFooter,    [UseRecaptcha] = @UseRecaptcha,    [FontFamily] = @FontFamily,    [FontColor] = @FontColor,    [PageBackgroundColor] = @PageBackgroundColor,    [UseCompanyInBasic] = @UseCompanyInBasic,    [CompanyRequiredInBasic] = @CompanyRequiredInBasic,    [HideUserAssignedTo] = @HideUserAssignedTo,    [HideGroupAssignedTo] = @HideGroupAssignedTo,    [BasicPortalColumnWidth] = @BasicPortalColumnWidth,    [DisplayGroups] = @DisplayGroups,    [PortalName] = @PortalName,    [KBAccess] = @KBAccess,    [DisplayProducts] = @DisplayProducts,    [HonorSupportExpiration] = @HonorSupportExpiration,    [HideCloseButton] = @HideCloseButton,    [Theme] = @Theme,    [AdvPortalWidth] = @AdvPortalWidth,    [BasicPortalDirections] = @BasicPortalDirections,    [DeflectionEnabled] = @DeflectionEnabled,    [DisplayForum] = @DisplayForum,    [DisplayFooter] = @DisplayFooter,    [DisplayPortalPhone] = @DisplayPortalPhone,    [DisplayAdvProducts] = @DisplayAdvProducts,    [DisplayAdvKB] = @DisplayAdvKB,    [DisplayProductVersion] = @DisplayProductVersion,    [LandingPageHtml] = @LandingPageHtml,    [DisplayLandingPage] = @DisplayLandingPage,    [EnableScreenr] = @EnableScreenr,    [PublicLandingPageHeader] = @PublicLandingPageHeader,    [PublicLandingPageBody] = @PublicLandingPageBody,    [TwoColumnFields] = @TwoColumnFields,    [DisplayAdvArticles] = @DisplayAdvArticles,    [DisplayTandC] = @DisplayTandC,    [TermsAndConditions] = @TermsAndConditions,    [RequestType] = @RequestType,    [RequestGroup] = @RequestGroup  WHERE ([OrganizationID] = @OrganizationID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -592,13 +616,69 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("DisplayTandC", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("TermsAndConditions", SqlDbType.NVarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("RequestType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("RequestGroup", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[PortalOptions] (    [OrganizationID],    [PortalHTMLHeader],    [PortalHTMLFooter],    [UseRecaptcha],    [FontFamily],    [FontColor],    [PageBackgroundColor],    [UseCompanyInBasic],    [CompanyRequiredInBasic],    [HideUserAssignedTo],    [HideGroupAssignedTo],    [BasicPortalColumnWidth],    [DisplayGroups],    [PortalName],    [KBAccess],    [DisplayProducts],    [HonorSupportExpiration],    [HideCloseButton],    [Theme],    [AdvPortalWidth],    [BasicPortalDirections],    [DeflectionEnabled],    [DisplayForum],    [DisplayFooter],    [DisplayPortalPhone],    [DisplayAdvProducts],    [DisplayAdvKB],    [DisplayProductVersion],    [LandingPageHtml],    [DisplayLandingPage],    [EnableScreenr],    [PublicLandingPageHeader],    [PublicLandingPageBody],    [TwoColumnFields],    [DisplayAdvArticles]) VALUES ( @OrganizationID, @PortalHTMLHeader, @PortalHTMLFooter, @UseRecaptcha, @FontFamily, @FontColor, @PageBackgroundColor, @UseCompanyInBasic, @CompanyRequiredInBasic, @HideUserAssignedTo, @HideGroupAssignedTo, @BasicPortalColumnWidth, @DisplayGroups, @PortalName, @KBAccess, @DisplayProducts, @HonorSupportExpiration, @HideCloseButton, @Theme, @AdvPortalWidth, @BasicPortalDirections, @DeflectionEnabled, @DisplayForum, @DisplayFooter, @DisplayPortalPhone, @DisplayAdvProducts, @DisplayAdvKB, @DisplayProductVersion, @LandingPageHtml, @DisplayLandingPage, @EnableScreenr, @PublicLandingPageHeader, @PublicLandingPageBody, @TwoColumnFields, @DisplayAdvArticles); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[PortalOptions] (    [OrganizationID],    [PortalHTMLHeader],    [PortalHTMLFooter],    [UseRecaptcha],    [FontFamily],    [FontColor],    [PageBackgroundColor],    [UseCompanyInBasic],    [CompanyRequiredInBasic],    [HideUserAssignedTo],    [HideGroupAssignedTo],    [BasicPortalColumnWidth],    [DisplayGroups],    [PortalName],    [KBAccess],    [DisplayProducts],    [HonorSupportExpiration],    [HideCloseButton],    [Theme],    [AdvPortalWidth],    [BasicPortalDirections],    [DeflectionEnabled],    [DisplayForum],    [DisplayFooter],    [DisplayPortalPhone],    [DisplayAdvProducts],    [DisplayAdvKB],    [DisplayProductVersion],    [LandingPageHtml],    [DisplayLandingPage],    [EnableScreenr],    [PublicLandingPageHeader],    [PublicLandingPageBody],    [TwoColumnFields],    [DisplayAdvArticles],    [DisplayTandC],    [TermsAndConditions],    [RequestType],    [RequestGroup]) VALUES ( @OrganizationID, @PortalHTMLHeader, @PortalHTMLFooter, @UseRecaptcha, @FontFamily, @FontColor, @PageBackgroundColor, @UseCompanyInBasic, @CompanyRequiredInBasic, @HideUserAssignedTo, @HideGroupAssignedTo, @BasicPortalColumnWidth, @DisplayGroups, @PortalName, @KBAccess, @DisplayProducts, @HonorSupportExpiration, @HideCloseButton, @Theme, @AdvPortalWidth, @BasicPortalDirections, @DeflectionEnabled, @DisplayForum, @DisplayFooter, @DisplayPortalPhone, @DisplayAdvProducts, @DisplayAdvKB, @DisplayProductVersion, @LandingPageHtml, @DisplayLandingPage, @EnableScreenr, @PublicLandingPageHeader, @PublicLandingPageBody, @TwoColumnFields, @DisplayAdvArticles, @DisplayTandC, @TermsAndConditions, @RequestType, @RequestGroup); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("RequestGroup", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("RequestType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TermsAndConditions", SqlDbType.NVarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DisplayTandC", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DisplayAdvArticles", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -957,7 +1037,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [PortalHTMLHeader], [PortalHTMLFooter], [UseRecaptcha], [FontFamily], [FontColor], [PageBackgroundColor], [UseCompanyInBasic], [CompanyRequiredInBasic], [HideUserAssignedTo], [HideGroupAssignedTo], [BasicPortalColumnWidth], [DisplayGroups], [PortalName], [KBAccess], [DisplayProducts], [HonorSupportExpiration], [HideCloseButton], [Theme], [AdvPortalWidth], [BasicPortalDirections], [DeflectionEnabled], [DisplayForum], [DisplayFooter], [DisplayPortalPhone], [DisplayAdvProducts], [DisplayAdvKB], [DisplayProductVersion], [LandingPageHtml], [DisplayLandingPage], [EnableScreenr], [PublicLandingPageHeader], [PublicLandingPageBody], [TwoColumnFields], [DisplayAdvArticles] FROM [dbo].[PortalOptions] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [PortalHTMLHeader], [PortalHTMLFooter], [UseRecaptcha], [FontFamily], [FontColor], [PageBackgroundColor], [UseCompanyInBasic], [CompanyRequiredInBasic], [HideUserAssignedTo], [HideGroupAssignedTo], [BasicPortalColumnWidth], [DisplayGroups], [PortalName], [KBAccess], [DisplayProducts], [HonorSupportExpiration], [HideCloseButton], [Theme], [AdvPortalWidth], [BasicPortalDirections], [DeflectionEnabled], [DisplayForum], [DisplayFooter], [DisplayPortalPhone], [DisplayAdvProducts], [DisplayAdvKB], [DisplayProductVersion], [LandingPageHtml], [DisplayLandingPage], [EnableScreenr], [PublicLandingPageHeader], [PublicLandingPageBody], [TwoColumnFields], [DisplayAdvArticles], [DisplayTandC], [TermsAndConditions], [RequestType], [RequestGroup] FROM [dbo].[PortalOptions] WHERE ([OrganizationID] = @OrganizationID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);

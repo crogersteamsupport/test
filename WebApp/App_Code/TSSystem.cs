@@ -101,6 +101,11 @@ namespace TSWebServices
 
       if (org.ParentID != null)
       {
+        if (user.ShowWelcomePage == true)
+        {
+          items.Add(new TsMenuItem("welcome", "mniWelcome", "Welcome", "vcr/141/images/icons/online.png", string.Format(data, "vcr/141/Pages/Welcome.html", "vcr/141/PaneInfo/Welcome.html")));
+        }
+        
 
         items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "vcr/141/images/nav/16/Dashboard.png", string.Format(data, "Frames/Dashboard.aspx", "vcr/141/PaneInfo/Dashboard.html")));
 

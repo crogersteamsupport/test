@@ -1557,5 +1557,21 @@ namespace TeamSupport.Data
     {
       return list.Select(x => int.Parse(x)).ToArray();
     }
+
+    public static string GetIndexPath(LoginUser loginUser)
+    {
+      return Path.Combine(SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\Indexes\\"), loginUser.OrganizationID.ToString());
+    }
+
+    public static string GetTicketIndexPath(LoginUser loginUser)
+    {
+      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
+      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Tickets");
+      if (!Directory.Exists(result))
+      {
+        result = Path.Combine(root, "Tickets");
+      }
+      return result;
+    }
   }
 }

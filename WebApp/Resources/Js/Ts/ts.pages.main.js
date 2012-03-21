@@ -940,6 +940,12 @@ Ts.Pages.Main.prototype =
     var element = $('.main-tab-content-item:visible');
     $(element).children('iframe').attr('src', 'Wiki/ViewPage.aspx?ArticleID=' + articleID);
   },
+  hideWelcome: function () {
+    this.MainMenu.find('mniDashboard', 'dashboard').select();
+    $('.menutree-item-welcome-mniWelcome').remove();
+
+    top.Ts.Services.Users.HideWelcomePage(function () { });
+  },
   openOrganizationProduct: function (organizationProductID) {
     var self = this;
     Ts.Services.Organizations.GetOrganizationProduct(organizationProductID, function (op) {

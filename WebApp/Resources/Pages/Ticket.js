@@ -728,106 +728,111 @@ $(document).ready(function () {
   });
 
   function initEditor(element, init) {
-    var editorOptions = {
-      theme: "advanced",
-      skin: "o2k7",
-      plugins: "autoresize,paste,table,spellchecker,inlinepopups,table",
-      theme_advanced_buttons1: "insertTicket,insertKb,recordScreen,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
-      theme_advanced_buttons2: "forecolor,backcolor,fontselect,fontsizeselect,bold,italic,underline,strikethrough,blockquote,|,spellchecker",
-      //theme_advanced_buttons3: "tablecontrols",
-      theme_advanced_buttons3: "",
-      theme_advanced_buttons4: "",
-      theme_advanced_toolbar_location: "top",
-      theme_advanced_toolbar_align: "left",
-      theme_advanced_statusbar_location: "none",
-      theme_advanced_resizing: true,
-      autoresize_bottom_margin: 10,
-      autoresize_on_init: true,
-      spellchecker_rpc_url: "../../../TinyMCEHandler.aspx?module=SpellChecker",
-      gecko_spellcheck: true,
-      extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
-      convert_urls: true,
-      remove_script_host: false,
-      relative_urls: false,
-      content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
-      body_class: "ui-widget ui-widget-content",
+    top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+      var editorOptions = {
+        theme: "advanced",
+        skin: "o2k7",
+        plugins: "autoresize,paste,table,spellchecker,inlinepopups,table",
+        theme_advanced_buttons1: "insertTicket,insertKb,recordScreen,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
+        theme_advanced_buttons2: "forecolor,backcolor,fontselect,fontsizeselect,bold,italic,underline,strikethrough,blockquote,|,spellchecker",
+        //theme_advanced_buttons3: "tablecontrols",
+        theme_advanced_buttons3: "",
+        theme_advanced_buttons4: "",
+        theme_advanced_toolbar_location: "top",
+        theme_advanced_toolbar_align: "left",
+        theme_advanced_statusbar_location: "none",
+        theme_advanced_resizing: true,
+        autoresize_bottom_margin: 10,
+        autoresize_on_init: true,
+        spellchecker_rpc_url: "../../../TinyMCEHandler.aspx?module=SpellChecker",
+        gecko_spellcheck: true,
+        extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
+        convert_urls: true,
+        remove_script_host: false,
+        relative_urls: false,
+        content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
+        body_class: "ui-widget ui-widget-content",
 
-      template_external_list_url: "tinymce/jscripts/template_list.js",
-      external_link_list_url: "tinymce/jscripts/link_list.js",
-      external_image_list_url: "tinymce/jscripts/image_list.js",
-      media_external_list_url: "tinymce/jscripts/media_list.js",
-      setup: function (ed) {
-        ed.addButton('insertTicket', {
-          title: 'Insert Ticket',
-          image: '../images/nav/16/tickets.png',
-          onclick: function () {
-            top.Ts.MainPage.selectTicket(null, function (ticketID) {
-              top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
-                ed.focus();
+        template_external_list_url: "tinymce/jscripts/template_list.js",
+        external_link_list_url: "tinymce/jscripts/link_list.js",
+        external_image_list_url: "tinymce/jscripts/image_list.js",
+        media_external_list_url: "tinymce/jscripts/media_list.js",
+        setup: function (ed) {
+          ed.addButton('insertTicket', {
+            title: 'Insert Ticket',
+            image: '../images/nav/16/tickets.png',
+            onclick: function () {
+              top.Ts.MainPage.selectTicket(null, function (ticketID) {
+                top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
+                  ed.focus();
 
-                var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
-                ed.selection.setContent(html);
-                ed.execCommand('mceAutoResize');
-                ed.focus();
-              }, function () {
-                alert('There was a problem inserting the ticket link.');
+                  var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
+                  ed.selection.setContent(html);
+                  ed.execCommand('mceAutoResize');
+                  ed.focus();
+                }, function () {
+                  alert('There was a problem inserting the ticket link.');
+                });
               });
-            });
-          }
-        });
+            }
+          });
 
-        ed.addButton('insertKb', {
-          title: 'Insert Knowledgebase',
-          image: '../images/nav/16/knowledge.png',
-          onclick: function () {
-            filter = new top.TeamSupport.Data.TicketLoadFilter();
-            filter.IsKnowledgeBase = true;
-            top.Ts.MainPage.selectTicket(filter, function (ticketID) {
-              top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
-                if (result === null) {
+          ed.addButton('insertKb', {
+            title: 'Insert Knowledgebase',
+            image: '../images/nav/16/knowledge.png',
+            onclick: function () {
+              filter = new top.TeamSupport.Data.TicketLoadFilter();
+              filter.IsKnowledgeBase = true;
+              top.Ts.MainPage.selectTicket(filter, function (ticketID) {
+                top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
+                  if (result === null) {
+                    alert('There was an error inserting your knowledgebase ticket.');
+                    return;
+                  }
+                  var ticket = result[0];
+                  var actions = result[1];
+
+                  var html = '<div><h2>' + ticket.Name + '</h2>';
+
+                  for (var i = 0; i < actions.length; i++) {
+                    html = html + '<div>' + actions[i].Description + '</div></br>';
+                  }
+                  html = html + '</div>';
+
+                  ed.focus();
+                  ed.selection.setContent(html);
+                  ed.execCommand('mceAutoResize');
+                  ed.focus();
+
+                  //needs to resize or go to end
+
+                }, function () {
                   alert('There was an error inserting your knowledgebase ticket.');
-                  return;
-                }
-                var ticket = result[0];
-                var actions = result[1];
-
-                var html = '<div><h2>' + ticket.Name + '</h2>';
-
-                for (var i = 0; i < actions.length; i++) {
-                  html = html + '<div>' + actions[i].Description + '</div></br>';
-                }
-                html = html + '</div>';
-
-                ed.focus();
-                ed.selection.setContent(html);
-                ed.execCommand('mceAutoResize');
-                ed.focus();
-
-                //needs to resize or go to end
-
-              }, function () {
-                alert('There was an error inserting your knowledgebase ticket.');
+                });
               });
-            });
-          }
-        });
+            }
+          });
 
-        ed.addButton('recordScreen', {
-          title: 'Record Screen',
-          image: '../images/icons/Symbol_Record.png',
-          onclick: function () {
-            top.Ts.MainPage.recordScreen(null, function (result) {
-              var html = '<div>' + result.embed + '</div>';
-              ed.selection.setContent(html);
-              ed.execCommand('mceAutoResize');
-              ed.focus();
+          if (enableScreenR.toLowerCase() != 'false')
+          {
+            ed.addButton('recordScreen', {
+              title: 'Record Screen',
+              image: '../images/icons/Symbol_Record.png',
+              onclick: function () {
+                top.Ts.MainPage.recordScreen(null, function (result) {
+                  var html = '<div>' + result.embed + '</div>';
+                  ed.selection.setContent(html);
+                  ed.execCommand('mceAutoResize');
+                  ed.focus();
+                });
+              }
             });
           }
-        });
-      }
-    , oninit: init
-    };
-    $(element).tinymce(editorOptions);
+        }
+      , oninit: init
+      };
+      $(element).tinymce(editorOptions);
+    });
   }
 
   $('.ticket-action-add').click(function (e) {
@@ -856,15 +861,18 @@ $(document).ready(function () {
     e.preventDefault();
     e.stopPropagation();
     var actionDiv = $(this).parents('.ticket-action');
-    var action = actionDiv.data('action');
-    var form = $('<div>').addClass('');
-    actionDiv.append(form).find('.ticket-action-display').hide();
-    createActionForm(form, action, function (actionInfo) {
-      if ($('.ticket-action-form').length < 2) {
-        top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
-      }
-      if (actionInfo !== null) { loadActionDisplay(actionDiv, actionInfo, true); }
-      actionDiv.find('.ticket-action-display').show();
+    //var action = actionDiv.data('action');
+
+    top.Ts.Services.Tickets.GetAction(actionDiv.data('action').ActionID, function (action) {
+      var form = $('<div>').addClass('');
+      actionDiv.append(form).find('.ticket-action-display').hide();
+      createActionForm(form, action, function (actionInfo) {
+        if ($('.ticket-action-form').length < 2) {
+          top.Ts.MainPage.highlightTicketTab(_ticketNumber, false);
+        }
+        if (actionInfo !== null) { loadActionDisplay(actionDiv, actionInfo, true); }
+        actionDiv.find('.ticket-action-display').show();
+      });
     });
   });
 

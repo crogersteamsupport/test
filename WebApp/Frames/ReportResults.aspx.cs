@@ -83,9 +83,9 @@ public partial class Frames_ReportResults : BaseFramePage
         CreateColumns(_report);
         LoadReportSettings();
       }
-      catch (Exception)
+      catch (Exception ex)
       {
-
+        ExceptionLogs.LogException(UserSession.LoginUser, ex, "Reports");
       }
     }
 

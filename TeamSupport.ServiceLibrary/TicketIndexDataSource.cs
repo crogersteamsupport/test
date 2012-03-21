@@ -24,8 +24,14 @@ namespace TeamSupport.ServiceLibrary
       set { _maxCount = value; }
     }
 
-    private Dictionary<int, int> _updatedTickets = null;
+    /*private Dictionary<int, int> _updatedTickets = null;
     public Dictionary<int, int> UpdatedTickets
+    {
+      get { return _updatedTickets; }
+      set { _updatedTickets = value; }
+    }*/
+    private List<int> _updatedTickets = null;
+    public List<int> UpdatedTickets
     {
       get { return _updatedTickets; }
       set { _updatedTickets = value; }
@@ -45,6 +51,15 @@ namespace TeamSupport.ServiceLibrary
       set { _logs = value; }
     }
 
+    private int _organizationID;
+
+    public int OrganizationID
+    {
+      get { return _organizationID; }
+      set { _organizationID = value; }
+    }
+
+
     public TicketIndexDataSource()
     {
       DocName = "";
@@ -54,7 +69,7 @@ namespace TeamSupport.ServiceLibrary
       DocText = "";
       DocFields = "";
       DocIsFile = false;
-      _updatedTickets = new Dictionary<int, int>();
+      _updatedTickets = new List<int>();
       _fieldAliases = new Dictionary<string, string>();
     }
 
@@ -63,16 +78,14 @@ namespace TeamSupport.ServiceLibrary
     {
       try
       {
-        Logs.WriteEvent("Getting next ticket");
         if (_reader == null) { Rewind(); }
 
         if (_lastTicketID != null)
         {
-          _updatedTickets.Add((int)_lastTicketID, DocId);
+          _updatedTickets.Add((int)_lastTicketID);
         }
 
         if (_count >= _maxCount) {
-          Logs.WriteEvent("Max has been reached.");
           return false; 
         }
 
@@ -81,7 +94,6 @@ namespace TeamSupport.ServiceLibrary
           try
           {
             if (!_reader.IsClosed) _reader.Close();
-            Logs.WriteEvent("No more tickets to process.");
             return false;
           }
           catch (Exception)
@@ -98,7 +110,6 @@ namespace TeamSupport.ServiceLibrary
         DocFields = "";
         DocName = _reader["TicketID"].ToString();
         DocDisplayName = string.Format("{0}: {1}", _reader["TicketNumber"].ToString(), _reader["Name"].ToString());
-        Logs.WriteEvent("Processing [" + _count.ToString() + "] " + DocDisplayName);
         _lastTicketID = (int)_reader["TicketID"];
         for (int i = 0; i < _reader.FieldCount; i++)
         {
@@ -158,6 +169,7 @@ namespace TeamSupport.ServiceLibrary
         tv.*
         FROM TicketsView tv WITH(NOLOCK)
         WHERE tv.NeedsIndexing = 1
+        AND tv.OrganizationID= @OrganizationID
         ORDER BY DateModified 
         ";
         SqlConnection connection = new SqlConnection(LoginUser.ConnectionString);
@@ -165,6 +177,7 @@ namespace TeamSupport.ServiceLibrary
         SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
         SqlCommand command = new SqlCommand(sql, connection, transaction);
         command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", _organizationID);
         _reader = command.ExecuteReader(CommandBehavior.CloseConnection);
         _lastTicketID = null;
         _count = 0;

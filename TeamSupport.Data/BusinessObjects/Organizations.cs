@@ -1122,6 +1122,23 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByNeedsIndexing()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = //"SELECT * FROM Organizations o WHERE EXISTS (SELECT * FROM Tickets t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)";
+@"SELECT * FROM Organizations o 
+WHERE EXISTS (SELECT * FROM Tickets t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
+OR EXISTS (
+  SELECT * FROM DeletedIndexItems dii 
+  WHERE dii.RefType = 17
+  AND dii.OrganizationID = o.OrganizationID
+)";
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }
+
     /// <summary>
     /// Loads ONLY the organizations associated with a ticket, but not already associated with a specific contact
     /// </summary>

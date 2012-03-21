@@ -2,7 +2,27 @@
   AutoEventWireup="true" CodeFile="ContactInformation.aspx.cs" Inherits="Frames_ContactInformation" %>
 
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server"></asp:Content>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
+  <link href="../Resources/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="../Resources/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="../Resources/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <link href="../Resources/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" />
+  <link href="../Resources/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" />
+  <link href="../Resources/Css/jquery.cluetip.css" rel="stylesheet" type="text/css" />
+  <style>
+    .tickets { padding: 0 1em 1em 1em;}
+    .ticket { padding-top: 1em; lineheight: 16px;}
+    .ticket .ts-icon { float:left; margin-right:0.5em;}
+    .no-tickets { padding-top: 1em;}
+  
+  </style>
+  <script src="../Resources/Js/jquery-1.6.2.min.js" type="text/javascript"></script>
+  <script src="../Resources/Js/jquery-ui-1.9.5.min.js" type="text/javascript"></script>
+
+  <script src="../Resources/Js/jquery.hoverIntent.js" type="text/javascript"></script>
+  <script src="../Resources/Js/jquery.cluetip.js" type="text/javascript"></script>
+
+</asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
   <telerik:RadWindowManager ID="RadWindowManager1" runat="server"></telerik:RadWindowManager>
   <telerik:RadSplitter ID="RadSplitter1" runat="server" BorderSize="0" Height="100%"
@@ -10,7 +30,7 @@
     <telerik:RadPane ID="RadPane1" runat="server" Scrolling="Y" Height="100%" Width="100%"
       BackColor="White">
       <div id="pnlUserProperties" runat="server">
-        <div style="margin: 0 auto; padding: 0 40px 20px 20px;">
+        <div style="margin: 0 auto; padding: 0 40px 20px 20px;" class="ui-widget">
           <div class="groupDiv groupLightBlue" style="padding-top: 10px;">
             <div class="groupHeaderDiv">
               <span class="groupHeaderSpan"></span>
@@ -30,7 +50,7 @@
                   <asp:Label ID="lblProperties" runat="server" Text="There are no properties to display."></asp:Label>
                   <asp:Repeater ID="rptProperties" runat="server">
                     <ItemTemplate>
-                      <div style="margin: 5px 5px 5px 15px; line-height: 20px;">
+                      <div style="margin: 1em 1em;">
                         <span style="font-weight: bold;">
                           <%# DataBinder.Eval(Container.DataItem, "Name")%></span>
                         <span>
@@ -59,7 +79,7 @@
             </div>
             <div class="groupBodyWrapperDiv">
               <div class="groupBodyDiv"">
-                <div id="pnlPhone" runat="server" class="adminDiv" style="padding: 5px 5px 5px 5px;">
+                <div id="pnlPhone" runat="server" class="adminDiv" style="padding: 1em 1em;">
                   <asp:Label ID="lblPhone" runat="server" Text="There are no phone numbers to display."></asp:Label>
                   <asp:Repeater ID="rptPhone" runat="server">
                     <ItemTemplate>
@@ -97,7 +117,7 @@
             </div>
             <div class="groupBodyWrapperDiv">
               <div class="groupBodyDiv">
-                <div id="pnlAddress" runat="server" class="adminDiv" style="padding: 5px 5px 5px 5px;">
+                <div id="pnlAddress" runat="server" class="adminDiv" style="padding: 1em 1em;">
                   <asp:Label ID="lblAddresses" runat="server" Text="There are no addresses to display."></asp:Label>
                   <asp:Repeater ID="rptAddresses" runat="server">
                     <ItemTemplate>
@@ -128,6 +148,41 @@
               </div>
             </div>
           </div>
+<div class="groupDiv groupLightBlue" style="padding-top: 10px;">
+            <div class="groupHeaderDiv">
+              <span class="groupHeaderSpan"></span>
+              <span class="groupCaptionSpan">Open Tickets</span>
+              <span class="groupButtonSpanWrapper">
+                <span class="groupButtonsSpan">
+                </span>
+              </span>
+            </div>
+            <div class="groupBodyWrapperDiv">
+              <div class="groupBodyDiv">
+                <div id="openTickets" class="tickets">
+                
+                </div>
+              </div>
+            </div>
+          </div>
+
+<div class="groupDiv groupLightBlue" style="padding-top: 10px;">
+            <div class="groupHeaderDiv">
+              <span class="groupHeaderSpan"></span>
+              <span class="groupCaptionSpan">Closed Tickets</span>
+              <span class="groupButtonSpanWrapper">
+                <span class="groupButtonsSpan">
+                </span>
+              </span>
+            </div>
+            <div class="groupBodyWrapperDiv">
+              <div class="groupBodyDiv">
+                <div id="closedTickets" class="tickets">
+                
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </telerik:RadPane>
@@ -135,19 +190,85 @@
   <telerik:RadScriptBlock ID="RadScriptBlock1" runat="server">
 
     <script type="text/javascript" language="javascript">
-    function DialogClosed(sender, args) {
-      sender.remove_close(DialogClosed);
-      RefreshContent();
-    }
+      function DialogClosed(sender, args) {
+        sender.remove_close(DialogClosed);
+        RefreshContent();
+      }
 
-    function ShowDialog(wnd) {
-      wnd.add_close(DialogClosed);
-      wnd.show();
-    }
+      function ShowDialog(wnd) {
+        wnd.add_close(DialogClosed);
+        wnd.show();
+      }
 
-    function RefreshContent() {
-      __doPostBack();
-    }
+      function RefreshContent() {
+        __doPostBack();
+      }
+
+      $(document).ready(function () {
+        var userID = top.Ts.Utils.getQueryValue('userid', window);
+        var tipTimer = null;
+        var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
+
+        $('body').delegate('.ts-icon-info', 'mouseout', function (e) {
+          if (tipTimer != null) clearTimeout(tipTimer);
+          tipTimer = setTimeout("$(document).trigger('hideCluetip');", 1000);
+        });
+
+        $('body').delegate('.cluetip', 'mouseover', function (e) {
+          if (tipTimer != null) clearTimeout(tipTimer);
+        });
+
+        top.Ts.Services.Tickets.GetContactTickets(userID, function (tickets) {
+          for (var i = 0; i < tickets.length; i++) {
+            var div = $('<div>')
+          .data('o', tickets[i])
+          .addClass('ticket');
+
+            $('<span>')
+          .addClass('ts-icon ts-icon-info')
+          .attr('rel', '../Tips/Ticket.aspx?TicketID=' + tickets[i].TicketID)
+          .cluetip(clueTipOptions)
+          .appendTo(div);
+
+            var caption = $('<span>')
+          .addClass('ticket-name')
+          .appendTo(div);
+
+            $('<a>')
+          .addClass('ts-link ui-state-defaultx')
+          .attr('href', '#')
+          .text(tickets[i].TicketNumber + ': ' + tickets[i].Name)
+          .appendTo(caption)
+          .click(function (e) {
+
+            top.Ts.MainPage.openTicket($(this).closest('.ticket').data('o').TicketNumber, true);
+          });
+
+
+            div.appendTo(tickets[i].IsClosed == false ? '#openTickets' : '#closedTickets');
+          }
+
+          if ($('#closedTickets .ticket').length < 1) {
+            $('<div>')
+            .addClass('no-tickets')
+            .text('There are no tickets to display')
+            .appendTo('#closedTickets');
+          }
+
+          if ($('#openTickets .ticket').length < 1) {
+            $('<div>')
+            .addClass('no-tickets')
+            .text('There are no tickets to display')
+            .appendTo('#openTickets');
+          }
+        });
+
+
+
+
+
+
+      });
     
     
     </script>

@@ -145,7 +145,8 @@ AdminPortal = function () {
     $('#portal_show_group').prop('checked', portalOption.HideGroupAssignedTo == null ? true : !portalOption.HideGroupAssignedTo);
     $('#portal_adv_kb').prop('checked', portalOption.DisplayAdvKB == true);
     $('#portal_adv_wiki').prop('checked', portalOption.DisplayAdvArticles == true);
-
+    $('#portal_adv_enable_toc').prop('checked', portalOption.DisplayTandC == true);
+    $('#portal_adv_toc').val(portalOption.TermsAndConditions);
 
     $('#portal_captcha').prop('checked', portalOption.UseRecaptcha == null ? false : portalOption.UseRecaptcha);
     $('#portal_basic_header').val(portalOption.BasicPortalDirections);
@@ -171,7 +172,7 @@ AdminPortal = function () {
     portalOption.PortalName = $('#portal_name').val();
     portalOption.DeflectionEnabled = $('#portal_deflection').prop('checked');
     //organization.DefaultPortalGroupID = $('#portal_def_group').val();
-    portalOption.DisplayGroups = $('#portal_show_group').prop('checked');
+    portalOption.DisplayGroups = $('#portal_show_grouplist').prop('checked');
     portalOption.DisplayProducts = $('#portal_show_product').prop('checked');
     portalOption.DisplayProductVersion = $('#portal_show_version').prop('checked');
     portalOption.Theme = $('#portal_theme').val();
@@ -188,6 +189,8 @@ AdminPortal = function () {
     portalOption.HideGroupAssignedTo = !$('#portal_show_group').prop('checked');
     portalOption.DisplayAdvKB = $('#portal_adv_kb').prop('checked');
     portalOption.DisplayAdvArticles = $('#portal_adv_wiki').prop('checked');
+    portalOption.DisplayTandC = $('#portal_adv_enable_toc').prop('checked');
+    portalOption.TermsAndConditions = $('#portal_adv_toc').val();
 
     portalOption.UseRecaptcha = $('#portal_captcha').prop('checked');
     portalOption.BasicPortalDirections = $('#portal_basic_header').val();

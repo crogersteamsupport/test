@@ -41,7 +41,7 @@ namespace TeamSupport.Data
   public class Importer
   {
     const int BULK_LIMIT = 1000;
-    bool _IsBulk = false;
+    bool _IsBulk = true;
 
     class ImportCustomInfo
     {
@@ -429,7 +429,7 @@ namespace TeamSupport.Data
       for (int i = index; i < table.Columns.Count; i++)
       {
         string name = table.Columns[i].ColumnName;
-
+        if (name.Trim() == "") continue;
         CustomField field = customFields.FindByName(name);
         if (field == null)
         {
@@ -933,7 +933,7 @@ namespace TeamSupport.Data
         organization.HasPortalAccess = false;
         organization.ImportID = row["CustomerID"].ToString().Trim();
         organization.InActiveReason = "";
-        organization.IsActive = true;
+        organization.IsActive = bool.Parse(row["IsActive"].ToString().Trim());
         organization.IsCustomerFree = false;
         organization.Name = row["Name"].ToString().Trim();
         organization.ParentID = _organizationID;
@@ -1323,6 +1323,7 @@ namespace TeamSupport.Data
           if (_IsBulk == true) tickets.BulkSave(); else tickets.Save();
           tickets = new Tickets(_loginUser);
           GC.WaitForPendingFinalizers();
+          EmailPosts.DeleteImportEmails(_loginUser);
 
         }
       }

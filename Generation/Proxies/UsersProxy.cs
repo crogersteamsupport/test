@@ -53,6 +53,9 @@ namespace TeamSupport.Data
     [DataMember] public bool DoNotAutoSubscribe { get; set; }
     [DataMember] public bool IsClassicView { get; set; }
     [DataMember] public bool SubscribeToNewActions { get; set; }
+    [DataMember] public bool ApprovedTerms { get; set; }
+    [DataMember] public bool ShowWelcomePage { get; set; }
+    [DataMember] public string UserInformation { get; set; }
           
   }
   
@@ -61,6 +64,9 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.UserInformation = this.UserInformation;
+      result.ShowWelcomePage = this.ShowWelcomePage;
+      result.ApprovedTerms = this.ApprovedTerms;
       result.SubscribeToNewActions = this.SubscribeToNewActions;
       result.IsClassicView = this.IsClassicView;
       result.DoNotAutoSubscribe = this.DoNotAutoSubscribe;

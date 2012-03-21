@@ -48,6 +48,10 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("PublicLandingPageBody", "PublicLandingPageBody", false, false, false);
       _fieldMap.AddMap("TwoColumnFields", "TwoColumnFields", false, false, false);
       _fieldMap.AddMap("DisplayAdvArticles", "DisplayAdvArticles", false, false, false);
+      _fieldMap.AddMap("DisplayTandC", "DisplayTandC", false, false, false);
+      _fieldMap.AddMap("TermsAndConditions", "TermsAndConditions", false, false, false);
+      _fieldMap.AddMap("RequestType", "RequestType", false, false, false);
+      _fieldMap.AddMap("RequestGroup", "RequestGroup", false, false, false);
             
     }
   }

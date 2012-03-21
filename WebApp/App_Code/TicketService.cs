@@ -261,7 +261,7 @@ namespace TSWebServices
           }
 
           if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
-          job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
+          job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(TSAuthentication.GetLoginUser()));
           job.Execute();
           SearchResults results = job.Results;
 
@@ -329,7 +329,7 @@ namespace TSWebServices
         if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
 
 
-        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
+        job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(TSAuthentication.GetLoginUser()));
         job.Execute();
         SearchResults results = job.Results;
 
@@ -987,6 +987,13 @@ namespace TSWebServices
       posts.Save();
     }
 
+    [WebMethod]
+    public TicketsViewItemProxy[] GetContactTickets(int userID)
+    {
+      TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+      tickets.LoadByContactID(userID, "DateModified DESC");
+      return tickets.GetTicketsViewItemProxies();
+    }
 
     [WebMethod]
     public string[] CreateDummyTickets()

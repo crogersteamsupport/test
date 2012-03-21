@@ -53,6 +53,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DoNotAutoSubscribe", "DoNotAutoSubscribe", false, false, false);
       _fieldMap.AddMap("IsClassicView", "IsClassicView", false, false, false);
       _fieldMap.AddMap("SubscribeToNewActions", "SubscribeToNewActions", false, false, false);
+      _fieldMap.AddMap("ApprovedTerms", "ApprovedTerms", false, false, false);
+      _fieldMap.AddMap("ShowWelcomePage", "ShowWelcomePage", false, false, false);
+      _fieldMap.AddMap("UserInformation", "UserInformation", false, false, false);
             
     }
   }

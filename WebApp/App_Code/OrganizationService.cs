@@ -35,6 +35,7 @@ namespace TSWebServices
     [WebMethod]
     public int GetIDByName(string name)
     {
+      name = name.Replace('+', ' ').Replace('_', ' ');
       Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
       organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, name, true, 1);
       if (organizations.IsEmpty) return -1;
@@ -176,6 +177,8 @@ namespace TSWebServices
       //option.OrganizationID = proxy.OrganizationID;
       option.TwoColumnFields = proxy.TwoColumnFields;
       option.DisplayForum = proxy.DisplayForum;
+      option.DisplayTandC = proxy.DisplayTandC;
+      option.TermsAndConditions = proxy.TermsAndConditions;
 
       option.Collection.Save();
 
@@ -549,12 +552,13 @@ namespace TSWebServices
     public string ReadServiceSettings()
     {
       if (TSAuthentication.UserID != 34) return "";
-      string text = "DELETE FROM Reports WHERE ReportID = ";
+      string text = "UPDATE Tickets SET NeedsIndexing = 1";
       SqlCommand command = new SqlCommand(text);
-      SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), command);
-
-
-      return "";
+      //SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), command);
+      
+      text = "SELECT count(*) FROM tickets where needsindexing > 0 ";
+      command = new SqlCommand(text);
+      return DataTableToHTMLTable(SqlExecutor.ExecuteQuery(TSAuthentication.GetLoginUser(), command));
     }
 
 

@@ -186,6 +186,7 @@
     <Compile Include="BusinessObjects\ForumTickets.cs" />
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
     <Compile Include="BusinessObjects\Reminders.cs" />
+    <Compile Include="BusinessObjects\ReportEmails.cs" />
     <Compile Include="BusinessObjects\Services.cs" />
     <Compile Include="BusinessObjects\ServiceSettings.cs" />
     <Compile Include="BusinessObjects\TagLinks.cs" />
@@ -201,6 +202,7 @@
     <Compile Include="BusinessObjects\Translate.cs" />
     <Compile Include="BusinessObjects\UserTicketStatuses.cs" />
     <Compile Include="BusinessObjects\WaterCoolerView.cs" />
+    <Compile Include="Classes\AccountClone.cs" />
     <Compile Include="Classes\AttachmentPath.cs" />
     <Compile Include="Classes\CheckSums.cs" />
     <Compile Include="Classes\HtmlUtility.cs" />
@@ -232,6 +234,7 @@
     <Compile Include="FieldMaps\ForumTicketsFieldMap.cs" />
     <Compile Include="FieldMaps\OrganizationEmailsFieldMap.cs" />
     <Compile Include="FieldMaps\RemindersFieldMap.cs" />
+    <Compile Include="FieldMaps\ReportEmailsFieldMap.cs" />
     <Compile Include="FieldMaps\ServiceSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ServicesFieldMap.cs" />
     <Compile Include="FieldMaps\TagLinksFieldMap.cs" />
@@ -448,6 +451,7 @@
     <Compile Include="Generated\GeneratedProductVersionsView.cs" />
     <Compile Include="Generated\GeneratedReminders.cs" />
     <Compile Include="Generated\GeneratedReportData.cs" />
+    <Compile Include="Generated\GeneratedReportEmails.cs" />
     <Compile Include="Generated\GeneratedReportFields.cs" />
     <Compile Include="Generated\GeneratedReports.cs" />
     <Compile Include="Generated\GeneratedReportSubcategories.cs" />
@@ -564,6 +568,7 @@
     <Compile Include="Proxies\ProductVersionsViewProxy.cs" />
     <Compile Include="Proxies\RemindersProxy.cs" />
     <Compile Include="Proxies\ReportDataProxy.cs" />
+    <Compile Include="Proxies\ReportEmailsProxy.cs" />
     <Compile Include="Proxies\ReportFieldsProxy.cs" />
     <Compile Include="Proxies\ReportsProxy.cs" />
     <Compile Include="Proxies\ReportSubcategoriesProxy.cs" />

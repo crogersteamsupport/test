@@ -13,10 +13,9 @@ namespace TeamSupport.ServiceLibrary
   {
     public override void Run()
     {
-      return;
       try
       {
-        string ticketPath = Settings.ReadString("Tickets Index Path", "c:\\Indexes\\Tickets");
+        string ticketPath = Settings.ReadString("Tickets Index Path", "c:\\Indexes");
         CompressIndex(LoginUser, "Tickets", ticketPath);
       }
       catch (Exception ex)

@@ -342,7 +342,7 @@ namespace TeamSupport.Data
           {
             foreach (HtmlNode node in nc)
             {
-              node.Attributes.Remove("stYle");
+              node.Attributes.Remove("style");
             }
           }
 

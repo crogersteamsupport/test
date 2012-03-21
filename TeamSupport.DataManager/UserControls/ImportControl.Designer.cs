@@ -33,6 +33,8 @@
       this.label1 = new System.Windows.Forms.Label();
       this.lblFileName = new System.Windows.Forms.Label();
       this.panel1 = new System.Windows.Forms.Panel();
+      this.btnClone = new System.Windows.Forms.Button();
+      this.cbCustomFieldsOnly = new System.Windows.Forms.CheckBox();
       this.cbNewOrg = new System.Windows.Forms.CheckBox();
       this.label2 = new System.Windows.Forms.Label();
       this.textOrganizationName = new System.Windows.Forms.TextBox();
@@ -41,7 +43,6 @@
       this.lbSummary = new System.Windows.Forms.ListBox();
       this.tpMessages = new System.Windows.Forms.TabPage();
       this.lbMessages = new System.Windows.Forms.ListBox();
-      this.cbCustomFieldsOnly = new System.Windows.Forms.CheckBox();
       this.panel1.SuspendLayout();
       this.tabControl.SuspendLayout();
       this.tpSummary.SuspendLayout();
@@ -89,6 +90,7 @@
       // 
       // panel1
       // 
+      this.panel1.Controls.Add(this.btnClone);
       this.panel1.Controls.Add(this.cbCustomFieldsOnly);
       this.panel1.Controls.Add(this.cbNewOrg);
       this.panel1.Controls.Add(this.label2);
@@ -102,6 +104,26 @@
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(743, 84);
       this.panel1.TabIndex = 4;
+      // 
+      // btnClone
+      // 
+      this.btnClone.Location = new System.Drawing.Point(616, 20);
+      this.btnClone.Name = "btnClone";
+      this.btnClone.Size = new System.Drawing.Size(75, 23);
+      this.btnClone.TabIndex = 8;
+      this.btnClone.Text = "Clone";
+      this.btnClone.UseVisualStyleBackColor = true;
+      this.btnClone.Click += new System.EventHandler(this.btnClone_Click);
+      // 
+      // cbCustomFieldsOnly
+      // 
+      this.cbCustomFieldsOnly.AutoSize = true;
+      this.cbCustomFieldsOnly.Location = new System.Drawing.Point(7, 49);
+      this.cbCustomFieldsOnly.Name = "cbCustomFieldsOnly";
+      this.cbCustomFieldsOnly.Size = new System.Drawing.Size(115, 17);
+      this.cbCustomFieldsOnly.TabIndex = 7;
+      this.cbCustomFieldsOnly.Text = "Custom Fields Only";
+      this.cbCustomFieldsOnly.UseVisualStyleBackColor = true;
       // 
       // cbNewOrg
       // 
@@ -171,7 +193,7 @@
       this.tpMessages.Location = new System.Drawing.Point(4, 22);
       this.tpMessages.Name = "tpMessages";
       this.tpMessages.Padding = new System.Windows.Forms.Padding(3);
-      this.tpMessages.Size = new System.Drawing.Size(735, 516);
+      this.tpMessages.Size = new System.Drawing.Size(735, 481);
       this.tpMessages.TabIndex = 1;
       this.tpMessages.Text = "Messages";
       this.tpMessages.UseVisualStyleBackColor = true;
@@ -182,18 +204,8 @@
       this.lbMessages.FormattingEnabled = true;
       this.lbMessages.Location = new System.Drawing.Point(3, 3);
       this.lbMessages.Name = "lbMessages";
-      this.lbMessages.Size = new System.Drawing.Size(729, 510);
+      this.lbMessages.Size = new System.Drawing.Size(729, 475);
       this.lbMessages.TabIndex = 1;
-      // 
-      // cbCustomFieldsOnly
-      // 
-      this.cbCustomFieldsOnly.AutoSize = true;
-      this.cbCustomFieldsOnly.Location = new System.Drawing.Point(7, 49);
-      this.cbCustomFieldsOnly.Name = "cbCustomFieldsOnly";
-      this.cbCustomFieldsOnly.Size = new System.Drawing.Size(115, 17);
-      this.cbCustomFieldsOnly.TabIndex = 7;
-      this.cbCustomFieldsOnly.Text = "Custom Fields Only";
-      this.cbCustomFieldsOnly.UseVisualStyleBackColor = true;
       // 
       // ImportControl
       // 
@@ -228,5 +240,6 @@
     private System.Windows.Forms.TextBox textOrganizationName;
     private System.Windows.Forms.CheckBox cbNewOrg;
     private System.Windows.Forms.CheckBox cbCustomFieldsOnly;
+    private System.Windows.Forms.Button btnClone;
   }
 }

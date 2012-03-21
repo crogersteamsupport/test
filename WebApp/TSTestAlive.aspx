@@ -5,6 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title></title>
+
+    <script type="text/javascript" language="javascript">
+      setTimeout(function () {
+        window.location = window.location;
+      }, 5000);
+    
+    </script>
 </head>
 <body>
     <form id="form1" runat="server">

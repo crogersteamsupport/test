@@ -232,15 +232,20 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByContactID(int userID)
+    public void LoadByContactID(int userID, string orderBy)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT tv.* FROM TicketsView tv LEFT JOIN UserTickets ut ON ut.TicketID = tv.TicketID WHERE ut.UserID = @UserID ORDER BY TicketNumber";
+        command.CommandText = "SELECT tv.* FROM TicketsView tv LEFT JOIN UserTickets ut ON ut.TicketID = tv.TicketID WHERE ut.UserID = @UserID ORDER BY " + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@UserID", userID);
         Fill(command);
       }
+    }
+
+    public void LoadByContactID(int userID)
+    {
+      LoadByContactID(userID, "TicketNumber");
     }
 
     public void LoadByTicketTypeID(int ticketTypeID)
@@ -606,7 +611,7 @@ namespace TeamSupport.Data
         }
 
         if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
-        job.IndexesToSearch.Add(SystemSettings.ReadString(loginUser, "IndexerPathTickets", ""));
+        job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(loginUser));
         job.Execute();
 
         SearchResults results = job.Results;

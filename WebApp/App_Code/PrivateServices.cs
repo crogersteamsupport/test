@@ -146,7 +146,7 @@ namespace TeamSupport.Services
         }
 
         if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
-        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
+        job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(TSAuthentication.GetLoginUser()));
         job.Execute();
         SearchResults results = job.Results;
 
@@ -208,7 +208,7 @@ namespace TeamSupport.Services
         }
 
         if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
-        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
+        job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(TSAuthentication.GetLoginUser()));
         job.Execute();
         SearchResults results = job.Results;
 
@@ -269,7 +269,7 @@ namespace TeamSupport.Services
         }
 
         if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
-        job.IndexesToSearch.Add(SystemSettings.ReadString(TSAuthentication.GetLoginUser(), "IndexerPathTickets", ""));
+        job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(TSAuthentication.GetLoginUser()));
         job.Execute();
         SearchResults results = job.Results;
 

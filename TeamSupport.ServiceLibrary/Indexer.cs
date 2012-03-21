@@ -16,7 +16,18 @@ namespace TeamSupport.ServiceLibrary
       Logs.WriteEvent("Started Indexing");
       try
       {
-        ProcessTicketIndex();
+
+        Organizations orgs = new Organizations(LoginUser);
+        orgs.LoadByNeedsIndexing();
+        int cnt = 0;
+        foreach (Organization org in orgs)
+        {
+          cnt++;
+          Logs.WriteEvent(string.Format("Started Indexing for org: {0}, [{1}/{2}]",org.OrganizationID.ToString(), cnt.ToString(), orgs.Count.ToString()));
+          ProcessTicketIndex(org);
+        }
+
+        
       }
       catch (Exception ex)
       {
@@ -33,11 +44,9 @@ namespace TeamSupport.ServiceLibrary
       get { return "Indexer"; }
     }
 
-    private void ProcessTicketIndex()
+    private void ProcessTicketIndex(Organization organization)
     {
-      Logs.WriteEvent("Starting Ticket Index");
-
-      string path = Settings.ReadString("Tickets Index Path", "c:\\Indexes\\Tickets");
+      string path = Path.Combine(Settings.ReadString("Tickets Index Path", "c:\\Indexes"), organization.OrganizationID.ToString() + "\\Tickets");
       Logs.WriteEvent("Path: " + path);
       bool isNew = !System.IO.Directory.Exists(path);
 
@@ -46,12 +55,12 @@ namespace TeamSupport.ServiceLibrary
 
       try
       {
-        RemoveOldTicketIndexes(LoginUser, path);
+        RemoveOldTicketIndexes(LoginUser, path, organization);
       }
       catch (Exception ex)
       {
         Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Indexer.RemoveOldTicketIndexes"); 
+        ExceptionLogs.LogException(LoginUser, ex, "Indexer.RemoveOldTicketIndexes - " + organization.OrganizationID.ToString()); 
       }
 
       Options options = new Options();
@@ -63,6 +72,7 @@ namespace TeamSupport.ServiceLibrary
         dataSource.LoginUser = LoginUser;
         dataSource.Logs = Logs;
         dataSource.MaxCount = Settings.ReadInt("Max Records", 1000);
+        dataSource.OrganizationID = organization.OrganizationID;
         job.DataSourceToIndex = dataSource;
         
         job.IndexPath = path;
@@ -75,38 +85,57 @@ namespace TeamSupport.ServiceLibrary
             IndexingFlags.dtsIndexCacheOriginalFile |
             IndexingFlags.dtsIndexCacheText |
             IndexingFlags.dtsIndexCacheTextWithoutFields;
-        ExecuteJob(job, "IndexerTicketsStatus");
+
+        try
+        {
+          job.ExecuteInThread();
+
+          // Monitor the job execution thread as it progresses
+          IndexProgressInfo status = new IndexProgressInfo();
+          while (job.IsThreadDone(500, status) == false)
+          {
+            if (IsStopped) { job.AbortThread(); }
+          }
+        }
+        catch (Exception ex)
+        {
+          ExceptionLogs.LogException(LoginUser, ex, "Index Job Processor - " + organization.OrganizationID.ToString());
+          Logs.WriteException(ex);
+          throw;
+        }
+        
         UpdateTickets(dataSource);
       }
-      Logs.WriteEvent("Finished Ticket Index");
     }
 
     private void UpdateTickets(TicketIndexDataSource dataSource)
     {
       if (dataSource.UpdatedTickets.Count < 1) return;
-      Logs.WriteEvent("Started Updating Ticket Indexes Statuses");
 
+      /*
       StringBuilder builder = new StringBuilder();
       foreach (KeyValuePair<int, int> item in dataSource.UpdatedTickets)
       {
         string sql = string.Format("UPDATE Tickets SET NeedsIndexing = 0, DocID = {1} WHERE TicketID = {0};", item.Key.ToString(), item.Value.ToString());
         builder.AppendLine(sql);
       }
+      */
 
+      string updateSql = "UPDATE Tickets SET NeedsIndexing = 0 WHERE TicketID IN (" + DataUtils.IntArrayToCommaString(dataSource.UpdatedTickets.ToArray()) + ")";
+      Logs.WriteEvent(updateSql);
       SqlCommand command = new SqlCommand();
-      command.CommandText = builder.ToString();
+      command.CommandText = updateSql;
       command.CommandType = System.Data.CommandType.Text;
 
       SqlExecutor.ExecuteNonQuery(dataSource.LoginUser, command);
-      Logs.WriteEvent("Finished Updating Ticket Indexes Statuses");
+      Logs.WriteEvent("Ticket Indexes Statuses UPdated");
     }
 
-    private void RemoveOldTicketIndexes(LoginUser loginUser, string indexPath)
+    private void RemoveOldTicketIndexes(LoginUser loginUser, string indexPath, Organization organization)
     {
-      Logs.WriteEvent("Started Removing Old Ticket Indexes");
       if (!Directory.Exists(indexPath)) return;
       DeletedIndexItems items = new DeletedIndexItems(loginUser);
-      items.LoadByReferenceType(ReferenceType.Tickets);
+      items.LoadByReferenceType(ReferenceType.Tickets, organization.OrganizationID);
       if (items.IsEmpty) return;
       if (!Directory.Exists(indexPath)) return;
 
@@ -116,7 +145,7 @@ namespace TeamSupport.ServiceLibrary
         builder.AppendLine(item.RefID.ToString());
       }
 
-      string fileName = Path.Combine(indexPath, "DeletedTicketIDs.txt");
+      string fileName = Path.Combine(indexPath, "DeletedTickets.txt");
       if (File.Exists(fileName)) File.Delete(fileName);
       using (StreamWriter writer = new StreamWriter(fileName))
       {
@@ -137,7 +166,7 @@ namespace TeamSupport.ServiceLibrary
 
       items.DeleteAll();
       items.Save();
-      Logs.WriteEvent("Finished Removing Old Ticket Indexes");
+      Logs.WriteEvent("Finished Removing Old Ticket Indexes - OrgID = " + organization.OrganizationID);
     }
     /*
     private void CompressTicketIndexes(LoginUser loginUser, string indexPath)
@@ -203,31 +232,5 @@ namespace TeamSupport.ServiceLibrary
       }
     }
     */
-
-    private void ExecuteJob(IndexJob job, string statusKey)
-    {
-      Logs.WriteEvent("Starting Index Job");
-      try
-      {
-        job.Execute();
-        /*
-        job.ExecuteInThread();
-
-        // Monitor the job execution thread as it progresses
-        IndexProgressInfo status = new IndexProgressInfo();
-        while (job.IsThreadDone(500, status) == false)
-        {
-          if (IsStopped) { job.AbortThread(); }
-        }*/
-      }
-      catch (Exception ex)
-      {
-        ExceptionLogs.LogException(LoginUser, ex, "Index Job Processor");
-        Logs.WriteException(ex);
-        throw;
-      }
-      Logs.WriteEvent("Finished Index Job");
-    }
-
   }
 }

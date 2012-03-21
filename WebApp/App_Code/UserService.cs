@@ -53,6 +53,14 @@ namespace TSWebServices
       user.IsClassicView = value;
       user.Collection.Save();
     }
+
+    [WebMethod]
+    public void HideWelcomePage()
+    {
+      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      user.ShowWelcomePage = false;
+      user.Collection.Save();
+    }
       
       //tells us whether the logged in user can edit the specified user's account
     [WebMethod]

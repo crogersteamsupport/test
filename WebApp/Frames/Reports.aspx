@@ -33,9 +33,9 @@
             ImageUrl="~/images/icons/trash.png"></telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Text="Export to PDF" Enabled="false" ImageUrl="~/images/icons/Export.png"
             Value="ExportPDF" Visible="false"></telerik:RadToolBarButton>
-          <telerik:RadToolBarButton runat="server" Text="Export to Excel" Enabled="false" ImageUrl="~/images/icons/Export.png"
+          <telerik:RadToolBarButton runat="server" Text="Export to Excel" Enabled="false" Visible="false" ImageUrl="~/images/icons/Export.png"
             Value="ExportExcel"></telerik:RadToolBarButton>
-          <telerik:RadToolBarButton runat="server" Text="Export to CSV" Enabled="false" ImageUrl="~/images/icons/Export.png"
+          <telerik:RadToolBarButton runat="server" Text="Export" Enabled="false" ImageUrl="~/images/icons/Export.png"
             Value="ExportCSV"></telerik:RadToolBarButton>
             <telerik:RadToolBarButton runat="server" Text="Add to Favorites" Value="Favorite" Enabled="false" ImageUrl="~/images/icons/Favorites.png"></telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Value="Help" ImageUrl="~/images/icons/Help.png"
@@ -127,7 +127,7 @@
 
         itemFav.set_enabled(result);
         itemExpCSV.set_enabled(result);
-        itemExpEx.set_enabled(result);
+        if (itemExpEx != null) itemExpEx.set_enabled(result);
     }
 
     function SetIsFavorite(result) {
