@@ -39,10 +39,6 @@
                 </h1>
 
                 <div class="user-name-value">
-                    <span class="property">User Information:</span>
-                    <span class="value"><a id="userInfo" class="ui-state-default ts-link" href="#"></a></span>
-                </div>
-                <div class="user-name-value">
                     <span class="property">Title:</span>
                     <span class="value" ><a id="userTitle" class="ui-state-default ts-link" href="#"></a></span>
                 </div>
@@ -53,7 +49,18 @@
                     <a id="editEmail" class="ui-state-default ts-link edit-email" href="#">Edit</a>
                     </div>
                 </div>
-
+                <div class="user-name-value">
+                    <span class="property">User Information:</span>
+                    <div class="inline">
+                        <span class="value" id="userInfo"></span>
+                        <a id="userInfoEdit" class="ui-state-default ts-link edit-info" href="#">Edit</a>
+                    </div>
+                    <div class="clearfix">
+                        <span class="property">&nbsp;</span>
+                        
+                    </div>
+                    
+                </div>
                 <div class="line"></div>
 
                 <div class="user-name-value">
@@ -125,7 +132,6 @@
                 <div class="user-name-value"><span class="property-wide">System Administrator:</span><a id="userSysAdmin" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Chat User:</span><a id="chatUser" class="ts-link" href="#"></a></div>
 
-                <div class="user-name-value"><span class="property-wide">Financial Administrator:</span><span class="value" id="userFinanceAdmin"></span></div>
                 <div class="user-name-value"><span class="property-wide">Activated On:</span><span class="value" id="activatedOn"></span></div>
                 <div class="user-name-value"><span class="property-wide">Last Logged In:</span><span class="value" id="userLastLogin"></span></div>
             </div>

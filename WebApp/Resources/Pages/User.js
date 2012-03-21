@@ -59,10 +59,9 @@ UserPage = function () {
         $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Yes' : 'No'));
         $('#userDateFormat').text(user.CultureDisplay);
         $('#userSysAdmin').text((user.IsSystemAdmin == true ? 'Yes' : 'No'));
-        $('#userFinanceAdmin').text((user.IsFinanceAdmin == true ? 'Yes' : 'No'));
         $('#chatUser').text((user.IsChatUser == true ? 'Yes' : 'No'));
         $('#activatedOn').text(user.ActivatedOn.toDateString());
-        $('#userInfo').text((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation));
+        $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
 
 
         top.Ts.Services.Users.GetUserPhoto(userID, function (att) {
@@ -251,7 +250,7 @@ UserPage = function () {
         .appendTo(container)
     });
 
-    $('#userInfo')
+    $('#userInfoEdit')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
         e.preventDefault();
@@ -260,9 +259,9 @@ UserPage = function () {
         .addClass('user-info-edit')
         .insertAfter(header);
 
-        $('<input type=text>')
+        $('<textarea cols=50 rows=5>')
         .addClass('ui-widget-content ui-corner-all')
-        .val($(this).text())
+        .val($(this).parent().find('span').html().replace(/<br>/g, '\n'))
         .appendTo(container)
         .focus();
 
@@ -273,7 +272,7 @@ UserPage = function () {
             header.show().find('img').show();
             top.Ts.Services.Users.SaveUserInfo(_user.UserID, $(this).prev().val(), function (result) {
                 header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                $('#userInfo').text(result);
+                $('#userInfo').html(result.replace(/\n\r?/g, '<br />'));
             },
           function (error) {
               header.show().find('img').hide();
@@ -528,21 +527,13 @@ UserPage = function () {
             var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
             var select = $('<select>').appendTo(container);
 
-            top.Ts.Services.Users.GetTimezone(
-              function (result) {
-                  for (var i = 0; i < result.length; i += 2) {
-                      var option = $('<option>').text(result[i]).appendTo(select).data('type', result[i + 1]);
-                      if ($.trim(value) == $.trim(result[i + 1])) {
-                          option.attr('selected', 'selected');
-                      }
-                  }
-
-              },
-              function (error) {
-                  alert('There was an error getting timezones.');
-                  item.next().hide();
-              });
-
+            var tz = top.Ts.Cache.getTimeZones();
+            for (var i = 0; i < tz.length; i += 2) {
+                var option = $('<option>').text(tz[i]).data('type', tz[i + 1]).appendTo(select);
+                if ($.trim(value) == $.trim(tz[i])) {
+                    option.attr('selected', 'selected');
+                }
+            }
 
             select.combobox({
                 selected: function (e, ui) {
@@ -581,20 +572,14 @@ UserPage = function () {
             var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
             var select = $('<select>').appendTo(container);
 
-            top.Ts.Services.Users.GetCultures(
-              function (result) {
-                  for (var i = 0; i < result.length; i += 2) {
-                      var option = $('<option>').text(result[i]).appendTo(select).data('type', result[i + 1]);
-                      if ($.trim(value) == $.trim(result[i + 1])) {
-                          option.attr('selected', 'selected');
-                      }
-                  }
-              },
-              function (error) {
-                  alert('There was an error getting cultures.');
-                  item.next().hide();
-              });
-
+            var culture = top.Ts.Cache.getCultures();
+            for (var i = 0; i < culture.length; i ++) {
+                var displayname = culture[i].split("_");
+                var option = $('<option>').text(displayname[0]).appendTo(select).data('type', displayname[1]);
+                if ($.trim(value) == $.trim(displayname[0])) {
+                    option.attr('selected', 'selected');
+                }
+            }
 
             select.combobox({
                 selected: function (e, ui) {

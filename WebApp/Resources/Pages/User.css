@@ -29,8 +29,9 @@
     .user-name-edit input { float:left; width:50%; }
     .user-name-edit .ts-icon { float:left; margin-left: .5em; cursor:pointer; }
     
+    .edit-info {margin-left: 1em}    
     .user-info-edit {float:left; margin: 0 !important; vertical-align: top; width: 50%}
-    .user-info-edit input { float:left; width:80%; }
+    .user-info-edit textarea { float:left; width:80%; }
     .user-info-edit .ts-icon { float:left; margin-left: .5em; cursor:pointer; }
     
     .user-title-edit {float:left; margin: 0 !important; vertical-align: top; width: 50%}
