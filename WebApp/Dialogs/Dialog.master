@@ -82,7 +82,7 @@
               <asp:Button ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" OnClientClick="clearCache();" />
             </td>
             <td>
-              <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClientClick="Close(); return false;" />
+              <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClick="btnCancel_Click"  />
             </td>
           </tr>
         </table>

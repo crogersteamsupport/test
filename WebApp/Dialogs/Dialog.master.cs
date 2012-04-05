@@ -70,7 +70,18 @@ public partial class Dialogs_Dialog : System.Web.UI.MasterPage
 
   protected void btnCancel_Click(object sender, EventArgs e)
   {
-    CloseWindow();
+      if (ContentPlaceHolder1.Page is BaseDialogPage)
+      {
+          try
+          {
+              (ContentPlaceHolder1.Page as BaseDialogPage).Close();
+              CloseWindow();
+          }
+          catch (Exception ex)
+          {
+              CloseWindow();
+          }
+      }
   }
 
   private void CloseWindow()

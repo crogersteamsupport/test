@@ -47,7 +47,14 @@ UserPage = function () {
         orgID = user.OrganizationID;
 
         $('.user-displayname').html(user.FirstName + ' ' + user.LastName);
-        $('#userEmail').html('<a href="mailto:' + user.Email + '">' + user.Email + '</a>');
+        $('#userEmail').html('<a class=fleft href="mailto:' + user.Email + '">' + user.Email + '</a>');
+        var email = $('#userEmail').parent()
+        .hover(function () {
+            $(this).find('.ts-icon-edit').show();
+        }, function () {
+            $(this).find('.ts-icon-edit').hide();
+        });
+
         $('#userTitle').html(user.Title == '' ? 'None' : user.Title);
         $('#userTimeZone').html(user.timeZoneDisplay);
         $('#userLastLogin').text(user.LastLogin.toDateString());
@@ -62,7 +69,6 @@ UserPage = function () {
         $('#chatUser').text((user.IsChatUser == true ? 'Yes' : 'No'));
         $('#activatedOn').text(user.ActivatedOn.toDateString());
         $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
-
 
         top.Ts.Services.Users.GetUserPhoto(userID, function (att) {
             $('#userPhoto').attr("src", att);
@@ -102,11 +108,11 @@ UserPage = function () {
 
     var canEdit = top.Ts.System.User.UserID === userID || top.Ts.System.User.IsSystemAdmin;
     if (canEdit) {
-        $('.ts-icon-edit').click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            ShowDialog(top.GetUserDialog(orgID, userID));
-        });
+//        $('.ts-icon-edit').click(function (e) {
+//            e.preventDefault();
+//            e.stopPropagation();
+//            ShowDialog(top.GetUserDialog(orgID, userID));
+//        });
 
         $('.user-address-add').click(function (e) {
             e.preventDefault();
@@ -250,18 +256,19 @@ UserPage = function () {
         .appendTo(container)
     });
 
-    $('#userInfoEdit')
+    $('#userInfo')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
         e.preventDefault();
         var header = $(this).parent().hide();
+        $(this).find('.ts-icon-edit').hide();
         var container = $('<div>')
         .addClass('user-info-edit')
         .insertAfter(header);
 
         $('<textarea cols=50 rows=5>')
         .addClass('ui-widget-content ui-corner-all')
-        .val($(this).parent().find('span').html().replace(/<br>/g, '\n'))
+        .val($(this).parent().find('a').html().replace(/<br>/g, '\n'))
         .appendTo(container)
         .focus();
 
@@ -335,13 +342,14 @@ UserPage = function () {
     .click(function (e) {
         e.preventDefault();
         var header = $(this).parent().hide();
+        $(this).find('.ts-icon-edit').hide();
         var container = $('<div>')
         .addClass('user-email-edit')
         .insertAfter(header);
 
         $('<input type="text">')
         .addClass('ui-widget-content ui-corner-all')
-        .val($(this).closest('a').prev().text())
+        .val($('#userEmail').text())
         .appendTo(container)
         .focus();
 
@@ -573,7 +581,7 @@ UserPage = function () {
             var select = $('<select>').appendTo(container);
 
             var culture = top.Ts.Cache.getCultures();
-            for (var i = 0; i < culture.length; i ++) {
+            for (var i = 0; i < culture.length; i++) {
                 var displayname = culture[i].split("_");
                 var option = $('<option>').text(displayname[0]).appendTo(select).data('type', displayname[1]);
                 if ($.trim(value) == $.trim(displayname[0])) {
@@ -621,22 +629,32 @@ UserPage = function () {
 
             for (var i = 0; i < addresses.length; i++) {
                 var header = $('<div>').addClass('user-address')
+                            .hover(function () {
+                                $(this).find('.ts-icon').show();
+                            }, function () {
+                                $(this).find('.ts-icon').hide();
+                            })
                                    .data('data', addresses[i].AddressID);
                 var desc = $('<span>')
                             .addClass('link-strong')
                             .text(addresses[i].Description)
                             .appendTo(header);
-                var deletebutton = $('<span>').addClass('address-delete')
-                                .text('x')
-                                .click(function (e) {
-                                    if (confirm('Are you sure you would like to remove this address?')) {
-                                        var item = $(this).parent();
-                                        var data = item.data('data');
-                                        top.privateServices.DeleteAddress(data);
-                                        window.location = window.location;
-                                    }
-                                })
-                                .appendTo(header);
+
+                $('<span>')
+                .addClass('fleft ts-icon ts-icon-delete')
+                .click(function (e) {
+                    if (confirm('Are you sure you would like to remove this address?')) {
+                        var item = $(this).parent();
+                        var data = item.data('data');
+                        top.privateServices.DeleteAddress(data);
+                        window.location = window.location;
+                    }
+                    else
+                        $(this).hide();
+                }).hide()
+                .appendTo(header);
+
+
                 var addr1 = $('<div>').addClass('user-address-st1')
                                 .text(addresses[i].Addr1)
                                 .appendTo(header);
@@ -670,22 +688,31 @@ UserPage = function () {
             }
             for (var i = 0; i < phones.length; i++) {
                 var header = $('<div>').addClass('user-phone')
+                        .hover(function () {
+                            $(this).find('.ts-icon').show();
+                        }, function () {
+                            $(this).find('.ts-icon').hide();
+                        })
                         .data('data', phones[i].PhoneID);
                 var link = $('<span>')
+                                .addClass('fleft')
                                 .html('<strong>' + phones[i].PhoneTypeName + '</strong>: ' + phones[i].Number + '  ' + (phones[i].Extension == '' ? '' : '<strong>Ext:</strong> ' + phones[i].Extension))
-                                .appendTo(header)
-
-                var deletebutton = $('<span>').addClass('phone-delete')
-                                .text('x')
-                                .click(function (e) {
-                                    if (confirm('Are you sure you would like to remove this phone number?')) {
-                                        var item = $(this).parent();
-                                        var data = item.data('data');
-                                        top.privateServices.DeletePhone(data);
-                                        window.location = window.location;
-                                    }
-                                })
                                 .appendTo(header);
+
+                $('<span>')
+                .addClass('fleft ts-icon ts-icon-delete')
+                .click(function (e) {
+                    if (confirm('Are you sure you would like to remove this phone number?')) {
+                        var item = $(this).parent();
+                        var data = item.data('data');
+                        top.privateServices.DeletePhone(data);
+                        window.location = window.location;
+                    }
+                    else
+                        $(this).hide();
+                }).hide()
+                .appendTo(header);
+
                 $('#userPhoneList').append(header);
             }
             $('#userPhoneList').prepend(phonelist);
@@ -702,22 +729,32 @@ UserPage = function () {
 
             for (var i = 0; i < groups.length; i++) {
                 var header = $('<div>').addClass('user-group')
+                            .hover(function () {
+                                $(this).find('.ts-icon').show();
+                            }, function () {
+                                $(this).find('.ts-icon').hide();
+                            })
                         .data('data', groups[i].GroupID);
                 var link = $('<span>')
-                                .addClass('ts-link')
+                                .addClass('group-name')
                                 .text(groups[i].Name)
                                 .appendTo(header);
-                var deletebutton = $('<span>').addClass('group-delete')
-                                .text('x')
-                                .click(function (e) {
-                                    if (confirm('Are you sure you would like to remove this group?')) {
-                                        var item = $(this).parent();
-                                        var data = item.data('data');
-                                        top.privateServices.DeleteGroupUser(data, _user.UserID);
-                                        window.location = window.location;
-                                    }
-                                })
-                                .appendTo(header);
+
+                $('<span>')
+                .addClass('fleft ts-icon ts-icon-delete')
+                .click(function (e) {
+                    if (confirm('Are you sure you would like to remove this group?')) {
+                        var item = $(this).parent();
+                        var data = item.data('data');
+                        top.privateServices.DeleteGroupUser(data, _user.UserID);
+                        window.location = window.location;
+                    }
+                    else
+                        $(this).hide();
+                }).hide()
+                .appendTo(header);
+
+
                 $('#userGroups').append(header);
             }
             $('#userGroups').prepend(groupslist);

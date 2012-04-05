@@ -35,6 +35,7 @@ public class BaseDialogPage : System.Web.UI.Page
   }
 
   public virtual bool Save() { return false; }
+  public virtual bool Close() { return false; }
 
   protected override void SavePageStateToPersistenceMedium(object viewState)
   {

@@ -46,14 +46,14 @@
                     <span class="property">Email:</span>
                     <div class="inline">
                     <span class="value" id="userEmail"></span>
-                    <a id="editEmail" class="ui-state-default ts-link edit-email" href="#">Edit</a>
+                    <span class="fleft ts-icon ts-icon-edit" id="editEmail"></span>
                     </div>
                 </div>
                 <div class="user-name-value">
                     <span class="property">User Information:</span>
                     <div class="inline">
-                        <span class="value" id="userInfo"></span>
-                        <a id="userInfoEdit" class="ui-state-default ts-link edit-info" href="#">Edit</a>
+                        <a class="value fleft" id="userInfo" href="#"></a>
+                        <!--<span id="userInfoEdit" class="fleft ts-icon ts-icon-edit">Edit</span>-->
                     </div>
                     <div class="clearfix">
                         <span class="property">&nbsp;</span>
@@ -121,16 +121,16 @@
             
             <h2 >User Properties</h2>
             <div id="userProperties" style="display: block;">
+                <div class="user-name-value"><span class="property-wide">System Administrator:</span><a id="userSysAdmin" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Time Zone:</span><span><a id="userTimeZone" class="ts-link" href="#"></a></span></div>
-                <div class="user-name-value"><span class="property-wide">Active:</span><a id="userActive" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Email Ticket Notifications:</span><a id="userEmailNotify" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Automatically subscribe to new tickets I post:</span><a id="userSubscribeTickets" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Automatically subscribe to tickets when I post an action:</span><a id="userSubscribeActions" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Do not subscribe to tickets when cc'd on email:</span><a id="userAutoSubscribe" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Receive Assigned Group Notifications:</span><a id="userGroupNotify" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Date Format:</span><span><a id="userDateFormat" class="ts-link" href="#"></a></span></div>
-                <div class="user-name-value"><span class="property-wide">System Administrator:</span><a id="userSysAdmin" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Chat User:</span><a id="chatUser" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Active:</span><a id="userActive" class="ts-link" href="#"></a></div>
 
                 <div class="user-name-value"><span class="property-wide">Activated On:</span><span class="value" id="activatedOn"></span></div>
                 <div class="user-name-value"><span class="property-wide">Last Logged In:</span><span class="value" id="userLastLogin"></span></div>

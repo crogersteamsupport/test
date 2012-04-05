@@ -84,7 +84,7 @@ namespace TSWebServices
                 path = String.Format("../dc/{0}/avatar/{1}", user.OrganizationID, att[0].AttachmentID); ;//att[0].Path;
             }
             else
-                path = "../../images/blank_avatar.png";
+                path = "../images/blank_avatar.png";
             return path;
         }
 

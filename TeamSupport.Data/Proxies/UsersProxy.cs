@@ -108,16 +108,9 @@ namespace TeamSupport.Data
        
       result.DeactivatedOn = this.DeactivatedOnUtc == null ? this.DeactivatedOnUtc : DateTime.SpecifyKind((DateTime)this.DeactivatedOnUtc, DateTimeKind.Utc); 
       result.LastPing = this.LastPingUtc == null ? this.LastPingUtc : DateTime.SpecifyKind((DateTime)this.LastPingUtc, DateTimeKind.Utc);
-      if (!string.IsNullOrEmpty(this.TimeZoneID))
-      {
-        TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(this.TimeZoneID);
-        if (timeZone != null) result.timeZoneDisplay = timeZone.DisplayName;
-      }
-      if (!string.IsNullOrEmpty(this.CultureName))
-      {
-        CultureInfo culture = new CultureInfo(this.CultureName);
-        if (culture != null) result.CultureDisplay = culture.DisplayName;
-      }
+
+      result.timeZoneDisplay = TimeZoneInfo.FindSystemTimeZoneById(this.TimeZoneID).DisplayName;
+      result.CultureDisplay = new CultureInfo(this.CultureName).DisplayName;
       result.UserInformation = this.UserInformation;
 
       return result;
