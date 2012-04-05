@@ -37,6 +37,23 @@
 
       var _lastRefreshTime = new Date();
 
+      function pageLoad() {
+        onShow();
+        var tabStrip = $find("<%=tsMain.ClientID %>");
+        changeTab(tabStrip.get_selectedTab());
+      }
+
+      function onShow() {
+        top.Ts.Settings.Organization.read('SelectedAdminTabText', 'My Company', function (tabText) {
+          if (tabText == null) {
+            $find("<%=tsMain.ClientID %>").get_allTabs()[0].select();
+          }
+          else {
+            selectTab(tabText);
+          }
+        });
+      }
+
       function refreshData() {
         if (_lastRefreshTime != null) {
           var now = new Date();
@@ -47,20 +64,32 @@
         _lastRefreshTime = new Date();
 
         window.location = window.location;
-
       }    
+
       function TabSelected(sender, args) {
-        showLoadingPanel("<%=frmAdmin.ClientID %>");
-        var tab = args.get_tab();
+        changeTab(args.get_tab());
+      }
+
+      function selectTab(text) {
+        var tabStrip = $find("<%=tsMain.ClientID %>");
+        var tab = tabStrip.findTabByText(text);
+        if (tab != null) {
+          tab.select();
+        }
+        else {
+          tabStrip.get_allTabs()[0].select();
+        }
+
+        var frame = $get("<%=frmAdmin.ClientID %>");
+        try { if (frame.contentWindow.onShow) frame.contentWindow.onShow(); } catch (err) { }
+
+      }
+
+      function changeTab(tab) {
         var frame = $get("<%=frmAdmin.ClientID %>");
         frame.setAttribute('src', tab.get_value());
-        top.privateServices.SetUserSetting('SelectedAdminTabIndex' , tab.get_index());
-        hideLoadingPanel("<%=frmAdmin.ClientID %>");
-      }  
-    
-            
-  
-    
+        top.Ts.Settings.Organization.write('SelectedAdminTabText', tab.get_text());
+      }
     
     </script>
   

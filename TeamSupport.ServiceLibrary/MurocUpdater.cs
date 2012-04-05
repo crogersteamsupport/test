@@ -7,14 +7,10 @@ using TeamSupport.Data;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class MurocUpdater : ServiceThread
   {
     public MurocUpdater() { }
-
-    public override string ServiceName
-    {
-      get { return "muroc"; }
-    }
 
     public override void Run()
     {

@@ -25,6 +25,11 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("RunCount", "RunCount", false, false, false);
       _fieldMap.AddMap("RunTimeAvg", "RunTimeAvg", false, false, false);
       _fieldMap.AddMap("RunTimeMax", "RunTimeMax", false, false, false);
+      _fieldMap.AddMap("AssemblyName", "AssemblyName", false, false, false);
+      _fieldMap.AddMap("AutoStart", "AutoStart", false, false, false);
+      _fieldMap.AddMap("HealthTime", "HealthTime", false, false, false);
+      _fieldMap.AddMap("NameSpace", "NameSpace", false, false, false);
+      _fieldMap.AddMap("HealthMaxMinutes", "HealthMaxMinutes", false, false, false);
             
     }
   }

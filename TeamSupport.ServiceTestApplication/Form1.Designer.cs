@@ -37,6 +37,7 @@
       this.btnIndexer = new System.Windows.Forms.Button();
       this.btnIndexMaint = new System.Windows.Forms.Button();
       this.btnReminders = new System.Windows.Forms.Button();
+      this.button1 = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // btnEmailProcessor
@@ -49,7 +50,7 @@
       this.btnEmailProcessor.TabIndex = 21;
       this.btnEmailProcessor.Text = "Start Email Processor";
       this.btnEmailProcessor.UseVisualStyleBackColor = true;
-      this.btnEmailProcessor.Click += new System.EventHandler(this.btnEmailProcessor_Click);
+      this.btnEmailProcessor.Click += new System.EventHandler(this.btnThread_Click);
       // 
       // btnSlaProcessor
       // 
@@ -61,7 +62,7 @@
       this.btnSlaProcessor.TabIndex = 22;
       this.btnSlaProcessor.Text = "Start SLA Processor";
       this.btnSlaProcessor.UseVisualStyleBackColor = true;
-      this.btnSlaProcessor.Click += new System.EventHandler(this.btnSlaProcessor_Click);
+      this.btnSlaProcessor.Click += new System.EventHandler(this.btnThread_Click);
       // 
       // btnEmailSender
       // 
@@ -73,7 +74,7 @@
       this.btnEmailSender.TabIndex = 23;
       this.btnEmailSender.Text = "Start Email Sender";
       this.btnEmailSender.UseVisualStyleBackColor = true;
-      this.btnEmailSender.Click += new System.EventHandler(this.btnEmailSender_Click);
+      this.btnEmailSender.Click += new System.EventHandler(this.btnThread_Click);
       // 
       // btnCrmPool
       // 
@@ -85,7 +86,7 @@
       this.btnCrmPool.TabIndex = 24;
       this.btnCrmPool.Text = "Start CRM Pool";
       this.btnCrmPool.UseVisualStyleBackColor = true;
-      this.btnCrmPool.Click += new System.EventHandler(this.btnCrmPool_Click);
+      this.btnCrmPool.Click += new System.EventHandler(this.btnThread_Click);
       // 
       // btnIndexer
       // 
@@ -97,7 +98,7 @@
       this.btnIndexer.TabIndex = 25;
       this.btnIndexer.Text = "Start Indexer";
       this.btnIndexer.UseVisualStyleBackColor = true;
-      this.btnIndexer.Click += new System.EventHandler(this.btnIndexer_Click);
+      this.btnIndexer.Click += new System.EventHandler(this.btnThread_Click);
       // 
       // btnIndexMaint
       // 
@@ -109,7 +110,7 @@
       this.btnIndexMaint.TabIndex = 26;
       this.btnIndexMaint.Text = "Start Index Maintenance";
       this.btnIndexMaint.UseVisualStyleBackColor = true;
-      this.btnIndexMaint.Click += new System.EventHandler(this.btnIndexMaint_Click);
+      this.btnIndexMaint.Click += new System.EventHandler(this.btnThread_Click);
       // 
       // btnReminders
       // 
@@ -121,13 +122,26 @@
       this.btnReminders.TabIndex = 27;
       this.btnReminders.Text = "Start Reminder Processor";
       this.btnReminders.UseVisualStyleBackColor = true;
-      this.btnReminders.Click += new System.EventHandler(this.btnReminders_Click);
+      this.btnReminders.Click += new System.EventHandler(this.btnThread_Click);
+      // 
+      // button1
+      // 
+      this.button1.Font = new System.Drawing.Font("Trebuchet MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.button1.ForeColor = System.Drawing.Color.Green;
+      this.button1.Location = new System.Drawing.Point(12, 289);
+      this.button1.Name = "button1";
+      this.button1.Size = new System.Drawing.Size(221, 29);
+      this.button1.TabIndex = 28;
+      this.button1.Text = "Start Service Thread";
+      this.button1.UseVisualStyleBackColor = true;
+      this.button1.Click += new System.EventHandler(this.button1_Click);
       // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(248, 272);
+      this.ClientSize = new System.Drawing.Size(248, 330);
+      this.Controls.Add(this.button1);
       this.Controls.Add(this.btnReminders);
       this.Controls.Add(this.btnIndexMaint);
       this.Controls.Add(this.btnIndexer);
@@ -138,6 +152,7 @@
       this.Name = "Form1";
       this.Text = "Email Test";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+      this.Click += new System.EventHandler(this.btnThread_Click);
       this.ResumeLayout(false);
 
     }
@@ -152,6 +167,7 @@
     private System.Windows.Forms.Button btnIndexer;
     private System.Windows.Forms.Button btnIndexMaint;
     private System.Windows.Forms.Button btnReminders;
+    private System.Windows.Forms.Button button1;
   }
 }
 

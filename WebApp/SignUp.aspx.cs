@@ -90,7 +90,7 @@ public partial class SignUp : System.Web.UI.Page
     organization.Name = Ecom_BillTo_Postal_Company.Text.Trim();
     organization.ParentID = teamSupport.OrganizationID;
     organization.ProductType = (ProductType)int.Parse(cmbVersion.SelectedValue);
-    organization.PortalSeats = organization.ProductType == ProductType.Enterprise || organization.ProductType == ProductType.HelpDesk ? 10 : 0;
+    organization.PortalSeats = organization.ProductType == ProductType.Enterprise || organization.ProductType == ProductType.HelpDesk ? 999999 : 0;
     organization.IsApiActive = organization.ProductType != ProductType.Express;
     organization.IsApiEnabled = true;
     organization.IsAdvancedPortal = organization.PortalSeats > 0;
@@ -143,6 +143,7 @@ public partial class SignUp : System.Web.UI.Page
     user.MiddleName = "";
     user.OrganizationID = organization.OrganizationID;
     user.ReceiveTicketNotifications = true;
+    user.ShowWelcomePage = true;
     user.Collection.Save();
 
     loginUser = new LoginUser(UserSession.ConnectionString, user.UserID, user.OrganizationID, null);

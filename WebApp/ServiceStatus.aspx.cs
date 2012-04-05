@@ -11,7 +11,6 @@ public partial class ServiceStatus : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-      int delay = Request["Delay"] != null ? int.Parse(Request["Delay"]) : 20;
       string name = "All services are ";
       
       bool flag = false;
@@ -35,7 +34,7 @@ public partial class ServiceStatus : System.Web.UI.Page
         name = service.Name + " service is ";
         if (service.LastStartTime != null) 
         {
-          if (DateTime.Now.Subtract((DateTime)service.Row["LastStartTime"]).TotalMinutes < delay)
+          if (DateTime.Now.Subtract((DateTime)service.Row["HealthTime"]).TotalMinutes < service.HealthMaxMinutes)
           {
             flag = true;
           }
@@ -49,7 +48,7 @@ public partial class ServiceStatus : System.Web.UI.Page
         foreach (Service service in services)
         {
           if (service.LastStartTime == null || !service.Enabled) continue;
-          if (DateTime.Now.Subtract((DateTime)service.Row["LastStartTime"]).TotalMinutes > delay)
+          if (DateTime.Now.Subtract((DateTime)service.Row["HealthTime"]).TotalMinutes > service.HealthMaxMinutes)
           {
             flag = false;
             break;

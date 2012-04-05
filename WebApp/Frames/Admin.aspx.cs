@@ -21,9 +21,9 @@ public partial class Frames_Admin : BaseFramePage
   {
     if (!IsPostBack)
     {
-      tsMain.SelectedIndex = Settings.UserDB.ReadInt("SelectedAdminTabIndex", 0);
-      if (tsMain.SelectedTab == null) tsMain.SelectedIndex = 0;
-      frmAdmin.Attributes["src"] = tsMain.SelectedTab.Value;
+      //tsMain.SelectedIndex = Settings.UserDB.ReadInt("SelectedAdminTabIndex", 0);
+      //if (tsMain.SelectedTab == null) tsMain.SelectedIndex = 0;
+      //frmAdmin.Attributes["src"] = tsMain.SelectedTab.Value;
     }
   }
 }

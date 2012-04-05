@@ -152,17 +152,28 @@
       var _ticketType = '-1';
       var _editID = -1;
 
-      $(document).ready(function() {
+      function onShow() {
+        top.Ts.Settings.User.read('SelectedCustomPropertyValue', 0, function (value) {
+          var cmbType = $find("<%=cmbTypes.ClientID %>");
+          var item = cmbType.findItemByValue(value);
+          if (item != null) item.select();
+          loadType(cmbType.get_selectedItem());
+          loadTicketTypeCombo();
+        });
+      }
+
+      $(document).ready(function () {
         var button = $('#spanUploadIcon'), interval;
+
 
         new AjaxUpload(button, {
           action: 'Upload/Images/TicketTypes',
           autoSubmit: true,
           responseType: false,
-          onSubmit: function(file, ext) {
+          onSubmit: function (file, ext) {
             button.text('Uploading Icon');
             // Uploding -> Uploading. -> Uploading...
-            interval = window.setInterval(function() {
+            interval = window.setInterval(function () {
               var text = button.text();
               if (text.length < 13) {
                 button.text(text + '.');
@@ -171,7 +182,7 @@
               }
             }, 200);
           },
-          onComplete: function(file, response) {
+          onComplete: function (file, response) {
             button.text('Upload Icon');
             window.clearInterval(interval);
             loadTicketTypeImageCombo($find('<%= wndEditType.ContentContainer.FindControl("cmbTicketTypeIcons").ClientID %>').get_value());
@@ -186,12 +197,21 @@
       });
 
       function pageLoad() {
-        loadTypes();
-        loadTicketTypeCombo();
+        onShow();
+        /*var cmbType = $find("<%=cmbTypes.ClientID %>");
+        loadType(cmbType.get_selectedItem());
+        loadTicketTypeCombo();*/
       }
+
       function cmbTypes_OnClientSelectedIndexChanged(sender, args) {
-        $('#spanCaption').text(args.get_item().get_text());
-        _type = args.get_item().get_value();
+        loadType(args.get_item());
+      }
+
+      function loadType(comboBoxItem) {
+        if (comboBoxItem == null) return;
+        $('#spanCaption').text(comboBoxItem.get_text());
+        _type = comboBoxItem.get_value();
+        top.Ts.Settings.User.write('SelectedCustomPropertyValue', _type);
         if (_type == 4) {
           $('#divTicketType').show();
         }
@@ -203,6 +223,7 @@
 
       function cmbTicketTypes_OnClientSelectedIndexChanged(sender, args) {
         _ticketType = args.get_item().get_value();
+
         loadTypes();
       }
 

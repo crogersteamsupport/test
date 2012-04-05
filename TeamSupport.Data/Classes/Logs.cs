@@ -11,25 +11,39 @@ namespace TeamSupport.Data
 {
   public class Logs
   {
-
+    static readonly object _syncObject = new object();
     string _category = null;
+    string _logPath;
+    string _name;
 
     public string Category
     {
       get
       {
-        lock (this)
+        lock (_syncObject)
         {
           return _category;
         } 
       }
     }
 
-    public Logs() { }
+    public Logs() 
+    { 
+      InitializeLog();
+    }
 
     public Logs(string category)
     {
       this._category = category;
+      InitializeLog();
+    }
+
+    private void InitializeLog()
+    {
+      _name = Path.ChangeExtension(System.AppDomain.CurrentDomain.FriendlyName, "");
+      if (!string.IsNullOrEmpty(Category)) { _name = _name + " [" + Category + "]"; }
+      _logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
+      if (!Directory.Exists(_logPath)) Directory.CreateDirectory(_logPath);
     }
 
     public void WriteException(Exception ex)
@@ -54,32 +68,92 @@ namespace TeamSupport.Data
       WriteEvent(DataUtils.DataRowToString(row));
     }
 
-    public void WriteEvent(string message)
+    public void WriteEvent(string message, bool showDateTime)
     {
-      lock (this)
+      lock (_syncObject)
       {
-        string name = Path.ChangeExtension(System.AppDomain.CurrentDomain.FriendlyName, "");
 
-        if (!string.IsNullOrEmpty(Category)) { name = name + " [" + Category + "]"; }
-
-        string logPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs");
-
-        if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
-
-        string path = Path.Combine(logPath,
-            string.Format("{0} {1:yyyy-MM-dd}.txt", name, DateTime.Now));
-
-        message = string.Format("[{0:hh:mm:ss tt}] {1}", DateTime.Now, message);
-
-        //TextWriter writer = TextWriter.Synchronized(!File.Exists(path) ? File.CreateText(path) : File.AppendText(path));
-
-        using (StreamWriter writer = !File.Exists(path) ? File.CreateText(path) : File.AppendText(path))
-        {
-          writer.WriteLine(message);
+        if (showDateTime) message = string.Format("[{0:hh:mm:ss tt}] {1}", DateTime.Now, message);
+        //TextWriter _writer = TextWriter.Synchronized(!File.Exists(_logPath) ? File.CreateText(_logPath) : File.AppendText(_logPath));
+        
+        string path = Path.Combine(_logPath, string.Format("{0} {1:yyyy-MM-dd}.txt", _name, DateTime.Now));
+        
+        using (StreamWriter writer = !File.Exists(path) ? File.CreateText(path) : File.AppendText(path)) 
+        { 
+          writer.WriteLine(message); 
         }
 
+        
+
       }
+
     }
 
+    public void WriteEvent(string message)
+    {
+      WriteEvent(message, true);
+    }
+
+    public void WriteLine()
+    {
+      WriteEvent(System.Environment.NewLine, false);
+    }
+
+    public void WriteHeader(string text)
+    {
+      StringBuilder builder = new StringBuilder("********************************************");
+      for (int i = 0; i < text.Length+2; i++)
+			{
+			  builder.Append("*");
+			}
+
+      WriteLine();
+      WriteEvent(builder.ToString(), false);
+      WriteEvent(string.Format("********************** {0} **********************", text), false);
+      WriteEvent(builder.ToString(), false);
+      WriteLine();
+
+
+    }
+
+   
   }
 }
+
+
+/*
+ * 
+ * class ThreadSafe
+{
+    static readonly object _lock = new object();
+
+    public static void Test()
+    {
+        lock (_lock)
+        {
+            // critical section
+        }
+    }
+}
+ * 
+ * private static readonly object _syncObject = new object();
+
+public static void Log(string logMessage, TextWriter w)    {
+   // only one thread can own this lock, so other threads
+   // entering this method will wait here until lock is
+   // available.
+   lock(_syncObject) {
+      w.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(),
+          DateTime.Now.ToLongDateString());
+      w.WriteLine("  :");
+      w.WriteLine("  :{0}", logMessage);
+      w.WriteLine("-------------------------------");
+      // Update the underlying file.
+      w.Flush();
+   }
+}
+ * 
+ * 
+ */
+
+

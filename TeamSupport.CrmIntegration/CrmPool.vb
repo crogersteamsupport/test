@@ -4,8 +4,7 @@ Imports System.IO
 
 Namespace TeamSupport
   Namespace CrmIntegration
-
-    Public Class CrmPool
+    <Serializable()> Public Class CrmPool
       Inherits ServiceThread
 
       Private Shared _crmPoolStopped As Boolean = False
@@ -27,12 +26,6 @@ Namespace TeamSupport
       Public Sub New()
         RunHandlesStop = True
       End Sub
-
-      Public Overrides ReadOnly Property ServiceName As String
-        Get
-          Return "CrmPool"
-        End Get
-      End Property
 
       Public Overrides Sub [Stop]()
         CrmPoolStopped = True

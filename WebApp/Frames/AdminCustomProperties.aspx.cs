@@ -40,6 +40,12 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
       cmbTypes.Items.Add(new RadComboBoxItem("Ticket Severities", ((int)SelectedType.TicketSeverities).ToString()));
       cmbTypes.Items.Add(new RadComboBoxItem("Ticket Statuses", ((int)SelectedType.TicketStatuses).ToString()));
       cmbTypes.Items.Add(new RadComboBoxItem("Ticket Types", ((int)SelectedType.TicketTypes).ToString()));
+
+
+      /*int type = Settings.UserDB.ReadInt("SelectedCustomPropertyValue", ((int) SelectedType.ActionTypes));
+      RadComboBoxItem item = cmbTypes.FindItemByValue(type.ToString());
+      if (item != null) item.Selected = true;*/
+
       spanNewType.Visible = UserSession.CurrentUser.IsSystemAdmin;
     }
   }

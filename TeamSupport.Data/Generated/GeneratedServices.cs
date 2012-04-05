@@ -36,6 +36,30 @@ namespace TeamSupport.Data
     
 
     
+    public int HealthMaxMinutes
+    {
+      get { return (int)Row["HealthMaxMinutes"]; }
+      set { Row["HealthMaxMinutes"] = CheckNull(value); }
+    }
+    
+    public string NameSpace
+    {
+      get { return (string)Row["NameSpace"]; }
+      set { Row["NameSpace"] = CheckNull(value); }
+    }
+    
+    public bool AutoStart
+    {
+      get { return (bool)Row["AutoStart"]; }
+      set { Row["AutoStart"] = CheckNull(value); }
+    }
+    
+    public string AssemblyName
+    {
+      get { return (string)Row["AssemblyName"]; }
+      set { Row["AssemblyName"] = CheckNull(value); }
+    }
+    
     public int RunTimeMax
     {
       get { return (int)Row["RunTimeMax"]; }
@@ -117,6 +141,17 @@ namespace TeamSupport.Data
     public DateTime? LastEndTimeUtc
     {
       get { return Row["LastEndTime"] != DBNull.Value ? (DateTime?)Row["LastEndTime"] : null; }
+    }
+    
+    public DateTime? HealthTime
+    {
+      get { return Row["HealthTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["HealthTime"]) : null; }
+      set { Row["HealthTime"] = CheckNull(value); }
+    }
+
+    public DateTime? HealthTimeUtc
+    {
+      get { return Row["HealthTime"] != DBNull.Value ? (DateTime?)Row["HealthTime"] : null; }
     }
     
 
@@ -215,7 +250,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Services] SET     [Name] = @Name,    [Enabled] = @Enabled,    [Interval] = @Interval,    [LastStartTime] = @LastStartTime,    [LastEndTime] = @LastEndTime,    [LastResult] = @LastResult,    [LastError] = @LastError,    [ErrorCount] = @ErrorCount,    [RunCount] = @RunCount,    [RunTimeAvg] = @RunTimeAvg,    [RunTimeMax] = @RunTimeMax  WHERE ([ServiceID] = @ServiceID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Services] SET     [Name] = @Name,    [Enabled] = @Enabled,    [Interval] = @Interval,    [LastStartTime] = @LastStartTime,    [LastEndTime] = @LastEndTime,    [LastResult] = @LastResult,    [LastError] = @LastError,    [ErrorCount] = @ErrorCount,    [RunCount] = @RunCount,    [RunTimeAvg] = @RunTimeAvg,    [RunTimeMax] = @RunTimeMax,    [AssemblyName] = @AssemblyName,    [AutoStart] = @AutoStart,    [HealthTime] = @HealthTime,    [NameSpace] = @NameSpace,    [HealthMaxMinutes] = @HealthMaxMinutes  WHERE ([ServiceID] = @ServiceID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ServiceID", SqlDbType.Int, 4);
@@ -302,13 +337,83 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("AssemblyName", SqlDbType.VarChar, 1000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("AutoStart", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("HealthTime", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("NameSpace", SqlDbType.VarChar, 1000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("HealthMaxMinutes", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Services] (    [Name],    [Enabled],    [Interval],    [LastStartTime],    [LastEndTime],    [LastResult],    [LastError],    [ErrorCount],    [RunCount],    [RunTimeAvg],    [RunTimeMax]) VALUES ( @Name, @Enabled, @Interval, @LastStartTime, @LastEndTime, @LastResult, @LastError, @ErrorCount, @RunCount, @RunTimeAvg, @RunTimeMax); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Services] (    [Name],    [Enabled],    [Interval],    [LastStartTime],    [LastEndTime],    [LastResult],    [LastError],    [ErrorCount],    [RunCount],    [RunTimeAvg],    [RunTimeMax],    [AssemblyName],    [AutoStart],    [HealthTime],    [NameSpace],    [HealthMaxMinutes]) VALUES ( @Name, @Enabled, @Interval, @LastStartTime, @LastEndTime, @LastResult, @LastError, @ErrorCount, @RunCount, @RunTimeAvg, @RunTimeMax, @AssemblyName, @AutoStart, @HealthTime, @NameSpace, @HealthMaxMinutes); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("HealthMaxMinutes", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("NameSpace", SqlDbType.VarChar, 1000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("HealthTime", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("AutoStart", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("AssemblyName", SqlDbType.VarChar, 1000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("RunTimeMax", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -499,7 +604,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ServiceID], [Name], [Enabled], [Interval], [LastStartTime], [LastEndTime], [LastResult], [LastError], [ErrorCount], [RunCount], [RunTimeAvg], [RunTimeMax] FROM [dbo].[Services] WHERE ([ServiceID] = @ServiceID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ServiceID], [Name], [Enabled], [Interval], [LastStartTime], [LastEndTime], [LastResult], [LastError], [ErrorCount], [RunCount], [RunTimeAvg], [RunTimeMax], [AssemblyName], [AutoStart], [HealthTime], [NameSpace], [HealthMaxMinutes] FROM [dbo].[Services] WHERE ([ServiceID] = @ServiceID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ServiceID", serviceID);
         Fill(command);

@@ -386,7 +386,10 @@ Ts.Pages.Main.prototype =
     }
 
     function processQuery() {
-      Ts.Services.Settings.ReadUserSetting('main-menu-selected', 'mniDashboard', function (selectedID) {
+      var defaultMenuItem = 'mniWelcome';
+      if ($('.menutree-item-welcome-mniWelcome').length < 1) defaultMenuItem = 'mniDashboard';
+
+      Ts.Services.Settings.ReadUserSetting('main-menu-selected', defaultMenuItem, function (selectedID) {
         self.MainMenu.getByID(selectedID).select();
 
         var ticketID = Ts.Utils.getQueryValue('ticketid');
@@ -770,25 +773,26 @@ Ts.Pages.Main.prototype =
     .focusout(function () { $(this).val('Search for a ticket...').addClass('main-quick-ticket-blur').removeClass('ui-autocomplete-loading'); })
     .click(function () { $(this).val('').removeClass('main-quick-ticket-blur'); })
     .val('Search for a ticket...');
-
+    /*
     top.Ts.Services.Users.ShowIntroVideo(function (result) {
-      var overrideIntro = Ts.Utils.getQueryValue('intro');
-      if (result === false && !(overrideIntro != null && overrideIntro == 1)) return;
-      var div = $('<div>')
-        .addClass('dialog-intro')
-        .append('<iframe width="420" height="315" src="https://www.youtube.com/embed/BVl7zLVzT7E?rel=0&autoplay=1" frameborder="0" allowfullscreen></iframe>')
-        .appendTo('body');
+    var overrideIntro = Ts.Utils.getQueryValue('intro');
+    if (result === false && !(overrideIntro != null && overrideIntro == 1)) return;
+    var div = $('<div>')
+    .addClass('dialog-intro')
+    .append('<iframe width="420" height="315" src="https://www.youtube.com/embed/BVl7zLVzT7E?rel=0&autoplay=1" frameborder="0" allowfullscreen></iframe>')
+    .appendTo('body');
 
-      div.dialog({
-        width: 'auto',
-        height: 'auto',
-        title: 'Introduction',
-        resizable: false,
-        close: function () {
-          div.remove();
-        }
-      });
+    div.dialog({
+    width: 'auto',
+    height: 'auto',
+    title: 'Introduction',
+    resizable: false,
+    close: function () {
+    div.remove();
+    }
     });
+    });
+    */
 
 
     Ts.Services.Settings.ReadUserSetting('main-info-state', true, function (isOpen) {
@@ -916,6 +920,14 @@ Ts.Pages.Main.prototype =
     if (contentFrame && contentFrame.contentWindow.selectCustomer) {
       contentFrame.contentWindow.selectCustomer(customerID);
     }
+  },
+  openAdmin: function (tabText) {
+    var self = this;
+    top.Ts.Settings.Organization.write('SelectedAdminTabText', tabText, function () {
+      self.MainMenu.find('mniAdmin', 'admin').select();
+    });
+
+
   },
   openProduct: function (productID, versionID) {
     var self = this;

@@ -9,6 +9,7 @@ using System.Data;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class IisDbLogger : ServiceThread
   {
 /*    public string LastLogFileName {
@@ -30,10 +31,6 @@ namespace TeamSupport.ServiceLibrary
     */
     public IisDbLogger() { }
 
-    public override string ServiceName
-    {
-      get { return "iis"; }
-    }
 
     public override void Run()
     {

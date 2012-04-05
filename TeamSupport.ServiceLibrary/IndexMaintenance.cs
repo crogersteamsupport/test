@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class IndexMaintenance : ServiceThread
   {
     public override void Run()
@@ -22,11 +23,6 @@ namespace TeamSupport.ServiceLibrary
       {
         ExceptionLogs.LogException(LoginUser, ex, "IndexMaintenance"); 
       }
-    }
-
-    public override string ServiceName
-    {
-      get { return "IndexMaintenance"; }
     }
 
     private void CompressIndex(LoginUser loginUser, string indexName, string indexPath)

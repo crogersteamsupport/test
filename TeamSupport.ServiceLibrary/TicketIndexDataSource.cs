@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   class TicketIndexDataSource : dtSearch.Engine.DataSource
   {
     private int? _lastTicketID = null;

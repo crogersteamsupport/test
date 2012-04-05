@@ -6,6 +6,7 @@ using TeamSupport.Data;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class Settings
   {
     private LoginUser _loginUser;

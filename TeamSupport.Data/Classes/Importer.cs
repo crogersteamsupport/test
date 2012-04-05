@@ -1316,6 +1316,7 @@ namespace TeamSupport.Data
         ticket.TicketStatusID = GetTicketStatus(ticketStatuses, row["TicketStatus"].ToString(), ticketType).TicketStatusID;
         ticket.TicketTypeID = ticketType.TicketTypeID;
         ticket.UserID = userID;
+        ticket.NeedsIndexing = true;
         ticket.GroupID = groupID;
 
         if (++count % BULK_LIMIT == 0)

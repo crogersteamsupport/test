@@ -249,6 +249,7 @@ AdminAuto = function () {
   function loadComboUsers(select) {
     select.html('');
     $('<option>').attr('value', '-1').text('Assigned User').appendTo(select).attr('selected', 'selected');
+    $('<option>').attr('value', '-2').text('Organization\'s Primary Contact').appendTo(select);
     for (var i = 0; i < _data.Users.length; i++) {
       select.append('<option value="' + _data.Users[i].id + '">' + _data.Users[i].label + '</option>');
     }

@@ -9,6 +9,7 @@ using System.Net.Mail;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class SlaProcessor : ServiceThread
   {
     enum NotificationType { InitialResponse, LastAction, TimeClosed }
@@ -16,12 +17,6 @@ namespace TeamSupport.ServiceLibrary
     public SlaProcessor()
     {
     }
-
-    public override string ServiceName
-    {
-      get { return "SlaProcessor"; }
-    }
-
 
     public override void Run()
     {
@@ -47,6 +42,7 @@ namespace TeamSupport.ServiceLibrary
 
     private void ProcessTicket(TicketSlaViewItem ticketSlaViewItem)
     {
+      UpdateHealth();
       SlaTriggersView triggers = new SlaTriggersView(LoginUser);
       triggers.LoadByTicket(ticketSlaViewItem.TicketID);
 

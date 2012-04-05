@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class Indexer : ServiceThread
   {
     public override void Run()
@@ -25,6 +26,7 @@ namespace TeamSupport.ServiceLibrary
           cnt++;
           Logs.WriteEvent(string.Format("Started Indexing for org: {0}, [{1}/{2}]",org.OrganizationID.ToString(), cnt.ToString(), orgs.Count.ToString()));
           ProcessTicketIndex(org);
+          UpdateHealth();
         }
 
         
@@ -39,10 +41,6 @@ namespace TeamSupport.ServiceLibrary
 
     }
 
-    public override string ServiceName
-    {
-      get { return "Indexer"; }
-    }
 
     private void ProcessTicketIndex(Organization organization)
     {

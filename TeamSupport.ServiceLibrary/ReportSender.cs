@@ -18,6 +18,7 @@ using System.ComponentModel;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class ReportSender : ServiceThread
   {
     private static int[] _nextAttempts = new int[] { 10, 15, 20, 30, 60, 120, 360, 720, 1440 };
@@ -28,11 +29,6 @@ namespace TeamSupport.ServiceLibrary
     public ReportSender()
     {
       _debugAddresses = new MailAddressCollection();
-    }
-
-    public override string ServiceName
-    {
-      get { return "ReportSender"; }
     }
 
     public override void Run()

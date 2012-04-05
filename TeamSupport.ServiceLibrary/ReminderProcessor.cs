@@ -9,6 +9,7 @@ using System.Net.Mail;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class ReminderProcessor : ServiceThread
   {
     private Logs logs;
@@ -22,17 +23,13 @@ namespace TeamSupport.ServiceLibrary
         foreach (Reminder reminder in reminders)
         {
           ProcessReminder(reminder);
+          UpdateHealth();
         }
       }
       catch (Exception ex)
       {
         ExceptionLogs.LogException(LoginUser, ex, "ReminderProcessor"); 
       }
-    }
-
-    public override string ServiceName
-    {
-      get { return "ReminderProcessor"; }
     }
 
     private void ProcessReminder(Reminder reminder)

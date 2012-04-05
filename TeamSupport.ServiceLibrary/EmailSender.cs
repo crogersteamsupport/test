@@ -18,21 +18,17 @@ using System.ComponentModel;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class EmailSender : ServiceThread
   {
     private static int[] _nextAttempts = new int[] { 10, 15, 20, 30, 60, 120, 360, 720, 1440 };
 
     private bool _isDebug = false;
-    private MailAddressCollection _debugAddresses;
+    private List<MailAddress> _debugAddresses;
 
     public EmailSender()
     {
-      _debugAddresses = new MailAddressCollection();
-    }
-
-    public override string ServiceName
-    {
-      get { return "EmailSender"; }
+      _debugAddresses = new List<MailAddress>();
     }
 
     public override void Run()
@@ -89,6 +85,7 @@ namespace TeamSupport.ServiceLibrary
             email.Body = "";
             email.DateSent = DateTime.UtcNow;
             email.Collection.Save();
+            UpdateHealth();
           }
         }
         catch (Exception ex)

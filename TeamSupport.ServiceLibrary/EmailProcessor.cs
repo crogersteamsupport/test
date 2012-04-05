@@ -18,6 +18,7 @@ using System.ComponentModel;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class EmailProcessor : ServiceThread
   {
     class UserEmail
@@ -59,11 +60,6 @@ namespace TeamSupport.ServiceLibrary
     {
     }
 
-    public override string ServiceName
-    {
-      get { return "EmailProcessor"; }
-    }
-
     public override void Run()
     {
       try
@@ -81,6 +77,7 @@ namespace TeamSupport.ServiceLibrary
             {
               SetTimeZone(emailPost);
               ProcessEmail(emailPost);
+              UpdateHealth();
             }
             catch (Exception ex)
             {
@@ -712,8 +709,9 @@ namespace TeamSupport.ServiceLibrary
 
     private void AddUser(List<UserEmail> list, User user, bool honorTicketNotifications)
     {
+      if (user == null || user.Email == null) return;
       if (IsUserAlreadyInList(list, user.UserID) || (!user.ReceiveTicketNotifications && honorTicketNotifications)) return;
-      list.Add(new UserEmail(user.UserID, user.FirstName + " " + user.LastName, user.Email));
+      list.Add(new UserEmail(user.UserID, user.DisplayName, user.Email));
     }
 
     private void RemoveUser(List<UserEmail> list, int userID)

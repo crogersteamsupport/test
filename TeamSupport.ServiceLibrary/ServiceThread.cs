@@ -7,9 +7,12 @@ using Microsoft.Win32;
 using TeamSupport.Data;
 using System.Configuration;
 
+
 namespace TeamSupport.ServiceLibrary
 {
-  public abstract class ServiceThread
+
+  [Serializable]
+  public abstract class ServiceThread : MarshalByRefObject
   {
     public ServiceThread()
     {
@@ -55,7 +58,14 @@ namespace TeamSupport.ServiceLibrary
       set { lock (this) { _runHandlesStop = value; } }
     }
 
-    public abstract string ServiceName { get; }
+    public string ServiceName
+    {
+      get
+      {
+        return this.GetType().Name;
+      }
+
+    }
 
     protected Settings _settings;
     protected Settings Settings
@@ -77,19 +87,35 @@ namespace TeamSupport.ServiceLibrary
 
     public virtual void Stop()
     {
+      _logs.WriteEvent("Stop Requested");
       lock (this) { _isStopped = true; }
 
       if (Thread.IsAlive)
       {
         if (!Thread.Join(10000))
         {
-          if (Thread.IsAlive) _thread.Abort();
+          if (Thread.IsAlive)
+          {
+            _logs.WriteEvent("Still alive, aborting");
+            Thread.Abort();
+          }
+        }
+        else
+        {
+          _logs.WriteEvent("Successfully Stopped");
         }
       }
     }
 
+    public virtual void Abort()
+    {
+       _thread.Abort();
+    }
+
     public virtual void Start()
     {
+      _logs = new Data.Logs(ServiceName);
+      _logs.WriteEvent("Service Started");
       if (!IsStopped) return;
       _isStopped = false;
       _thread = new Thread(new ThreadStart(Process));
@@ -104,9 +130,9 @@ namespace TeamSupport.ServiceLibrary
         service.ErrorCount = 0;
         service.LastError = "";
         service.LastResult = "";
+        service.HealthTime = DateTime.Now;
         service.Collection.Save();
       }
-      _logs = new Data.Logs(ServiceName);
       _thread.Start();
     }
 
@@ -125,11 +151,13 @@ namespace TeamSupport.ServiceLibrary
             if (service.Enabled && (lastTime.AddMilliseconds(service.Interval) < DateTime.Now || !IsLoop))
             {
               service.LastStartTime = DateTime.Now;
+              service.HealthTime = DateTime.Now;
               service.Collection.Save();
               Run();
               lastTime = DateTime.Now;
               service.RunCount = service.RunCount + 1;
               service.LastEndTime = DateTime.Now;
+              service.HealthTime = DateTime.Now;
               service.LastResult = "Success";
               int total = (int)((DateTime)service.LastEndTime).Subtract((DateTime)service.LastStartTime).TotalSeconds;
               service.RunTimeMax = service.RunTimeMax < total ? total : service.RunTimeMax;
@@ -145,6 +173,7 @@ namespace TeamSupport.ServiceLibrary
           }
           catch (Exception ex)
           {
+            _logs.WriteException(ex);
             ExceptionLog log = ExceptionLogs.LogException(_loginUser, ex, "Service - " + ServiceName);
             service.LastError = string.Format("[{0} {1}", log.ExceptionLogID.ToString(), ex.Message);
             service.ErrorCount = service.ErrorCount + 1;
@@ -157,8 +186,9 @@ namespace TeamSupport.ServiceLibrary
           }
         }
       }
-      catch (Exception)
+      catch (Exception ex)
       {
+        _logs.WriteException(ex);
 
       }
     }
@@ -167,6 +197,13 @@ namespace TeamSupport.ServiceLibrary
     ///<remarks>Check the property IsStopped to see if you need to stop processing.</remarks>
     public abstract void Run();
 
+    public void UpdateHealth()
+    {
+      Service service = Services.GetService(_loginUser, ServiceName);
+      service.HealthTime = DateTime.Now;
+      service.Collection.Save();
+
+    }
 
     public static LoginUser GetLoginUser(string appName)
     {

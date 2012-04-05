@@ -25,6 +25,11 @@ namespace TeamSupport.Data
     [DataMember] public int RunCount { get; set; }
     [DataMember] public int RunTimeAvg { get; set; }
     [DataMember] public int RunTimeMax { get; set; }
+    [DataMember] public string AssemblyName { get; set; }
+    [DataMember] public bool AutoStart { get; set; }
+    [DataMember] public DateTime? HealthTime { get; set; }
+    [DataMember] public string NameSpace { get; set; }
+    [DataMember] public int HealthMaxMinutes { get; set; }
           
   }
   
@@ -33,6 +38,10 @@ namespace TeamSupport.Data
     public ServiceProxy GetProxy()
     {
       ServiceProxy result = new ServiceProxy();
+      result.HealthMaxMinutes = this.HealthMaxMinutes;
+      result.NameSpace = this.NameSpace;
+      result.AutoStart = this.AutoStart;
+      result.AssemblyName = this.AssemblyName;
       result.RunTimeMax = this.RunTimeMax;
       result.RunTimeAvg = this.RunTimeAvg;
       result.RunCount = this.RunCount;
@@ -45,6 +54,7 @@ namespace TeamSupport.Data
       result.ServiceID = this.ServiceID;
        
        
+      result.HealthTime = this.HealthTimeUtc == null ? this.HealthTimeUtc : DateTime.SpecifyKind((DateTime)this.HealthTimeUtc, DateTimeKind.Utc); 
       result.LastEndTime = this.LastEndTimeUtc == null ? this.LastEndTimeUtc : DateTime.SpecifyKind((DateTime)this.LastEndTimeUtc, DateTimeKind.Utc); 
       result.LastStartTime = this.LastStartTimeUtc == null ? this.LastStartTimeUtc : DateTime.SpecifyKind((DateTime)this.LastStartTimeUtc, DateTimeKind.Utc); 
        

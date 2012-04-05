@@ -65,10 +65,61 @@ WelcomePage = function () {
 
   $('.welcome-hide').click(function (e) {
     e.preventDefault();
-
     top.Ts.MainPage.hideWelcome();
+  });
+
+  var sysEmail = top.Ts.System.Organization.SystemEmailID + '@teamsupport.com';
+
+  $('.welcome-sysemail')
+    .text(sysEmail)
+    .attr('href', 'mailto:' + sysEmail);
+
+  $('.welcome-setup-email').click(function (e) {
+    e.preventDefault();
+    top.Ts.MainPage.openAdmin('Email');
 
   });
+
+  $('.welcome-setup-tickettypes').click(function (e) {
+    e.preventDefault();
+    top.Ts.Settings.User.write('SelectedCustomPropertyValue', 5, function () {
+      top.Ts.MainPage.openAdmin('Custom Properties');
+    });
+
+  });
+
+  $('.welcome-setup-ticketstatuses').click(function (e) {
+    e.preventDefault();
+    top.Ts.Settings.User.write('SelectedCustomPropertyValue', 4, function () {
+      top.Ts.MainPage.openAdmin('Custom Properties');
+    });
+  });
+
+  $('.welcome-setup-custom-fields').click(function (e) {
+    e.preventDefault();
+    top.Ts.MainPage.openAdmin('Custom Fields');
+  });
+
+  $('.welcome-setup-workflow').click(function (e) {
+    e.preventDefault();
+    top.Ts.MainPage.openAdmin('Workflow');
+  });
+
+  $('.welcome-setup-portals').click(function (e) {
+    e.preventDefault();
+    top.Ts.MainPage.openAdmin('My Portal');
+  });
+
+  $('.welcome-help-ticket').click(function (e) {
+    e.preventDefault();
+    top.Ts.System.openSupport();
+  });
+
+  $('.welcome-help-chat').click(function (e) {
+    e.preventDefault();
+    window.open('https://app.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
+  });
+
 };
 
 

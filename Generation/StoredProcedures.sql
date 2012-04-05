@@ -7705,7 +7705,12 @@ AS
     [ErrorCount],
     [RunCount],
     [RunTimeAvg],
-    [RunTimeMax]
+    [RunTimeMax],
+    [AssemblyName],
+    [AutoStart],
+    [HealthTime],
+    [NameSpace],
+    [HealthMaxMinutes]
   FROM [dbo].[Services]
   WHERE ([ServiceID] = @ServiceID)
 GO
@@ -7727,6 +7732,11 @@ CREATE PROCEDURE dbo.uspGeneratedInsertService
   @RunCount int,
   @RunTimeAvg int,
   @RunTimeMax int,
+  @AssemblyName varchar(1000),
+  @AutoStart bit,
+  @HealthTime datetime,
+  @NameSpace varchar(1000),
+  @HealthMaxMinutes int,
   @Identity int OUT
 )
 AS
@@ -7743,7 +7753,12 @@ AS
     [ErrorCount],
     [RunCount],
     [RunTimeAvg],
-    [RunTimeMax])
+    [RunTimeMax],
+    [AssemblyName],
+    [AutoStart],
+    [HealthTime],
+    [NameSpace],
+    [HealthMaxMinutes])
   VALUES (
     @Name,
     @Enabled,
@@ -7755,7 +7770,12 @@ AS
     @ErrorCount,
     @RunCount,
     @RunTimeAvg,
-    @RunTimeMax)
+    @RunTimeMax,
+    @AssemblyName,
+    @AutoStart,
+    @HealthTime,
+    @NameSpace,
+    @HealthMaxMinutes)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -7777,7 +7797,12 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateService
   @ErrorCount int,
   @RunCount int,
   @RunTimeAvg int,
-  @RunTimeMax int
+  @RunTimeMax int,
+  @AssemblyName varchar(1000),
+  @AutoStart bit,
+  @HealthTime datetime,
+  @NameSpace varchar(1000),
+  @HealthMaxMinutes int
 )
 AS
   SET NOCOUNT OFF;
@@ -7793,7 +7818,12 @@ AS
     [ErrorCount] = @ErrorCount,
     [RunCount] = @RunCount,
     [RunTimeAvg] = @RunTimeAvg,
-    [RunTimeMax] = @RunTimeMax
+    [RunTimeMax] = @RunTimeMax,
+    [AssemblyName] = @AssemblyName,
+    [AutoStart] = @AutoStart,
+    [HealthTime] = @HealthTime,
+    [NameSpace] = @NameSpace,
+    [HealthMaxMinutes] = @HealthMaxMinutes
   WHERE ([ServiceID] = @ServiceID)
 GO
 
@@ -20354,7 +20384,12 @@ AS
     [ErrorCount],
     [RunCount],
     [RunTimeAvg],
-    [RunTimeMax]
+    [RunTimeMax],
+    [AssemblyName],
+    [AutoStart],
+    [HealthTime],
+    [NameSpace],
+    [HealthMaxMinutes]
   FROM [dbo].[Services]
   WHERE ([ServiceID] = @ServiceID)
 GO
@@ -20376,6 +20411,11 @@ CREATE PROCEDURE dbo.uspGeneratedInsertService
   @RunCount int,
   @RunTimeAvg int,
   @RunTimeMax int,
+  @AssemblyName varchar(1000),
+  @AutoStart bit,
+  @HealthTime datetime,
+  @NameSpace varchar(1000),
+  @HealthMaxMinutes int,
   @Identity int OUT
 )
 AS
@@ -20392,7 +20432,12 @@ AS
     [ErrorCount],
     [RunCount],
     [RunTimeAvg],
-    [RunTimeMax])
+    [RunTimeMax],
+    [AssemblyName],
+    [AutoStart],
+    [HealthTime],
+    [NameSpace],
+    [HealthMaxMinutes])
   VALUES (
     @Name,
     @Enabled,
@@ -20404,7 +20449,12 @@ AS
     @ErrorCount,
     @RunCount,
     @RunTimeAvg,
-    @RunTimeMax)
+    @RunTimeMax,
+    @AssemblyName,
+    @AutoStart,
+    @HealthTime,
+    @NameSpace,
+    @HealthMaxMinutes)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -20426,7 +20476,12 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateService
   @ErrorCount int,
   @RunCount int,
   @RunTimeAvg int,
-  @RunTimeMax int
+  @RunTimeMax int,
+  @AssemblyName varchar(1000),
+  @AutoStart bit,
+  @HealthTime datetime,
+  @NameSpace varchar(1000),
+  @HealthMaxMinutes int
 )
 AS
   SET NOCOUNT OFF;
@@ -20442,7 +20497,12 @@ AS
     [ErrorCount] = @ErrorCount,
     [RunCount] = @RunCount,
     [RunTimeAvg] = @RunTimeAvg,
-    [RunTimeMax] = @RunTimeMax
+    [RunTimeMax] = @RunTimeMax,
+    [AssemblyName] = @AssemblyName,
+    [AutoStart] = @AutoStart,
+    [HealthTime] = @HealthTime,
+    [NameSpace] = @NameSpace,
+    [HealthMaxMinutes] = @HealthMaxMinutes
   WHERE ([ServiceID] = @ServiceID)
 GO
 
@@ -33003,7 +33063,12 @@ AS
     [ErrorCount],
     [RunCount],
     [RunTimeAvg],
-    [RunTimeMax]
+    [RunTimeMax],
+    [AssemblyName],
+    [AutoStart],
+    [HealthTime],
+    [NameSpace],
+    [HealthMaxMinutes]
   FROM [dbo].[Services]
   WHERE ([ServiceID] = @ServiceID)
 GO
@@ -33025,6 +33090,11 @@ CREATE PROCEDURE dbo.uspGeneratedInsertService
   @RunCount int,
   @RunTimeAvg int,
   @RunTimeMax int,
+  @AssemblyName varchar(1000),
+  @AutoStart bit,
+  @HealthTime datetime,
+  @NameSpace varchar(1000),
+  @HealthMaxMinutes int,
   @Identity int OUT
 )
 AS
@@ -33041,7 +33111,12 @@ AS
     [ErrorCount],
     [RunCount],
     [RunTimeAvg],
-    [RunTimeMax])
+    [RunTimeMax],
+    [AssemblyName],
+    [AutoStart],
+    [HealthTime],
+    [NameSpace],
+    [HealthMaxMinutes])
   VALUES (
     @Name,
     @Enabled,
@@ -33053,7 +33128,12 @@ AS
     @ErrorCount,
     @RunCount,
     @RunTimeAvg,
-    @RunTimeMax)
+    @RunTimeMax,
+    @AssemblyName,
+    @AutoStart,
+    @HealthTime,
+    @NameSpace,
+    @HealthMaxMinutes)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -33075,7 +33155,12 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateService
   @ErrorCount int,
   @RunCount int,
   @RunTimeAvg int,
-  @RunTimeMax int
+  @RunTimeMax int,
+  @AssemblyName varchar(1000),
+  @AutoStart bit,
+  @HealthTime datetime,
+  @NameSpace varchar(1000),
+  @HealthMaxMinutes int
 )
 AS
   SET NOCOUNT OFF;
@@ -33091,7 +33176,12 @@ AS
     [ErrorCount] = @ErrorCount,
     [RunCount] = @RunCount,
     [RunTimeAvg] = @RunTimeAvg,
-    [RunTimeMax] = @RunTimeMax
+    [RunTimeMax] = @RunTimeMax,
+    [AssemblyName] = @AssemblyName,
+    [AutoStart] = @AutoStart,
+    [HealthTime] = @HealthTime,
+    [NameSpace] = @NameSpace,
+    [HealthMaxMinutes] = @HealthMaxMinutes
   WHERE ([ServiceID] = @ServiceID)
 GO
 
@@ -45652,7 +45742,12 @@ AS
     [ErrorCount],
     [RunCount],
     [RunTimeAvg],
-    [RunTimeMax]
+    [RunTimeMax],
+    [AssemblyName],
+    [AutoStart],
+    [HealthTime],
+    [NameSpace],
+    [HealthMaxMinutes]
   FROM [dbo].[Services]
   WHERE ([ServiceID] = @ServiceID)
 GO
@@ -45674,6 +45769,11 @@ CREATE PROCEDURE dbo.uspGeneratedInsertService
   @RunCount int,
   @RunTimeAvg int,
   @RunTimeMax int,
+  @AssemblyName varchar(1000),
+  @AutoStart bit,
+  @HealthTime datetime,
+  @NameSpace varchar(1000),
+  @HealthMaxMinutes int,
   @Identity int OUT
 )
 AS
@@ -45690,7 +45790,12 @@ AS
     [ErrorCount],
     [RunCount],
     [RunTimeAvg],
-    [RunTimeMax])
+    [RunTimeMax],
+    [AssemblyName],
+    [AutoStart],
+    [HealthTime],
+    [NameSpace],
+    [HealthMaxMinutes])
   VALUES (
     @Name,
     @Enabled,
@@ -45702,7 +45807,12 @@ AS
     @ErrorCount,
     @RunCount,
     @RunTimeAvg,
-    @RunTimeMax)
+    @RunTimeMax,
+    @AssemblyName,
+    @AutoStart,
+    @HealthTime,
+    @NameSpace,
+    @HealthMaxMinutes)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -45724,7 +45834,12 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateService
   @ErrorCount int,
   @RunCount int,
   @RunTimeAvg int,
-  @RunTimeMax int
+  @RunTimeMax int,
+  @AssemblyName varchar(1000),
+  @AutoStart bit,
+  @HealthTime datetime,
+  @NameSpace varchar(1000),
+  @HealthMaxMinutes int
 )
 AS
   SET NOCOUNT OFF;
@@ -45740,7 +45855,12 @@ AS
     [ErrorCount] = @ErrorCount,
     [RunCount] = @RunCount,
     [RunTimeAvg] = @RunTimeAvg,
-    [RunTimeMax] = @RunTimeMax
+    [RunTimeMax] = @RunTimeMax,
+    [AssemblyName] = @AssemblyName,
+    [AutoStart] = @AutoStart,
+    [HealthTime] = @HealthTime,
+    [NameSpace] = @NameSpace,
+    [HealthMaxMinutes] = @HealthMaxMinutes
   WHERE ([ServiceID] = @ServiceID)
 GO
 
@@ -58301,7 +58421,12 @@ AS
     [ErrorCount],
     [RunCount],
     [RunTimeAvg],
-    [RunTimeMax]
+    [RunTimeMax],
+    [AssemblyName],
+    [AutoStart],
+    [HealthTime],
+    [NameSpace],
+    [HealthMaxMinutes]
   FROM [dbo].[Services]
   WHERE ([ServiceID] = @ServiceID)
 GO
@@ -58323,6 +58448,11 @@ CREATE PROCEDURE dbo.uspGeneratedInsertService
   @RunCount int,
   @RunTimeAvg int,
   @RunTimeMax int,
+  @AssemblyName varchar(1000),
+  @AutoStart bit,
+  @HealthTime datetime,
+  @NameSpace varchar(1000),
+  @HealthMaxMinutes int,
   @Identity int OUT
 )
 AS
@@ -58339,7 +58469,12 @@ AS
     [ErrorCount],
     [RunCount],
     [RunTimeAvg],
-    [RunTimeMax])
+    [RunTimeMax],
+    [AssemblyName],
+    [AutoStart],
+    [HealthTime],
+    [NameSpace],
+    [HealthMaxMinutes])
   VALUES (
     @Name,
     @Enabled,
@@ -58351,7 +58486,12 @@ AS
     @ErrorCount,
     @RunCount,
     @RunTimeAvg,
-    @RunTimeMax)
+    @RunTimeMax,
+    @AssemblyName,
+    @AutoStart,
+    @HealthTime,
+    @NameSpace,
+    @HealthMaxMinutes)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -58373,7 +58513,12 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateService
   @ErrorCount int,
   @RunCount int,
   @RunTimeAvg int,
-  @RunTimeMax int
+  @RunTimeMax int,
+  @AssemblyName varchar(1000),
+  @AutoStart bit,
+  @HealthTime datetime,
+  @NameSpace varchar(1000),
+  @HealthMaxMinutes int
 )
 AS
   SET NOCOUNT OFF;
@@ -58389,7 +58534,12 @@ AS
     [ErrorCount] = @ErrorCount,
     [RunCount] = @RunCount,
     [RunTimeAvg] = @RunTimeAvg,
-    [RunTimeMax] = @RunTimeMax
+    [RunTimeMax] = @RunTimeMax,
+    [AssemblyName] = @AssemblyName,
+    [AutoStart] = @AutoStart,
+    [HealthTime] = @HealthTime,
+    [NameSpace] = @NameSpace,
+    [HealthMaxMinutes] = @HealthMaxMinutes
   WHERE ([ServiceID] = @ServiceID)
 GO
 

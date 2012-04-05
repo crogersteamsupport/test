@@ -23,14 +23,26 @@ namespace TeamSupport.Data
     {
       get
       {
-        return LastName + ", " + FirstName;
+        StringBuilder builder = new StringBuilder();
+        if (!string.IsNullOrEmpty(this.FirstName))
+        {
+          builder.Append(this.FirstName);
+        }
+
+        if (!string.IsNullOrEmpty(this.LastName))
+        {
+          if (builder.Length > 0) builder.Append(" ");
+          builder.Append(this.LastName);
+        }
+
+        return builder.Length > 0 ? builder.ToString() : "Unknown";
       }
     }
     public string FirstLastName
     {
       get
       {
-        return FirstName + " " + LastName;
+        return DisplayName;
       }
     }
 

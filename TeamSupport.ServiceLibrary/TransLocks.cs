@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 
 namespace TeamSupport.ServiceLibrary
 {
+  [Serializable]
   public class TransLocks : ServiceThread
   {
     public override void Run()
@@ -61,9 +62,10 @@ ORDER BY L.request_session_id DESC
       }
     }
 
+    /*
     public override string ServiceName
     {
       get { return "TransLocks"; }
-    }
+    }*/
   }
 }
