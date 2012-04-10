@@ -363,20 +363,21 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public bool SetChatUser(int userID, bool value)
+        public string SetChatUser(int userID, bool value)
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             LoginUser loginUser = TSAuthentication.GetLoginUser();
             Organization organization = Organizations.GetOrganization(loginUser, loginUser.OrganizationID);
-            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
-            if (!TSAuthentication.IsSystemAdmin) return !value;
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value.ToString();
+            if (!TSAuthentication.IsSystemAdmin) return value.ToString();
 
             if (value && Organizations.GetChatCount(loginUser, loginUser.OrganizationID) >= organization.ChatSeats)
-                return !value;
+                return "error";
 
             user.IsChatUser = value;
             user.Collection.Save();
-            return user.IsChatUser;
+            return user.IsChatUser.ToString();
+        
         }
 
         [WebMethod]

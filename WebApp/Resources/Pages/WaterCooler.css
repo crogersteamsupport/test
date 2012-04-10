@@ -1,3 +1,17 @@
 ﻿.wc-reply { padding: .5em .5em; margin: .25em 0;}
 .wc-thread { margin-top: 2em;}
 
+.boxsizingBorder {
+box-sizing: border-box;
+-webkit-box-sizing:border-box;
+-moz-box-sizing: border-box;
+-ms-box-sizing: border-box;
+}
+
+textarea
+{
+    border:none;
+    width:100%;
+    margin:5px 0;
+    padding:3px;
+}

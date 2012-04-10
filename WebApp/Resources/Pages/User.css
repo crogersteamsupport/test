@@ -17,10 +17,10 @@
     .user-name-value .ts-icon-saved { margin-top: 1px; margin-left: .5em; float:left; display:none;} 
     .user-name-value .ticket-name-value-noproperty { margin-left: 0;}
 
-    #userAddressList,#userPhoneList, #userGroups{padding:0 .75em .5em 0; float:left}
-    .user-address div, .user-address h3, .user-phone{line-height:16px;}
+    #userAddressList,#userPhoneList, #userGroups{padding:0 .75em .5em 0; float:left; width: 250px}
+    .user-address div, .user-address h3, .user-phone{line-height:16px; clear: both;}
     .user-address-desc {font-weight: bold;}
-    .user-address {margin: 0 0 .5em 0; float: left}
+    .user-address {margin: 0 0 1em 0; /*float: left*/}
     .address-delete { color: Red; font-weight: bold; margin-left: .5em; cursor: pointer}
     
     .user-profile-edit { float: right;}
@@ -49,6 +49,7 @@
     .user-phone-edit .ts-icon { float:left; margin-left: .5em; cursor:pointer; }
     .phone-delete { color: Red; font-weight: bold; margin-left: .5em; cursor: pointer}
     
+    .user-group { clear: both }
     .group-delete { color: Red; font-weight: bold; margin-left: .5em; cursor: pointer}    
     .group-name {float: left}
     .ui-widget .ui-autocomplete-input, .ui-autocomplete-input, input.text{ width: 500px !important; }        
@@ -71,8 +72,9 @@
     h1.no-margin{ margin: 0px 0px 1em 0px; }
 
     .fleft { float: left}
-    
     .clearfix { clear:both; height: 1px; }
-    
+
+    .disabledlink{text-decoration:none; cursor:default }
+    a.disabledlink:hover   { text-decoration: none }
     #user-top-info img { display:none;}
     #user-top-info .ts-icon-saved {display: none;}

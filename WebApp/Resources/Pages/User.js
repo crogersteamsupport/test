@@ -15,7 +15,6 @@ function onShow() {
   userPage.refresh();
 };
 
-
 function DialogClosed(sender, args) {
     sender.remove_close(DialogClosed);
     window.location = window.location;
@@ -26,19 +25,37 @@ function ShowDialog(wnd) {
     wnd.show();
 }
 
-
 UserPage = function () {
     var _user = null;
 
-    $('#btnRefresh')
-  .click(function (e) {
-      e.preventDefault();
-      window.location = window.location;
-  })
-  .toggle(window.location.hostname.indexOf('127.0.0.1') > -1);
-
     $('button').button();
+
     $('a').addClass('ui-state-default ts-link');
+
+    $('.ts-section').hover(function (e) {
+        e.preventDefault();
+        $(this).find('.user-profile-edit').show();
+    }, function (e) {
+        e.preventDefault();
+        $('.user-profile-edit').hide();
+    });
+
+    $('.ts-section .collapsable')
+    .prepend('<span class="ui-icon ui-icon-triangle-1-e">')
+    .click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var icon = $(this).find('.ui-icon');
+        if (icon.hasClass('ui-icon-triangle-1-e')) {
+            icon.removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
+            $(this).next().hide();
+        }
+        else {
+            icon.removeClass('ui-icon-triangle-1-s').addClass('ui-icon-triangle-1-e');
+            $(this).next().show();
+        }
+    });
+
     var userID = top.Ts.Utils.getQueryValue("userid", window);
     var orgID;
 
@@ -76,43 +93,19 @@ UserPage = function () {
 
     });
 
-
-    GetAddresses();
-    GetPhoneNumbers();
-    GetGroups();
-
-
-    $('.ts-section').hover(function (e) {
-        e.preventDefault();
-        $(this).find('.user-profile-edit').show();
-    }, function (e) {
-        e.preventDefault();
-        $('.user-profile-edit').hide();
-    });
-
-    $('.ts-section .collapsable')
-    .prepend('<span class="ui-icon ui-icon-triangle-1-e">')
-    .click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var icon = $(this).find('.ui-icon');
-        if (icon.hasClass('ui-icon-triangle-1-e')) {
-            icon.removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
-            $(this).next().hide();
-        }
-        else {
-            icon.removeClass('ui-icon-triangle-1-s').addClass('ui-icon-triangle-1-e');
-            $(this).next().show();
-        }
-    });
-
-    var canEdit = top.Ts.System.User.UserID === userID || top.Ts.System.User.IsSystemAdmin;
+    var canEdit = top.Ts.System.User.UserID == userID || top.Ts.System.User.IsSystemAdmin;
+    var isSysAdmin = top.Ts.System.User.IsSystemAdmin;
     if (canEdit) {
-//        $('.ts-icon-edit').click(function (e) {
-//            e.preventDefault();
-//            e.stopPropagation();
-//            ShowDialog(top.GetUserDialog(orgID, userID));
-//        });
+
+        if (!isSysAdmin) {
+            $('#userActive').removeClass('ui-state-default ts-link');
+            $('#userActive').addClass('disabledlink');
+            $('#userSysAdmin').removeClass('ui-state-default ts-link');
+            $('#userSysAdmin').addClass('disabledlink');
+            $('#chatUser').removeClass('ui-state-default ts-link');
+            $('#chatUser').addClass('disabledlink');
+        }
+
 
         $('.user-address-add').click(function (e) {
             e.preventDefault();
@@ -123,46 +116,6 @@ UserPage = function () {
         $('.user-phone-add').click(function (e) {
             e.preventDefault();
             e.stopPropagation();
-
-            //            var header = $(this).parent().hide();
-            //            var container = $('<div>')
-            //                .addClass('user-title-edit')
-            //                .insertAfter(header);
-
-            //            $('<input type="text">')
-            //                .addClass('ui-widget-content ui-corner-all')
-            //                .val('number')
-            //                .appendTo(container)
-            //                .focus();
-            //            $('<input type="text">')
-            //                .addClass('ui-widget-content ui-corner-all')
-            //                .val('extension')
-            //                .appendTo(container)
-            //                .focus();
-
-            //            $('<span>')
-            //                .addClass('ts-icon ts-icon-save')
-            //                .click(function (e) {
-            //                    $(this).closest('div').remove();
-            //                    header.show().find('img').show();
-            //                    top.Ts.Services.Users.SaveUserTitle(_user.UserID, $(this).prev().val(), function (result) {
-            //                        header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-            //                        $('#userTitle').html(result);
-            //                    },
-            //                  function (error) {
-            //                      header.show().find('img').hide();
-            //                      alert('There was an error saving the users title.');
-            //                  });
-            //                })
-            //                .appendTo(container)
-
-            //            $('<span>')
-            //                .addClass('ts-icon ts-icon-cancel')
-            //                .click(function (e) {
-            //                    $(this).closest('div').remove();
-            //                    header.show();
-            //                })
-            //                .appendTo(container)
             ShowDialog(top.GetPhoneDialog(userID, 22));
 
         });
@@ -172,13 +125,8 @@ UserPage = function () {
             e.stopPropagation();
             ShowDialog(top.GetSelectGroupDialog(userID, 22));
         });
-    }
-    else {
-        $('.ts-icon-edit').remove();
-        $('.ts-add').remove();
-    }
 
-    $('#userPhotoEdit')
+        $('#userPhotoEdit')
       .click(function (e) {
           e.preventDefault();
           ShowDialog(top.GetProfileImageDialog(orgID, userID));
@@ -190,7 +138,7 @@ UserPage = function () {
           //            });
       });
 
-    $('#UserName')
+        $('#UserName')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
         e.preventDefault();
@@ -256,7 +204,7 @@ UserPage = function () {
         .appendTo(container)
     });
 
-    $('#userInfo')
+        $('#userInfo')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
         e.preventDefault();
@@ -297,7 +245,7 @@ UserPage = function () {
         .appendTo(container)
     });
 
-    $('#userTitle')
+        $('#userTitle')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
         e.preventDefault();
@@ -337,7 +285,7 @@ UserPage = function () {
         .appendTo(container)
     });
 
-    $('#editEmail')
+        $('#editEmail')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
         e.preventDefault();
@@ -381,21 +329,15 @@ UserPage = function () {
         .appendTo(container)
     });
 
-    $('#editPhoneNo')
-      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-      .click(function (e) {
-          e.preventDefault();
-          alert("test");
-      });
-
-
-    $('#userActive')
+        $('#userActive')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
           e.preventDefault();
           var item = $(this);
-          item.next().show();
-          top.Ts.Services.Users.SetIsActive(_user.UserID, (item.text() !== 'Yes'),
+
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetIsActive(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
               item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
@@ -403,9 +345,10 @@ UserPage = function () {
               alert('There was an error saving the user active status.');
               item.next().hide();
           });
+          }
       });
 
-    $('#userEmailNotify')
+        $('#userEmailNotify')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
           e.preventDefault();
@@ -422,7 +365,7 @@ UserPage = function () {
       });
 
 
-    $('#userSubscribeTickets')
+        $('#userSubscribeTickets')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
           e.preventDefault();
@@ -438,7 +381,7 @@ UserPage = function () {
           });
       });
 
-    $('#userSubscribeActions')
+        $('#userSubscribeActions')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
           e.preventDefault();
@@ -454,7 +397,7 @@ UserPage = function () {
           });
       });
 
-    $('#userAutoSubscribe')
+        $('#userAutoSubscribe')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
           e.preventDefault();
@@ -470,7 +413,7 @@ UserPage = function () {
           });
       });
 
-    $('#userGroupNotify')
+        $('#userGroupNotify')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
           e.preventDefault();
@@ -486,13 +429,14 @@ UserPage = function () {
           });
       });
 
-    $('#userSysAdmin')
+        $('#userSysAdmin')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
           e.preventDefault();
           var item = $(this);
-          item.next().show();
-          top.Ts.Services.Users.SetSysAdmin(_user.UserID, (item.text() !== 'Yes'),
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetSysAdmin(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
               item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
@@ -500,31 +444,34 @@ UserPage = function () {
               alert('There was an error saving the user system admin status.');
               item.next().hide();
           });
+          }
       });
 
-    $('#chatUser')
+        $('#chatUser')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
           e.preventDefault();
           var item = $(this);
-          item.next().show();
-          top.Ts.Services.Users.SetChatUser(_user.UserID, (item.text() !== 'Yes'),
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChatUser(_user.UserID, (item.text() !== 'Yes'),
           function (result) {
-              if (result = item.text() !== 'Yes') {
+              if (result == 'error') {
                   item.text('No').next().hide().next().show().delay(800).fadeOut(400);
                   alert("You have exceeded your chat licenses.  Please purchase more seats to add additional chat users.");
               }
               else
-                  item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                  item.text((result == "True" ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
               alert('There was an error saving the user chat status.');
               item.next().hide();
           });
+          }
       });
 
 
-    $('#userTimeZone')
+        $('#userTimeZone')
         .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
         .click(function (e) {
             e.preventDefault();
@@ -569,7 +516,7 @@ UserPage = function () {
             select.combobox('search', '');
         });
 
-    $('#userDateFormat')
+        $('#userDateFormat')
         .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
         .click(function (e) {
             e.preventDefault();
@@ -615,6 +562,46 @@ UserPage = function () {
             select.combobox('search', '');
         });
 
+    }
+    else {
+        $('.ts-icon-edit').remove();
+        $('.ts-add').remove();
+        $('#userPhotoEdit').remove();
+        $('#userTitle').removeClass('ui-state-default ts-link');
+        $('#userTitle').addClass('disabledlink');
+        $('#userTimeZone').removeClass('ui-state-default ts-link');
+        $('#userTimeZone').addClass('disabledlink');
+        $('#userLastLogin').removeClass('ui-state-default ts-link');
+        $('#userLastLogin').addClass('disabledlink');
+        $('#userActive').removeClass('ui-state-default ts-link');
+        $('#userActive').addClass('disabledlink');
+        $('#userEmailNotify').removeClass('ui-state-default ts-link');
+        $('#userEmailNotify').addClass('disabledlink');
+        $('#userSubscribeTickets').removeClass('ui-state-default ts-link');
+        $('#userSubscribeTickets').addClass('disabledlink');
+        $('#userSubscribeActions').removeClass('ui-state-default ts-link');
+        $('#userSubscribeActions').addClass('disabledlink');
+        $('#userAutoSubscribe').removeClass('ui-state-default ts-link');
+        $('#userAutoSubscribe').addClass('disabledlink');
+        $('#userGroupNotify').removeClass('ui-state-default ts-link');
+        $('#userGroupNotify').addClass('disabledlink');
+        $('#userDateFormat').removeClass('ui-state-default ts-link');
+        $('#userDateFormat').addClass('disabledlink');
+        $('#userDateFormat').removeClass('ui-state-default ts-link');
+        $('#userDateFormat').addClass('disabledlink');
+        $('#userSysAdmin').removeClass('ui-state-default ts-link');
+        $('#userSysAdmin').addClass('disabledlink');
+        $('#chatUser').removeClass('ui-state-default ts-link');
+        $('#chatUser').addClass('disabledlink');
+        $('#userInfo').removeClass('ui-state-default ts-link');
+        $('#userInfo').addClass('disabledlink');
+    }
+
+    GetAddresses();
+    GetPhoneNumbers();
+    GetGroups();
+
+
     function removeComboBoxes() {
         $('.ticket-combobox').prev().show().next().remove();
     }
@@ -639,8 +626,8 @@ UserPage = function () {
                             .addClass('link-strong')
                             .text(addresses[i].Description)
                             .appendTo(header);
-
-                $('<span>')
+                if (canEdit) {
+                    $('<span>')
                 .addClass('fleft ts-icon ts-icon-delete')
                 .click(function (e) {
                     if (confirm('Are you sure you would like to remove this address?')) {
@@ -653,7 +640,7 @@ UserPage = function () {
                         $(this).hide();
                 }).hide()
                 .appendTo(header);
-
+                }
 
                 var addr1 = $('<div>').addClass('user-address-st1')
                                 .text(addresses[i].Addr1)
@@ -694,12 +681,13 @@ UserPage = function () {
                             $(this).find('.ts-icon').hide();
                         })
                         .data('data', phones[i].PhoneID);
+
                 var link = $('<span>')
                                 .addClass('fleft')
                                 .html('<strong>' + phones[i].PhoneTypeName + '</strong>: ' + phones[i].Number + '  ' + (phones[i].Extension == '' ? '' : '<strong>Ext:</strong> ' + phones[i].Extension))
                                 .appendTo(header);
-
-                $('<span>')
+                if (canEdit) {
+                    $('<span>')
                 .addClass('fleft ts-icon ts-icon-delete')
                 .click(function (e) {
                     if (confirm('Are you sure you would like to remove this phone number?')) {
@@ -712,7 +700,7 @@ UserPage = function () {
                         $(this).hide();
                 }).hide()
                 .appendTo(header);
-
+                }
                 $('#userPhoneList').append(header);
             }
             $('#userPhoneList').prepend(phonelist);
@@ -722,7 +710,6 @@ UserPage = function () {
     function GetGroups() {
         top.Ts.Services.Users.GetUserGroups(userID, function (groups) {
             var groupslist = '';
-
             if (groups.length === 0) {
                 groupslist = '<div>There are no groups to display.</div>';
             }
@@ -739,8 +726,8 @@ UserPage = function () {
                                 .addClass('group-name')
                                 .text(groups[i].Name)
                                 .appendTo(header);
-
-                $('<span>')
+                if (canEdit) {
+                    $('<span>')
                 .addClass('fleft ts-icon ts-icon-delete')
                 .click(function (e) {
                     if (confirm('Are you sure you would like to remove this group?')) {
@@ -753,7 +740,7 @@ UserPage = function () {
                         $(this).hide();
                 }).hide()
                 .appendTo(header);
-
+                }
 
                 $('#userGroups').append(header);
             }
@@ -761,15 +748,9 @@ UserPage = function () {
         });
     }
 
-    //  $('.dialog-profile').dialog({
-    //    autoOpen: true
-
-    //  });
-
-
     $('.loading-section').hide().next().show();
-};
 
+};
 
 UserPage.prototype = {
   constructor: UserPage,
