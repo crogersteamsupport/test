@@ -51,14 +51,14 @@ Namespace TeamSupport
                                 Return False
                             End If
 
-                            Dim TagID As String = GetTagID(Key, CompanyName, TagToMatch, ParentOrgID)
+                            Dim TagID As String = GetTagID(Key, CompanyName, TagToMatch.Trim(), ParentOrgID)
 
                             If TagID IsNot Nothing Then
                                 TagIDs.Add(TagID)
                             End If
                         Next
                     Else
-                        Dim TagID As String = GetTagID(Key, CompanyName, TagsToMatch, ParentOrgID)
+                        Dim TagID As String = GetTagID(Key, CompanyName, TagsToMatch.Trim(), ParentOrgID)
 
                         If TagID IsNot Nothing Then
                             TagIDs.Add(TagID)
@@ -168,8 +168,6 @@ Namespace TeamSupport
                             End If
 
                         Next
-                    Else 'no tags so we can't query any customers
-                        Return True
                     End If
 
                 Catch ex As Exception

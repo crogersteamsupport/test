@@ -103,7 +103,7 @@ Namespace TeamSupport
                     Log.Write("Finished updating people information")
                 End If
 
-                Return True
+                Return Not SyncError
             End Function
 
             Private Function ParseBBCompanyXML(ByRef CompaniesToSync As XmlDocument) As List(Of CompanyData)

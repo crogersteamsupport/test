@@ -131,6 +131,7 @@ Namespace TeamSupport
                             'OK, we have a major error binding the query.
                             BindingRanOK = False
                             Log.Write("Error when attempting to bind the Query: " + ex.Message)
+                            SyncError = True
                         End Try
 
 
@@ -189,12 +190,7 @@ Namespace TeamSupport
                             End While
 
                             'check for existence of custom fields to sync
-                            Try
-                                GetCustomFields("Account", TypeString, LastUpdateSFFormat)
-                            Catch ex As Exception
-                                Log.Write("Error running GetCustomFields: " & ex.Message)
-                                Log.Write(ex.StackTrace)
-                            End Try
+                            GetCustomFields("Account", TypeString, LastUpdateSFFormat)
 
                             Log.Write("All done updating company information.")
 
@@ -227,7 +223,7 @@ Namespace TeamSupport
                     Binding.logout()
                     Binding.logoutAsync()
 
-                    Return True
+                    Return Not SyncError
                 Else
                     If LoginReturn.ToLower() = "password expired" Or LoginReturn.ToLower().Contains("invalid_login") Then
                         ErrorCode = IntegrationError.InvalidLogin
@@ -409,12 +405,7 @@ Namespace TeamSupport
                         End While
 
                         'check for existence of custom fields to sync
-                        Try
-                            GetCustomFields("Contact", TypeString, LastUpdate)
-                        Catch ex As Exception
-                            Log.Write("Error running GetCustomFields: " & ex.Message)
-                            Log.Write(ex.StackTrace)
-                        End Try
+                        GetCustomFields("Contact", TypeString, LastUpdate)
 
                     Else
                         Log.Write("No records found.")
@@ -426,7 +417,7 @@ Namespace TeamSupport
                 Catch ex As Exception
                     Log.Write("Failed to execute query successfully, error message was: " & ex.Message)
                     ErrorCode = IntegrationError.Unknown
-
+                    SyncError = True
                 End Try
             End Sub
 
@@ -508,6 +499,7 @@ Namespace TeamSupport
                         done = True
 
                         Log.Write("Error in GetProductAndLicenseInfo. " + ex.Message)
+                        SyncError = True
                     End Try
 
                     If qr.size > 0 Then
@@ -614,6 +606,7 @@ Namespace TeamSupport
 
                                 Catch ex As Exception
                                     Log.Write("Error updating product " & i.ToString() & ": " & ex.Message & " " & ex.StackTrace)
+                                    SyncError = True
                                 End Try
 
                             Next
@@ -632,15 +625,16 @@ Namespace TeamSupport
 
                 Catch ex As Exception
                     Log.Write("Error in GetProductAndLicenseInfo : Failed to execute succesfully, error message was: " & ex.Message & " " & ex.StackTrace)
+                    SyncError = True
                 End Try
             End Sub
 
 
             Private Sub GetCustomFields(ByVal objType As String, ByVal TypeString As String, ByVal LastUpdate As String)
-                Dim customFieldList As String = Nothing
-                Dim theseFields As New CRMLinkFields(User)
-
                 Try
+                    Dim customFieldList As String = Nothing
+                    Dim theseFields As New CRMLinkFields(User)
+
                     theseFields.LoadByObjectType(objType, CRMLinkRow.CRMLinkID)
 
                     If theseFields.Count > 0 Then
@@ -664,93 +658,88 @@ Namespace TeamSupport
 
                         Log.Write(customQuery)
 
-                        Try
-                            Dim qr As QueryResult = Binding.query(customQuery)
+                        Dim qr As QueryResult = Binding.query(customQuery)
 
-                            Log.Write(qr.size.ToString() & " records with custom fields to sync.")
+                        Log.Write(qr.size.ToString() & " records with custom fields to sync.")
 
-                            For Each record As sObject In qr.records
-                                Dim accountID As String
+                        For Each record As sObject In qr.records
+                            Dim accountID As String
 
-                                'find the object in OUR system
+                            'find the object in OUR system
+                            If objType = "Account" Then
+                                accountID = record.Id
+
+                            ElseIf objType = "Contact" Then
+                                accountID = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName = "Account")("sf:Id").InnerText
+
+                            Else
+                                Return
+                            End If
+
+                            Dim findAccount As New Organizations(User)
+                            findAccount.LoadByCRMLinkID(accountID, CRMLinkRow.OrganizationID)
+
+                            If findAccount.Count > 0 Then
+                                Dim thisAccount As Organization = findAccount(0)
+
+                                'update fields
                                 If objType = "Account" Then
-                                    accountID = record.Id
+                                    For Each thisField As Xml.XmlElement In record.Any
+                                        If thisField.InnerText <> "" Then
+                                            Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
 
-                                ElseIf objType = "Contact" Then
-                                    accountID = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName = "Account")("sf:Id").InnerText
+                                            If thisMapping IsNot Nothing Then
+                                                If thisMapping.CustomFieldID IsNot Nothing Then
+                                                    UpdateCustomValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, thisField.InnerText)
 
-                                Else
-                                    Return
-                                End If
+                                                ElseIf thisMapping.TSFieldName IsNot Nothing Then
+                                                    thisAccount.Row(thisMapping.TSFieldName) = thisField.InnerText
+                                                    thisAccount.BaseCollection.Save()
+                                                End If
+                                            End If
+                                        End If
+                                    Next
 
-                                Dim findAccount As New Organizations(User)
-                                findAccount.LoadByCRMLinkID(accountID, CRMLinkRow.OrganizationID)
+                                Else 'if it's not an account, it's a contact (otherwise we would have returned above)
+                                    Dim email As String = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName.ToLower() = "email").InnerText
 
-                                If findAccount.Count > 0 Then
-                                    Dim thisAccount As Organization = findAccount(0)
+                                    Dim findContact As New Users(User)
+                                    Dim thisContact As User = Nothing
 
-                                    'update fields
-                                    If objType = "Account" Then
+                                    findContact.LoadByOrganizationID(thisAccount.OrganizationID, False)
+                                    thisContact = findContact.FindByEmail(email)
+
+                                    If thisContact IsNot Nothing Then
+
                                         For Each thisField As Xml.XmlElement In record.Any
                                             If thisField.InnerText <> "" Then
                                                 Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
 
                                                 If thisMapping IsNot Nothing Then
                                                     If thisMapping.CustomFieldID IsNot Nothing Then
-                                                        UpdateCustomValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, thisField.InnerText)
+                                                        UpdateCustomValue(thisMapping.CustomFieldID, thisContact.UserID, thisField.InnerText)
 
                                                     ElseIf thisMapping.TSFieldName IsNot Nothing Then
-                                                        thisAccount.Row(thisMapping.TSFieldName) = thisField.InnerText
-                                                        thisAccount.BaseCollection.Save()
+                                                        thisContact.Row(thisMapping.TSFieldName) = thisField.InnerText
+                                                        thisContact.BaseCollection.Save()
                                                     End If
                                                 End If
                                             End If
+
                                         Next
 
-                                    Else 'if it's not an account, it's a contact (otherwise we would have returned above)
-                                        Dim email As String = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName.ToLower() = "email").InnerText
-
-                                        Dim findContact As New Users(User)
-                                        Dim thisContact As User = Nothing
-
-                                        findContact.LoadByOrganizationID(thisAccount.OrganizationID, False)
-                                        thisContact = findContact.FindByEmail(email)
-
-                                        If thisContact IsNot Nothing Then
-
-                                            For Each thisField As Xml.XmlElement In record.Any
-                                                If thisField.InnerText <> "" Then
-                                                    Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
-
-                                                    If thisMapping IsNot Nothing Then
-                                                        If thisMapping.CustomFieldID IsNot Nothing Then
-                                                            UpdateCustomValue(thisMapping.CustomFieldID, thisContact.UserID, thisField.InnerText)
-
-                                                        ElseIf thisMapping.TSFieldName IsNot Nothing Then
-                                                            thisContact.Row(thisMapping.TSFieldName) = thisField.InnerText
-                                                            thisContact.BaseCollection.Save()
-                                                        End If
-                                                    End If
-                                                End If
-
-                                            Next
-
-                                        End If
-
                                     End If
+
                                 End If
+                            End If
 
-                            Next
-                        Catch e As Exception
-                            Log.Write("Error caught in GetCustomFields: " & e.Message)
-                            Log.Write(e.StackTrace)
-                        End Try
-
+                        Next
                     End If
 
                 Catch ex As Exception
                     Log.Write("Exception caught in GetCustomFields: " & ex.Message)
                     Log.Write(ex.StackTrace)
+                    SyncError = True
                 End Try
             End Sub
 
