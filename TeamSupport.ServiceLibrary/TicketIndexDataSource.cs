@@ -7,6 +7,7 @@ using TeamSupport.Data;
 using System.Data;
 using System.Data.Sql;
 using System.Data.SqlClient;
+using HtmlAgilityPack;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -135,6 +136,8 @@ namespace TeamSupport.ServiceLibrary
         throw;
       }
     }
+
+    
 
     override public bool Rewind()
     {
