@@ -81,7 +81,7 @@
             
               <telerik:RadTabStrip ID="tsMain" runat="server" SelectedIndex="0" OnClientTabSelected="TabSelected">
                 <Tabs>
-                  <telerik:RadTab runat="server" Value="UserInformation.aspx?TicketStatusID=-3&UserID=" Selected="True" Text="User Information"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../Resources/Pages/User.html?UserID=" Selected="True" Text="User Information"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="Tickets.aspx?TicketStatusID=-3&UserID=" Text="Open Tickets"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="Tickets.aspx?TicketStatusID=-4&UserID=" Text="Closed Tickets"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="Tickets.aspx?UserID=" Text="All Tickets"></telerik:RadTab>

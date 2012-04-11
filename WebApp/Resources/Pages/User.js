@@ -120,11 +120,16 @@ UserPage = function () {
 
         });
 
-        $('.user-group-add').click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            ShowDialog(top.GetSelectGroupDialog(userID, 22));
-        });
+        if (!isSysAdmin) {
+            $('.user-group-add').remove();
+        }
+        else {
+            $('.user-group-add').click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                ShowDialog(top.GetSelectGroupDialog(userID, 22));
+            });
+        }
 
         $('#userPhotoEdit')
       .click(function (e) {
@@ -567,6 +572,8 @@ UserPage = function () {
         $('.ts-icon-edit').remove();
         $('.ts-add').remove();
         $('#userPhotoEdit').remove();
+        $('#UserName').removeClass('ui-state-default ts-link');
+        $('#UserName').addClass('disabledlink');
         $('#userTitle').removeClass('ui-state-default ts-link');
         $('#userTitle').addClass('disabledlink');
         $('#userTimeZone').removeClass('ui-state-default ts-link');
@@ -726,7 +733,7 @@ UserPage = function () {
                                 .addClass('group-name')
                                 .text(groups[i].Name)
                                 .appendTo(header);
-                if (canEdit) {
+                if (isSysAdmin) {
                     $('<span>')
                 .addClass('fleft ts-icon ts-icon-delete')
                 .click(function (e) {

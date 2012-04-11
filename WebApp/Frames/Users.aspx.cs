@@ -33,7 +33,7 @@ public partial class Frames_Users : BaseFramePage
     }
 
 
-    tsMain.Tabs.FindTabByText("NEW").Visible = true;// TSAuthentication.UserID == 34;
+    //tsMain.Tabs.FindTabByText("NEW").Visible = true;// TSAuthentication.UserID == 34;
     int userCount = Organizations.GetUserCount(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
     Organization organization = (Organization)Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
 
