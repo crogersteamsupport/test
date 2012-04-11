@@ -424,7 +424,7 @@ namespace TSWebServices
 
             user.CultureName = cu;
             user.Collection.Save();
-            return value;
+            return CultureInfo.GetCultureInfo(int.Parse(value)).DisplayName;
         }
 
         [WebMethod]

@@ -15,3 +15,9 @@ textarea
     margin:5px 0;
     padding:3px;
 }
+
+.ticket-removable-item {
+padding: .25em .5em;
+margin: 0 .5em .5em 0;
+float: left;
+}

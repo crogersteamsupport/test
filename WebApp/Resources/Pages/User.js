@@ -549,7 +549,7 @@ UserPage = function () {
                 selected: function (e, ui) {
                     parent.show().find('img').show();
                     var type = $(ui.item).data('type');
-                    top.Ts.Services.Users.SetTimezone(_user.UserID, type, function (result) {
+                    top.Ts.Services.Users.SetCulture(_user.UserID, type, function (result) {
                         if (result !== null) {
                             $('#userDateFormat').html(result);
                             parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
@@ -639,6 +639,16 @@ UserPage = function () {
                             .appendTo(header);
                 if (canEdit) {
                     $('<span>')
+                .addClass('fleft ts-icon ts-icon-edit')
+                .click(function (e) {
+                    var item = $(this).parent();
+                    var data = item.data('data');
+                    ShowDialog(top.GetAddressDialog(data));
+                }).hide()
+                .appendTo(header);
+
+
+                    $('<span>')
                 .addClass('fleft ts-icon ts-icon-delete')
                 .click(function (e) {
                     if (confirm('Are you sure you would like to remove this address?')) {
@@ -647,8 +657,10 @@ UserPage = function () {
                         top.privateServices.DeleteAddress(data);
                         window.location = window.location;
                     }
-                    else
+                    else {
+                        $(this).prev().hide();
                         $(this).hide();
+                    }
                 }).hide()
                 .appendTo(header);
                 }
@@ -699,6 +711,15 @@ UserPage = function () {
                                 .appendTo(header);
                 if (canEdit) {
                     $('<span>')
+                .addClass('fleft ts-icon ts-icon-edit')
+                .click(function (e) {
+                    var item = $(this).parent();
+                    var data = item.data('data');
+                    ShowDialog(top.GetPhoneDialog(data));
+                }).hide()
+                .appendTo(header);
+
+                    $('<span>')
                 .addClass('fleft ts-icon ts-icon-delete')
                 .click(function (e) {
                     if (confirm('Are you sure you would like to remove this phone number?')) {
@@ -707,8 +728,10 @@ UserPage = function () {
                         top.privateServices.DeletePhone(data);
                         window.location = window.location;
                     }
-                    else
+                    else {
+                        $(this).prev().hide();
                         $(this).hide();
+                    }
                 }).hide()
                 .appendTo(header);
                 }
