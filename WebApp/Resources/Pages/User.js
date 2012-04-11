@@ -232,7 +232,11 @@ UserPage = function () {
             header.show().find('img').show();
             top.Ts.Services.Users.SaveUserInfo(_user.UserID, $(this).prev().val(), function (result) {
                 header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                $('#userInfo').html(result.replace(/\n\r?/g, '<br />'));
+                if (result != '') {
+                    $('#userInfo').html(result.replace(/\n\r?/g, '<br />'));
+                } else {
+                    $('#userInfo').html('No Additional Information');
+                }
             },
           function (error) {
               header.show().find('img').hide();

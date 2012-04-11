@@ -65,7 +65,7 @@
     }        
     .ts-section .ts-icon-edit { display:none;}
     .ts-section .collapsable .ui-icon-triangle-1-s, .ts-section .collapsable .ui-icon-triangle-1-e { float:left;}
-    .ts-icon {margin-left: .1em}
+    /*.ts-icon {margin-left: .1em}*/
 
     h3 { font-size: 1em; border-bottom: 0px solid #ddd; padding:0; margin: 1em 0 0 0; clear:both;}
     

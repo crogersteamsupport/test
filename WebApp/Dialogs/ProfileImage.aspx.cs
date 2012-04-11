@@ -73,9 +73,9 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
 
         if (Upload.HasFile)
         {
-            Session["WorkingImage"] = "tmpavatar" + Upload.FileName;
+            Session["WorkingImage"] = "tmpavatar" + Upload.FileName.Replace(" ",string.Empty);
             String FileExtension = Path.GetExtension(Session["WorkingImage"].ToString()).ToLower();
-            String[] allowedExtensions = { ".png", ".jpeg", ".jpg", ".gif" };
+            String[] allowedExtensions = { ".png", ".jpeg", ".jpg" };
             for (int i = 0; i < allowedExtensions.Length; i++)
             {
                 if (FileExtension == allowedExtensions[i])

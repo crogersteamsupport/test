@@ -30,16 +30,27 @@
 
       <div id="maincontainer" style="width:450px">
         <div id="postcontainer">
-            <div id="faketext" style="border: 1px solid #DDD;height:32px;line-height:32px;margin-bottom:5px">
-                <span style="font-size:14px;margin-left:10px" title="Share to Watercooler">Share to Watercooler</span>
+            <div id="faketextcontainer" style="border: 1px solid #DDD;height:32px;line-height:32px;margin-bottom:5px">
+                <span id="faketext" style="font-size:14px;margin-left:10px" title="Share to Watercooler">Share to Watercooler</span>
             </div>
-            <div style="border: 1px solid #DDD">
+            <div id="commentcontainer" style="border: 1px solid #DDD;display:none">
                 <span>
-                    <textarea rows="5" class="boxsizingBorder" id="messagecontents" placeholder="Share to Watercooler" style="font-size:14px;padding:5px 0 0 10px;height:60px;resize:none;"></textarea>
+                    <textarea rows="5" class="boxsizingBorder" id="messagecontents" placeholder="Share to Watercooler" style="font-size:14px;padding:2px 0 0 9px;height:60px;resize:none;"></textarea>
                 </span>
                 <div style="border-top:1px solid #ddd; padding: .5em">
-                    <img src="../Images/icons/Add.png" style="padding:4px" /> <img src="../Images/nav/16/Tickets.png" style="padding:4px" /> <img src="../Images/nav/16/Groups.png" style="padding:4px" />
+                    <a href="#" id="addatt"><img src="../Images/icons/Add.png" style="padding:4px" /></a>
+                    <a href="#" id="addticket"><img src="../Images/nav/16/Tickets.png" style="padding:4px" /></a>
+                    <a href="#" id="addgroup"><img src="../Images/nav/16/Groups.png" style="padding:4px" /></a>
                     <span style="float:right"><button>post</button></span>
+                </div>
+                <div id="attcontainer" style="border-top:1px solid #ddd; padding: .5em;display:none">
+                    <a href="#">+add attachment</a>
+                </div>
+                <div id="ticketcontainer" style="border-top:1px solid #ddd; padding: .5em;display:none">
+                    <a href="#">+attach to ticket</a>
+                </div>
+                <div id="groupcontainer" style="border-top:1px solid #ddd; padding: .5em;display:none">
+                    <a href="#">+group</a>
                 </div>
             </div>
         </div>
