@@ -204,7 +204,7 @@ Namespace TeamSupport
                         request = DirectCast(WebRequest.Create(WebString), HttpWebRequest)
                         ' Add authentication to request  
                         request.Credentials = New NetworkCredential(Token, "x")
-                        request.Timeout = 7000 'was 5, changed to 7 11/18/09
+                        request.Timeout = 40000 'was 5, changed to 7 11/18/09, changed to 40 on 4/16/2012
                         request.Method = "GET" 'not sure on this one?
                         request.KeepAlive = False
                         request.UserAgent = Client
