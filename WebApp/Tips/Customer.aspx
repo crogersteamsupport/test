@@ -5,6 +5,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
+    <style>
+      .tip-customer-expired { color: Red;}
+      .ui-cluetip-content dd { width: 60%; }
+      .ui-cluetip-content dt { width: 35%;}
+    </style>
 </head>
 <body>
   <div>

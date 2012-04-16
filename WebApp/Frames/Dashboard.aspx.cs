@@ -14,6 +14,11 @@ using Telerik.Web.UI;
 
 public partial class Frames_Dashboard : System.Web.UI.Page
 {
+  private static string GetReportConnectionString()
+  {
+    return System.Web.Configuration.WebConfigurationManager.ConnectionStrings["ReportConnection"].ConnectionString;
+  }
+
   protected override void OnLoad(EventArgs e)
   {
     base.OnLoad(e);
@@ -42,7 +47,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
 
   private static DataTable GetReportDataTable(Report report)
   {
-    using (SqlConnection connection = new SqlConnection(UserSession.ConnectionString))
+    using (SqlConnection connection = new SqlConnection(GetReportConnectionString()))
     {
       string query = report.GetSql(false);
       query = query.Replace("SELECT ", "SELECT TOP 100 ");

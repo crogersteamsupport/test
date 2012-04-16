@@ -25,6 +25,10 @@ public partial class Frames_ReportResults : BaseFramePage
   private TimeZoneInfo _timeZoneInfo;
   private bool _isCustom = false;
 
+  private string GetReportConnectionString()
+  {
+    return System.Web.Configuration.WebConfigurationManager.ConnectionStrings["ReportConnection"].ConnectionString;
+  }
 
   protected override void OnInit(EventArgs e)
   {
@@ -101,7 +105,7 @@ public partial class Frames_ReportResults : BaseFramePage
       command.CommandType = CommandType.Text;
       Report.CreateParameters(UserSession.LoginUser, command, UserSession.LoginUser.UserID);
 
-      using (SqlConnection connection = new SqlConnection(UserSession.LoginUser.ConnectionString))
+      using (SqlConnection connection = new SqlConnection(GetReportConnectionString()))
       {
         connection.Open();
         command.Connection = connection;
@@ -272,7 +276,7 @@ public partial class Frames_ReportResults : BaseFramePage
     Report report = Reports.GetReport(UserSession.LoginUser, reportID);
     if (report == null) return null;
 
-    using (SqlConnection connection = new SqlConnection(UserSession.ConnectionString))
+    using (SqlConnection connection = new SqlConnection(GetReportConnectionString()))
     {
       _query = report.GetSql(false, filterControl.ReportConditions);
       report.LastSqlExecuted = _query;

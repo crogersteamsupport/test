@@ -333,8 +333,8 @@ $(document).ready(function () {
     .attr('type', 'text')
     .addClass('ui-widget-content ui-corner-all newticket-custom-datetime')
     .css('width', '150px')
-    .datetimepicker()
-    .appendTo(div);
+    .appendTo(div)
+    .datetimepicker();
   }
 
 

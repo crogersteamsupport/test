@@ -29,6 +29,12 @@ public partial class Tips_Customer : System.Web.UI.Page
         props.Append(string.Format("<dt>Website</dt><dd><a target=\"_blank\" href=\"{0}\">{0}</a></dd>", organization.Website));
       }
 
+      if (organization.SAExpirationDate != null)
+      {
+        string css = organization.SAExpirationDate <= DateTime.UtcNow ? "tip-customer-expired" : "";
+        props.Append(string.Format("<dt>Service Expiration</dt><dd class=\"{0}\">{1:D}</dd>", css, (DateTime)organization.SAExpirationDate));
+      }
+
       PhoneNumbersView numbers = new PhoneNumbersView(organization.Collection.LoginUser);
       numbers.LoadByID(organization.OrganizationID, ReferenceType.Organizations);
 
