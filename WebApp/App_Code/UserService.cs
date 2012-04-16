@@ -453,6 +453,29 @@ namespace TSWebServices
             return user.UserInformation;
         }
 
+        [WebMethod]
+        public string ResetEmailPW(int userID)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return ("There was an error resetting the password.");
+            try
+            {
+                if (DataUtils.ResetPassword(TSAuthentication.GetLoginUser(), user, false))
+                {
+                return ("A new password has been sent to " + user.FirstName + " " + user.LastName);
+
+                }
+            }
+            catch(Exception e)
+            {
+                return ("There was an error resetting the password.");
+            }
+
+            return ("There was an error resetting the password.");
+        }
+
+
+
         [DataContract]
         public class BasicUser
         {

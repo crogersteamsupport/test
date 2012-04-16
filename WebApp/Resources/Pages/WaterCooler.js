@@ -43,6 +43,7 @@ WaterCoolerPage = function () {
     $('#faketext').click(function (e) {
         $('#faketextcontainer').hide();
         $('#commentcontainer').show();
+        $(this).focus();
     });
     $('#faketextcontainer').click(function (e) {
         $(this).hide();

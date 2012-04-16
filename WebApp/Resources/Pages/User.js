@@ -87,6 +87,10 @@ UserPage = function () {
         $('#activatedOn').text(user.ActivatedOn.toDateString());
         $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
 
+
+        var pwText = top.Ts.System.User.UserID == userID && top.Ts.System.User.IsSystemAdmin && (userID > -1);
+        $('#userPW').text((pwText == true ? 'Change Password' : 'Reset and Email Password'));
+
         top.Ts.Services.Users.GetUserPhoto(userID, function (att) {
             $('#userPhoto').attr("src", att);
         });
@@ -130,6 +134,23 @@ UserPage = function () {
                 ShowDialog(top.GetSelectGroupDialog(userID, 22));
             });
         }
+
+        $('#userPW').click(function (e) {
+            e.preventDefault();
+            var pwText = top.Ts.System.User.UserID == userID && top.Ts.System.User.IsSystemAdmin && (userID > -1);
+            if (!pwText) {
+                top.Ts.Services.Users.ResetEmailPW(_user.UserID, function (result) {
+                    alert(result);
+                },
+                  function (error) {
+                      alert('There was an error.');
+                  });
+
+            }
+            else {
+                window.open("../../ChangePassword.aspx", "ChangePW");
+            }
+        });
 
         $('#userPhotoEdit')
       .click(function (e) {
