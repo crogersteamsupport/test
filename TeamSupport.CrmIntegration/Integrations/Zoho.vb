@@ -117,77 +117,88 @@ Namespace TeamSupport
                 Dim CompanySyncData As List(Of CompanyData) = Nothing
                 Dim tagsToMatch As String() = Array.ConvertAll(CRMLinkRow.TypeFieldMatch.ToLower().Split(","), Function(p As String) p.Trim())
 
-                Dim needToGetMore As Boolean = True
-                Dim returnedRecords As Integer = 0
-                Dim totalRecords As Integer = 1
+                If tagsToMatch.Contains(String.Empty) Then
+                    Log.Write("Missing Account Type to Link To TeamSupport (TypeFieldMatch).")
+                    SyncError = True
+                Else
+                    Dim needToGetMore As Boolean = True
+                    Dim returnedRecords As Integer = 0
+                    Dim totalRecords As Integer = 1
 
-                While needToGetMore
-                    Dim allaccounts As XElement = XElement.Load(New XmlNodeReader(CompaniesToSync))
+                    While needToGetMore
+                        Dim allaccounts As XElement = XElement.Load(New XmlNodeReader(CompaniesToSync))
 
-                    For Each company As XElement In allaccounts.Descendants("row")
-                        If Processor.IsStopped Then
-                            Return Nothing
-                        End If
+                        For Each company As XElement In allaccounts.Descendants("row")
+                            If Processor.IsStopped Then
+                                Return Nothing
+                            End If
 
-                        If CompanySyncData Is Nothing Then
-                            CompanySyncData = New List(Of CompanyData)()
-                        End If
+                            If CompanySyncData Is Nothing Then
+                                CompanySyncData = New List(Of CompanyData)()
+                            End If
 
-                        Dim thisCustomer As New CompanyData()
-                        Dim add As Boolean = False
+                            Dim thisCustomer As New CompanyData()
+                            Dim add As Boolean = False
+                            Dim hasAccountType As Boolean = False
 
-                        With thisCustomer
-                            'Zoho's XML is really ugly so we have to parse it like this
-                            For Each dataitem As XElement In company.Descendants("FL")
-                                Select Case dataitem.Attribute("val").Value
-                                    Case "ACCOUNTID"
-                                        .AccountID = dataitem.Value
-                                    Case "Account Name"
-                                        .AccountName = dataitem.Value
-                                    Case "Shipping City"
-                                        .City = dataitem.Value
-                                    Case "Shipping Country"
-                                        .Country = dataitem.Value
-                                    Case "Shipping State"
-                                        .State = dataitem.Value
-                                    Case "Shipping Street"
-                                        .Street = dataitem.Value
-                                    Case "Shipping Code"
-                                        .Zip = dataitem.Value
-                                    Case "Phone"
-                                        .Phone = dataitem.Value
-                                    Case "Account Type"
-                                        add = tagsToMatch.Contains(dataitem.Value.ToLower())
-                                End Select
-                            Next
-                        End With
+                            With thisCustomer
+                                'Zoho's XML is really ugly so we have to parse it like this
+                                For Each dataitem As XElement In company.Descendants("FL")
+                                    Select Case dataitem.Attribute("val").Value
+                                        Case "ACCOUNTID"
+                                            .AccountID = dataitem.Value
+                                        Case "Account Name"
+                                            .AccountName = dataitem.Value
+                                        Case "Shipping City"
+                                            .City = dataitem.Value
+                                        Case "Shipping Country"
+                                            .Country = dataitem.Value
+                                        Case "Shipping State"
+                                            .State = dataitem.Value
+                                        Case "Shipping Street"
+                                            .Street = dataitem.Value
+                                        Case "Shipping Code"
+                                            .Zip = dataitem.Value
+                                        Case "Phone"
+                                            .Phone = dataitem.Value
+                                        Case "Account Type"
+                                            add = tagsToMatch.Contains(dataitem.Value.ToLower())
+                                            hasAccountType = True
+                                    End Select
+                                Next
+                            End With
 
-                        If add Then
-                            CompanySyncData.Add(thisCustomer)
-                        End If
+                            If tagsToMatch.Contains("none") AndAlso Not hasAccountType Then
+                                add = True
+                            End If
 
-                        returnedRecords += 1
-                        totalRecords += 1
-                    Next
+                            If add Then
+                                CompanySyncData.Add(thisCustomer)
+                            End If
 
-                    If returnedRecords = MaxBatchSize Then
-                        Log.Write("getting next set of records..." & totalRecords.ToString())
+                            returnedRecords += 1
+                            totalRecords += 1
+                        Next
 
-                        Try
-                            CompaniesToSync = GetZohoCompanyXML(totalRecords, totalRecords + MaxBatchSize - 1)
-                        Catch ex As Exception
-                            Log.Write("Error getting next records..." & ex.Message)
-                        End Try
+                        If returnedRecords = MaxBatchSize Then
+                            Log.Write("getting next set of records..." & totalRecords.ToString())
 
-                        If XElement.Load(New XmlNodeReader(CompaniesToSync)).Descendants("row").Count > 0 Then
-                            returnedRecords = 0
+                            Try
+                                CompaniesToSync = GetZohoCompanyXML(totalRecords, totalRecords + MaxBatchSize - 1)
+                            Catch ex As Exception
+                                Log.Write("Error getting next records..." & ex.Message)
+                            End Try
+
+                            If XElement.Load(New XmlNodeReader(CompaniesToSync)).Descendants("row").Count > 0 Then
+                                returnedRecords = 0
+                            Else
+                                needToGetMore = False
+                            End If
                         Else
                             needToGetMore = False
                         End If
-                    Else
-                        needToGetMore = False
-                    End If
-                End While
+                    End While
+                End If
 
                 Return CompanySyncData
             End Function

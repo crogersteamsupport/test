@@ -77,139 +77,149 @@ Namespace TeamSupport
                         'This code should let us support multiple account types separated by a comma
                         Dim TypeString As String = ""
                         Dim AccountTypeString As String = ""
-                        Dim MatchArray As String() = TagsToMatch.Split(",")
-                        For z As Integer = 0 To MatchArray.Length - 1
-                            If z > 0 Then
-                                TypeString = TypeString + " or "
-                                AccountTypeString = AccountTypeString + " or "
+                        Dim MatchArray As String() = Array.ConvertAll(TagsToMatch.Split(","), Function(p As String) p.Trim())
+                        If MatchArray.Contains(String.Empty) Then
+                            Log.Write("Missing Account Type to Link To TeamSupport (TypeFieldMatch).")
+                            SyncError = True
+                        Else
+                            For z As Integer = 0 To MatchArray.Length - 1
+                                If z > 0 Then
+                                    TypeString = TypeString + " or "
+                                    AccountTypeString = AccountTypeString + " or "
+                                End If
+
+                                Dim tagToMatch As String = MatchArray(z)
+                                If tagToMatch.ToLower() = "none" Then
+                                    tagToMatch = String.Empty
+                                End If
+
+                                TypeString = TypeString + " type = '" + tagToMatch + "'"
+                                AccountTypeString = AccountTypeString + " Account.Type = '" + tagToMatch + "'"
+                            Next
+
+                            Log.Write("TypeString = " + TypeString)
+
+                            Dim SFQuery As String
+                            Dim done As Boolean = False
+                            Dim HasAddress As Boolean = True
+
+                            Dim BindingRanOK As Boolean
+                            Try
+                                Try
+                                    'OK, lets try this with the shipping addresses
+                                    SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")"
+                                    Log.Write("SF Query String = " + SFQuery)
+
+                                    qr = Binding.query(SFQuery)
+                                    Log.Write("qr.size = " + qr.size.ToString)
+                                    BindingRanOK = True
+                                Catch ex As Exception
+                                    'Hmm...No shipping addresses.  Let's try billing addresses
+                                    'This doesn't appear to work either...? 7/1/10
+                                    Try
+                                        Log.Write("Shipping Address information not found - Attempting to find Billing Address information instead.")
+                                        SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
+                                        Log.Write("SF Query String = " + SFQuery)
+
+                                        qr = Binding.query(SFQuery)
+                                        Log.Write("qr.size = " + qr.size.ToString)
+                                        BindingRanOK = True
+                                    Catch ex2 As Exception
+                                        'Well crap - No billing address either.
+                                        Log.Write("Billing Address information not found - Attempting to process company with no address info at all.")
+                                        SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
+                                        Log.Write("SF Query String = " + SFQuery)
+
+                                        qr = Binding.query(SFQuery)
+                                        Log.Write("qr.size = " + qr.size.ToString)
+                                        HasAddress = False 'Set this to false so we can set local variables correctly
+                                        BindingRanOK = True
+                                    End Try
+                                End Try
+                            Catch ex As Exception
+                                'OK, we have a major error binding the query.
+                                BindingRanOK = False
+                                Log.Write("Error when attempting to bind the Query: " + ex.Message)
+                                SyncError = True
+                            End Try
+
+
+                            If (BindingRanOK) And (qr.size > 0) Then
+                                'We now have a list of all accounts that have been modified in the last 3 hours and that match our account types. Let's update.
+                                While Not done
+
+                                    Log.Write("Begining While Loop to get companies.  qr.records.length = " + qr.records.Length.ToString)
+                                    Log.Write("Updating company information, qr.size = " + qr.size.ToString)
+
+
+                                    For i As Integer = 0 To qr.records.Length - 1
+                                        Dim thisCompany As New CompanyData()
+                                        Log.Write("In for loop iteration " + i.ToString)
+                                        Dim LastModifiedDateTime As DateTime
+
+                                        Dim records As sObject() = qr.records
+                                        Dim contact As sObject = records(i)
+
+                                        With thisCompany
+                                            .AccountID = records(i).Any(0).InnerText
+                                            .AccountName = records(i).Any(1).InnerText
+
+                                            If HasAddress Then
+                                                .Street = records(i).Any(3).InnerText
+                                                .City = records(i).Any(4).InnerText
+                                                .State = records(i).Any(5).InnerText
+                                                .Zip = records(i).Any(6).InnerText
+                                                .Country = records(i).Any(7).InnerText
+                                                .Phone = records(i).Any(8).InnerText
+                                                LastModifiedDateTime = Date.Parse(records(i).Any(9).InnerText)
+                                            Else
+                                                .Phone = records(i).Any(3).InnerText
+                                                LastModifiedDateTime = Date.Parse(records(i).Any(4).InnerText)
+
+                                            End If
+                                        End With
+
+                                        Log.Write("Company " & thisCompany.AccountName & " last modified on " & LastModifiedDateTime.ToString())
+
+                                        UpdateOrgInfo(thisCompany, ParentOrgID)
+                                        Log.Write("Completed AddOrUpdateAccountInformation for company " + thisCompany.AccountName)
+
+                                        'Let's force an update of contact information for this company
+                                        GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, thisCompany.AccountID, True)
+
+                                        Log.Write("Completed force update contact info for " + thisCompany.AccountName)
+
+                                    Next
+                                    If qr.done Then
+                                        done = True
+                                    Else
+                                        Log.Write("Requesting more records (should be more than 2000 companies?)")
+                                        qr = Binding.queryMore(qr.queryLocator)
+                                    End If
+                                End While
+
+                                'check for existence of custom fields to sync
+                                GetCustomFields("Account", TypeString, LastUpdateSFFormat)
+
+                                Log.Write("All done updating company information.")
+
+                            Else
+                                Log.Write("**No matching record found!!")
                             End If
 
-                            TypeString = TypeString + " type = '" + Trim(MatchArray(z)) + "'"
-                            AccountTypeString = AccountTypeString + " Account.Type = '" + Trim(MatchArray(z)) + "'"
-                        Next
+                            If BindingRanOK Then
+                                'Breaking this out separately since they were not running if there were no companies that had changed.
 
-                        Log.Write("TypeString = " + TypeString)
-
-                        Dim SFQuery As String
-                        Dim done As Boolean = False
-                        Dim HasAddress As Boolean = True
-
-                        Dim BindingRanOK As Boolean
-                        Try
-                            Try
-                                'OK, lets try this with the shipping addresses
-                                SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")"
-                                Log.Write("SF Query String = " + SFQuery)
-
-                                qr = Binding.query(SFQuery)
-                                Log.Write("qr.size = " + qr.size.ToString)
-                                BindingRanOK = True
-                            Catch ex As Exception
-                                'Hmm...No shipping addresses.  Let's try billing addresses
-                                'This doesn't appear to work either...? 7/1/10
-                                Try
-                                    Log.Write("Shipping Address information not found - Attempting to find Billing Address information instead.")
-                                    SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
-                                    Log.Write("SF Query String = " + SFQuery)
-
-                                    qr = Binding.query(SFQuery)
-                                    Log.Write("qr.size = " + qr.size.ToString)
-                                    BindingRanOK = True
-                                Catch ex2 As Exception
-                                    'Well crap - No billing address either.
-                                    Log.Write("Billing Address information not found - Attempting to process company with no address info at all.")
-                                    SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
-                                    Log.Write("SF Query String = " + SFQuery)
-
-                                    qr = Binding.query(SFQuery)
-                                    Log.Write("qr.size = " + qr.size.ToString)
-                                    HasAddress = False 'Set this to false so we can set local variables correctly
-                                    BindingRanOK = True
-                                End Try
-                            End Try
-                        Catch ex As Exception
-                            'OK, we have a major error binding the query.
-                            BindingRanOK = False
-                            Log.Write("Error when attempting to bind the Query: " + ex.Message)
-                            SyncError = True
-                        End Try
+                                'We updated all of the ACCOUNT information above
+                                'Now let's update all of the contact information
+                                GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, "0", False)
 
 
-                        If (BindingRanOK) And (qr.size > 0) Then
-                            'We now have a list of all accounts that have been modified in the last 3 hours and that match our account types. Let's update.
-                            While Not done
+                                'Code for Axceler to update their product and license information
+                                If ParentOrgID = 305383 Then
+                                    GetProductAndLicenseInfo(LastUpdateSFFormat)
 
-                                Log.Write("Begining While Loop to get companies.  qr.records.length = " + qr.records.Length.ToString)
-                                Log.Write("Updating company information, qr.size = " + qr.size.ToString)
-
-
-                                For i As Integer = 0 To qr.records.Length - 1
-                                    Dim thisCompany As New CompanyData()
-                                    Log.Write("In for loop iteration " + i.ToString)
-                                    Dim LastModifiedDateTime As DateTime
-
-                                    Dim records As sObject() = qr.records
-                                    Dim contact As sObject = records(i)
-
-                                    With thisCompany
-                                        .AccountID = records(i).Any(0).InnerText
-                                        .AccountName = records(i).Any(1).InnerText
-
-                                        If HasAddress Then
-                                            .Street = records(i).Any(3).InnerText
-                                            .City = records(i).Any(4).InnerText
-                                            .State = records(i).Any(5).InnerText
-                                            .Zip = records(i).Any(6).InnerText
-                                            .Country = records(i).Any(7).InnerText
-                                            .Phone = records(i).Any(8).InnerText
-                                            LastModifiedDateTime = Date.Parse(records(i).Any(9).InnerText)
-                                        Else
-                                            .Phone = records(i).Any(3).InnerText
-                                            LastModifiedDateTime = Date.Parse(records(i).Any(4).InnerText)
-
-                                        End If
-                                    End With
-
-                                    Log.Write("Company " & thisCompany.AccountName & " last modified on " & LastModifiedDateTime.ToString())
-
-                                    UpdateOrgInfo(thisCompany, ParentOrgID)
-                                    Log.Write("Completed AddOrUpdateAccountInformation for company " + thisCompany.AccountName)
-
-                                    'Let's force an update of contact information for this company
-                                    GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, thisCompany.AccountID, True)
-
-                                    Log.Write("Completed force update contact info for " + thisCompany.AccountName)
-
-                                Next
-                                If qr.done Then
-                                    done = True
-                                Else
-                                    Log.Write("Requesting more records (should be more than 2000 companies?)")
-                                    qr = Binding.queryMore(qr.queryLocator)
                                 End If
-                            End While
-
-                            'check for existence of custom fields to sync
-                            GetCustomFields("Account", TypeString, LastUpdateSFFormat)
-
-                            Log.Write("All done updating company information.")
-
-                        Else
-                            Log.Write("**No matching record found!!")
-                        End If
-
-                        If BindingRanOK Then
-                            'Breaking this out separately since they were not running if there were no companies that had changed.
-
-                            'We updated all of the ACCOUNT information above
-                            'Now let's update all of the contact information
-                            GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, "0", False)
-
-
-                            'Code for Axceler to update their product and license information
-                            If ParentOrgID = 305383 Then
-                                GetProductAndLicenseInfo(LastUpdateSFFormat)
-
                             End If
                         End If
                     Catch ex As Exception

@@ -34,43 +34,54 @@ Namespace TeamSupport
 
                 'first retrieve a list of company data from batchbook
                 If TagsToMatch.Contains(",") Then
-                    'process multiple tags where present
-                    For Each TagToMatch As String In TagsToMatch.Split(",")
-                        If Processor.IsStopped Then
-                            Return False
-                        End If
-
-                        CompaniesToSync = GetBatchBookXML("companies.xml?tag=" & Trim(TagToMatch))
-
-                        If CompaniesToSync IsNot Nothing Then
-                            If CompanySyncData Is Nothing Then
-                                CompanySyncData = New List(Of CompanyData)()
+                    Dim tagsToMatchArray As String() = Array.ConvertAll(TagsToMatch.Split(","), Function(p As String) p.Trim())
+                    If tagsToMatchArray.Contains(String.Empty) Then
+                        Log.Write("Missing Account Type to Link To TeamSupport (TypeFieldMatch).")
+                        SyncError = True
+                    Else
+                        'process multiple tags where present
+                        For Each TagToMatch As String In tagsToMatchArray
+                            If Processor.IsStopped Then
+                                Return False
                             End If
 
-                            Dim thisCompanyData As List(Of CompanyData) = ParseBBCompanyXML(CompaniesToSync)
+                            CompaniesToSync = GetBatchBookXML("companies.xml?tag=" & TagToMatch)
 
-                            'avoid duplicates by only adding companies that aren't already in the list
-                            For Each newData As CompanyData In thisCompanyData
-                                Dim alreadyExists As Boolean = False
-                                For Each existingData As CompanyData In CompanySyncData
-                                    If newData.Equals(existingData) Then
-                                        alreadyExists = True
+                            If CompaniesToSync IsNot Nothing Then
+                                If CompanySyncData Is Nothing Then
+                                    CompanySyncData = New List(Of CompanyData)()
+                                End If
+
+                                Dim thisCompanyData As List(Of CompanyData) = ParseBBCompanyXML(CompaniesToSync)
+
+                                'avoid duplicates by only adding companies that aren't already in the list
+                                For Each newData As CompanyData In thisCompanyData
+                                    Dim alreadyExists As Boolean = False
+                                    For Each existingData As CompanyData In CompanySyncData
+                                        If newData.Equals(existingData) Then
+                                            alreadyExists = True
+                                        End If
+                                    Next
+
+                                    If Not alreadyExists Then
+                                        CompanySyncData.Add(newData)
                                     End If
                                 Next
-
-                                If Not alreadyExists Then
-                                    CompanySyncData.Add(newData)
-                                End If
-                            Next
-                        End If
-                    Next
+                            End If
+                        Next
+                    End If
                 Else
-                    'only one tag, don't need to loop
-                    CompaniesToSync = GetBatchBookXML("companies.xml?tag=" & TagsToMatch)
+                    If TagsToMatch = String.Empty Then
+                        Log.Write("Missing Account Type to Link To TeamSupport (TypeFieldMatch).")
+                        SyncError = True
+                    Else
+                        'only one tag, don't need to loop
+                        CompaniesToSync = GetBatchBookXML("companies.xml?tag=" & TagsToMatch)
 
-                    If CompaniesToSync IsNot Nothing Then
-                        CompanySyncData = New List(Of CompanyData)()
-                        CompanySyncData = ParseBBCompanyXML(CompaniesToSync)
+                        If CompaniesToSync IsNot Nothing Then
+                            CompanySyncData = New List(Of CompanyData)()
+                            CompanySyncData = ParseBBCompanyXML(CompaniesToSync)
+                        End If
                     End If
                 End If
 

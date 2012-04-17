@@ -29,24 +29,28 @@ Namespace TeamSupport
             End Function
 
             Private Function SyncAccounts() As Boolean
-                Dim MyXML As XmlDocument
-                Dim Key As String = CRMLinkRow.SecurityToken
-                Dim CompanyName As String = CRMLinkRow.Username
-                Dim ParentOrgID As String = CRMLinkRow.OrganizationID
                 Dim TagsToMatch As String = CRMLinkRow.TypeFieldMatch
 
-                SyncError = False
-                UseSSL = True
+                Dim MatchArray As String() = Array.ConvertAll(TagsToMatch.Split(","), Function(p As String) p.Trim())
+                If MatchArray.Contains(String.Empty) Then
+                    Log.Write("Missing Account Type to Link To TeamSupport (TypeFieldMatch).")
+                    SyncError = True
+                Else
+                    Dim MyXML As XmlDocument
+                    Dim Key As String = CRMLinkRow.SecurityToken
+                    Dim CompanyName As String = CRMLinkRow.Username
+                    Dim ParentOrgID As String = CRMLinkRow.OrganizationID
 
-                'strip .highrisehq.com from username if present
-                CompanyName = CompanyName.Replace(".highrisehq.com", "")
+                    SyncError = False
+                    UseSSL = True
 
-                Try
-                    Dim TagIDs As New List(Of String)()
+                    'strip .highrisehq.com from username if present
+                    CompanyName = CompanyName.Replace(".highrisehq.com", "")
 
-                    If TagsToMatch.Contains(",") Then
-                        'process multiple tags where present
-                        For Each TagToMatch As String In TagsToMatch.Split(",")
+                    Try
+                        Dim TagIDs As New List(Of String)()
+
+                        For Each TagToMatch As String In MatchArray
                             If Processor.IsStopped Then
                                 Return False
                             End If
@@ -57,125 +61,119 @@ Namespace TeamSupport
                                 TagIDs.Add(TagID)
                             End If
                         Next
-                    Else
-                        Dim TagID As String = GetTagID(Key, CompanyName, TagsToMatch.Trim(), ParentOrgID)
 
-                        If TagID IsNot Nothing Then
-                            TagIDs.Add(TagID)
-                        End If
-                    End If
+                        If TagIDs.Count > 0 Then
+                            For Each TagID As String In TagIDs
+                                If Processor.IsStopped Then
+                                    Return False
+                                End If
 
-                    If TagIDs.Count > 0 Then
-                        For Each TagID As String In TagIDs
-                            If Processor.IsStopped Then
-                                Return False
-                            End If
+                                Dim CompanySyncData As New List(Of CompanyData)()
+                                Dim NeedtoGetMore As Boolean = True
+                                Dim XMLLoopCount As Integer = 0
+                                Dim TotalLoopCount As Integer = 0
 
-                            Dim CompanySyncData As New List(Of CompanyData)()
-                            Dim NeedtoGetMore As Boolean = True
-                            Dim XMLLoopCount As Integer = 0
-                            Dim TotalLoopCount As Integer = 0
+                                Log.Write("Starting GetXML")
+                                MyXML = GetHighriseXML(Key, CompanyName, "companies.xml?tag_id=" + TagID)  'note that capitalization DOES matter
+                                Log.Write("Finished GetXML")
 
-                            Log.Write("Starting GetXML")
-                            MyXML = GetHighriseXML(Key, CompanyName, "companies.xml?tag_id=" + TagID)  'note that capitalization DOES matter
-                            Log.Write("Finished GetXML")
+                                If MyXML IsNot Nothing Then
 
-                            If MyXML IsNot Nothing Then
+                                    While NeedtoGetMore
+                                        Dim allcust As XElement = XElement.Load(New XmlNodeReader(MyXML))
 
-                                While NeedtoGetMore
-                                    Dim allcust As XElement = XElement.Load(New XmlNodeReader(MyXML))
-
-                                    For Each company As XElement In allcust.Descendants("company")
-                                        If Processor.IsStopped Then
-                                            Return False
-                                        End If
-
-                                        If CRMLinkRow.LastLink Is Nothing Or Date.Parse(company.Element("updated-at").Value).AddMinutes(30) > CRMLinkRow.LastLink Then
-                                            Dim thisCustomer As New CompanyData()
-                                            Dim address As XElement = company.Element("contact-data").Element("addresses").Element("address")
-                                            Dim phone As XElement = Nothing
-                                            If company.Element("phone-numbers") IsNot Nothing Then
-                                                phone = company.Element("phone-numbers").Element("phone-number")
+                                        For Each company As XElement In allcust.Descendants("company")
+                                            If Processor.IsStopped Then
+                                                Return False
                                             End If
 
-                                            With thisCustomer
-                                                .AccountID = company.Element("id").Value
-                                                .AccountName = company.Element("name").Value
-
-                                                If address IsNot Nothing Then
-                                                    .City = address.Element("city").Value
-                                                    .Country = address.Element("country").Value
-                                                    .Street = address.Element("street").Value
-                                                    .State = address.Element("state").Value
-                                                    .Zip = address.Element("zip").Value
+                                            If CRMLinkRow.LastLink Is Nothing Or Date.Parse(company.Element("updated-at").Value).AddMinutes(30) > CRMLinkRow.LastLink Then
+                                                Dim thisCustomer As New CompanyData()
+                                                Dim address As XElement = company.Element("contact-data").Element("addresses").Element("address")
+                                                Dim phone As XElement = Nothing
+                                                If company.Element("phone-numbers") IsNot Nothing Then
+                                                    phone = company.Element("phone-numbers").Element("phone-number")
                                                 End If
-                                                If phone IsNot Nothing Then
-                                                    If phone.Element("location").Value = "Work" Then
-                                                        .Phone = phone.Element("number").Value
+
+                                                With thisCustomer
+                                                    .AccountID = company.Element("id").Value
+                                                    .AccountName = company.Element("name").Value
+
+                                                    If address IsNot Nothing Then
+                                                        .City = address.Element("city").Value
+                                                        .Country = address.Element("country").Value
+                                                        .Street = address.Element("street").Value
+                                                        .State = address.Element("state").Value
+                                                        .Zip = address.Element("zip").Value
                                                     End If
-                                                End If
-                                            End With
+                                                    If phone IsNot Nothing Then
+                                                        If phone.Element("location").Value = "Work" Then
+                                                            .Phone = phone.Element("number").Value
+                                                        End If
+                                                    End If
+                                                End With
 
-                                            CompanySyncData.Add(thisCustomer)
-                                        End If
+                                                CompanySyncData.Add(thisCustomer)
+                                            End If
 
-                                        XMLLoopCount += 1
-                                        TotalLoopCount += 1
-                                    Next
+                                            XMLLoopCount += 1
+                                            TotalLoopCount += 1
+                                        Next
 
-                                    If XMLLoopCount = 500 Then
-                                        Log.Write("Getting next set of records..." & TotalLoopCount.ToString())
-                                        Try
-                                            MyXML = GetHighriseXML(Key, CompanyName, "companies.xml?tag_id=" + TagID + "&n=" + TotalLoopCount.ToString())  'note that capitalization DOES matter
-                                        Catch e As Exception
-                                            Log.Write("Error getting next records: " & e.Message)
+                                        If XMLLoopCount = 500 Then
+                                            Log.Write("Getting next set of records..." & TotalLoopCount.ToString())
+                                            Try
+                                                MyXML = GetHighriseXML(Key, CompanyName, "companies.xml?tag_id=" + TagID + "&n=" + TotalLoopCount.ToString())  'note that capitalization DOES matter
+                                            Catch e As Exception
+                                                Log.Write("Error getting next records: " & e.Message)
 
-                                        End Try
+                                            End Try
 
-                                        If MyXML IsNot Nothing Then
-                                            XMLLoopCount = 0
+                                            If MyXML IsNot Nothing Then
+                                                XMLLoopCount = 0
+                                            Else
+                                                NeedtoGetMore = False
+                                            End If
                                         Else
                                             NeedtoGetMore = False
                                         End If
-                                    Else
-                                        NeedtoGetMore = False
-                                    End If
-                                End While
+                                    End While
 
-                                Log.Write("Processed " + CompanySyncData.Count.ToString() + " accounts.")
-                                Log.Write("Updating account information...")
+                                    Log.Write("Processed " + CompanySyncData.Count.ToString() + " accounts.")
+                                    Log.Write("Updating account information...")
 
-                                For Each company As CompanyData In CompanySyncData
-                                    'Go through all accounts we just processed and add to the TS database
-                                    UpdateOrgInfo(company, ParentOrgID)
-                                    Log.Write("Updated w/ Address: " & company.AccountName)
-                                Next
+                                    For Each company As CompanyData In CompanySyncData
+                                        'Go through all accounts we just processed and add to the TS database
+                                        UpdateOrgInfo(company, ParentOrgID)
+                                        Log.Write("Updated w/ Address: " & company.AccountName)
+                                    Next
 
-                                Log.Write("Finished updating account information.")
-                                Log.Write("Updating people information...")
+                                    Log.Write("Finished updating account information.")
+                                    Log.Write("Updating people information...")
 
-                                For Each company As CompanyData In CompanySyncData
-                                    Try
-                                        GetPeople(Key, CompanyName, company.AccountID, ParentOrgID)
-                                        Log.Write("Updated people information for " & company.AccountName)
-                                    Catch ex As Exception
-                                        Log.Write("Error in Updating People loop:" + ex.Message)
+                                    For Each company As CompanyData In CompanySyncData
+                                        Try
+                                            GetPeople(Key, CompanyName, company.AccountID, ParentOrgID)
+                                            Log.Write("Updated people information for " & company.AccountName)
+                                        Catch ex As Exception
+                                            Log.Write("Error in Updating People loop:" + ex.Message)
 
-                                    End Try
-                                Next
+                                        End Try
+                                    Next
 
-                                Log.Write("Finished updating people information")
-                            End If
+                                    Log.Write("Finished updating people information")
+                                End If
 
-                        Next
-                    End If
+                            Next
+                        End If
 
-                Catch ex As Exception
-                    SyncError = True
+                    Catch ex As Exception
+                        SyncError = True
 
-                    ErrorCode = IntegrationError.Unknown
-                    Log.Write("Error in Perform Highrise Sync: " + ex.Message)
-                End Try
+                        ErrorCode = IntegrationError.Unknown
+                        Log.Write("Error in Perform Highrise Sync: " + ex.Message)
+                    End Try
+                End If
 
                 Return Not SyncError
 
@@ -195,6 +193,7 @@ Namespace TeamSupport
                     'No s.
                     WebString = "http://" + CompanyName + ".highrisehq.com/" + URL
                 End If
+                Log.Write("Request: " + WebString)
 
                 If CompanyName <> "" Then
                     Try
@@ -211,6 +210,10 @@ Namespace TeamSupport
 
                         ' Get response  
                         response = DirectCast(request.GetResponse(), HttpWebResponse)
+                        Log.Write("Request have response: " + request.HaveResponse.ToString)
+                        If request.HaveResponse Then
+                          Log.Write("Response Content Length: " + response.ContentLength.ToString)
+                        End If
 
                         If request.HaveResponse AndAlso Not (response Is Nothing) Then
                             ' Get the response stream into a reader  
@@ -228,17 +231,18 @@ Namespace TeamSupport
                         response.Close()
 
                     Catch ex As Exception
-                        If UseSSL Then
-                            'If UseSSL is true then it means this is probably the first time we've called this.  Set to false then try again
-                            UseSSL = False
+                        Log.Write("Requesting: " + WebString + ". The following error in GetHighriseXML occurred: " + ex.ToString)
+                        'If UseSSL Then
+                        '    'If UseSSL is true then it means this is probably the first time we've called this.  Set to false then try again
+                        '    UseSSL = False
 
-                        Else
-                            'Don't need to raise the rror flag the first time through.
+                        'Else
+                        '    'Don't need to raise the rror flag the first time through.
                             ErrorCode = IntegrationError.Unknown
-                            Log.Write("Error in GetHighriseXML: " + ex.ToString)
+                        '    Log.Write("Error in GetHighriseXML: " + ex.ToString)
                             SyncError = True
 
-                        End If
+                        'End If
 
                         Return Nothing
                     End Try

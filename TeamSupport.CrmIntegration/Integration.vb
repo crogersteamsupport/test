@@ -92,7 +92,7 @@ Namespace TeamSupport
                     Log.Write("Finished updating people information")
                 End If
 
-                Return True
+                Return Not SyncError
             End Function
 
             Protected Delegate Function CreateCRMNote(ByVal accountid As String, ByVal thisTicket As Ticket) As Boolean
