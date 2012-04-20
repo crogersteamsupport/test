@@ -107,7 +107,20 @@ namespace TeamSupport.ServiceLibrary
         DocModifiedDate = DateTime.UtcNow;
         DocCreatedDate = (DateTime)_reader["DateCreated"];
         DocIsFile = false;
+
+        StringBuilder actionsBuilder = new StringBuilder();
+        Actions actions = new Actions(LoginUser);
+        actions.LoadByTicketID((int)_reader["TicketID"]);
+        foreach (TeamSupport.Data.Action action in actions)
+        {
+          actionsBuilder.AppendLine(HtmlToText.ConvertHtml(HtmlUtility.TidyHtml(action.Description)));
+        }
+        
+        
         DocText = string.Format("<html>{0}</html>", _reader["IndexText"].ToString());
+
+
+
         //Logs.Log(_loginUser, "Indexer", "Index Text", DocText, null, ReferenceType.Tickets, (int)_reader["TicketID"]);
         DocFields = "";
         DocName = _reader["TicketID"].ToString();
