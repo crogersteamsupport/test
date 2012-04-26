@@ -270,6 +270,24 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadForIndexing(int organizationID, int max)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        string text = @"
+        SELECT TOP {0} TicketID
+        FROM TicketsView tv WITH(NOLOCK)
+        WHERE tv.NeedsIndexing = 1
+        AND tv.OrganizationID= @OrganizationID
+        ORDER BY DateModified DESC";
+
+        command.CommandText = string.Format(text, max.ToString());
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
     public void LoadByFilter(int pageIndex, int pageSize, TicketLoadFilter filter)
     {/*
       using (SqlCommand command = new SqlCommand())

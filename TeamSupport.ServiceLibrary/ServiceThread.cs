@@ -62,7 +62,10 @@ namespace TeamSupport.ServiceLibrary
     {
       get
       {
-        return this.GetType().Name;
+        string result;
+
+        lock (this) { result = this.GetType().Name; }
+        return result;
       }
 
     }
@@ -87,7 +90,6 @@ namespace TeamSupport.ServiceLibrary
 
     public virtual void Stop()
     {
-      _logs.WriteEvent("Stop Requested");
       lock (this) { _isStopped = true; }
 
       if (Thread.IsAlive)
@@ -96,20 +98,15 @@ namespace TeamSupport.ServiceLibrary
         {
           if (Thread.IsAlive)
           {
-            _logs.WriteEvent("Still alive, aborting");
             Thread.Abort();
           }
-        }
-        else
-        {
-          _logs.WriteEvent("Successfully Stopped");
         }
       }
     }
 
     public virtual void Abort()
     {
-       _thread.Abort();
+      lock(this) _thread.Abort();
     }
 
     public virtual void Start()

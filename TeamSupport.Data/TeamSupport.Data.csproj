@@ -500,6 +500,7 @@
     <Compile Include="Generated\GeneratedWikiArticles.cs" />
     <Compile Include="Generated\GeneratedWikiArticlesView.cs" />
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
+    <Compile Include="HtmlToText.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>

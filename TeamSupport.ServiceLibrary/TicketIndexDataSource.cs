@@ -15,54 +15,23 @@ namespace TeamSupport.ServiceLibrary
   class TicketIndexDataSource : dtSearch.Engine.DataSource
   {
     private int? _lastTicketID = null;
-    private SqlDataReader _reader = null;
-    private int _count = 0;
-    private Dictionary<string, string> _fieldAliases;
-
-    private int _maxCount = 1000;
-    public int MaxCount
-    {
-      get { return _maxCount; }
-      set { _maxCount = value; }
-    }
-
-    /*private Dictionary<int, int> _updatedTickets = null;
-    public Dictionary<int, int> UpdatedTickets
-    {
-      get { return _updatedTickets; }
-      set { _updatedTickets = value; }
-    }*/
+    protected List<int> _ticketIDList = null;
+    private int _rowIndex = 0;
+    //private Dictionary<string, string> _fieldAliases;
+    private LoginUser _loginUser = null;
+    private int _organizationID;
+    private int _maxCount;
+    protected Logs _logs;
     private List<int> _updatedTickets = null;
     public List<int> UpdatedTickets
     {
-      get { return _updatedTickets; }
-      set { _updatedTickets = value; }
-    }
-
-    private LoginUser _loginUser = null;
-    public LoginUser LoginUser
-    {
-      get { return _loginUser; }
-      set { _loginUser = value; }
-    }
-
-    private Logs _logs = null;
-    public Logs Logs
-    {
-      get { return _logs; }
-      set { _logs = value; }
-    }
-
-    private int _organizationID;
-
-    public int OrganizationID
-    {
-      get { return _organizationID; }
-      set { _organizationID = value; }
+      get { lock (this) { return _updatedTickets; } }
     }
 
 
-    public TicketIndexDataSource()
+    protected TicketIndexDataSource() { }
+
+    public TicketIndexDataSource(LoginUser loginUser, int maxCount, int organizationID)
     {
       DocName = "";
       DocDisplayName = "";
@@ -71,8 +40,12 @@ namespace TeamSupport.ServiceLibrary
       DocText = "";
       DocFields = "";
       DocIsFile = false;
+      _maxCount = maxCount;
+      _loginUser = new LoginUser(loginUser.ConnectionString, loginUser.UserID, loginUser.OrganizationID, null);
       _updatedTickets = new List<int>();
-      _fieldAliases = new Dictionary<string, string>();
+      _organizationID = organizationID;
+      _logs = new Logs("Ticket Indexer DataSource");
+      //_fieldAliases = new Dictionary<string, string>();
     }
 
 
@@ -80,72 +53,72 @@ namespace TeamSupport.ServiceLibrary
     {
       try
       {
-        if (_reader == null) { Rewind(); }
+        if (_ticketIDList == null) { Rewind(); }
+        if (_lastTicketID != null) { UpdatedTickets.Add((int)_lastTicketID); }
+        _rowIndex++;
+        if (_ticketIDList.Count <= _rowIndex) { return false; }
+        TicketsViewItem ticket = TicketsView.GetTicketsViewItem(_loginUser, _ticketIDList[_rowIndex]);
+        _logs.WriteEvent("Started Processing TicketID: " + ticket.TicketID.ToString());
+        
+        //DocModifiedDate = (DateTime)_reader["DateModified"];
+        DocModifiedDate = DateTime.UtcNow;
+        DocCreatedDate = (DateTime) ticket.Row["DateCreated"];
+        DocIsFile = false;
 
-        if (_lastTicketID != null)
+        StringBuilder actionsBuilder = new StringBuilder();
+        Actions actions = new Actions(_loginUser);
+        actions.LoadByTicketID(ticket.TicketID);
+        foreach (TeamSupport.Data.Action action in actions)
         {
-          _updatedTickets.Add((int)_lastTicketID);
-        }
-
-        if (_count >= _maxCount) {
-          return false; 
-        }
-
-        if (!_reader.HasRows || !_reader.Read())
-        {
+          string actionText = action.Description;
           try
           {
-            if (!_reader.IsClosed) _reader.Close();
-            return false;
+            //actionText = HtmlUtility.TidyHtml(actionText);
           }
           catch (Exception)
           {
           }
-        }
-
-        //DocModifiedDate = (DateTime)_reader["DateModified"];
-        DocModifiedDate = DateTime.UtcNow;
-        DocCreatedDate = (DateTime)_reader["DateCreated"];
-        DocIsFile = false;
-
-        StringBuilder actionsBuilder = new StringBuilder();
-        Actions actions = new Actions(LoginUser);
-        actions.LoadByTicketID((int)_reader["TicketID"]);
-        foreach (TeamSupport.Data.Action action in actions)
-        {
-          actionsBuilder.AppendLine(HtmlToText.ConvertHtml(HtmlUtility.TidyHtml(action.Description)));
-        }
-        
-        
-        DocText = string.Format("<html>{0}</html>", _reader["IndexText"].ToString());
-
-
-
-        //Logs.Log(_loginUser, "Indexer", "Index Text", DocText, null, ReferenceType.Tickets, (int)_reader["TicketID"]);
-        DocFields = "";
-        DocName = _reader["TicketID"].ToString();
-        DocDisplayName = string.Format("{0}: {1}", _reader["TicketNumber"].ToString(), _reader["Name"].ToString());
-        _lastTicketID = (int)_reader["TicketID"];
-        for (int i = 0; i < _reader.FieldCount; i++)
-        {
-          string name = _reader.GetName(i);
-          /*if (_fieldAliases.ContainsKey(name))
+          
+          try
           {
-            name = _fieldAliases[name];
-          }*/
-          if (name.ToLower() == "indextext") continue;
-          object value = _reader.GetValue(i);
-          string s = value == null || value == DBNull.Value ? "" : value.ToString();
-          DocFields += name + "\t" + s.Replace("\t", " ") + "\t";
+            actionText = HtmlToText.ConvertHtml(actionText);
+          }
+          catch (Exception)
+          {
+          }
+          actionsBuilder.AppendLine(actionText);
         }
+        DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", actionsBuilder.ToString());
 
-        _count++;
+
+        DocFields = "";
+        DocName = ticket.TicketID.ToString();
+        DocDisplayName = string.Format("{0}: {1}", ticket.TicketNumber.ToString(), ticket.Name);
+        _lastTicketID = ticket.TicketID;
+
+        foreach (DataColumn column in ticket.Collection.Table.Columns)
+	      {
+          object value = ticket.Row[column];
+          string s = value == null || value == DBNull.Value ? "" : value.ToString();
+          DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
+
+	      }
+
+        CustomValues customValues = new CustomValues(_loginUser);
+        customValues.LoadByReferenceType(_organizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID);
+
+        foreach (CustomValue value in customValues)
+        {
+          object o = value.Row["CustomValue"];
+          string s = o == null || o == DBNull.Value ? "" : o.ToString();
+          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
+        }
         return true;
       }
       catch (Exception ex)
       {
-        ExceptionLogs.LogException(LoginUser, ex, "TicketIndexDataSource");
-        Logs.WriteException(ex);
+        ExceptionLogs.LogException(_loginUser, ex, "TicketIndexDataSource");
+        //Logs.WriteException(ex);
         throw;
       }
     }
@@ -156,58 +129,35 @@ namespace TeamSupport.ServiceLibrary
     {
       try
       {
-        Logs.WriteEvent("Rewinding Tickets Source");
-        _fieldAliases.Clear();
+        //Logs.WriteEvent("Rewinding Tickets Source");
+        /*_fieldAliases.Clear();
         ReportTableFields fields = new ReportTableFields(LoginUser);
         fields.LoadByReportTableID(10);
         foreach (ReportTableField field in fields)
         {
           _fieldAliases.Add(field.FieldName, field.Alias);
         }
-
-        string sql =
-        @"SELECT 
-        ISNULL(
-        (
-        ISNULL(
-        (
-          SELECT CAST(cv.CustomValue + ' ' AS VARCHAR(MAX)) FROM CustomValues cv LEFT JOIN CustomFields cf ON cf.CustomFieldID = cv.CustomFieldID 
-          WHERE cf.RefType=17 AND cv.RefID=tv.TicketID    
-          FOR XML PATH('')
-        ), '') + ' ' +
-        (
-          SELECT CAST(ISNULL(a.Description, '') + ' ' + ISNULL(a.Name, '') + ' ' + ISNULL(a.CreatorName, '') + ' ' AS VARCHAR(MAX))
-          FROM ActionsView a
-          WHERE a.TicketID = tv.TicketID
-          FOR XML PATH('')
-        )
-
-        ), '') AS IndexText,
-        tv.*
-        FROM TicketsView tv WITH(NOLOCK)
-        WHERE tv.NeedsIndexing = 1
-        AND tv.OrganizationID= @OrganizationID
-        ORDER BY DateModified 
-        ";
-        SqlConnection connection = new SqlConnection(LoginUser.ConnectionString);
-        connection.Open();
-        SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
-        SqlCommand command = new SqlCommand(sql, connection, transaction);
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", _organizationID);
-        _reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+         */
+        _logs.WriteEvent("Rewound, OrgID: " + _organizationID.ToString());
+        _ticketIDList = new List<int>();
+        TicketsView tickets = new TicketsView(_loginUser);
+        tickets.LoadForIndexing(_organizationID, _maxCount);
+        foreach (TicketsViewItem ticket in tickets)
+        {
+          _ticketIDList.Add(ticket.TicketID);
+        }
         _lastTicketID = null;
-        _count = 0;
-        Logs.WriteEvent("Tickets Source Rewound");
-
+        _rowIndex = -1;
+        //Logs.WriteEvent("Tickets Source Rewound");
       }
       catch (Exception ex)
       {
-        ExceptionLogs.LogException(LoginUser, ex, "TicketIndexDataSource Rewind");
-        Logs.WriteException(ex);
+        ExceptionLogs.LogException(_loginUser, ex, "TicketIndexDataSource Rewind");
+        //Logs.WriteException(ex);
         throw;
       }
       return true;
     }
   }
 }
+

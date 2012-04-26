@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using TidyNet;
 using HtmlAgilityPack;
+using System.Linq;
 
 namespace TeamSupport.Data
 {
@@ -365,20 +366,6 @@ namespace TeamSupport.Data
           return doc.DocumentNode.WriteTo();
         }
 
-        public static string HtmlToText(string html)
-        { 
-          HtmlDocument document = new HtmlDocument();
-          document.LoadHtml(html);
-          string result = "";
-
-          if (document != null && document.DocumentNode != null)
-          {
-            foreach (var script in document.DocumentNode.Descendants("script")) script.Remove();
-            foreach (var style in document.DocumentNode.Descendants("style")) style.Remove();
-            result = document.DocumentNode.InnerText;
-          }
-          return result; 
-        }
 
     }
 }

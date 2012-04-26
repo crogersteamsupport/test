@@ -26,10 +26,10 @@ namespace TeamSupport.ServiceTestApplication
     {
       InitializeComponent();
       System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.BelowNormal;
-      Settings settings = new Settings(ServiceThread.GetLoginUser("Service Test App"), "EmailSender");
-      settings.WriteBool("Debug", true);
-      settings = new Settings(ServiceThread.GetLoginUser("Service Test App"), "EmailProcessor");
-      settings.WriteBool("Debug", true);
+      //Settings settings = new Settings(ServiceThread.GetLoginUser("Service Test App"), "EmailSender");
+      //settings.WriteBool("Debug", true);
+      //settings = new Settings(ServiceThread.GetLoginUser("Service Test App"), "EmailProcessor");
+      //settings.WriteBool("Debug", true);
       _threads = new List<ServiceThread>();
       _domains = new List<AppDomain>();
       _serviceManager = new ServiceManager();

@@ -235,35 +235,33 @@ namespace TeamSupport.ServiceLibrary
 
     private void RecreateThread(Service service, ServiceThread thread)
     {
-      try
-      {
-        thread.Stop();
-      }
-      catch (Exception ex)
-      {
-        _logs.WriteException(ex);
-        ExceptionLogs.LogException(_loginUser, ex, "Service Manager: Thread Stop");
-      }
-
-      try
-      {
-        _threads.Remove(thread);
-      }
-      catch (Exception)
-      {
-      }
-      RecreateThread(service);
-    }
-
-    private void RecreateThread(Service service)
-    {
       _logs.WriteEvent(string.Format("Attempting to restart {0}.  Current Time: {1:g}   Last Health Check: {2:g}",
         service.Name,
         DateTime.Now,
         (DateTime)service.Row["HealthTime"]));
 
-      ServiceThread newThread = CreateThreadDomain(service);
+      if (thread != null)
+      {
+        try
+        {
+          thread.Stop();
+        }
+        catch (Exception ex)
+        {
+          _logs.WriteException(ex);
+          ExceptionLogs.LogException(_loginUser, ex, "Service Manager: Thread Stop");
+        }
 
+        try
+        {
+          _threads.Remove(thread);
+        }
+        catch (Exception)
+        {
+        }
+      }
+
+      ServiceThread newThread = CreateThreadDomain(service);
       if (newThread != null)
       {
         newThread.Start();
@@ -275,8 +273,12 @@ namespace TeamSupport.ServiceLibrary
         _logs.WriteEvent("FAILED to restart " + service.Name);
         EmailMessage("FAILED to restart " + service.Name);
       }
-      
-    
+
+    }
+
+    private void RecreateThread(Service service)
+    {
+      RecreateThread(service, null);
     }
 
 

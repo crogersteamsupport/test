@@ -66,11 +66,7 @@ namespace TeamSupport.ServiceLibrary
 
       using (IndexJob job = new IndexJob())
       {
-        TicketIndexDataSource dataSource = new TicketIndexDataSource();
-        dataSource.LoginUser = LoginUser;
-        dataSource.Logs = Logs;
-        dataSource.MaxCount = Settings.ReadInt("Max Records", 1000);
-        dataSource.OrganizationID = organization.OrganizationID;
+        TicketIndexDataSource dataSource = new TicketIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
         job.DataSourceToIndex = dataSource;
         
         job.IndexPath = path;
@@ -90,10 +86,11 @@ namespace TeamSupport.ServiceLibrary
 
           // Monitor the job execution thread as it progresses
           IndexProgressInfo status = new IndexProgressInfo();
-          while (job.IsThreadDone(500, status) == false)
+          while (job.IsThreadDone(1000, status) == false)
           {
             if (IsStopped) { job.AbortThread(); }
           }
+
         }
         catch (Exception ex)
         {
@@ -108,6 +105,7 @@ namespace TeamSupport.ServiceLibrary
 
     private void UpdateTickets(TicketIndexDataSource dataSource)
     {
+      UpdateHealth();
       if (dataSource.UpdatedTickets.Count < 1) return;
 
       /*
@@ -118,14 +116,13 @@ namespace TeamSupport.ServiceLibrary
         builder.AppendLine(sql);
       }
       */
-
       string updateSql = "UPDATE Tickets SET NeedsIndexing = 0 WHERE TicketID IN (" + DataUtils.IntArrayToCommaString(dataSource.UpdatedTickets.ToArray()) + ")";
       Logs.WriteEvent(updateSql);
       SqlCommand command = new SqlCommand();
       command.CommandText = updateSql;
       command.CommandType = System.Data.CommandType.Text;
 
-      SqlExecutor.ExecuteNonQuery(dataSource.LoginUser, command);
+      SqlExecutor.ExecuteNonQuery(LoginUser, command);
       Logs.WriteEvent("Ticket Indexes Statuses UPdated");
     }
 
@@ -162,6 +159,7 @@ namespace TeamSupport.ServiceLibrary
         job.Execute();
       }
 
+      UpdateHealth();
       items.DeleteAll();
       items.Save();
       Logs.WriteEvent("Finished Removing Old Ticket Indexes - OrgID = " + organization.OrganizationID);
