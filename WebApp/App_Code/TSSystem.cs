@@ -173,6 +173,7 @@ namespace TSWebServices
           utils.AddItem(new TsMenuItem("utils", "utils-exceptions", "Exceptions", "vcr/141/images/nav/16/close_2.png", string.Format(data, "vcr/141/Pages/Utils_Exceptions.html", "vcr/141/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-services", "Services", "vcr/141/images/nav/16/close_2.png", string.Format(data, "vcr/141/Pages/Utils_Services.html", "vcr/141/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-sanitizer", "Sanitizer", "vcr/141/images/nav/16/close_2.png", string.Format(data, "vcr/141/Pages/Utils_Sanitizer.html", "vcr/141/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-ticketsearch", "Ticket Search", "vcr/141/images/nav/16/close_2.png", string.Format(data, "vcr/141/Pages/Utils_TicketSearch.html", "vcr/141/PaneInfo/Admin.html")));
         }
       }
       else
@@ -530,6 +531,13 @@ namespace TSWebServices
       customValue.Collection.Save();
       return customValue.GetProxy();
     }
+
+    [WebMethod]
+    public void ChangeHealthCheck(bool value)
+    {
+      SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), new SqlCommand(value == true ? "UPDATE Services SET HealthMaxMinutes = 20" : "UPDATE Services SET HealthMaxMinutes = 999999"));
+    }
+
 
   }
 

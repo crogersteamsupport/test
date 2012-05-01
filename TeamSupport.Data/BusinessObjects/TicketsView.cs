@@ -602,17 +602,67 @@ namespace TeamSupport.Data
 
     }
 
-    public static int[] GetTicketIDs(string searchTerm, LoginUser loginUser)
-    {
-      using (SearchJob job = new SearchJob())
-      {
+    public static SearchResults GetQuickSearchTicketResults(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
+    { 
         Options options = new Options();
         options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+
+        using (SearchJob job = new SearchJob())
+        {
+          searchTerm = searchTerm.Trim();
+          job.Request = searchTerm;
+          job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+
+          StringBuilder conditions = new StringBuilder();
+          if (filter != null)
+          {
+            if (filter.IsKnowledgeBase != null) conditions.Append("(IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString() + ")");
+          }
+
+          job.BooleanConditions = conditions.ToString();
+          job.MaxFilesToRetrieve = 25;
+          job.AutoStopLimit = 100000;
+          job.TimeoutSeconds = 10;
+          job.SearchFlags =
+            SearchFlags.dtsSearchStemming |
+            SearchFlags.dtsSearchDelayDocInfo;
+
+          int num = 0;
+          if (!int.TryParse(searchTerm, out num))
+          {
+            job.Fuzziness = 1;
+            job.Request = job.Request + "*";
+            job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
+            //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
+          }
+
+          if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+          job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(loginUser));
+          job.Execute();
+          return job.Results;
+        }
+    }
+
+    public static SearchResults GetSearchTicketResults(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
+    {
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+      using (SearchJob job = new SearchJob())
+      {
 
         searchTerm = searchTerm.Trim();
         job.Request = searchTerm;
         job.FieldWeights = "TicketNumber: 5000, Name: 1000";
-        job.BooleanConditions = "OrganizationID::" + loginUser.OrganizationID.ToString();
+
+
+        StringBuilder conditions = new StringBuilder();
+        if (filter != null)
+        {
+          if (filter.IsKnowledgeBase != null) conditions.Append("(IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString() + ")");
+        }
+        job.BooleanConditions = conditions.ToString();
+
+
         job.MaxFilesToRetrieve = 1000;
         job.AutoStopLimit = 1000000;
         job.TimeoutSeconds = 30;
@@ -632,19 +682,37 @@ namespace TeamSupport.Data
         job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(loginUser));
         job.Execute();
 
-        SearchResults results = job.Results;
-
-        List<int> items = new List<int>();
-        for (int i = 0; i < results.Count; i++)
-        {
-          results.GetNthDoc(i);
-          items.Add(int.Parse(results.CurrentItem.Filename));
-        }
-        return items.ToArray();
+        return job.Results;
       }
-
     
     }
+
+    public static int[] GetTicketIDs(string searchTerm, LoginUser loginUser)
+    {
+      return GetTicketIDs(searchTerm, loginUser, null);
+    }
+
+    /// <summary>
+    /// Searches tickets based on search term and fitlers
+    /// </summary>
+    /// <param name="searchTerm"></param>
+    /// <param name="loginUser"></param>
+    /// <param name="filter"></param>
+    /// <returns></returns>
+    public static int[] GetTicketIDs(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
+    {
+      SearchResults results = GetSearchTicketResults(searchTerm, loginUser, filter);
+
+      List<int> items = new List<int>();
+      for (int i = 0; i < results.Count; i++)
+      {
+        results.GetNthDoc(i);
+        items.Add(int.Parse(results.CurrentItem.Filename));
+      }
+      return items.ToArray();
+    }
+
+    
 
     private static void AddTicketParameter(string name, object value, bool isUnassignableInt, StringBuilder builder, SqlCommand command)
     {

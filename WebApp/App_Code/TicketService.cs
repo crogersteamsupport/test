@@ -16,6 +16,7 @@ using System.Runtime.Serialization;
 using dtSearch.Engine;
 using HtmlAgilityPack;
 using System.IO;
+using TidyNet;
 
 namespace TSWebServices
 {
@@ -96,6 +97,18 @@ namespace TSWebServices
       ActionTypes types = new ActionTypes(TSAuthentication.GetLoginUser());
       types.LoadAllPositions(TSAuthentication.OrganizationID);
       return types.GetActionTypeProxies();
+    }
+
+    [WebMethod]
+    public string[] ActionToText(int actionID)
+    {
+      List<string> result = new List<string>();
+      TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+     
+      result.Add(HtmlToText.ConvertHtml(HtmlUtility.TidyHtml(action.Description)));
+      result.Add(action.Description);
+      return result.ToArray();
+
     }
 
     [WebMethod]
@@ -224,59 +237,17 @@ namespace TSWebServices
     {
       try
       {
-        Options options = new Options();
-        options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+        SearchResults results = TicketsView.GetQuickSearchTicketResults(searchTerm, TSAuthentication.GetLoginUser(), filter);
+        List<AutocompleteItem> items = new List<AutocompleteItem>();
+        //for (int i = 0; i < job.Errors.Count; i++) { items.Add(new AutocompleteItem(job.Errors.Message(i), "")); }
 
-        using (SearchJob job = new SearchJob())
+        for (int i = 0; i < results.Count; i++)
         {
-          searchTerm = searchTerm.Trim();
-          job.Request = searchTerm;
-          job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+          results.GetNthDoc(i);
 
-          StringBuilder conditions = new StringBuilder();
-          conditions.Append("(OrganizationID::" + TSAuthentication.OrganizationID.ToString() + ")");
-          if (filter != null)
-          {
-            conditions.Append(" AND (");
-            if (filter.IsKnowledgeBase != null)
-              conditions.Append("IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString());
-            conditions.Append(")");
-          }
-
-          job.BooleanConditions = conditions.ToString();
-          job.MaxFilesToRetrieve = 25;
-          job.AutoStopLimit = 100000;
-          job.TimeoutSeconds = 10;
-          job.SearchFlags =
-            SearchFlags.dtsSearchStemming |
-            SearchFlags.dtsSearchDelayDocInfo;
-
-          int num = 0;
-          if (!int.TryParse(searchTerm, out num))
-          {
-            job.Fuzziness = 1;
-            job.Request = job.Request + "*";
-            job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
-            //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
-          }
-
-          if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
-          job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(TSAuthentication.GetLoginUser()));
-          job.Execute();
-          SearchResults results = job.Results;
-
-
-          List<AutocompleteItem> items = new List<AutocompleteItem>();
-          //for (int i = 0; i < job.Errors.Count; i++) { items.Add(new AutocompleteItem(job.Errors.Message(i), "")); }
-
-          for (int i = 0; i < results.Count; i++)
-          {
-            results.GetNthDoc(i);
-
-            items.Add(new AutocompleteItem(results.CurrentItem.DisplayName, results.CurrentItem.UserFields["TicketNumber"].ToString(), results.CurrentItem.UserFields["TicketID"].ToString()));
-          }
-          return items.ToArray();
+          items.Add(new AutocompleteItem(results.CurrentItem.DisplayName, results.CurrentItem.UserFields["TicketNumber"].ToString(), results.CurrentItem.UserFields["TicketID"].ToString()));
         }
+        return items.ToArray();
       }
       catch (Exception ex)
       {
@@ -285,80 +256,107 @@ namespace TSWebServices
       return null;
     }
 
-    /*
-    public AutocompleteItem[] SearchTickets(string searchTerm)
-    {
-      return GetSearchTickets(searchTerm, false);
-    }
+
 
     [WebMethod]
-    public AutocompleteItem[] SearchKBTickets(string searchTerm)
-    {
-      return GetSearchTickets(searchTerm, true);
-    }*/
-
-    [WebMethod]
-    public string[] SearchTicketsTest(string searchTerm)
+    public string[] SearchTicketsTest(string searchTerm, int organizationID)
     {
       if (TSAuthentication.OrganizationID != 1078) return null;
-      Options options = new Options();
-      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+      LoginUser loginUser = new LoginUser(TSAuthentication.GetLoginUser().ConnectionString, -1, organizationID, null);
+      SearchResults results = TicketsView.GetSearchTicketResults(searchTerm, loginUser, null);
 
-      using (SearchJob job = new SearchJob())
+      SearchReportJob report = results.NewSearchReportJob();
+      report.SelectAll();
+      report.Flags = ReportFlags.dtsReportStoreInResults | ReportFlags.dtsReportWholeFile | ReportFlags.dtsReportGetFromCache | ReportFlags.dtsReportIncludeAll;
+      report.OutputFormat = OutputFormats.itUnformattedHTML;
+      report.MaxContextBlocks = 3;
+      report.MaxWordsToRead = 50000;
+      report.OutputStringMaxSize = 50000;
+      //report.WordsOfContext = 10;
+      report.BeforeHit = "123456789";// "<strong style=\"color:red;\">";
+      report.AfterHit = "987654321"; //"</strong>";
+      report.OutputToString = true;
+      report.Execute();
+      report.ContextSeparator = "<br/><br/>";
+      List<string> result = new List<string>();
+
+
+      for (int i = 0; i < results.Count; i++)
       {
-        searchTerm = searchTerm.Trim();
-        job.Request = searchTerm;
-        job.FieldWeights = "TicketNumber: 5000, Name: 1000";
-        job.BooleanConditions = "OrganizationID::5070";// + TSAuthentication.OrganizationID.ToString();
-        job.MaxFilesToRetrieve = 25;
-        job.AutoStopLimit = 100000;
-        job.TimeoutSeconds = 10;
-        job.SearchFlags =
-          SearchFlags.dtsSearchSelectMostRecent |
-          SearchFlags.dtsSearchStemming |
-          SearchFlags.dtsSearchDelayDocInfo;
+        results.GetNthDoc(i);
 
-        int num = 0;
-        if (!int.TryParse(searchTerm, out num))
-        {
-          job.Fuzziness = 0;
-          job.Request = job.Request;
-          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
-        }
+        using (FileConverter fc = new FileConverter ()) 
+				{
+			
+					// This sets up FileConverter with the input file, index location, and hits
+          fc.SetInputItem(results, 0);
+					
+					fc.OutputToString = true;
+					fc.OutputStringMaxSize = 2000000;
+					fc.OutputFormat = OutputFormats.itHTML;
 
-        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
-
-
-        job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(TSAuthentication.GetLoginUser()));
-        job.Execute();
-        SearchResults results = job.Results;
-
-        SearchReportJob report = results.NewSearchReportJob();
-        report.SelectAll();
-        report.Flags = ReportFlags.dtsReportStoreInResults | ReportFlags.dtsReportWholeFile | ReportFlags.dtsReportGetFromCache | ReportFlags.dtsReportIncludeAll;
-        report.OutputFormat = OutputFormats.itHTML;
-        //report.MaxContextBlocks = 3;
-        //report.MaxWordsToRead = 50000;
-        //report.OutputStringMaxSize = 500;
-        //report.WordsOfContext = 10;
-        report.BeforeHit = "<strong style=\"color:red;\">";
-        report.AfterHit = "</strong>";
-        report.OutputToString = true;
-        report.Execute();
-
-        List<string> result = new List<string>();
+					//String 	scriptName = Request.ServerVariables.Get ("SCRIPT_NAME");
+					//String virtPath = MakeVirtual (res.get_DocDetailItem("_filename"));
+					//String HitNavSrc = GetVirtualFolder(scriptName) + "HitNav.js";
+					//String HitNavLink =  "\r\n<script language=JavaScript src=\"" + HitNavSrc + "\"></script>\r\n";
+					fc.Header = "<A NAME=hit0></A>"    
+						+ "<TABLE border=0>"  
+						+ "<TR><TD bgcolor=#003399 color=#ffffff>"
+						+ "<font face=verdana color=#ffffff size=2></TD></TR>"
+						+ "<TR><TD bgcolor=#eeeeee color=#000000>"
+						+ "<font face=verdana color=#003399 size=2>"
+            + "<B>" + results.get_DocDetailItem("_shortName") + "   </B><BR>"
+						+ "<font face=verdana color=#000000 size=1>"
+            + results.DocHitCount + " Hits."
+						+ "  <B>Location: </B>  <B>Date: </B>"
+            + results.get_DocDetailItem("_date") + "<BR>"
+						+ "</FONT>"
+						+ "</TD></TR><TR><TD bgcolor=#003399 color=#ffffff>"
+						+"<font face=verdana color=#ffffff size=2></TD></TR></TABLE>";
 
 
-        for (int i = 0; i < results.Count; i++)
-        {
-          results.GetNthDoc(i);
+					// Set up additional settings for the file converter
+					fc.BeforeHit = "<span style=\"background-color: #FF0000\">";
+					fc.AfterHit = "</span>";
+					
+					// If the index was built with cached text, get the document from the cache
+					fc.Flags = (fc.Flags | ConvertFlags.dtsConvertGetFromCache);
+
+					// Execute the file conversion
+					fc.Execute ();
+
           StringBuilder builder = new StringBuilder();
-          builder.Append("<h1>" + results.CurrentItem.DisplayName + "</h1>");
-          builder.Append("<p class=\"ui-helper-hiddenx\">" + results.CurrentItem.Synopsis + "</p>");
+          //builder.Append("<h1>" + results.CurrentItem.DisplayName + "</h1>");
+          //builder.Append("<p class=\"ui-helper-hiddenx\">" + results.CurrentItem.Synopsis + "</p>");
+          
+          JobErrorInfo errors = fc.Errors;
+          if ((errors.Count > 0) || (fc.OutputString.Length < 2))
+          {
+            builder.AppendLine("<html><h1>Error converting document to HTML</h1>");
+            builder.AppendLine("<p>" + Server.HtmlEncode(fc.InputFile));
+            if (errors.Count > 0)
+            {
+              builder.AppendLine("<p>");
+              builder.AppendLine(Server.HtmlEncode(errors.Message(0)));
+            }
+            builder.AppendLine("<p>Note: To prevent conversion errors when highlighting hits " +
+              "use caching when building the index.  For more information, see " +
+              "<a href=\"http://www.dtsearch.com/index7.html\">http://www.dtsearch.com/index7.html</a> " +
+              "and the dtsIndexCacheOriginalFiles flag in the dtSearch Engine API documentation");
+
+          }
+          else
+          {
+            // Output the result of the file conversion
+            builder.AppendLine(fc.OutputString);
+          }
           result.Add(builder.ToString());
-        }
-        return result.ToArray();
+				}
+        
+
+
       }
+      return result.ToArray();
     }
 
     [WebMethod]

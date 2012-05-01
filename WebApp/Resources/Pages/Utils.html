@@ -92,6 +92,17 @@
         });
       });
 
+      $('#btnActionToText').click(function (e) {
+        e.preventDefault();
+
+        top.Ts.Services.Tickets.ActionToText($('#textActionToText').val(), function (result) {
+          $('.action-text').text(result[0]);
+          $('.action-html').text(result[1]);
+        });
+
+
+
+      });
 
 
       var execGetTicket = null;
@@ -110,6 +121,13 @@
       });
 
 
+      $('#btnHealthOff').click(function (e) { 
+        top.Ts.Services.System.ChangeHealthCheck(false);
+      });
+      $('#btnHealthOn').click(function (e) {
+        top.Ts.Services.System.ChangeHealthCheck(true);
+      });
+
     });  
   </script>
 
@@ -122,6 +140,8 @@
     <button id="btnRefresh">Refresh</button>&nbsp
     <button id="btnGenKeys">Generate Machine Keys</button>&nbsp
     <button id="btnDefaultUsers">Create Default Users</button>&nbsp
+    <button id="btnHealthOff">Turn Off Service Health Check</button>&nbsp
+    <button id="btnHealthOn">Turn On Service Health Check</button>&nbsp
     <button id="btnTest">Test</button>&nbsp
   </div>
   <div class="utils-content ui-widget ui-widget-content">
@@ -136,6 +156,14 @@
   </div>
   <div class="utils-content ui-widget ui-widget-content">
     <input class="text ui-corner-all ui-widget-content" type="text" id="textQuick" style="width: 250px;" />
+  </div>
+
+  <div class="utils-content ui-widget ui-widget-content">
+    <input class="text ui-corner-all ui-widget-content" type="text" id="textActionToText" style="width:300px;"/> <button id="btnActionToText">Action To Text</button>
+    <h1>TEXT</h1>
+    <div class="action-text"></div>
+    <h1>HTML</h1>
+    <div class="action-html"></div>
   </div>
 
   <div class="test-results">
