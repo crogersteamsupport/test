@@ -651,15 +651,26 @@ Namespace TeamSupport
                         Dim objDescription = Binding.describeSObject(objType)
 
                         For Each cField As CRMLinkField In theseFields
-                            For Each apiField As Field In objDescription.fields
-                                If apiField.name = cField.CRMFieldName Then
-                                    If customFieldList Is Nothing Then
-                                        customFieldList = apiField.name
-                                    Else
-                                        customFieldList &= ", " & apiField.name
+                            If (
+                                    objType = "Account" AndAlso cField.CRMFieldName.Trim().ToLower() <> "id"
+                                ) OrElse (
+                                    objType = "Contact" AndAlso cField.CRMFieldName.Trim().ToLower() <> "email"
+                            ) Then
+                                For Each apiField As Field In objDescription.fields
+                                    If apiField.name.Trim().ToLower() = cField.CRMFieldName.Trim().ToLower() Then
+                                        If customFieldList Is Nothing Then
+                                            customFieldList = apiField.name
+                                        'Any duplicate will raise an exception.
+                                        ElseIf Not customFieldList.Contains(apiField.name) Then
+                                            customFieldList &= ", " & apiField.name
+                                        Else
+                                            Log.Write("Custom field " & apiField.name & " is mapped more than one time.")
+                                        End If
+                                        'No need to continue after the field has been added.
+                                        Exit For
                                     End If
-                                End If
-                            Next
+                                Next
+                            End If
                         Next
                     End If
 
@@ -695,18 +706,27 @@ Namespace TeamSupport
                                 'update fields
                                 If objType = "Account" Then
                                     For Each thisField As Xml.XmlElement In record.Any
-                                        If thisField.InnerText <> "" Then
-                                            Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
+                                        Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
 
-                                            If thisMapping IsNot Nothing Then
+                                        If thisMapping IsNot Nothing Then
+                                            Try
                                                 If thisMapping.CustomFieldID IsNot Nothing Then
-                                                    UpdateCustomValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, thisField.InnerText)
+                                                    Dim translatedFieldValue As String = TranslateFieldValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, thisField.InnerText)
+                                                    UpdateCustomValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, translatedFieldValue)
 
                                                 ElseIf thisMapping.TSFieldName IsNot Nothing Then
-                                                    thisAccount.Row(thisMapping.TSFieldName) = thisField.InnerText
+                                                    thisAccount.Row(thisMapping.TSFieldName) = TranslateFieldValue(thisField.InnerText, thisAccount.Row(thisMapping.TSFieldName).GetType().Name)
                                                     thisAccount.BaseCollection.Save()
                                                 End If
-                                            End If
+                                            Catch mappingException As Exception
+                                                Log.Write(
+                                                  "The following exception was caught mapping the account field """ &
+                                                  thisField.LocalName &
+                                                  """ with """ &
+                                                  thisMapping.TSFieldName &
+                                                  """: " &
+                                                  mappingException.Message)
+                                            End Try
                                         End If
                                     Next
 
@@ -722,18 +742,27 @@ Namespace TeamSupport
                                     If thisContact IsNot Nothing Then
 
                                         For Each thisField As Xml.XmlElement In record.Any
-                                            If thisField.InnerText <> "" Then
-                                                Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
+                                            Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
 
-                                                If thisMapping IsNot Nothing Then
+                                            If thisMapping IsNot Nothing Then
+                                                Try
                                                     If thisMapping.CustomFieldID IsNot Nothing Then
-                                                        UpdateCustomValue(thisMapping.CustomFieldID, thisContact.UserID, thisField.InnerText)
+                                                        Dim translatedFieldValue As String = TranslateFieldValue(thisMapping.CustomFieldID, thisContact.UserID, thisField.InnerText)
+                                                        UpdateCustomValue(thisMapping.CustomFieldID, thisContact.UserID, translatedFieldValue)
 
                                                     ElseIf thisMapping.TSFieldName IsNot Nothing Then
-                                                        thisContact.Row(thisMapping.TSFieldName) = thisField.InnerText
+                                                        thisContact.Row(thisMapping.TSFieldName) = TranslateFieldValue(thisField.InnerText, thisContact.Row(thisMapping.TSFieldName).GetType().Name)
                                                         thisContact.BaseCollection.Save()
                                                     End If
-                                                End If
+                                                Catch mappingException As Exception
+                                                    Log.Write(
+                                                      "The following was exception caught mapping the contact field """ &
+                                                      thisField.LocalName &
+                                                      """ with """ &
+                                                      thisMapping.TSFieldName &
+                                                      """: " &
+                                                      mappingException.Message)
+                                                End Try
                                             End If
 
                                         Next
@@ -752,6 +781,63 @@ Namespace TeamSupport
                     SyncError = True
                 End Try
             End Sub
+
+            Private Overloads Function TranslateFieldValue(ByVal salesForceValue As String, ByVal teamSupportTypeName As String) As String
+                Dim teamSupportValue As String
+
+                Select Case teamSupportTypeName.ToLower()
+                    Case "boolean"
+                        teamSupportValue = TranslateBooleanFieldValue(salesForceValue)
+                    Case "datetime"
+                        teamSupportValue = TranslateDateTimeFieldValue(salesForceValue)
+                    Case Else
+                        teamSupportValue = salesForceValue
+                End Select
+
+                Return teamSupportValue
+            End Function
+
+            Private Overloads Function TranslateFieldValue(ByVal customFieldID As Integer, ByVal RefID As Integer, ByVal salesForceValue As String) As String
+                Dim result As String
+
+                Dim findCustom As New CustomValues(User)
+                findCustom.LoadByFieldID(customFieldID, RefID)
+                If findCustom.Count > 0 Then
+                    result = TranslateFieldValue(salesForceValue, findCustom(0).FieldType.ToString())
+                Else
+                    result = salesForceValue
+                End If
+
+                Return result
+            End Function
+
+            Private Function TranslateBooleanFieldValue(ByVal salesForceValue As String) As String
+                Dim teamSupportValue As String
+
+                Dim salesForceComparableValue As String = salesForceValue.Trim().ToLower()
+
+                If salesForceComparableValue = "yes" OrElse salesForceComparableValue = "1" Then
+                    teamSupportValue = "true"
+                ElseIf salesForceComparableValue = "no" OrElse salesForceComparableValue = "0" Then
+                    teamSupportValue = "false"
+                Else
+                    teamSupportValue = salesForceValue
+                End If
+
+                Return teamSupportValue
+            End Function
+
+            Private Function TranslateDateTimeFieldValue(ByVal salesForceValue As String) As String
+                Dim result As String
+
+                Try
+                    result = Convert.ToDateTime(salesForceValue).ToString()
+                Catch ex As Exception
+                    result = salesForceValue
+                End Try
+
+                Return result
+            End Function
 
             Protected Overrides Sub Finalize()
                 MyBase.Finalize()
