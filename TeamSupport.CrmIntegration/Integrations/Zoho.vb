@@ -521,14 +521,8 @@ Namespace TeamSupport
 
                 Dim postParameters As New Dictionary(Of String, Object)()
 
-                'only bother updating if it is an update... if it is a new sync, just add
-                If CRMLinkRow.LastLink.HasValue Then
-                    postParameters.Add("ZOHO_IMPORT_TYPE", "UPDATEADD")
-                    postParameters.Add("ZOHO_MATCHING_COLUMNS", keyName)
-                Else
-                    postParameters.Add("ZOHO_IMPORT_TYPE", "APPEND")
-                End If
-
+                postParameters.Add("ZOHO_IMPORT_TYPE", "UPDATEADD")
+                postParameters.Add("ZOHO_MATCHING_COLUMNS", keyName)
                 postParameters.Add("ZOHO_AUTO_IDENTIFY", "false")
                 postParameters.Add("ZOHO_ON_IMPORT_ERROR", "ABORT")
                 postParameters.Add("ZOHO_DELIMITER", "0")
