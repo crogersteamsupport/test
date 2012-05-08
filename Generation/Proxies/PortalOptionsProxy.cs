@@ -52,6 +52,7 @@ namespace TeamSupport.Data
     [DataMember] public string TermsAndConditions { get; set; }
     [DataMember] public int? RequestType { get; set; }
     [DataMember] public int? RequestGroup { get; set; }
+    [DataMember] public bool AutoRegister { get; set; }
           
   }
   
@@ -60,6 +61,7 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.AutoRegister = this.AutoRegister;
       result.RequestGroup = this.RequestGroup;
       result.RequestType = this.RequestType;
       result.TermsAndConditions = this.TermsAndConditions;

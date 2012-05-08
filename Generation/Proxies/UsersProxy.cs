@@ -56,6 +56,7 @@ namespace TeamSupport.Data
     [DataMember] public bool ApprovedTerms { get; set; }
     [DataMember] public bool ShowWelcomePage { get; set; }
     [DataMember] public string UserInformation { get; set; }
+    [DataMember] public bool PortalAutoReg { get; set; }
           
   }
   
@@ -64,6 +65,7 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.PortalAutoReg = this.PortalAutoReg;
       result.UserInformation = this.UserInformation;
       result.ShowWelcomePage = this.ShowWelcomePage;
       result.ApprovedTerms = this.ApprovedTerms;

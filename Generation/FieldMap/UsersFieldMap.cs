@@ -56,6 +56,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ApprovedTerms", "ApprovedTerms", false, false, false);
       _fieldMap.AddMap("ShowWelcomePage", "ShowWelcomePage", false, false, false);
       _fieldMap.AddMap("UserInformation", "UserInformation", false, false, false);
+      _fieldMap.AddMap("PortalAutoReg", "PortalAutoReg", false, false, false);
             
     }
   }

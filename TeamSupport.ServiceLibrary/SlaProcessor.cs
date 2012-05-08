@@ -23,13 +23,13 @@ namespace TeamSupport.ServiceLibrary
       try
       {
 
-        TicketSlaView view = new TicketSlaView(LoginUser);
-        view.LoadAllUnnotifiedAndExpired();
+        Tickets tickets = new Tickets(LoginUser);
+        tickets.LoadAllUnnotifiedAndExpiredSla();
 
-        foreach (TicketSlaViewItem item in view)
+        foreach (Ticket ticket in tickets)
         {
           if (IsStopped) break;
-          ProcessTicket(item);
+          ProcessTicket(ticket);
           System.Threading.Thread.Sleep(0);
         }
       }
@@ -40,11 +40,11 @@ namespace TeamSupport.ServiceLibrary
     }
 
 
-    private void ProcessTicket(TicketSlaViewItem ticketSlaViewItem)
+    private void ProcessTicket(Ticket ticket)
     {
       UpdateHealth();
       SlaTriggersView triggers = new SlaTriggersView(LoginUser);
-      triggers.LoadByTicket(ticketSlaViewItem.TicketID);
+      triggers.LoadByTicket(ticket.TicketID);
 
       bool warnGroup = false;
       bool warnUser = false;
@@ -59,93 +59,93 @@ namespace TeamSupport.ServiceLibrary
         vioUser = item.NotifyUserOnViolation || vioUser;
       }
 
-      SlaNotification notification = SlaNotifications.GetSlaNotification(LoginUser, ticketSlaViewItem.TicketID);
+      SlaNotification notification = SlaNotifications.GetSlaNotification(LoginUser, ticket.TicketID);
       if (notification == null)
       {
         notification = (new SlaNotifications(LoginUser)).AddNewSlaNotification();
-        notification.TicketID = ticketSlaViewItem.TicketID;
+        notification.TicketID = ticket.TicketID;
       }
 
       DateTime notifyTime;
 
-      if (ticketSlaViewItem.ViolationInitialResponse != null && ticketSlaViewItem.ViolationInitialResponse <= 0)
+      if (ticket.SlaViolationInitialResponse != null && ticket.SlaViolationInitialResponse <= DateTime.UtcNow)
       {
-        
-        notifyTime = DateTime.UtcNow.AddMinutes((int)ticketSlaViewItem.ViolationInitialResponse);
+
+        notifyTime = (DateTime)ticket.SlaViolationInitialResponse;
         if (!IsTooOld(notifyTime))
         {
           if (notification.InitialResponseViolationDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.InitialResponseViolationDate) - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticketSlaViewItem.TicketID, vioUser, vioGroup, false, NotificationType.InitialResponse);
+            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, NotificationType.InitialResponse);
             notification.InitialResponseViolationDate = notifyTime;
           }
         }
       }
-      else if (ticketSlaViewItem.WarningInitialResponse != null && ticketSlaViewItem.WarningInitialResponse <= 0)
+      else if (ticket.SlaWarningInitialResponse != null && ticket.SlaWarningInitialResponse <= DateTime.UtcNow)
       {
-        notifyTime = DateTime.UtcNow.AddMinutes((int)ticketSlaViewItem.WarningInitialResponse);
+        notifyTime = (DateTime) ticket.SlaWarningInitialResponse;
 
         if (!IsTooOld(notifyTime))
         {
           if (notification.InitialResponseWarningDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.InitialResponseWarningDate) - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticketSlaViewItem.TicketID, warnUser, warnGroup, true, NotificationType.InitialResponse);
+            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, NotificationType.InitialResponse);
             notification.InitialResponseWarningDate = notifyTime;
           }
         }
       }
 
 
-      if (ticketSlaViewItem.ViolationLastAction != null && ticketSlaViewItem.ViolationLastAction <= 0)
+      if (ticket.SlaViolationLastAction != null && ticket.SlaViolationLastAction <= DateTime.UtcNow)
       {
-        notifyTime = DateTime.UtcNow.AddMinutes((int)ticketSlaViewItem.ViolationLastAction);
+        notifyTime = (DateTime) ticket.SlaViolationLastAction;
 
         if (!IsTooOld(notifyTime))
         {
           if (notification.LastActionViolationDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.LastActionViolationDate) - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticketSlaViewItem.TicketID, vioUser, vioGroup, false, NotificationType.LastAction);
+            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, NotificationType.LastAction);
             notification.LastActionViolationDate = notifyTime;
           }
         }
       }
-      else if (ticketSlaViewItem.WarningLastAction != null && ticketSlaViewItem.WarningLastAction <= 0)
+      else if (ticket.SlaWarningLastAction != null && ticket.SlaWarningLastAction <= DateTime.UtcNow)
       {
-        notifyTime = DateTime.UtcNow.AddMinutes((int)ticketSlaViewItem.WarningLastAction);
+        notifyTime = (DateTime) ticket.SlaWarningLastAction;
 
         if (!IsTooOld(notifyTime))
         {
           if (notification.LastActionWarningDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.LastActionWarningDate) - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticketSlaViewItem.TicketID, warnUser, warnGroup, true, NotificationType.LastAction);
+            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, NotificationType.LastAction);
             notification.LastActionWarningDate = notifyTime;
           }
         }
       }
 
 
-      if (ticketSlaViewItem.ViolationTimeClosed != null && ticketSlaViewItem.ViolationTimeClosed <= 0)
+      if (ticket.SlaViolationTimeClosed != null && ticket.SlaViolationTimeClosed <= DateTime.UtcNow)
       {
-        notifyTime = DateTime.UtcNow.AddMinutes((int)ticketSlaViewItem.ViolationTimeClosed);
+        notifyTime = (DateTime)ticket.SlaViolationTimeClosed;
 
         if (!IsTooOld(notifyTime))
         {
           if (notification.TimeClosedViolationDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.TimeClosedViolationDate) - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticketSlaViewItem.TicketID, vioUser, vioGroup, false, NotificationType.TimeClosed);
+            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, NotificationType.TimeClosed);
             notification.TimeClosedViolationDate = notifyTime;
           }
         }
       }
-      else if (ticketSlaViewItem.WarningTimeClosed != null && ticketSlaViewItem.WarningTimeClosed <= 0)
+      else if (ticket.SlaWarningTimeClosed != null && ticket.SlaWarningTimeClosed <= DateTime.UtcNow)
       {
-        notifyTime = DateTime.UtcNow.AddMinutes((int)ticketSlaViewItem.WarningTimeClosed);
+        notifyTime = (DateTime)ticket.SlaWarningTimeClosed;
 
         if (!IsTooOld(notifyTime))
         {
           if (notification.TimeClosedWarningDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.TimeClosedWarningDate) - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticketSlaViewItem.TicketID, warnUser, warnGroup, true, NotificationType.TimeClosed);
+            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, NotificationType.TimeClosed);
             notification.TimeClosedWarningDate = notifyTime;
           }
         }

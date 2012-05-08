@@ -594,7 +594,8 @@ AS
     [SubscribeToNewActions],
     [ApprovedTerms],
     [ShowWelcomePage],
-    [UserInformation]
+    [UserInformation],
+    [PortalAutoReg]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -647,6 +648,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
   @Identity int OUT
 )
 AS
@@ -694,7 +696,8 @@ AS
     [SubscribeToNewActions],
     [ApprovedTerms],
     [ShowWelcomePage],
-    [UserInformation])
+    [UserInformation],
+    [PortalAutoReg])
   VALUES (
     @Email,
     @FirstName,
@@ -737,7 +740,8 @@ AS
     @SubscribeToNewActions,
     @ApprovedTerms,
     @ShowWelcomePage,
-    @UserInformation)
+    @UserInformation,
+    @PortalAutoReg)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -788,7 +792,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @SubscribeToNewActions bit,
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
-  @UserInformation varchar(MAX)
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit
 )
 AS
   SET NOCOUNT OFF;
@@ -833,7 +838,8 @@ AS
     [SubscribeToNewActions] = @SubscribeToNewActions,
     [ApprovedTerms] = @ApprovedTerms,
     [ShowWelcomePage] = @ShowWelcomePage,
-    [UserInformation] = @UserInformation
+    [UserInformation] = @UserInformation,
+    [PortalAutoReg] = @PortalAutoReg
   WHERE ([UserID] = @UserID)
 GO
 
@@ -10781,7 +10787,8 @@ AS
     [DisplayTandC],
     [TermsAndConditions],
     [RequestType],
-    [RequestGroup]
+    [RequestGroup],
+    [AutoRegister]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -10831,6 +10838,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
   @RequestGroup int,
+  @AutoRegister bit,
   @Identity int OUT
 )
 AS
@@ -10875,7 +10883,8 @@ AS
     [DisplayTandC],
     [TermsAndConditions],
     [RequestType],
-    [RequestGroup])
+    [RequestGroup],
+    [AutoRegister])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -10915,7 +10924,8 @@ AS
     @DisplayTandC,
     @TermsAndConditions,
     @RequestType,
-    @RequestGroup)
+    @RequestGroup,
+    @AutoRegister)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -10964,7 +10974,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayTandC bit,
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
-  @RequestGroup int
+  @RequestGroup int,
+  @AutoRegister bit
 )
 AS
   SET NOCOUNT OFF;
@@ -11007,7 +11018,8 @@ AS
     [DisplayTandC] = @DisplayTandC,
     [TermsAndConditions] = @TermsAndConditions,
     [RequestType] = @RequestType,
-    [RequestGroup] = @RequestGroup
+    [RequestGroup] = @RequestGroup,
+    [AutoRegister] = @AutoRegister
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -13273,7 +13285,8 @@ AS
     [SubscribeToNewActions],
     [ApprovedTerms],
     [ShowWelcomePage],
-    [UserInformation]
+    [UserInformation],
+    [PortalAutoReg]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -13326,6 +13339,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
   @Identity int OUT
 )
 AS
@@ -13373,7 +13387,8 @@ AS
     [SubscribeToNewActions],
     [ApprovedTerms],
     [ShowWelcomePage],
-    [UserInformation])
+    [UserInformation],
+    [PortalAutoReg])
   VALUES (
     @Email,
     @FirstName,
@@ -13416,7 +13431,8 @@ AS
     @SubscribeToNewActions,
     @ApprovedTerms,
     @ShowWelcomePage,
-    @UserInformation)
+    @UserInformation,
+    @PortalAutoReg)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -13467,7 +13483,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @SubscribeToNewActions bit,
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
-  @UserInformation varchar(MAX)
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit
 )
 AS
   SET NOCOUNT OFF;
@@ -13512,7 +13529,8 @@ AS
     [SubscribeToNewActions] = @SubscribeToNewActions,
     [ApprovedTerms] = @ApprovedTerms,
     [ShowWelcomePage] = @ShowWelcomePage,
-    [UserInformation] = @UserInformation
+    [UserInformation] = @UserInformation,
+    [PortalAutoReg] = @PortalAutoReg
   WHERE ([UserID] = @UserID)
 GO
 
@@ -23460,7 +23478,8 @@ AS
     [DisplayTandC],
     [TermsAndConditions],
     [RequestType],
-    [RequestGroup]
+    [RequestGroup],
+    [AutoRegister]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -23510,6 +23529,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
   @RequestGroup int,
+  @AutoRegister bit,
   @Identity int OUT
 )
 AS
@@ -23554,7 +23574,8 @@ AS
     [DisplayTandC],
     [TermsAndConditions],
     [RequestType],
-    [RequestGroup])
+    [RequestGroup],
+    [AutoRegister])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -23594,7 +23615,8 @@ AS
     @DisplayTandC,
     @TermsAndConditions,
     @RequestType,
-    @RequestGroup)
+    @RequestGroup,
+    @AutoRegister)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -23643,7 +23665,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayTandC bit,
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
-  @RequestGroup int
+  @RequestGroup int,
+  @AutoRegister bit
 )
 AS
   SET NOCOUNT OFF;
@@ -23686,7 +23709,8 @@ AS
     [DisplayTandC] = @DisplayTandC,
     [TermsAndConditions] = @TermsAndConditions,
     [RequestType] = @RequestType,
-    [RequestGroup] = @RequestGroup
+    [RequestGroup] = @RequestGroup,
+    [AutoRegister] = @AutoRegister
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -25952,7 +25976,8 @@ AS
     [SubscribeToNewActions],
     [ApprovedTerms],
     [ShowWelcomePage],
-    [UserInformation]
+    [UserInformation],
+    [PortalAutoReg]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -26005,6 +26030,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
   @Identity int OUT
 )
 AS
@@ -26052,7 +26078,8 @@ AS
     [SubscribeToNewActions],
     [ApprovedTerms],
     [ShowWelcomePage],
-    [UserInformation])
+    [UserInformation],
+    [PortalAutoReg])
   VALUES (
     @Email,
     @FirstName,
@@ -26095,7 +26122,8 @@ AS
     @SubscribeToNewActions,
     @ApprovedTerms,
     @ShowWelcomePage,
-    @UserInformation)
+    @UserInformation,
+    @PortalAutoReg)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -26146,7 +26174,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @SubscribeToNewActions bit,
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
-  @UserInformation varchar(MAX)
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit
 )
 AS
   SET NOCOUNT OFF;
@@ -26191,7 +26220,8 @@ AS
     [SubscribeToNewActions] = @SubscribeToNewActions,
     [ApprovedTerms] = @ApprovedTerms,
     [ShowWelcomePage] = @ShowWelcomePage,
-    [UserInformation] = @UserInformation
+    [UserInformation] = @UserInformation,
+    [PortalAutoReg] = @PortalAutoReg
   WHERE ([UserID] = @UserID)
 GO
 
@@ -36139,7 +36169,8 @@ AS
     [DisplayTandC],
     [TermsAndConditions],
     [RequestType],
-    [RequestGroup]
+    [RequestGroup],
+    [AutoRegister]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -36189,6 +36220,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
   @RequestGroup int,
+  @AutoRegister bit,
   @Identity int OUT
 )
 AS
@@ -36233,7 +36265,8 @@ AS
     [DisplayTandC],
     [TermsAndConditions],
     [RequestType],
-    [RequestGroup])
+    [RequestGroup],
+    [AutoRegister])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -36273,7 +36306,8 @@ AS
     @DisplayTandC,
     @TermsAndConditions,
     @RequestType,
-    @RequestGroup)
+    @RequestGroup,
+    @AutoRegister)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -36322,7 +36356,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayTandC bit,
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
-  @RequestGroup int
+  @RequestGroup int,
+  @AutoRegister bit
 )
 AS
   SET NOCOUNT OFF;
@@ -36365,7 +36400,8 @@ AS
     [DisplayTandC] = @DisplayTandC,
     [TermsAndConditions] = @TermsAndConditions,
     [RequestType] = @RequestType,
-    [RequestGroup] = @RequestGroup
+    [RequestGroup] = @RequestGroup,
+    [AutoRegister] = @AutoRegister
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -38631,7 +38667,8 @@ AS
     [SubscribeToNewActions],
     [ApprovedTerms],
     [ShowWelcomePage],
-    [UserInformation]
+    [UserInformation],
+    [PortalAutoReg]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -38684,6 +38721,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
   @Identity int OUT
 )
 AS
@@ -38731,7 +38769,8 @@ AS
     [SubscribeToNewActions],
     [ApprovedTerms],
     [ShowWelcomePage],
-    [UserInformation])
+    [UserInformation],
+    [PortalAutoReg])
   VALUES (
     @Email,
     @FirstName,
@@ -38774,7 +38813,8 @@ AS
     @SubscribeToNewActions,
     @ApprovedTerms,
     @ShowWelcomePage,
-    @UserInformation)
+    @UserInformation,
+    @PortalAutoReg)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -38825,7 +38865,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @SubscribeToNewActions bit,
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
-  @UserInformation varchar(MAX)
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit
 )
 AS
   SET NOCOUNT OFF;
@@ -38870,7 +38911,8 @@ AS
     [SubscribeToNewActions] = @SubscribeToNewActions,
     [ApprovedTerms] = @ApprovedTerms,
     [ShowWelcomePage] = @ShowWelcomePage,
-    [UserInformation] = @UserInformation
+    [UserInformation] = @UserInformation,
+    [PortalAutoReg] = @PortalAutoReg
   WHERE ([UserID] = @UserID)
 GO
 
@@ -48818,7 +48860,8 @@ AS
     [DisplayTandC],
     [TermsAndConditions],
     [RequestType],
-    [RequestGroup]
+    [RequestGroup],
+    [AutoRegister]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -48868,6 +48911,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
   @RequestGroup int,
+  @AutoRegister bit,
   @Identity int OUT
 )
 AS
@@ -48912,7 +48956,8 @@ AS
     [DisplayTandC],
     [TermsAndConditions],
     [RequestType],
-    [RequestGroup])
+    [RequestGroup],
+    [AutoRegister])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -48952,7 +48997,8 @@ AS
     @DisplayTandC,
     @TermsAndConditions,
     @RequestType,
-    @RequestGroup)
+    @RequestGroup,
+    @AutoRegister)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -49001,7 +49047,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayTandC bit,
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
-  @RequestGroup int
+  @RequestGroup int,
+  @AutoRegister bit
 )
 AS
   SET NOCOUNT OFF;
@@ -49044,7 +49091,8 @@ AS
     [DisplayTandC] = @DisplayTandC,
     [TermsAndConditions] = @TermsAndConditions,
     [RequestType] = @RequestType,
-    [RequestGroup] = @RequestGroup
+    [RequestGroup] = @RequestGroup,
+    [AutoRegister] = @AutoRegister
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -51310,7 +51358,8 @@ AS
     [SubscribeToNewActions],
     [ApprovedTerms],
     [ShowWelcomePage],
-    [UserInformation]
+    [UserInformation],
+    [PortalAutoReg]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -51363,6 +51412,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
+  @PortalAutoReg bit,
   @Identity int OUT
 )
 AS
@@ -51410,7 +51460,8 @@ AS
     [SubscribeToNewActions],
     [ApprovedTerms],
     [ShowWelcomePage],
-    [UserInformation])
+    [UserInformation],
+    [PortalAutoReg])
   VALUES (
     @Email,
     @FirstName,
@@ -51453,7 +51504,8 @@ AS
     @SubscribeToNewActions,
     @ApprovedTerms,
     @ShowWelcomePage,
-    @UserInformation)
+    @UserInformation,
+    @PortalAutoReg)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -51504,7 +51556,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @SubscribeToNewActions bit,
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
-  @UserInformation varchar(MAX)
+  @UserInformation varchar(MAX),
+  @PortalAutoReg bit
 )
 AS
   SET NOCOUNT OFF;
@@ -51549,7 +51602,8 @@ AS
     [SubscribeToNewActions] = @SubscribeToNewActions,
     [ApprovedTerms] = @ApprovedTerms,
     [ShowWelcomePage] = @ShowWelcomePage,
-    [UserInformation] = @UserInformation
+    [UserInformation] = @UserInformation,
+    [PortalAutoReg] = @PortalAutoReg
   WHERE ([UserID] = @UserID)
 GO
 
@@ -61497,7 +61551,8 @@ AS
     [DisplayTandC],
     [TermsAndConditions],
     [RequestType],
-    [RequestGroup]
+    [RequestGroup],
+    [AutoRegister]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -61547,6 +61602,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
   @RequestGroup int,
+  @AutoRegister bit,
   @Identity int OUT
 )
 AS
@@ -61591,7 +61647,8 @@ AS
     [DisplayTandC],
     [TermsAndConditions],
     [RequestType],
-    [RequestGroup])
+    [RequestGroup],
+    [AutoRegister])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -61631,7 +61688,8 @@ AS
     @DisplayTandC,
     @TermsAndConditions,
     @RequestType,
-    @RequestGroup)
+    @RequestGroup,
+    @AutoRegister)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -61680,7 +61738,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @DisplayTandC bit,
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
-  @RequestGroup int
+  @RequestGroup int,
+  @AutoRegister bit
 )
 AS
   SET NOCOUNT OFF;
@@ -61723,7 +61782,8 @@ AS
     [DisplayTandC] = @DisplayTandC,
     [TermsAndConditions] = @TermsAndConditions,
     [RequestType] = @RequestType,
-    [RequestGroup] = @RequestGroup
+    [RequestGroup] = @RequestGroup,
+    [AutoRegister] = @AutoRegister
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 

@@ -20,6 +20,38 @@ namespace TeamSupport.Data
       {
         command.CommandText =
 @"
+SELECT t.*,sn.*
+FROM Tickets t
+LEFT JOIN SlaNotifications sn ON t.TicketID = sn.TicketID
+
+WHERE 
+(ISNULL(t.SlaViolationTimeClosed, 10000) BETWEEN -1440 AND -1
+ AND
+ DATEDIFF(minute,  t.SlaViolationTimeClosed, ISNULL(sn.TimeClosedViolationDate, 999999)) > 10)
+OR
+(ISNULL(t.SlaWarningTimeClosed, 10000) BETWEEN -1440 AND -1
+ AND
+ DATEDIFF(minute, t.SlaWarningTimeClosed, ISNULL(sn.TimeClosedWarningDate, 999999)) > 10)
+OR 
+(ISNULL(t.SlaViolationLastAction, 10000) BETWEEN -1440 AND -1
+ AND
+ DATEDIFF(minute, t.SlaViolationLastAction, ISNULL(sn.LastActionViolationDate, 999999)) > 10)
+OR
+(ISNULL(t.SlaWarningLastAction, 10000) BETWEEN -1440 AND -1
+ AND
+ DATEDIFF(minute, t.SlaWarningLastAction, ISNULL(sn.LastActionWarningDate, 999999)) > 10)
+OR 
+(ISNULL(t.SlaViolationInitialResponse, 10000) BETWEEN -1440 AND -1
+ AND
+ DATEDIFF(minute, t.SlaViolationInitialResponse, ISNULL(sn.InitialResponseViolationDate, 999999)) > 10)
+OR
+(ISNULL(t.SlaWarningInitialResponse, 10000) BETWEEN -1440 AND -1
+ AND
+ DATEDIFF(minute, t.SlaWarningInitialResponse, ISNULL(sn.InitialResponseWarningDate, 999999)) > 10)
+";
+
+/*
+@"
 SELECT tsv.*
 FROM TicketSlaView tsv
 LEFT JOIN SlaNotifications sn ON tsv.TicketID = sn.TicketID
@@ -48,7 +80,7 @@ OR
 (ISNULL(tsv.WarningInitialResponse, 10000) BETWEEN -1440 AND -1
  AND
  DATEDIFF(minute, DATEADD(minute, tsv.WarningInitialResponse, GETUTCDATE()), ISNULL(sn.InitialResponseWarningDate, 999999)) > 10)
-";
+";*/
 
 
         command.CommandType = CommandType.Text;

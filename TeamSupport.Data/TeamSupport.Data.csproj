@@ -191,6 +191,7 @@
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
     <Compile Include="BusinessObjects\Reminders.cs" />
     <Compile Include="BusinessObjects\ReportEmails.cs" />
+    <Compile Include="BusinessObjects\ReportViews.cs" />
     <Compile Include="BusinessObjects\Services.cs" />
     <Compile Include="BusinessObjects\ServiceSettings.cs" />
     <Compile Include="BusinessObjects\TagLinks.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="FieldMaps\OrganizationEmailsFieldMap.cs" />
     <Compile Include="FieldMaps\RemindersFieldMap.cs" />
     <Compile Include="FieldMaps\ReportEmailsFieldMap.cs" />
+    <Compile Include="FieldMaps\ReportViewsFieldMap.cs" />
     <Compile Include="FieldMaps\ServiceSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ServicesFieldMap.cs" />
     <Compile Include="FieldMaps\TagLinksFieldMap.cs" />
@@ -461,6 +463,7 @@
     <Compile Include="Generated\GeneratedReportSubcategories.cs" />
     <Compile Include="Generated\GeneratedReportTableFields.cs" />
     <Compile Include="Generated\GeneratedReportTables.cs" />
+    <Compile Include="Generated\GeneratedReportViews.cs" />
     <Compile Include="Generated\GeneratedServices.cs" />
     <Compile Include="Generated\GeneratedServiceSettings.cs" />
     <Compile Include="Generated\GeneratedSlaLevels.cs" />
@@ -579,6 +582,7 @@
     <Compile Include="Proxies\ReportSubcategoriesProxy.cs" />
     <Compile Include="Proxies\ReportTableFieldsProxy.cs" />
     <Compile Include="Proxies\ReportTablesProxy.cs" />
+    <Compile Include="Proxies\ReportViewsProxy.cs" />
     <Compile Include="Proxies\ServiceSettingsProxy.cs" />
     <Compile Include="Proxies\ServicesProxy.cs" />
     <Compile Include="Proxies\SlaLevelsProxy.cs" />

@@ -19,12 +19,14 @@ namespace TeamSupport.ServiceLibrary
     List<ServiceThread> _threads;
     LoginUser _loginUser;
     Logs _logs;
+    string _domain;
 
     public ServiceManager()
     {
       _threads = new List<ServiceThread>();
       _logs = new Logs("Service Manager");
       _loginUser = ServiceThread.GetLoginUser("ServiceManager");
+      _domain = SystemSettings.ReadString(_loginUser, "AppDomain", "Unknown Domain");
     }
 
     private Thread _thread;
@@ -145,7 +147,7 @@ namespace TeamSupport.ServiceLibrary
       mailMessage.To.Add("kjones@teamsupport.com");
       mailMessage.To.Add("jharada@teamsupport.com");
       mailMessage.Subject = "Service Manager Notice";
-      mailMessage.Body = message;
+      mailMessage.Body = string.Format("{0} <br/><br/> {1}", message, _domain);
 
       SmtpClient client = new SmtpClient();
       Settings settings = new Settings(_loginUser, "EmailSender");

@@ -1180,7 +1180,34 @@ AND u.OrganizationID = @OrganizationID
       }
     }
 
-    
+    public void LoadAllUnnotifiedAndExpiredSla()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+@"
+SELECT ticketnumber, t.*, sn.*
+FROM Tickets t
+LEFT JOIN SlaNotifications sn ON t.TicketID = sn.TicketID
+
+WHERE  
+t.organizationID in (13679,362372)  and
+(
+ DATEDIFF(minute,  t.SlaViolationTimeClosed, ISNULL(sn.TimeClosedViolationDate, '1/1/1980')) < 10 OR
+ DATEDIFF(minute,  t.SlaWarningTimeClosed, ISNULL(sn.TimeClosedWarningDate, '1/1/1980')) < 10 OR
+ DATEDIFF(minute,  t.SlaViolationLastAction, ISNULL(sn.LastActionViolationDate, '1/1/1980')) < 10 OR
+ DATEDIFF(minute,  t.SlaWarningLastAction, ISNULL(sn.LastActionWarningDate, '1/1/1980')) < 10 OR
+ DATEDIFF(minute,  t.SlaViolationInitialResponse, ISNULL(sn.InitialResponseViolationDate, '1/1/1980')) < 10 OR
+ DATEDIFF(minute,  t.SlaWarningInitialResponse, ISNULL(sn.InitialResponseWarningDate, '1/1/1980')) < 10 
+)";
+
+
+
+
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }    
 
 
   }
