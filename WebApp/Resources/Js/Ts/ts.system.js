@@ -78,6 +78,10 @@ Ts.Services = {};
     Ts.Services.Admin = new TSWebServices.AdminService();
     Ts.Services.Admin.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Admin.set_defaultFailedCallback(defaultFailedCallback);
+
+    Ts.Services.Assets = new TSWebServices.AssetService();
+    Ts.Services.Assets.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.Assets.set_defaultFailedCallback(defaultFailedCallback);
     callback();
   }
 

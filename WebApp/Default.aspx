@@ -74,6 +74,7 @@
         <asp:ServiceReference Path="~/Services/WaterCoolerService.asmx" />
         <asp:ServiceReference Path="~/Services/OrganizationService.asmx" />
         <asp:ServiceReference Path="~/Services/ProductService.asmx" />
+        <asp:ServiceReference Path="~/Services/AssetService.asmx" />
 
         <asp:ServiceReference Path="~/Services/PrivateServices.asmx" />
       </services>

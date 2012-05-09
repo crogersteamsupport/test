@@ -341,7 +341,7 @@
     <IsDBReadOnly>false</IsDBReadOnly>
   </TableNames>
   <TableNames>
-    <Include>false</Include>
+    <Include>true</Include>
     <TableName>ReportViews</TableName>
     <ItemName>ReportView</ItemName>
     <CollectionName>ReportViews</CollectionName>

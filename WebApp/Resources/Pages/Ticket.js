@@ -8,6 +8,7 @@ $(document).ready(function () {
   var _ticketID = null;
   var _ticketNumber = null;
   var _ticketCreatorID = null;
+  if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
 
   $('.page-loading').show().next().hide();
 
@@ -233,6 +234,116 @@ $(document).ready(function () {
       $('<div>').addClass('clearfix').appendTo(container);
     });
 
+
+
+  //asets
+
+  
+
+  function appendAssets(assets) {
+    $('#divAssets').empty().append('<div class="ts-separator ui-widget-content">');
+    for (var i = 0; i < assets.length; i++) {
+      appendAsset(assets[i]);
+    }
+  }
+
+  function appendAsset(asset) {
+    var item = $('<div>')
+      .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-asset')
+      .data('data', asset);
+
+    $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
+
+    var title = $('<div>').addClass('ticket-removable-item-title').appendTo(item);
+    $('<a>')
+        .attr('href', '#')
+        .click(function (e) {
+          e.preventDefault();
+          top.Ts.MainPage.openAsset(asset.AssetID);
+        })
+        .text(ellipseString(asset.Name, 30))
+        .appendTo(title);
+
+    $('<span>')
+      .addClass('ts-icon ts-icon-info')
+      .attr('rel', '../../../Tips/Asset.aspx?AssetID=' + asset.AssetID)
+      .cluetip(clueTipOptions)
+      .appendTo(title);
+    $('#divAssets').append(item);
+
+  }
+
+  $('#divAssets').delegate('.ticket-asset .ui-icon-close', 'click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var item = $(this).parent();
+    var data = item.data('data');
+    top.Ts.Services.Tickets.RemoveTicketAsset(_ticketID, data.AssetID, function (assets) {
+      appendAssets(assets);
+    }, function () {
+      alert('There was a problem removing the asset from the ticket.');
+    });
+  });
+
+  var execGetAsset = null;
+  function getAssets(request, response) {
+    if (execGetAsset) { execGetAsset._executor.abort(); }
+    execGetAsset = top.Ts.Services.Assets.GetAsset(request.term, function (result) { response(result); });
+  }
+
+
+  $('.ticket-asset-add')
+    .click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      $('.ticket-rail-input').remove();
+      $(this).parent().find('.ui-icon').removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
+      var container = $('<div>').
+       addClass('ticket-rail-input')
+       .prependTo($(this).parent().next().show());
+      var input = $('<input type="text">')
+        .addClass('ui-corner-all ui-widget-content')
+        .autocomplete({
+          minLength: 2,
+          source: getAssets,
+          select: function (event, ui) {
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading')
+            .next().show();
+          }
+        })
+        .appendTo(container)
+        .focus()
+        .width(container.width() - 48 - 12);
+
+      $('<span>')
+        .addClass('ts-icon ts-icon-save')
+        .hide()
+        .click(function (e) {
+          var item = $(this).prev().data('item');
+          top.Ts.Services.Tickets.AddTicketAsset(_ticketID, item.id, function (assets) {
+            appendAssets(assets);
+            $(this).parent().remove();
+          }, function () {
+            $(this).parent().remove();
+            alert('There was an error adding the asset.');
+          });
+
+        })
+        .appendTo(container)
+
+      $('<span>')
+        .addClass('ts-icon ts-icon-cancel')
+        .click(function (e) {
+          $(this).parent().remove();
+        })
+        .appendTo(container);
+
+      $('<div>').addClass('clearfix').appendTo(container);
+    });
+
+  //assets
 
   function appendSubscribers(subscribers) {
     $('#divSubscribers').empty().append('<div class="ts-separator ui-widget-content">');
@@ -813,8 +924,7 @@ $(document).ready(function () {
             }
           });
 
-          if (enableScreenR.toLowerCase() != 'false')
-          {
+          if (enableScreenR.toLowerCase() != 'false') {
             ed.addButton('recordScreen', {
               title: 'Record Screen',
               image: '../images/icons/Symbol_Record.png',
@@ -2101,6 +2211,7 @@ $(document).ready(function () {
       $('#timeSpent').text(top.Ts.Utils.getTimeSpentText(info.Ticket.HoursSpent));
 
       appendCustomers(info.Customers);
+      appendAssets(info.Assets);
       appendTags(info.Tags);
       appendRelated(info.Related);
       appendCustomValues(info.CustomValues);

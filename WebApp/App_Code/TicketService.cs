@@ -783,6 +783,33 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public AssetProxy[] AddTicketAsset(int ticketID, int assetID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+
+      Asset asset = Assets.GetAsset(ticket.Collection.LoginUser, assetID);
+      if (asset.OrganizationID != TSAuthentication.OrganizationID) return null;
+      ticket.Collection.AddAsset(assetID, ticketID);
+
+      Assets assets = new Assets(ticket.Collection.LoginUser);
+      assets.LoadByTicketID(ticketID);
+      return assets.GetAssetProxies();
+    }
+
+    [WebMethod]
+    public AssetProxy[] RemoveTicketAsset(int ticketID, int assetID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+      ticket.Collection.RemoveAsset(assetID, ticketID);
+      Assets assets = new Assets(ticket.Collection.LoginUser);
+      assets.LoadByTicketID(ticketID);
+      if (assets.IsEmpty) return null;
+      return assets.GetAssetProxies();
+    }
+
+    [WebMethod]
     public TicketCustomer[] AddTicketCustomer(int ticketID, string type, int id)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -1095,6 +1122,10 @@ namespace TSWebServices
       Reminders reminders = new Reminders(ticket.Collection.LoginUser);
       reminders.LoadByItem(ReferenceType.Tickets, ticket.TicketID, TSAuthentication.UserID);
       info.Reminders = reminders.GetReminderProxies();
+
+      Assets assets = new Assets(ticket.Collection.LoginUser);
+      assets.LoadByTicketID(ticket.TicketID);
+      info.Assets = assets.GetAssetProxies();
 
       Actions actions = new Actions(ticket.Collection.LoginUser);
       actions.LoadByTicketID(ticket.TicketID);
@@ -1424,7 +1455,6 @@ namespace TSWebServices
       return relatedTickets.ToArray();
     }
 
-
     private TicketCustomer[] GetTicketCustomers(int ticketID)
     {
       List<TicketCustomer> customers = new List<TicketCustomer>();
@@ -1452,6 +1482,13 @@ namespace TSWebServices
         customers.Add(customer);
       }
       return customers.ToArray();
+    }
+
+    private AssetProxy[] GetTicketAssets(int ticketID)
+    {
+      Assets assets = new Assets(TSAuthentication.GetLoginUser());
+      assets.LoadByTicketID(ticketID);
+      return assets.GetAssetProxies();
     }
 
     [WebMethod]
@@ -1658,6 +1695,7 @@ namespace TSWebServices
     
     }
 
+
   }
 
   [DataContract]
@@ -1724,6 +1762,7 @@ namespace TSWebServices
     [DataMember] public UserInfo[] Subscribers { get; set; }
     [DataMember] public UserInfo[] Queuers { get; set; }
     [DataMember] public ReminderProxy[] Reminders { get; set; }
+    [DataMember] public AssetProxy[] Assets { get; set; }
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]

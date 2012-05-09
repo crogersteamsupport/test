@@ -405,6 +405,65 @@ namespace TeamSupport.Data
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Organizations, organizationID, description);
     }
 
+    public static int GetAssetCount(LoginUser loginUser, int assetID, int ticketID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT COUNT(*) FROM AssetTickets WHERE (TicketID = @TicketID) AND (AssetID = @AssetID)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@AssetID", assetID);
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+
+        Tickets tickets = new Tickets(loginUser);
+        return (int)tickets.ExecuteScalar(command);
+      }
+    }
+
+
+    public void AddAsset(int assetID, int ticketID)
+    {
+      Asset asset = Assets.GetAsset(LoginUser, assetID);
+      Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
+      if (asset.OrganizationID != ticket.OrganizationID) return;
+      if (GetAssetCount(LoginUser, assetID, ticketID) > 0) return;
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "INSERT INTO AssetTickets (TicketID, AssetID, DateCreated, CreatorID) VALUES (@TicketID, @AssetID, @DateCreated, @CreatorID)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@AssetID", assetID);
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+        command.Parameters.AddWithValue("@CreatorID", LoginUser.UserID);
+        ExecuteNonQuery(command, "AssetTickets");
+      }
+
+      string description = "Added '" + asset.Name + "' to the asset list for " + GetTicketLink(ticket);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Assets, assetID, description);
+    }
+
+
+    public void RemoveAsset(int assetID, int ticketID)
+    {
+      Asset asset = Assets.GetAsset(LoginUser, assetID);
+      Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "DELETE FROM AssetTickets WHERE (TicketID = @TicketID) AND (AssetID = @AssetID)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@AssetID", assetID);
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        ExecuteNonQuery(command, "AssetTickets");
+      }
+
+      string description = "Removed '" + asset.Name + "' to the asset list for " + GetTicketLink(ticket);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticketID, description);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Assets, assetID, description);
+    }
+
+
     public static void DeleteRelationships(LoginUser loginUser, int ticketID)
     {
       Tickets tickets = new Tickets(loginUser);

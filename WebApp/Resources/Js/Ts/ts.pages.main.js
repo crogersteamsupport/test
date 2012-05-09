@@ -598,7 +598,9 @@ Ts.Pages.Main.prototype =
         if (result) {
           for (var i = 0; i < result.length; i++) {
             //isSelected, tabType, id, caption, isClosable, isSortable, isHighlighted, icon, imageUrl
-            if (result[i].TabType === Ts.Ui.Tabs.Tab.Type.Ticket) { self.MainTabs.add(false, result[i].TabType, result[i].ID, result[i].Caption, true, true, false); }
+            if (result[i].TabType === Ts.Ui.Tabs.Tab.Type.Ticket && (result[i].Caption != null || result[i].Caption != '')) {
+              self.MainTabs.add(false, result[i].TabType, result[i].ID, result[i].Caption, true, true, false);
+            }
           }
         }
 
@@ -865,6 +867,9 @@ Ts.Pages.Main.prototype =
   },
   openAttachment: function (attachmentID) {
     window.open('../Attachment.aspx?attachmentID=' + attachmentID, 'Attachment' + attachmentID);
+  },
+  openAsset: function (assetID) {
+    alert('Needs implementation');
   },
   openUser: function (userID) {
     var self = this;

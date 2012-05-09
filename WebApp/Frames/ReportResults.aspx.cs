@@ -278,9 +278,18 @@ public partial class Frames_ReportResults : BaseFramePage
 
     using (SqlConnection connection = new SqlConnection(GetReportConnectionString()))
     {
+      DateTime start = DateTime.Now;
+      ReportViews reportViews = new ReportViews(UserSession.LoginUser);
+      ReportView reportView = reportViews.AddNewReportView();
+      reportView.UserID = UserSession.LoginUser.UserID;
+      reportView.ReportID = report.ReportID;
+      reportView.DateViewed = DateTime.UtcNow;
+
       _query = report.GetSql(false, filterControl.ReportConditions);
+      reportView.SQLExecuted = _query;
       report.LastSqlExecuted = _query;
       report.Collection.Save();
+
       SqlCommand command = new SqlCommand(_query, connection);
 
       Report.CreateParameters(UserSession.LoginUser, command, UserSession.LoginUser.UserID);
@@ -297,6 +306,7 @@ public partial class Frames_ReportResults : BaseFramePage
       catch (Exception ex)
       {
         transaction.Rollback();
+        reportView.ErrorMessage = ex.Message;
         DataUtils.LogException(UserSession.LoginUser, ex);
       }
 
@@ -304,7 +314,8 @@ public partial class Frames_ReportResults : BaseFramePage
       {
         column.ColumnName = column.ColumnName.Replace(' ', '_');
       }
-
+      reportView.DurationToLoad = DateTime.Now.Subtract(start).TotalSeconds;
+      reportView.Collection.Save();
       return table;
     }
   }
