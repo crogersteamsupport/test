@@ -120,6 +120,8 @@ Namespace TeamSupport
                                     Return False
                                 End If
 
+                                Dim atLeastOneSucceded As Boolean = False
+                                
                                 'get a list of customers associated to the ticket
                                 Dim customers As New OrganizationsView(User)
                                 customers.LoadByTicketID(thisTicket.TicketID)
@@ -130,21 +132,24 @@ Namespace TeamSupport
 
                                         If CreateCRMNote(customer.CRMLinkID, thisTicket) Then
                                             Log.Write("Comment created successfully.")
-
-                                            CRMLinkRow.LastTicketID = thisTicket.TicketID
-                                            CRMLinkRow.Collection.Save()
+                                            atLeastOneSucceded = True
                                         Else
                                             Log.Write("Error creating comment.")
                                         End If
                                     End If
                                 Next
 
-                                ActionLogs.AddActionLog(
-                                    User,
-                                    ActionLogType.Insert,
-                                    ReferenceType.Tickets,
-                                    thisTicket.TicketID,
-                                    "Sent ticket data to " + Type.ToString() + ".")
+                                If atLeastOneSucceded Then
+                                    CRMLinkRow.LastTicketID = thisTicket.TicketID
+                                    CRMLinkRow.Collection.Save()
+
+                                    ActionLogs.AddActionLog(
+                                        User,
+                                        ActionLogType.Insert,
+                                        ReferenceType.Tickets,
+                                        thisTicket.TicketID,
+                                        "Sent ticket data to " + Type.ToString() + ".")
+                                End If
                             Next
                         Else
                             Log.Write("No new tickets to sync.")

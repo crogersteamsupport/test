@@ -91,8 +91,8 @@ Namespace TeamSupport
                                                 Dim thisCustomer As New CompanyData()
                                                 Dim address As XElement = company.Element("contact-data").Element("addresses").Element("address")
                                                 Dim phone As XElement = Nothing
-                                                If company.Element("phone-numbers") IsNot Nothing Then
-                                                    phone = company.Element("phone-numbers").Element("phone-number")
+                                                If company.Element("contact-data").Element("phone-numbers") IsNot Nothing Then
+                                                    phone = company.Element("contact-data").Element("phone-numbers").Element("phone-number")
                                                 End If
 
                                                 With thisCustomer
