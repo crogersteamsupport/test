@@ -16,6 +16,8 @@ $(document).ready(function () {
 
   $('button').button();
 
+  if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
+
   var types = top.Ts.Cache.getTicketTypes();
   for (var i = 0; i < types.length; i++) {
     $('<option>').attr('value', types[i].TicketTypeID).text(types[i].Name).data('o', types[i]).appendTo('.newticket-type');
@@ -681,6 +683,102 @@ $(document).ready(function () {
     if (tipTimer != null) clearTimeout(tipTimer);
   });
 
+
+  //Assets
+  function appendAsset(asset) {
+    var item = $('<div>')
+      .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-asset')
+      .data('data', asset);
+
+    $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
+    var title = $('<div>').addClass('ticket-removable-item-title').appendTo(item);
+    $('<a>')
+      .attr('href', '#')
+      .addClass('value ui-state-default ts-link')
+      .click(function (e) {
+        e.preventDefault();
+        top.Ts.MainPage.openAsset(asset.AssetID);
+      })
+      .text(ellipseString(asset.Name, 30))
+      .appendTo(title);
+
+    $('<span>')
+      .addClass('ts-icon ts-icon-info')
+      .attr('rel', '../../../Tips/Asset.aspx?AssetID=' + asset.AssetID)
+      .cluetip(clueTipOptions)
+      .appendTo(title);
+
+    $('#divAssets .newticket-noitems').hide().after(item);
+  }
+
+  var execGetAssets = null;
+  function getAssets(request, response) {
+    if (execGetAssets) { execGetAssets._executor.abort(); }
+    execGetAssets = top.Ts.Services.Assets.FindAsset(request.term, function (result) { response(result); });
+  }
+
+
+  $('#divAssets').delegate('.ticket-asset .ui-icon-close', 'click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $(this).closest('.ticket-removable-item').remove();
+    if ($('#divAssets .ticket-removable-item').length < 1) {
+      $('#divAssets .newticket-noitems').show()
+    }
+  });
+
+  $('.ticket-asset-add')
+    .click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      $('.ticket-rail-input').remove();
+
+      $(this).parent().find('.ui-icon').removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
+
+      var container = $('<div>')
+        .addClass('ticket-rail-input')
+        .prependTo($(this).parent().next().show());
+
+      var input = $('<input type="text">')
+        .addClass('ui-corner-all ui-widget-content')
+        .autocomplete({
+          minLength: 2,
+          source: getAssets,
+          select: function (event, ui) {
+            $(this)
+            .data('assetID', ui.item.id)
+            .removeClass('ui-autocomplete-loading')
+            .next().show();
+          }
+        })
+        .appendTo(container)
+        .focus()
+        .width(container.width() - 48 - 12);
+
+      $('<span>')
+        .addClass('ts-icon ts-icon-save')
+        .hide()
+        .click(function (e) {
+          var assetID = $(this).prev().data('assetID');
+          $(this).parent().remove();
+          top.Ts.Services.Assets.GetAsset(assetID, function (asset) {
+            appendAsset(asset);
+          });
+        })
+        .appendTo(container)
+
+      $('<span>')
+        .addClass('ts-icon ts-icon-cancel')
+        .click(function (e) {
+          $(this).parent().remove();
+        })
+      .appendTo(container);
+
+      $('<div>').addClass('clearfix').appendTo(container);
+    });
+
+
+  //Assets
 
   var execGetTags = null;
   function getTags(request, response) {
@@ -1389,6 +1487,11 @@ $(document).ready(function () {
       info.Queuers = new Array();
       $('.ticket-queue').each(function () {
         info.Queuers[info.Queuers.length] = $(this).data('data').UserID;
+      });
+
+      info.Assets = new Array();
+      $('.ticket-asset').each(function () {
+        info.Assets[info.Assets.length] = $(this).data('data').AssetID;
       });
 
       info.Customers = new Array();

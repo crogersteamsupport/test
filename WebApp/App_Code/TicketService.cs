@@ -1606,6 +1606,11 @@ namespace TSWebServices
         AddTag(ticket.TicketID, tag);
       }
 
+      foreach (int assetID in info.Assets)
+      {
+        AddTicketAsset(ticket.TicketID, assetID);
+      }
+
       foreach (int id in info.Customers)
       {
         AddTicketCustomer(ticket.TicketID, "o", id);
@@ -1793,6 +1798,7 @@ namespace TSWebServices
     [DataMember] public List<int> Subscribers { get; set; }
     [DataMember] public List<int> Queuers { get; set; }
     [DataMember] public List<NewTicketReminderInfo> Reminders { get; set; }
+    [DataMember] public List<int> Assets { get; set; }
 
   }
 

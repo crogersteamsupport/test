@@ -288,7 +288,7 @@ $(document).ready(function () {
   var execGetAsset = null;
   function getAssets(request, response) {
     if (execGetAsset) { execGetAsset._executor.abort(); }
-    execGetAsset = top.Ts.Services.Assets.GetAsset(request.term, function (result) { response(result); });
+    execGetAsset = top.Ts.Services.Assets.FindAsset(request.term, function (result) { response(result); });
   }
 
 

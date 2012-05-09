@@ -869,7 +869,7 @@ Ts.Pages.Main.prototype =
     window.open('../Attachment.aspx?attachmentID=' + attachmentID, 'Attachment' + attachmentID);
   },
   openAsset: function (assetID) {
-    alert('Needs implementation');
+    //alert('Needs implementation');
   },
   openUser: function (userID) {
     var self = this;

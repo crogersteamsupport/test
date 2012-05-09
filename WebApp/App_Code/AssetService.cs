@@ -33,7 +33,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public AutocompleteItem[] GetAsset(string searchTerm)
+    public AutocompleteItem[] FindAsset(string searchTerm)
     {
       Assets assets = new Assets(TSAuthentication.GetLoginUser());
       assets.LoadByLikeNameOrSerial(TSAuthentication.OrganizationID, searchTerm, 25);
@@ -47,6 +47,15 @@ namespace TSWebServices
 
       return list.ToArray();
     }
+
+    [WebMethod]
+    public AssetProxy GetAsset(int assetID)
+    {
+      Asset asset = Assets.GetAsset(TSAuthentication.GetLoginUser(), assetID);
+      if (asset.OrganizationID != TSAuthentication.OrganizationID) return null;
+      return asset.GetProxy();
+    }
+
 
   }  
 }
