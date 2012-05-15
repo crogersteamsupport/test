@@ -369,7 +369,7 @@ namespace TeamSupport.Data
         CreateCustomFields(ticketTypeName, "DateClosed", true);
       }
       CreateCustomFields("Customers", "Website");
-      CreateCustomFields("Contacts", "Title");
+      CreateCustomFields("Contacts", "DateCreated");
       CreateCustomFields("Users", "IsActive");
       CreateCustomFields("Groups", "Description");
       CreateCustomFields("Products", "Description");
@@ -1002,6 +1002,7 @@ namespace TeamSupport.Data
         user.OrganizationID = organizationID;
         user.PrimaryGroupID = null;
         user.Title = row["Title"].ToString().Trim();
+        user.DateCreated = (DateTime)GetDBDate(row["DateCreated"], false); 
         if (++count % BULK_LIMIT == 0)
         {
           if (_IsBulk == true) users.BulkSave(); else users.Save();
