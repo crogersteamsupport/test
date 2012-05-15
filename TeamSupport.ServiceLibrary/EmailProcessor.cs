@@ -598,6 +598,7 @@ namespace TeamSupport.ServiceLibrary
       User user = Users.GetUser(LoginUser, userID);
       Organization organization = Organizations.GetOrganization(LoginUser, user.OrganizationID);
       MailMessage message = EmailTemplates.GetSignUpNotification(LoginUser, user);
+      message.From = new MailAddress("sales@teamsupport.com", "TeamSupport.com");
       message.To.Add(new MailAddress("kjones@teamsupport.com"));
       message.To.Add(new MailAddress("rjohnson@teamsupport.com"));
       message.To.Add(new MailAddress("eharrington@teamsupport.com"));
