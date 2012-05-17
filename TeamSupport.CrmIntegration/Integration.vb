@@ -210,9 +210,11 @@ Namespace TeamSupport
                         thisCompany.HasPortalAccess = isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess
                         thisCompany.IsActive = True
 
-                        With New Organizations(User)
+                        With New SlaLevels(User)
                             .LoadByOrganizationID(ParentOrgID)
-                            thisCompany.SlaLevelID = .Item(0).SlaLevelID
+                            If .Count > 0 Then
+                                thisCompany.SlaLevelID = .Item(0).SlaLevelID
+                            End If
                         End With
 
                         Log.Write("Added a new account.")
