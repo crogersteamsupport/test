@@ -143,6 +143,9 @@ Namespace TeamSupport
                                 .Street = address.Element("street_1").Value
                                 .Zip = address.Element("postal_code").Value
                                 .Phone = address.Element("phone").Value
+                                If address.Element("fax") IsNot Nothing Then
+                                    .Fax = address.Element("fax").Value
+                                End If
                             End If
                         End With
 
@@ -175,7 +178,7 @@ Namespace TeamSupport
                         If address IsNot Nothing Then
                             .Email = address.Element("email").Value
                             .Phone = address.Element("phone").Value
-                            .Cell = address.Element("phone").Value
+                            .Cell = address.Element("cell").Value
                             .Fax = address.Element("fax").Value
                         End If
                     End With

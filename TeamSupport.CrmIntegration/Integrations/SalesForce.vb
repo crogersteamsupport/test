@@ -102,38 +102,81 @@ Namespace TeamSupport
                             Dim SFQuery As String
                             Dim done As Boolean = False
                             Dim HasAddress As Boolean = True
+                            Dim hasFax As Boolean = False
+                            Dim queriedShippingAddress As Boolean = False
 
                             Dim BindingRanOK As Boolean
                             Try
+                                'These try catch blocks are implemented because some companies do not have all the fields been queried.
+                                'I am adding trying with and without Fax by not knowing if it is included or not in all companies.
                                 Try
-                                    'OK, lets try this with the shipping addresses
-                                    SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")"
+                                    '1st attempt: with Shipping address and fax.
+                                    SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")"
                                     Log.Write("SF Query String = " + SFQuery)
 
                                     qr = Binding.query(SFQuery)
                                     Log.Write("qr.size = " + qr.size.ToString)
                                     BindingRanOK = True
+                                    hasFax = True
+                                    queriedShippingAddress = True
                                 Catch ex As Exception
-                                    'Hmm...No shipping addresses.  Let's try billing addresses
-                                    'This doesn't appear to work either...? 7/1/10
                                     Try
-                                        Log.Write("Shipping Address information not found - Attempting to find Billing Address information instead.")
-                                        SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
+                                        '2nd attempt: with Shipping address and without fax.
+                                        SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")"
                                         Log.Write("SF Query String = " + SFQuery)
 
                                         qr = Binding.query(SFQuery)
                                         Log.Write("qr.size = " + qr.size.ToString)
                                         BindingRanOK = True
-                                    Catch ex2 As Exception
-                                        'Well crap - No billing address either.
-                                        Log.Write("Billing Address information not found - Attempting to process company with no address info at all.")
-                                        SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
-                                        Log.Write("SF Query String = " + SFQuery)
+                                        hasFax = False
+                                        queriedShippingAddress = True
+                                    Catch ex1 As Exception
+                                        Try
+                                            '3rd attempt: With Billing address and fax
+                                            Log.Write("Shipping Address information not found - Attempting to find Billing Address information instead.")
+                                            SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
+                                            Log.Write("SF Query String = " + SFQuery)
 
-                                        qr = Binding.query(SFQuery)
-                                        Log.Write("qr.size = " + qr.size.ToString)
-                                        HasAddress = False 'Set this to false so we can set local variables correctly
-                                        BindingRanOK = True
+                                            qr = Binding.query(SFQuery)
+                                            Log.Write("qr.size = " + qr.size.ToString)
+                                            BindingRanOK = True
+                                            hasFax = True
+                                        Catch ex2 As Exception
+                                            Try
+                                                '4th attempt: With Billing address and without fax
+                                                Log.Write("Shipping Address information not found - Attempting to find Billing Address information instead.")
+                                                SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
+                                                Log.Write("SF Query String = " + SFQuery)
+
+                                                qr = Binding.query(SFQuery)
+                                                Log.Write("qr.size = " + qr.size.ToString)
+                                                BindingRanOK = True
+                                                hasFax = False
+                                            Catch ex3 As Exception
+                                                Try
+                                                    '5th attempt: Without address and with Fax
+                                                    Log.Write("Billing Address information not found - Attempting to process company with no address info at all.")
+                                                    SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
+                                                    Log.Write("SF Query String = " + SFQuery)
+
+                                                    qr = Binding.query(SFQuery)
+                                                    Log.Write("qr.size = " + qr.size.ToString)
+                                                    HasAddress = False 'Set this to false so we can set local variables correctly
+                                                    BindingRanOK = True
+                                                    hasFax = True
+                                                Catch ex4 As Exception
+                                                    Log.Write("Billing Address information not found - Attempting to process company with no address info at all.")
+                                                    SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
+                                                    Log.Write("SF Query String = " + SFQuery)
+
+                                                    qr = Binding.query(SFQuery)
+                                                    Log.Write("qr.size = " + qr.size.ToString)
+                                                    HasAddress = False 'Set this to false so we can set local variables correctly
+                                                    BindingRanOK = True
+                                                    hasFax = False
+                                                End Try
+                                            End Try
+                                        End Try
                                     End Try
                                 End Try
                             Catch ex As Exception
@@ -165,15 +208,37 @@ Namespace TeamSupport
                                             .AccountName = records(i).Any(1).InnerText
 
                                             If HasAddress Then
-                                                .Street = records(i).Any(3).InnerText
-                                                .City = records(i).Any(4).InnerText
-                                                .State = records(i).Any(5).InnerText
-                                                .Zip = records(i).Any(6).InnerText
-                                                .Country = records(i).Any(7).InnerText
-                                                .Phone = records(i).Any(8).InnerText
+                                                If records(i).Any(3).InnerText = String.Empty AndAlso queriedShippingAddress Then
+                                                    Dim billingAddressWithFax As Boolean = False
+                                                    Dim billingAddress As sObject() = GetBillingAddress(.AccountID, billingAddressWithFax)
+                                                    If billingAddress IsNot Nothing Then
+                                                        .Street   = billingAddress(0).Any(0).InnerText
+                                                        .City     = billingAddress(0).Any(1).InnerText
+                                                        .State    = billingAddress(0).Any(2).InnerText
+                                                        .Zip      = billingAddress(0).Any(3).InnerText
+                                                        .Country  = billingAddress(0).Any(4).InnerText
+                                                        .Phone    = billingAddress(0).Any(5).InnerText
+                                                        If billingAddressWithFax Then
+                                                            .Fax  = billingAddress(0).Any(6).InnerText
+                                                        End If
+                                                    End If
+                                                Else
+                                                    .Street   = records(i).Any(3).InnerText
+                                                    .City     = records(i).Any(4).InnerText
+                                                    .State    = records(i).Any(5).InnerText
+                                                    .Zip      = records(i).Any(6).InnerText
+                                                    .Country  = records(i).Any(7).InnerText
+                                                    .Phone    = records(i).Any(8).InnerText
+                                                    If hasFax Then
+                                                        .Fax  = records(i).Any(11).InnerText
+                                                    End If
+                                                End If
                                                 LastModifiedDateTime = Date.Parse(records(i).Any(9).InnerText)
                                             Else
                                                 .Phone = records(i).Any(3).InnerText
+                                                If hasFax Then
+                                                    .Fax = records(i).Any(6).InnerText
+                                                End If
                                                 LastModifiedDateTime = Date.Parse(records(i).Any(4).InnerText)
 
                                             End If
@@ -245,6 +310,40 @@ Namespace TeamSupport
 
             End Function
 
+            Private Function GetBillingAddress(ByVal organizationId As String, ByRef hasFax As Boolean) As sObject()
+                Dim SFQuery As String = Nothing
+                Dim qr As QueryResult = Nothing
+                Try
+                    'First try with Fax
+                    Log.Write("Attempting to find Billing Address with fax of OrganizationId: " & organizationId.ToString() & ".")
+                    SFQuery = "select BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, Fax from Account where ID = '" + organizationId.ToString() + "'"
+                    Log.Write("SF Query String = " + SFQuery)
+
+                    qr = Binding.query(SFQuery)
+                    Log.Write("qr.size = " + qr.size.ToString)
+                    hasFax = True
+                Catch ex1 As Exception
+                    Try
+                        'Try without fax
+                        Log.Write("Attempting to find Billing Address without fax of OrganizationId: " & organizationId.ToString() & ".")
+                        SFQuery = "select BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone from Account where ID = '" + organizationId.ToString() + "'"
+                        Log.Write("SF Query String = " + SFQuery)
+
+                        qr = Binding.query(SFQuery)
+                        Log.Write("qr.size = " + qr.size.ToString)
+                        hasFax = False
+                    Catch ex2 As Exception
+                        Log.Write("Error when attempting to bind the Query: " + ex2.Message)                        
+                    End Try
+                End Try
+
+                Dim result As sObject() = Nothing
+                If qr IsNot Nothing AndAlso qr.size > 0 Then
+                    result = qr.records
+                End If
+
+                Return result
+            End Function
 
             Private Function SendSFTicketData() As Boolean
                 Dim Success As Boolean = True
@@ -683,80 +782,45 @@ Namespace TeamSupport
 
                         Log.Write(qr.size.ToString() & " records with custom fields to sync.")
 
-                        For Each record As sObject In qr.records
-                            Dim accountID As String
+                        If qr.size > 0 Then
+                            For Each record As sObject In qr.records
+                                Dim accountID As String
 
-                            'find the object in OUR system
-                            If objType = "Account" Then
-                                accountID = record.Id
-
-                            ElseIf objType = "Contact" Then
-                                accountID = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName = "Account")("sf:Id").InnerText
-
-                            Else
-                                Return
-                            End If
-
-                            Dim findAccount As New Organizations(User)
-                            findAccount.LoadByCRMLinkID(accountID, CRMLinkRow.OrganizationID)
-
-                            If findAccount.Count > 0 Then
-                                Dim thisAccount As Organization = findAccount(0)
-
-                                'update fields
+                                'find the object in OUR system
                                 If objType = "Account" Then
-                                    For Each thisField As Xml.XmlElement In record.Any
-                                        Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
+                                    accountID = record.Id
 
-                                        If thisMapping IsNot Nothing Then
-                                            Try
-                                                If thisMapping.CustomFieldID IsNot Nothing Then
-                                                    Dim translatedFieldValue As String = TranslateFieldValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, thisField.InnerText)
-                                                    UpdateCustomValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, translatedFieldValue)
+                                ElseIf objType = "Contact" Then
+                                    accountID = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName = "Account")("sf:Id").InnerText
 
-                                                ElseIf thisMapping.TSFieldName IsNot Nothing Then
-                                                    thisAccount.Row(thisMapping.TSFieldName) = TranslateFieldValue(thisField.InnerText, thisAccount.Row(thisMapping.TSFieldName).GetType().Name)
-                                                    thisAccount.BaseCollection.Save()
-                                                End If
-                                            Catch mappingException As Exception
-                                                Log.Write(
-                                                  "The following exception was caught mapping the account field """ &
-                                                  thisField.LocalName &
-                                                  """ with """ &
-                                                  thisMapping.TSFieldName &
-                                                  """: " &
-                                                  mappingException.Message)
-                                            End Try
-                                        End If
-                                    Next
+                                Else
+                                    Return
+                                End If
 
-                                Else 'if it's not an account, it's a contact (otherwise we would have returned above)
-                                    Dim email As String = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName.ToLower() = "email").InnerText
+                                Dim findAccount As New Organizations(User)
+                                findAccount.LoadByCRMLinkID(accountID, CRMLinkRow.OrganizationID)
 
-                                    Dim findContact As New Users(User)
-                                    Dim thisContact As User = Nothing
+                                If findAccount.Count > 0 Then
+                                    Dim thisAccount As Organization = findAccount(0)
 
-                                    findContact.LoadByOrganizationID(thisAccount.OrganizationID, False)
-                                    thisContact = findContact.FindByEmail(email)
-
-                                    If thisContact IsNot Nothing Then
-
+                                    'update fields
+                                    If objType = "Account" Then
                                         For Each thisField As Xml.XmlElement In record.Any
                                             Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
 
                                             If thisMapping IsNot Nothing Then
                                                 Try
                                                     If thisMapping.CustomFieldID IsNot Nothing Then
-                                                        Dim translatedFieldValue As String = TranslateFieldValue(thisMapping.CustomFieldID, thisContact.UserID, thisField.InnerText)
-                                                        UpdateCustomValue(thisMapping.CustomFieldID, thisContact.UserID, translatedFieldValue)
+                                                        Dim translatedFieldValue As String = TranslateFieldValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, thisField.InnerText)
+                                                        UpdateCustomValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, translatedFieldValue)
 
                                                     ElseIf thisMapping.TSFieldName IsNot Nothing Then
-                                                        thisContact.Row(thisMapping.TSFieldName) = TranslateFieldValue(thisField.InnerText, thisContact.Row(thisMapping.TSFieldName).GetType().Name)
-                                                        thisContact.BaseCollection.Save()
+                                                        thisAccount.Row(thisMapping.TSFieldName) = TranslateFieldValue(thisField.InnerText, thisAccount.Row(thisMapping.TSFieldName).GetType().Name)
+                                                        thisAccount.BaseCollection.Save()
                                                     End If
                                                 Catch mappingException As Exception
                                                     Log.Write(
-                                                      "The following was exception caught mapping the contact field """ &
+                                                      "The following exception was caught mapping the account field """ &
                                                       thisField.LocalName &
                                                       """ with """ &
                                                       thisMapping.TSFieldName &
@@ -764,15 +828,52 @@ Namespace TeamSupport
                                                       mappingException.Message)
                                                 End Try
                                             End If
-
                                         Next
 
+                                    Else 'if it's not an account, it's a contact (otherwise we would have returned above)
+                                        Dim email As String = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName.ToLower() = "email").InnerText
+
+                                        Dim findContact As New Users(User)
+                                        Dim thisContact As User = Nothing
+
+                                        findContact.LoadByOrganizationID(thisAccount.OrganizationID, False)
+                                        thisContact = findContact.FindByEmail(email)
+
+                                        If thisContact IsNot Nothing Then
+
+                                            For Each thisField As Xml.XmlElement In record.Any
+                                                Dim thisMapping As CRMLinkField = theseFields.FindByCRMFieldName(thisField.LocalName)
+
+                                                If thisMapping IsNot Nothing Then
+                                                    Try
+                                                        If thisMapping.CustomFieldID IsNot Nothing Then
+                                                            Dim translatedFieldValue As String = TranslateFieldValue(thisMapping.CustomFieldID, thisContact.UserID, thisField.InnerText)
+                                                            UpdateCustomValue(thisMapping.CustomFieldID, thisContact.UserID, translatedFieldValue)
+
+                                                        ElseIf thisMapping.TSFieldName IsNot Nothing Then
+                                                            thisContact.Row(thisMapping.TSFieldName) = TranslateFieldValue(thisField.InnerText, thisContact.Row(thisMapping.TSFieldName).GetType().Name)
+                                                            thisContact.BaseCollection.Save()
+                                                        End If
+                                                    Catch mappingException As Exception
+                                                        Log.Write(
+                                                          "The following was exception caught mapping the contact field """ &
+                                                          thisField.LocalName &
+                                                          """ with """ &
+                                                          thisMapping.TSFieldName &
+                                                          """: " &
+                                                          mappingException.Message)
+                                                    End Try
+                                                End If
+
+                                            Next
+
+                                        End If
+
                                     End If
-
                                 End If
-                            End If
 
-                        Next
+                            Next
+                        End If
                     End If
 
                 Catch ex As Exception

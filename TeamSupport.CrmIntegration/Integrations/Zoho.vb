@@ -161,6 +161,8 @@ Namespace TeamSupport
                                             .Zip = dataitem.Value
                                         Case "Phone"
                                             .Phone = dataitem.Value
+                                        Case "Fax"
+                                            .Fax = dataitem.Value
                                         Case "Account Type"
                                             add = tagsToMatch.Contains(dataitem.Value.ToLower())
                                             hasAccountType = True

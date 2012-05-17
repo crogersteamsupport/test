@@ -248,38 +248,109 @@ Namespace TeamSupport
                     .Collection.Save()
                 End With
 
-                If company.Phone <> "" Then
-                    Log.Write("Adding/updating account phone numbers.")
-                    Log.Write(String.Format("AccountID={0}, OrgID={1}", company.AccountID, thisCompany.OrganizationID))
+                Log.Write(String.Format("AccountID={0}, OrgID={1}", company.AccountID, thisCompany.OrganizationID))
+                Log.Write("Adding/updating account phone number.")
 
-                    Dim findPhone As New PhoneNumbers(User)
-                    Dim thisPhone As PhoneNumber
-                    findPhone.LoadByID(thisCompany.OrganizationID, ReferenceType.Organizations)
+                Dim phoneTypes As New PhoneTypes(User)
+                phoneTypes.LoadAllPositions(ParentOrgID)
 
-                    If findPhone.Count > 0 Then
-                        Log.Write("Found a phone record, updating...")
-                        thisPhone = findPhone(0)
-                    Else
-                        Log.Write("No phone record found--adding a new record.")
+                Dim CRMPhoneType As PhoneType = Nothing
+                'We use the corresponding CRM ("phone" or "work") phone type.
+                Select Case Type
+                    Case IntegrationType.Batchbook, IntegrationType.SalesForce, IntegrationType.ZohoCRM
+                        CRMPhoneType = phoneTypes.FindByName("Phone")
+                        If CRMPhoneType Is Nothing Then
+                            CRMPhoneType = AddPhoneType("Phone", phoneTypes.Count, ParentOrgID)
+                            phoneTypes.LoadAllPositions(ParentOrgID)
+                        End If
+                    Case IntegrationType.Highrise
+                        CRMPhoneType = phoneTypes.FindByName("Work")
+                        If CRMPhoneType Is Nothing Then
+                            CRMPhoneType = AddPhoneType("Work", phoneTypes.Count, ParentOrgID)
+                            phoneTypes.LoadAllPositions(ParentOrgID)
+                        End If
+                End Select
 
+                Dim thisPhone As PhoneNumber = Nothing
+
+                'This routine finds a number to update.
+                Dim findPhone As New PhoneNumbers(User)
+                findPhone.LoadByID(thisCompany.OrganizationID, ReferenceType.Organizations)
+
+                If findPhone.Count > 0 Then
+                    For Each phone As PhoneNumber In findPhone
+                        'The previous version did not added type and this version uses the CRMPhoneType
+                        If phone.PhoneTypeID Is Nothing OrElse (CRMPhoneType IsNot Nothing AndAlso phone.PhoneTypeID = CRMPhoneType.PhoneTypeId) Then
+                            thisPhone = phone
+                            Exit For
+                        End If
+                    Next
+                End If
+
+                If company.Phone Is Nothing OrElse company.Phone = String.Empty Then
+                    If thisPhone IsNot Nothing Then
+                        thisPhone.Collection.DeleteFromDB(thisPhone.PhoneID)
+                    End If
+                Else
+                    If thisPhone Is Nothing
                         thisPhone = (New PhoneNumbers(User)).AddNewPhoneNumber()
-                        thisPhone.RefID = thisCompany.OrganizationID
-                        thisPhone.RefType = ReferenceType.Organizations
-
-                        thisPhone.Collection.Save()
                     End If
 
                     With thisPhone
-                        .Number = company.Phone
+                        .Number   = company.Phone
+                        .RefType  = ReferenceType.Organizations
+                        .RefID    = thisCompany.OrganizationID
+                        If CRMPhoneType IsNot Nothing Then
+                          .PhoneTypeID = CRMPhoneType.PhoneTypeID
+                        End If
+
                         .Collection.Save()
-                        Log.Write("Organization phone number updated.")
-                    End With
+                        Log.Write("Account phone number added/upated.")
+                    End With                
+                End If
+
+                Log.Write("Adding/updating account fax number.")
+                Dim faxType As PhoneType = phoneTypes.FindByName("Fax") 
+                If faxType Is Nothing Then
+                    faxType = AddPhoneType("Fax", phoneTypes.Count, ParentOrgID)
+                    phoneTypes.LoadAllPositions(ParentOrgID)
+                End If
+
+                Dim thisFax As PhoneNumber = findPhone.FindByPhoneTypeID(faxType.PhoneTypeID)
+
+                If company.Fax Is Nothing OrElse company.Fax = String.Empty Then
+                    If thisFax IsNot Nothing Then
+                        thisFax.Collection.DeleteFromDB(thisFax.PhoneID)
+                    End If
                 Else
-                    Log.Write("There is no phone number to add.")
+                    If thisFax Is Nothing Then
+                        thisFax = (New PhoneNumbers(User)).AddNewPhoneNumber()
+                    End If
+                
+                    With thisFax
+                        .Number = company.Fax
+                        .RefType     = ReferenceType.Organizations
+                        .RefID       = thisCompany.OrganizationID
+                        .PhoneTypeID = faxType.PhoneTypeID
+                        .Collection.Save()
+                    End With                
+                    Log.Write("Account fax number added.")
                 End If
 
                 Log.Write("Updated w/ Address:" & company.AccountName)
             End Sub
+
+            Private Function AddPhoneType(ByVal typeName As String, ByVal position As Integer, ByVal parentOrgId As String) As PhoneType
+                Dim phoneTypes As PhoneTypes = New PhoneTypes(User)
+                Dim result As PhoneType = phoneTypes.AddNewPhoneType()
+                result.Name = typeName
+                result.Description = typeName
+                result.Position = position
+                result.OrganizationID = parentOrgId
+
+                phoneTypes.Save()
+                Return result
+            End Function
 
             ''' <summary>
             ''' Updates information about a customer (User) in TeamSupport
@@ -348,24 +419,81 @@ Namespace TeamSupport
                     End With
 
                     Log.Write("Updating phone information.")
-                    Dim findPhone As New PhoneNumbers(User)
 
+                    '1. Preparation. Get phone types to use in update.
                     Dim thesePhoneTypes As New PhoneTypes(User)
                     thesePhoneTypes.LoadAllPositions(ParentOrgID)
 
-                    findPhone.LoadByID(thisUser.UserID, ReferenceType.Users)
+                    Dim CRMPhoneType As PhoneType = Nothing
+                    'We'll save the phone number using the corresponding CRM ("phone" or "work") phone type.
+                    Select Case Type
+                        Case IntegrationType.Batchbook, IntegrationType.SalesForce, IntegrationType.ZohoCRM
+                            CRMPhoneType = thesePhoneTypes.FindByName("Phone")
+                            If CRMPhoneType Is Nothing Then
+                                CRMPhoneType = AddPhoneType("Phone", thesePhoneTypes.Count, ParentOrgID)
+                                thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                            End If
+                        Case IntegrationType.Highrise
+                            CRMPhoneType = thesePhoneTypes.FindByName("Work")
+                            If CRMPhoneType Is Nothing Then
+                                CRMPhoneType = AddPhoneType("Work", thesePhoneTypes.Count, ParentOrgID)
+                                thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                            End If
+                    End Select
 
-                    Dim workPhone As PhoneNumber = Nothing
+                    'The worktype is used regardless of the CRM phone type to be able to update the numbers processed by the previous version of this class.
+                    Dim workType As PhoneType = thesePhoneTypes.FindByName("Work")
+                    If workType Is Nothing Then
+                        workType = AddPhoneType("Work", thesePhoneTypes.Count, ParentOrgID)
+                        thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                    End If
+
+                    'All the CRMs uses Mobile for this phone type.
+                    Dim mobileType As PhoneType = thesePhoneTypes.FindByName("Mobile")
+                    If mobileType Is Nothing Then
+                        mobileType = AddPhoneType("Mobile", thesePhoneTypes.Count, ParentOrgID)
+                        thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                    End If
+
+                    'All the CRMs uses Fax for this phone type.
+                    Dim faxType As PhoneType = thesePhoneTypes.FindByName("Fax")
+                    If faxType Is Nothing Then
+                        faxType = AddPhoneType("Fax", thesePhoneTypes.Count, ParentOrgID)
+                        thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                    End If
+
+                    '2. Preparation. Get existing numbers, if any, to update instead of add new.
+                    Dim phone As PhoneNumber = Nothing
                     Dim mobilePhone As PhoneNumber = Nothing
                     Dim faxPhone As PhoneNumber = Nothing
 
-                    Dim workType As PhoneType = thesePhoneTypes.FindByName("Work")
-                    Dim mobileType As PhoneType = thesePhoneTypes.FindByName("Mobile")
-                    Dim faxType As PhoneType = thesePhoneTypes.FindByName("Fax")
-
+                    'We'll proceed to find an existing number to update instead of incorrectly adding a new number everytime the contact get sync.
+                    'If more than one phone number exist with the type we are looking for, we might end up updating the incorrect number.
+                    'Unfortunately there is not an easy way to prevent this undesirable effect.
+                    'An alternative is to wipe all numbers and add the ones comming from the CRM. This has been reviewed and rejected by RJ.
+                    'Error chances are less if we update the first existing number with the type being updated than deleting existing numbers.
+                    'Specially because we are bringing only the first number from the CRM.
+                    Dim findPhone As New PhoneNumbers(User)
+                    findPhone.LoadByID(thisUser.UserID, ReferenceType.Users)
                     If findPhone.Count > 0 Then
-                        If workType IsNot Nothing Then
-                            workPhone = findPhone.FindByPhoneTypeID(workType.PhoneTypeID)
+                        'The previous version assigned phone to the work type when the work type existed.
+                        'Because chances are low that the Work Type was deleted by a user chances are big that this is the number we need to update.
+                        phone = findPhone.FindByPhoneTypeID(workType.PhoneTypeID)
+                        If phone Is Nothing Then
+                            'When no work number exist, there is a small chance that the work type was deleted.
+                            'In this case, for a long time we did not add the phone, recently we updated the code to add the number without type.
+                            'To handle this very low chance we look for a number without type.
+                            For Each existingNumber As PhoneNumber In findPhone
+                                If existingNumber.PhoneTypeID Is Nothing Then
+                                    phone = existingNumber
+                                    Exit For
+                                End If
+                            Next
+                        End If
+                        If phone Is Nothing AndAlso CRMPhoneType IsNot Nothing Then
+                            'If no number have been found so far, maybe the current version already updated this contact.
+                            'Therefore we look for a number with the CRM phone type.
+                            phone = findPhone.FindByPhoneTypeID(CRMPhoneType.PhoneTypeID)
                         End If
 
                         If mobileType IsNot Nothing Then
@@ -377,46 +505,62 @@ Namespace TeamSupport
                         End If
                     End If
 
-                    If person.Phone IsNot Nothing Then
-                        If workPhone Is Nothing Then
-                            workPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                    '3. Action. Add/Update.
+                    If person.Phone Is Nothing OrElse person.Phone = String.Empty Then
+                        If phone IsNot Nothing Then
+                            phone.Collection.DeleteFromDB(phone.PhoneID)
+                        End If
+                    Else
+                        If phone Is Nothing Then
+                            phone = (New PhoneNumbers(User).AddNewPhoneNumber())
                         End If
 
-                        workPhone.Number = person.Phone
-                        If workType IsNot Nothing Then
-                            workPhone.PhoneTypeID = workType.PhoneTypeID
-                        End If
-                        workPhone.RefType = ReferenceType.Users
-                        workPhone.RefID = thisUser.UserID
-                        workPhone.Collection.Save()
+                        With phone
+                            .Number  = person.Phone
+                            .RefType = ReferenceType.Users
+                            .RefID   = thisUser.UserID
+                            If CRMPhoneType IsNot Nothing Then
+                                .PhoneTypeID = CRMPhoneType.PhoneTypeID
+                            End If
+                        
+                            .Collection.Save()
+                        End With
                     End If
 
-                    If person.Cell IsNot Nothing Then
+                    If person.Cell Is Nothing OrElse person.Cell = String.Empty Then
+                        If mobilePhone IsNot Nothing then
+                            mobilePhone.Collection.DeleteFromDB(mobilePhone.PhoneID)
+                        End If
+                    Else
                         If mobilePhone Is Nothing Then
                             mobilePhone = (New PhoneNumbers(User).AddNewPhoneNumber())
                         End If
 
-                        mobilePhone.Number = person.Cell
-                        If mobileType IsNot Nothing Then
-                            mobilePhone.PhoneTypeID = mobileType.PhoneTypeID
-                        End If
-                        mobilePhone.RefType = ReferenceType.Users
-                        mobilePhone.RefID = thisUser.UserID
-                        mobilePhone.Collection.Save()
+                        With mobilePhone
+                            .Number       = person.Cell
+                            .RefType      = ReferenceType.Users
+                            .RefID        = thisUser.UserID
+                            .PhoneTypeID  = mobileType.PhoneTypeID
+                            .Collection.Save()
+                        End With
                     End If
 
-                    If person.Fax IsNot Nothing Then
+                    If person.Fax Is Nothing OrElse person.Fax = String.Empty Then
+                        If faxPhone IsNot Nothing then
+                            faxPhone.Collection.DeleteFromDB(faxPhone.PhoneID)
+                        End If
+                    Else
                         If faxPhone Is Nothing Then
                             faxPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
                         End If
 
-                        faxPhone.Number = person.Fax
-                        If faxType IsNot Nothing Then
-                            faxPhone.PhoneTypeID = faxType.PhoneTypeID
-                        End If
-                        faxPhone.RefType = ReferenceType.Users
-                        faxPhone.RefID = thisUser.UserID
-                        faxPhone.Collection.Save()
+                        With faxPhone
+                            .Number   = person.Fax
+                            .RefType  = ReferenceType.Users
+                            .RefID    = thisUser.UserID
+                            .PhoneTypeID = faxType.PhoneTypeID
+                            .Collection.Save()
+                        End With
                     End If
 
 
@@ -653,15 +797,167 @@ Namespace TeamSupport
         End Class
 
         Public Class CompanyData
+            Private _city         As String
+            Private _country      As String
+            Private _state        As String
+            Private _street       As String
+            Private _street2      As String
+            Private _zip          As String
+            Private _phone        As String
+            Private _fax          As String
+            Private _accountId    As String
+            Private _accountName  As String
+
             Property City As String
+                Get
+                    Return _city
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 1024 Then
+                            _city = value.Substring(0, 1024)
+                        Else
+                            _city = value
+                        End If
+                    End If
+                End Set
+            End Property
+
             Property Country As String
+                Get
+                    Return _country
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 250 Then
+                            _country = value.Substring(0, 250)
+                        Else
+                            _country = value
+                        End If
+                    End If
+                End Set
+            End Property
+
             Property State As String
+                Get
+                    Return _state
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 50 Then
+                            _state = value.Substring(0, 50)
+                        Else
+                            _state = value
+                        End If
+                    End If
+                End Set
+            End Property
+
             Property Street As String
+                Get
+                    Return _street
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 1024 Then
+                            _street = value.Substring(0, 1024)
+                        Else
+                            _street = value
+                        End If
+                        
+                    End If
+                End Set
+            End Property
+
             Property Street2 As String
+                Get
+                    Return _street2
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 1024 Then
+                            _street2 = value.Substring(0, 1024)
+                        Else
+                            _street2 = value
+                        End If
+                    End If
+                End Set
+            End Property
+
             Property Zip As String
+                Get
+                    Return _zip
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 30 Then
+                            _zip = value.Substring(0, 30)
+                        Else
+                            _zip = value
+                        End If
+                    End If
+                End Set
+            End Property
+
             Property Phone As String
+                Get
+                    Return _phone
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 50 Then
+                            _phone = value.Substring(0, 50)
+                        Else
+                            _phone = value
+                        End If
+                    End If
+                End Set
+            End Property
+
+            Property Fax As String
+                Get
+                    Return _fax
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 50 Then
+                            _fax = value.Substring(0, 50)
+                        Else
+                            _fax = value
+                        End If
+                    End If
+                End Set
+            End Property
+
             Property AccountID As String
+                Get
+                    Return _accountId
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 100 Then
+                            _accountId = value.Substring(0, 100)
+                        Else
+                            _accountId = value
+                        End If
+                    End If
+                End Set
+            End Property
+
             Property AccountName As String
+                Get
+                    Return _accountName
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 255 Then
+                            _accountName = value.Substring(0, 255)
+                        Else
+                            _accountName = value
+                        End If
+                    End If
+                End Set
+            End Property
 
             Public Overrides Function Equals(ByVal obj As Object) As Boolean
                 If Not TypeOf (obj) Is CompanyData Then
@@ -679,13 +975,119 @@ Namespace TeamSupport
         End Class
 
         Public Class EmployeeData
+            Private _firstName  As String
+            Private _lastName   As String
+            Private _title      As String
+            Private _email      As String
+            Private _phone      As String
+            Private _cell       As String
+            Private _fax        As String
+
             Property FirstName As String
+                Get
+                    Return _firstName
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 100 Then
+                            _firstName = value.Substring(0, 100)
+                        Else
+                            _firstName = value
+                        End If
+                    End If
+                End Set
+            End Property
+
             Property LastName As String
+                Get
+                    Return _lastName
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 100 Then
+                            _lastName = value.Substring(0, 100)
+                        Else
+                            _lastName = value
+                        End If
+                    End If
+                End Set
+            End Property
+
             Property Title As String
+                Get
+                    Return _title
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 100 Then
+                            _title = value.Substring(0, 100)
+                        Else
+                            _title = value
+                        End If
+                    End If
+                End Set
+            End Property
+
             Property Email As String
+                Get
+                    Return _email
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 1024 Then
+                            _email = value.Substring(0, 1024)
+                        Else
+                            _email = value
+                        End If
+                    End If
+                End Set
+            End Property
+            
             Property Phone As String
+                Get
+                    Return _phone
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 50 Then
+                            _phone = value.Substring(0, 50)
+                        Else
+                            _phone = value
+                        End If
+                    End If
+                End Set
+            End Property
+            
             Property Cell As String
+                Get
+                    Return _cell
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 50 Then
+                            _cell = value.Substring(0, 50)
+                        Else
+                            _cell = value
+                        End If
+                    End If
+                End Set
+            End Property
+            
             Property Fax As String
+                Get
+                    Return _fax
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 50 Then
+                            _fax = value.Substring(0, 50)
+                        Else
+                            _fax = value
+                        End if
+                    End If
+                End Set
+            End Property
+
         End Class
 
         ''' <summary>

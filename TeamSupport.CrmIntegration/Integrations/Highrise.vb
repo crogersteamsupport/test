@@ -91,8 +91,18 @@ Namespace TeamSupport
                                                 Dim thisCustomer As New CompanyData()
                                                 Dim address As XElement = company.Element("contact-data").Element("addresses").Element("address")
                                                 Dim phone As XElement = Nothing
+                                                Dim fax As XElement = Nothing
                                                 If company.Element("contact-data").Element("phone-numbers") IsNot Nothing Then
-                                                    phone = company.Element("contact-data").Element("phone-numbers").Element("phone-number")
+                                                    For Each phoneNumber As XElement In company.Element("contact-data").Element("phone-numbers").Descendants("phone-number")
+                                                        If phoneNumber.Element("location").Value = "Work" AndAlso phone Is Nothing Then
+                                                            phone = phoneNumber
+                                                        ElseIf phoneNumber.Element("location").Value = "Fax" AndAlso fax Is Nothing Then
+                                                            fax = phoneNumber
+                                                        End If
+                                                        If phone IsNot Nothing AndAlso fax IsNot Nothing Then
+                                                            Exit For
+                                                        End If
+                                                    Next
                                                 End If
 
                                                 With thisCustomer
@@ -107,9 +117,10 @@ Namespace TeamSupport
                                                         .Zip = address.Element("zip").Value
                                                     End If
                                                     If phone IsNot Nothing Then
-                                                        If phone.Element("location").Value = "Work" Then
-                                                            .Phone = phone.Element("number").Value
-                                                        End If
+                                                        .Phone = phone.Element("number").Value
+                                                    End If
+                                                    If fax IsNot Nothing Then
+                                                        .Fax = fax.Element("number").Value
                                                     End If
                                                 End With
 
