@@ -32,37 +32,37 @@ namespace TeamSupport.Data
     public int? TicketType
     {
       get { return Row["TicketType"] != DBNull.Value ? (int?)Row["TicketType"] : null; }
-      set { Row["TicketType"] = CheckNull(value); }
+      set { Row["TicketType"] = CheckValue("TicketType", value); }
     }
     
     public int? Votes
     {
       get { return Row["Votes"] != DBNull.Value ? (int?)Row["Votes"] : null; }
-      set { Row["Votes"] = CheckNull(value); }
+      set { Row["Votes"] = CheckValue("Votes", value); }
     }
     
     public float? Rating
     {
       get { return Row["Rating"] != DBNull.Value ? (float?)Row["Rating"] : null; }
-      set { Row["Rating"] = CheckNull(value); }
+      set { Row["Rating"] = CheckValue("Rating", value); }
     }
     
     public int? Views
     {
       get { return Row["Views"] != DBNull.Value ? (int?)Row["Views"] : null; }
-      set { Row["Views"] = CheckNull(value); }
+      set { Row["Views"] = CheckValue("Views", value); }
     }
     
     public int? ThumbsUp
     {
       get { return Row["ThumbsUp"] != DBNull.Value ? (int?)Row["ThumbsUp"] : null; }
-      set { Row["ThumbsUp"] = CheckNull(value); }
+      set { Row["ThumbsUp"] = CheckValue("ThumbsUp", value); }
     }
     
     public int? ThumbsDown
     {
       get { return Row["ThumbsDown"] != DBNull.Value ? (int?)Row["ThumbsDown"] : null; }
-      set { Row["ThumbsDown"] = CheckNull(value); }
+      set { Row["ThumbsDown"] = CheckValue("ThumbsDown", value); }
     }
     
 
@@ -70,7 +70,7 @@ namespace TeamSupport.Data
     public int TicketID
     {
       get { return (int)Row["TicketID"]; }
-      set { Row["TicketID"] = CheckNull(value); }
+      set { Row["TicketID"] = CheckValue("TicketID", value); }
     }
     
 
@@ -83,7 +83,7 @@ namespace TeamSupport.Data
     public DateTime? LastViewed
     {
       get { return Row["LastViewed"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastViewed"]) : null; }
-      set { Row["LastViewed"] = CheckNull(value); }
+      set { Row["LastViewed"] = CheckValue("LastViewed", value); }
     }
 
     public DateTime? LastViewedUtc

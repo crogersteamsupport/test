@@ -37,67 +37,67 @@ namespace TeamSupport.Data
     public string SerialNumber
     {
       get { return Row["SerialNumber"] != DBNull.Value ? (string)Row["SerialNumber"] : null; }
-      set { Row["SerialNumber"] = CheckNull(value); }
+      set { Row["SerialNumber"] = CheckValue("SerialNumber", value); }
     }
     
     public string Name
     {
       get { return Row["Name"] != DBNull.Value ? (string)Row["Name"] : null; }
-      set { Row["Name"] = CheckNull(value); }
+      set { Row["Name"] = CheckValue("Name", value); }
     }
     
     public string Location
     {
       get { return Row["Location"] != DBNull.Value ? (string)Row["Location"] : null; }
-      set { Row["Location"] = CheckNull(value); }
+      set { Row["Location"] = CheckValue("Location", value); }
     }
     
     public string Notes
     {
       get { return Row["Notes"] != DBNull.Value ? (string)Row["Notes"] : null; }
-      set { Row["Notes"] = CheckNull(value); }
+      set { Row["Notes"] = CheckValue("Notes", value); }
     }
     
     public int? ProductID
     {
       get { return Row["ProductID"] != DBNull.Value ? (int?)Row["ProductID"] : null; }
-      set { Row["ProductID"] = CheckNull(value); }
+      set { Row["ProductID"] = CheckValue("ProductID", value); }
     }
     
     public int? AssignedTo
     {
       get { return Row["AssignedTo"] != DBNull.Value ? (int?)Row["AssignedTo"] : null; }
-      set { Row["AssignedTo"] = CheckNull(value); }
+      set { Row["AssignedTo"] = CheckValue("AssignedTo", value); }
     }
     
     public int? CreatorID
     {
       get { return Row["CreatorID"] != DBNull.Value ? (int?)Row["CreatorID"] : null; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public int? ModifierID
     {
       get { return Row["ModifierID"] != DBNull.Value ? (int?)Row["ModifierID"] : null; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int? SubPartOf
     {
       get { return Row["SubPartOf"] != DBNull.Value ? (int?)Row["SubPartOf"] : null; }
-      set { Row["SubPartOf"] = CheckNull(value); }
+      set { Row["SubPartOf"] = CheckValue("SubPartOf", value); }
     }
     
     public string Status
     {
       get { return Row["Status"] != DBNull.Value ? (string)Row["Status"] : null; }
-      set { Row["Status"] = CheckNull(value); }
+      set { Row["Status"] = CheckValue("Status", value); }
     }
     
     public string ImportID
     {
       get { return Row["ImportID"] != DBNull.Value ? (string)Row["ImportID"] : null; }
-      set { Row["ImportID"] = CheckNull(value); }
+      set { Row["ImportID"] = CheckValue("ImportID", value); }
     }
     
 
@@ -105,7 +105,7 @@ namespace TeamSupport.Data
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -118,7 +118,7 @@ namespace TeamSupport.Data
     public DateTime? WarrantyExpiration
     {
       get { return Row["WarrantyExpiration"] != DBNull.Value ? DateToLocal((DateTime?)Row["WarrantyExpiration"]) : null; }
-      set { Row["WarrantyExpiration"] = CheckNull(value); }
+      set { Row["WarrantyExpiration"] = CheckValue("WarrantyExpiration", value); }
     }
 
     public DateTime? WarrantyExpirationUtc
@@ -129,7 +129,7 @@ namespace TeamSupport.Data
     public DateTime? DateCreated
     {
       get { return Row["DateCreated"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateCreated"]) : null; }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime? DateCreatedUtc
@@ -140,7 +140,7 @@ namespace TeamSupport.Data
     public DateTime? DateModified
     {
       get { return Row["DateModified"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateModified"]) : null; }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime? DateModifiedUtc

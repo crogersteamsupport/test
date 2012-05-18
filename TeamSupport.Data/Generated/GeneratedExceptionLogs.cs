@@ -37,37 +37,37 @@ namespace TeamSupport.Data
     public string URL
     {
       get { return Row["URL"] != DBNull.Value ? (string)Row["URL"] : null; }
-      set { Row["URL"] = CheckNull(value); }
+      set { Row["URL"] = CheckValue("URL", value); }
     }
     
     public string PageInfo
     {
       get { return Row["PageInfo"] != DBNull.Value ? (string)Row["PageInfo"] : null; }
-      set { Row["PageInfo"] = CheckNull(value); }
+      set { Row["PageInfo"] = CheckValue("PageInfo", value); }
     }
     
     public string ExceptionName
     {
       get { return Row["ExceptionName"] != DBNull.Value ? (string)Row["ExceptionName"] : null; }
-      set { Row["ExceptionName"] = CheckNull(value); }
+      set { Row["ExceptionName"] = CheckValue("ExceptionName", value); }
     }
     
     public string Message
     {
       get { return Row["Message"] != DBNull.Value ? (string)Row["Message"] : null; }
-      set { Row["Message"] = CheckNull(value); }
+      set { Row["Message"] = CheckValue("Message", value); }
     }
     
     public string StackTrace
     {
       get { return Row["StackTrace"] != DBNull.Value ? (string)Row["StackTrace"] : null; }
-      set { Row["StackTrace"] = CheckNull(value); }
+      set { Row["StackTrace"] = CheckValue("StackTrace", value); }
     }
     
     public string Browser
     {
       get { return Row["Browser"] != DBNull.Value ? (string)Row["Browser"] : null; }
-      set { Row["Browser"] = CheckNull(value); }
+      set { Row["Browser"] = CheckValue("Browser", value); }
     }
     
 
@@ -75,13 +75,13 @@ namespace TeamSupport.Data
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
 
@@ -96,7 +96,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -107,7 +107,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

@@ -37,13 +37,13 @@ namespace TeamSupport.Data
     public int? TargetUserID
     {
       get { return Row["TargetUserID"] != DBNull.Value ? (int?)Row["TargetUserID"] : null; }
-      set { Row["TargetUserID"] = CheckNull(value); }
+      set { Row["TargetUserID"] = CheckValue("TargetUserID", value); }
     }
     
     public int? GroupID
     {
       get { return Row["GroupID"] != DBNull.Value ? (int?)Row["GroupID"] : null; }
-      set { Row["GroupID"] = CheckNull(value); }
+      set { Row["GroupID"] = CheckValue("GroupID", value); }
     }
     
 
@@ -51,43 +51,43 @@ namespace TeamSupport.Data
     public bool IsAccepted
     {
       get { return (bool)Row["IsAccepted"]; }
-      set { Row["IsAccepted"] = CheckNull(value); }
+      set { Row["IsAccepted"] = CheckValue("IsAccepted", value); }
     }
     
     public ChatRequestType RequestType
     {
       get { return (ChatRequestType)Row["RequestType"]; }
-      set { Row["RequestType"] = CheckNull(value); }
+      set { Row["RequestType"] = CheckValue("RequestType", value); }
     }
     
     public string Message
     {
       get { return (string)Row["Message"]; }
-      set { Row["Message"] = CheckNull(value); }
+      set { Row["Message"] = CheckValue("Message", value); }
     }
     
     public ChatParticipantType RequestorType
     {
       get { return (ChatParticipantType)Row["RequestorType"]; }
-      set { Row["RequestorType"] = CheckNull(value); }
+      set { Row["RequestorType"] = CheckValue("RequestorType", value); }
     }
     
     public int RequestorID
     {
       get { return (int)Row["RequestorID"]; }
-      set { Row["RequestorID"] = CheckNull(value); }
+      set { Row["RequestorID"] = CheckValue("RequestorID", value); }
     }
     
     public int ChatID
     {
       get { return (int)Row["ChatID"]; }
-      set { Row["ChatID"] = CheckNull(value); }
+      set { Row["ChatID"] = CheckValue("ChatID", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -102,7 +102,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

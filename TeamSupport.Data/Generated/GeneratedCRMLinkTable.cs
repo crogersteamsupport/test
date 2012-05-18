@@ -37,25 +37,25 @@ namespace TeamSupport.Data
     public string Username
     {
       get { return Row["Username"] != DBNull.Value ? (string)Row["Username"] : null; }
-      set { Row["Username"] = CheckNull(value); }
+      set { Row["Username"] = CheckValue("Username", value); }
     }
     
     public string Password
     {
       get { return Row["Password"] != DBNull.Value ? (string)Row["Password"] : null; }
-      set { Row["Password"] = CheckNull(value); }
+      set { Row["Password"] = CheckValue("Password", value); }
     }
     
     public string SecurityToken
     {
       get { return Row["SecurityToken"] != DBNull.Value ? (string)Row["SecurityToken"] : null; }
-      set { Row["SecurityToken"] = CheckNull(value); }
+      set { Row["SecurityToken"] = CheckValue("SecurityToken", value); }
     }
     
     public string TypeFieldMatch
     {
       get { return Row["TypeFieldMatch"] != DBNull.Value ? (string)Row["TypeFieldMatch"] : null; }
-      set { Row["TypeFieldMatch"] = CheckNull(value); }
+      set { Row["TypeFieldMatch"] = CheckValue("TypeFieldMatch", value); }
     }
     
 
@@ -63,43 +63,43 @@ namespace TeamSupport.Data
     public bool SendWelcomeEmail
     {
       get { return (bool)Row["SendWelcomeEmail"]; }
-      set { Row["SendWelcomeEmail"] = CheckNull(value); }
+      set { Row["SendWelcomeEmail"] = CheckValue("SendWelcomeEmail", value); }
     }
     
     public bool AllowPortalAccess
     {
       get { return (bool)Row["AllowPortalAccess"]; }
-      set { Row["AllowPortalAccess"] = CheckNull(value); }
+      set { Row["AllowPortalAccess"] = CheckValue("AllowPortalAccess", value); }
     }
     
     public int LastTicketID
     {
       get { return (int)Row["LastTicketID"]; }
-      set { Row["LastTicketID"] = CheckNull(value); }
+      set { Row["LastTicketID"] = CheckValue("LastTicketID", value); }
     }
     
     public bool SendBackTicketData
     {
       get { return (bool)Row["SendBackTicketData"]; }
-      set { Row["SendBackTicketData"] = CheckNull(value); }
+      set { Row["SendBackTicketData"] = CheckValue("SendBackTicketData", value); }
     }
     
     public string CRMType
     {
       get { return (string)Row["CRMType"]; }
-      set { Row["CRMType"] = CheckNull(value); }
+      set { Row["CRMType"] = CheckValue("CRMType", value); }
     }
     
     public bool Active
     {
       get { return (bool)Row["Active"]; }
-      set { Row["Active"] = CheckNull(value); }
+      set { Row["Active"] = CheckValue("Active", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -112,7 +112,7 @@ namespace TeamSupport.Data
     public DateTime? LastLink
     {
       get { return Row["LastLink"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastLink"]) : null; }
-      set { Row["LastLink"] = CheckNull(value); }
+      set { Row["LastLink"] = CheckValue("LastLink", value); }
     }
 
     public DateTime? LastLinkUtc
@@ -125,7 +125,7 @@ namespace TeamSupport.Data
     public DateTime LastProcessed
     {
       get { return DateToLocal((DateTime)Row["LastProcessed"]); }
-      set { Row["LastProcessed"] = CheckNull(value); }
+      set { Row["LastProcessed"] = CheckValue("LastProcessed", value); }
     }
 
     public DateTime LastProcessedUtc
@@ -272,7 +272,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("SecurityToken", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("SecurityToken", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -385,7 +385,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("SecurityToken", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("SecurityToken", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

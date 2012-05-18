@@ -32,49 +32,49 @@ namespace TeamSupport.Data
     public string URL
     {
       get { return Row["URL"] != DBNull.Value ? (string)Row["URL"] : null; }
-      set { Row["URL"] = CheckNull(value); }
+      set { Row["URL"] = CheckValue("URL", value); }
     }
     
     public string PageInfo
     {
       get { return Row["PageInfo"] != DBNull.Value ? (string)Row["PageInfo"] : null; }
-      set { Row["PageInfo"] = CheckNull(value); }
+      set { Row["PageInfo"] = CheckValue("PageInfo", value); }
     }
     
     public string ExceptionName
     {
       get { return Row["ExceptionName"] != DBNull.Value ? (string)Row["ExceptionName"] : null; }
-      set { Row["ExceptionName"] = CheckNull(value); }
+      set { Row["ExceptionName"] = CheckValue("ExceptionName", value); }
     }
     
     public string Message
     {
       get { return Row["Message"] != DBNull.Value ? (string)Row["Message"] : null; }
-      set { Row["Message"] = CheckNull(value); }
+      set { Row["Message"] = CheckValue("Message", value); }
     }
     
     public string StackTrace
     {
       get { return Row["StackTrace"] != DBNull.Value ? (string)Row["StackTrace"] : null; }
-      set { Row["StackTrace"] = CheckNull(value); }
+      set { Row["StackTrace"] = CheckValue("StackTrace", value); }
     }
     
     public string FirstName
     {
       get { return Row["FirstName"] != DBNull.Value ? (string)Row["FirstName"] : null; }
-      set { Row["FirstName"] = CheckNull(value); }
+      set { Row["FirstName"] = CheckValue("FirstName", value); }
     }
     
     public string LastName
     {
       get { return Row["LastName"] != DBNull.Value ? (string)Row["LastName"] : null; }
-      set { Row["LastName"] = CheckNull(value); }
+      set { Row["LastName"] = CheckValue("LastName", value); }
     }
     
     public string Name
     {
       get { return Row["Name"] != DBNull.Value ? (string)Row["Name"] : null; }
-      set { Row["Name"] = CheckNull(value); }
+      set { Row["Name"] = CheckValue("Name", value); }
     }
     
 
@@ -82,13 +82,13 @@ namespace TeamSupport.Data
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public int ExceptionLogID
     {
       get { return (int)Row["ExceptionLogID"]; }
-      set { Row["ExceptionLogID"] = CheckNull(value); }
+      set { Row["ExceptionLogID"] = CheckValue("ExceptionLogID", value); }
     }
     
 
@@ -103,7 +103,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

@@ -32,19 +32,19 @@ namespace TeamSupport.Data
     public int? OrganizationID
     {
       get { return Row["OrganizationID"] != DBNull.Value ? (int?)Row["OrganizationID"] : null; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public int? FilterUserID
     {
       get { return Row["FilterUserID"] != DBNull.Value ? (int?)Row["FilterUserID"] : null; }
-      set { Row["FilterUserID"] = CheckNull(value); }
+      set { Row["FilterUserID"] = CheckValue("FilterUserID", value); }
     }
     
     public int? FilterOrgID
     {
       get { return Row["FilterOrgID"] != DBNull.Value ? (int?)Row["FilterOrgID"] : null; }
-      set { Row["FilterOrgID"] = CheckNull(value); }
+      set { Row["FilterOrgID"] = CheckValue("FilterOrgID", value); }
     }
     
 
@@ -52,7 +52,7 @@ namespace TeamSupport.Data
     public int CategoryID
     {
       get { return (int)Row["CategoryID"]; }
-      set { Row["CategoryID"] = CheckNull(value); }
+      set { Row["CategoryID"] = CheckValue("CategoryID", value); }
     }
     
 

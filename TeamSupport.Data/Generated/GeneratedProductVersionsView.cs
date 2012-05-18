@@ -32,13 +32,13 @@ namespace TeamSupport.Data
     public string Description
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public string ImportID
     {
       get { return Row["ImportID"] != DBNull.Value ? (string)Row["ImportID"] : null; }
-      set { Row["ImportID"] = CheckNull(value); }
+      set { Row["ImportID"] = CheckValue("ImportID", value); }
     }
     
 
@@ -46,61 +46,61 @@ namespace TeamSupport.Data
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public string ProductName
     {
       get { return (string)Row["ProductName"]; }
-      set { Row["ProductName"] = CheckNull(value); }
+      set { Row["ProductName"] = CheckValue("ProductName", value); }
     }
     
     public string VersionStatus
     {
       get { return (string)Row["VersionStatus"]; }
-      set { Row["VersionStatus"] = CheckNull(value); }
+      set { Row["VersionStatus"] = CheckValue("VersionStatus", value); }
     }
     
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public bool IsReleased
     {
       get { return (bool)Row["IsReleased"]; }
-      set { Row["IsReleased"] = CheckNull(value); }
+      set { Row["IsReleased"] = CheckValue("IsReleased", value); }
     }
     
     public string VersionNumber
     {
       get { return (string)Row["VersionNumber"]; }
-      set { Row["VersionNumber"] = CheckNull(value); }
+      set { Row["VersionNumber"] = CheckValue("VersionNumber", value); }
     }
     
     public int ProductVersionStatusID
     {
       get { return (int)Row["ProductVersionStatusID"]; }
-      set { Row["ProductVersionStatusID"] = CheckNull(value); }
+      set { Row["ProductVersionStatusID"] = CheckValue("ProductVersionStatusID", value); }
     }
     
     public int ProductID
     {
       get { return (int)Row["ProductID"]; }
-      set { Row["ProductID"] = CheckNull(value); }
+      set { Row["ProductID"] = CheckValue("ProductID", value); }
     }
     
     public int ProductVersionID
     {
       get { return (int)Row["ProductVersionID"]; }
-      set { Row["ProductVersionID"] = CheckNull(value); }
+      set { Row["ProductVersionID"] = CheckValue("ProductVersionID", value); }
     }
     
 
@@ -113,7 +113,7 @@ namespace TeamSupport.Data
     public DateTime? ReleaseDate
     {
       get { return Row["ReleaseDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["ReleaseDate"]) : null; }
-      set { Row["ReleaseDate"] = CheckNull(value); }
+      set { Row["ReleaseDate"] = CheckValue("ReleaseDate", value); }
     }
 
     public DateTime? ReleaseDateUtc
@@ -126,7 +126,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -137,7 +137,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

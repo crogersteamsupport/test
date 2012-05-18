@@ -32,31 +32,31 @@ namespace TeamSupport.Data
     public string Description
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public int? GroupToAssign
     {
       get { return Row["GroupToAssign"] != DBNull.Value ? (int?)Row["GroupToAssign"] : null; }
-      set { Row["GroupToAssign"] = CheckNull(value); }
+      set { Row["GroupToAssign"] = CheckValue("GroupToAssign", value); }
     }
     
     public int? DefaultTicketType
     {
       get { return Row["DefaultTicketType"] != DBNull.Value ? (int?)Row["DefaultTicketType"] : null; }
-      set { Row["DefaultTicketType"] = CheckNull(value); }
+      set { Row["DefaultTicketType"] = CheckValue("DefaultTicketType", value); }
     }
     
     public int? ProductID
     {
       get { return Row["ProductID"] != DBNull.Value ? (int?)Row["ProductID"] : null; }
-      set { Row["ProductID"] = CheckNull(value); }
+      set { Row["ProductID"] = CheckValue("ProductID", value); }
     }
     
     public string SendingEMailAddress
     {
       get { return Row["SendingEMailAddress"] != DBNull.Value ? (string)Row["SendingEMailAddress"] : null; }
-      set { Row["SendingEMailAddress"] = CheckNull(value); }
+      set { Row["SendingEMailAddress"] = CheckValue("SendingEMailAddress", value); }
     }
     
 
@@ -64,13 +64,13 @@ namespace TeamSupport.Data
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public Guid SystemEMailID
     {
       get { return (Guid)Row["SystemEMailID"]; }
-      set { Row["SystemEMailID"] = CheckNull(value); }
+      set { Row["SystemEMailID"] = CheckValue("SystemEMailID", value); }
     }
     
 

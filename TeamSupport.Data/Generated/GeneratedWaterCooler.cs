@@ -37,25 +37,25 @@ namespace TeamSupport.Data
     public int? GroupFor
     {
       get { return Row["GroupFor"] != DBNull.Value ? (int?)Row["GroupFor"] : null; }
-      set { Row["GroupFor"] = CheckNull(value); }
+      set { Row["GroupFor"] = CheckValue("GroupFor", value); }
     }
     
     public int? ReplyTo
     {
       get { return Row["ReplyTo"] != DBNull.Value ? (int?)Row["ReplyTo"] : null; }
-      set { Row["ReplyTo"] = CheckNull(value); }
+      set { Row["ReplyTo"] = CheckValue("ReplyTo", value); }
     }
     
     public string Message
     {
       get { return Row["Message"] != DBNull.Value ? (string)Row["Message"] : null; }
-      set { Row["Message"] = CheckNull(value); }
+      set { Row["Message"] = CheckValue("Message", value); }
     }
     
     public string MessageType
     {
       get { return Row["MessageType"] != DBNull.Value ? (string)Row["MessageType"] : null; }
-      set { Row["MessageType"] = CheckNull(value); }
+      set { Row["MessageType"] = CheckValue("MessageType", value); }
     }
     
 
@@ -63,13 +63,13 @@ namespace TeamSupport.Data
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public int UserID
     {
       get { return (int)Row["UserID"]; }
-      set { Row["UserID"] = CheckNull(value); }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
 
@@ -84,7 +84,7 @@ namespace TeamSupport.Data
     public DateTime TimeStamp
     {
       get { return DateToLocal((DateTime)Row["TimeStamp"]); }
-      set { Row["TimeStamp"] = CheckNull(value); }
+      set { Row["TimeStamp"] = CheckValue("TimeStamp", value); }
     }
 
     public DateTime TimeStampUtc

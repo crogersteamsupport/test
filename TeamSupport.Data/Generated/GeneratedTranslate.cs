@@ -37,37 +37,37 @@ namespace TeamSupport.Data
     public string English
     {
       get { return Row["English"] != DBNull.Value ? (string)Row["English"] : null; }
-      set { Row["English"] = CheckNull(value); }
+      set { Row["English"] = CheckValue("English", value); }
     }
     
     public string French
     {
       get { return Row["French"] != DBNull.Value ? (string)Row["French"] : null; }
-      set { Row["French"] = CheckNull(value); }
+      set { Row["French"] = CheckValue("French", value); }
     }
     
     public string Italian
     {
       get { return Row["Italian"] != DBNull.Value ? (string)Row["Italian"] : null; }
-      set { Row["Italian"] = CheckNull(value); }
+      set { Row["Italian"] = CheckValue("Italian", value); }
     }
     
     public string German
     {
       get { return Row["German"] != DBNull.Value ? (string)Row["German"] : null; }
-      set { Row["German"] = CheckNull(value); }
+      set { Row["German"] = CheckValue("German", value); }
     }
     
     public string Spanish
     {
       get { return Row["Spanish"] != DBNull.Value ? (string)Row["Spanish"] : null; }
-      set { Row["Spanish"] = CheckNull(value); }
+      set { Row["Spanish"] = CheckValue("Spanish", value); }
     }
     
     public string Portugese
     {
       get { return Row["Portugese"] != DBNull.Value ? (string)Row["Portugese"] : null; }
-      set { Row["Portugese"] = CheckNull(value); }
+      set { Row["Portugese"] = CheckValue("Portugese", value); }
     }
     
 

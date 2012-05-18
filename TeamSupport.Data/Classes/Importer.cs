@@ -945,6 +945,7 @@ namespace TeamSupport.Data
         organization.CompanyDomains = row["Domains"].ToString().Trim();
         organization.WebServiceID = Guid.NewGuid();
         organization.Website = row["Website"].ToString().Trim();
+        organization.DateCreated = (DateTime)GetDBDate(row["DateCreated"], false);
         organization.SAExpirationDate = GetDBDate(row["ServiceExpiration"], true);
         if (++count % BULK_LIMIT == 0)
         {
@@ -1826,12 +1827,20 @@ namespace TeamSupport.Data
         Ticket ticket = tickets.FindByImportID(row["TicketID"].ToString().Trim());
         Organization organization = organizations.FindByImportID(row["CustomerID"].ToString().Trim());
 
-        if (organization == null || ticket == null)
+        bool missing = false;
+        if (ticket == null)
         {
-          _log.AppendError(row, "Customer Ticket skipped due to missing organization or ticket.");
-          continue;
+          _log.AppendError(row, "Customer Ticket skipped due to missing ticket.");
+          missing = true;
         }
 
+        if (organization == null)
+        {
+          _log.AppendError(row, "Customer Ticket skipped due to missing organization.");
+          missing = true;
+        }
+
+        if (missing == true) continue;
         tickets.AddOrganization(organization.OrganizationID, ticket.TicketID);
 
       }

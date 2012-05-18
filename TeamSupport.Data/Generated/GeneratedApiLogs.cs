@@ -37,7 +37,7 @@ namespace TeamSupport.Data
     public string RequestBody
     {
       get { return Row["RequestBody"] != DBNull.Value ? (string)Row["RequestBody"] : null; }
-      set { Row["RequestBody"] = CheckNull(value); }
+      set { Row["RequestBody"] = CheckValue("RequestBody", value); }
     }
     
 
@@ -45,31 +45,31 @@ namespace TeamSupport.Data
     public int StatusCode
     {
       get { return (int)Row["StatusCode"]; }
-      set { Row["StatusCode"] = CheckNull(value); }
+      set { Row["StatusCode"] = CheckValue("StatusCode", value); }
     }
     
     public string Verb
     {
       get { return (string)Row["Verb"]; }
-      set { Row["Verb"] = CheckNull(value); }
+      set { Row["Verb"] = CheckValue("Verb", value); }
     }
     
     public string Url
     {
       get { return (string)Row["Url"]; }
-      set { Row["Url"] = CheckNull(value); }
+      set { Row["Url"] = CheckValue("Url", value); }
     }
     
     public string IPAddress
     {
       get { return (string)Row["IPAddress"]; }
-      set { Row["IPAddress"] = CheckNull(value); }
+      set { Row["IPAddress"] = CheckValue("IPAddress", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -84,7 +84,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

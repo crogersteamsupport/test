@@ -37,25 +37,25 @@ namespace TeamSupport.Data
     public string ListValues
     {
       get { return Row["ListValues"] != DBNull.Value ? (string)Row["ListValues"] : null; }
-      set { Row["ListValues"] = CheckNull(value); }
+      set { Row["ListValues"] = CheckValue("ListValues", value); }
     }
     
     public string Description
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public bool? IsVisibleOnPortal
     {
       get { return Row["IsVisibleOnPortal"] != DBNull.Value ? (bool?)Row["IsVisibleOnPortal"] : null; }
-      set { Row["IsVisibleOnPortal"] = CheckNull(value); }
+      set { Row["IsVisibleOnPortal"] = CheckValue("IsVisibleOnPortal", value); }
     }
     
     public int? CustomFieldCategoryID
     {
       get { return Row["CustomFieldCategoryID"] != DBNull.Value ? (int?)Row["CustomFieldCategoryID"] : null; }
-      set { Row["CustomFieldCategoryID"] = CheckNull(value); }
+      set { Row["CustomFieldCategoryID"] = CheckValue("CustomFieldCategoryID", value); }
     }
     
 
@@ -63,67 +63,67 @@ namespace TeamSupport.Data
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public bool IsRequired
     {
       get { return (bool)Row["IsRequired"]; }
-      set { Row["IsRequired"] = CheckNull(value); }
+      set { Row["IsRequired"] = CheckValue("IsRequired", value); }
     }
     
     public bool IsFirstIndexSelect
     {
       get { return (bool)Row["IsFirstIndexSelect"]; }
-      set { Row["IsFirstIndexSelect"] = CheckNull(value); }
+      set { Row["IsFirstIndexSelect"] = CheckValue("IsFirstIndexSelect", value); }
     }
     
     public int Position
     {
       get { return (int)Row["Position"]; }
-      set { Row["Position"] = CheckNull(value); }
+      set { Row["Position"] = CheckValue("Position", value); }
     }
     
     public int AuxID
     {
       get { return (int)Row["AuxID"]; }
-      set { Row["AuxID"] = CheckNull(value); }
+      set { Row["AuxID"] = CheckValue("AuxID", value); }
     }
     
     public CustomFieldType FieldType
     {
       get { return (CustomFieldType)Row["FieldType"]; }
-      set { Row["FieldType"] = CheckNull(value); }
+      set { Row["FieldType"] = CheckValue("FieldType", value); }
     }
     
     public ReferenceType RefType
     {
       get { return (ReferenceType)Row["RefType"]; }
-      set { Row["RefType"] = CheckNull(value); }
+      set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
     public string ApiFieldName
     {
       get { return (string)Row["ApiFieldName"]; }
-      set { Row["ApiFieldName"] = CheckNull(value); }
+      set { Row["ApiFieldName"] = CheckValue("ApiFieldName", value); }
     }
     
     public string Name
     {
       get { return (string)Row["Name"]; }
-      set { Row["Name"] = CheckNull(value); }
+      set { Row["Name"] = CheckValue("Name", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -138,7 +138,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -149,7 +149,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

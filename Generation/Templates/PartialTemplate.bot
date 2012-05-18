@@ -43,7 +43,7 @@ namespace TeamSupport.Data
     public <$DataType$> <$PropertyName$>
     {
       get { return Row["<$FieldName$>"] != DBNull.Value ? (<$DataType$>)Row["<$FieldName$>"] : null; }
-      set { Row["<$FieldName$>"] = CheckNull(value); }
+      set { Row["<$FieldName$>"] = CheckValue("<$FieldName$>", value); }
     }
     <$EndFields$>
 
@@ -51,7 +51,7 @@ namespace TeamSupport.Data
     public <$DataType$> <$PropertyName$>
     {
       get { return (<$DataType$>)Row["<$FieldName$>"]; }
-      set { Row["<$FieldName$>"] = CheckNull(value); }
+      set { Row["<$FieldName$>"] = CheckValue("<$FieldName$>", value); }
     }
     <$EndFields$>
 
@@ -84,7 +84,7 @@ namespace TeamSupport.Data
     public <$DataType$> <$PropertyName$>
     {
       get { return Row["<$FieldName$>"] != DBNull.Value ? DateToLocal((<$DataType$>)Row["<$FieldName$>"]) : null; }
-      set { Row["<$FieldName$>"] = CheckNull(value); }
+      set { Row["<$FieldName$>"] = CheckValue("<$FieldName$>", value); }
     }
 
     public <$DataType$> <$PropertyName$>Utc
@@ -97,7 +97,7 @@ namespace TeamSupport.Data
     public <$DataType$> <$PropertyName$>
     {
       get { return DateToLocal((<$DataType$>)Row["<$FieldName$>"]); }
-      set { Row["<$FieldName$>"] = CheckNull(value); }
+      set { Row["<$FieldName$>"] = CheckValue("<$FieldName$>", value); }
     }
 
     public <$DataType$> <$PropertyName$>Utc

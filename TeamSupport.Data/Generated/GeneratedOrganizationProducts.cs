@@ -37,13 +37,13 @@ namespace TeamSupport.Data
     public int? ProductVersionID
     {
       get { return Row["ProductVersionID"] != DBNull.Value ? (int?)Row["ProductVersionID"] : null; }
-      set { Row["ProductVersionID"] = CheckNull(value); }
+      set { Row["ProductVersionID"] = CheckValue("ProductVersionID", value); }
     }
     
     public string ImportID
     {
       get { return Row["ImportID"] != DBNull.Value ? (string)Row["ImportID"] : null; }
-      set { Row["ImportID"] = CheckNull(value); }
+      set { Row["ImportID"] = CheckValue("ImportID", value); }
     }
     
 
@@ -51,31 +51,31 @@ namespace TeamSupport.Data
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public bool IsVisibleOnPortal
     {
       get { return (bool)Row["IsVisibleOnPortal"]; }
-      set { Row["IsVisibleOnPortal"] = CheckNull(value); }
+      set { Row["IsVisibleOnPortal"] = CheckValue("IsVisibleOnPortal", value); }
     }
     
     public int ProductID
     {
       get { return (int)Row["ProductID"]; }
-      set { Row["ProductID"] = CheckNull(value); }
+      set { Row["ProductID"] = CheckValue("ProductID", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -88,7 +88,7 @@ namespace TeamSupport.Data
     public DateTime? SupportExpiration
     {
       get { return Row["SupportExpiration"] != DBNull.Value ? DateToLocal((DateTime?)Row["SupportExpiration"]) : null; }
-      set { Row["SupportExpiration"] = CheckNull(value); }
+      set { Row["SupportExpiration"] = CheckValue("SupportExpiration", value); }
     }
 
     public DateTime? SupportExpirationUtc
@@ -101,7 +101,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -112,7 +112,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

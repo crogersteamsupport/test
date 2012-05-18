@@ -37,13 +37,13 @@ namespace TeamSupport.Data
     public string SQLExecuted
     {
       get { return Row["SQLExecuted"] != DBNull.Value ? (string)Row["SQLExecuted"] : null; }
-      set { Row["SQLExecuted"] = CheckNull(value); }
+      set { Row["SQLExecuted"] = CheckValue("SQLExecuted", value); }
     }
     
     public string ErrorMessage
     {
       get { return Row["ErrorMessage"] != DBNull.Value ? (string)Row["ErrorMessage"] : null; }
-      set { Row["ErrorMessage"] = CheckNull(value); }
+      set { Row["ErrorMessage"] = CheckValue("ErrorMessage", value); }
     }
     
 
@@ -51,19 +51,19 @@ namespace TeamSupport.Data
     public double DurationToLoad
     {
       get { return (double)Row["DurationToLoad"]; }
-      set { Row["DurationToLoad"] = CheckNull(value); }
+      set { Row["DurationToLoad"] = CheckValue("DurationToLoad", value); }
     }
     
     public int UserID
     {
       get { return (int)Row["UserID"]; }
-      set { Row["UserID"] = CheckNull(value); }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
     public int ReportID
     {
       get { return (int)Row["ReportID"]; }
-      set { Row["ReportID"] = CheckNull(value); }
+      set { Row["ReportID"] = CheckValue("ReportID", value); }
     }
     
 
@@ -78,7 +78,7 @@ namespace TeamSupport.Data
     public DateTime DateViewed
     {
       get { return DateToLocal((DateTime)Row["DateViewed"]); }
-      set { Row["DateViewed"] = CheckNull(value); }
+      set { Row["DateViewed"] = CheckValue("DateViewed", value); }
     }
 
     public DateTime DateViewedUtc

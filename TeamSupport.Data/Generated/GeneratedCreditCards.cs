@@ -37,7 +37,7 @@ namespace TeamSupport.Data
     public Byte[] CardNumber
     {
       get { return Row["CardNumber"] != DBNull.Value ? (Byte[])Row["CardNumber"] : null; }
-      set { Row["CardNumber"] = CheckNull(value); }
+      set { Row["CardNumber"] = CheckValue("CardNumber", value); }
     }
     
 
@@ -45,43 +45,43 @@ namespace TeamSupport.Data
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public string NameOnCard
     {
       get { return (string)Row["NameOnCard"]; }
-      set { Row["NameOnCard"] = CheckNull(value); }
+      set { Row["NameOnCard"] = CheckValue("NameOnCard", value); }
     }
     
     public string SecurityCode
     {
       get { return (string)Row["SecurityCode"]; }
-      set { Row["SecurityCode"] = CheckNull(value); }
+      set { Row["SecurityCode"] = CheckValue("SecurityCode", value); }
     }
     
     public CreditCardType CreditCardType
     {
       get { return (CreditCardType)Row["CreditCardType"]; }
-      set { Row["CreditCardType"] = CheckNull(value); }
+      set { Row["CreditCardType"] = CheckValue("CreditCardType", value); }
     }
     
     public string DisplayNumber
     {
       get { return (string)Row["DisplayNumber"]; }
-      set { Row["DisplayNumber"] = CheckNull(value); }
+      set { Row["DisplayNumber"] = CheckValue("DisplayNumber", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -96,7 +96,7 @@ namespace TeamSupport.Data
     public DateTime DateModfied
     {
       get { return DateToLocal((DateTime)Row["DateModfied"]); }
-      set { Row["DateModfied"] = CheckNull(value); }
+      set { Row["DateModfied"] = CheckValue("DateModfied", value); }
     }
 
     public DateTime DateModfiedUtc
@@ -107,7 +107,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc
@@ -118,7 +118,7 @@ namespace TeamSupport.Data
     public DateTime ExpirationDate
     {
       get { return DateToLocal((DateTime)Row["ExpirationDate"]); }
-      set { Row["ExpirationDate"] = CheckNull(value); }
+      set { Row["ExpirationDate"] = CheckValue("ExpirationDate", value); }
     }
 
     public DateTime ExpirationDateUtc

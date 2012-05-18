@@ -37,55 +37,55 @@ namespace TeamSupport.Data
     public string EMailFrom
     {
       get { return Row["EMailFrom"] != DBNull.Value ? (string)Row["EMailFrom"] : null; }
-      set { Row["EMailFrom"] = CheckNull(value); }
+      set { Row["EMailFrom"] = CheckValue("EMailFrom", value); }
     }
     
     public string EMailTo
     {
       get { return Row["EMailTo"] != DBNull.Value ? (string)Row["EMailTo"] : null; }
-      set { Row["EMailTo"] = CheckNull(value); }
+      set { Row["EMailTo"] = CheckValue("EMailTo", value); }
     }
     
     public string EMailSubject
     {
       get { return Row["EMailSubject"] != DBNull.Value ? (string)Row["EMailSubject"] : null; }
-      set { Row["EMailSubject"] = CheckNull(value); }
+      set { Row["EMailSubject"] = CheckValue("EMailSubject", value); }
     }
     
     public string EMailBody
     {
       get { return Row["EMailBody"] != DBNull.Value ? (string)Row["EMailBody"] : null; }
-      set { Row["EMailBody"] = CheckNull(value); }
+      set { Row["EMailBody"] = CheckValue("EMailBody", value); }
     }
     
     public string OrganizationGUID
     {
       get { return Row["OrganizationGUID"] != DBNull.Value ? (string)Row["OrganizationGUID"] : null; }
-      set { Row["OrganizationGUID"] = CheckNull(value); }
+      set { Row["OrganizationGUID"] = CheckValue("OrganizationGUID", value); }
     }
     
     public bool? ActionAdded
     {
       get { return Row["ActionAdded"] != DBNull.Value ? (bool?)Row["ActionAdded"] : null; }
-      set { Row["ActionAdded"] = CheckNull(value); }
+      set { Row["ActionAdded"] = CheckValue("ActionAdded", value); }
     }
     
     public string Status
     {
       get { return Row["Status"] != DBNull.Value ? (string)Row["Status"] : null; }
-      set { Row["Status"] = CheckNull(value); }
+      set { Row["Status"] = CheckValue("Status", value); }
     }
     
     public int? TicketID
     {
       get { return Row["TicketID"] != DBNull.Value ? (int?)Row["TicketID"] : null; }
-      set { Row["TicketID"] = CheckNull(value); }
+      set { Row["TicketID"] = CheckValue("TicketID", value); }
     }
     
     public int? OrganizationID
     {
       get { return Row["OrganizationID"] != DBNull.Value ? (int?)Row["OrganizationID"] : null; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -100,7 +100,7 @@ namespace TeamSupport.Data
     public DateTime? DateTime
     {
       get { return Row["DateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateTime"]) : null; }
-      set { Row["DateTime"] = CheckNull(value); }
+      set { Row["DateTime"] = CheckValue("DateTime", value); }
     }
 
     public DateTime? DateTimeUtc

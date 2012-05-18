@@ -39,31 +39,31 @@ namespace TeamSupport.Data
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public int Position
     {
       get { return (int)Row["Position"]; }
-      set { Row["Position"] = CheckNull(value); }
+      set { Row["Position"] = CheckValue("Position", value); }
     }
     
     public int NextStatusID
     {
       get { return (int)Row["NextStatusID"]; }
-      set { Row["NextStatusID"] = CheckNull(value); }
+      set { Row["NextStatusID"] = CheckValue("NextStatusID", value); }
     }
     
     public int CurrentStatusID
     {
       get { return (int)Row["CurrentStatusID"]; }
-      set { Row["CurrentStatusID"] = CheckNull(value); }
+      set { Row["CurrentStatusID"] = CheckValue("CurrentStatusID", value); }
     }
     
 
@@ -78,7 +78,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -89,7 +89,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

@@ -32,7 +32,7 @@ namespace TeamSupport.Data
     public int? ReportTableID
     {
       get { return Row["ReportTableID"] != DBNull.Value ? (int?)Row["ReportTableID"] : null; }
-      set { Row["ReportTableID"] = CheckNull(value); }
+      set { Row["ReportTableID"] = CheckValue("ReportTableID", value); }
     }
     
 
@@ -40,19 +40,19 @@ namespace TeamSupport.Data
     public string BaseQuery
     {
       get { return (string)Row["BaseQuery"]; }
-      set { Row["BaseQuery"] = CheckNull(value); }
+      set { Row["BaseQuery"] = CheckValue("BaseQuery", value); }
     }
     
     public int ReportCategoryTableID
     {
       get { return (int)Row["ReportCategoryTableID"]; }
-      set { Row["ReportCategoryTableID"] = CheckNull(value); }
+      set { Row["ReportCategoryTableID"] = CheckValue("ReportCategoryTableID", value); }
     }
     
     public int ReportSubcategoryID
     {
       get { return (int)Row["ReportSubcategoryID"]; }
-      set { Row["ReportSubcategoryID"] = CheckNull(value); }
+      set { Row["ReportSubcategoryID"] = CheckValue("ReportSubcategoryID", value); }
     }
     
 

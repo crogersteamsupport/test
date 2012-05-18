@@ -39,37 +39,37 @@ namespace TeamSupport.Data
     public bool MatchAll
     {
       get { return (bool)Row["MatchAll"]; }
-      set { Row["MatchAll"] = CheckNull(value); }
+      set { Row["MatchAll"] = CheckValue("MatchAll", value); }
     }
     
     public string TestValue
     {
       get { return (string)Row["TestValue"]; }
-      set { Row["TestValue"] = CheckNull(value); }
+      set { Row["TestValue"] = CheckValue("TestValue", value); }
     }
     
     public string Measure
     {
       get { return (string)Row["Measure"]; }
-      set { Row["Measure"] = CheckNull(value); }
+      set { Row["Measure"] = CheckValue("Measure", value); }
     }
     
     public int FieldID
     {
       get { return (int)Row["FieldID"]; }
-      set { Row["FieldID"] = CheckNull(value); }
+      set { Row["FieldID"] = CheckValue("FieldID", value); }
     }
     
     public int TableID
     {
       get { return (int)Row["TableID"]; }
-      set { Row["TableID"] = CheckNull(value); }
+      set { Row["TableID"] = CheckValue("TableID", value); }
     }
     
     public int TriggerID
     {
       get { return (int)Row["TriggerID"]; }
-      set { Row["TriggerID"] = CheckNull(value); }
+      set { Row["TriggerID"] = CheckValue("TriggerID", value); }
     }
     
 

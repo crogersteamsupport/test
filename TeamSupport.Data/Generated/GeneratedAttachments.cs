@@ -37,7 +37,7 @@ namespace TeamSupport.Data
     public string Description
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
 
@@ -45,55 +45,55 @@ namespace TeamSupport.Data
     public int RefID
     {
       get { return (int)Row["RefID"]; }
-      set { Row["RefID"] = CheckNull(value); }
+      set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
     public ReferenceType RefType
     {
       get { return (ReferenceType)Row["RefType"]; }
-      set { Row["RefType"] = CheckNull(value); }
+      set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public string Path
     {
       get { return (string)Row["Path"]; }
-      set { Row["Path"] = CheckNull(value); }
+      set { Row["Path"] = CheckValue("Path", value); }
     }
     
     public long FileSize
     {
       get { return (long)Row["FileSize"]; }
-      set { Row["FileSize"] = CheckNull(value); }
+      set { Row["FileSize"] = CheckValue("FileSize", value); }
     }
     
     public string FileType
     {
       get { return (string)Row["FileType"]; }
-      set { Row["FileType"] = CheckNull(value); }
+      set { Row["FileType"] = CheckValue("FileType", value); }
     }
     
     public string FileName
     {
       get { return (string)Row["FileName"]; }
-      set { Row["FileName"] = CheckNull(value); }
+      set { Row["FileName"] = CheckValue("FileName", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -108,7 +108,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -119,7 +119,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

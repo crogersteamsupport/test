@@ -37,7 +37,7 @@ namespace TeamSupport.Data
     public int? ActionID
     {
       get { return Row["ActionID"] != DBNull.Value ? (int?)Row["ActionID"] : null; }
-      set { Row["ActionID"] = CheckNull(value); }
+      set { Row["ActionID"] = CheckValue("ActionID", value); }
     }
     
 
@@ -45,19 +45,19 @@ namespace TeamSupport.Data
     public ChatParticipantType InitiatorType
     {
       get { return (ChatParticipantType)Row["InitiatorType"]; }
-      set { Row["InitiatorType"] = CheckNull(value); }
+      set { Row["InitiatorType"] = CheckValue("InitiatorType", value); }
     }
     
     public int InitiatorID
     {
       get { return (int)Row["InitiatorID"]; }
-      set { Row["InitiatorID"] = CheckNull(value); }
+      set { Row["InitiatorID"] = CheckValue("InitiatorID", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -72,7 +72,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

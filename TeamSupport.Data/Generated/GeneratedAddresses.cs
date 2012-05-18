@@ -37,49 +37,49 @@ namespace TeamSupport.Data
     public string Addr1
     {
       get { return Row["Addr1"] != DBNull.Value ? (string)Row["Addr1"] : null; }
-      set { Row["Addr1"] = CheckNull(value); }
+      set { Row["Addr1"] = CheckValue("Addr1", value); }
     }
     
     public string Addr2
     {
       get { return Row["Addr2"] != DBNull.Value ? (string)Row["Addr2"] : null; }
-      set { Row["Addr2"] = CheckNull(value); }
+      set { Row["Addr2"] = CheckValue("Addr2", value); }
     }
     
     public string Addr3
     {
       get { return Row["Addr3"] != DBNull.Value ? (string)Row["Addr3"] : null; }
-      set { Row["Addr3"] = CheckNull(value); }
+      set { Row["Addr3"] = CheckValue("Addr3", value); }
     }
     
     public string City
     {
       get { return Row["City"] != DBNull.Value ? (string)Row["City"] : null; }
-      set { Row["City"] = CheckNull(value); }
+      set { Row["City"] = CheckValue("City", value); }
     }
     
     public string State
     {
       get { return Row["State"] != DBNull.Value ? (string)Row["State"] : null; }
-      set { Row["State"] = CheckNull(value); }
+      set { Row["State"] = CheckValue("State", value); }
     }
     
     public string Zip
     {
       get { return Row["Zip"] != DBNull.Value ? (string)Row["Zip"] : null; }
-      set { Row["Zip"] = CheckNull(value); }
+      set { Row["Zip"] = CheckValue("Zip", value); }
     }
     
     public string Country
     {
       get { return Row["Country"] != DBNull.Value ? (string)Row["Country"] : null; }
-      set { Row["Country"] = CheckNull(value); }
+      set { Row["Country"] = CheckValue("Country", value); }
     }
     
     public string Comment
     {
       get { return Row["Comment"] != DBNull.Value ? (string)Row["Comment"] : null; }
-      set { Row["Comment"] = CheckNull(value); }
+      set { Row["Comment"] = CheckValue("Comment", value); }
     }
     
 
@@ -87,31 +87,31 @@ namespace TeamSupport.Data
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public string Description
     {
       get { return (string)Row["Description"]; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public ReferenceType RefType
     {
       get { return (ReferenceType)Row["RefType"]; }
-      set { Row["RefType"] = CheckNull(value); }
+      set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
     public int RefID
     {
       get { return (int)Row["RefID"]; }
-      set { Row["RefID"] = CheckNull(value); }
+      set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
 
@@ -126,7 +126,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -137,7 +137,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

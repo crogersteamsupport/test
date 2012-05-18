@@ -37,55 +37,55 @@ namespace TeamSupport.Data
     public int? OrganizationID
     {
       get { return Row["OrganizationID"] != DBNull.Value ? (int?)Row["OrganizationID"] : null; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public string Description
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public string Query
     {
       get { return Row["Query"] != DBNull.Value ? (string)Row["Query"] : null; }
-      set { Row["Query"] = CheckNull(value); }
+      set { Row["Query"] = CheckValue("Query", value); }
     }
     
     public string CustomFieldKeyName
     {
       get { return Row["CustomFieldKeyName"] != DBNull.Value ? (string)Row["CustomFieldKeyName"] : null; }
-      set { Row["CustomFieldKeyName"] = CheckNull(value); }
+      set { Row["CustomFieldKeyName"] = CheckValue("CustomFieldKeyName", value); }
     }
     
     public int? CustomAuxID
     {
       get { return Row["CustomAuxID"] != DBNull.Value ? (int?)Row["CustomAuxID"] : null; }
-      set { Row["CustomAuxID"] = CheckNull(value); }
+      set { Row["CustomAuxID"] = CheckValue("CustomAuxID", value); }
     }
     
     public int? ReportSubcategoryID
     {
       get { return Row["ReportSubcategoryID"] != DBNull.Value ? (int?)Row["ReportSubcategoryID"] : null; }
-      set { Row["ReportSubcategoryID"] = CheckNull(value); }
+      set { Row["ReportSubcategoryID"] = CheckValue("ReportSubcategoryID", value); }
     }
     
     public string QueryObject
     {
       get { return Row["QueryObject"] != DBNull.Value ? (string)Row["QueryObject"] : null; }
-      set { Row["QueryObject"] = CheckNull(value); }
+      set { Row["QueryObject"] = CheckValue("QueryObject", value); }
     }
     
     public string ExternalURL
     {
       get { return Row["ExternalURL"] != DBNull.Value ? (string)Row["ExternalURL"] : null; }
-      set { Row["ExternalURL"] = CheckNull(value); }
+      set { Row["ExternalURL"] = CheckValue("ExternalURL", value); }
     }
     
     public string LastSqlExecuted
     {
       get { return Row["LastSqlExecuted"] != DBNull.Value ? (string)Row["LastSqlExecuted"] : null; }
-      set { Row["LastSqlExecuted"] = CheckNull(value); }
+      set { Row["LastSqlExecuted"] = CheckValue("LastSqlExecuted", value); }
     }
     
 
@@ -93,25 +93,25 @@ namespace TeamSupport.Data
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public ReferenceType CustomRefType
     {
       get { return (ReferenceType)Row["CustomRefType"]; }
-      set { Row["CustomRefType"] = CheckNull(value); }
+      set { Row["CustomRefType"] = CheckValue("CustomRefType", value); }
     }
     
     public string Name
     {
       get { return (string)Row["Name"]; }
-      set { Row["Name"] = CheckNull(value); }
+      set { Row["Name"] = CheckValue("Name", value); }
     }
     
 
@@ -126,7 +126,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -137,7 +137,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

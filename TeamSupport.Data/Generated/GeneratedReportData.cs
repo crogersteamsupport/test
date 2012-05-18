@@ -37,13 +37,13 @@ namespace TeamSupport.Data
     public string ReportData
     {
       get { return Row["ReportData"] != DBNull.Value ? (string)Row["ReportData"] : null; }
-      set { Row["ReportData"] = CheckNull(value); }
+      set { Row["ReportData"] = CheckValue("ReportData", value); }
     }
     
     public string QueryObject
     {
       get { return Row["QueryObject"] != DBNull.Value ? (string)Row["QueryObject"] : null; }
-      set { Row["QueryObject"] = CheckNull(value); }
+      set { Row["QueryObject"] = CheckValue("QueryObject", value); }
     }
     
 
@@ -51,25 +51,25 @@ namespace TeamSupport.Data
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public int ReportID
     {
       get { return (int)Row["ReportID"]; }
-      set { Row["ReportID"] = CheckNull(value); }
+      set { Row["ReportID"] = CheckValue("ReportID", value); }
     }
     
     public int UserID
     {
       get { return (int)Row["UserID"]; }
-      set { Row["UserID"] = CheckNull(value); }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
 
@@ -84,7 +84,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -95,7 +95,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

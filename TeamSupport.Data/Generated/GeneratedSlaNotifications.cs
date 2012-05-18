@@ -34,7 +34,7 @@ namespace TeamSupport.Data
     public int TicketID
     {
       get { return (int)Row["TicketID"]; }
-      set { Row["TicketID"] = CheckNull(value); }
+      set { Row["TicketID"] = CheckValue("TicketID", value); }
     }
     
 
@@ -47,7 +47,7 @@ namespace TeamSupport.Data
     public DateTime? TimeClosedViolationDate
     {
       get { return Row["TimeClosedViolationDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["TimeClosedViolationDate"]) : null; }
-      set { Row["TimeClosedViolationDate"] = CheckNull(value); }
+      set { Row["TimeClosedViolationDate"] = CheckValue("TimeClosedViolationDate", value); }
     }
 
     public DateTime? TimeClosedViolationDateUtc
@@ -58,7 +58,7 @@ namespace TeamSupport.Data
     public DateTime? LastActionViolationDate
     {
       get { return Row["LastActionViolationDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastActionViolationDate"]) : null; }
-      set { Row["LastActionViolationDate"] = CheckNull(value); }
+      set { Row["LastActionViolationDate"] = CheckValue("LastActionViolationDate", value); }
     }
 
     public DateTime? LastActionViolationDateUtc
@@ -69,7 +69,7 @@ namespace TeamSupport.Data
     public DateTime? InitialResponseViolationDate
     {
       get { return Row["InitialResponseViolationDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["InitialResponseViolationDate"]) : null; }
-      set { Row["InitialResponseViolationDate"] = CheckNull(value); }
+      set { Row["InitialResponseViolationDate"] = CheckValue("InitialResponseViolationDate", value); }
     }
 
     public DateTime? InitialResponseViolationDateUtc
@@ -80,7 +80,7 @@ namespace TeamSupport.Data
     public DateTime? TimeClosedWarningDate
     {
       get { return Row["TimeClosedWarningDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["TimeClosedWarningDate"]) : null; }
-      set { Row["TimeClosedWarningDate"] = CheckNull(value); }
+      set { Row["TimeClosedWarningDate"] = CheckValue("TimeClosedWarningDate", value); }
     }
 
     public DateTime? TimeClosedWarningDateUtc
@@ -91,7 +91,7 @@ namespace TeamSupport.Data
     public DateTime? LastActionWarningDate
     {
       get { return Row["LastActionWarningDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastActionWarningDate"]) : null; }
-      set { Row["LastActionWarningDate"] = CheckNull(value); }
+      set { Row["LastActionWarningDate"] = CheckValue("LastActionWarningDate", value); }
     }
 
     public DateTime? LastActionWarningDateUtc
@@ -102,7 +102,7 @@ namespace TeamSupport.Data
     public DateTime? InitialResponseWarningDate
     {
       get { return Row["InitialResponseWarningDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["InitialResponseWarningDate"]) : null; }
-      set { Row["InitialResponseWarningDate"] = CheckNull(value); }
+      set { Row["InitialResponseWarningDate"] = CheckValue("InitialResponseWarningDate", value); }
     }
 
     public DateTime? InitialResponseWarningDateUtc

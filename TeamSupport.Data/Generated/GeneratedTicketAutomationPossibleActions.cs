@@ -37,19 +37,19 @@ namespace TeamSupport.Data
     public string ActionName
     {
       get { return Row["ActionName"] != DBNull.Value ? (string)Row["ActionName"] : null; }
-      set { Row["ActionName"] = CheckNull(value); }
+      set { Row["ActionName"] = CheckValue("ActionName", value); }
     }
     
     public string ValueList
     {
       get { return Row["ValueList"] != DBNull.Value ? (string)Row["ValueList"] : null; }
-      set { Row["ValueList"] = CheckNull(value); }
+      set { Row["ValueList"] = CheckValue("ValueList", value); }
     }
     
     public string ValueList2
     {
       get { return Row["ValueList2"] != DBNull.Value ? (string)Row["ValueList2"] : null; }
-      set { Row["ValueList2"] = CheckNull(value); }
+      set { Row["ValueList2"] = CheckValue("ValueList2", value); }
     }
     
 
@@ -57,19 +57,19 @@ namespace TeamSupport.Data
     public bool Active
     {
       get { return (bool)Row["Active"]; }
-      set { Row["Active"] = CheckNull(value); }
+      set { Row["Active"] = CheckValue("Active", value); }
     }
     
     public bool RequireValue
     {
       get { return (bool)Row["RequireValue"]; }
-      set { Row["RequireValue"] = CheckNull(value); }
+      set { Row["RequireValue"] = CheckValue("RequireValue", value); }
     }
     
     public string DisplayName
     {
       get { return (string)Row["DisplayName"]; }
-      set { Row["DisplayName"] = CheckNull(value); }
+      set { Row["DisplayName"] = CheckValue("DisplayName", value); }
     }
     
 

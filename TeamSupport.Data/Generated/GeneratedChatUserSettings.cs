@@ -34,25 +34,25 @@ namespace TeamSupport.Data
     public int LastChatRequestID
     {
       get { return (int)Row["LastChatRequestID"]; }
-      set { Row["LastChatRequestID"] = CheckNull(value); }
+      set { Row["LastChatRequestID"] = CheckValue("LastChatRequestID", value); }
     }
     
     public bool IsAvailable
     {
       get { return (bool)Row["IsAvailable"]; }
-      set { Row["IsAvailable"] = CheckNull(value); }
+      set { Row["IsAvailable"] = CheckValue("IsAvailable", value); }
     }
     
     public int CurrentChatID
     {
       get { return (int)Row["CurrentChatID"]; }
-      set { Row["CurrentChatID"] = CheckNull(value); }
+      set { Row["CurrentChatID"] = CheckValue("CurrentChatID", value); }
     }
     
     public int UserID
     {
       get { return (int)Row["UserID"]; }
-      set { Row["UserID"] = CheckNull(value); }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
 

@@ -37,31 +37,31 @@ namespace TeamSupport.Data
     public string UserName
     {
       get { return Row["UserName"] != DBNull.Value ? (string)Row["UserName"] : null; }
-      set { Row["UserName"] = CheckNull(value); }
+      set { Row["UserName"] = CheckValue("UserName", value); }
     }
     
     public int? OrganizationID
     {
       get { return Row["OrganizationID"] != DBNull.Value ? (int?)Row["OrganizationID"] : null; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public string OrganizationName
     {
       get { return Row["OrganizationName"] != DBNull.Value ? (string)Row["OrganizationName"] : null; }
-      set { Row["OrganizationName"] = CheckNull(value); }
+      set { Row["OrganizationName"] = CheckValue("OrganizationName", value); }
     }
     
     public bool? Success
     {
       get { return Row["Success"] != DBNull.Value ? (bool?)Row["Success"] : null; }
-      set { Row["Success"] = CheckNull(value); }
+      set { Row["Success"] = CheckValue("Success", value); }
     }
     
     public string IPAddress
     {
       get { return Row["IPAddress"] != DBNull.Value ? (string)Row["IPAddress"] : null; }
-      set { Row["IPAddress"] = CheckNull(value); }
+      set { Row["IPAddress"] = CheckValue("IPAddress", value); }
     }
     
 
@@ -76,7 +76,7 @@ namespace TeamSupport.Data
     public DateTime? LoginDateTime
     {
       get { return Row["LoginDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["LoginDateTime"]) : null; }
-      set { Row["LoginDateTime"] = CheckNull(value); }
+      set { Row["LoginDateTime"] = CheckValue("LoginDateTime", value); }
     }
 
     public DateTime? LoginDateTimeUtc

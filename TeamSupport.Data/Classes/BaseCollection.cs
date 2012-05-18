@@ -28,8 +28,18 @@ namespace TeamSupport.Data
       set { _baseCollection = value; }
     }
 
-    protected object CheckNull(object value)
+    protected object CheckValue(string columnName, object value)
     {
+      DataColumn column = Row.Table.Columns[columnName];
+      if (column.DataType == typeof(String) && value != null)
+      {
+        if (value.GetType() != typeof(String)) return "";
+        string s = (string)value;
+        if (s.Length >= column.MaxLength && column.MaxLength > 0)
+        {
+          value = s.Substring(0, column.MaxLength - 1);
+        }
+      }
       return value == null ? DBNull.Value : value;
     }
 

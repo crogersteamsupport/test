@@ -37,13 +37,13 @@ namespace TeamSupport.Data
     public string FromAddress
     {
       get { return Row["FromAddress"] != DBNull.Value ? (string)Row["FromAddress"] : null; }
-      set { Row["FromAddress"] = CheckNull(value); }
+      set { Row["FromAddress"] = CheckValue("FromAddress", value); }
     }
     
     public string ToAddress
     {
       get { return Row["ToAddress"] != DBNull.Value ? (string)Row["ToAddress"] : null; }
-      set { Row["ToAddress"] = CheckNull(value); }
+      set { Row["ToAddress"] = CheckValue("ToAddress", value); }
     }
     
 

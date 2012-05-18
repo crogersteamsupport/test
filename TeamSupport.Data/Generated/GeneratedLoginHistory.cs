@@ -37,79 +37,79 @@ namespace TeamSupport.Data
     public int? UserID
     {
       get { return Row["UserID"] != DBNull.Value ? (int?)Row["UserID"] : null; }
-      set { Row["UserID"] = CheckNull(value); }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
     public string IPAddress
     {
       get { return Row["IPAddress"] != DBNull.Value ? (string)Row["IPAddress"] : null; }
-      set { Row["IPAddress"] = CheckNull(value); }
+      set { Row["IPAddress"] = CheckValue("IPAddress", value); }
     }
     
     public string Browser
     {
       get { return Row["Browser"] != DBNull.Value ? (string)Row["Browser"] : null; }
-      set { Row["Browser"] = CheckNull(value); }
+      set { Row["Browser"] = CheckValue("Browser", value); }
     }
     
     public string Version
     {
       get { return Row["Version"] != DBNull.Value ? (string)Row["Version"] : null; }
-      set { Row["Version"] = CheckNull(value); }
+      set { Row["Version"] = CheckValue("Version", value); }
     }
     
     public string MajorVersion
     {
       get { return Row["MajorVersion"] != DBNull.Value ? (string)Row["MajorVersion"] : null; }
-      set { Row["MajorVersion"] = CheckNull(value); }
+      set { Row["MajorVersion"] = CheckValue("MajorVersion", value); }
     }
     
     public bool? CookiesEnabled
     {
       get { return Row["CookiesEnabled"] != DBNull.Value ? (bool?)Row["CookiesEnabled"] : null; }
-      set { Row["CookiesEnabled"] = CheckNull(value); }
+      set { Row["CookiesEnabled"] = CheckValue("CookiesEnabled", value); }
     }
     
     public string Platform
     {
       get { return Row["Platform"] != DBNull.Value ? (string)Row["Platform"] : null; }
-      set { Row["Platform"] = CheckNull(value); }
+      set { Row["Platform"] = CheckValue("Platform", value); }
     }
     
     public string UserAgent
     {
       get { return Row["UserAgent"] != DBNull.Value ? (string)Row["UserAgent"] : null; }
-      set { Row["UserAgent"] = CheckNull(value); }
+      set { Row["UserAgent"] = CheckValue("UserAgent", value); }
     }
     
     public string Language
     {
       get { return Row["Language"] != DBNull.Value ? (string)Row["Language"] : null; }
-      set { Row["Language"] = CheckNull(value); }
+      set { Row["Language"] = CheckValue("Language", value); }
     }
     
     public string PixelDepth
     {
       get { return Row["PixelDepth"] != DBNull.Value ? (string)Row["PixelDepth"] : null; }
-      set { Row["PixelDepth"] = CheckNull(value); }
+      set { Row["PixelDepth"] = CheckValue("PixelDepth", value); }
     }
     
     public string ScreenHeight
     {
       get { return Row["ScreenHeight"] != DBNull.Value ? (string)Row["ScreenHeight"] : null; }
-      set { Row["ScreenHeight"] = CheckNull(value); }
+      set { Row["ScreenHeight"] = CheckValue("ScreenHeight", value); }
     }
     
     public string ScreenWidth
     {
       get { return Row["ScreenWidth"] != DBNull.Value ? (string)Row["ScreenWidth"] : null; }
-      set { Row["ScreenWidth"] = CheckNull(value); }
+      set { Row["ScreenWidth"] = CheckValue("ScreenWidth", value); }
     }
     
     public string URL
     {
       get { return Row["URL"] != DBNull.Value ? (string)Row["URL"] : null; }
-      set { Row["URL"] = CheckNull(value); }
+      set { Row["URL"] = CheckValue("URL", value); }
     }
     
 
@@ -126,7 +126,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

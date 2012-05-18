@@ -37,31 +37,31 @@ namespace TeamSupport.Data
     public string CategoryDesc
     {
       get { return Row["CategoryDesc"] != DBNull.Value ? (string)Row["CategoryDesc"] : null; }
-      set { Row["CategoryDesc"] = CheckNull(value); }
+      set { Row["CategoryDesc"] = CheckValue("CategoryDesc", value); }
     }
     
     public int? Position
     {
       get { return Row["Position"] != DBNull.Value ? (int?)Row["Position"] : null; }
-      set { Row["Position"] = CheckNull(value); }
+      set { Row["Position"] = CheckValue("Position", value); }
     }
     
     public int? TicketType
     {
       get { return Row["TicketType"] != DBNull.Value ? (int?)Row["TicketType"] : null; }
-      set { Row["TicketType"] = CheckNull(value); }
+      set { Row["TicketType"] = CheckValue("TicketType", value); }
     }
     
     public int? GroupID
     {
       get { return Row["GroupID"] != DBNull.Value ? (int?)Row["GroupID"] : null; }
-      set { Row["GroupID"] = CheckNull(value); }
+      set { Row["GroupID"] = CheckValue("GroupID", value); }
     }
     
     public int? ProductID
     {
       get { return Row["ProductID"] != DBNull.Value ? (int?)Row["ProductID"] : null; }
-      set { Row["ProductID"] = CheckNull(value); }
+      set { Row["ProductID"] = CheckValue("ProductID", value); }
     }
     
 
@@ -69,19 +69,19 @@ namespace TeamSupport.Data
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public string CategoryName
     {
       get { return (string)Row["CategoryName"]; }
-      set { Row["CategoryName"] = CheckNull(value); }
+      set { Row["CategoryName"] = CheckValue("CategoryName", value); }
     }
     
     public int ParentID
     {
       get { return (int)Row["ParentID"]; }
-      set { Row["ParentID"] = CheckNull(value); }
+      set { Row["ParentID"] = CheckValue("ParentID", value); }
     }
     
 

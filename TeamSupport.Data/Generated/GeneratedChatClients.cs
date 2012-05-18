@@ -37,7 +37,7 @@ namespace TeamSupport.Data
     public int? LinkedUserID
     {
       get { return Row["LinkedUserID"] != DBNull.Value ? (int?)Row["LinkedUserID"] : null; }
-      set { Row["LinkedUserID"] = CheckNull(value); }
+      set { Row["LinkedUserID"] = CheckValue("LinkedUserID", value); }
     }
     
 
@@ -45,31 +45,31 @@ namespace TeamSupport.Data
     public string CompanyName
     {
       get { return (string)Row["CompanyName"]; }
-      set { Row["CompanyName"] = CheckNull(value); }
+      set { Row["CompanyName"] = CheckValue("CompanyName", value); }
     }
     
     public string Email
     {
       get { return (string)Row["Email"]; }
-      set { Row["Email"] = CheckNull(value); }
+      set { Row["Email"] = CheckValue("Email", value); }
     }
     
     public string LastName
     {
       get { return (string)Row["LastName"]; }
-      set { Row["LastName"] = CheckNull(value); }
+      set { Row["LastName"] = CheckValue("LastName", value); }
     }
     
     public string FirstName
     {
       get { return (string)Row["FirstName"]; }
-      set { Row["FirstName"] = CheckNull(value); }
+      set { Row["FirstName"] = CheckValue("FirstName", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -84,7 +84,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc
@@ -95,7 +95,7 @@ namespace TeamSupport.Data
     public DateTime LastPing
     {
       get { return DateToLocal((DateTime)Row["LastPing"]); }
-      set { Row["LastPing"] = CheckNull(value); }
+      set { Row["LastPing"] = CheckValue("LastPing", value); }
     }
 
     public DateTime LastPingUtc
