@@ -37,13 +37,13 @@ namespace TeamSupport.Data
     public int? OrganizationID
     {
       get { return Row["OrganizationID"] != DBNull.Value ? (int?)Row["OrganizationID"] : null; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public string AttemptResult
     {
       get { return Row["AttemptResult"] != DBNull.Value ? (string)Row["AttemptResult"] : null; }
-      set { Row["AttemptResult"] = CheckNull(value); }
+      set { Row["AttemptResult"] = CheckValue("AttemptResult", value); }
     }
     
 
@@ -58,7 +58,7 @@ namespace TeamSupport.Data
     public DateTime? AttemptDateTime
     {
       get { return Row["AttemptDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["AttemptDateTime"]) : null; }
-      set { Row["AttemptDateTime"] = CheckNull(value); }
+      set { Row["AttemptDateTime"] = CheckValue("AttemptDateTime", value); }
     }
 
     public DateTime? AttemptDateTimeUtc

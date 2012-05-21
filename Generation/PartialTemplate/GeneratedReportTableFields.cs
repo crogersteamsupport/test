@@ -37,13 +37,13 @@ namespace TeamSupport.Data
     public string Description
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public int? LookupTableID
     {
       get { return Row["LookupTableID"] != DBNull.Value ? (int?)Row["LookupTableID"] : null; }
-      set { Row["LookupTableID"] = CheckNull(value); }
+      set { Row["LookupTableID"] = CheckValue("LookupTableID", value); }
     }
     
 
@@ -51,43 +51,43 @@ namespace TeamSupport.Data
     public bool IsReadOnly
     {
       get { return (bool)Row["IsReadOnly"]; }
-      set { Row["IsReadOnly"] = CheckNull(value); }
+      set { Row["IsReadOnly"] = CheckValue("IsReadOnly", value); }
     }
     
     public bool IsVisible
     {
       get { return (bool)Row["IsVisible"]; }
-      set { Row["IsVisible"] = CheckNull(value); }
+      set { Row["IsVisible"] = CheckValue("IsVisible", value); }
     }
     
     public int Size
     {
       get { return (int)Row["Size"]; }
-      set { Row["Size"] = CheckNull(value); }
+      set { Row["Size"] = CheckValue("Size", value); }
     }
     
     public string DataType
     {
       get { return (string)Row["DataType"]; }
-      set { Row["DataType"] = CheckNull(value); }
+      set { Row["DataType"] = CheckValue("DataType", value); }
     }
     
     public string Alias
     {
       get { return (string)Row["Alias"]; }
-      set { Row["Alias"] = CheckNull(value); }
+      set { Row["Alias"] = CheckValue("Alias", value); }
     }
     
     public string FieldName
     {
       get { return (string)Row["FieldName"]; }
-      set { Row["FieldName"] = CheckNull(value); }
+      set { Row["FieldName"] = CheckValue("FieldName", value); }
     }
     
     public int ReportTableID
     {
       get { return (int)Row["ReportTableID"]; }
-      set { Row["ReportTableID"] = CheckNull(value); }
+      set { Row["ReportTableID"] = CheckValue("ReportTableID", value); }
     }
     
 

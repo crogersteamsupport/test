@@ -37,7 +37,7 @@ namespace TeamSupport.Data
     public string ActionType
     {
       get { return Row["ActionType"] != DBNull.Value ? (string)Row["ActionType"] : null; }
-      set { Row["ActionType"] = CheckNull(value); }
+      set { Row["ActionType"] = CheckValue("ActionType", value); }
     }
     
 
@@ -45,19 +45,19 @@ namespace TeamSupport.Data
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public int TriggerID
     {
       get { return (int)Row["TriggerID"]; }
-      set { Row["TriggerID"] = CheckNull(value); }
+      set { Row["TriggerID"] = CheckValue("TriggerID", value); }
     }
     
     public int TicketID
     {
       get { return (int)Row["TicketID"]; }
-      set { Row["TicketID"] = CheckNull(value); }
+      set { Row["TicketID"] = CheckValue("TicketID", value); }
     }
     
 
@@ -70,7 +70,7 @@ namespace TeamSupport.Data
     public DateTime? TriggerDateTime
     {
       get { return Row["TriggerDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["TriggerDateTime"]) : null; }
-      set { Row["TriggerDateTime"] = CheckNull(value); }
+      set { Row["TriggerDateTime"] = CheckValue("TriggerDateTime", value); }
     }
 
     public DateTime? TriggerDateTimeUtc

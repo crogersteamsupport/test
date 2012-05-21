@@ -37,25 +37,25 @@ namespace TeamSupport.Data
     public int? PhoneActive
     {
       get { return Row["PhoneActive"] != DBNull.Value ? (int?)Row["PhoneActive"] : null; }
-      set { Row["PhoneActive"] = CheckNull(value); }
+      set { Row["PhoneActive"] = CheckValue("PhoneActive", value); }
     }
     
     public string AccountSID
     {
       get { return Row["AccountSID"] != DBNull.Value ? (string)Row["AccountSID"] : null; }
-      set { Row["AccountSID"] = CheckNull(value); }
+      set { Row["AccountSID"] = CheckValue("AccountSID", value); }
     }
     
     public string AccountToken
     {
       get { return Row["AccountToken"] != DBNull.Value ? (string)Row["AccountToken"] : null; }
-      set { Row["AccountToken"] = CheckNull(value); }
+      set { Row["AccountToken"] = CheckValue("AccountToken", value); }
     }
     
     public string WelcomeAudioURL
     {
       get { return Row["WelcomeAudioURL"] != DBNull.Value ? (string)Row["WelcomeAudioURL"] : null; }
-      set { Row["WelcomeAudioURL"] = CheckNull(value); }
+      set { Row["WelcomeAudioURL"] = CheckValue("WelcomeAudioURL", value); }
     }
     
 
@@ -63,7 +63,7 @@ namespace TeamSupport.Data
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 

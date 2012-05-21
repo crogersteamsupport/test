@@ -37,25 +37,25 @@ namespace TeamSupport.Data
     public int? OrganizationID
     {
       get { return Row["OrganizationID"] != DBNull.Value ? (int?)Row["OrganizationID"] : null; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public int? ArticleID
     {
       get { return Row["ArticleID"] != DBNull.Value ? (int?)Row["ArticleID"] : null; }
-      set { Row["ArticleID"] = CheckNull(value); }
+      set { Row["ArticleID"] = CheckValue("ArticleID", value); }
     }
     
     public string ViewIP
     {
       get { return Row["ViewIP"] != DBNull.Value ? (string)Row["ViewIP"] : null; }
-      set { Row["ViewIP"] = CheckNull(value); }
+      set { Row["ViewIP"] = CheckValue("ViewIP", value); }
     }
     
     public int? UserID
     {
       get { return Row["UserID"] != DBNull.Value ? (int?)Row["UserID"] : null; }
-      set { Row["UserID"] = CheckNull(value); }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
 
@@ -70,7 +70,7 @@ namespace TeamSupport.Data
     public DateTime? ViewDateTime
     {
       get { return Row["ViewDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["ViewDateTime"]) : null; }
-      set { Row["ViewDateTime"] = CheckNull(value); }
+      set { Row["ViewDateTime"] = CheckValue("ViewDateTime", value); }
     }
 
     public DateTime? ViewDateTimeUtc

@@ -39,19 +39,19 @@ namespace TeamSupport.Data
     public int OrgID
     {
       get { return (int)Row["OrgID"]; }
-      set { Row["OrgID"] = CheckNull(value); }
+      set { Row["OrgID"] = CheckValue("OrgID", value); }
     }
     
     public int UserID
     {
       get { return (int)Row["UserID"]; }
-      set { Row["UserID"] = CheckNull(value); }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
     public int TopicID
     {
       get { return (int)Row["TopicID"]; }
-      set { Row["TopicID"] = CheckNull(value); }
+      set { Row["TopicID"] = CheckValue("TopicID", value); }
     }
     
 
@@ -66,7 +66,7 @@ namespace TeamSupport.Data
     public DateTime ViewTime
     {
       get { return DateToLocal((DateTime)Row["ViewTime"]); }
-      set { Row["ViewTime"] = CheckNull(value); }
+      set { Row["ViewTime"] = CheckValue("ViewTime", value); }
     }
 
     public DateTime ViewTimeUtc

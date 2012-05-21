@@ -37,19 +37,19 @@ namespace TeamSupport.Data
     public string CRMObjectName
     {
       get { return Row["CRMObjectName"] != DBNull.Value ? (string)Row["CRMObjectName"] : null; }
-      set { Row["CRMObjectName"] = CheckNull(value); }
+      set { Row["CRMObjectName"] = CheckValue("CRMObjectName", value); }
     }
     
     public int? CustomFieldID
     {
       get { return Row["CustomFieldID"] != DBNull.Value ? (int?)Row["CustomFieldID"] : null; }
-      set { Row["CustomFieldID"] = CheckNull(value); }
+      set { Row["CustomFieldID"] = CheckValue("CustomFieldID", value); }
     }
     
     public string TSFieldName
     {
       get { return Row["TSFieldName"] != DBNull.Value ? (string)Row["TSFieldName"] : null; }
-      set { Row["TSFieldName"] = CheckNull(value); }
+      set { Row["TSFieldName"] = CheckValue("TSFieldName", value); }
     }
     
 
@@ -57,13 +57,13 @@ namespace TeamSupport.Data
     public string CRMFieldName
     {
       get { return (string)Row["CRMFieldName"]; }
-      set { Row["CRMFieldName"] = CheckNull(value); }
+      set { Row["CRMFieldName"] = CheckValue("CRMFieldName", value); }
     }
     
     public int CRMLinkID
     {
       get { return (int)Row["CRMLinkID"]; }
-      set { Row["CRMLinkID"] = CheckNull(value); }
+      set { Row["CRMLinkID"] = CheckValue("CRMLinkID", value); }
     }
     
 

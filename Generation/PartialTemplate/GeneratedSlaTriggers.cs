@@ -39,73 +39,73 @@ namespace TeamSupport.Data
     public bool UseBusinessHours
     {
       get { return (bool)Row["UseBusinessHours"]; }
-      set { Row["UseBusinessHours"] = CheckNull(value); }
+      set { Row["UseBusinessHours"] = CheckValue("UseBusinessHours", value); }
     }
     
     public int WarningTime
     {
       get { return (int)Row["WarningTime"]; }
-      set { Row["WarningTime"] = CheckNull(value); }
+      set { Row["WarningTime"] = CheckValue("WarningTime", value); }
     }
     
     public bool NotifyGroupOnViolation
     {
       get { return (bool)Row["NotifyGroupOnViolation"]; }
-      set { Row["NotifyGroupOnViolation"] = CheckNull(value); }
+      set { Row["NotifyGroupOnViolation"] = CheckValue("NotifyGroupOnViolation", value); }
     }
     
     public bool NotifyUserOnViolation
     {
       get { return (bool)Row["NotifyUserOnViolation"]; }
-      set { Row["NotifyUserOnViolation"] = CheckNull(value); }
+      set { Row["NotifyUserOnViolation"] = CheckValue("NotifyUserOnViolation", value); }
     }
     
     public bool NotifyGroupOnWarning
     {
       get { return (bool)Row["NotifyGroupOnWarning"]; }
-      set { Row["NotifyGroupOnWarning"] = CheckNull(value); }
+      set { Row["NotifyGroupOnWarning"] = CheckValue("NotifyGroupOnWarning", value); }
     }
     
     public bool NotifyUserOnWarning
     {
       get { return (bool)Row["NotifyUserOnWarning"]; }
-      set { Row["NotifyUserOnWarning"] = CheckNull(value); }
+      set { Row["NotifyUserOnWarning"] = CheckValue("NotifyUserOnWarning", value); }
     }
     
     public int TimeToClose
     {
       get { return (int)Row["TimeToClose"]; }
-      set { Row["TimeToClose"] = CheckNull(value); }
+      set { Row["TimeToClose"] = CheckValue("TimeToClose", value); }
     }
     
     public int TimeLastAction
     {
       get { return (int)Row["TimeLastAction"]; }
-      set { Row["TimeLastAction"] = CheckNull(value); }
+      set { Row["TimeLastAction"] = CheckValue("TimeLastAction", value); }
     }
     
     public int TimeInitialResponse
     {
       get { return (int)Row["TimeInitialResponse"]; }
-      set { Row["TimeInitialResponse"] = CheckNull(value); }
+      set { Row["TimeInitialResponse"] = CheckValue("TimeInitialResponse", value); }
     }
     
     public int TicketSeverityID
     {
       get { return (int)Row["TicketSeverityID"]; }
-      set { Row["TicketSeverityID"] = CheckNull(value); }
+      set { Row["TicketSeverityID"] = CheckValue("TicketSeverityID", value); }
     }
     
     public int TicketTypeID
     {
       get { return (int)Row["TicketTypeID"]; }
-      set { Row["TicketTypeID"] = CheckNull(value); }
+      set { Row["TicketTypeID"] = CheckValue("TicketTypeID", value); }
     }
     
     public int SlaLevelID
     {
       get { return (int)Row["SlaLevelID"]; }
-      set { Row["SlaLevelID"] = CheckNull(value); }
+      set { Row["SlaLevelID"] = CheckValue("SlaLevelID", value); }
     }
     
 

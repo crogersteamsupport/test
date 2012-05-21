@@ -47,67 +47,67 @@ namespace TeamSupport.Data
     public string Description
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public string Website
     {
       get { return Row["Website"] != DBNull.Value ? (string)Row["Website"] : null; }
-      set { Row["Website"] = CheckNull(value); }
+      set { Row["Website"] = CheckValue("Website", value); }
     }
     
     public string InActiveReason
     {
       get { return Row["InActiveReason"] != DBNull.Value ? (string)Row["InActiveReason"] : null; }
-      set { Row["InActiveReason"] = CheckNull(value); }
+      set { Row["InActiveReason"] = CheckValue("InActiveReason", value); }
     }
     
     public int? PrimaryUserID
     {
       get { return Row["PrimaryUserID"] != DBNull.Value ? (int?)Row["PrimaryUserID"] : null; }
-      set { Row["PrimaryUserID"] = CheckNull(value); }
+      set { Row["PrimaryUserID"] = CheckValue("PrimaryUserID", value); }
     }
     
     public int? ParentID
     {
       get { return Row["ParentID"] != DBNull.Value ? (int?)Row["ParentID"] : null; }
-      set { Row["ParentID"] = CheckNull(value); }
+      set { Row["ParentID"] = CheckValue("ParentID", value); }
     }
     
     public string SlaName
     {
       get { return Row["SlaName"] != DBNull.Value ? (string)Row["SlaName"] : null; }
-      set { Row["SlaName"] = CheckNull(value); }
+      set { Row["SlaName"] = CheckValue("SlaName", value); }
     }
     
     public string CRMLinkID
     {
       get { return Row["CRMLinkID"] != DBNull.Value ? (string)Row["CRMLinkID"] : null; }
-      set { Row["CRMLinkID"] = CheckNull(value); }
+      set { Row["CRMLinkID"] = CheckValue("CRMLinkID", value); }
     }
     
     public int? SlaLevelID
     {
       get { return Row["SlaLevelID"] != DBNull.Value ? (int?)Row["SlaLevelID"] : null; }
-      set { Row["SlaLevelID"] = CheckNull(value); }
+      set { Row["SlaLevelID"] = CheckValue("SlaLevelID", value); }
     }
     
     public int? DefaultWikiArticleID
     {
       get { return Row["DefaultWikiArticleID"] != DBNull.Value ? (int?)Row["DefaultWikiArticleID"] : null; }
-      set { Row["DefaultWikiArticleID"] = CheckNull(value); }
+      set { Row["DefaultWikiArticleID"] = CheckValue("DefaultWikiArticleID", value); }
     }
     
     public int? DefaultSupportGroupID
     {
       get { return Row["DefaultSupportGroupID"] != DBNull.Value ? (int?)Row["DefaultSupportGroupID"] : null; }
-      set { Row["DefaultSupportGroupID"] = CheckNull(value); }
+      set { Row["DefaultSupportGroupID"] = CheckValue("DefaultSupportGroupID", value); }
     }
     
     public int? DefaultSupportUserID
     {
       get { return Row["DefaultSupportUserID"] != DBNull.Value ? (int?)Row["DefaultSupportUserID"] : null; }
-      set { Row["DefaultSupportUserID"] = CheckNull(value); }
+      set { Row["DefaultSupportUserID"] = CheckValue("DefaultSupportUserID", value); }
     }
     
 
@@ -115,43 +115,43 @@ namespace TeamSupport.Data
     public Guid PortalGuid
     {
       get { return (Guid)Row["PortalGuid"]; }
-      set { Row["PortalGuid"] = CheckNull(value); }
+      set { Row["PortalGuid"] = CheckValue("PortalGuid", value); }
     }
     
     public bool HasPortalAccess
     {
       get { return (bool)Row["HasPortalAccess"]; }
-      set { Row["HasPortalAccess"] = CheckNull(value); }
+      set { Row["HasPortalAccess"] = CheckValue("HasPortalAccess", value); }
     }
     
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public bool IsActive
     {
       get { return (bool)Row["IsActive"]; }
-      set { Row["IsActive"] = CheckNull(value); }
+      set { Row["IsActive"] = CheckValue("IsActive", value); }
     }
     
     public string Name
     {
       get { return (string)Row["Name"]; }
-      set { Row["Name"] = CheckNull(value); }
+      set { Row["Name"] = CheckValue("Name", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -164,7 +164,7 @@ namespace TeamSupport.Data
     public DateTime? SAExpirationDate
     {
       get { return Row["SAExpirationDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["SAExpirationDate"]) : null; }
-      set { Row["SAExpirationDate"] = CheckNull(value); }
+      set { Row["SAExpirationDate"] = CheckValue("SAExpirationDate", value); }
     }
 
     public DateTime? SAExpirationDateUtc
@@ -177,7 +177,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -188,7 +188,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

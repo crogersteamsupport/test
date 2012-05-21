@@ -32,13 +32,13 @@ namespace TeamSupport.Data
     public int? ForumCategory
     {
       get { return Row["ForumCategory"] != DBNull.Value ? (int?)Row["ForumCategory"] : null; }
-      set { Row["ForumCategory"] = CheckNull(value); }
+      set { Row["ForumCategory"] = CheckValue("ForumCategory", value); }
     }
     
     public int? ViewCount
     {
       get { return Row["ViewCount"] != DBNull.Value ? (int?)Row["ViewCount"] : null; }
-      set { Row["ViewCount"] = CheckNull(value); }
+      set { Row["ViewCount"] = CheckValue("ViewCount", value); }
     }
     
 
@@ -46,7 +46,7 @@ namespace TeamSupport.Data
     public int TicketID
     {
       get { return (int)Row["TicketID"]; }
-      set { Row["TicketID"] = CheckNull(value); }
+      set { Row["TicketID"] = CheckValue("TicketID", value); }
     }
     
 

@@ -37,73 +37,73 @@ namespace TeamSupport.Data
     public int? ParentID
     {
       get { return Row["ParentID"] != DBNull.Value ? (int?)Row["ParentID"] : null; }
-      set { Row["ParentID"] = CheckNull(value); }
+      set { Row["ParentID"] = CheckValue("ParentID", value); }
     }
     
     public string ArticleName
     {
       get { return Row["ArticleName"] != DBNull.Value ? (string)Row["ArticleName"] : null; }
-      set { Row["ArticleName"] = CheckNull(value); }
+      set { Row["ArticleName"] = CheckValue("ArticleName", value); }
     }
     
     public string Body
     {
       get { return Row["Body"] != DBNull.Value ? (string)Row["Body"] : null; }
-      set { Row["Body"] = CheckNull(value); }
+      set { Row["Body"] = CheckValue("Body", value); }
     }
     
     public int? Version
     {
       get { return Row["Version"] != DBNull.Value ? (int?)Row["Version"] : null; }
-      set { Row["Version"] = CheckNull(value); }
+      set { Row["Version"] = CheckValue("Version", value); }
     }
     
     public bool? PublicView
     {
       get { return Row["PublicView"] != DBNull.Value ? (bool?)Row["PublicView"] : null; }
-      set { Row["PublicView"] = CheckNull(value); }
+      set { Row["PublicView"] = CheckValue("PublicView", value); }
     }
     
     public bool? PublicEdit
     {
       get { return Row["PublicEdit"] != DBNull.Value ? (bool?)Row["PublicEdit"] : null; }
-      set { Row["PublicEdit"] = CheckNull(value); }
+      set { Row["PublicEdit"] = CheckValue("PublicEdit", value); }
     }
     
     public bool? PortalView
     {
       get { return Row["PortalView"] != DBNull.Value ? (bool?)Row["PortalView"] : null; }
-      set { Row["PortalView"] = CheckNull(value); }
+      set { Row["PortalView"] = CheckValue("PortalView", value); }
     }
     
     public bool? PortalEdit
     {
       get { return Row["PortalEdit"] != DBNull.Value ? (bool?)Row["PortalEdit"] : null; }
-      set { Row["PortalEdit"] = CheckNull(value); }
+      set { Row["PortalEdit"] = CheckValue("PortalEdit", value); }
     }
     
     public bool? Private
     {
       get { return Row["Private"] != DBNull.Value ? (bool?)Row["Private"] : null; }
-      set { Row["Private"] = CheckNull(value); }
+      set { Row["Private"] = CheckValue("Private", value); }
     }
     
     public bool? IsDeleted
     {
       get { return Row["IsDeleted"] != DBNull.Value ? (bool?)Row["IsDeleted"] : null; }
-      set { Row["IsDeleted"] = CheckNull(value); }
+      set { Row["IsDeleted"] = CheckValue("IsDeleted", value); }
     }
     
     public int? CreatedBy
     {
       get { return Row["CreatedBy"] != DBNull.Value ? (int?)Row["CreatedBy"] : null; }
-      set { Row["CreatedBy"] = CheckNull(value); }
+      set { Row["CreatedBy"] = CheckValue("CreatedBy", value); }
     }
     
     public int? ModifiedBy
     {
       get { return Row["ModifiedBy"] != DBNull.Value ? (int?)Row["ModifiedBy"] : null; }
-      set { Row["ModifiedBy"] = CheckNull(value); }
+      set { Row["ModifiedBy"] = CheckValue("ModifiedBy", value); }
     }
     
 
@@ -111,7 +111,7 @@ namespace TeamSupport.Data
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -124,7 +124,7 @@ namespace TeamSupport.Data
     public DateTime? CreatedDate
     {
       get { return Row["CreatedDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["CreatedDate"]) : null; }
-      set { Row["CreatedDate"] = CheckNull(value); }
+      set { Row["CreatedDate"] = CheckValue("CreatedDate", value); }
     }
 
     public DateTime? CreatedDateUtc
@@ -135,7 +135,7 @@ namespace TeamSupport.Data
     public DateTime? ModifiedDate
     {
       get { return Row["ModifiedDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["ModifiedDate"]) : null; }
-      set { Row["ModifiedDate"] = CheckNull(value); }
+      set { Row["ModifiedDate"] = CheckValue("ModifiedDate", value); }
     }
 
     public DateTime? ModifiedDateUtc

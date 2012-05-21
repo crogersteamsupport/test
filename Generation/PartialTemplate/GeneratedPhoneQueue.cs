@@ -37,7 +37,7 @@ namespace TeamSupport.Data
     public string ActionValue
     {
       get { return Row["ActionValue"] != DBNull.Value ? (string)Row["ActionValue"] : null; }
-      set { Row["ActionValue"] = CheckNull(value); }
+      set { Row["ActionValue"] = CheckValue("ActionValue", value); }
     }
     
 
@@ -45,37 +45,37 @@ namespace TeamSupport.Data
     public string Status
     {
       get { return (string)Row["Status"]; }
-      set { Row["Status"] = CheckNull(value); }
+      set { Row["Status"] = CheckValue("Status", value); }
     }
     
     public string CallFrom
     {
       get { return (string)Row["CallFrom"]; }
-      set { Row["CallFrom"] = CheckNull(value); }
+      set { Row["CallFrom"] = CheckValue("CallFrom", value); }
     }
     
     public string CallTo
     {
       get { return (string)Row["CallTo"]; }
-      set { Row["CallTo"] = CheckNull(value); }
+      set { Row["CallTo"] = CheckValue("CallTo", value); }
     }
     
     public string AccountSID
     {
       get { return (string)Row["AccountSID"]; }
-      set { Row["AccountSID"] = CheckNull(value); }
+      set { Row["AccountSID"] = CheckValue("AccountSID", value); }
     }
     
     public string CallSID
     {
       get { return (string)Row["CallSID"]; }
-      set { Row["CallSID"] = CheckNull(value); }
+      set { Row["CallSID"] = CheckValue("CallSID", value); }
     }
     
     public string OrganizationID
     {
       get { return (string)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -88,7 +88,7 @@ namespace TeamSupport.Data
     public DateTime? CallDateTime
     {
       get { return Row["CallDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["CallDateTime"]) : null; }
-      set { Row["CallDateTime"] = CheckNull(value); }
+      set { Row["CallDateTime"] = CheckValue("CallDateTime", value); }
     }
 
     public DateTime? CallDateTimeUtc
@@ -99,7 +99,7 @@ namespace TeamSupport.Data
     public DateTime? LastActionDateTime
     {
       get { return Row["LastActionDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastActionDateTime"]) : null; }
-      set { Row["LastActionDateTime"] = CheckNull(value); }
+      set { Row["LastActionDateTime"] = CheckValue("LastActionDateTime", value); }
     }
 
     public DateTime? LastActionDateTimeUtc

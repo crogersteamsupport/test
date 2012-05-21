@@ -37,7 +37,7 @@ namespace TeamSupport.Data
     public int? AuxID
     {
       get { return Row["AuxID"] != DBNull.Value ? (int?)Row["AuxID"] : null; }
-      set { Row["AuxID"] = CheckNull(value); }
+      set { Row["AuxID"] = CheckValue("AuxID", value); }
     }
     
 
@@ -45,25 +45,25 @@ namespace TeamSupport.Data
     public ReferenceType RefType
     {
       get { return (ReferenceType)Row["RefType"]; }
-      set { Row["RefType"] = CheckNull(value); }
+      set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
     public int Position
     {
       get { return (int)Row["Position"]; }
-      set { Row["Position"] = CheckNull(value); }
+      set { Row["Position"] = CheckValue("Position", value); }
     }
     
     public string Category
     {
       get { return (string)Row["Category"]; }
-      set { Row["Category"] = CheckNull(value); }
+      set { Row["Category"] = CheckValue("Category", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 

@@ -37,7 +37,7 @@ namespace TeamSupport.Data
     public int? AttachmentOrganizationID
     {
       get { return Row["AttachmentOrganizationID"] != DBNull.Value ? (int?)Row["AttachmentOrganizationID"] : null; }
-      set { Row["AttachmentOrganizationID"] = CheckNull(value); }
+      set { Row["AttachmentOrganizationID"] = CheckValue("AttachmentOrganizationID", value); }
     }
     
 
@@ -45,13 +45,13 @@ namespace TeamSupport.Data
     public int UserID
     {
       get { return (int)Row["UserID"]; }
-      set { Row["UserID"] = CheckNull(value); }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
     public int AttachmentID
     {
       get { return (int)Row["AttachmentID"]; }
-      set { Row["AttachmentID"] = CheckNull(value); }
+      set { Row["AttachmentID"] = CheckValue("AttachmentID", value); }
     }
     
 
@@ -66,7 +66,7 @@ namespace TeamSupport.Data
     public DateTime DateDownloaded
     {
       get { return DateToLocal((DateTime)Row["DateDownloaded"]); }
-      set { Row["DateDownloaded"] = CheckNull(value); }
+      set { Row["DateDownloaded"] = CheckValue("DateDownloaded", value); }
     }
 
     public DateTime DateDownloadedUtc

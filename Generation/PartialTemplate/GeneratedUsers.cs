@@ -37,55 +37,55 @@ namespace TeamSupport.Data
     public string MiddleName
     {
       get { return Row["MiddleName"] != DBNull.Value ? (string)Row["MiddleName"] : null; }
-      set { Row["MiddleName"] = CheckNull(value); }
+      set { Row["MiddleName"] = CheckValue("MiddleName", value); }
     }
     
     public string Title
     {
       get { return Row["Title"] != DBNull.Value ? (string)Row["Title"] : null; }
-      set { Row["Title"] = CheckNull(value); }
+      set { Row["Title"] = CheckValue("Title", value); }
     }
     
     public string TimeZoneID
     {
       get { return Row["TimeZoneID"] != DBNull.Value ? (string)Row["TimeZoneID"] : null; }
-      set { Row["TimeZoneID"] = CheckNull(value); }
+      set { Row["TimeZoneID"] = CheckValue("TimeZoneID", value); }
     }
     
     public string CultureName
     {
       get { return Row["CultureName"] != DBNull.Value ? (string)Row["CultureName"] : null; }
-      set { Row["CultureName"] = CheckNull(value); }
+      set { Row["CultureName"] = CheckValue("CultureName", value); }
     }
     
     public int? PrimaryGroupID
     {
       get { return Row["PrimaryGroupID"] != DBNull.Value ? (int?)Row["PrimaryGroupID"] : null; }
-      set { Row["PrimaryGroupID"] = CheckNull(value); }
+      set { Row["PrimaryGroupID"] = CheckValue("PrimaryGroupID", value); }
     }
     
     public string LastVersion
     {
       get { return Row["LastVersion"] != DBNull.Value ? (string)Row["LastVersion"] : null; }
-      set { Row["LastVersion"] = CheckNull(value); }
+      set { Row["LastVersion"] = CheckValue("LastVersion", value); }
     }
     
     public Guid? SessionID
     {
       get { return Row["SessionID"] != DBNull.Value ? (Guid?)Row["SessionID"] : null; }
-      set { Row["SessionID"] = CheckNull(value); }
+      set { Row["SessionID"] = CheckValue("SessionID", value); }
     }
     
     public string ImportID
     {
       get { return Row["ImportID"] != DBNull.Value ? (string)Row["ImportID"] : null; }
-      set { Row["ImportID"] = CheckNull(value); }
+      set { Row["ImportID"] = CheckValue("ImportID", value); }
     }
     
     public string OrgsUserCanSeeOnPortal
     {
       get { return Row["OrgsUserCanSeeOnPortal"] != DBNull.Value ? (string)Row["OrgsUserCanSeeOnPortal"] : null; }
-      set { Row["OrgsUserCanSeeOnPortal"] = CheckNull(value); }
+      set { Row["OrgsUserCanSeeOnPortal"] = CheckValue("OrgsUserCanSeeOnPortal", value); }
     }
     
 
@@ -93,163 +93,163 @@ namespace TeamSupport.Data
     public bool PortalAutoReg
     {
       get { return (bool)Row["PortalAutoReg"]; }
-      set { Row["PortalAutoReg"] = CheckNull(value); }
+      set { Row["PortalAutoReg"] = CheckValue("PortalAutoReg", value); }
     }
     
     public string UserInformation
     {
       get { return (string)Row["UserInformation"]; }
-      set { Row["UserInformation"] = CheckNull(value); }
+      set { Row["UserInformation"] = CheckValue("UserInformation", value); }
     }
     
     public bool ShowWelcomePage
     {
       get { return (bool)Row["ShowWelcomePage"]; }
-      set { Row["ShowWelcomePage"] = CheckNull(value); }
+      set { Row["ShowWelcomePage"] = CheckValue("ShowWelcomePage", value); }
     }
     
     public bool ApprovedTerms
     {
       get { return (bool)Row["ApprovedTerms"]; }
-      set { Row["ApprovedTerms"] = CheckNull(value); }
+      set { Row["ApprovedTerms"] = CheckValue("ApprovedTerms", value); }
     }
     
     public bool SubscribeToNewActions
     {
       get { return (bool)Row["SubscribeToNewActions"]; }
-      set { Row["SubscribeToNewActions"] = CheckNull(value); }
+      set { Row["SubscribeToNewActions"] = CheckValue("SubscribeToNewActions", value); }
     }
     
     public bool IsClassicView
     {
       get { return (bool)Row["IsClassicView"]; }
-      set { Row["IsClassicView"] = CheckNull(value); }
+      set { Row["IsClassicView"] = CheckValue("IsClassicView", value); }
     }
     
     public bool DoNotAutoSubscribe
     {
       get { return (bool)Row["DoNotAutoSubscribe"]; }
-      set { Row["DoNotAutoSubscribe"] = CheckNull(value); }
+      set { Row["DoNotAutoSubscribe"] = CheckValue("DoNotAutoSubscribe", value); }
     }
     
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public bool SubscribeToNewTickets
     {
       get { return (bool)Row["SubscribeToNewTickets"]; }
-      set { Row["SubscribeToNewTickets"] = CheckNull(value); }
+      set { Row["SubscribeToNewTickets"] = CheckValue("SubscribeToNewTickets", value); }
     }
     
     public bool ReceiveAllGroupNotifications
     {
       get { return (bool)Row["ReceiveAllGroupNotifications"]; }
-      set { Row["ReceiveAllGroupNotifications"] = CheckNull(value); }
+      set { Row["ReceiveAllGroupNotifications"] = CheckValue("ReceiveAllGroupNotifications", value); }
     }
     
     public bool ReceiveTicketNotifications
     {
       get { return (bool)Row["ReceiveTicketNotifications"]; }
-      set { Row["ReceiveTicketNotifications"] = CheckNull(value); }
+      set { Row["ReceiveTicketNotifications"] = CheckValue("ReceiveTicketNotifications", value); }
     }
     
     public string InOfficeComment
     {
       get { return (string)Row["InOfficeComment"]; }
-      set { Row["InOfficeComment"] = CheckNull(value); }
+      set { Row["InOfficeComment"] = CheckValue("InOfficeComment", value); }
     }
     
     public bool InOffice
     {
       get { return (bool)Row["InOffice"]; }
-      set { Row["InOffice"] = CheckNull(value); }
+      set { Row["InOffice"] = CheckValue("InOffice", value); }
     }
     
     public bool IsChatUser
     {
       get { return (bool)Row["IsChatUser"]; }
-      set { Row["IsChatUser"] = CheckNull(value); }
+      set { Row["IsChatUser"] = CheckValue("IsChatUser", value); }
     }
     
     public bool IsPortalUser
     {
       get { return (bool)Row["IsPortalUser"]; }
-      set { Row["IsPortalUser"] = CheckNull(value); }
+      set { Row["IsPortalUser"] = CheckValue("IsPortalUser", value); }
     }
     
     public bool IsPasswordExpired
     {
       get { return (bool)Row["IsPasswordExpired"]; }
-      set { Row["IsPasswordExpired"] = CheckNull(value); }
+      set { Row["IsPasswordExpired"] = CheckValue("IsPasswordExpired", value); }
     }
     
     public bool IsFinanceAdmin
     {
       get { return (bool)Row["IsFinanceAdmin"]; }
-      set { Row["IsFinanceAdmin"] = CheckNull(value); }
+      set { Row["IsFinanceAdmin"] = CheckValue("IsFinanceAdmin", value); }
     }
     
     public bool IsSystemAdmin
     {
       get { return (bool)Row["IsSystemAdmin"]; }
-      set { Row["IsSystemAdmin"] = CheckNull(value); }
+      set { Row["IsSystemAdmin"] = CheckValue("IsSystemAdmin", value); }
     }
     
     public int LastWaterCoolerID
     {
       get { return (int)Row["LastWaterCoolerID"]; }
-      set { Row["LastWaterCoolerID"] = CheckNull(value); }
+      set { Row["LastWaterCoolerID"] = CheckValue("LastWaterCoolerID", value); }
     }
     
     public bool MarkDeleted
     {
       get { return (bool)Row["MarkDeleted"]; }
-      set { Row["MarkDeleted"] = CheckNull(value); }
+      set { Row["MarkDeleted"] = CheckValue("MarkDeleted", value); }
     }
     
     public bool IsActive
     {
       get { return (bool)Row["IsActive"]; }
-      set { Row["IsActive"] = CheckNull(value); }
+      set { Row["IsActive"] = CheckValue("IsActive", value); }
     }
     
     public string CryptedPassword
     {
       get { return (string)Row["CryptedPassword"]; }
-      set { Row["CryptedPassword"] = CheckNull(value); }
+      set { Row["CryptedPassword"] = CheckValue("CryptedPassword", value); }
     }
     
     public string LastName
     {
       get { return (string)Row["LastName"]; }
-      set { Row["LastName"] = CheckNull(value); }
+      set { Row["LastName"] = CheckValue("LastName", value); }
     }
     
     public string FirstName
     {
       get { return (string)Row["FirstName"]; }
-      set { Row["FirstName"] = CheckNull(value); }
+      set { Row["FirstName"] = CheckValue("FirstName", value); }
     }
     
     public string Email
     {
       get { return (string)Row["Email"]; }
-      set { Row["Email"] = CheckNull(value); }
+      set { Row["Email"] = CheckValue("Email", value); }
     }
     
 
@@ -262,7 +262,7 @@ namespace TeamSupport.Data
     public DateTime? LastPing
     {
       get { return Row["LastPing"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastPing"]) : null; }
-      set { Row["LastPing"] = CheckNull(value); }
+      set { Row["LastPing"] = CheckValue("LastPing", value); }
     }
 
     public DateTime? LastPingUtc
@@ -273,7 +273,7 @@ namespace TeamSupport.Data
     public DateTime? DeactivatedOn
     {
       get { return Row["DeactivatedOn"] != DBNull.Value ? DateToLocal((DateTime?)Row["DeactivatedOn"]) : null; }
-      set { Row["DeactivatedOn"] = CheckNull(value); }
+      set { Row["DeactivatedOn"] = CheckValue("DeactivatedOn", value); }
     }
 
     public DateTime? DeactivatedOnUtc
@@ -286,7 +286,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -297,7 +297,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc
@@ -308,7 +308,7 @@ namespace TeamSupport.Data
     public DateTime ActivatedOn
     {
       get { return DateToLocal((DateTime)Row["ActivatedOn"]); }
-      set { Row["ActivatedOn"] = CheckNull(value); }
+      set { Row["ActivatedOn"] = CheckValue("ActivatedOn", value); }
     }
 
     public DateTime ActivatedOnUtc
@@ -319,7 +319,7 @@ namespace TeamSupport.Data
     public DateTime LastActivity
     {
       get { return DateToLocal((DateTime)Row["LastActivity"]); }
-      set { Row["LastActivity"] = CheckNull(value); }
+      set { Row["LastActivity"] = CheckValue("LastActivity", value); }
     }
 
     public DateTime LastActivityUtc
@@ -330,7 +330,7 @@ namespace TeamSupport.Data
     public DateTime LastLogin
     {
       get { return DateToLocal((DateTime)Row["LastLogin"]); }
-      set { Row["LastLogin"] = CheckNull(value); }
+      set { Row["LastLogin"] = CheckValue("LastLogin", value); }
     }
 
     public DateTime LastLoginUtc

@@ -39,37 +39,37 @@ namespace TeamSupport.Data
     public int LastPreviewedMessageID
     {
       get { return (int)Row["LastPreviewedMessageID"]; }
-      set { Row["LastPreviewedMessageID"] = CheckNull(value); }
+      set { Row["LastPreviewedMessageID"] = CheckValue("LastPreviewedMessageID", value); }
     }
     
     public int LastMessageID
     {
       get { return (int)Row["LastMessageID"]; }
-      set { Row["LastMessageID"] = CheckNull(value); }
+      set { Row["LastMessageID"] = CheckValue("LastMessageID", value); }
     }
     
     public string IPAddress
     {
       get { return (string)Row["IPAddress"]; }
-      set { Row["IPAddress"] = CheckNull(value); }
+      set { Row["IPAddress"] = CheckValue("IPAddress", value); }
     }
     
     public ChatParticipantType ParticipantType
     {
       get { return (ChatParticipantType)Row["ParticipantType"]; }
-      set { Row["ParticipantType"] = CheckNull(value); }
+      set { Row["ParticipantType"] = CheckValue("ParticipantType", value); }
     }
     
     public int ParticipantID
     {
       get { return (int)Row["ParticipantID"]; }
-      set { Row["ParticipantID"] = CheckNull(value); }
+      set { Row["ParticipantID"] = CheckValue("ParticipantID", value); }
     }
     
     public int ChatID
     {
       get { return (int)Row["ChatID"]; }
-      set { Row["ChatID"] = CheckNull(value); }
+      set { Row["ChatID"] = CheckValue("ChatID", value); }
     }
     
 
@@ -82,7 +82,7 @@ namespace TeamSupport.Data
     public DateTime? DateLeft
     {
       get { return Row["DateLeft"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateLeft"]) : null; }
-      set { Row["DateLeft"] = CheckNull(value); }
+      set { Row["DateLeft"] = CheckValue("DateLeft", value); }
     }
 
     public DateTime? DateLeftUtc
@@ -95,7 +95,7 @@ namespace TeamSupport.Data
     public DateTime DateJoined
     {
       get { return DateToLocal((DateTime)Row["DateJoined"]); }
-      set { Row["DateJoined"] = CheckNull(value); }
+      set { Row["DateJoined"] = CheckValue("DateJoined", value); }
     }
 
     public DateTime DateJoinedUtc
@@ -106,7 +106,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc
@@ -117,7 +117,7 @@ namespace TeamSupport.Data
     public DateTime LastTyped
     {
       get { return DateToLocal((DateTime)Row["LastTyped"]); }
-      set { Row["LastTyped"] = CheckNull(value); }
+      set { Row["LastTyped"] = CheckValue("LastTyped", value); }
     }
 
     public DateTime LastTypedUtc

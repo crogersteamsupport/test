@@ -34,19 +34,19 @@ namespace TeamSupport.Data
     public bool DisplayKB
     {
       get { return (bool)Row["DisplayKB"]; }
-      set { Row["DisplayKB"] = CheckNull(value); }
+      set { Row["DisplayKB"] = CheckValue("DisplayKB", value); }
     }
     
     public bool DisplayArticles
     {
       get { return (bool)Row["DisplayArticles"]; }
-      set { Row["DisplayArticles"] = CheckNull(value); }
+      set { Row["DisplayArticles"] = CheckValue("DisplayArticles", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 

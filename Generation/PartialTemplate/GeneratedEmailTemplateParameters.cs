@@ -39,19 +39,19 @@ namespace TeamSupport.Data
     public string Description
     {
       get { return (string)Row["Description"]; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public string Name
     {
       get { return (string)Row["Name"]; }
-      set { Row["Name"] = CheckNull(value); }
+      set { Row["Name"] = CheckValue("Name", value); }
     }
     
     public int EmailTemplateID
     {
       get { return (int)Row["EmailTemplateID"]; }
-      set { Row["EmailTemplateID"] = CheckNull(value); }
+      set { Row["EmailTemplateID"] = CheckValue("EmailTemplateID", value); }
     }
     
 

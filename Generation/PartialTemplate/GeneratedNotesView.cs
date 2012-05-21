@@ -44,43 +44,43 @@ namespace TeamSupport.Data
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public string Description
     {
       get { return (string)Row["Description"]; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public string Title
     {
       get { return (string)Row["Title"]; }
-      set { Row["Title"] = CheckNull(value); }
+      set { Row["Title"] = CheckValue("Title", value); }
     }
     
     public int RefID
     {
       get { return (int)Row["RefID"]; }
-      set { Row["RefID"] = CheckNull(value); }
+      set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
     public int RefType
     {
       get { return (int)Row["RefType"]; }
-      set { Row["RefType"] = CheckNull(value); }
+      set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
     public int NoteID
     {
       get { return (int)Row["NoteID"]; }
-      set { Row["NoteID"] = CheckNull(value); }
+      set { Row["NoteID"] = CheckValue("NoteID", value); }
     }
     
 
@@ -95,7 +95,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc
@@ -106,7 +106,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc

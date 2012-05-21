@@ -32,163 +32,163 @@ namespace TeamSupport.Data
     public string PortalHTMLHeader
     {
       get { return Row["PortalHTMLHeader"] != DBNull.Value ? (string)Row["PortalHTMLHeader"] : null; }
-      set { Row["PortalHTMLHeader"] = CheckNull(value); }
+      set { Row["PortalHTMLHeader"] = CheckValue("PortalHTMLHeader", value); }
     }
     
     public string PortalHTMLFooter
     {
       get { return Row["PortalHTMLFooter"] != DBNull.Value ? (string)Row["PortalHTMLFooter"] : null; }
-      set { Row["PortalHTMLFooter"] = CheckNull(value); }
+      set { Row["PortalHTMLFooter"] = CheckValue("PortalHTMLFooter", value); }
     }
     
     public bool? UseRecaptcha
     {
       get { return Row["UseRecaptcha"] != DBNull.Value ? (bool?)Row["UseRecaptcha"] : null; }
-      set { Row["UseRecaptcha"] = CheckNull(value); }
+      set { Row["UseRecaptcha"] = CheckValue("UseRecaptcha", value); }
     }
     
     public string FontFamily
     {
       get { return Row["FontFamily"] != DBNull.Value ? (string)Row["FontFamily"] : null; }
-      set { Row["FontFamily"] = CheckNull(value); }
+      set { Row["FontFamily"] = CheckValue("FontFamily", value); }
     }
     
     public string FontColor
     {
       get { return Row["FontColor"] != DBNull.Value ? (string)Row["FontColor"] : null; }
-      set { Row["FontColor"] = CheckNull(value); }
+      set { Row["FontColor"] = CheckValue("FontColor", value); }
     }
     
     public string PageBackgroundColor
     {
       get { return Row["PageBackgroundColor"] != DBNull.Value ? (string)Row["PageBackgroundColor"] : null; }
-      set { Row["PageBackgroundColor"] = CheckNull(value); }
+      set { Row["PageBackgroundColor"] = CheckValue("PageBackgroundColor", value); }
     }
     
     public bool? UseCompanyInBasic
     {
       get { return Row["UseCompanyInBasic"] != DBNull.Value ? (bool?)Row["UseCompanyInBasic"] : null; }
-      set { Row["UseCompanyInBasic"] = CheckNull(value); }
+      set { Row["UseCompanyInBasic"] = CheckValue("UseCompanyInBasic", value); }
     }
     
     public bool? CompanyRequiredInBasic
     {
       get { return Row["CompanyRequiredInBasic"] != DBNull.Value ? (bool?)Row["CompanyRequiredInBasic"] : null; }
-      set { Row["CompanyRequiredInBasic"] = CheckNull(value); }
+      set { Row["CompanyRequiredInBasic"] = CheckValue("CompanyRequiredInBasic", value); }
     }
     
     public bool? HideUserAssignedTo
     {
       get { return Row["HideUserAssignedTo"] != DBNull.Value ? (bool?)Row["HideUserAssignedTo"] : null; }
-      set { Row["HideUserAssignedTo"] = CheckNull(value); }
+      set { Row["HideUserAssignedTo"] = CheckValue("HideUserAssignedTo", value); }
     }
     
     public bool? HideGroupAssignedTo
     {
       get { return Row["HideGroupAssignedTo"] != DBNull.Value ? (bool?)Row["HideGroupAssignedTo"] : null; }
-      set { Row["HideGroupAssignedTo"] = CheckNull(value); }
+      set { Row["HideGroupAssignedTo"] = CheckValue("HideGroupAssignedTo", value); }
     }
     
     public int? BasicPortalColumnWidth
     {
       get { return Row["BasicPortalColumnWidth"] != DBNull.Value ? (int?)Row["BasicPortalColumnWidth"] : null; }
-      set { Row["BasicPortalColumnWidth"] = CheckNull(value); }
+      set { Row["BasicPortalColumnWidth"] = CheckValue("BasicPortalColumnWidth", value); }
     }
     
     public bool? DisplayGroups
     {
       get { return Row["DisplayGroups"] != DBNull.Value ? (bool?)Row["DisplayGroups"] : null; }
-      set { Row["DisplayGroups"] = CheckNull(value); }
+      set { Row["DisplayGroups"] = CheckValue("DisplayGroups", value); }
     }
     
     public string PortalName
     {
       get { return Row["PortalName"] != DBNull.Value ? (string)Row["PortalName"] : null; }
-      set { Row["PortalName"] = CheckNull(value); }
+      set { Row["PortalName"] = CheckValue("PortalName", value); }
     }
     
     public bool? KBAccess
     {
       get { return Row["KBAccess"] != DBNull.Value ? (bool?)Row["KBAccess"] : null; }
-      set { Row["KBAccess"] = CheckNull(value); }
+      set { Row["KBAccess"] = CheckValue("KBAccess", value); }
     }
     
     public bool? DisplayProducts
     {
       get { return Row["DisplayProducts"] != DBNull.Value ? (bool?)Row["DisplayProducts"] : null; }
-      set { Row["DisplayProducts"] = CheckNull(value); }
+      set { Row["DisplayProducts"] = CheckValue("DisplayProducts", value); }
     }
     
     public bool? HonorSupportExpiration
     {
       get { return Row["HonorSupportExpiration"] != DBNull.Value ? (bool?)Row["HonorSupportExpiration"] : null; }
-      set { Row["HonorSupportExpiration"] = CheckNull(value); }
+      set { Row["HonorSupportExpiration"] = CheckValue("HonorSupportExpiration", value); }
     }
     
     public bool? HideCloseButton
     {
       get { return Row["HideCloseButton"] != DBNull.Value ? (bool?)Row["HideCloseButton"] : null; }
-      set { Row["HideCloseButton"] = CheckNull(value); }
+      set { Row["HideCloseButton"] = CheckValue("HideCloseButton", value); }
     }
     
     public string Theme
     {
       get { return Row["Theme"] != DBNull.Value ? (string)Row["Theme"] : null; }
-      set { Row["Theme"] = CheckNull(value); }
+      set { Row["Theme"] = CheckValue("Theme", value); }
     }
     
     public int? AdvPortalWidth
     {
       get { return Row["AdvPortalWidth"] != DBNull.Value ? (int?)Row["AdvPortalWidth"] : null; }
-      set { Row["AdvPortalWidth"] = CheckNull(value); }
+      set { Row["AdvPortalWidth"] = CheckValue("AdvPortalWidth", value); }
     }
     
     public string BasicPortalDirections
     {
       get { return Row["BasicPortalDirections"] != DBNull.Value ? (string)Row["BasicPortalDirections"] : null; }
-      set { Row["BasicPortalDirections"] = CheckNull(value); }
+      set { Row["BasicPortalDirections"] = CheckValue("BasicPortalDirections", value); }
     }
     
     public bool? DeflectionEnabled
     {
       get { return Row["DeflectionEnabled"] != DBNull.Value ? (bool?)Row["DeflectionEnabled"] : null; }
-      set { Row["DeflectionEnabled"] = CheckNull(value); }
+      set { Row["DeflectionEnabled"] = CheckValue("DeflectionEnabled", value); }
     }
     
     public bool? DisplayForum
     {
       get { return Row["DisplayForum"] != DBNull.Value ? (bool?)Row["DisplayForum"] : null; }
-      set { Row["DisplayForum"] = CheckNull(value); }
+      set { Row["DisplayForum"] = CheckValue("DisplayForum", value); }
     }
     
     public string LandingPageHtml
     {
       get { return Row["LandingPageHtml"] != DBNull.Value ? (string)Row["LandingPageHtml"] : null; }
-      set { Row["LandingPageHtml"] = CheckNull(value); }
+      set { Row["LandingPageHtml"] = CheckValue("LandingPageHtml", value); }
     }
     
     public string PublicLandingPageHeader
     {
       get { return Row["PublicLandingPageHeader"] != DBNull.Value ? (string)Row["PublicLandingPageHeader"] : null; }
-      set { Row["PublicLandingPageHeader"] = CheckNull(value); }
+      set { Row["PublicLandingPageHeader"] = CheckValue("PublicLandingPageHeader", value); }
     }
     
     public string PublicLandingPageBody
     {
       get { return Row["PublicLandingPageBody"] != DBNull.Value ? (string)Row["PublicLandingPageBody"] : null; }
-      set { Row["PublicLandingPageBody"] = CheckNull(value); }
+      set { Row["PublicLandingPageBody"] = CheckValue("PublicLandingPageBody", value); }
     }
     
     public int? RequestType
     {
       get { return Row["RequestType"] != DBNull.Value ? (int?)Row["RequestType"] : null; }
-      set { Row["RequestType"] = CheckNull(value); }
+      set { Row["RequestType"] = CheckValue("RequestType", value); }
     }
     
     public int? RequestGroup
     {
       get { return Row["RequestGroup"] != DBNull.Value ? (int?)Row["RequestGroup"] : null; }
-      set { Row["RequestGroup"] = CheckNull(value); }
+      set { Row["RequestGroup"] = CheckValue("RequestGroup", value); }
     }
     
 
@@ -196,79 +196,79 @@ namespace TeamSupport.Data
     public bool AutoRegister
     {
       get { return (bool)Row["AutoRegister"]; }
-      set { Row["AutoRegister"] = CheckNull(value); }
+      set { Row["AutoRegister"] = CheckValue("AutoRegister", value); }
     }
     
     public string TermsAndConditions
     {
       get { return (string)Row["TermsAndConditions"]; }
-      set { Row["TermsAndConditions"] = CheckNull(value); }
+      set { Row["TermsAndConditions"] = CheckValue("TermsAndConditions", value); }
     }
     
     public bool DisplayTandC
     {
       get { return (bool)Row["DisplayTandC"]; }
-      set { Row["DisplayTandC"] = CheckNull(value); }
+      set { Row["DisplayTandC"] = CheckValue("DisplayTandC", value); }
     }
     
     public bool DisplayAdvArticles
     {
       get { return (bool)Row["DisplayAdvArticles"]; }
-      set { Row["DisplayAdvArticles"] = CheckNull(value); }
+      set { Row["DisplayAdvArticles"] = CheckValue("DisplayAdvArticles", value); }
     }
     
     public bool TwoColumnFields
     {
       get { return (bool)Row["TwoColumnFields"]; }
-      set { Row["TwoColumnFields"] = CheckNull(value); }
+      set { Row["TwoColumnFields"] = CheckValue("TwoColumnFields", value); }
     }
     
     public bool EnableScreenr
     {
       get { return (bool)Row["EnableScreenr"]; }
-      set { Row["EnableScreenr"] = CheckNull(value); }
+      set { Row["EnableScreenr"] = CheckValue("EnableScreenr", value); }
     }
     
     public bool DisplayLandingPage
     {
       get { return (bool)Row["DisplayLandingPage"]; }
-      set { Row["DisplayLandingPage"] = CheckNull(value); }
+      set { Row["DisplayLandingPage"] = CheckValue("DisplayLandingPage", value); }
     }
     
     public bool DisplayProductVersion
     {
       get { return (bool)Row["DisplayProductVersion"]; }
-      set { Row["DisplayProductVersion"] = CheckNull(value); }
+      set { Row["DisplayProductVersion"] = CheckValue("DisplayProductVersion", value); }
     }
     
     public bool DisplayAdvKB
     {
       get { return (bool)Row["DisplayAdvKB"]; }
-      set { Row["DisplayAdvKB"] = CheckNull(value); }
+      set { Row["DisplayAdvKB"] = CheckValue("DisplayAdvKB", value); }
     }
     
     public bool DisplayAdvProducts
     {
       get { return (bool)Row["DisplayAdvProducts"]; }
-      set { Row["DisplayAdvProducts"] = CheckNull(value); }
+      set { Row["DisplayAdvProducts"] = CheckValue("DisplayAdvProducts", value); }
     }
     
     public bool DisplayPortalPhone
     {
       get { return (bool)Row["DisplayPortalPhone"]; }
-      set { Row["DisplayPortalPhone"] = CheckNull(value); }
+      set { Row["DisplayPortalPhone"] = CheckValue("DisplayPortalPhone", value); }
     }
     
     public bool DisplayFooter
     {
       get { return (bool)Row["DisplayFooter"]; }
-      set { Row["DisplayFooter"] = CheckNull(value); }
+      set { Row["DisplayFooter"] = CheckValue("DisplayFooter", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 

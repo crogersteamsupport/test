@@ -39,19 +39,19 @@ namespace TeamSupport.Data
     public ReferenceType RefType
     {
       get { return (ReferenceType)Row["RefType"]; }
-      set { Row["RefType"] = CheckNull(value); }
+      set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
     public int RefID
     {
       get { return (int)Row["RefID"]; }
-      set { Row["RefID"] = CheckNull(value); }
+      set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -66,7 +66,7 @@ namespace TeamSupport.Data
     public DateTime DateDeleted
     {
       get { return DateToLocal((DateTime)Row["DateDeleted"]); }
-      set { Row["DateDeleted"] = CheckNull(value); }
+      set { Row["DateDeleted"] = CheckValue("DateDeleted", value); }
     }
 
     public DateTime DateDeletedUtc

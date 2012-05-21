@@ -39,49 +39,49 @@ namespace TeamSupport.Data
     public bool UseGlobalTemplate
     {
       get { return (bool)Row["UseGlobalTemplate"]; }
-      set { Row["UseGlobalTemplate"] = CheckNull(value); }
+      set { Row["UseGlobalTemplate"] = CheckValue("UseGlobalTemplate", value); }
     }
     
     public bool IsHtml
     {
       get { return (bool)Row["IsHtml"]; }
-      set { Row["IsHtml"] = CheckNull(value); }
+      set { Row["IsHtml"] = CheckValue("IsHtml", value); }
     }
     
     public string Body
     {
       get { return (string)Row["Body"]; }
-      set { Row["Body"] = CheckNull(value); }
+      set { Row["Body"] = CheckValue("Body", value); }
     }
     
     public string Footer
     {
       get { return (string)Row["Footer"]; }
-      set { Row["Footer"] = CheckNull(value); }
+      set { Row["Footer"] = CheckValue("Footer", value); }
     }
     
     public string Header
     {
       get { return (string)Row["Header"]; }
-      set { Row["Header"] = CheckNull(value); }
+      set { Row["Header"] = CheckValue("Header", value); }
     }
     
     public string Subject
     {
       get { return (string)Row["Subject"]; }
-      set { Row["Subject"] = CheckNull(value); }
+      set { Row["Subject"] = CheckValue("Subject", value); }
     }
     
     public int EmailTemplateID
     {
       get { return (int)Row["EmailTemplateID"]; }
-      set { Row["EmailTemplateID"] = CheckNull(value); }
+      set { Row["EmailTemplateID"] = CheckValue("EmailTemplateID", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 

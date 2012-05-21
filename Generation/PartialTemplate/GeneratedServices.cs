@@ -39,79 +39,79 @@ namespace TeamSupport.Data
     public int HealthMaxMinutes
     {
       get { return (int)Row["HealthMaxMinutes"]; }
-      set { Row["HealthMaxMinutes"] = CheckNull(value); }
+      set { Row["HealthMaxMinutes"] = CheckValue("HealthMaxMinutes", value); }
     }
     
     public string NameSpace
     {
       get { return (string)Row["NameSpace"]; }
-      set { Row["NameSpace"] = CheckNull(value); }
+      set { Row["NameSpace"] = CheckValue("NameSpace", value); }
     }
     
     public bool AutoStart
     {
       get { return (bool)Row["AutoStart"]; }
-      set { Row["AutoStart"] = CheckNull(value); }
+      set { Row["AutoStart"] = CheckValue("AutoStart", value); }
     }
     
     public string AssemblyName
     {
       get { return (string)Row["AssemblyName"]; }
-      set { Row["AssemblyName"] = CheckNull(value); }
+      set { Row["AssemblyName"] = CheckValue("AssemblyName", value); }
     }
     
     public int RunTimeMax
     {
       get { return (int)Row["RunTimeMax"]; }
-      set { Row["RunTimeMax"] = CheckNull(value); }
+      set { Row["RunTimeMax"] = CheckValue("RunTimeMax", value); }
     }
     
     public int RunTimeAvg
     {
       get { return (int)Row["RunTimeAvg"]; }
-      set { Row["RunTimeAvg"] = CheckNull(value); }
+      set { Row["RunTimeAvg"] = CheckValue("RunTimeAvg", value); }
     }
     
     public int RunCount
     {
       get { return (int)Row["RunCount"]; }
-      set { Row["RunCount"] = CheckNull(value); }
+      set { Row["RunCount"] = CheckValue("RunCount", value); }
     }
     
     public int ErrorCount
     {
       get { return (int)Row["ErrorCount"]; }
-      set { Row["ErrorCount"] = CheckNull(value); }
+      set { Row["ErrorCount"] = CheckValue("ErrorCount", value); }
     }
     
     public string LastError
     {
       get { return (string)Row["LastError"]; }
-      set { Row["LastError"] = CheckNull(value); }
+      set { Row["LastError"] = CheckValue("LastError", value); }
     }
     
     public string LastResult
     {
       get { return (string)Row["LastResult"]; }
-      set { Row["LastResult"] = CheckNull(value); }
+      set { Row["LastResult"] = CheckValue("LastResult", value); }
     }
     
     public int Interval
     {
       get { return (int)Row["Interval"]; }
-      set { Row["Interval"] = CheckNull(value); }
+      set { Row["Interval"] = CheckValue("Interval", value); }
     }
     
     public bool Enabled
     {
       get { return (bool)Row["Enabled"]; }
-      set { Row["Enabled"] = CheckNull(value); }
+      set { Row["Enabled"] = CheckValue("Enabled", value); }
     }
     
     public string Name
     {
       get { return (string)Row["Name"]; }
-      set { Row["Name"] = CheckNull(value); }
+      set { Row["Name"] = CheckValue("Name", value); }
     }
     
 
@@ -124,7 +124,7 @@ namespace TeamSupport.Data
     public DateTime? LastStartTime
     {
       get { return Row["LastStartTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastStartTime"]) : null; }
-      set { Row["LastStartTime"] = CheckNull(value); }
+      set { Row["LastStartTime"] = CheckValue("LastStartTime", value); }
     }
 
     public DateTime? LastStartTimeUtc
@@ -135,7 +135,7 @@ namespace TeamSupport.Data
     public DateTime? LastEndTime
     {
       get { return Row["LastEndTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["LastEndTime"]) : null; }
-      set { Row["LastEndTime"] = CheckNull(value); }
+      set { Row["LastEndTime"] = CheckValue("LastEndTime", value); }
     }
 
     public DateTime? LastEndTimeUtc
@@ -146,7 +146,7 @@ namespace TeamSupport.Data
     public DateTime? HealthTime
     {
       get { return Row["HealthTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["HealthTime"]) : null; }
-      set { Row["HealthTime"] = CheckNull(value); }
+      set { Row["HealthTime"] = CheckValue("HealthTime", value); }
     }
 
     public DateTime? HealthTimeUtc

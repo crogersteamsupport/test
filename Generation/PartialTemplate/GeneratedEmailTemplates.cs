@@ -34,79 +34,79 @@ namespace TeamSupport.Data
     public string Body
     {
       get { return (string)Row["Body"]; }
-      set { Row["Body"] = CheckNull(value); }
+      set { Row["Body"] = CheckValue("Body", value); }
     }
     
     public bool UseGlobalTemplate
     {
       get { return (bool)Row["UseGlobalTemplate"]; }
-      set { Row["UseGlobalTemplate"] = CheckNull(value); }
+      set { Row["UseGlobalTemplate"] = CheckValue("UseGlobalTemplate", value); }
     }
     
     public bool IsEmail
     {
       get { return (bool)Row["IsEmail"]; }
-      set { Row["IsEmail"] = CheckNull(value); }
+      set { Row["IsEmail"] = CheckValue("IsEmail", value); }
     }
     
     public bool IncludeDelimiter
     {
       get { return (bool)Row["IncludeDelimiter"]; }
-      set { Row["IncludeDelimiter"] = CheckNull(value); }
+      set { Row["IncludeDelimiter"] = CheckValue("IncludeDelimiter", value); }
     }
     
     public bool IsHtml
     {
       get { return (bool)Row["IsHtml"]; }
-      set { Row["IsHtml"] = CheckNull(value); }
+      set { Row["IsHtml"] = CheckValue("IsHtml", value); }
     }
     
     public string Footer
     {
       get { return (string)Row["Footer"]; }
-      set { Row["Footer"] = CheckNull(value); }
+      set { Row["Footer"] = CheckValue("Footer", value); }
     }
     
     public string Header
     {
       get { return (string)Row["Header"]; }
-      set { Row["Header"] = CheckNull(value); }
+      set { Row["Header"] = CheckValue("Header", value); }
     }
     
     public string Subject
     {
       get { return (string)Row["Subject"]; }
-      set { Row["Subject"] = CheckNull(value); }
+      set { Row["Subject"] = CheckValue("Subject", value); }
     }
     
     public bool IsTSOnly
     {
       get { return (bool)Row["IsTSOnly"]; }
-      set { Row["IsTSOnly"] = CheckNull(value); }
+      set { Row["IsTSOnly"] = CheckValue("IsTSOnly", value); }
     }
     
     public string Description
     {
       get { return (string)Row["Description"]; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public string Name
     {
       get { return (string)Row["Name"]; }
-      set { Row["Name"] = CheckNull(value); }
+      set { Row["Name"] = CheckValue("Name", value); }
     }
     
     public int Position
     {
       get { return (int)Row["Position"]; }
-      set { Row["Position"] = CheckNull(value); }
+      set { Row["Position"] = CheckValue("Position", value); }
     }
     
     public int EmailTemplateID
     {
       get { return (int)Row["EmailTemplateID"]; }
-      set { Row["EmailTemplateID"] = CheckNull(value); }
+      set { Row["EmailTemplateID"] = CheckValue("EmailTemplateID", value); }
     }
     
 

@@ -472,7 +472,8 @@ $(document).ready(function () {
               image: '../images/icons/Symbol_Record.png',
               onclick: function () {
                 top.Ts.MainPage.recordScreen(null, function (result) {
-                  var html = '<div>' + result.embed + '</div>';
+                  var link = '<a href="' + result.url + '" target="_blank">Click here to view screen recording video</a>';
+                  var html = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/' + result.id + '" width="650" height="400" frameborder="0">' + link + '</iframe></div>'
                   ed.selection.setContent(html);
                   ed.execCommand('mceAutoResize');
                   ed.focus();

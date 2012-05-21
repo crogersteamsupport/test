@@ -32,79 +32,79 @@ namespace TeamSupport.Data
     public string Param1
     {
       get { return Row["Param1"] != DBNull.Value ? (string)Row["Param1"] : null; }
-      set { Row["Param1"] = CheckNull(value); }
+      set { Row["Param1"] = CheckValue("Param1", value); }
     }
     
     public string Param2
     {
       get { return Row["Param2"] != DBNull.Value ? (string)Row["Param2"] : null; }
-      set { Row["Param2"] = CheckNull(value); }
+      set { Row["Param2"] = CheckValue("Param2", value); }
     }
     
     public string Param3
     {
       get { return Row["Param3"] != DBNull.Value ? (string)Row["Param3"] : null; }
-      set { Row["Param3"] = CheckNull(value); }
+      set { Row["Param3"] = CheckValue("Param3", value); }
     }
     
     public string Param4
     {
       get { return Row["Param4"] != DBNull.Value ? (string)Row["Param4"] : null; }
-      set { Row["Param4"] = CheckNull(value); }
+      set { Row["Param4"] = CheckValue("Param4", value); }
     }
     
     public string Param5
     {
       get { return Row["Param5"] != DBNull.Value ? (string)Row["Param5"] : null; }
-      set { Row["Param5"] = CheckNull(value); }
+      set { Row["Param5"] = CheckValue("Param5", value); }
     }
     
     public string Param6
     {
       get { return Row["Param6"] != DBNull.Value ? (string)Row["Param6"] : null; }
-      set { Row["Param6"] = CheckNull(value); }
+      set { Row["Param6"] = CheckValue("Param6", value); }
     }
     
     public string Param7
     {
       get { return Row["Param7"] != DBNull.Value ? (string)Row["Param7"] : null; }
-      set { Row["Param7"] = CheckNull(value); }
+      set { Row["Param7"] = CheckValue("Param7", value); }
     }
     
     public string Param8
     {
       get { return Row["Param8"] != DBNull.Value ? (string)Row["Param8"] : null; }
-      set { Row["Param8"] = CheckNull(value); }
+      set { Row["Param8"] = CheckValue("Param8", value); }
     }
     
     public string Param9
     {
       get { return Row["Param9"] != DBNull.Value ? (string)Row["Param9"] : null; }
-      set { Row["Param9"] = CheckNull(value); }
+      set { Row["Param9"] = CheckValue("Param9", value); }
     }
     
     public string Param10
     {
       get { return Row["Param10"] != DBNull.Value ? (string)Row["Param10"] : null; }
-      set { Row["Param10"] = CheckNull(value); }
+      set { Row["Param10"] = CheckValue("Param10", value); }
     }
     
     public string Text1
     {
       get { return Row["Text1"] != DBNull.Value ? (string)Row["Text1"] : null; }
-      set { Row["Text1"] = CheckNull(value); }
+      set { Row["Text1"] = CheckValue("Text1", value); }
     }
     
     public string Text2
     {
       get { return Row["Text2"] != DBNull.Value ? (string)Row["Text2"] : null; }
-      set { Row["Text2"] = CheckNull(value); }
+      set { Row["Text2"] = CheckValue("Text2", value); }
     }
     
     public string Text3
     {
       get { return Row["Text3"] != DBNull.Value ? (string)Row["Text3"] : null; }
-      set { Row["Text3"] = CheckNull(value); }
+      set { Row["Text3"] = CheckValue("Text3", value); }
     }
     
 
@@ -112,25 +112,25 @@ namespace TeamSupport.Data
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public int HoldTime
     {
       get { return (int)Row["HoldTime"]; }
-      set { Row["HoldTime"] = CheckNull(value); }
+      set { Row["HoldTime"] = CheckValue("HoldTime", value); }
     }
     
     public int EmailPostType
     {
       get { return (int)Row["EmailPostType"]; }
-      set { Row["EmailPostType"] = CheckNull(value); }
+      set { Row["EmailPostType"] = CheckValue("EmailPostType", value); }
     }
     
     public int EmailPostID
     {
       get { return (int)Row["EmailPostID"]; }
-      set { Row["EmailPostID"] = CheckNull(value); }
+      set { Row["EmailPostID"] = CheckValue("EmailPostID", value); }
     }
     
 
@@ -145,7 +145,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

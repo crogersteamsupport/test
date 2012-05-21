@@ -37,43 +37,43 @@ namespace TeamSupport.Data
     public string CCAddress
     {
       get { return Row["CCAddress"] != DBNull.Value ? (string)Row["CCAddress"] : null; }
-      set { Row["CCAddress"] = CheckNull(value); }
+      set { Row["CCAddress"] = CheckValue("CCAddress", value); }
     }
     
     public string BCCAddress
     {
       get { return Row["BCCAddress"] != DBNull.Value ? (string)Row["BCCAddress"] : null; }
-      set { Row["BCCAddress"] = CheckNull(value); }
+      set { Row["BCCAddress"] = CheckValue("BCCAddress", value); }
     }
     
     public string Subject
     {
       get { return Row["Subject"] != DBNull.Value ? (string)Row["Subject"] : null; }
-      set { Row["Subject"] = CheckNull(value); }
+      set { Row["Subject"] = CheckValue("Subject", value); }
     }
     
     public string Body
     {
       get { return Row["Body"] != DBNull.Value ? (string)Row["Body"] : null; }
-      set { Row["Body"] = CheckNull(value); }
+      set { Row["Body"] = CheckValue("Body", value); }
     }
     
     public string Attachments
     {
       get { return Row["Attachments"] != DBNull.Value ? (string)Row["Attachments"] : null; }
-      set { Row["Attachments"] = CheckNull(value); }
+      set { Row["Attachments"] = CheckValue("Attachments", value); }
     }
     
     public string LastFailedReason
     {
       get { return Row["LastFailedReason"] != DBNull.Value ? (string)Row["LastFailedReason"] : null; }
-      set { Row["LastFailedReason"] = CheckNull(value); }
+      set { Row["LastFailedReason"] = CheckValue("LastFailedReason", value); }
     }
     
     public int? EmailPostID
     {
       get { return Row["EmailPostID"] != DBNull.Value ? (int?)Row["EmailPostID"] : null; }
-      set { Row["EmailPostID"] = CheckNull(value); }
+      set { Row["EmailPostID"] = CheckValue("EmailPostID", value); }
     }
     
 
@@ -81,55 +81,55 @@ namespace TeamSupport.Data
     public int Attempts
     {
       get { return (int)Row["Attempts"]; }
-      set { Row["Attempts"] = CheckNull(value); }
+      set { Row["Attempts"] = CheckValue("Attempts", value); }
     }
     
     public bool IsHtml
     {
       get { return (bool)Row["IsHtml"]; }
-      set { Row["IsHtml"] = CheckNull(value); }
+      set { Row["IsHtml"] = CheckValue("IsHtml", value); }
     }
     
     public bool IsWaiting
     {
       get { return (bool)Row["IsWaiting"]; }
-      set { Row["IsWaiting"] = CheckNull(value); }
+      set { Row["IsWaiting"] = CheckValue("IsWaiting", value); }
     }
     
     public bool IsSuccess
     {
       get { return (bool)Row["IsSuccess"]; }
-      set { Row["IsSuccess"] = CheckNull(value); }
+      set { Row["IsSuccess"] = CheckValue("IsSuccess", value); }
     }
     
     public int Size
     {
       get { return (int)Row["Size"]; }
-      set { Row["Size"] = CheckNull(value); }
+      set { Row["Size"] = CheckValue("Size", value); }
     }
     
     public string ToAddress
     {
       get { return (string)Row["ToAddress"]; }
-      set { Row["ToAddress"] = CheckNull(value); }
+      set { Row["ToAddress"] = CheckValue("ToAddress", value); }
     }
     
     public string FromAddress
     {
       get { return (string)Row["FromAddress"]; }
-      set { Row["FromAddress"] = CheckNull(value); }
+      set { Row["FromAddress"] = CheckValue("FromAddress", value); }
     }
     
     public string Description
     {
       get { return (string)Row["Description"]; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -142,7 +142,7 @@ namespace TeamSupport.Data
     public DateTime? DateSent
     {
       get { return Row["DateSent"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateSent"]) : null; }
-      set { Row["DateSent"] = CheckNull(value); }
+      set { Row["DateSent"] = CheckValue("DateSent", value); }
     }
 
     public DateTime? DateSentUtc
@@ -155,7 +155,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc
@@ -166,7 +166,7 @@ namespace TeamSupport.Data
     public DateTime NextAttempt
     {
       get { return DateToLocal((DateTime)Row["NextAttempt"]); }
-      set { Row["NextAttempt"] = CheckNull(value); }
+      set { Row["NextAttempt"] = CheckValue("NextAttempt", value); }
     }
 
     public DateTime NextAttemptUtc

@@ -3223,6 +3223,147 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CRMLinkID],
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+
+(
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CRMLinkTable]
+  (
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail])
+  VALUES (
+    @OrganizationID,
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+
+(
+  @CRMLinkID int,
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CRMLinkTable]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatParticipant' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatParticipant
 GO
 
@@ -12006,147 +12147,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ReportTables]
   WHERE ([ReportTableID] = @ReportTableID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
-
-(
-  @CRMLinkID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [CRMLinkID],
-    [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
-
-(
-  @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(100),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
-  (
-    [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail])
-  VALUES (
-    @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
-
-(
-  @CRMLinkID int,
-  @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(100),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail
-  WHERE ([CRMLinkID] = @CRMLinkID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
-
-(
-  @CRMLinkID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
@@ -16013,6 +16013,147 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CRMLinkID],
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+
+(
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CRMLinkTable]
+  (
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail])
+  VALUES (
+    @OrganizationID,
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+
+(
+  @CRMLinkID int,
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CRMLinkTable]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatParticipant' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatParticipant
 GO
 
@@ -24796,147 +24937,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ReportTables]
   WHERE ([ReportTableID] = @ReportTableID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
-
-(
-  @CRMLinkID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [CRMLinkID],
-    [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
-
-(
-  @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(100),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
-  (
-    [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail])
-  VALUES (
-    @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
-
-(
-  @CRMLinkID int,
-  @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(100),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail
-  WHERE ([CRMLinkID] = @CRMLinkID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
-
-(
-  @CRMLinkID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
@@ -28803,6 +28803,147 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CRMLinkID],
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+
+(
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CRMLinkTable]
+  (
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail])
+  VALUES (
+    @OrganizationID,
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+
+(
+  @CRMLinkID int,
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CRMLinkTable]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatParticipant' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatParticipant
 GO
 
@@ -37586,147 +37727,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ReportTables]
   WHERE ([ReportTableID] = @ReportTableID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
-
-(
-  @CRMLinkID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [CRMLinkID],
-    [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
-
-(
-  @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(100),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
-  (
-    [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail])
-  VALUES (
-    @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
-
-(
-  @CRMLinkID int,
-  @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(100),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail
-  WHERE ([CRMLinkID] = @CRMLinkID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
-
-(
-  @CRMLinkID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
@@ -41593,6 +41593,147 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CRMLinkID],
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+
+(
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CRMLinkTable]
+  (
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail])
+  VALUES (
+    @OrganizationID,
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+
+(
+  @CRMLinkID int,
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CRMLinkTable]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatParticipant' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatParticipant
 GO
 
@@ -50376,147 +50517,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ReportTables]
   WHERE ([ReportTableID] = @ReportTableID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
-
-(
-  @CRMLinkID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [CRMLinkID],
-    [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
-
-(
-  @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(100),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
-  (
-    [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail])
-  VALUES (
-    @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
-
-(
-  @CRMLinkID int,
-  @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(100),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail
-  WHERE ([CRMLinkID] = @CRMLinkID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
-
-(
-  @CRMLinkID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
@@ -54383,6 +54383,147 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CRMLinkID],
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+
+(
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CRMLinkTable]
+  (
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail])
+  VALUES (
+    @OrganizationID,
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+
+(
+  @CRMLinkID int,
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CRMLinkTable]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChatParticipant' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChatParticipant
 GO
 
@@ -63166,147 +63307,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ReportTables]
   WHERE ([ReportTableID] = @ReportTableID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
-
-(
-  @CRMLinkID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [CRMLinkID],
-    [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
-
-(
-  @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(100),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
-  (
-    [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail])
-  VALUES (
-    @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
-
-(
-  @CRMLinkID int,
-  @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(100),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail
-  WHERE ([CRMLinkID] = @CRMLinkID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
-
-(
-  @CRMLinkID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 

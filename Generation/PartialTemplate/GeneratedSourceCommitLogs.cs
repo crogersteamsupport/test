@@ -37,55 +37,55 @@ namespace TeamSupport.Data
     public int? OrganizationID
     {
       get { return Row["OrganizationID"] != DBNull.Value ? (int?)Row["OrganizationID"] : null; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public int? ProductID
     {
       get { return Row["ProductID"] != DBNull.Value ? (int?)Row["ProductID"] : null; }
-      set { Row["ProductID"] = CheckNull(value); }
+      set { Row["ProductID"] = CheckValue("ProductID", value); }
     }
     
     public int? VersionID
     {
       get { return Row["VersionID"] != DBNull.Value ? (int?)Row["VersionID"] : null; }
-      set { Row["VersionID"] = CheckNull(value); }
+      set { Row["VersionID"] = CheckValue("VersionID", value); }
     }
     
     public string UserName
     {
       get { return Row["UserName"] != DBNull.Value ? (string)Row["UserName"] : null; }
-      set { Row["UserName"] = CheckNull(value); }
+      set { Row["UserName"] = CheckValue("UserName", value); }
     }
     
     public string Description
     {
       get { return Row["Description"] != DBNull.Value ? (string)Row["Description"] : null; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public int? Revision
     {
       get { return Row["Revision"] != DBNull.Value ? (int?)Row["Revision"] : null; }
-      set { Row["Revision"] = CheckNull(value); }
+      set { Row["Revision"] = CheckValue("Revision", value); }
     }
     
     public string Tickets
     {
       get { return Row["Tickets"] != DBNull.Value ? (string)Row["Tickets"] : null; }
-      set { Row["Tickets"] = CheckNull(value); }
+      set { Row["Tickets"] = CheckValue("Tickets", value); }
     }
     
     public string RawCommitText
     {
       get { return Row["RawCommitText"] != DBNull.Value ? (string)Row["RawCommitText"] : null; }
-      set { Row["RawCommitText"] = CheckNull(value); }
+      set { Row["RawCommitText"] = CheckValue("RawCommitText", value); }
     }
     
     public string Status
     {
       get { return Row["Status"] != DBNull.Value ? (string)Row["Status"] : null; }
-      set { Row["Status"] = CheckNull(value); }
+      set { Row["Status"] = CheckValue("Status", value); }
     }
     
 
@@ -100,7 +100,7 @@ namespace TeamSupport.Data
     public DateTime? CommitDateTime
     {
       get { return Row["CommitDateTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["CommitDateTime"]) : null; }
-      set { Row["CommitDateTime"] = CheckNull(value); }
+      set { Row["CommitDateTime"] = CheckValue("CommitDateTime", value); }
     }
 
     public DateTime? CommitDateTimeUtc

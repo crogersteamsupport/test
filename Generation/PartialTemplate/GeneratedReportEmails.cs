@@ -39,19 +39,19 @@ namespace TeamSupport.Data
     public bool IsWaiting
     {
       get { return (bool)Row["IsWaiting"]; }
-      set { Row["IsWaiting"] = CheckNull(value); }
+      set { Row["IsWaiting"] = CheckValue("IsWaiting", value); }
     }
     
     public int ReportID
     {
       get { return (int)Row["ReportID"]; }
-      set { Row["ReportID"] = CheckNull(value); }
+      set { Row["ReportID"] = CheckValue("ReportID", value); }
     }
     
     public int UserID
     {
       get { return (int)Row["UserID"]; }
-      set { Row["UserID"] = CheckNull(value); }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
 
@@ -64,7 +64,7 @@ namespace TeamSupport.Data
     public DateTime? DateSent
     {
       get { return Row["DateSent"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateSent"]) : null; }
-      set { Row["DateSent"] = CheckNull(value); }
+      set { Row["DateSent"] = CheckValue("DateSent", value); }
     }
 
     public DateTime? DateSentUtc
@@ -75,7 +75,7 @@ namespace TeamSupport.Data
     public DateTime? DateFailed
     {
       get { return Row["DateFailed"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateFailed"]) : null; }
-      set { Row["DateFailed"] = CheckNull(value); }
+      set { Row["DateFailed"] = CheckValue("DateFailed", value); }
     }
 
     public DateTime? DateFailedUtc
@@ -88,7 +88,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

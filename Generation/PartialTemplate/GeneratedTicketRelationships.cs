@@ -39,25 +39,25 @@ namespace TeamSupport.Data
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public int Ticket2ID
     {
       get { return (int)Row["Ticket2ID"]; }
-      set { Row["Ticket2ID"] = CheckNull(value); }
+      set { Row["Ticket2ID"] = CheckValue("Ticket2ID", value); }
     }
     
     public int Ticket1ID
     {
       get { return (int)Row["Ticket1ID"]; }
-      set { Row["Ticket1ID"] = CheckNull(value); }
+      set { Row["Ticket1ID"] = CheckValue("Ticket1ID", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -72,7 +72,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

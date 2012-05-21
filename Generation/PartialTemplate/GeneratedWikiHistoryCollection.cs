@@ -37,31 +37,31 @@ namespace TeamSupport.Data
     public string ArticleName
     {
       get { return Row["ArticleName"] != DBNull.Value ? (string)Row["ArticleName"] : null; }
-      set { Row["ArticleName"] = CheckNull(value); }
+      set { Row["ArticleName"] = CheckValue("ArticleName", value); }
     }
     
     public string Body
     {
       get { return Row["Body"] != DBNull.Value ? (string)Row["Body"] : null; }
-      set { Row["Body"] = CheckNull(value); }
+      set { Row["Body"] = CheckValue("Body", value); }
     }
     
     public int? Version
     {
       get { return Row["Version"] != DBNull.Value ? (int?)Row["Version"] : null; }
-      set { Row["Version"] = CheckNull(value); }
+      set { Row["Version"] = CheckValue("Version", value); }
     }
     
     public int? CreatedBy
     {
       get { return Row["CreatedBy"] != DBNull.Value ? (int?)Row["CreatedBy"] : null; }
-      set { Row["CreatedBy"] = CheckNull(value); }
+      set { Row["CreatedBy"] = CheckValue("CreatedBy", value); }
     }
     
     public int? ModifiedBy
     {
       get { return Row["ModifiedBy"] != DBNull.Value ? (int?)Row["ModifiedBy"] : null; }
-      set { Row["ModifiedBy"] = CheckNull(value); }
+      set { Row["ModifiedBy"] = CheckValue("ModifiedBy", value); }
     }
     
 
@@ -69,13 +69,13 @@ namespace TeamSupport.Data
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public int ArticleID
     {
       get { return (int)Row["ArticleID"]; }
-      set { Row["ArticleID"] = CheckNull(value); }
+      set { Row["ArticleID"] = CheckValue("ArticleID", value); }
     }
     
 
@@ -88,7 +88,7 @@ namespace TeamSupport.Data
     public DateTime? CreatedDate
     {
       get { return Row["CreatedDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["CreatedDate"]) : null; }
-      set { Row["CreatedDate"] = CheckNull(value); }
+      set { Row["CreatedDate"] = CheckValue("CreatedDate", value); }
     }
 
     public DateTime? CreatedDateUtc
@@ -99,7 +99,7 @@ namespace TeamSupport.Data
     public DateTime? ModifiedDate
     {
       get { return Row["ModifiedDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["ModifiedDate"]) : null; }
-      set { Row["ModifiedDate"] = CheckNull(value); }
+      set { Row["ModifiedDate"] = CheckValue("ModifiedDate", value); }
     }
 
     public DateTime? ModifiedDateUtc

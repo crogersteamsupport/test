@@ -39,19 +39,19 @@ namespace TeamSupport.Data
     public bool IsCustomField
     {
       get { return (bool)Row["IsCustomField"]; }
-      set { Row["IsCustomField"] = CheckNull(value); }
+      set { Row["IsCustomField"] = CheckValue("IsCustomField", value); }
     }
     
     public int LinkedFieldID
     {
       get { return (int)Row["LinkedFieldID"]; }
-      set { Row["LinkedFieldID"] = CheckNull(value); }
+      set { Row["LinkedFieldID"] = CheckValue("LinkedFieldID", value); }
     }
     
     public int ReportID
     {
       get { return (int)Row["ReportID"]; }
-      set { Row["ReportID"] = CheckNull(value); }
+      set { Row["ReportID"] = CheckValue("ReportID", value); }
     }
     
 

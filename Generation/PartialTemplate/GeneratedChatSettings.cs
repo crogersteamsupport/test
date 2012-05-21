@@ -34,19 +34,19 @@ namespace TeamSupport.Data
     public string ClientCss
     {
       get { return (string)Row["ClientCss"]; }
-      set { Row["ClientCss"] = CheckNull(value); }
+      set { Row["ClientCss"] = CheckValue("ClientCss", value); }
     }
     
     public bool UseCss
     {
       get { return (bool)Row["UseCss"]; }
-      set { Row["UseCss"] = CheckNull(value); }
+      set { Row["UseCss"] = CheckValue("UseCss", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 

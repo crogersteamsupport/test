@@ -32,25 +32,25 @@ namespace TeamSupport.Data
     public string OrganizationIDFieldName
     {
       get { return Row["OrganizationIDFieldName"] != DBNull.Value ? (string)Row["OrganizationIDFieldName"] : null; }
-      set { Row["OrganizationIDFieldName"] = CheckNull(value); }
+      set { Row["OrganizationIDFieldName"] = CheckValue("OrganizationIDFieldName", value); }
     }
     
     public string LookupKeyFieldName
     {
       get { return Row["LookupKeyFieldName"] != DBNull.Value ? (string)Row["LookupKeyFieldName"] : null; }
-      set { Row["LookupKeyFieldName"] = CheckNull(value); }
+      set { Row["LookupKeyFieldName"] = CheckValue("LookupKeyFieldName", value); }
     }
     
     public string LookupDisplayClause
     {
       get { return Row["LookupDisplayClause"] != DBNull.Value ? (string)Row["LookupDisplayClause"] : null; }
-      set { Row["LookupDisplayClause"] = CheckNull(value); }
+      set { Row["LookupDisplayClause"] = CheckValue("LookupDisplayClause", value); }
     }
     
     public string LookupOrderBy
     {
       get { return Row["LookupOrderBy"] != DBNull.Value ? (string)Row["LookupOrderBy"] : null; }
-      set { Row["LookupOrderBy"] = CheckNull(value); }
+      set { Row["LookupOrderBy"] = CheckValue("LookupOrderBy", value); }
     }
     
 
@@ -58,31 +58,31 @@ namespace TeamSupport.Data
     public bool IsCategory
     {
       get { return (bool)Row["IsCategory"]; }
-      set { Row["IsCategory"] = CheckNull(value); }
+      set { Row["IsCategory"] = CheckValue("IsCategory", value); }
     }
     
     public ReferenceType CustomFieldRefType
     {
       get { return (ReferenceType)Row["CustomFieldRefType"]; }
-      set { Row["CustomFieldRefType"] = CheckNull(value); }
+      set { Row["CustomFieldRefType"] = CheckValue("CustomFieldRefType", value); }
     }
     
     public string Alias
     {
       get { return (string)Row["Alias"]; }
-      set { Row["Alias"] = CheckNull(value); }
+      set { Row["Alias"] = CheckValue("Alias", value); }
     }
     
     public string TableName
     {
       get { return (string)Row["TableName"]; }
-      set { Row["TableName"] = CheckNull(value); }
+      set { Row["TableName"] = CheckValue("TableName", value); }
     }
     
     public int ReportTableID
     {
       get { return (int)Row["ReportTableID"]; }
-      set { Row["ReportTableID"] = CheckNull(value); }
+      set { Row["ReportTableID"] = CheckValue("ReportTableID", value); }
     }
     
 

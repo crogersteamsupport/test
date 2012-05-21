@@ -39,19 +39,19 @@ namespace TeamSupport.Data
     public bool IsFlagged
     {
       get { return (bool)Row["IsFlagged"]; }
-      set { Row["IsFlagged"] = CheckNull(value); }
+      set { Row["IsFlagged"] = CheckValue("IsFlagged", value); }
     }
     
     public int UserID
     {
       get { return (int)Row["UserID"]; }
-      set { Row["UserID"] = CheckNull(value); }
+      set { Row["UserID"] = CheckValue("UserID", value); }
     }
     
     public int TicketID
     {
       get { return (int)Row["TicketID"]; }
-      set { Row["TicketID"] = CheckNull(value); }
+      set { Row["TicketID"] = CheckValue("TicketID", value); }
     }
     
 
@@ -66,7 +66,7 @@ namespace TeamSupport.Data
     public DateTime DateRead
     {
       get { return DateToLocal((DateTime)Row["DateRead"]); }
-      set { Row["DateRead"] = CheckNull(value); }
+      set { Row["DateRead"] = CheckValue("DateRead", value); }
     }
 
     public DateTime DateReadUtc

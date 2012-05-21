@@ -39,25 +39,25 @@ namespace TeamSupport.Data
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public int RefID
     {
       get { return (int)Row["RefID"]; }
-      set { Row["RefID"] = CheckNull(value); }
+      set { Row["RefID"] = CheckValue("RefID", value); }
     }
     
     public ReferenceType RefType
     {
       get { return (ReferenceType)Row["RefType"]; }
-      set { Row["RefType"] = CheckNull(value); }
+      set { Row["RefType"] = CheckValue("RefType", value); }
     }
     
     public int TagID
     {
       get { return (int)Row["TagID"]; }
-      set { Row["TagID"] = CheckNull(value); }
+      set { Row["TagID"] = CheckValue("TagID", value); }
     }
     
 
@@ -72,7 +72,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

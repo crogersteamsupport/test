@@ -37,25 +37,25 @@ namespace TeamSupport.Data
     public int? ActionTypeID
     {
       get { return Row["ActionTypeID"] != DBNull.Value ? (int?)Row["ActionTypeID"] : null; }
-      set { Row["ActionTypeID"] = CheckNull(value); }
+      set { Row["ActionTypeID"] = CheckValue("ActionTypeID", value); }
     }
     
     public int? TimeSpent
     {
       get { return Row["TimeSpent"] != DBNull.Value ? (int?)Row["TimeSpent"] : null; }
-      set { Row["TimeSpent"] = CheckNull(value); }
+      set { Row["TimeSpent"] = CheckValue("TimeSpent", value); }
     }
     
     public string ImportID
     {
       get { return Row["ImportID"] != DBNull.Value ? (string)Row["ImportID"] : null; }
-      set { Row["ImportID"] = CheckNull(value); }
+      set { Row["ImportID"] = CheckValue("ImportID", value); }
     }
     
     public string ActionSource
     {
       get { return Row["ActionSource"] != DBNull.Value ? (string)Row["ActionSource"] : null; }
-      set { Row["ActionSource"] = CheckNull(value); }
+      set { Row["ActionSource"] = CheckValue("ActionSource", value); }
     }
     
 
@@ -63,49 +63,49 @@ namespace TeamSupport.Data
     public int TicketID
     {
       get { return (int)Row["TicketID"]; }
-      set { Row["TicketID"] = CheckNull(value); }
+      set { Row["TicketID"] = CheckValue("TicketID", value); }
     }
     
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public bool IsKnowledgeBase
     {
       get { return (bool)Row["IsKnowledgeBase"]; }
-      set { Row["IsKnowledgeBase"] = CheckNull(value); }
+      set { Row["IsKnowledgeBase"] = CheckValue("IsKnowledgeBase", value); }
     }
     
     public bool IsVisibleOnPortal
     {
       get { return (bool)Row["IsVisibleOnPortal"]; }
-      set { Row["IsVisibleOnPortal"] = CheckNull(value); }
+      set { Row["IsVisibleOnPortal"] = CheckValue("IsVisibleOnPortal", value); }
     }
     
     public string Description
     {
       get { return (string)Row["Description"]; }
-      set { Row["Description"] = CheckNull(value); }
+      set { Row["Description"] = CheckValue("Description", value); }
     }
     
     public string Name
     {
       get { return (string)Row["Name"]; }
-      set { Row["Name"] = CheckNull(value); }
+      set { Row["Name"] = CheckValue("Name", value); }
     }
     
     public SystemActionType SystemActionTypeID
     {
       get { return (SystemActionType)Row["SystemActionTypeID"]; }
-      set { Row["SystemActionTypeID"] = CheckNull(value); }
+      set { Row["SystemActionTypeID"] = CheckValue("SystemActionTypeID", value); }
     }
     
 
@@ -118,7 +118,7 @@ namespace TeamSupport.Data
     public DateTime? DateStarted
     {
       get { return Row["DateStarted"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateStarted"]) : null; }
-      set { Row["DateStarted"] = CheckNull(value); }
+      set { Row["DateStarted"] = CheckValue("DateStarted", value); }
     }
 
     public DateTime? DateStartedUtc
@@ -131,7 +131,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -142,7 +142,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

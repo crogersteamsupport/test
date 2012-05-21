@@ -37,13 +37,13 @@ namespace TeamSupport.Data
     public string ActionValue
     {
       get { return Row["ActionValue"] != DBNull.Value ? (string)Row["ActionValue"] : null; }
-      set { Row["ActionValue"] = CheckNull(value); }
+      set { Row["ActionValue"] = CheckValue("ActionValue", value); }
     }
     
     public string ActionValue2
     {
       get { return Row["ActionValue2"] != DBNull.Value ? (string)Row["ActionValue2"] : null; }
-      set { Row["ActionValue2"] = CheckNull(value); }
+      set { Row["ActionValue2"] = CheckValue("ActionValue2", value); }
     }
     
 
@@ -51,13 +51,13 @@ namespace TeamSupport.Data
     public int ActionID
     {
       get { return (int)Row["ActionID"]; }
-      set { Row["ActionID"] = CheckNull(value); }
+      set { Row["ActionID"] = CheckValue("ActionID", value); }
     }
     
     public int TriggerID
     {
       get { return (int)Row["TriggerID"]; }
-      set { Row["TriggerID"] = CheckNull(value); }
+      set { Row["TriggerID"] = CheckValue("TriggerID", value); }
     }
     
 

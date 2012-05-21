@@ -32,43 +32,43 @@ namespace TeamSupport.Data
     public int? CreditCardID
     {
       get { return Row["CreditCardID"] != DBNull.Value ? (int?)Row["CreditCardID"] : null; }
-      set { Row["CreditCardID"] = CheckNull(value); }
+      set { Row["CreditCardID"] = CheckValue("CreditCardID", value); }
     }
     
     public int? AddressID
     {
       get { return Row["AddressID"] != DBNull.Value ? (int?)Row["AddressID"] : null; }
-      set { Row["AddressID"] = CheckNull(value); }
+      set { Row["AddressID"] = CheckValue("AddressID", value); }
     }
     
     public double? UserPrice
     {
       get { return Row["UserPrice"] != DBNull.Value ? (double?)Row["UserPrice"] : null; }
-      set { Row["UserPrice"] = CheckNull(value); }
+      set { Row["UserPrice"] = CheckValue("UserPrice", value); }
     }
     
     public double? PortalPrice
     {
       get { return Row["PortalPrice"] != DBNull.Value ? (double?)Row["PortalPrice"] : null; }
-      set { Row["PortalPrice"] = CheckNull(value); }
+      set { Row["PortalPrice"] = CheckValue("PortalPrice", value); }
     }
     
     public double? BasicPortalPrice
     {
       get { return Row["BasicPortalPrice"] != DBNull.Value ? (double?)Row["BasicPortalPrice"] : null; }
-      set { Row["BasicPortalPrice"] = CheckNull(value); }
+      set { Row["BasicPortalPrice"] = CheckValue("BasicPortalPrice", value); }
     }
     
     public double? ChatPrice
     {
       get { return Row["ChatPrice"] != DBNull.Value ? (double?)Row["ChatPrice"] : null; }
-      set { Row["ChatPrice"] = CheckNull(value); }
+      set { Row["ChatPrice"] = CheckValue("ChatPrice", value); }
     }
     
     public double? StoragePrice
     {
       get { return Row["StoragePrice"] != DBNull.Value ? (double?)Row["StoragePrice"] : null; }
-      set { Row["StoragePrice"] = CheckNull(value); }
+      set { Row["StoragePrice"] = CheckValue("StoragePrice", value); }
     }
     
 
@@ -76,25 +76,25 @@ namespace TeamSupport.Data
     public int ModifierID
     {
       get { return (int)Row["ModifierID"]; }
-      set { Row["ModifierID"] = CheckNull(value); }
+      set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
     public int CreatorID
     {
       get { return (int)Row["CreatorID"]; }
-      set { Row["CreatorID"] = CheckNull(value); }
+      set { Row["CreatorID"] = CheckValue("CreatorID", value); }
     }
     
     public bool IsAutomatic
     {
       get { return (bool)Row["IsAutomatic"]; }
-      set { Row["IsAutomatic"] = CheckNull(value); }
+      set { Row["IsAutomatic"] = CheckValue("IsAutomatic", value); }
     }
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
 
@@ -109,7 +109,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc
@@ -120,7 +120,7 @@ namespace TeamSupport.Data
     public DateTime DateModified
     {
       get { return DateToLocal((DateTime)Row["DateModified"]); }
-      set { Row["DateModified"] = CheckNull(value); }
+      set { Row["DateModified"] = CheckValue("DateModified", value); }
     }
 
     public DateTime DateModifiedUtc
@@ -131,7 +131,7 @@ namespace TeamSupport.Data
     public DateTime NextInvoiceDate
     {
       get { return DateToLocal((DateTime)Row["NextInvoiceDate"]); }
-      set { Row["NextInvoiceDate"] = CheckNull(value); }
+      set { Row["NextInvoiceDate"] = CheckValue("NextInvoiceDate", value); }
     }
 
     public DateTime NextInvoiceDateUtc

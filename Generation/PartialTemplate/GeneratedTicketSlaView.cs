@@ -32,37 +32,37 @@ namespace TeamSupport.Data
     public int? ViolationTimeClosed
     {
       get { return Row["ViolationTimeClosed"] != DBNull.Value ? (int?)Row["ViolationTimeClosed"] : null; }
-      set { Row["ViolationTimeClosed"] = CheckNull(value); }
+      set { Row["ViolationTimeClosed"] = CheckValue("ViolationTimeClosed", value); }
     }
     
     public int? WarningTimeClosed
     {
       get { return Row["WarningTimeClosed"] != DBNull.Value ? (int?)Row["WarningTimeClosed"] : null; }
-      set { Row["WarningTimeClosed"] = CheckNull(value); }
+      set { Row["WarningTimeClosed"] = CheckValue("WarningTimeClosed", value); }
     }
     
     public int? ViolationLastAction
     {
       get { return Row["ViolationLastAction"] != DBNull.Value ? (int?)Row["ViolationLastAction"] : null; }
-      set { Row["ViolationLastAction"] = CheckNull(value); }
+      set { Row["ViolationLastAction"] = CheckValue("ViolationLastAction", value); }
     }
     
     public int? WarningLastAction
     {
       get { return Row["WarningLastAction"] != DBNull.Value ? (int?)Row["WarningLastAction"] : null; }
-      set { Row["WarningLastAction"] = CheckNull(value); }
+      set { Row["WarningLastAction"] = CheckValue("WarningLastAction", value); }
     }
     
     public int? ViolationInitialResponse
     {
       get { return Row["ViolationInitialResponse"] != DBNull.Value ? (int?)Row["ViolationInitialResponse"] : null; }
-      set { Row["ViolationInitialResponse"] = CheckNull(value); }
+      set { Row["ViolationInitialResponse"] = CheckValue("ViolationInitialResponse", value); }
     }
     
     public int? WarningInitialResponse
     {
       get { return Row["WarningInitialResponse"] != DBNull.Value ? (int?)Row["WarningInitialResponse"] : null; }
-      set { Row["WarningInitialResponse"] = CheckNull(value); }
+      set { Row["WarningInitialResponse"] = CheckValue("WarningInitialResponse", value); }
     }
     
 
@@ -70,7 +70,7 @@ namespace TeamSupport.Data
     public int TicketID
     {
       get { return (int)Row["TicketID"]; }
-      set { Row["TicketID"] = CheckNull(value); }
+      set { Row["TicketID"] = CheckValue("TicketID", value); }
     }
     
 

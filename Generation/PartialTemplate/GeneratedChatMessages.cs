@@ -39,31 +39,31 @@ namespace TeamSupport.Data
     public ChatParticipantType PosterType
     {
       get { return (ChatParticipantType)Row["PosterType"]; }
-      set { Row["PosterType"] = CheckNull(value); }
+      set { Row["PosterType"] = CheckValue("PosterType", value); }
     }
     
     public int PosterID
     {
       get { return (int)Row["PosterID"]; }
-      set { Row["PosterID"] = CheckNull(value); }
+      set { Row["PosterID"] = CheckValue("PosterID", value); }
     }
     
     public string Message
     {
       get { return (string)Row["Message"]; }
-      set { Row["Message"] = CheckNull(value); }
+      set { Row["Message"] = CheckValue("Message", value); }
     }
     
     public bool IsNotification
     {
       get { return (bool)Row["IsNotification"]; }
-      set { Row["IsNotification"] = CheckNull(value); }
+      set { Row["IsNotification"] = CheckValue("IsNotification", value); }
     }
     
     public int ChatID
     {
       get { return (int)Row["ChatID"]; }
-      set { Row["ChatID"] = CheckNull(value); }
+      set { Row["ChatID"] = CheckValue("ChatID", value); }
     }
     
 
@@ -78,7 +78,7 @@ namespace TeamSupport.Data
     public DateTime DateCreated
     {
       get { return DateToLocal((DateTime)Row["DateCreated"]); }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime DateCreatedUtc

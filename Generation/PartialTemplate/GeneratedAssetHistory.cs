@@ -37,49 +37,49 @@ namespace TeamSupport.Data
     public string ActionDescription
     {
       get { return Row["ActionDescription"] != DBNull.Value ? (string)Row["ActionDescription"] : null; }
-      set { Row["ActionDescription"] = CheckNull(value); }
+      set { Row["ActionDescription"] = CheckValue("ActionDescription", value); }
     }
     
     public int? ShippedFrom
     {
       get { return Row["ShippedFrom"] != DBNull.Value ? (int?)Row["ShippedFrom"] : null; }
-      set { Row["ShippedFrom"] = CheckNull(value); }
+      set { Row["ShippedFrom"] = CheckValue("ShippedFrom", value); }
     }
     
     public int? ShippedTo
     {
       get { return Row["ShippedTo"] != DBNull.Value ? (int?)Row["ShippedTo"] : null; }
-      set { Row["ShippedTo"] = CheckNull(value); }
+      set { Row["ShippedTo"] = CheckValue("ShippedTo", value); }
     }
     
     public string TrackingNumber
     {
       get { return Row["TrackingNumber"] != DBNull.Value ? (string)Row["TrackingNumber"] : null; }
-      set { Row["TrackingNumber"] = CheckNull(value); }
+      set { Row["TrackingNumber"] = CheckValue("TrackingNumber", value); }
     }
     
     public string ShippingMethod
     {
       get { return Row["ShippingMethod"] != DBNull.Value ? (string)Row["ShippingMethod"] : null; }
-      set { Row["ShippingMethod"] = CheckNull(value); }
+      set { Row["ShippingMethod"] = CheckValue("ShippingMethod", value); }
     }
     
     public string ReferenceNum
     {
       get { return Row["ReferenceNum"] != DBNull.Value ? (string)Row["ReferenceNum"] : null; }
-      set { Row["ReferenceNum"] = CheckNull(value); }
+      set { Row["ReferenceNum"] = CheckValue("ReferenceNum", value); }
     }
     
     public string Comments
     {
       get { return Row["Comments"] != DBNull.Value ? (string)Row["Comments"] : null; }
-      set { Row["Comments"] = CheckNull(value); }
+      set { Row["Comments"] = CheckValue("Comments", value); }
     }
     
     public int? Actor
     {
       get { return Row["Actor"] != DBNull.Value ? (int?)Row["Actor"] : null; }
-      set { Row["Actor"] = CheckNull(value); }
+      set { Row["Actor"] = CheckValue("Actor", value); }
     }
     
 
@@ -87,13 +87,13 @@ namespace TeamSupport.Data
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
-      set { Row["OrganizationID"] = CheckNull(value); }
+      set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
     }
     
     public int AssetID
     {
       get { return (int)Row["AssetID"]; }
-      set { Row["AssetID"] = CheckNull(value); }
+      set { Row["AssetID"] = CheckValue("AssetID", value); }
     }
     
 
@@ -106,7 +106,7 @@ namespace TeamSupport.Data
     public DateTime? ActionTime
     {
       get { return Row["ActionTime"] != DBNull.Value ? DateToLocal((DateTime?)Row["ActionTime"]) : null; }
-      set { Row["ActionTime"] = CheckNull(value); }
+      set { Row["ActionTime"] = CheckValue("ActionTime", value); }
     }
 
     public DateTime? ActionTimeUtc
@@ -117,7 +117,7 @@ namespace TeamSupport.Data
     public DateTime? DateCreated
     {
       get { return Row["DateCreated"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateCreated"]) : null; }
-      set { Row["DateCreated"] = CheckNull(value); }
+      set { Row["DateCreated"] = CheckValue("DateCreated", value); }
     }
 
     public DateTime? DateCreatedUtc
