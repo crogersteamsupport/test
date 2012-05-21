@@ -250,6 +250,11 @@ AdminInt = function () {
       flag = true;
     }
 
+    if (parent.find('.int-crm-token2').val() != parent.find('.int-crm-token2-confirm').val()) {
+      parent.find('.int-message').append('<div>Your CRM Authentication tokens do not match.</div>').show();
+      flag = true;
+    }
+
     if (flag) return;
     parent.find('.int-action').hide();
 
@@ -264,13 +269,18 @@ AdminInt = function () {
     else if (type.hasClass('zohocrm')) crmType = 'ZohoCrm';
     else if (type.hasClass('zohoreports')) crmType = 'ZohoReports';
 
+    var crmToken = crmToken = parent.find('.int-crm-token').val();
+
+    if (typeof parent.find('.int-crm-token2').val() != "undefined" && parent.find('.int-crm-token2').val().replace(/^\s+|\s+$/g, "") != '') {
+      crmToken = crmToken + ', ' + parent.find('.int-crm-token2').val().replace(/^\s+|\s+$/g, "");
+    }
 
     top.Ts.Services.Organizations.SaveCrmLink(
           linkID,
           parent.find('.int-crm-active').attr('checked'),
           crmType,
           (parent.find('.int-crm-password').length > 0 ? parent.find('.int-crm-password').val() : ''),
-          (parent.find('.int-crm-token').length > 0 ? parent.find('.int-crm-token').val() : ''),
+          crmToken,
           (parent.find('.int-crm-tag').length > 0 ? parent.find('.int-crm-tag').val() : ''),
           (parent.find('.int-crm-user').length > 0 ? parent.find('.int-crm-user').val() : ''),
           (parent.find('.int-crm-email').length > 0 ? parent.find('.int-crm-email').attr('checked') : false),
@@ -335,6 +345,8 @@ AdminInt = function () {
     element.find('.int-crm-password-confirm').val(item.Password);
     element.find('.int-crm-token').val(item.SecurityToken);
     element.find('.int-crm-token-confirm').val(item.SecurityToken);
+    element.find('.int-crm-token2').val(item.TempSecurityToken);
+    element.find('.int-crm-token2-confirm').val(item.TempSecurityToken);
     element.find('.int-crm-tag').val(item.TypeFieldMatch);
     if (item.Active) {
       element.find('.int-crm-active').attr('checked', 'checked');

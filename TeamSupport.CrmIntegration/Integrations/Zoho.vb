@@ -51,8 +51,13 @@ Namespace TeamSupport
             ''' </summary>
             ''' <remarks></remarks>
             Protected Sub Logout()
-                Log.Write("Logging out.")
-                Dim ZohoUri As New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&ticket=" & APITicket)
+                Log.Write("Logging out revision 400.")
+                Dim ZohoUri As Uri = Nothing
+                If CRMLinkRow.TempSecurityToken IsNot Nothing AndAlso CRMLinkRow.TempSecurityToken <> String.Empty Then
+                    ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&authtoken=" & CRMLinkRow.TempSecurityToken & "&scope=crmapi")
+                Else
+                    ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&ticket=" & APITicket)
+                End If
 
                 GetHTTPData(Nothing, ZohoUri)
             End Sub
@@ -108,7 +113,12 @@ Namespace TeamSupport
             End Function
 
             Private Function GetZohoCRMXML(ByVal PathAndQuery As String) As XmlDocument
-                Dim ZohoUri As New Uri("https://crm.zoho.com/crm/private/xml/" & PathAndQuery & "&apikey=" & CRMLinkRow.SecurityToken & "&ticket=" & APITicket)
+                Dim ZohoUri As Uri = Nothing
+                If CRMLinkRow.TempSecurityToken IsNot Nothing AndAlso CRMLinkRow.TempSecurityToken <> String.Empty Then
+                    ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/" & PathAndQuery & "&authtoken=" & CRMLinkRow.TempSecurityToken & "&scope=crmapi")
+                Else
+                    ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/" & PathAndQuery & "&apikey=" & CRMLinkRow.SecurityToken & "&ticket=" & APITicket)
+                End If
 
                 Return GetXML(ZohoUri)
             End Function
@@ -281,7 +291,12 @@ Namespace TeamSupport
                 Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}", _
                                                                              thisTicket.Name, thisTicket.TicketID.ToString(), HtmlUtility.StripHTML(description.Description), Environment.NewLine)
 
-                Dim ZohoUri As New Uri("https://crm.zoho.com/crm/private/xml/Notes/insertRecords?newFormat=1&apikey=" & CRMLinkRow.SecurityToken & "&ticket=" & APITicket)
+                Dim ZohoUri As Uri = Nothing
+                If CRMLinkRow.TempSecurityToken IsNot Nothing AndAlso CRMLinkRow.TempSecurityToken <> String.Empty Then
+                    ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/Notes/insertRecords?newFormat=1&authtoken=" & CRMLinkRow.TempSecurityToken & "&scope=crmapi")
+                Else
+                    ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/Notes/insertRecords?newFormat=1&apikey=" & CRMLinkRow.SecurityToken & "&ticket=" & APITicket)
+                End If
 
                 Dim postData As String = String.Format("<Notes><row no=""1"">" & _
                                         "<FL val=""entityId"">{0}</FL>" & _

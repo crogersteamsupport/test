@@ -48,10 +48,50 @@ namespace TeamSupport.Data
     
     public string SecurityToken
     {
-      get { return Row["SecurityToken"] != DBNull.Value ? (string)Row["SecurityToken"] : null; }
+      get
+      {
+        string result = null;
+
+        if (Row["SecurityToken"] != DBNull.Value)
+        {
+          string rawValue = (string)Row["SecurityToken"];
+          int commaIndex = rawValue.IndexOf(", ");
+          if (commaIndex >= 0)
+          {
+            result = rawValue.Substring(0, commaIndex);
+          }
+          else
+          {
+            result = rawValue;
+          }
+        }
+
+        return result;
+      }
+
       set { Row["SecurityToken"] = CheckValue("SecurityToken", value); }
     }
-    
+
+    public string TempSecurityToken
+    {
+      get 
+      { 
+          string result = null;
+
+          if (Row["SecurityToken"] != DBNull.Value)
+          {
+              string rawValue = (string)Row["SecurityToken"];
+              int commaIndex = rawValue.IndexOf(", ");
+              if (commaIndex >= 0)
+              {
+                  result = rawValue.Substring(commaIndex + 2);
+              }
+          }
+
+          return result; 
+      }
+    }
+
     public string TypeFieldMatch
     {
       get { return Row["TypeFieldMatch"] != DBNull.Value ? (string)Row["TypeFieldMatch"] : null; }

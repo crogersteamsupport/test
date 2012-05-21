@@ -27,6 +27,7 @@ namespace TeamSupport.Data
     [DataMember] public int LastTicketID { get; set; }
     [DataMember] public bool AllowPortalAccess { get; set; }
     [DataMember] public bool SendWelcomeEmail { get; set; }
+    [DataMember] public string TempSecurityToken { get; set; }
           
   }
   
@@ -47,6 +48,7 @@ namespace TeamSupport.Data
       result.Active = this.Active;
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
+      result.TempSecurityToken = this.TempSecurityToken;
        
       result.LastProcessed = DateTime.SpecifyKind(this.LastProcessedUtc, DateTimeKind.Utc);
        
