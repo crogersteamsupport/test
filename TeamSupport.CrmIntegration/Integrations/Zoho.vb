@@ -77,7 +77,7 @@ Namespace TeamSupport
                 Dim Success As Boolean = False
 
                 'check to make sure we have all the data we need
-                If (CRMLinkRow.SecurityToken Is Nothing OrElse CRMLinkRow.SecurityToken = "") AndAlso (CRMLinkRow.TempSecurityToken Is Nothing OrElse CRMLinkRow.TempSecurityToken = String.Empty) Then
+                If CRMLinkRow.SecurityToken Is Nothing OrElse CRMLinkRow.SecurityToken = "" Then
                     _exception = New IntegrationException("API key not specified.")
                 ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
                     _exception = New IntegrationException("Username or password not specified.")

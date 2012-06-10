@@ -48,20 +48,14 @@ Namespace TeamSupport
 
                     Log.Write("Logged in OK")
 
-                    'The results will be placed in a list of objects named queryResults
-                    'This list has a limit (BatchSize: default value 500 can be set up to 2,000 top) 
-                    'in case than more companies than the limit are included in the results
-                    'we use a list of lists of objects (list of queryResults) 
-                    'and a GetQueriesResults() method that will make as many calls to SalesForce as necessary to populate it.
-                    Dim queriesResults As List(Of QueryResult) = Nothing
-                    'To hold the total amount of objects (companies) we use the numberOfCompaniesInQueriesResults variable.
-                    Dim numberOfCompaniesInQueriesResults As Integer = 0
+                    'The results will be placed in qr
+                    Dim qr As QueryResult = Nothing
 
                     Binding.QueryOptionsValue = New QueryOptions()
 
                     'setting this to an absurdly high value.
-                    'Binding.QueryOptionsValue.batchSize = 1 '**What happens if we return more information than the batch size??
-                    'Binding.QueryOptionsValue.batchSizeSpecified = True
+                    Binding.QueryOptionsValue.batchSize = 2000 '**What happens if we return more information than the batch size??
+                    Binding.QueryOptionsValue.batchSizeSpecified = True
 
                     Dim LastUpdateSFFormat As String
                     Dim TempTime As New DateTime(1900, 1, 1)
@@ -106,6 +100,7 @@ Namespace TeamSupport
                             Log.Write("TypeString = " + TypeString)
 
                             Dim SFQuery As String
+                            Dim done As Boolean = False
                             Dim HasAddress As Boolean = True
                             Dim hasFax As Boolean = False
                             Dim queriedShippingAddress As Boolean = False
@@ -119,8 +114,8 @@ Namespace TeamSupport
                                     SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")"
                                     Log.Write("SF Query String = " + SFQuery)
 
-                                    queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                    Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+                                    qr = Binding.query(SFQuery)
+                                    Log.Write("qr.size = " + qr.size.ToString)
                                     BindingRanOK = True
                                     hasFax = True
                                     queriedShippingAddress = True
@@ -130,8 +125,8 @@ Namespace TeamSupport
                                         SFQuery = "select ID, Name, type, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")"
                                         Log.Write("SF Query String = " + SFQuery)
 
-                                        queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                        Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+                                        qr = Binding.query(SFQuery)
+                                        Log.Write("qr.size = " + qr.size.ToString)
                                         BindingRanOK = True
                                         hasFax = False
                                         queriedShippingAddress = True
@@ -142,8 +137,8 @@ Namespace TeamSupport
                                             SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
                                             Log.Write("SF Query String = " + SFQuery)
 
-                                            queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                            Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+                                            qr = Binding.query(SFQuery)
+                                            Log.Write("qr.size = " + qr.size.ToString)
                                             BindingRanOK = True
                                             hasFax = True
                                         Catch ex2 As Exception
@@ -153,8 +148,8 @@ Namespace TeamSupport
                                                 SFQuery = "select ID, Name, type, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
                                                 Log.Write("SF Query String = " + SFQuery)
 
-                                                queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                                Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+                                                qr = Binding.query(SFQuery)
+                                                Log.Write("qr.size = " + qr.size.ToString)
                                                 BindingRanOK = True
                                                 hasFax = False
                                             Catch ex3 As Exception
@@ -164,8 +159,8 @@ Namespace TeamSupport
                                                     SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp, Fax from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
                                                     Log.Write("SF Query String = " + SFQuery)
 
-                                                    queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                                    Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+                                                    qr = Binding.query(SFQuery)
+                                                    Log.Write("qr.size = " + qr.size.ToString)
                                                     HasAddress = False 'Set this to false so we can set local variables correctly
                                                     BindingRanOK = True
                                                     hasFax = True
@@ -174,8 +169,8 @@ Namespace TeamSupport
                                                     SFQuery = "select ID, Name, type,Phone, LastModifiedDate, SystemModStamp from Account where SystemModStamp >= " + LastUpdateSFFormat + " and (" + TypeString + ")" ' and " + TypeString
                                                     Log.Write("SF Query String = " + SFQuery)
 
-                                                    queriesResults = GetQueriesResults(SFQuery, numberOfCompaniesInQueriesResults)
-                                                    Log.Write("Number of Companies in queries results = " + Convert.ToString(numberOfCompaniesInQueriesResults))
+                                                    qr = Binding.query(SFQuery)
+                                                    Log.Write("qr.size = " + qr.size.ToString)
                                                     HasAddress = False 'Set this to false so we can set local variables correctly
                                                     BindingRanOK = True
                                                     hasFax = False
@@ -192,11 +187,11 @@ Namespace TeamSupport
                             End Try
 
 
-                            If (BindingRanOK) And (numberOfCompaniesInQueriesResults > 0) Then
+                            If (BindingRanOK) And (qr.size > 0) Then
                                 'We now have a list of all accounts that have been modified in the last 3 hours and that match our account types. Let's update.
-                                For Each qr As QueryResult In queriesResults 
+                                While Not done
 
-                                    Log.Write("Begining For Each Loop to get companies.  qr.records.length = " + qr.records.Length.ToString)
+                                    Log.Write("Begining While Loop to get companies.  qr.records.length = " + qr.records.Length.ToString)
                                     Log.Write("Updating company information, qr.size = " + qr.size.ToString)
 
 
@@ -260,7 +255,13 @@ Namespace TeamSupport
                                         Log.Write("Completed force update contact info for " + thisCompany.AccountName)
 
                                     Next
-                                Next
+                                    If qr.done Then
+                                        done = True
+                                    Else
+                                        Log.Write("Requesting more records (should be more than 2000 companies?)")
+                                        qr = Binding.queryMore(qr.queryLocator)
+                                    End If
+                                End While
 
                                 'check for existence of custom fields to sync
                                 GetCustomFields("Account", TypeString, LastUpdateSFFormat)
@@ -307,30 +308,6 @@ Namespace TeamSupport
                     Return False
                 End If
 
-            End Function
-
-            Private Function GetQueriesResults(ByRef SFQuery As String, ByRef numberOfCompaniesInQueriesResults As Integer) As List(Of QueryResult)
-                Dim result As List(Of QueryResult) = New List(Of QueryResult)
-
-                Dim done As Boolean = False
-                Dim itsFirstIteration As Boolean = True 
-                While Not done
-                    Dim queryResult As QueryResult = Nothing
-                    
-                    If itsFirstIteration Then
-                        queryResult = Binding.query(SFQuery)
-                        itsFirstIteration = False
-                    Else 
-                        queryResult = Binding.queryMore(result.Item(result.Count - 1).queryLocator)
-                    End If
-
-                    done = queryResult.done 
-                    numberOfCompaniesInQueriesResults += queryResult.records.Length 
-
-                    result.Add(queryResult)
-                End While
-
-                Return result
             End Function
 
             Private Function GetBillingAddress(ByVal organizationId As String, ByRef hasFax As Boolean) As sObject()
