@@ -60,21 +60,21 @@ public partial class Frames_Products : BaseFramePage
 
     if (GetVersionID(tvProducts.SelectedNode) < 0)
     {
-      tbMain.Items[5].Enabled = false;
-      tbMain.Items[6].Enabled = false;
+      tbMain.Items.FindItemByValue("EditVersion").Enabled = false;
+      tbMain.Items.FindItemByValue("DeleteVersion").Enabled = false;
     }
 
     if (!UserSession.CurrentUser.IsSystemAdmin)
     {
-      tbMain.Items[2].Visible = false;
-      tbMain.Items[6].Visible = false;
+      tbMain.Items.FindItemByValue("DeleteProduct").Enabled = false;
+      tbMain.Items.FindItemByValue("DeleteVersion").Enabled = false;
     }
 
     if (UserSession.CurrentUser.ProductType == ProductType.Express || UserSession.CurrentUser.ProductType == ProductType.BugTracking)
     {
-      tbMain.Items[7].Visible = false;
-      tbMain.Items[8].Visible = false;
-      tbMain.Items[9].Visible = false;
+      tbMain.Items.FindItemByValue("CustomerSeparator").Enabled = false;
+      tbMain.Items.FindItemByValue("AssociateCustomer").Enabled = false;
+      tbMain.Items.FindItemByValue("AssociateCustomers").Enabled = false;
     }
   }
 

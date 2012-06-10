@@ -55,6 +55,26 @@ namespace TeamSupport.Data
       }
     }
 
+    public void TempLoadFix()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+select a.* from attachments a 
+left join organizations o on o.OrganizationID=a.OrganizationID
+where a.RefType=0 
+--and o.OrganizationID in (305383, 421709 )
+and a.DateCreated > '2012-04-24 13:03:25.980'
+and ISNULL(a.path, '') = ''
+--and FileType not like '%image%'
+order by o.Name, a.DateCreated desc
+";
+
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }
+
     public static void DeleteAttachmentAndFile(LoginUser loginUser, int attachmentID)
     {
       Attachment attachment = GetAttachment(loginUser, attachmentID);

@@ -126,7 +126,7 @@ namespace TSWebServices
 
         if (org.UseForums == true)
         {
-          items.Add(new TsMenuItem("forum", "mniForum", "Community", "vcr/141/images/nav/16/forum.png", string.Format(data, "vcr/141/Pages/TicketGrid.html?tf_ForumCategoryID=-1", "vcr/141/PaneInfo/Forum.html")));
+          items.Add(new TsMenuItem("forum", "mniForum", "Community", "vcr/141/images/nav/16/forum.png", string.Format(data, "vcr/141/Pages/TicketGrid.html?tf_ForumCategoryID=-1", "vcr/141/PaneInfo/Community.html")));
         }
 
         if (org.ProductType != ProductType.Express)
@@ -174,6 +174,8 @@ namespace TSWebServices
           utils.AddItem(new TsMenuItem("utils", "utils-services", "Services", "vcr/141/images/nav/16/close_2.png", string.Format(data, "vcr/141/Pages/Utils_Services.html", "vcr/141/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-sanitizer", "Sanitizer", "vcr/141/images/nav/16/close_2.png", string.Format(data, "vcr/141/Pages/Utils_Sanitizer.html", "vcr/141/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-ticketsearch", "Ticket Search", "vcr/141/images/nav/16/close_2.png", string.Format(data, "vcr/141/Pages/Utils_TicketSearch.html", "vcr/141/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-emailsearch", "Email Search", "vcr/141/images/nav/16/close_2.png", string.Format(data, "vcr/141/Pages/Utils_EmailsSearch.html", "vcr/141/PaneInfo/Admin.html")));
+          
         }
       }
       else

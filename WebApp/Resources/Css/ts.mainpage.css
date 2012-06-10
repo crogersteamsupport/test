@@ -80,7 +80,10 @@
 .main-quick-panel input.text {  width: 90%; }
 .main-info { overflow:auto;} 
 .main-info > div.ui-widget-header { padding: .4em .4em; text-align:right; border-left: none; border-top: none; border-right:none;}
-.main-info-content { padding: 10px 10px;}
+.main-info-content { padding: 10px 10px; line-height: 1.2m;}
+.main-info-content p { margin-top: .5em; }
+.main-info-content h3 { font-weight:bold;}
+
 .main-quick-ticket-blur { font-style: italic;}
 .old-header-links a { padding: 3px 5px; font-weight:normal !important; margin-left: 5px; }
 .main-header-links a:hover { text-decoration:none;}

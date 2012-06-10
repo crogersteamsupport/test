@@ -963,22 +963,37 @@ namespace TeamSupport.Data
     {
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
-      IdList idList = GetIdList(organizations);
-
+      //IdList idList = GetIdList(organizations);
       Users users = new Users(_loginUser);
       DataTable table = ReadTable("Contacts");
       int count = 0;
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
-        int organizationID;
-
-        if (!idList.TryGetValue(row["CustomerID"].ToString().Trim().ToLower(), out organizationID))
+        Organization organization = organizations.FindByImportID(row["CustomerID"].ToString());
+        if (organization == null)
         {
           _log.AppendError(row, "Contact skipped due to missing organization.");
           continue;
-
         }
+
+        SqlCommand command = new SqlCommand();
+        command.CommandText = @"
+SELECT COUNT(*) 
+FROM Users
+WHERE OrganizationID = @OrganizationID
+AND RTRIM(FirstName) = @FirstName
+AND RTRIM(LastName) = @LastName
+";
+        command.Parameters.AddWithValue("OrganizationID", organization.OrganizationID);
+        command.Parameters.AddWithValue("FirstName", row["FirstName"].ToString().Trim());
+        command.Parameters.AddWithValue("LastName", row["LastName"].ToString().Trim());
+        object o = SqlExecutor.ExecuteScalar(_loginUser, command);
+        if (o == null || o == DBNull.Value || (int)o > 0) {
+          _log.AppendError(row, "Contact skipped due to already exists.");
+          continue;
+        }
+
         //Organization organization = organizations.FindByImportID(row["CustomerID"].ToString().Trim());
         //if (organization == null) { _log.AppendError(row, "Contact skipped due to missing organization."); continue; }
 
@@ -1000,7 +1015,7 @@ namespace TeamSupport.Data
         user.LastLogin = DateTime.UtcNow;
         user.LastName = row["LastName"].ToString().Trim();
         user.MiddleName = row["MiddleName"].ToString().Trim();
-        user.OrganizationID = organizationID;
+        user.OrganizationID = organization.OrganizationID;
         user.PrimaryGroupID = null;
         user.Title = row["Title"].ToString().Trim();
         user.DateCreated = (DateTime)GetDBDate(row["DateCreated"], false); 

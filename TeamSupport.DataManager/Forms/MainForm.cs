@@ -12,6 +12,12 @@ using Telerik.WinControls;
 using TeamSupport.Data;
 using System.Data.SqlClient;
 using Microsoft.Win32;
+using OpenPop.Common.Logging;
+using OpenPop.Mime;
+using OpenPop.Mime.Decode;
+using OpenPop.Mime.Header;
+using OpenPop.Pop3;
+using System.IO;
 
 namespace TeamSupport.DataManager
 {
@@ -21,6 +27,7 @@ namespace TeamSupport.DataManager
     public MainForm()
     {
       InitializeComponent();
+      //ForAspNet.POP3.License.LicenseKey = "Gk11cm9jIFN5c3RlbXMsIEluYy4gKFcyNzQpAQAAAAEAAAD/Pzf0dSjKK0y+sCpu2UbqXtI36PB0YjN1dnd0wwMsiHXhwI7S7tI9Z3jaJDIohYejP1t5FaqL3w==";
     }
 
     private void radButton1_Click(object sender, EventArgs e)
@@ -170,90 +177,76 @@ namespace TeamSupport.DataManager
       Properties.Settings.Default.Save();
     }
 
+    private Attachments _attachments = null;
+
     private void btnTestButton_Click(object sender, EventArgs e)
     {
-      /*
-      SqlConnection connection = new SqlConnection("Data Source=localhost;Initial Catalog=IC;Integrated Security=True");
-      connection.Open();
-      string cmdString = @"select 
-CAST(ie.ieincidentid AS VarChar(40)) + ', ' + CAST(ie.ieProjectID AS VARCHAR(40)) + ', ' + CAST(ie.ieventid AS VARCHAR(40)) AS TicketID,
-isnull(mb.subject,'') as Name, datecreated as DateCreated, -1 as CreatorID, 'Email' as ActionType, null as DateStarted, null as TimeSpent, mbb.mailboxbodytext as Description
-from incidentevent ie
-left join mailbox mb on mb.mailid = ie.mailitemid
-left join mailboxbody mbb on mb.mailid = mbb.mailid
-where (rtrim(isnull(mb.Subject,'')) <> '')
- or not (mbb.mailboxbodytext  is null)
 
-";
+      Pop3Client pop = new Pop3Client();
+      pop.Connect("pop.gmail.com", 995, true);
+      pop.Authenticate("recent:tickets@teamsupport.com", "Muroc2008!");
+      int count = pop.GetMessageCount();
+      DateTime startDate = new DateTime(2012, 4, 23, 20, 0, 0);
+      DateTime endDate = new DateTime(2012, 4, 24, 10, 0, 0);
+      for (int i = count; i > 0; i--)
+			{
+        try
+        {
+          MessageHeader header = pop.GetMessageHeaders(i);
+          if (header.DateSent > startDate && header.DateSent < endDate) continue;
 
-      SqlDataAdapter adapter = new SqlDataAdapter(cmdString, connection);
-      DataTable table = new DataTable();
-      adapter.Fill(table);
+          OpenPop.Mime.Message message = pop.GetMessage(i);
 
-      int orgid = (int)((NamObjectItem)cmbOrganization.SelectedItem).Value;
-      Users users = new Users(LoginSession.LoginUser);
-      users.LoadByOrganizationID(orgid, false);
+          foreach (MessagePart attachment in message.FindAllAttachments())
+	        {
+		        ProcessAttachment(attachment.FileName, attachment.Body);
+	        }
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(ex.Message);
+        }
+			}
+      MessageBox.Show("Done");
+    }
 
-      Tickets tickets = new Tickets(LoginSession.LoginUser);
-      tickets.LoadByOrganizationID(orgid);
-
-      ActionTypes actionTypes = new ActionTypes(LoginSession.LoginUser);
-      actionTypes.LoadAllPositions(orgid);
-
-
-      Actions actions = new Actions(LoginSession.LoginUser);
-
-      foreach (DataRow row in table.Rows)
+    private void ProcessAttachment(string fileName, byte[] bytes)
+    {
+      Attachment attachment = FindAttachment(fileName);
+      if (attachment != null)
       {
-        Ticket ticket = tickets.FindByImportID(row["TicketID"].ToString().Trim());
-        if (ticket == null) continue;
+        string path = string.Format(@"\\MUROC-WEB1\TSData\Organizations\{0}\Actions\{1}\", attachment.OrganizationID, attachment.RefID);
+        //string path = string.Format(@"c:\TSData2\Organizations\{0}\Actions\{1}\", attachment.OrganizationID, attachment.RefID);
+        if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+        path = Path.Combine(path, fileName);
+        if (!File.Exists(path))
+        {
+          File.WriteAllBytes(path, bytes);
+          attachment.Path = path;
+          attachment.Collection.Save();
+        }
+      }
+    }
 
-        User creator = users.FindByImportID(row["CreatorID"].ToString().Trim());
-        int creatorID = creator == null ? LoginSession.LoginUser.UserID : creator.UserID;
-
-        TeamSupport.Data.Action action = actions.AddNewAction();
-
-        SystemActionType sysActionType = GetSystemActionTypeID(row["ActionType"].ToString().Trim());
-
-        action.ActionTypeID = sysActionType == SystemActionType.Custom ? GetActionTypeID(row["ActionType"].ToString().Trim(), actionTypes) : null;
-        action.CreatorID = creatorID;
-        action.DateCreated = (DateTime)GetDBDate(row["DateCreated"].ToString().Trim(), false);
-        action.DateModified = DateTime.Now;
-        action.DateStarted = GetDBDate(row["DateStarted"].ToString().Trim(), true);
-        action.Description = row["Description"].ToString().Trim();
-        action.IsVisibleOnPortal = false;
-        action.ModifierID = LoginSession.LoginUser.UserID;
-        action.Name = row["Name"].ToString().Trim();
-        if (action.Name.Length > 499) action.Name = action.Name.Substring(0, 499);
-        action.SystemActionTypeID = sysActionType;
-        action.TicketID = ticket.TicketID;
-        action.TimeSpent = GetDBInt(row["TimeSpent"], true);
+    private Attachment FindAttachment(string fileName)
+    {
+      if (_attachments == null) 
+      { 
+        _attachments = new Attachments(LoginSession.LoginUser);
+        _attachments.TempLoadFix();
       }
 
-      actions.BulkSave();
-      MessageBox.Show(table.Rows.Count.ToString());
+      Attachment result = null;
 
-      
-
-      /*
-      DataSet dataSet = new DataSet();
-      dataSet.ReadXml(@"U:\Development\TeamSupport\Imports\Integrated Clinical\MailBoxBody2.xml");
-      SqlConnection connection = new SqlConnection("Data Source=localhost;Initial Catalog=IC;Integrated Security=True");
-      connection.Open();
-
-      DataTable table = new DataTable();
-      table.Columns.Add("ProjectID", Type.GetType("System.Int32"));
-      table.Columns.Add("MailID", Type.GetType("System.Int32"));
-      table.Columns.Add("MailBoxBodyText", Type.GetType("System.String"));
-      table.ReadXml(@"U:\Development\TeamSupport\Imports\Integrated Clinical\MailBoxBody2.xml");
-
-      SqlBulkCopy copy = new SqlBulkCopy(connection);
-      copy.DestinationTableName = "MailBoxBody";
-      copy.WriteToServer(dataSet.Tables[0]);
-      table.AcceptChanges();
-     
-      */
-
+      foreach (Attachment attachment in _attachments)
+      {
+        if (attachment.FileName.ToLower().Trim() == fileName.ToLower().Trim())
+        {
+          if (result != null) return null;
+          result = attachment;
+        }
+      }
+      return result;
     }
 
     private SystemActionType GetSystemActionTypeID(string name)

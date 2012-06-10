@@ -53,7 +53,23 @@ namespace TeamSupport.ServiceLibrary
       {
         ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending emails");
       }
+
+      try
+      {
+        DeleteOldEmails();
+      }
+      catch (Exception ex)
+      {
+        ExceptionLogs.LogException(LoginUser, ex, "Email", "Error deleting old emails");
+      }
+
     }
+
+    private void DeleteOldEmails()
+    { 
+      SqlExecutor.ExecuteNonQuery(LoginUser, new SqlCommand("DELETE FROM Emails WHERE DateCreated < (DATEADD(month, -1, GetUtcDate()))"));
+    }
+   
 
     private void SendEmails()
     {

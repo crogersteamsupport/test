@@ -238,7 +238,7 @@ $(document).ready(function () {
 
   //asets
 
-  
+
 
   function appendAssets(assets) {
     $('#divAssets').empty().append('<div class="ts-separator ui-widget-content">');
@@ -1156,7 +1156,7 @@ $(document).ready(function () {
     action.IsKnowledgeBase = element.find('.ticket-action-form-kb').prop('checked');
     action.IsVisibleOnPortal = element.find('.ticket-action-form-portal').prop('checked');
     action.Description = element.find('.ticket-action-form-description').html();
-
+    if (action.IsVisibleOnPortal == true) confirmVisibleToCustomers();
     top.Ts.Services.Tickets.UpdateAction(action, function (result) {
       callback(result)
     }, function (error) {
@@ -1372,6 +1372,7 @@ $(document).ready(function () {
     function (result) {
       if (result == true) {
         icon.removeClass('ts-icon-portalnot').addClass('ts-icon-portal');
+        confirmVisibleToCustomers();
       }
       else {
         icon.removeClass('ts-icon-portal').addClass('ts-icon-portalnot');
@@ -1381,6 +1382,14 @@ $(document).ready(function () {
     });
 
   });
+
+  function confirmVisibleToCustomers() {
+    if ($('#isTicketPortal').text() != 'Yes') {
+      if (confirm('This ticket is not visible to customers.\n\nWould you like to make it visible to customers now?') == true) {
+        $('#isTicketPortal').click();
+      }
+    }
+  }
 
   $('#divActions').delegate('.ticket-action-expand', 'click', function (e) {
     e.preventDefault();

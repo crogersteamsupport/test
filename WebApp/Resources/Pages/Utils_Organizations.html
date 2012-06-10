@@ -50,7 +50,17 @@
 
               var apiLink = 'https://' + org.OrganizationID + ':' + org.WebServiceID + '@app.teamsupport.com/api/xml/';
               org.ApiLink = '<a href="' + apiLink + '" target="_blank">' + apiLink + '</a>';
-              appendData($('#divOrganization').empty(), org.Name, org);
+              var orgDiv = $('#divOrganization').empty().data('o', org);
+              
+              appendData(orgDiv, org.Name, org);
+              $('<button>')
+                  .text('Set admin(s) show welcome page to true')
+                  .click(function (e) {
+                    e.preventDefault();
+                    top.Ts.Services.Organizations.SetShowWelcomePage($('#divOrganization').data('o').OrganizationID, function () { alert('Word.'); });
+                  })
+                  .appendTo(orgDiv)
+                  .button();
 
               var crmDivs = $('<div>').appendTo('#divOrganization');
 

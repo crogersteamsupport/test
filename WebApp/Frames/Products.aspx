@@ -16,7 +16,7 @@
           <telerik:RadToolBarButton runat="server" Text="New Version" Value="NewVersion" ImageUrl="~/images/icons/new.png"></telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Text="Edit Version" Value="EditVersion" ImageUrl="~/images/icons/edit.png"></telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Text="Delete Version" Value="DeleteVersion" ImageUrl="~/images/icons/trash.png"></telerik:RadToolBarButton>
-          <telerik:RadToolBarButton runat="server" IsSeparator="true"></telerik:RadToolBarButton>
+          <telerik:RadToolBarButton runat="server" IsSeparator="true" Value="CustomerSeparator"></telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Text="Associate Customer" Value="AssociateCustomer" ImageUrl="~/images/icons/add.png"></telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Text="Associate Customers" Value="AssociateCustomers" ImageUrl="~/images/icons/add.png" Visible="false"></telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Value="Help" ImageUrl="~/images/icons/Help.png"
@@ -124,10 +124,12 @@
         top.privateServices.SetUserSetting('SelectedProductID', productNode.get_value());
 
         var toolBar = $find("<%=tbMain.ClientID %>");
-        var items = toolBar.get_allItems();
+        //var items = toolBar.get_allItems();
+        toolBar.findItemByValue("EditVersion").set_enabled(versionNode != null);
+        toolBar.findItemByValue("DeleteVersion").set_enabled(versionNode != null);
 
-        items[5].set_enabled(versionNode != null);
-        items[6].set_enabled(versionNode != null);
+        //items[5].set_enabled(versionNode != null);
+        //items[6].set_enabled(versionNode != null);
 
         if (versionNode != null) {
           top.privateServices.SetUserSetting('SelectedVersionID', versionNode.get_value());

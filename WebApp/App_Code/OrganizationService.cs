@@ -103,6 +103,8 @@ namespace TSWebServices
        return organization.GetProxy();
     }
 
+
+
     [WebMethod]
     public PortalOptionProxy GetPortalOption(int organizationID)
     {
@@ -215,6 +217,19 @@ namespace TSWebServices
       return table.GetCRMLinkTableItemProxies();
     }
 
+    [WebMethod]
+    public void SetShowWelcomePage(int organizationID)
+    {
+      if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+      Users users = new Users(TSAuthentication.GetLoginUser());
+      users.LoadByOrganizationID(organizationID, true);
+      foreach (User user in users)
+      {
+        if (user.IsSystemAdmin) user.ShowWelcomePage = true;
+      }
+
+      users.Save();
+    }
 
     [WebMethod]
     public void ResetCrmLastLink(int crmLinkID)
