@@ -139,6 +139,7 @@ Namespace TeamSupport
           End If
         Catch ex As Exception
           Integration.LogSyncResult(String.Format("Sync Error Reported."), CRMLinkTableItem.OrganizationID, LoginUser)
+          ExceptionLogs.LogException(LoginUser, ex, "CRM Processor", CRMLinkTableItem.Row)
         End Try
       End Sub
 
