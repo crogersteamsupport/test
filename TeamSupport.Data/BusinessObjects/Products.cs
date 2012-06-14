@@ -154,6 +154,23 @@ namespace TeamSupport.Data
       
     }
 
+    public void RemoveCustomer(int organizationID, int productID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "DELETE FROM OrganizationProducts WHERE (ProductID = @ProductID) AND (OrganizationID = @OrganizationID)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@ProductID", productID);
+        ExecuteNonQuery(command, "OrganizationProducts");
+      }
+      Organization org = (Organization)Organizations.GetOrganization(LoginUser, organizationID);
+      Product product = (Product)Products.GetProduct(LoginUser, productID);
+      string description = "Removed '" + product.Name + "' from the customer " + org.Name;
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Products, productID, description);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Organizations, organizationID, description);
+    }
+
     public void AddCustomer(int organizationID, int productID, int versionID)
     {
       using (SqlCommand command = new SqlCommand())

@@ -9,6 +9,57 @@ namespace TeamSupport.Data
 {
   public partial class CRMLinkTableItem
   {
+    #region Properties
+
+    public string SecurityToken
+    {
+      get
+      {
+        string result = null;
+
+        if (Row["SecurityToken"] != DBNull.Value)
+        {
+          string rawValue = (string)Row["SecurityToken"];
+          int commaIndex = rawValue.IndexOf(", ");
+          if (commaIndex >= 0)
+          {
+            result = rawValue.Substring(0, commaIndex);
+          }
+          else
+          {
+            result = rawValue;
+          }
+        }
+
+        return result;
+      }
+
+      set { Row["SecurityToken"] = CheckNull(value); }
+    }
+
+    public string TempSecurityToken
+    {
+      get
+      {
+        string result = null;
+
+        if (Row["SecurityToken"] != DBNull.Value)
+        {
+          string rawValue = (string)Row["SecurityToken"];
+          int commaIndex = rawValue.IndexOf(", ");
+          if (commaIndex >= 0)
+          {
+            result = rawValue.Substring(commaIndex + 2);
+          }
+        }
+
+        return result;
+      }
+    }
+
+
+    #endregion
+
   }
   
   public partial class CRMLinkTable

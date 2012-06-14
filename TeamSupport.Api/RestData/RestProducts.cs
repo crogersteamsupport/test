@@ -67,7 +67,30 @@ namespace TeamSupport.Api
       items.LoadByCustomerID(organizationID);
       return items.GetXml("Products", "Product", true, command.Filters);
     }
-     
+
+    public static string AddOrganizationProduct(RestCommand command, int organizationID, int productID)
+    {
+      Organization organization = Organizations.GetOrganization(command.LoginUser, organizationID);
+      if (organization == null || organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+      Product product = Products.GetProduct(command.LoginUser, productID);
+      if (product == null || product.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+
+      Products products = new Products(command.LoginUser);
+      products.AddCustomer(organizationID, productID);
+      return OrganizationsView.GetOrganizationsViewItem(command.LoginUser, organizationID).GetXml("Customer", true);
+    }
+
+    public static string RemoveOrganizationProduct(RestCommand command, int organizationID, int productID)
+    {
+      Organization organization = Organizations.GetOrganization(command.LoginUser, organizationID);
+      if (organization == null || organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+      Product product = Products.GetProduct(command.LoginUser, productID);
+      if (product == null || product.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+
+      Products products = new Products(command.LoginUser);
+      products.RemoveCustomer(organizationID, productID);
+      return OrganizationsView.GetOrganizationsViewItem(command.LoginUser, organizationID).GetXml("Customer", true);
+    }
 
   }
 }

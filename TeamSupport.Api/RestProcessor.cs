@@ -199,6 +199,7 @@ namespace TeamSupport.Api
           case "/customers/{id}/addresses/": data = RestAddresses.AddAddress(_command, ReferenceType.Organizations, GetId(1)); break;
           case "/customers/{id}/notes/": data = RestNotes.AddNote(_command, ReferenceType.Organizations, GetId(1)); break;
           case "/customers/{id}/contacts/": data = RestContacts.CreateContact(_command, GetId(1)); break;
+          case "/customers/{id}/products/{id}/": data = RestProducts.AddOrganizationProduct(_command, GetId(1), GetId(3)); break;
           case "/contacts/{id}/addresses/": data = RestAddresses.AddAddress(_command, ReferenceType.Users, GetId(1)); break;
           case "/contacts/{id}/phonenumbers/": data = RestPhoneNumbers.AddPhoneNumber(_command, ReferenceType.Users, GetId(1)); break;
           case "/products/": data = RestProducts.CreateProduct(_command); break;
@@ -290,6 +291,7 @@ namespace TeamSupport.Api
           case "/customers/{id}/phonenumbers/{id}/": RestPhoneNumbers.RemovePhoneNumber(_command, ReferenceType.Organizations, GetId(1), GetId(3)); break;
           case "/customers/{id}/addresses/{id}/": RestAddresses.RemoveAddress(_command, ReferenceType.Organizations, GetId(1), GetId(3)); break;
           case "/customers/{id}/notes/": RestNotes.RemoveNote(_command, ReferenceType.Organizations, GetId(1), GetId(3)); break;
+          case "/customers/{id}/products/{id}/": data = RestProducts.RemoveOrganizationProduct(_command, GetId(1), GetId(3)); break;
           case "/customers/{id}/": RestOrganizations.DeleteOrganization(_command, GetId(1)); break;
           case "/contacts/{id}/": RestContacts.DeleteContact(_command, GetId(1)); break;
           case "/contacts/{id}/phonenumbers/{id}/": RestPhoneNumbers.RemovePhoneNumber(_command, ReferenceType.Users, GetId(1), GetId(3)); break;
