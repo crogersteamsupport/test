@@ -57,6 +57,10 @@ namespace TSWebServices
         fieldItems.Add(new AutoFieldItem(custom));
       }
 
+      ReportTableField actionsViewDescription = ReportTableFields.GetReportTableField(fields.LoginUser, 6);
+      actionsViewDescription.Alias = "Action Text";
+      fieldItems.Add(new AutoFieldItem(actionsViewDescription));
+
       result.Fields = fieldItems.ToArray();
       
       Users users = new Users(UserSession.LoginUser);
@@ -325,6 +329,7 @@ namespace TSWebServices
       this.Size = 0;
       this.IsVisible = true;
       this.Description = field.Description;
+      this.TableID = (int)field.RefType;
       this.LookupTableID = null;
       this.ListValues = field.ListValues.Split('|');
     }
@@ -340,6 +345,7 @@ namespace TSWebServices
       this.Alias = field.Alias;
       this.DataType = field.DataType;
       this.Size = field.Size;
+      this.TableID = field.ReportTableID;
       this.IsVisible = field.IsVisible;
       this.Description = field.Description;
       this.LookupTableID = field.LookupTableID;
@@ -354,6 +360,7 @@ namespace TSWebServices
     [DataMember] public string Alias { get; set; }
     [DataMember] public string DataType { get; set; }
     [DataMember] public int Size { get; set; }
+    [DataMember] public int TableID { get; set; }
     [DataMember] public bool IsVisible { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int? LookupTableID { get; set; }

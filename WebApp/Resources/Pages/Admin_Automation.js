@@ -462,7 +462,7 @@ AdminAuto = function () {
       $(selector).find('.condition').each(function () {
         proxy = new top.TeamSupport.Data.TicketAutomationTriggerLogicItemProxy();
         proxy.TriggerID = -1;
-        proxy.TableID = 10;
+        proxy.TableID = $(this).find('.condition-field option:selected').data('field').TableID;
         proxy.FieldID = $(this).find('.condition-field').val();
         proxy.IsCustom = $(this).find('.condition-field option:selected').data('field').IsCustom;
         proxy.Measure = $(this).find('.condition-measure').val();
