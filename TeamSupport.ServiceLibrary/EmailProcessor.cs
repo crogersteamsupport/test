@@ -309,6 +309,15 @@ namespace TeamSupport.ServiceLibrary
       string subject = " [pvt]";
       if (ticket.IsVisibleOnPortal && !actions.IsEmpty && actions[0].IsVisibleOnPortal) subject = "";
 
+      List<string> fileNames = new List<string>();
+      if (!actions.IsEmpty)
+      {
+        Attachments attachments = actions[0].GetAttachments();
+        foreach (TeamSupport.Data.Attachment attachment in attachments)
+        {
+          fileNames.Add(attachment.Path);
+        }
+      }
 
       if (ticket.UserID != null && oldUserID != null)
       {
@@ -319,7 +328,7 @@ namespace TeamSupport.ServiceLibrary
           MailMessage message = EmailTemplates.GetTicketAssignmentUser(LoginUser, modifierName, ticket.GetTicketView());
           message.To.Add(new MailAddress(owner.Email, owner.FirstLastName));
           message.Subject = message.Subject + subject;
-          AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message);
+          AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, fileNames.ToArray());
         }
       }
 
@@ -333,7 +342,7 @@ namespace TeamSupport.ServiceLibrary
         MailMessage message = EmailTemplates.GetTicketAssignmentGroup(LoginUser, modifierName, ticket.GetTicketView());
         AddUsersToAddresses(message.To, list, modifierID);
         message.Subject = message.Subject + subject;
-        AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message);
+        AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, fileNames.ToArray());
 
       }
 
