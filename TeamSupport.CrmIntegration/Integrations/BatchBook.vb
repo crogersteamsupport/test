@@ -194,7 +194,7 @@ Namespace TeamSupport
                 Dim returnXML As XmlDocument = Nothing
 
                 If CRMLinkRow.Username <> "" Then
-                    returnXML = GetXML(BBUri, New NetworkCredential(CRMLinkRow.SecurityToken, "X"))
+          returnXML = GetXML(BBUri, New NetworkCredential(CRMLinkRow.SecurityToken1, "X"))
                 End If
                 Return returnXML
             End Function
@@ -213,7 +213,7 @@ Namespace TeamSupport
                     Dim BBUri As New Uri("https://" & CRMLinkRow.Username & ".batchbook.com/service/companies/" & AccountID & "/comments.xml")
                     Dim postData As String = "<comment><comment><![CDATA[" & NoteBody & "]]></comment></comment>"
 
-                    statusCode = PostXML(New NetworkCredential(CRMLinkRow.SecurityToken, "X"), BBUri, postData)
+          statusCode = PostXML(New NetworkCredential(CRMLinkRow.SecurityToken1, "X"), BBUri, postData)
                 End If
 
                 success = statusCode = HttpStatusCode.Created

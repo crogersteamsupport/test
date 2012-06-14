@@ -11,7 +11,7 @@ namespace TeamSupport.Data
   {
     #region Properties
 
-    public string SecurityToken
+    public string SecurityToken1
     {
       get
       {
@@ -34,10 +34,10 @@ namespace TeamSupport.Data
         return result;
       }
 
-      set { Row["SecurityToken"] = CheckNull(value); }
+      set { Row["SecurityToken"] = CheckValue("SecurityToken", value); }
     }
 
-    public string TempSecurityToken
+    public string SecurityToken2
     {
       get
       {

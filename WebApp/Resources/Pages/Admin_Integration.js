@@ -345,8 +345,8 @@ AdminInt = function () {
     element.find('.int-crm-password-confirm').val(item.Password);
     element.find('.int-crm-token').val(item.SecurityToken);
     element.find('.int-crm-token-confirm').val(item.SecurityToken);
-    element.find('.int-crm-token2').val(item.TempSecurityToken);
-    element.find('.int-crm-token2-confirm').val(item.TempSecurityToken);
+    element.find('.int-crm-token2').val(item.SecurityToken2);
+    element.find('.int-crm-token2-confirm').val(item.SecurityToken2);
     element.find('.int-crm-tag').val(item.TypeFieldMatch);
     if (item.Active) {
       element.find('.int-crm-active').attr('checked', 'checked');

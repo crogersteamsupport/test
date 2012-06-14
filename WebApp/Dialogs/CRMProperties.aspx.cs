@@ -54,8 +54,8 @@ public partial class Dialogs_CRMProperties : BaseDialogPage
     textUserName.Text = item.Username;
     textPassword.Text = item.Password;
     textPasswordConfirm.Text = item.Password;
-    textSecurityToken.Text = item.SecurityToken;
-    textSecurityTokenConfirm.Text = item.SecurityToken;
+    textSecurityToken.Text = item.SecurityToken1;
+    textSecurityTokenConfirm.Text = item.SecurityToken1;
     textTypeFieldMatch.Text = item.TypeFieldMatch;
     cbActive.Checked = item.Active;
     cbEmail.Checked = item.SendWelcomeEmail;
@@ -148,7 +148,7 @@ public partial class Dialogs_CRMProperties : BaseDialogPage
     item.SendWelcomeEmail = cbEmail.Checked;
     item.CRMType = cmbType.SelectedValue;
     if (textPassword.Text.Trim() != "") item.Password = textPassword.Text;
-    if (textSecurityToken.Text.Trim() != "") item.SecurityToken = textSecurityToken.Text;
+    if (textSecurityToken.Text.Trim() != "") item.SecurityToken1 = textSecurityToken.Text;
     item.TypeFieldMatch = textTypeFieldMatch.Text;
     item.Username = cmbType.SelectedIndex == 0 ? textUserName.Text.Replace(" ", "") : textUserName.Text;
     item.Collection.Save();

@@ -19,7 +19,7 @@ namespace TeamSupport.Data
     [DataMember] public string CRMType { get; set; }
     [DataMember] public string Username { get; set; }
     [DataMember] public string Password { get; set; }
-    [DataMember] public string SecurityToken { get; set; }
+    [DataMember] public string SecurityToken1 { get; set; }
     [DataMember] public string TypeFieldMatch { get; set; }
     [DataMember] public DateTime? LastLink { get; set; }
     [DataMember] public bool SendBackTicketData { get; set; }
@@ -27,7 +27,7 @@ namespace TeamSupport.Data
     [DataMember] public int LastTicketID { get; set; }
     [DataMember] public bool AllowPortalAccess { get; set; }
     [DataMember] public bool SendWelcomeEmail { get; set; }
-    [DataMember] public string TempSecurityToken { get; set; }
+    [DataMember] public string SecurityToken2 { get; set; }
           
   }
   
@@ -41,14 +41,14 @@ namespace TeamSupport.Data
       result.LastTicketID = this.LastTicketID;
       result.SendBackTicketData = this.SendBackTicketData;
       result.TypeFieldMatch = this.TypeFieldMatch;
-      result.SecurityToken = this.SecurityToken;
+      result.SecurityToken1 = this.SecurityToken1;
       result.Password = this.Password;
       result.Username = this.Username;
       result.CRMType = this.CRMType;
       result.Active = this.Active;
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
-      result.TempSecurityToken = this.TempSecurityToken;
+      result.SecurityToken2 = this.SecurityToken2;
        
       result.LastProcessed = DateTime.SpecifyKind(this.LastProcessedUtc, DateTimeKind.Utc);
        

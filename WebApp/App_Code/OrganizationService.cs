@@ -279,7 +279,7 @@ namespace TSWebServices
       item.CRMType = crmType;
       item.SendWelcomeEmail = email;
       item.Password = password;
-      item.SecurityToken = token;
+      item.SecurityToken1 = token;
       item.TypeFieldMatch = tag;
       item.Username = userName;
 

@@ -16,7 +16,7 @@ Namespace TeamSupport
                 MyBase.New(crmLinkOrg, crmLog, thisUser, thisProcessor, IntegrationType.MailChimp)
 
                 'parse the api key to get datacenter for url
-                datacenter = CRMLinkRow.SecurityToken.Substring(CRMLinkRow.SecurityToken.LastIndexOf("-") + 1)
+        datacenter = CRMLinkRow.SecurityToken1.Substring(CRMLinkRow.SecurityToken1.LastIndexOf("-") + 1)
             End Sub
 
 
@@ -55,7 +55,7 @@ Namespace TeamSupport
                                 If (CRMLinkRow.LastLink Is Nothing Or CType(contact.Row("DateModified"), DateTime).AddMinutes(30) > CRMLinkRow.LastLink _
                                     Or CType(customer.Row("DateModified"), DateTime).AddMinutes(30) > CRMLinkRow.LastLink) And Not contact.MarkDeleted Then
                                     If emailBatch Is Nothing Then
-                                        emailBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken _
+                    emailBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken1 _
                                                                        & "&id=" & listID _
                                                                        & "&double_optin=false")
                                     End If
@@ -79,7 +79,7 @@ Namespace TeamSupport
                                     Or CType(customer.Row("DateModified"), DateTime).AddMinutes(30) > CRMLinkRow.LastLink Then
 
                                     If unsubBatch Is Nothing Then
-                                        unsubBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken _
+                    unsubBatch = New StringBuilder("&apikey=" & CRMLinkRow.SecurityToken1 _
                                                                        & "&id=" & listID _
                                                                        & "&send_goodbye=false")
                                     End If
@@ -135,7 +135,7 @@ Namespace TeamSupport
             Private Function GetImportListID() As String
                 Dim returnID As String = Nothing
 
-                Dim Lists As XmlDocument = GetMailChimpXML("?method=lists&apikey=" & CRMLinkRow.SecurityToken)
+        Dim Lists As XmlDocument = GetMailChimpXML("?method=lists&apikey=" & CRMLinkRow.SecurityToken1)
                 Dim ImportList As XElement = Nothing
 
                 If Lists IsNot Nothing Then

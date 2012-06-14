@@ -34,7 +34,7 @@ Namespace TeamSupport
             End Function
 
             Private Function SyncAccounts() As Boolean
-                Dim SecurityToken As String = CRMLinkRow.SecurityToken
+        Dim SecurityToken As String = CRMLinkRow.SecurityToken1
                 Dim CompanyName As String = CRMLinkRow.Username
                 Dim Password As String = CRMLinkRow.Password
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
@@ -373,12 +373,12 @@ Namespace TeamSupport
             Private Function SendSFTicketData() As Boolean
                 Dim Success As Boolean = True
 
-                If login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken)) = "OK" Then
-                    Success = SendTicketData(AddressOf CreateNote)
+        If login(Trim(CRMLinkRow.Username), Trim(CRMLinkRow.Password), Trim(CRMLinkRow.SecurityToken1)) = "OK" Then
+          Success = SendTicketData(AddressOf CreateNote)
 
-                    Binding.logout()
-                    Binding.logoutAsync()
-                End If
+          Binding.logout()
+          Binding.logoutAsync()
+        End If
 
                 Return Success
             End Function

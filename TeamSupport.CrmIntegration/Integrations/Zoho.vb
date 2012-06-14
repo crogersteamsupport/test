@@ -53,13 +53,13 @@ Namespace TeamSupport
             Protected Sub Logout()
                 Log.Write("Logging out revision 400.")
                 Dim ZohoUri As Uri = Nothing
-                If CRMLinkRow.TempSecurityToken IsNot Nothing AndAlso CRMLinkRow.TempSecurityToken <> String.Empty Then
-                    ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&authtoken=" & CRMLinkRow.TempSecurityToken & "&scope=crmapi")
-                Else
-                    ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&ticket=" & APITicket)
-                End If
+        If CRMLinkRow.SecurityToken2 IsNot Nothing AndAlso CRMLinkRow.SecurityToken2 <> String.Empty Then
+          ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&authtoken=" & CRMLinkRow.SecurityToken2 & "&scope=crmapi")
+        Else
+          ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&ticket=" & APITicket)
+        End If
 
-                GetHTTPData(Nothing, ZohoUri)
+        GetHTTPData(Nothing, ZohoUri)
             End Sub
         End Class
 
@@ -77,11 +77,11 @@ Namespace TeamSupport
                 Dim Success As Boolean = False
 
                 'check to make sure we have all the data we need
-                If (CRMLinkRow.SecurityToken Is Nothing OrElse CRMLinkRow.SecurityToken = "") AndAlso (CRMLinkRow.TempSecurityToken Is Nothing OrElse CRMLinkRow.TempSecurityToken = String.Empty) Then
-                    _exception = New IntegrationException("API key not specified.")
-                ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
-                    _exception = New IntegrationException("Username or password not specified.")
-                End If
+        If (CRMLinkRow.SecurityToken1 Is Nothing OrElse CRMLinkRow.SecurityToken1 = "") AndAlso (CRMLinkRow.SecurityToken2 Is Nothing OrElse CRMLinkRow.SecurityToken2 = String.Empty) Then
+          _exception = New IntegrationException("API key not specified.")
+        ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
+          _exception = New IntegrationException("Username or password not specified.")
+        End If
 
                 If Exception IsNot Nothing Then
                     Return False
@@ -114,11 +114,11 @@ Namespace TeamSupport
 
             Private Function GetZohoCRMXML(ByVal PathAndQuery As String) As XmlDocument
                 Dim ZohoUri As Uri = Nothing
-                If CRMLinkRow.TempSecurityToken IsNot Nothing AndAlso CRMLinkRow.TempSecurityToken <> String.Empty Then
-                    ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/" & PathAndQuery & "&authtoken=" & CRMLinkRow.TempSecurityToken & "&scope=crmapi")
-                Else
-                    ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/" & PathAndQuery & "&apikey=" & CRMLinkRow.SecurityToken & "&ticket=" & APITicket)
-                End If
+        If CRMLinkRow.SecurityToken2 IsNot Nothing AndAlso CRMLinkRow.SecurityToken2 <> String.Empty Then
+          ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/" & PathAndQuery & "&authtoken=" & CRMLinkRow.SecurityToken2 & "&scope=crmapi")
+        Else
+          ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/" & PathAndQuery & "&apikey=" & CRMLinkRow.SecurityToken1 & "&ticket=" & APITicket)
+        End If
 
                 Return GetXML(ZohoUri)
             End Function
@@ -292,11 +292,11 @@ Namespace TeamSupport
                                                                              thisTicket.Name, thisTicket.TicketID.ToString(), HtmlUtility.StripHTML(description.Description), Environment.NewLine)
 
                 Dim ZohoUri As Uri = Nothing
-                If CRMLinkRow.TempSecurityToken IsNot Nothing AndAlso CRMLinkRow.TempSecurityToken <> String.Empty Then
-                    ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/Notes/insertRecords?newFormat=1&authtoken=" & CRMLinkRow.TempSecurityToken & "&scope=crmapi")
-                Else
-                    ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/Notes/insertRecords?newFormat=1&apikey=" & CRMLinkRow.SecurityToken & "&ticket=" & APITicket)
-                End If
+        If CRMLinkRow.SecurityToken2 IsNot Nothing AndAlso CRMLinkRow.SecurityToken2 <> String.Empty Then
+          ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/Notes/insertRecords?newFormat=1&authtoken=" & CRMLinkRow.SecurityToken2 & "&scope=crmapi")
+        Else
+          ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/Notes/insertRecords?newFormat=1&apikey=" & CRMLinkRow.SecurityToken1 & "&ticket=" & APITicket)
+        End If
 
                 Dim postData As String = String.Format("<Notes><row no=""1"">" & _
                                         "<FL val=""entityId"">{0}</FL>" & _
@@ -337,11 +337,11 @@ Namespace TeamSupport
                 Dim Success As Boolean = False
 
                 'check to make sure we have all the data we need
-                If CRMLinkRow.SecurityToken Is Nothing OrElse CRMLinkRow.SecurityToken = "" Then
-                    _exception = New IntegrationException("API key not specified.")
-                ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
-                    _exception = New IntegrationException("Username or password not specified.")
-                End If
+        If CRMLinkRow.SecurityToken1 Is Nothing OrElse CRMLinkRow.SecurityToken1 = "" Then
+          _exception = New IntegrationException("API key not specified.")
+        ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
+          _exception = New IntegrationException("Username or password not specified.")
+        End If
 
                 If Exception IsNot Nothing Then
                     Return False
@@ -533,8 +533,8 @@ Namespace TeamSupport
 
             Private Function ImportZohoCSV(ByVal tableName As String, ByVal keyName As String, ByVal byteData As Byte()) As Boolean
                 Dim success As Boolean = True
-                Dim zohoUri As New Uri(String.Format("https://reportsapi.zoho.com/api/{0}/{3}/{4}?ZOHO_ACTION=IMPORT&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={1}&ticket={2}&ZOHO_API_VERSION=1.0", _
-                                                     CRMLinkRow.Username, CRMLinkRow.SecurityToken, APITicket, databaseName, tableName))
+        Dim zohoUri As New Uri(String.Format("https://reportsapi.zoho.com/api/{0}/{3}/{4}?ZOHO_ACTION=IMPORT&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={1}&ticket={2}&ZOHO_API_VERSION=1.0", _
+                                             CRMLinkRow.Username, CRMLinkRow.SecurityToken1, APITicket, databaseName, tableName))
 
                 Dim postParameters As New Dictionary(Of String, Object)()
 
@@ -574,7 +574,7 @@ Namespace TeamSupport
             End Function
 
             Private Function DeleteZohoTableRow(ByVal tableName As String, ByVal keyName As String, ByVal rowKey As String) As Boolean
-                Dim DeletePath As String = String.Format("{0}/{1}/{2}?ZOHO_ACTION=DELETE&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={3}&ZOHO_API_VERSION=1.0", CRMLinkRow.Username, databaseName, tableName, CRMLinkRow.SecurityToken)
+        Dim DeletePath As String = String.Format("{0}/{1}/{2}?ZOHO_ACTION=DELETE&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={3}&ZOHO_API_VERSION=1.0", CRMLinkRow.Username, databaseName, tableName, CRMLinkRow.SecurityToken1)
                 Dim DeleteParameters As String = "&ZOHO_CRITERIA=(""" & keyName & """ = " & rowKey & ")"
 
                 Log.Write(DeleteParameters)
@@ -582,7 +582,7 @@ Namespace TeamSupport
             End Function
 
             Private Function PostZohoReports(ByVal PathAndQuery As String, ByVal PostParameters As String) As HttpStatusCode
-                Dim ZohoUri As New Uri("https://reportsapi.zoho.com/api/" & PathAndQuery & "&apikey=" & CRMLinkRow.SecurityToken & "&ticket=" & APITicket)
+        Dim ZohoUri As New Uri("https://reportsapi.zoho.com/api/" & PathAndQuery & "&apikey=" & CRMLinkRow.SecurityToken1 & "&ticket=" & APITicket)
 
                 Return PostQueryString(Nothing, ZohoUri, PostParameters)
             End Function

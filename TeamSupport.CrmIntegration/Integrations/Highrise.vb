@@ -37,7 +37,7 @@ Namespace TeamSupport
                     SyncError = True
                 Else
                     Dim MyXML As XmlDocument
-                    Dim Key As String = CRMLinkRow.SecurityToken
+          Dim Key As String = CRMLinkRow.SecurityToken1
                     Dim CompanyName As String = CRMLinkRow.Username
                     Dim ParentOrgID As String = CRMLinkRow.OrganizationID
 
@@ -309,7 +309,7 @@ Namespace TeamSupport
                     Request.ContentLength = ByteData.Length
                     Request.PreAuthenticate = True
 
-                    Request.Credentials = New NetworkCredential(CRMLinkRow.SecurityToken, "xx")
+          Request.Credentials = New NetworkCredential(CRMLinkRow.SecurityToken1, "xx")
 
 
                     'OK, let's write the data
