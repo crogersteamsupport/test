@@ -343,8 +343,8 @@ AdminInt = function () {
     element.find('.int-crm-user').val(item.Username);
     element.find('.int-crm-password').val(item.Password);
     element.find('.int-crm-password-confirm').val(item.Password);
-    element.find('.int-crm-token').val(item.SecurityToken);
-    element.find('.int-crm-token-confirm').val(item.SecurityToken);
+    element.find('.int-crm-token').val(item.SecurityToken1);
+    element.find('.int-crm-token-confirm').val(item.SecurityToken1);
     element.find('.int-crm-token2').val(item.SecurityToken2);
     element.find('.int-crm-token2-confirm').val(item.SecurityToken2);
     element.find('.int-crm-tag').val(item.TypeFieldMatch);
