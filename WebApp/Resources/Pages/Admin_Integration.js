@@ -7,7 +7,7 @@
 /// <reference path="ts/ts.pages.main.js" />
 /// <reference path="ts/ts.grids.models.tickets.js" />
 /// <reference path="~/Default.aspx" />
-
+var slaLevels;
 var adminInt = null;
 $(document).ready(function () {
   adminInt = new AdminInt();
@@ -20,6 +20,10 @@ function onShow() {
 
 
 AdminInt = function () {
+  top.Ts.Services.Organizations.GetSlaLevels(function (result) {
+    slaLevels = result;
+  });
+
   $('#btnRefresh')
   .click(function (e) {
     e.preventDefault();
@@ -177,6 +181,22 @@ AdminInt = function () {
     }
   }
 
+  function loadSlaLevels(element, savedValue) {
+    if (slaLevels.length > 0) {
+      element.attr('disabled', '');
+      for (var i = 0; i < slaLevels.length; i++) {
+        var selected = '">';
+        if (savedValue == slaLevels[i].SlaLevelID) {
+          selected = '" selected="selected">';
+        }
+        element.append('<option value="' + slaLevels[i].SlaLevelID + selected + slaLevels[i].Name + '</option>');
+      }
+    }
+    else {
+      element.attr('disabled', 'disabled');
+    }
+  }
+
   function appendMappedField(element, field) {
     var div = $('<div>')
       .addClass('map-fieldset')
@@ -285,6 +305,7 @@ AdminInt = function () {
           (parent.find('.int-crm-user').length > 0 ? parent.find('.int-crm-user').val() : ''),
           (parent.find('.int-crm-email').length > 0 ? parent.find('.int-crm-email').attr('checked') : false),
           (parent.find('.int-crm-portal').length > 0 ? parent.find('.int-crm-portal').attr('checked') : false),
+          parent.find('.int-defaultSla').val(),
           function (result) {
             parent.data('link', result).find('.int-message').removeClass('ui-state-error').html('Your information was saved.').show().delay(1000).fadeOut('slow');
             loadMaps(parent);
@@ -333,6 +354,7 @@ AdminInt = function () {
   }
 
   $('.int-panel input').change(onChange).keydown(onChange);
+  $('.int-defaultSla').change(onChange);
   $('.int-content-center input').unbind('change').unbind('keydown');
 
   function loadPanel(element) {
@@ -348,6 +370,7 @@ AdminInt = function () {
     element.find('.int-crm-token2').val(item.SecurityToken2);
     element.find('.int-crm-token2-confirm').val(item.SecurityToken2);
     element.find('.int-crm-tag').val(item.TypeFieldMatch);
+    loadSlaLevels(element.find('.int-defaultSla'), item.DefaultSlaLevelID);
     if (item.Active) {
       element.find('.int-crm-active').attr('checked', 'checked');
     }

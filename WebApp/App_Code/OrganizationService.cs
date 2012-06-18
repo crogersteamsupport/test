@@ -103,8 +103,6 @@ namespace TSWebServices
        return organization.GetProxy();
     }
 
-
-
     [WebMethod]
     public PortalOptionProxy GetPortalOption(int organizationID)
     {
@@ -250,7 +248,16 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public CRMLinkTableItemProxy SaveCrmLink(int crmLinkID, bool isActive, string crmType, string password, string token, string tag, string userName, bool email, bool portal)
+    public SlaLevelProxy[] GetSlaLevels()
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+      SlaLevels table = new SlaLevels(TSAuthentication.GetLoginUser());
+      table.LoadByOrganizationID(TSAuthentication.OrganizationID);
+      return table.GetSlaLevelProxies();
+    }
+
+    [WebMethod]
+    public CRMLinkTableItemProxy SaveCrmLink(int crmLinkID, bool isActive, string crmType, string password, string token, string tag, string userName, bool email, bool portal, int? defaultSlaLevelID)
     {
       if (!TSAuthentication.IsSystemAdmin) return null;
       CRMLinkTableItem item;
@@ -282,6 +289,7 @@ namespace TSWebServices
       item.SecurityToken1 = token;
       item.TypeFieldMatch = tag;
       item.Username = userName;
+      item.DefaultSlaLevelID = defaultSlaLevelID;
 
       item.Collection.Save();
       return item.GetProxy();

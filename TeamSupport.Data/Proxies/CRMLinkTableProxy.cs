@@ -28,6 +28,7 @@ namespace TeamSupport.Data
     [DataMember] public bool AllowPortalAccess { get; set; }
     [DataMember] public bool SendWelcomeEmail { get; set; }
     [DataMember] public string SecurityToken2 { get; set; }
+    [DataMember] public int? DefaultSlaLevelID { get; set; }
           
   }
   
@@ -49,6 +50,7 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
       result.SecurityToken2 = this.SecurityToken2;
+      result.DefaultSlaLevelID = this.DefaultSlaLevelID;
        
       result.LastProcessed = DateTime.SpecifyKind(this.LastProcessedUtc, DateTimeKind.Utc);
        
