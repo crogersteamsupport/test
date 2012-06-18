@@ -67,6 +67,28 @@ namespace TeamSupport.Data
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, description);
     }
 
+    public static int GetMyOpenUnreadTicketCount(LoginUser loginUser, int userID)
+    {
+      int cnt = 0;
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+SELECT COUNT(*) FROM Tickets t
+LEFT JOIN UserTicketStatusesView utsv ON t.TicketID=utsv.TicketID AND utsv.ViewerID = @ViewerID
+LEFT JOIN TicketStatuses ts ON ts.TicketStatusID = t.TicketStatusID
+WHERE t.UserID=@ViewerID
+AND utsv.IsRead = 0
+AND ts.IsClosed = 0";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ViewerID", userID);
+
+        object o = SqlExecutor.ExecuteScalar(loginUser, command);
+        if (o == DBNull.Value) return -1;
+        cnt = (int)o;
+      }
+      return cnt;      
+    }
+
     public void UpdateChildTickets(Ticket ticket)
     { 
       Tickets tickets = new Tickets(LoginUser);

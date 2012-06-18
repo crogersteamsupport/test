@@ -481,8 +481,15 @@ Ts.Pages.Main.prototype =
           timer = setInterval(processMessages, isIdle ? 30000 : 4000);
         }
 
-        if (window.location.hostname.indexOf('127.0.0.1') > -1) {
+        if (window.location.hostname.indexOf('127.0.0.1x') > -1) {
           clearInterval(timer);
+        }
+
+        if (result.OpenUnreadTicketCount && result.OpenUnreadTicketCount != null && result.OpenUnreadTicketCount > 0) {
+          $('.menutree-item-mytickets-mniMyTickets a').text('My Tickets (' + result.OpenUnreadTicketCount + ')').css('font-weight', 'bold');
+        }
+        else {
+          $('.menutree-item-mytickets-mniMyTickets a').text('My Tickets').css('font-weight', 'normal');
         }
 
 
@@ -573,7 +580,9 @@ Ts.Pages.Main.prototype =
 
     function openMenuItem(item) {
       var mainTab = mainTabs.find(0, Ts.Ui.Tabs.Tab.Type.Main);
-      mainTab.setCaption(item.getCaption());
+      var caption = item.getCaption();
+      if (caption.indexOf('My Tickets') == 0) caption = 'My Tickets';
+      mainTab.setCaption(caption);
       mainTab.setImageUrl(item.getImageUrl());
       mainTab.select();
     }
@@ -692,12 +701,12 @@ Ts.Pages.Main.prototype =
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
               .appendTo(div)
-              .attr('src', 'vcr/141/Pages/Ticket.html?TicketNumber=' + tab.getId());
+              .attr('src', 'vcr/142/Pages/Ticket.html?TicketNumber=' + tab.getId());
           }
           else {
             div.show();
           }
-          $('.main-info-content').load('vcr/141/PaneInfo/ticket.html');
+          $('.main-info-content').load('vcr/142/PaneInfo/ticket.html');
 
           break;
         case Ts.Ui.Tabs.Tab.Type.NewTicket:
@@ -713,13 +722,13 @@ Ts.Pages.Main.prototype =
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
               .appendTo(div)
-              .attr('src', 'vcr/141/Pages/NewTicket.html' + query);
+              .attr('src', 'vcr/142/Pages/NewTicket.html' + query);
             //.attr('src', 'frames/newticket.aspx' + query);
           }
           else {
             div.show();
           }
-          $('.main-info-content').load('vcr/141/PaneInfo/newticket.html');
+          $('.main-info-content').load('vcr/142/PaneInfo/newticket.html');
           break;
         default:
 

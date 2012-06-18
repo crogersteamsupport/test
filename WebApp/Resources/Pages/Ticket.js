@@ -2200,7 +2200,7 @@ $(document).ready(function () {
       if (info.Ticket.IsFlagged === true) $('#btnFlag .ts-toolbar-caption').text('Unflag');
 
       $('.ticket-source').css('backgroundImage', "url('../" + top.Ts.Utils.getTicketSourceIcon(info.Ticket.TicketSource) + "')").attr('title', 'Ticket Source: ' + (info.Ticket.TicketSource == null ? 'Agent' : info.Ticket.TicketSource));
-      var ticketUrl = window.location.href.replace('vcr/141/Pages/Ticket.html', '');
+      var ticketUrl = window.location.href.replace('vcr/142/Pages/Ticket.html', '');
       $('<a>')
       .attr('href', ticketUrl)
       .attr('target', '_blank')
