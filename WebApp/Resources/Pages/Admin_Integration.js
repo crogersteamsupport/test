@@ -183,19 +183,26 @@ AdminInt = function () {
     }
   }
 
-  function loadSlaLevels(element, savedValue) {
+  function loadSlaLevels(panel) {
+    var slaLevelsList = panel.find('.int-defaultSla');
+    if (slaLevelsList == null) return;
+
+    panel = $(panel);
+    var item = panel.data('link');
+
     if (slaLevels.length > 0) {
-      element.attr('disabled', '');
+      slaLevelsList.attr('disabled', '');
+      slaLevelsList.empty();
       for (var i = 0; i < slaLevels.length; i++) {
         var selected = '">';
-        if (savedValue == slaLevels[i].SlaLevelID) {
+        if (item != null && item.DefaultSlaLevelID != null && item.DefaultSlaLevelID == slaLevels[i].SlaLevelID) {
           selected = '" selected="selected">';
         }
-        element.append('<option value="' + slaLevels[i].SlaLevelID + selected + slaLevels[i].Name + '</option>');
+        slaLevelsList.append('<option value="' + slaLevels[i].SlaLevelID + selected + slaLevels[i].Name + '</option>');
       }
     }
     else {
-      element.attr('disabled', 'disabled');
+      slaLevelsList.attr('disabled', 'disabled');
     }
   }
 
