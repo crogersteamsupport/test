@@ -119,7 +119,9 @@ AdminInt = function () {
     }
     else {
       $(this).find('.ui-icon').addClass('ui-icon-triangle-1-s').removeClass('ui-icon-triangle-1-e');
-      loadMaps($(this).next().show());
+      loadMaps($(this).next());
+      loadSlaLevels($(this).next());
+      $(this).next().show();
     }
 
   });
