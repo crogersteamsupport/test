@@ -17,7 +17,7 @@ Ts.Ui.Tabs = function (element) {
 Ts.Ui.Tabs.prototype = {
   constructor: Ts.Ui.Tabs,
   getElement: function () { return this._element; },
-  add: function (isSelected, tabType, id, caption, isClosable, isSortable, isHighlighted, icon, imageUrl, data) {
+  add: function (isSelected, tabType, id, caption, isClosable, isSortable, isHighlighted, icon, imageUrl, data, title) {
     var tab = this.find(id, tabType);
     if (tab) { tab.select(); return tab; }
     var self = this;
@@ -29,6 +29,7 @@ Ts.Ui.Tabs.prototype = {
       function () { $(this).addClass('ui-state-hover').find('.ui-icon-close').show(); },
       function () { $('.ts-tab').removeClass('ui-state-hover'); $('.ts-tab .ui-icon-close').hide(); }
     );
+    if (title && title != null) li.attr('title', title);
     var contentSpan = $('<span>').addClass('ts-tab-content').appendTo(li);
     $('<span>').addClass('ts-tabs-hide tab-icon ts-icon').appendTo(contentSpan);
     $('<img>').addClass('ts-tabs-hide tab-image').appendTo(contentSpan);

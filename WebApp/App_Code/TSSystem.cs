@@ -574,6 +574,8 @@ namespace TSWebServices
     public string TabType { get; set; }
     [DataMember]
     public string Caption { get; set; }
+    [DataMember]
+    public string Title { get; set; }
   }
 
   [DataContract]

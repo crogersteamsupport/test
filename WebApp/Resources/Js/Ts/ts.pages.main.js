@@ -608,7 +608,7 @@ Ts.Pages.Main.prototype =
           for (var i = 0; i < result.length; i++) {
             //isSelected, tabType, id, caption, isClosable, isSortable, isHighlighted, icon, imageUrl
             if (result[i].TabType === Ts.Ui.Tabs.Tab.Type.Ticket && (result[i].Caption != null || result[i].Caption != '')) {
-              self.MainTabs.add(false, result[i].TabType, result[i].ID, result[i].Caption, true, true, false);
+              self.MainTabs.add(false, result[i].TabType, result[i].ID, result[i].Caption, true, true, false, result[i].Title);
             }
           }
         }
@@ -846,8 +846,11 @@ Ts.Pages.Main.prototype =
   },
   openTicket: function (ticketNumber, doSelect) {
     //isSelected, tabType, id, caption, isClosable, isSortable, isHighlighted, icon, imageUrl
+    var self = this;
     doSelect = doSelect == null ? true : doSelect;
-    this.MainTabs.add(doSelect, Ts.Ui.Tabs.Tab.Type.Ticket, ticketNumber, 'Ticket: ' + ticketNumber, true, true, false);
+    Ts.Services.Tickets.GetTicketName(ticketNumber, function (name) {
+      self.MainTabs.add(doSelect, Ts.Ui.Tabs.Tab.Type.Ticket, ticketNumber, 'Ticket: ' + ticketNumber, true, true, false, null, null, null, name);
+    });
   },
   newTicket: function (query) {
     //isSelected, tabType, id, caption, isClosable, isSortable, isHighlighted, icon, imageUrl, data

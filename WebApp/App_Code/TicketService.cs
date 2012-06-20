@@ -783,6 +783,13 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public string GetTicketName(int ticketNumber)
+    {
+      Ticket ticket = Tickets.GetTicketByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
+      return ticket.Name;
+    }
+
+    [WebMethod]
     public AssetProxy[] AddTicketAsset(int ticketID, int assetID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
