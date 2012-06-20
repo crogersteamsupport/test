@@ -22,6 +22,7 @@ public partial class Frames_Contacts : BaseFramePage
 
   protected void Page_Load(object sender, EventArgs e)
   {
+    CachePage = false;
     try
     {
       _organizationID = int.Parse(Request["OrganizationID"]);

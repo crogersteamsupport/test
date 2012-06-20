@@ -18,6 +18,7 @@ public partial class Frames_ContactInformation : BaseFramePage
 {
   protected void Page_Load(object sender, EventArgs e)
   {
+    CachePage = false;
     int userID;
     User user;
     

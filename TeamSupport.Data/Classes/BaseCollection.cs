@@ -661,24 +661,18 @@ namespace TeamSupport.Data
 
     public static string  GetCustomFieldSelect(CustomField field, string refIDFieldName, string fieldAlias)
     {
-      StringBuilder builder = new StringBuilder();
-      builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS ");
       switch (field.FieldType)
       {
-        case CustomFieldType.DateTime:
-          builder.Append("datetime");
-          break;
-        case CustomFieldType.Boolean:
-          builder.Append("bit");
-          break;
-        case CustomFieldType.Number:
-          builder.Append("decimal");
-          break;
+        case CustomFieldType.DateTime: return GetCustomFieldDateSelect(field, refIDFieldName, fieldAlias);          
+        case CustomFieldType.Boolean: return GetCustomFieldBooleanSelect(field, refIDFieldName, fieldAlias);          
+        case CustomFieldType.Number: return GetCustomFieldNumberSelect(field, refIDFieldName, fieldAlias);          
         default:
-          builder.Append("varchar(8000)");
           break;
       }
-      builder.Append(") FROM CustomValues WHERE (CustomFieldID = ");
+      
+
+      StringBuilder builder = new StringBuilder();
+      builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS varchar(8000)) FROM CustomValues WHERE (CustomFieldID = ");
       builder.Append(field.CustomFieldID.ToString());
       builder.Append(") AND (RefID = ");
       builder.Append(refIDFieldName);
@@ -700,6 +694,48 @@ namespace TeamSupport.Data
       builder.Append(fieldAlias);
       builder.Append("]");
       return builder.ToString();
+    }
+
+    public static string GetCustomFieldDateSelect(CustomField field, string refIDFieldName, string fieldAlias)
+    {
+      string sql = @"
+(
+  CASE 
+    WHEN ISDATE((SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))) = 1  
+    THEN (SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS datetime) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
+    ELSE NULL
+  END
+) AS [{2}]
+";
+      return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
+    }
+
+    public static string GetCustomFieldNumberSelect(CustomField field, string refIDFieldName, string fieldAlias)
+    {
+      string sql = @"
+(
+  CASE 
+    WHEN ISNUMERIC((SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))) = 1  
+    THEN (SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS decimal) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
+    ELSE NULL
+  END
+) AS [{2}]
+";
+      return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
+    }
+
+    public static string GetCustomFieldBooleanSelect(CustomField field, string refIDFieldName, string fieldAlias)
+    {
+      string sql = @"
+(
+  CASE 
+    WHEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})) = 'true'  THEN CAST(1 AS bit)
+    WHEN (SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1})) = 'false'  THEN CAST(0 AS bit)
+    ELSE NULL
+  END 
+) AS [{2}]
+";
+      return string.Format(sql, field.CustomFieldID.ToString(), refIDFieldName, fieldAlias);
     }
 
     public void DeleteAll()
