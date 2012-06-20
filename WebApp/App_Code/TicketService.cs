@@ -1583,6 +1583,8 @@ namespace TSWebServices
       action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
       action.IsKnowledgeBase = ticket.IsKnowledgeBase;
       action.TicketID = ticket.TicketID;
+      action.TimeSpent = info.TimeSpent;
+      action.DateStarted = info.DateStarted;
       action.Collection.Save();
 
       result.Add(ticket.TicketID);
@@ -1793,6 +1795,8 @@ namespace TSWebServices
     [DataMember] public bool IsVisibleOnPortal { get; set; }
     [DataMember] public bool IsKnowledgebase { get; set; }
     [DataMember] public string Description { get; set; }
+    [DataMember] public DateTime? DateStarted { get; set; }
+    [DataMember] public int? TimeSpent { get; set; }
     [DataMember] public int? ChatID { get; set; }
     [DataMember] public int? CategoryID { get; set; }
     [DataMember] public int? ParentTicketID { get; set; }

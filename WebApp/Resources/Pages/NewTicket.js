@@ -18,6 +18,10 @@ $(document).ready(function () {
 
   if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
 
+  $('.ticket-action-form-date').datetimepicker().datetimepicker('setDate', new Date());
+  $('.ticket-action-form-hours').spinner({ min: 0 });
+  $('.ticket-action-form-minutes').spinner({ min: 0 });
+
   var types = top.Ts.Cache.getTicketTypes();
   for (var i = 0; i < types.length; i++) {
     $('<option>').attr('value', types[i].TicketTypeID).text(types[i].Name).data('o', types[i]).appendTo('.newticket-type');
@@ -1428,6 +1432,10 @@ $(document).ready(function () {
       info.IsVisibleOnPortal = $('.newticket-portal').prop('checked')
       info.IsKnowledgebase = $('.newticket-kb').prop('checked');
       info.Description = $('.newticket-desc').html();
+
+      info.TimeSpent = parseInt($('.ticket-action-form-hours').val()) * 60 + parseInt($('.ticket-action-form-minutes').val());
+      info.DateStarted = top.Ts.Utils.getMsDate($('.ticket-action-form-date').datetimepicker('getDate'));
+
 
       // Custom Values
       info.Fields = new Array();
