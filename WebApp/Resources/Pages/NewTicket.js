@@ -240,13 +240,17 @@ $(document).ready(function () {
   function createCustomFields() {
     top.Ts.Services.CustomFields.GetCustomFields(top.Ts.ReferenceTypes.Tickets, null, function (result) {
       for (var i = 0; i < result.length; i++) {
-        switch (result[i].FieldType) {
-          case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i]); break;
-          case top.Ts.CustomFieldType.DateTime: appendCustomEditDate(result[i]); break;
-          case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i]); break;
-          case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i]); break;
-          case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i]); break;
-          default:
+        try {
+          switch (result[i].FieldType) {
+            case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i]); break;
+            case top.Ts.CustomFieldType.DateTime: appendCustomEditDate(result[i]); break;
+            case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i]); break;
+            case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i]); break;
+            case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i]); break;
+            default:
+          }
+        } catch (err) {
+          top.Ts.Services.System.LogException(err.message, "NewTicket.js createCustomFields");
         }
       }
 

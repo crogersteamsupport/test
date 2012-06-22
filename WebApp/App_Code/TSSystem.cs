@@ -187,6 +187,12 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void LogException(string message, string location)
+    {
+      ExceptionLogs.AddLog(TSAuthentication.GetLoginUser(), "Javascript Error", message, location, HttpContext.Current.Request.Url.ToString(), HttpContext.Current.Request.Headers.ToString(), HttpContext.Current.Request.Browser.ToString());
+    }
+
+    [WebMethod]
     public TsTabDataItem[] GetMainTabs()
     {
       List<TsTabDataItem> list = Settings.UserDB.ReadJson<List<TsTabDataItem>>("main-tabs");
