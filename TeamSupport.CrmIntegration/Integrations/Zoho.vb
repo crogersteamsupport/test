@@ -53,13 +53,13 @@ Namespace TeamSupport
             Protected Sub Logout()
                 Log.Write("Logging out revision 400.")
                 Dim ZohoUri As Uri = Nothing
-        If CRMLinkRow.SecurityToken2 IsNot Nothing AndAlso CRMLinkRow.SecurityToken2 <> String.Empty Then
-          ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&authtoken=" & CRMLinkRow.SecurityToken2 & "&scope=crmapi")
-        Else
-          ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&ticket=" & APITicket)
-        End If
-
-        GetHTTPData(Nothing, ZohoUri)
+                If CRMLinkRow.SecurityToken2 IsNot Nothing AndAlso CRMLinkRow.SecurityToken2 <> String.Empty Then
+                  ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&authtoken=" & CRMLinkRow.SecurityToken2 & "&scope=crmapi")
+                Else
+                  ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&ticket=" & APITicket)
+                End If
+        
+                GetHTTPData(Nothing, ZohoUri)
             End Sub
         End Class
 
@@ -87,7 +87,7 @@ Namespace TeamSupport
                     Return False
                 End If
 
-                If GenerateTicket() Then
+                If (CRMLinkRow.SecurityToken2 IsNot Nothing AndAlso CRMLinkRow.SecurityToken2 <> String.Empty) OrElse GenerateTicket() Then
 
                     Try
                         'sync accounts
