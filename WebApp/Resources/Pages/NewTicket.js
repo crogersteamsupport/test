@@ -236,12 +236,17 @@ $(document).ready(function () {
     loadVersionCombo($('.newticket-reported'));
   }
 
+  customfieldCreateCount = 0;
+
   createCustomFields();
   function createCustomFields() {
+    customfieldCreateCount++;
     top.Ts.Services.CustomFields.GetCustomFields(top.Ts.ReferenceTypes.Tickets, null, function (result) {
       for (var i = 0; i < result.length; i++) {
         try {
+          //throw new Error("Test");
           switch (result[i].FieldType) {
+
             case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i]); break;
             case top.Ts.CustomFieldType.DateTime: appendCustomEditDate(result[i]); break;
             case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i]); break;
@@ -250,10 +255,18 @@ $(document).ready(function () {
             default:
           }
         } catch (err) {
-          top.Ts.Services.System.LogException(err.message, "NewTicket.js createCustomFields");
-        }
-      }
+          var errorString = '';
+          for (property in err) { errorString += property + ': ' + err[property] + '; '; }
+          top.Ts.Services.System.LogException(err.message, "NewTicket.js createCustomFields   FieldType: " + result[i].FieldType + "   CustomFieldID: " + result[i].CustomFieldID + " ::  " + errorString);
 
+          $('.newticket-custom-field').remove();
+          if (customfieldCreateCount > 5) return;
+          setTimeout(createCustomFields, 500 * customfieldCreateCount);
+          //alert('x');
+          break;
+        }
+
+      }
       $('<div>').addClass('ui-helper-clearfix').appendTo('.newticket-fields');
       showCustomFields();
     });
