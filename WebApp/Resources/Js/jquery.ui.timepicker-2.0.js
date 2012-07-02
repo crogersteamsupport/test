@@ -141,7 +141,7 @@
 			inlineSettings = {};
 
       for (var attrName in this._defaults) {
-        var attrValue = $input.attr('time:' + attrName);
+        var attrValue = $input.prop('time:' + attrName);
         
         if (attrValue) {
           try {
