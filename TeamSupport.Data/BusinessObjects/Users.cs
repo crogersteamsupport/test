@@ -55,6 +55,8 @@ namespace TeamSupport.Data
         if (char.IsLetterOrDigit(c)) builder.Append(c);
 	    }
 
+      name = builder.ToString();
+
       return ((FirstName.Trim() + LastName.Trim()).ToLower() == name) || ((LastName.Trim() + FirstName.Trim()).ToLower() == name);
     }
 

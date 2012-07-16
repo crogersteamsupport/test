@@ -72,7 +72,7 @@ namespace TeamSupport.DataManager
     {
       int initOrgID = Properties.Settings.Default.LastOrgID;
       Properties.Settings.Default.Reload();
-      Importer.SetTypeGuessRowsForExcelImport();
+      //Importer.SetTypeGuessRowsForExcelImport();
       LoadOrganizations();
       SelectOrganization(initOrgID);
     }

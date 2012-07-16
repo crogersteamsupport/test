@@ -65,8 +65,8 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data, Version=6.0.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <Private>True</Private>
+    <Reference Include="MySql.Data">
+      <HintPath>References\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="OpenPop">
       <HintPath>..\OpenPop\OpenPop.NET 2.0.4\binaries\unsigned\OpenPop.dll</HintPath>
@@ -92,17 +92,23 @@
     <Reference Include="System.Xml" />
     <Reference Include="Telerik.WinControls, Version=2009.1.9.414, Culture=neutral, PublicKeyToken=5bb2a467cbec794e">
       <Private>True</Private>
+      <HintPath>References\Telerik.WinControls.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.WinControls.GridView, Version=2009.1.9.414, Culture=neutral, PublicKeyToken=5bb2a467cbec794e">
       <Private>True</Private>
+      <HintPath>References\Telerik.WinControls.GridView.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.WinControls.UI, Version=2009.1.9.414, Culture=neutral, PublicKeyToken=5bb2a467cbec794e">
       <Private>True</Private>
+      <HintPath>References\Telerik.WinControls.UI.dll</HintPath>
     </Reference>
     <Reference Include="TelerikCommon, Version=2009.1.9.414, Culture=neutral, PublicKeyToken=5bb2a467cbec794e">
       <Private>True</Private>
+      <HintPath>References\TelerikCommon.dll</HintPath>
     </Reference>
-    <Reference Include="TelerikData, Version=2009.1.9.414, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL" />
+    <Reference Include="TelerikData, Version=2009.1.9.414, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>References\TelerikData.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\BaseOrganizationUserControl.cs">

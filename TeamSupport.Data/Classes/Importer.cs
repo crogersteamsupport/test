@@ -315,7 +315,9 @@ namespace TeamSupport.Data
               GC.WaitForPendingFinalizers();
               ImportTickets();
               GC.WaitForPendingFinalizers();
+              
               ImportActions();
+              
               GC.WaitForPendingFinalizers();
               ImportAttachments();
               GC.WaitForPendingFinalizers();
@@ -333,6 +335,7 @@ namespace TeamSupport.Data
               GC.WaitForPendingFinalizers();
               ImportWiki();
               GC.WaitForPendingFinalizers();
+               
             }
             ImportCustomFields();
             GC.WaitForPendingFinalizers();
