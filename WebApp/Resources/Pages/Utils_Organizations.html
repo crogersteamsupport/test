@@ -46,14 +46,15 @@
         select: function (event, ui) {
           $(this).data('itemID', ui.item.id);
           top.Ts.Services.Organizations.GetOrganization(ui.item.id, function (org) {
-            top.Ts.Services.Organizations.AdminGetCrmLinks(ui.item.id, function (crms) {
+            top.Ts.Services.Organizations.GetPortalOption(ui.item.id, function (po) {
+              top.Ts.Services.Organizations.AdminGetCrmLinks(ui.item.id, function (crms) {
 
-              var apiLink = 'https://' + org.OrganizationID + ':' + org.WebServiceID + '@app.teamsupport.com/api/xml/';
-              org.ApiLink = '<a href="' + apiLink + '" target="_blank">' + apiLink + '</a>';
-              var orgDiv = $('#divOrganization').empty().data('o', org);
-              
-              appendData(orgDiv, org.Name, org);
-              $('<button>')
+                var apiLink = 'https://' + org.OrganizationID + ':' + org.WebServiceID + '@app.teamsupport.com/api/xml/';
+                org.ApiLink = '<a href="' + apiLink + '" target="_blank">' + apiLink + '</a>';
+                var orgDiv = $('#divOrganization').empty().data('o', org);
+
+                appendData(orgDiv, org.Name, org);
+                $('<button>')
                   .text('Set admin(s) show welcome page to true')
                   .click(function (e) {
                     e.preventDefault();
@@ -62,20 +63,22 @@
                   .appendTo(orgDiv)
                   .button();
 
-              var crmDivs = $('<div>').appendTo('#divOrganization');
+                  appendData(orgDiv, 'Portal Options', po);
 
-              for (var i = 0; i < crms.length; i++) {
-                var crm = crms[i];
-                var crmDiv = $('<div>')
+                  var crmDivs = $('<div>').appendTo('#divOrganization');
+
+                for (var i = 0; i < crms.length; i++) {
+                  var crm = crms[i];
+                  var crmDiv = $('<div>')
                   .addClass('crm-item')
                   .data('o', crm)
                   .appendTo(crmDivs);
 
-                $('<h1>')
+                  $('<h1>')
                 .text(crm.CRMType)
                 .appendTo(crmDiv);
 
-                $('<button>')
+                  $('<button>')
                   .text('Reset LastLink Date')
                   .click(function (e) {
                     e.preventDefault();
@@ -84,9 +87,10 @@
                   .appendTo(crmDiv)
                   .button();
 
-                appendData(crmDiv, '', crm);
+                  appendData(crmDiv, '', crm);
 
-              }
+                }
+              });
             });
           });
         }
