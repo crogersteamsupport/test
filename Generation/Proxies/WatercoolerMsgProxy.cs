@@ -9,10 +9,10 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(WaterCoolerViewItemProxy))]
-  public class WaterCoolerViewItemProxy
+  [KnownType(typeof(WatercoolerMsgItemProxy))]
+  public class WatercoolerMsgItemProxy
   {
-    public WaterCoolerViewItemProxy() {}
+    public WatercoolerMsgItemProxy() {}
     [DataMember] public int MessageID { get; set; }
     [DataMember] public int UserID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
@@ -21,18 +21,14 @@ namespace TeamSupport.Data
     [DataMember] public int? MessageParent { get; set; }
     [DataMember] public bool IsDeleted { get; set; }
     [DataMember] public DateTime LastModified { get; set; }
-    [DataMember] public int? RefType { get; set; }
-    [DataMember] public int? AttachmentID { get; set; }
           
   }
   
-  public partial class WaterCoolerViewItem : BaseItem
+  public partial class WatercoolerMsgItem : BaseItem
   {
-    public WaterCoolerViewItemProxy GetProxy()
+    public WatercoolerMsgItemProxy GetProxy()
     {
-      WaterCoolerViewItemProxy result = new WaterCoolerViewItemProxy();
-      result.AttachmentID = this.AttachmentID;
-      result.RefType = this.RefType;
+      WatercoolerMsgItemProxy result = new WatercoolerMsgItemProxy();
       result.IsDeleted = this.IsDeleted;
       result.MessageParent = this.MessageParent;
       result.Message = this.Message;
