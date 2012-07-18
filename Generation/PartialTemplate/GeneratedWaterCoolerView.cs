@@ -25,9 +25,26 @@ namespace TeamSupport.Data
     }
         
     
+    public string UserName
+    {
+      get { return Row["UserName"] != DBNull.Value ? (string)Row["UserName"] : null; }
+    }
+    
     
     
 
+    
+    public int? GroupFor
+    {
+      get { return Row["GroupFor"] != DBNull.Value ? (int?)Row["GroupFor"] : null; }
+      set { Row["GroupFor"] = CheckValue("GroupFor", value); }
+    }
+    
+    public int? ReplyTo
+    {
+      get { return Row["ReplyTo"] != DBNull.Value ? (int?)Row["ReplyTo"] : null; }
+      set { Row["ReplyTo"] = CheckValue("ReplyTo", value); }
+    }
     
     public string Message
     {
@@ -35,31 +52,19 @@ namespace TeamSupport.Data
       set { Row["Message"] = CheckValue("Message", value); }
     }
     
-    public int? MessageParent
+    public string MessageType
     {
-      get { return Row["MessageParent"] != DBNull.Value ? (int?)Row["MessageParent"] : null; }
-      set { Row["MessageParent"] = CheckValue("MessageParent", value); }
+      get { return Row["MessageType"] != DBNull.Value ? (string)Row["MessageType"] : null; }
+      set { Row["MessageType"] = CheckValue("MessageType", value); }
     }
     
-    public int? RefType
+    public string GroupName
     {
-      get { return Row["RefType"] != DBNull.Value ? (int?)Row["RefType"] : null; }
-      set { Row["RefType"] = CheckValue("RefType", value); }
-    }
-    
-    public int? AttachmentID
-    {
-      get { return Row["AttachmentID"] != DBNull.Value ? (int?)Row["AttachmentID"] : null; }
-      set { Row["AttachmentID"] = CheckValue("AttachmentID", value); }
+      get { return Row["GroupName"] != DBNull.Value ? (string)Row["GroupName"] : null; }
+      set { Row["GroupName"] = CheckValue("GroupName", value); }
     }
     
 
-    
-    public bool IsDeleted
-    {
-      get { return (bool)Row["IsDeleted"]; }
-      set { Row["IsDeleted"] = CheckValue("IsDeleted", value); }
-    }
     
     public int OrganizationID
     {
@@ -87,17 +92,6 @@ namespace TeamSupport.Data
 
     
 
-    
-    public DateTime LastModified
-    {
-      get { return DateToLocal((DateTime)Row["LastModified"]); }
-      set { Row["LastModified"] = CheckValue("LastModified", value); }
-    }
-
-    public DateTime LastModifiedUtc
-    {
-      get { return (DateTime)Row["LastModified"]; }
-    }
     
     public DateTime TimeStamp
     {
@@ -131,7 +125,7 @@ namespace TeamSupport.Data
     
     public override string PrimaryKeyFieldName
     {
-      get { return ""; }
+      get { return "MessageID"; }
     }
 
 
@@ -150,11 +144,11 @@ namespace TeamSupport.Data
     partial void AfterRowInsert(WaterCoolerViewItem waterCoolerViewItem);
     partial void BeforeRowEdit(WaterCoolerViewItem waterCoolerViewItem);
     partial void AfterRowEdit(WaterCoolerViewItem waterCoolerViewItem);
-    partial void BeforeRowDelete(int );
-    partial void AfterRowDelete(int );    
+    partial void BeforeRowDelete(int messageID);
+    partial void AfterRowDelete(int messageID);    
 
-    partial void BeforeDBDelete(int );
-    partial void AfterDBDelete(int );    
+    partial void BeforeDBDelete(int messageID);
+    partial void AfterDBDelete(int messageID);    
 
     #endregion
 
@@ -172,9 +166,9 @@ namespace TeamSupport.Data
       return list.ToArray();
     }	
 	
-    public virtual void DeleteFromDB(int )
+    public virtual void DeleteFromDB(int messageID)
     {
-      BeforeDBDelete();
+      BeforeDBDelete(messageID);
       using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
       {
         connection.Open();
@@ -183,17 +177,17 @@ namespace TeamSupport.Data
 
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WaterCoolerView] WH);";
-        deleteCommand.Parameters.Add("", SqlDbType.Int);
-        deleteCommand.Parameters[""].Value = ;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WaterCoolerView] WHERE ([MessageID] = @MessageID);";
+        deleteCommand.Parameters.Add("MessageID", SqlDbType.Int);
+        deleteCommand.Parameters["MessageID"].Value = messageID;
 
-        BeforeRowDelete();
+        BeforeRowDelete(messageID);
         deleteCommand.ExecuteNonQuery();
 		connection.Close();
         if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
-        AfterRowDelete();
+        AfterRowDelete(messageID);
       }
-      AfterDBDelete();
+      AfterDBDelete(messageID);
       
     }
 
@@ -204,7 +198,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WaterCoolerView] SET     [MessageID] = @MessageID,    [UserID] = @UserID,    [OrganizationID] = @OrganizationID,    [TimeStamp] = @TimeStamp,    [Message] = @Message,    [MessageParent] = @MessageParent,    [IsDeleted] = @IsDeleted,    [LastModified] = @LastModified,    [RefType] = @RefType,    [AttachmentID] = @AttachmentID  WH);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WaterCoolerView] SET     [UserID] = @UserID,    [OrganizationID] = @OrganizationID,    [TimeStamp] = @TimeStamp,    [GroupFor] = @GroupFor,    [ReplyTo] = @ReplyTo,    [Message] = @Message,    [MessageType] = @MessageType,    [UserName] = @UserName,    [GroupName] = @GroupName  WHERE ([MessageID] = @MessageID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("MessageID", SqlDbType.Int, 4);
@@ -235,6 +229,20 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("GroupFor", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ReplyTo", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 		tempParameter = updateCommand.Parameters.Add("Message", SqlDbType.Text, 2147483647);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -242,39 +250,25 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("MessageParent", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("IsDeleted", SqlDbType.Bit, 1);
+		tempParameter = updateCommand.Parameters.Add("MessageType", SqlDbType.VarChar, 50);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("LastModified", SqlDbType.DateTime, 8);
+		tempParameter = updateCommand.Parameters.Add("UserName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
-		  tempParameter.Precision = 23;
-		  tempParameter.Scale = 23;
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
+		tempParameter = updateCommand.Parameters.Add("GroupName", SqlDbType.VarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("AttachmentID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 
@@ -282,42 +276,28 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WaterCoolerView] (    [MessageID],    [UserID],    [OrganizationID],    [TimeStamp],    [Message],    [MessageParent],    [IsDeleted],    [LastModified],    [RefType],    [AttachmentID]) VALUES ( @MessageID, @UserID, @OrganizationID, @TimeStamp, @Message, @MessageParent, @IsDeleted, @LastModified, @RefType, @AttachmentID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WaterCoolerView] (    [MessageID],    [UserID],    [OrganizationID],    [TimeStamp],    [GroupFor],    [ReplyTo],    [Message],    [MessageType],    [UserName],    [GroupName]) VALUES ( @MessageID, @UserID, @OrganizationID, @TimeStamp, @GroupFor, @ReplyTo, @Message, @MessageType, @UserName, @GroupName); SET @Identity = SCOPE_IDENTITY();";
 
 		
-		tempParameter = insertCommand.Parameters.Add("AttachmentID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("LastModified", SqlDbType.DateTime, 8);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 23;
-		  tempParameter.Scale = 23;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("IsDeleted", SqlDbType.Bit, 1);
+		tempParameter = insertCommand.Parameters.Add("GroupName", SqlDbType.VarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("MessageParent", SqlDbType.Int, 4);
+		tempParameter = insertCommand.Parameters.Add("UserName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("MessageType", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("Message", SqlDbType.Text, 2147483647);
@@ -325,6 +305,20 @@ namespace TeamSupport.Data
 		{
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ReplyTo", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("GroupFor", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("TimeStamp", SqlDbType.DateTime, 8);
@@ -361,8 +355,8 @@ namespace TeamSupport.Data
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WaterCoolerView] WH);";
-		deleteCommand.Parameters.Add("", SqlDbType.Int);
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WaterCoolerView] WHERE ([MessageID] = @MessageID);";
+		deleteCommand.Parameters.Add("MessageID", SqlDbType.Int);
 
 		try
 		{
@@ -384,10 +378,10 @@ namespace TeamSupport.Data
 			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
 
 			  insertCommand.ExecuteNonQuery();
-			  Table.Columns[""].AutoIncrement = false;
-			  Table.Columns[""].ReadOnly = false;
+			  Table.Columns["MessageID"].AutoIncrement = false;
+			  Table.Columns["MessageID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				waterCoolerViewItem.Row[""] = (int)insertCommand.Parameters["Identity"].Value;
+				waterCoolerViewItem.Row["MessageID"] = (int)insertCommand.Parameters["Identity"].Value;
 			  AfterRowInsert(waterCoolerViewItem);
 			}
 			else if (waterCoolerViewItem.Row.RowState == DataRowState.Modified)
@@ -406,8 +400,8 @@ namespace TeamSupport.Data
 			}
 			else if (waterCoolerViewItem.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)waterCoolerViewItem.Row["", DataRowVersion.Original];
-			  deleteCommand.Parameters[""].Value = id;
+			  int id = (int)waterCoolerViewItem.Row["MessageID", DataRowVersion.Original];
+			  deleteCommand.Parameters["MessageID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
 			  AfterRowDelete(id);
@@ -443,11 +437,11 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public WaterCoolerViewItem FindBy(int )
+    public WaterCoolerViewItem FindByMessageID(int messageID)
     {
       foreach (WaterCoolerViewItem waterCoolerViewItem in this)
       {
-        if (waterCoolerViewItem. == )
+        if (waterCoolerViewItem.MessageID == messageID)
         {
           return waterCoolerViewItem;
         }
@@ -463,21 +457,21 @@ namespace TeamSupport.Data
       return new WaterCoolerViewItem(row, this);
     }
     
-    public virtual void LoadBy(int )
+    public virtual void LoadByMessageID(int messageID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [MessageID], [UserID], [OrganizationID], [TimeStamp], [Message], [MessageParent], [IsDeleted], [LastModified], [RefType], [AttachmentID] FROM [dbo].[WaterCoolerView] WH);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [MessageID], [UserID], [OrganizationID], [TimeStamp], [GroupFor], [ReplyTo], [Message], [MessageType], [UserName], [GroupName] FROM [dbo].[WaterCoolerView] WHERE ([MessageID] = @MessageID);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("", );
+        command.Parameters.AddWithValue("MessageID", messageID);
         Fill(command);
       }
     }
     
-    public static WaterCoolerViewItem GetWaterCoolerViewItem(LoginUser loginUser, int )
+    public static WaterCoolerViewItem GetWaterCoolerViewItem(LoginUser loginUser, int messageID)
     {
       WaterCoolerView waterCoolerView = new WaterCoolerView(loginUser);
-      waterCoolerView.LoadBy();
+      waterCoolerView.LoadByMessageID(messageID);
       if (waterCoolerView.IsEmpty)
         return null;
       else

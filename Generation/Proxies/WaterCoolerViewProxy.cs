@@ -17,12 +17,12 @@ namespace TeamSupport.Data
     [DataMember] public int UserID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public DateTime TimeStamp { get; set; }
+    [DataMember] public int? GroupFor { get; set; }
+    [DataMember] public int? ReplyTo { get; set; }
     [DataMember] public string Message { get; set; }
-    [DataMember] public int? MessageParent { get; set; }
-    [DataMember] public bool IsDeleted { get; set; }
-    [DataMember] public DateTime LastModified { get; set; }
-    [DataMember] public int? RefType { get; set; }
-    [DataMember] public int? AttachmentID { get; set; }
+    [DataMember] public string MessageType { get; set; }
+    [DataMember] public string UserName { get; set; }
+    [DataMember] public string GroupName { get; set; }
           
   }
   
@@ -31,17 +31,17 @@ namespace TeamSupport.Data
     public WaterCoolerViewItemProxy GetProxy()
     {
       WaterCoolerViewItemProxy result = new WaterCoolerViewItemProxy();
-      result.AttachmentID = this.AttachmentID;
-      result.RefType = this.RefType;
-      result.IsDeleted = this.IsDeleted;
-      result.MessageParent = this.MessageParent;
+      result.GroupName = this.GroupName;
+      result.UserName = this.UserName;
+      result.MessageType = this.MessageType;
       result.Message = this.Message;
+      result.ReplyTo = this.ReplyTo;
+      result.GroupFor = this.GroupFor;
       result.OrganizationID = this.OrganizationID;
       result.UserID = this.UserID;
       result.MessageID = this.MessageID;
        
       result.TimeStamp = DateTime.SpecifyKind(this.TimeStampUtc, DateTimeKind.Utc);
-      result.LastModified = DateTime.SpecifyKind(this.LastModifiedUtc, DateTimeKind.Utc);
        
        
       return result;
