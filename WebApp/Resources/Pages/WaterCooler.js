@@ -505,7 +505,8 @@ WaterCoolerPage = function () {
             var trc = $('<div>')
             .addClass('treplycontainer')
             .appendTo(tpic);
-            var tptxt = $('<div>')
+
+            var tpcommenttxt = $('<div>')
             .addClass('topicComments')
             .html(thread.Replies.length + " comments")
             .click(function (e) {

@@ -576,6 +576,22 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public AutocompleteItem[] WCSearchOrganization(string searchTerm)
+    {
+        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+        organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true);
+
+        List<AutocompleteItem> list = new List<AutocompleteItem>();
+        foreach (Organization organization in organizations)
+        {
+            list.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString(), organization.OrganizationID.ToString()));
+        }
+
+        return list.ToArray();
+    }
+
+
+    [WebMethod]
     public string ReadServiceSettings()
     {
       if (TSAuthentication.UserID != 34) return "";
