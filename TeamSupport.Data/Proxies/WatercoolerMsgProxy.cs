@@ -6,14 +6,13 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
-
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(WaterCoolerViewItemProxy))]
-  public class WaterCoolerViewItemProxy
+  [KnownType(typeof(WatercoolerMsgItemProxy))]
+  public class WatercoolerMsgItemProxy
   {
-    public WaterCoolerViewItemProxy() {}
+    public WatercoolerMsgItemProxy() {}
     [DataMember] public int MessageID { get; set; }
     [DataMember] public int UserID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
@@ -22,14 +21,14 @@ namespace TeamSupport.Data
     [DataMember] public int? MessageParent { get; set; }
     [DataMember] public bool IsDeleted { get; set; }
     [DataMember] public DateTime LastModified { get; set; }
-    [DataMember] public string UserName { get; set; }     
+    [DataMember] public string UserName { get; set; }              
   }
   
-  public partial class WaterCoolerViewItem : BaseItem
+  public partial class WatercoolerMsgItem : BaseItem
   {
-    public WaterCoolerViewItemProxy GetProxy()
+    public WatercoolerMsgItemProxy GetProxy()
     {
-      WaterCoolerViewItemProxy result = new WaterCoolerViewItemProxy();
+      WatercoolerMsgItemProxy result = new WatercoolerMsgItemProxy();
       result.IsDeleted = this.IsDeleted;
       result.MessageParent = this.MessageParent;
       result.Message = MakeLink(this.Message);
@@ -37,7 +36,7 @@ namespace TeamSupport.Data
       result.UserID = this.UserID;
       result.MessageID = this.MessageID;
       result.UserName = Users.GetUserFullName(BaseCollection.LoginUser, this.UserID);
-       
+
       result.TimeStamp = DateTime.SpecifyKind(this.TimeStampUtc, DateTimeKind.Utc).ToString("o");
       result.LastModified = DateTime.SpecifyKind(this.LastModifiedUtc, DateTimeKind.Utc);
        
@@ -50,7 +49,7 @@ namespace TeamSupport.Data
         //Regex regx = new Regex("http://([\\w+?\\.\\w+])+([a-zA-Z0-9\\~\\!\\@\\#\\$\\%\\^\\&amp;\\*\\(\\)_\\-\\=\\+\\\\\\/\\?\\.\\:\\;\\'\\,]*)?", RegexOptions.IgnoreCase);
         //(http://|)(www\.)?([^\.]+)\.(\w{2})$
         //(?<http>(http:[/][/]|www.)([a-z]|[A-Z]|[0-9]|[/.]|[~])*)
-        Regex regx = new Regex(@"((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)", RegexOptions.IgnoreCase);
+        Regex regx = new Regex("http[s]?://[^\\s<>\"]+|www\\.[^\\s<>\"]+", RegexOptions.IgnoreCase);
         MatchCollection mactches = regx.Matches(txt);
 
         foreach (Match match in mactches)

@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   
-  public partial class WaterCoolerView
+  public partial class WatercoolerMsg
   {
     protected override void BuildFieldMap()
     {
@@ -21,8 +21,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("MessageParent", "MessageParent", false, false, false);
       _fieldMap.AddMap("IsDeleted", "IsDeleted", false, false, false);
       _fieldMap.AddMap("LastModified", "LastModified", false, false, false);
-      _fieldMap.AddMap("RefType", "RefType", false, false, false);
-      _fieldMap.AddMap("AttachmentID", "AttachmentID", false, false, false);
             
     }
   }

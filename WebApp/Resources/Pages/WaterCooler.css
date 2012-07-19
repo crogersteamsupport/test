@@ -1,23 +1,183 @@
 ﻿.wc-reply { padding: .5em .5em; margin: .25em 0;}
 .wc-thread { margin-top: 2em;}
 
+#maincontainer{
+    /*width: 500px;*/
+    display: inline-block;
+    width: 100%;    
+}
+
+.faketextcontainer{
+    border: 1px solid #DDD;
+    height:32px;
+    line-height:32px;
+    overflow: hidden;
+    /*margin-bottom:5px;*/}
+
+.faketext{
+    font-size:14px;
+    margin-left:10px;}
+
+.commentcontainer{
+    border: 1px solid #DDD;
+    display:none;
+    overflow: hidden;
+    }
+
+.attachrow{
+    border-top:1px solid #ddd;
+    background-color: #F7F7F7;
+    padding: .5em;}
+
 .boxsizingBorder {
 box-sizing: border-box;
 -webkit-box-sizing:border-box;
 -moz-box-sizing: border-box;
 -ms-box-sizing: border-box;
-}
+font-size:14px !important;
+/*padding:2px 0 0 9px;*/
+height:60px;
+resize:none;}
 
-textarea
-{
+#newcomment{float:right}
+
+.subcontainer{border-top:1px solid #ddd; padding: .5em;/*display:none;height: 22px*/}
+.ur{/*display:inline-block;*/line-height:1.5em}    
+
+.ulfn{padding:2px;line-height:1.5em}
+
+.topic_container{margin-top:10px}
+.topic{border: 1px solid #ddd; padding: 5px;min-height:55px}
+.topicavatar{float:left}
+.topicavatarlrg{float:left;height:48px;width:48px;margin-right: 15px}
+.topicavatarsm{float:left;height:32px;width:32px;margin-right: 15px;padding-top:5px;padding-left: 5px;}
+/*.tpic{display:table-cell;width: 500px;}*/
+.tpic{display:block;margin-left:68px}
+.topicln {line-height:2em;}
+.topicts{color:#666;font-size:10px;margin-left:1em}
+.topicrel{color:#666;float:right}
+.topictext{padding-top:4px;padding-bottom:15px;display: inline-block;}
+.treplycontainer{display:block;border-top: 1px solid #E3E3E3;border-left: 1px solid #E3E3E3; border-right: 1px solid #E3E3E3;background-color: #F7F7F7;}
+.topicrpy{/*border-left: 1px solid #E3E3E3;border-right: 1px solid #E3E3E3/*padding:8px;/*border-bottom: 1px solid #E3E3E3*/}
+.topictm{color:#666;font-size:10px;margin: 0 1em 0 1em}
+.topicreplytxt{padding-top:4px;padding-bottom: 15px;line-height:1.4;display:table-row}
+.topicComments{padding:1em 0px 1em 5px;display: inline-block;font-weight: bold;color:#0057C2; cursor:pointer}
+.hiddenComments{display:none}
+.topiclike{font-size: 10px;padding-left: 5px}
+.likestar{width:10px;}
+#likeCounter{font-size: 11px;}
+
+.mainavatar{float:left}
+.mainavatarlrg{height:32px;width:32px;margin-left: 5px;margin-right: 35px;}
+
+
+.topiciconnotes{background-image:url('../Images/nav/16/Tasks.png');cursor: pointer;display: block;height: 16px;width: 16px;margin: 0 5px 5px 0;}
+.topicicontix{background-image:url('../Images/nav/16/Tickets.png');cursor: pointer;display: inline-block;height: 16px;width: 16px;margin-right: 5px;}
+.topicicongrp{background-image:url('../Images/nav/16/Groups.png');cursor: pointer;display: inline-block;height: 16px;width: 16px;}
+.topiciconprod{background-image:url('../Images/nav/16/Products.png');cursor: pointer;display: inline-block;height: 16px;width: 16px;}
+.topiciconcompany{background-image:url('../Images/nav/16/Customers.png');cursor: pointer;display: inline-block;height: 16px;width: 16px;}
+.topiciconuser{background-image:url('../Images/nav/16/Users.png');cursor: pointer;display: inline-block;height: 16px;width: 16px;}
+
+.topicHistory{background-image:url('../Images/icons/Information.png');cursor: pointer;display: inline-block;height: 16px;width: 16px;}
+
+.attachment-list{padding: 10px 0 0 0}
+.attfilename{margin-right: 5px; line-height: 16px;}
+
+.ts-icon-attachment{float:left; margin-right: 10px}
+
+.addatt{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/icons/Add.png');cursor:pointer}
+.addticket{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
+.addgroup{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
+.addcustomer{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
+.addproduct{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
+.adduser{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
+
+.postcontainer{/*padding:10px 0 10px 0*/}
+
+.singlelinecomment {overflow:hidden; height: auto !important}
+textarea{
     border:none;
     width:100%;
     margin:5px 0;
-    padding:3px;
-}
+    padding:3px;}
 
 .ticket-removable-item {
-padding: .25em .5em;
+/*padding: .25em .5em;*/
 margin: 0 .5em .5em 0;
 float: left;
+}
+
+.ticket-removable-item .ui-icon-close {
+    cursor: pointer;
+    float: right;
+    margin-left: 0.25em;
+    width: 16px;
+}
+
+.ticket-removable-item-title, .ticket-removable-item-title a.ui-state-default {
+    float: left;
+    font-weight: bold;
+}
+
+form.file-upload {
+position: relative;
+overflow: hidden;
+direction: ltr;
+cursor: pointer;
+color: #333;
+width: 8em;
+height: 20px;
+line-height: 0;
+/*float: left;*/
+margin-top: 0em;
+}
+
+form.file-upload input {
+    -moz-transform: translate(-800px, 0pt) scale(10);
+    /*border: 300px solid transparent;*/
+    cursor: pointer;
+    height: 1em;
+    margin: 0;
+    opacity: 0;
+    /*margin: 0 0 0 -210px;*/
+}
+
+.deletepadding {margin: .5em}
+
+.ts-linkb{font-weight:bold !important}
+.main-quick-ticket, .company-search, .user-search {width:250px}
+.main-quick-ticket-blur, .company-search-blur, .user-search-blur { font-style: italic;}
+
+#preview{
+	position:absolute;
+	display:none;
+	color:#fff;
+	}
+	
+.arrow_box {
+	position: relative;
+	background: #ffffff;
+	border: 2px solid #3D6DA7;
+}
+.arrow_box:after, .arrow_box:before {
+	right: 100%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.arrow_box:after {
+	border-right-color: #ffffff;
+	border-width: 10px;
+	top: 50%;
+	margin-top: -10px;
+}
+.arrow_box:before {
+	border-right-color: #3D6DA7;
+	border-width: 13px;
+	top: 50%;
+	margin-top: -13px;
 }

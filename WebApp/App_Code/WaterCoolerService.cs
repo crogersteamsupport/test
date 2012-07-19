@@ -13,9 +13,106 @@ using System.Text;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
+using SignalR.Hubs;
 
 namespace TSWebServices
 {
+    public class Chat1 : Hub
+    {
+        public void Send(string message)
+        {
+            // Call the addMessage method on all clients
+            Clients.addMessage(message);
+        }
+
+        public void NewThread(int messageID)
+        {
+            WaterCoolerThread thread = new WaterCoolerThread();
+
+            WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+            wcv.LoadByMessageID(messageID);
+
+            WaterCoolerView replies = new WaterCoolerView(TSAuthentication.GetLoginUser());
+            replies.LoadReplies(messageID);
+
+            WatercoolerAttachments wcgroups = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wcgroups.LoadByType(messageID, WaterCoolerAttachmentType.Group);
+
+            WatercoolerAttachments wctickets = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wctickets.LoadByType(messageID, WaterCoolerAttachmentType.Ticket);
+
+            WatercoolerAttachments wcprods = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wcprods.LoadByType(messageID, WaterCoolerAttachmentType.Product);
+
+            WatercoolerAttachments wccompany = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wccompany.LoadByType(messageID, WaterCoolerAttachmentType.Company);
+
+            WatercoolerAttachments wcuseratt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wcuseratt.LoadByType(messageID, WaterCoolerAttachmentType.User);
+
+            thread.Message = wcv.GetWaterCoolerViewItemProxies()[0];
+            thread.Replies = replies.GetWaterCoolerViewItemProxies();
+            thread.Groups = wcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
+            thread.Tickets = wctickets.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
+            thread.Products = wcprods.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
+            thread.Company = wccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
+            thread.User = wcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+
+            //If this is a new thread
+            if (thread.Message.MessageParent == -1)
+            {
+                Clients.addThread(thread);
+            }
+            else
+            {
+                Clients.addComment(thread);
+                int parentThreadID = (int)thread.Message.MessageParent;
+
+                WaterCoolerThread parentThread = new WaterCoolerThread();
+                WaterCoolerView parentThreadwcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+                parentThreadwcv.LoadByMessageID(parentThreadID);
+
+                WatercoolerAttachments parentThreadwcgroups = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                parentThreadwcgroups.LoadByType(parentThreadID, WaterCoolerAttachmentType.Group);
+
+                WatercoolerAttachments parentThreadwctickets = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                parentThreadwctickets.LoadByType(parentThreadID, WaterCoolerAttachmentType.Ticket);
+
+                WatercoolerAttachments parentThreadwcprods = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                parentThreadwcprods.LoadByType(parentThreadID, WaterCoolerAttachmentType.Product);
+
+                WatercoolerAttachments parentThreadwccompany = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                parentThreadwccompany.LoadByType(parentThreadID, WaterCoolerAttachmentType.Company);
+
+                WatercoolerAttachments parentThreadwcuseratt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+                parentThreadwcuseratt.LoadByType(parentThreadID, WaterCoolerAttachmentType.User);
+
+                parentThread.Message = parentThreadwcv.GetWaterCoolerViewItemProxies()[0];
+                parentThread.Groups = parentThreadwcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
+                parentThread.Tickets = parentThreadwctickets.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
+                parentThread.Products = parentThreadwcprods.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
+                parentThread.Company = parentThreadwccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
+                parentThread.User = parentThreadwcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+
+                Clients.updateattachments(parentThread);
+            }
+        }
+
+        public void Del(int messageID)
+        {
+            WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+            wcv.LoadByMessageID(messageID);
+
+            Clients.deleteMessage(messageID, wcv[0].MessageParent);
+        }
+
+        public void AddLike(WatercoolerLikProxy[] likes, int messageID, int messageParentID)
+        {
+            Clients.updateLikes(likes, messageID, messageParentID);
+        }
+
+    }
+
   [ScriptService]
   [WebService(Namespace = "http://teamsupport.com/")]
   [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
@@ -24,35 +121,290 @@ namespace TSWebServices
 
     public WaterCoolerService() { }
 
-    /// <summary>
-    /// Gets the top 25 wc messages plus their replies
-    /// </summary>
-    /// <returns></returns>
+    [WebMethod]
+    public bool IsValid(int pageID, int itemID, int messageID)
+    {
+        WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+        wcv.CheckMessage(pageID, itemID, messageID);
+
+        if (wcv.IsEmpty)
+            return false;
+        else
+            return true;
+    }
 
     [WebMethod]
     public WaterCoolerThread[] GetThreads()
     {
-      List<WaterCoolerThread> result = new List<WaterCoolerThread>();
-      //This reads the WaterCoolerView because it has UserNames and Groups.  This is readonly
-      WaterCoolerView wc = new WaterCoolerView(TSAuthentication.GetLoginUser());
-      wc.LoadTop25Threads();
+        List<WaterCoolerThread> result = new List<WaterCoolerThread>();
+
+        // Main page [group, user]
+        // Ticket page
+        // Product page
+        // Company page
+
+        WaterCoolerView wc = new WaterCoolerView(TSAuthentication.GetLoginUser());
+        wc.LoadTop10Threads(-1, -1);
 
 
-      foreach (WaterCoolerViewItem item in wc)
-      {
-        WaterCoolerThread thread = new WaterCoolerThread();
-        thread.Message = item.GetProxy();
+        foreach (WaterCoolerViewItem item in wc)
+        {
+            WaterCoolerThread thread = new WaterCoolerThread();
 
-        WaterCoolerView replies = new WaterCoolerView(wc.LoginUser);
-        replies.LoadReplies(item.MessageID);
+            WaterCoolerView replies = new WaterCoolerView(wc.LoginUser);
+            replies.LoadReplies(item.MessageID);
 
-        thread.Replies = replies.GetWaterCoolerViewItemProxies();
-        result.Add(thread);
-      }
+            WatercoolerAttachments threadAttachments = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            threadAttachments.LoadByMessageID(item.MessageID);
 
-      return result.ToArray();
+            thread.Message = item.GetProxy();
+            thread.Replies = replies.GetWaterCoolerViewItemProxies();
+            thread.Groups = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
+            thread.Tickets = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
+            thread.Products = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
+            thread.Company = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
+            thread.User = threadAttachments.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+            result.Add(thread);
+        }
+
+        return result.ToArray();
     }
 
+    [WebMethod]
+    public int NewComment(string data)
+    {
+        WatercoolerJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<WatercoolerJsonInfo>(data);
+        WatercoolerMsgItem wc = (new WatercoolerMsg(TSAuthentication.GetLoginUser())).AddNewWatercoolerMsgItem();
+        int parentmsgid = info.ParentTicketID;
+
+        wc.UserID = TSAuthentication.UserID;
+        wc.OrganizationID = TSAuthentication.OrganizationID;
+        wc.TimeStamp = DateTime.UtcNow;
+        wc.LastModified = DateTime.UtcNow;
+        wc.Message = info.Description;
+        wc.MessageParent = parentmsgid;
+        
+        wc.Collection.Save();
+
+        if (info.ParentTicketID != -1)
+        {
+            WatercoolerMsg wcm = new WatercoolerMsg(TSAuthentication.GetLoginUser());
+            wcm.LoadByMessageID(parentmsgid);
+
+            wcm[0].LastModified = DateTime.UtcNow;
+            wcm[0].Collection.Save();
+        }
+
+        foreach (int ticketID in info.Tickets)
+        {
+            AddAttachment(wc.MessageID, ticketID, WaterCoolerAttachmentType.Ticket);
+            if (wc.MessageParent != -1)
+                AddAttachment((int)wc.MessageParent, ticketID, WaterCoolerAttachmentType.Ticket);
+        }
+
+        foreach (int groupID in info.Groups)
+        {
+            AddAttachment(wc.MessageID, groupID, WaterCoolerAttachmentType.Group);
+            if (wc.MessageParent != -1)
+                AddAttachment((int)wc.MessageParent, groupID, WaterCoolerAttachmentType.Group);
+        }
+
+        foreach (int productID in info.Products)
+        {
+            AddAttachment(wc.MessageID, productID, WaterCoolerAttachmentType.Product);
+            if (wc.MessageParent != -1)
+                AddAttachment((int)wc.MessageParent, productID, WaterCoolerAttachmentType.Product);
+        }
+
+        foreach (int CompanyID in info.Company)
+        {
+            AddAttachment(wc.MessageID, CompanyID, WaterCoolerAttachmentType.Company);
+            if (wc.MessageParent != -1)
+                AddAttachment((int)wc.MessageParent, CompanyID, WaterCoolerAttachmentType.Company);
+        }
+
+        foreach (int UserID in info.User)
+        {
+            AddAttachment(wc.MessageID, UserID, WaterCoolerAttachmentType.User);
+            if (wc.MessageParent != -1)
+                AddAttachment((int)wc.MessageParent, UserID, WaterCoolerAttachmentType.User);
+        }
+
+        //WaterCoolerThread result = new WaterCoolerThread();
+        //WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+        //wcv.LoadByMessageID(wc.MessageID);
+
+        //WaterCoolerView replies = new WaterCoolerView(TSAuthentication.GetLoginUser());
+        //replies.LoadReplies(wc.MessageID);
+
+        //WatercoolerGroupAtt wcgroups = new WatercoolerGroupAtt(TSAuthentication.GetLoginUser());
+        //wcgroups.LoadByMessageID(resultid);
+
+        //WatercoolerTicketAtt wctickets = new WatercoolerTicketAtt(TSAuthentication.GetLoginUser());
+        //wctickets.LoadByMessageID(resultid);
+
+        //WatercoolerProductAtt wcprods = new WatercoolerProductAtt(TSAuthentication.GetLoginUser());
+        //wcprods.LoadByMessageID(resultid);
+
+        //WatercoolerCompanyAtt wccompany = new WatercoolerCompanyAtt(TSAuthentication.GetLoginUser());
+        //wccompany.LoadByMessageID(resultid);
+
+        //WatercoolerUserAtt wcuseratt = new WatercoolerUserAtt(TSAuthentication.GetLoginUser());
+        //wcuseratt.LoadByMessageID(resultid);
+
+        //result.Message = wcv.GetWaterCoolerViewItemProxies()[0];
+        //result.Groups = wcgroups.GetWatercoolerGroupAttItemProxies();
+        //result.Tickets = wctickets.GetWatercoolerTicketAttItemProxies();
+        //result.Replies = replies.GetWaterCoolerViewItemProxies();
+        //result.Products = wcprods.GetWatercoolerProductAttItemProxies();
+        //result.Company = wccompany.GetWatercoolerCompanyAttItemProxies();
+        //result.User = wcuseratt.GetWatercoolerUserAttItemProxies();
+
+        return wc.MessageID;
+    }
+
+    [WebMethod]
+    public void AddAttachment(int messageID, int attachmentID, WaterCoolerAttachmentType attachmentType)
+    {
+        try
+        {
+            WatercoolerAttachment ticketAttachment = (new WatercoolerAttachments(TSAuthentication.GetLoginUser()).AddNewWatercoolerAttachment());
+            ticketAttachment.MessageID = messageID;
+            ticketAttachment.AttachmentID = attachmentID;
+            ticketAttachment.RefType = attachmentType;
+            ticketAttachment.DateCreated = DateTime.UtcNow;
+            ticketAttachment.CreatorID = TSAuthentication.GetLoginUser().UserID;
+            ticketAttachment.Collection.Save();
+        }
+        catch (Exception e)
+        {
+
+        }
+    }
+
+    [WebMethod]
+    public AttachmentProxy[] GetAttachments(int msgid)
+    {
+        Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
+        attachments.LoadByWatercoolerID(msgid);
+        return attachments.GetAttachmentProxies();
+    }
+
+    [WebMethod]
+    public WatercoolerLikProxy[] GetLikes(int msgid)
+    {
+        WatercoolerLikes likes = new WatercoolerLikes(TSAuthentication.GetLoginUser());
+        likes.LoadByMessageID(msgid);
+
+        return likes.GetWatercoolerLikProxies();
+    }
+
+    [WebMethod]
+    public WaterCoolerThread[] GetMoreThreads(int pageID, int itemID, int msgcount)
+    {
+        List<WaterCoolerThread> result = new List<WaterCoolerThread>();
+
+        //This reads the WaterCoolerView because it has UserNames and Groups.  This is readonly
+
+        WaterCoolerView wc = new WaterCoolerView(TSAuthentication.GetLoginUser());
+        wc.LoadMoreThreads(pageID, itemID, msgcount);
+
+        foreach (WaterCoolerViewItem item in wc)
+        {
+            WaterCoolerThread thread = new WaterCoolerThread();
+
+            WaterCoolerView replies = new WaterCoolerView(wc.LoginUser);
+            replies.LoadReplies(item.MessageID);
+
+            WatercoolerAttachments wcgroups = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wcgroups.LoadByType(item.MessageID, WaterCoolerAttachmentType.Group);
+
+            WatercoolerAttachments wctickets = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wctickets.LoadByType(item.MessageID, WaterCoolerAttachmentType.Ticket);
+
+            WatercoolerAttachments wcprods = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wcprods.LoadByType(item.MessageID, WaterCoolerAttachmentType.Product);
+
+            WatercoolerAttachments wccompany = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wccompany.LoadByType(item.MessageID, WaterCoolerAttachmentType.Company);
+
+            WatercoolerAttachments wcuseratt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+            wcuseratt.LoadByType(item.MessageID, WaterCoolerAttachmentType.User);
+
+            thread.Message = item.GetProxy();
+            thread.Replies = replies.GetWaterCoolerViewItemProxies();
+            thread.Groups = wcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
+            thread.Tickets = wctickets.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
+            thread.Products = wcprods.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
+            thread.Company = wccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
+            thread.User = wcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+
+            result.Add(thread);
+        }
+
+        return result.ToArray();
+    }
+
+
+    [WebMethod]
+    public WaterCoolerThread[] GetUpdatedThreads(int msgcount, int pausetime)
+    {
+        List<WaterCoolerThread> result = new List<WaterCoolerThread>();
+
+        //This reads the WaterCoolerView because it has UserNames and Groups.  This is readonly
+
+        WaterCoolerView wc = new WaterCoolerView(TSAuthentication.GetLoginUser());
+        //wc.LoadUpdatedThreads(msgcount, pausetime);
+
+
+        foreach (WaterCoolerViewItem item in wc)
+        {
+            WaterCoolerThread thread = new WaterCoolerThread();
+
+            WaterCoolerView replies = new WaterCoolerView(wc.LoginUser);
+            replies.LoadReplies(item.MessageID);
+
+            //WatercoolerGroupAtt wcgroups = new WatercoolerGroupAtt(TSAuthentication.GetLoginUser());
+            //wcgroups.LoadByMessageID(item.MessageID);
+            //WatercoolerTicketAtt wctickets = new WatercoolerTicketAtt(TSAuthentication.GetLoginUser());
+            //wctickets.LoadByMessageID(item.MessageID);
+            //WatercoolerProductAtt wcprods = new WatercoolerProductAtt(TSAuthentication.GetLoginUser());
+            //wcprods.LoadByMessageID(item.MessageID);
+
+            //WatercoolerCompanyAtt wccompany = new WatercoolerCompanyAtt(TSAuthentication.GetLoginUser());
+            //wccompany.LoadByMessageID(item.MessageID);
+
+            //WatercoolerUserAtt wcuseratt = new WatercoolerUserAtt(TSAuthentication.GetLoginUser());
+            //wcuseratt.LoadByMessageID(item.MessageID);
+
+            thread.Message = item.GetProxy();
+            thread.Replies = replies.GetWaterCoolerViewItemProxies();
+            //thread.Groups = wcgroups.GetWatercoolerGroupAttItemProxies();
+            //thread.Tickets = wctickets.GetWatercoolerTicketAttItemProxies();
+            //thread.Products = wcprods.GetWatercoolerProductAttItemProxies();
+            //thread.Company = wccompany.GetWatercoolerCompanyAttItemProxies();
+            //thread.User = wcuseratt.GetWatercoolerUserAttItemProxies();
+            result.Add(thread);
+        }
+
+        return result.ToArray();
+    }
+
+    [WebMethod]
+    public WatercoolerLikProxy[] AddCommentLike(int MessageID)
+    {
+        WatercoolerLik wclikes = new WatercoolerLikes(TSAuthentication.GetLoginUser()).AddNewWatercoolerLik();
+        wclikes.MessageID = MessageID;
+        wclikes.UserID = TSAuthentication.GetLoginUser().UserID;
+        wclikes.DateCreated = DateTime.UtcNow;
+        wclikes.Collection.Save();
+
+        WatercoolerLikes likes = new WatercoolerLikes(TSAuthentication.GetLoginUser());
+        likes.LoadByMessageID(MessageID);
+
+        return likes.GetWatercoolerLikProxies();
+
+    }
 
     /// <summary>
     /// Saves a message to the watercooler DB from javascript
@@ -87,26 +439,47 @@ namespace TSWebServices
     [WebMethod]
     public bool DeleteMessage(int messageID)
     {
-      // DON'T user the view to save to the DB.  User the WaterCooler table.  The views are read only
-      WaterCoolerItem wc = WaterCooler.GetWaterCoolerItem(TSAuthentication.GetLoginUser(), messageID);
-      if (wc.OrganizationID != TSAuthentication.OrganizationID) return false;
-      if (wc.UserID != TSAuthentication.UserID && !TSAuthentication.IsSystemAdmin) return false;
-      wc.Delete();
-      wc.Collection.Save();
-      return true;
+
+        WatercoolerMsg wcm = new WatercoolerMsg(TSAuthentication.GetLoginUser());
+        wcm.LoadByMessageID(messageID);
+
+        if (wcm[0].OrganizationID != TSAuthentication.OrganizationID) return false;
+        if (wcm[0].UserID != TSAuthentication.UserID && !TSAuthentication.IsSystemAdmin) return false;
+
+        wcm[0].IsDeleted = true;
+        wcm[0].Collection.Save();
+
+        //wcm[0].Delete();
+        //wcm[0].Collection.Save();
+
+        return true;
     }
   }
-
-
 
   [DataContract]
   public class WaterCoolerThread
   {
     [DataMember] public WaterCoolerViewItemProxy Message { get; set; }
     [DataMember] public WaterCoolerViewItemProxy[] Replies { get; set; }
+    [DataMember] public WatercoolerAttachmentProxy[] Tickets { get; set; }
+    [DataMember] public WatercoolerAttachmentProxy[] Groups { get; set; }
+    [DataMember] public WatercoolerAttachmentProxy[] Products { get; set; }
+    [DataMember] public WatercoolerAttachmentProxy[] Company { get; set; }
+    [DataMember] public WatercoolerAttachmentProxy[] User { get; set; }
   }
 
-
+  [DataContract(Namespace = "http://teamsupport.com/")]
+  public class WatercoolerJsonInfo
+  {
+      public WatercoolerJsonInfo() { }
+      [DataMember] public string Description { get; set; }
+      [DataMember] public List<int> Tickets { get; set; }
+      [DataMember] public List<int> Groups { get; set; }
+      [DataMember] public List<int> Products { get; set; }
+      [DataMember] public List<int> Company { get; set; }
+      [DataMember] public List<int> User { get; set; }
+      [DataMember] public int ParentTicketID { get; set; }
+  }
 
 
 }

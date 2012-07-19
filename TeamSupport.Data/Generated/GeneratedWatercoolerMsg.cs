@@ -8,24 +8,29 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class WaterCoolerViewItem : BaseItem
+  public partial class WatercoolerMsgItem : BaseItem
   {
-    private WaterCoolerView _waterCoolerView;
+    private WatercoolerMsg _watercoolerMsg;
     
-    public WaterCoolerViewItem(DataRow row, WaterCoolerView waterCoolerView): base(row, waterCoolerView)
+    public WatercoolerMsgItem(DataRow row, WatercoolerMsg watercoolerMsg): base(row, watercoolerMsg)
     {
-      _waterCoolerView = waterCoolerView;
+      _watercoolerMsg = watercoolerMsg;
     }
 	
     #region Properties
     
-    public WaterCoolerView Collection
+    public WatercoolerMsg Collection
     {
-      get { return _waterCoolerView; }
+      get { return _watercoolerMsg; }
     }
         
     
     
+    
+    public int MessageID
+    {
+      get { return (int)Row["MessageID"]; }
+    }
     
 
     
@@ -39,18 +44,6 @@ namespace TeamSupport.Data
     {
       get { return Row["MessageParent"] != DBNull.Value ? (int?)Row["MessageParent"] : null; }
       set { Row["MessageParent"] = CheckValue("MessageParent",value); }
-    }
-    
-    public int? RefType
-    {
-      get { return Row["RefType"] != DBNull.Value ? (int?)Row["RefType"] : null; }
-      set { Row["RefType"] = CheckValue("RefType",value); }
-    }
-    
-    public int? AttachmentID
-    {
-      get { return Row["AttachmentID"] != DBNull.Value ? (int?)Row["AttachmentID"] : null; }
-      set { Row["AttachmentID"] = CheckValue("AttachmentID",value); }
     }
     
 
@@ -71,12 +64,6 @@ namespace TeamSupport.Data
     {
       get { return (int)Row["UserID"]; }
       set { Row["UserID"] = CheckValue("UserID",value); }
-    }
-    
-    public int MessageID
-    {
-      get { return (int)Row["MessageID"]; }
-      set { Row["MessageID"] = CheckValue("MessageID",value); }
     }
     
 
@@ -116,9 +103,9 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class WaterCoolerView : BaseCollection, IEnumerable<WaterCoolerViewItem>
+  public partial class WatercoolerMsg : BaseCollection, IEnumerable<WatercoolerMsgItem>
   {
-    public WaterCoolerView(LoginUser loginUser): base (loginUser)
+    public WatercoolerMsg(LoginUser loginUser): base (loginUser)
     {
     }
 
@@ -126,7 +113,7 @@ namespace TeamSupport.Data
 
     public override string TableName
     {
-        get { return "NewWaterCoolerView"; }
+      get { return "WatercoolerMsg"; }
     }
     
     public override string PrimaryKeyFieldName
@@ -136,9 +123,9 @@ namespace TeamSupport.Data
 
 
 
-    public WaterCoolerViewItem this[int index]
+    public WatercoolerMsgItem this[int index]
     {
-      get { return new WaterCoolerViewItem(Table.Rows[index], this); }
+      get { return new WatercoolerMsgItem(Table.Rows[index], this); }
     }
     
 
@@ -146,10 +133,10 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(WaterCoolerViewItem waterCoolerViewItem);
-    partial void AfterRowInsert(WaterCoolerViewItem waterCoolerViewItem);
-    partial void BeforeRowEdit(WaterCoolerViewItem waterCoolerViewItem);
-    partial void AfterRowEdit(WaterCoolerViewItem waterCoolerViewItem);
+    partial void BeforeRowInsert(WatercoolerMsgItem watercoolerMsgItem);
+    partial void AfterRowInsert(WatercoolerMsgItem watercoolerMsgItem);
+    partial void BeforeRowEdit(WatercoolerMsgItem watercoolerMsgItem);
+    partial void AfterRowEdit(WatercoolerMsgItem watercoolerMsgItem);
     partial void BeforeRowDelete(int messageID);
     partial void AfterRowDelete(int messageID);    
 
@@ -160,11 +147,11 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public WaterCoolerViewItemProxy[] GetWaterCoolerViewItemProxies()
+    public WatercoolerMsgItemProxy[] GetWatercoolerMsgItemProxies()
     {
-      List<WaterCoolerViewItemProxy> list = new List<WaterCoolerViewItemProxy>();
+      List<WatercoolerMsgItemProxy> list = new List<WatercoolerMsgItemProxy>();
 
-      foreach (WaterCoolerViewItem item in this)
+      foreach (WatercoolerMsgItem item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -183,7 +170,7 @@ namespace TeamSupport.Data
 
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[NewWaterCoolerView] WHERE ([MessageID] = @MessageID);";
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WatercoolerMsg] WHERE ([MessageID] = @MessageID);";
         deleteCommand.Parameters.Add("MessageID", SqlDbType.Int);
         deleteCommand.Parameters["MessageID"].Value = messageID;
 
@@ -198,13 +185,13 @@ namespace TeamSupport.Data
     }
 
     public override void Save(SqlConnection connection)    {
-		//SqlTransaction transaction = connection.BeginTransaction("WaterCoolerViewSave");
+		//SqlTransaction transaction = connection.BeginTransaction("WatercoolerMsgSave");
 		SqlParameter tempParameter;
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-        updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[NewWaterCoolerView] SET     [UserID] = @UserID,    [OrganizationID] = @OrganizationID,    [TimeStamp] = @TimeStamp,    [Message] = @Message,    [MessageParent] = @MessageParent,    [IsDeleted] = @IsDeleted,    [LastModified] = @LastModified,    [RefType] = @RefType,    [AttachmentID] = @AttachmentID  WHERE ([MessageID] = @MessageID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WatercoolerMsg] SET     [UserID] = @UserID,    [OrganizationID] = @OrganizationID,    [TimeStamp] = @TimeStamp,    [Message] = @Message,    [MessageParent] = @MessageParent,    [IsDeleted] = @IsDeleted,    [LastModified] = @LastModified  WHERE ([MessageID] = @MessageID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("MessageID", SqlDbType.Int, 4);
@@ -263,41 +250,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("AttachmentID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-        insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[NewWaterCoolerView] (    [MessageID],    [UserID],    [OrganizationID],    [TimeStamp],    [Message],    [MessageParent],    [IsDeleted],    [LastModified],    [RefType],    [AttachmentID]) VALUES ( @MessageID, @UserID, @OrganizationID, @TimeStamp, @Message, @MessageParent, @IsDeleted, @LastModified, @RefType, @AttachmentID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WatercoolerMsg] (    [UserID],    [OrganizationID],    [TimeStamp],    [Message],    [MessageParent],    [IsDeleted],    [LastModified]) VALUES ( @UserID, @OrganizationID, @TimeStamp, @Message, @MessageParent, @IsDeleted, @LastModified); SET @Identity = SCOPE_IDENTITY();";
 
-		
-		tempParameter = insertCommand.Parameters.Add("AttachmentID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("LastModified", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -348,35 +307,28 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("MessageID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
 
 		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[NewWaterCoolerView] WHERE ([MessageID] = @MessageID);";
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[WatercoolerMsg] WHERE ([MessageID] = @MessageID);";
 		deleteCommand.Parameters.Add("MessageID", SqlDbType.Int);
 
 		try
 		{
-		  foreach (WaterCoolerViewItem waterCoolerViewItem in this)
+		  foreach (WatercoolerMsgItem watercoolerMsgItem in this)
 		  {
-			if (waterCoolerViewItem.Row.RowState == DataRowState.Added)
+			if (watercoolerMsgItem.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(waterCoolerViewItem);
+			  BeforeRowInsert(watercoolerMsgItem);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = waterCoolerViewItem.Row[parameter.ParameterName];
+				  parameter.Value = watercoolerMsgItem.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -387,26 +339,26 @@ namespace TeamSupport.Data
 			  Table.Columns["MessageID"].AutoIncrement = false;
 			  Table.Columns["MessageID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				waterCoolerViewItem.Row["MessageID"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(waterCoolerViewItem);
+				watercoolerMsgItem.Row["MessageID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(watercoolerMsgItem);
 			}
-			else if (waterCoolerViewItem.Row.RowState == DataRowState.Modified)
+			else if (watercoolerMsgItem.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(waterCoolerViewItem);
+			  BeforeRowEdit(watercoolerMsgItem);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = waterCoolerViewItem.Row[parameter.ParameterName];
+				parameter.Value = watercoolerMsgItem.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(waterCoolerViewItem);
+			  AfterRowEdit(watercoolerMsgItem);
 			}
-			else if (waterCoolerViewItem.Row.RowState == DataRowState.Deleted)
+			else if (watercoolerMsgItem.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)waterCoolerViewItem.Row["MessageID", DataRowVersion.Original];
+			  int id = (int)watercoolerMsgItem.Row["MessageID", DataRowVersion.Original];
 			  deleteCommand.Parameters["MessageID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
@@ -427,10 +379,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (WaterCoolerViewItem waterCoolerViewItem in this)
+      foreach (WatercoolerMsgItem watercoolerMsgItem in this)
       {
-        if (waterCoolerViewItem.Row.Table.Columns.Contains("CreatorID") && (int)waterCoolerViewItem.Row["CreatorID"] == 0) waterCoolerViewItem.Row["CreatorID"] = LoginUser.UserID;
-        if (waterCoolerViewItem.Row.Table.Columns.Contains("ModifierID")) waterCoolerViewItem.Row["ModifierID"] = LoginUser.UserID;
+        if (watercoolerMsgItem.Row.Table.Columns.Contains("CreatorID") && (int)watercoolerMsgItem.Row["CreatorID"] == 0) watercoolerMsgItem.Row["CreatorID"] = LoginUser.UserID;
+        if (watercoolerMsgItem.Row.Table.Columns.Contains("ModifierID")) watercoolerMsgItem.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -443,45 +395,45 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public WaterCoolerViewItem FindByMessageID(int messageID)
+    public WatercoolerMsgItem FindByMessageID(int messageID)
     {
-      foreach (WaterCoolerViewItem waterCoolerViewItem in this)
+      foreach (WatercoolerMsgItem watercoolerMsgItem in this)
       {
-        if (waterCoolerViewItem.MessageID == messageID)
+        if (watercoolerMsgItem.MessageID == messageID)
         {
-          return waterCoolerViewItem;
+          return watercoolerMsgItem;
         }
       }
       return null;
     }
 
-    public virtual WaterCoolerViewItem AddNewWaterCoolerViewItem()
+    public virtual WatercoolerMsgItem AddNewWatercoolerMsgItem()
     {
-      if (Table.Columns.Count < 1) LoadColumns("WaterCoolerView");
+      if (Table.Columns.Count < 1) LoadColumns("WatercoolerMsg");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new WaterCoolerViewItem(row, this);
+      return new WatercoolerMsgItem(row, this);
     }
     
     public virtual void LoadByMessageID(int messageID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-          command.CommandText = "SET NOCOUNT OFF; SELECT [MessageID], [UserID], [OrganizationID], [TimeStamp], [Message], [MessageParent], [IsDeleted], [LastModified], [RefType], [AttachmentID] FROM [dbo].[NewWaterCoolerView] WHERE ([MessageID] = @MessageID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [MessageID], [UserID], [OrganizationID], [TimeStamp], [Message], [MessageParent], [IsDeleted], [LastModified] FROM [dbo].[WatercoolerMsg] WHERE ([MessageID] = @MessageID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("MessageID", messageID);
         Fill(command);
       }
     }
     
-    public static WaterCoolerViewItem GetWaterCoolerViewItem(LoginUser loginUser, int messageID)
+    public static WatercoolerMsgItem GetWatercoolerMsgItem(LoginUser loginUser, int messageID)
     {
-      WaterCoolerView waterCoolerView = new WaterCoolerView(loginUser);
-      waterCoolerView.LoadByMessageID(messageID);
-      if (waterCoolerView.IsEmpty)
+      WatercoolerMsg watercoolerMsg = new WatercoolerMsg(loginUser);
+      watercoolerMsg.LoadByMessageID(messageID);
+      if (watercoolerMsg.IsEmpty)
         return null;
       else
-        return waterCoolerView[0];
+        return watercoolerMsg[0];
     }
     
     
@@ -489,13 +441,13 @@ namespace TeamSupport.Data
 
     #endregion
 
-    #region IEnumerable<WaterCoolerViewItem> Members
+    #region IEnumerable<WatercoolerMsgItem> Members
 
-    public IEnumerator<WaterCoolerViewItem> GetEnumerator()
+    public IEnumerator<WatercoolerMsgItem> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new WaterCoolerViewItem(row, this);
+        yield return new WatercoolerMsgItem(row, this);
       }
     }
 

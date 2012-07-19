@@ -38,6 +38,11 @@ namespace TeamSupport.Data
       LoadByReference(ReferenceType.Actions, actionID);
     }
 
+    public void LoadByWatercoolerID(int WaterCoolerID)
+    {
+        LoadByReference(ReferenceType.WaterCooler, WaterCoolerID);
+    }
+
     public void LoadByOrganizationID(int organizationID)
     {
       LoadByReference(ReferenceType.Organizations, organizationID);

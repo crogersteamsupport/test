@@ -48,7 +48,8 @@ namespace TeamSupport.Data
      Assets = 34,
      EmailPost = 35,
      ForumCategories = 36,
-     UserPhoto = 37
+     UserPhoto = 37,
+     WaterCooler = 38
   };
 
   public enum SystemUser
@@ -172,6 +173,13 @@ namespace TeamSupport.Data
 
   }
 
-
+  public enum WaterCoolerAttachmentType
+  {
+      Ticket = 0,
+      Product,
+      Company,
+      User,
+      Group
+  }
 
 }
