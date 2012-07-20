@@ -146,8 +146,7 @@ namespace TSWebServices
         if (org.ProductType != ProductType.Express)
         {
           items.Add(new TsMenuItem("wc", "mniWC", "Water Cooler", "vcr/142/images/nav/16/watercooler.png", string.Format(data, "WaterCooler/WaterCooler.aspx", "vcr/142/PaneInfo/WaterCooler.html")));
-          //if (TSAuthentication.OrganizationID == 1078 || TSAuthentication.OrganizationID == 13679)
-          if (TSAuthentication.UserID == 34 || TSAuthentication.OrganizationID == 13679) // you can put your personal UserID here until released
+          if (TSAuthentication.OrganizationID == 1078 || TSAuthentication.OrganizationID == 13679)
           items.Add(new TsMenuItem("wc2", "mniWC2", "New Water Cooler", "vcr/142/images/nav/16/watercooler.png", string.Format(data, "vcr/142/Pages/WaterCooler.html", "vcr/142/PaneInfo/WaterCooler.html")));
         }
 
