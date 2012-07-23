@@ -24,11 +24,18 @@ WaterCoolerPage = function () {
     var pageType = top.Ts.Utils.getQueryValue("pagetype", window);
     var pageID = top.Ts.Utils.getQueryValue("typeid", window);
 
-    if (!pageType)
+    if (pageType == null) {
         pageType = -1;
+    }
+    else {
+        $('#leftcontent').removeClass("span9");
+        $('#leftcontent').addClass("span12");
+        $('#sidebar').remove();
+    }
 
-    if (!pageID)
+    if (pageID == null)
         pageID = -1;
+
 
     //Start the polling service
     var chatHubClient = $.connection.chat1;
@@ -85,6 +92,7 @@ WaterCoolerPage = function () {
                 else {
                     $(parentThread).find('.topictext').after(replydiv.fadeIn(1500));
                 }
+
                 firstpost.prepend(parentThread.fadeIn(1500));
             }
             else {
@@ -196,13 +204,12 @@ WaterCoolerPage = function () {
     // Start the connection
     $.connection.hub.start();
 
-
     top.Ts.Services.Users.GetUserPhoto(-99, function (att) {
         $('.mainavatarlrg').attr("src", att);
     });
 
     //Gets the top 10 threads on initial page load
-    top.Ts.Services.WaterCooler.GetThreads(function (threads) {
+    top.Ts.Services.WaterCooler.GetThreads(pageType, pageID, function (threads) {
         var threadContainer = $('#maincontainer');
         if (threads.length > 0)
             $('.discussioncontainer').show();
@@ -224,6 +231,9 @@ WaterCoolerPage = function () {
             commentinfo.Description = $('#messagecontents').val();
             commentinfo.Attachments = new Array();
             commentinfo.ParentTicketID = -1;
+
+            commentinfo.PageType = pageType;
+            commentinfo.PageID = pageID;
 
             commentinfo.Tickets = new Array();
             $('#commentatt:first').find('.ticket-queue').find('.ticket-removable-item').each(function () {
@@ -274,7 +284,7 @@ WaterCoolerPage = function () {
         $('#commentatt').find('.group-queue').empty();
         $('#commentatt').find('.customer-queue').empty();
         $('#commentatt').find('.user-queue').empty();
-        $(".newticket-group").combobox('setValue', -1);
+        //$(".newticket-group").combobox('setValue', -1);
 
     }
 
@@ -305,9 +315,9 @@ WaterCoolerPage = function () {
 
         var dv = $('<div>')
             .hover(function () {
-                $(this).find('.ts-icon').show();
+                $(this).find('.close').show();
             }, function () {
-                $(this).find('.ts-icon').hide();
+                $(this).find('.close').hide();
             })
             .appendTo(tpic);
 
@@ -327,7 +337,7 @@ WaterCoolerPage = function () {
 
         var sptm = $('<span>')
             .addClass('topictm timeago')
-            .attr('title', thread.Message.TimeStamp)
+            .attr('title', jQuery.timeago(thread.Message.TimeStamp))
             .text(jQuery.timeago(thread.Message.TimeStamp))
             .timeago()
             .appendTo(dv);
@@ -445,7 +455,7 @@ WaterCoolerPage = function () {
 
         if (canEdit) {
             var spdelete = $('<span>')
-            .addClass('topicrel ts-icon ts-icon-delete')
+            .addClass('topicrel close')
             .click(function (e) {
                 if (confirm('Are you sure you would like to remove this post?')) {
                     top.Ts.Services.WaterCooler.DeleteMessage(thread.Message.MessageID, function () {
@@ -457,6 +467,7 @@ WaterCoolerPage = function () {
                     $(this).hide();
                 }
             }).hide()
+            .text('x')
             .appendTo(dv);
 
         }
@@ -558,9 +569,9 @@ WaterCoolerPage = function () {
 
         var dv = $('<div>')
             .hover(function () {
-                $(this).find('.ts-icon').show();
+                $(this).find('.close').show();
             }, function () {
-                $(this).find('.ts-icon').hide();
+                $(this).find('.close').hide();
             })
             .appendTo(tprpy);
 
@@ -638,7 +649,7 @@ WaterCoolerPage = function () {
 
         if (canEdit) {
             var spdelete = $('<span>')
-            .addClass('topicrel ts-icon ts-icon-delete deletepadding')
+            .addClass('topicrel close')
             .click(function (e) {
                 if (confirm('Are you sure you would like to remove this reply?')) {
                     top.Ts.Services.WaterCooler.DeleteMessage(thread.MessageID, function () {
@@ -650,6 +661,7 @@ WaterCoolerPage = function () {
                     $(this).hide();
                 }
             }).hide()
+            .text('x')
             .appendTo(dv);
         }
         var tptxt = $('<div>')
@@ -722,7 +734,7 @@ WaterCoolerPage = function () {
         var ft = $('<span>')
         .addClass('faketext')
         .attr('title', 'comment')
-        .text('comment')
+        .text('post comment')
         .click(function (e) {
             $(this).parent().hide();
             var comment = $(this).parent().parent().find('.commentcontainer').show();
@@ -739,7 +751,7 @@ WaterCoolerPage = function () {
 
         var ta = $('<textarea>')
         .addClass('boxsizingBorder singlelinecomment')
-        .attr({ rows: '2', id: 'messagecontents', placeholder: 'comment' })
+        .attr({ rows: '2', id: 'messagecontents', placeholder: 'post comment' })
         .autoGrow()
         .appendTo(s);
 
@@ -833,12 +845,13 @@ WaterCoolerPage = function () {
 
         var postbtn = $('<button>')
         .attr({ id: 'newcomment', title: 'Post Comment' })
+        .addClass("btn btn-primary")
         .text('comment')
         .click(function (e) {
-            var msg = $(this).parent().prev().find('#messagecontents').val();
-            if (msg.length > 0) {
+            var msgtxtbox = $(this).parent().prev().find('#messagecontents');
+            if (msgtxtbox.val().length > 0) {
                 var commentinfo = new Object();
-                commentinfo.Description = msg;
+                commentinfo.Description = msgtxtbox.val();
                 commentinfo.Attachments = new Array();
                 commentinfo.ParentTicketID = messageid;
 
@@ -897,7 +910,6 @@ WaterCoolerPage = function () {
                 });
             }
         })
-        .button()
         .appendTo(attrow);
 
         var attcont = $('<div>')
@@ -1140,40 +1152,39 @@ WaterCoolerPage = function () {
         for (var i = 0; i < groups.length; i++) {
             $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo(gsel);
         }
-        addUnassignedComboItem(gsel.combobox());
+        addUnassignedComboItem(gsel);
 
-        gsel.combobox({
-            // And supply the "selected" event handler at the same time.
-            selected: function (event, ui) {
-                if (ui.item.text != "Unassigned") {
-                    var isDupe;
-                    var id = $(this).val();
+        gsel.change(function () {
+            var selectedtext = $(this).find(":selected").text();
+            var selectedval = $(this).find(":selected").val();
+            if (selectedtext != "Unassigned") {
+                var isDupe;
+                var id = selectedval;
 
-                    $(this).parent().parent().find('.group-queue').find('.ticket-removable-item').each(function () {
-                        if (id == $(this).data('Group')) {
-                            isDupe = true;
-                        }
-
-                    });
-                    if (!isDupe) {
-                        var bg = $('<div>')
-                .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
-                .appendTo($(this).parent().parent().find('.group-queue')).data('Group', $(this).val());
-
-                        $('<span>')
-                .text(ui.item.text)
-                .appendTo(bg);
-
-                        $('<span>')
-                .addClass('ui-icon ui-icon-close')
-                .click(function (e) {
-                    e.preventDefault();
-                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-                }).appendTo(bg);
+                $(this).parent().parent().find('.group-queue').find('.ticket-removable-item').each(function () {
+                    if (id == $(this).data('Group')) {
+                        isDupe = true;
                     }
+
+                });
+                if (!isDupe) {
+                    var bg = $('<div>')
+                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                    .appendTo($(this).parent().parent().find('.group-queue')).data('Group', selectedval);
+
+                    $('<span>')
+                    .text(selectedtext)
+                    .appendTo(bg);
+
+                    $('<span>')
+                    .addClass('ui-icon ui-icon-close')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                    }).appendTo(bg);
                 }
             }
-        })
+        }).trigger('change');
 
         var prodinpt = $('<div>')
                 .attr({ id: 'productinput' })
@@ -1187,45 +1198,39 @@ WaterCoolerPage = function () {
         for (var i = 0; i < products.length; i++) {
             $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo(prodsel);
         }
-        addUnassignedComboItem(prodsel.combobox());
+        addUnassignedComboItem(prodsel);
 
-        prodsel.combobox({
-            // And supply the "selected" event handler at the same time.
-            selected: function (event, ui) {
-                if (ui.item.text != "Unassigned") {
-                    var isDupe;
-                    var id = $(this).val();
+        prodsel.change(function () {
+            var selectedtext = $(this).find(":selected").text();
+            var selectedval = $(this).find(":selected").val();
+            if (selectedtext != "Unassigned") {
+                var isDupe;
+                var id = selectedval;
 
-                    $(this).parent().parent().find('.product-queue').find('.ticket-removable-item').each(function () {
-                        if (id == $(this).data('Product')) {
-                            isDupe = true;
-                        }
-
-                    });
-                    if (!isDupe) {
-                        var bg = $('<div>')
-                .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
-                .appendTo($(this).parent().parent().find('.product-queue')).data('Product', $(this).val());
-
-                        $('<span>')
-                .text(ui.item.text)
-                .appendTo(bg);
-
-                        $('<span>')
-                .addClass('ui-icon ui-icon-close')
-                .click(function (e) {
-                    e.preventDefault();
-                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-                }).appendTo(bg);
+                $(this).parent().parent().find('.product-queue').find('.ticket-removable-item').each(function () {
+                    if (id == $(this).data('Product')) {
+                        isDupe = true;
                     }
+
+                });
+                if (!isDupe) {
+                    var bg = $('<div>')
+            .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+            .appendTo($(this).parent().parent().find('.product-queue')).data('Product', selectedval);
+
+                    $('<span>')
+            .text(selectedtext)
+            .appendTo(bg);
+
+                    $('<span>')
+            .addClass('ui-icon ui-icon-close')
+            .click(function (e) {
+                e.preventDefault();
+                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+            }).appendTo(bg);
                 }
             }
-        })
-
-        var dclear = $('<div>')
-        .addClass('ui-helper-clearfix')
-        .appendTo(grinpt);
-
+        });
         return pc;
     }
 
@@ -1266,7 +1271,7 @@ WaterCoolerPage = function () {
         if ($(e.target).is('.faketextcontainer, .commentcontainer *, .faketext, .ui-autocomplete *, ui-combobox *')) return;
         $('.commentcontainer').hide();
         $('.faketextcontainer').show();
-        resetDisplay();
+        //resetDisplay();
     });
 
     $('.addatt').click(function (e) {
@@ -1546,43 +1551,43 @@ WaterCoolerPage = function () {
 
     function addUnassignedComboItem(el) {
         $('<option>').attr('value', -1).text('Unassigned').data('o', null).prependTo(el);
-        el.combobox('setValue', -1);
+        el.val(-1);
     }
 
     var products = top.Ts.Cache.getProducts();
     for (var i = 0; i < products.length; i++) {
         $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('.newticket-product');
     }
-    addUnassignedComboItem($('.newticket-product').combobox());
-    $(".newticket-product").combobox({
-        // And supply the "selected" event handler at the same time.
-        selected: function (event, ui) {
-            if (ui.item.text != "Unassigned") {
-                var isDupe;
-                var id = $(this).val();
+    addUnassignedComboItem($('.newticket-product'));
 
-                $(this).parent().parent().parent().find('.product-queue').find('.ticket-removable-item').each(function () {
-                    if (id == $(this).data('Product')) {
-                        isDupe = true;
-                    }
+    $('.newticket-product').change(function () {
+        var selectedtext = $(this).find(":selected").text();
+        var selectedval = $(this).find(":selected").val();
+        if (selectedtext != "Unassigned") {
+            var isDupe;
+            var id = selectedval;
 
-                });
-                if (!isDupe) {
-                    var bg = $('<div>')
-                .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
-                .appendTo($(this).parent().parent().parent().find('.product-queue')).data('Product', $(this).val());
-
-                    $('<span>')
-                .text(ui.item.text)
-                .appendTo(bg);
-
-                    $('<span>')
-                .addClass('ui-icon ui-icon-close')
-                .click(function (e) {
-                    e.preventDefault();
-                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-                }).appendTo(bg);
+            $(this).parent().parent().parent().find('.product-queue').find('.ticket-removable-item').each(function () {
+                if (id == $(this).data('Product')) {
+                    isDupe = true;
                 }
+
+            });
+            if (!isDupe) {
+                var bg = $('<div>')
+            .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+            .appendTo($(this).parent().parent().parent().find('.product-queue')).data('Product', selectedval);
+
+                $('<span>')
+            .text(selectedtext)
+            .appendTo(bg);
+
+                $('<span>')
+            .addClass('ui-icon ui-icon-close')
+            .click(function (e) {
+                e.preventDefault();
+                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+            }).appendTo(bg);
             }
         }
     });
@@ -1592,44 +1597,43 @@ WaterCoolerPage = function () {
     for (var i = 0; i < groups.length; i++) {
         $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('.newticket-group');
     }
-    addUnassignedComboItem($('.newticket-group').combobox());
+    addUnassignedComboItem($('.newticket-group'));
 
-    $(".newticket-group").combobox({
-        // And supply the "selected" event handler at the same time.
-        selected: function (event, ui) {
-            if (ui.item.text != "Unassigned") {
-                var isDupe;
-                var id = $(this).val();
+    $('.newticket-group').change(function () {
+        var selectedtext = $(this).find(":selected").text();
+        var selectedval = $(this).find(":selected").val();
+        if (selectedtext != "Unassigned") {
+            var isDupe;
+            var id = selectedval;
 
-                $(this).parent().parent().parent().find('.group-queue').find('.ticket-removable-item').each(function () {
-                    if (id == $(this).data('Group')) {
-                        isDupe = true;
-                    }
-
-                });
-                if (!isDupe) {
-                    var bg = $('<div>')
-                .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
-                .appendTo($(this).parent().parent().parent().find('.group-queue')).data('Group', $(this).val());
-
-                    $('<span>')
-                .text(ui.item.text)
-                .appendTo(bg);
-
-                    $('<span>')
-                .addClass('ui-icon ui-icon-close')
-                .click(function (e) {
-                    e.preventDefault();
-                    $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-                }).appendTo(bg);
+            $(this).parent().parent().parent().find('.group-queue').find('.ticket-removable-item').each(function () {
+                if (id == $(this).data('Group')) {
+                    isDupe = true;
                 }
+
+            });
+            if (!isDupe) {
+                var bg = $('<div>')
+                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                    .appendTo($(this).parent().parent().parent().find('.group-queue')).data('Group', selectedval);
+
+                $('<span>')
+                    .text(selectedtext)
+                    .appendTo(bg);
+
+                $('<span>')
+                    .addClass('ui-icon ui-icon-close')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                    }).appendTo(bg);
             }
         }
-    });
+    }).trigger('change');
 
-    $(function () {
-        $(".someClass").tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
-    });
+    //    $(function () {
+    //        $(".someClass").tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
+    //    });
 
     // set up the refresh button so we can just click that to see our dev changes
     $('#btnRefresh').click(function (e) { e.preventDefault(); window.location = window.location; }).toggle(window.location.hostname.indexOf('127.0.0.1') > -1);
@@ -1711,6 +1715,7 @@ WaterCoolerPage = function () {
     })
 
     $('.ui-autocomplete-input').css('width', '200px');
+
 };
 
 WaterCoolerPage.prototype = {

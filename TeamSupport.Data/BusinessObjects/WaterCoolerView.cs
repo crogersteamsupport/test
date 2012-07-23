@@ -41,16 +41,16 @@ namespace TeamSupport.Data
                                     or (RefType in (0,1,2))) group by MessageID)
                                     order by LastModified desc", WaterCoolerAttachmentType.Group.GetHashCode(), LoginUser.UserID, LoginUser.UserID, LoginUser.UserID, WaterCoolerAttachmentType.User.GetHashCode());
                       break;
-                  case 1:  //ticket page
-                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0) and AttachmentID = {1})) group by MessageID)
+                  case 0:  //ticket page
+                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0} and AttachmentID = {1})) group by MessageID)
                                     order by LastModified desc", WaterCoolerAttachmentType.Ticket.GetHashCode(), itemID);
                       break;
-                  case 2: //product page
-                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0) and AttachmentID = {1})) group by MessageID)
+                  case 1: //product page
+                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0} and AttachmentID = {1})) group by MessageID)
                                     order by LastModified desc", WaterCoolerAttachmentType.Product.GetHashCode(), itemID);
                       break;
-                  case 3: //company page
-                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0) and AttachmentID = {1})) group by MessageID)
+                  case 2: //company page
+                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0} and AttachmentID = {1})) group by MessageID)
                                     order by LastModified desc", WaterCoolerAttachmentType.Company.GetHashCode(), itemID);
                       break;
                   default:

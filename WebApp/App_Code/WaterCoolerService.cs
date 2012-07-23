@@ -134,7 +134,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public WaterCoolerThread[] GetThreads()
+    public WaterCoolerThread[] GetThreads(int pageType, int pageID)
     {
         List<WaterCoolerThread> result = new List<WaterCoolerThread>();
 
@@ -144,7 +144,7 @@ namespace TSWebServices
         // Company page
 
         WaterCoolerView wc = new WaterCoolerView(TSAuthentication.GetLoginUser());
-        wc.LoadTop10Threads(-1, -1);
+        wc.LoadTop10Threads(pageType, pageID);
 
 
         foreach (WaterCoolerViewItem item in wc)
@@ -176,6 +176,8 @@ namespace TSWebServices
         WatercoolerJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<WatercoolerJsonInfo>(data);
         WatercoolerMsgItem wc = (new WatercoolerMsg(TSAuthentication.GetLoginUser())).AddNewWatercoolerMsgItem();
         int parentmsgid = info.ParentTicketID;
+        int pageType = info.PageType;
+        int pageID = info.PageID;
 
         wc.UserID = TSAuthentication.UserID;
         wc.OrganizationID = TSAuthentication.OrganizationID;
@@ -195,6 +197,8 @@ namespace TSWebServices
             wcm[0].Collection.Save();
         }
 
+        if (wc.MessageParent == -1 && info.PageType == 0)
+            AddAttachment((int)wc.MessageID, info.PageID, WaterCoolerAttachmentType.Ticket);
         foreach (int ticketID in info.Tickets)
         {
             AddAttachment(wc.MessageID, ticketID, WaterCoolerAttachmentType.Ticket);
@@ -202,13 +206,8 @@ namespace TSWebServices
                 AddAttachment((int)wc.MessageParent, ticketID, WaterCoolerAttachmentType.Ticket);
         }
 
-        foreach (int groupID in info.Groups)
-        {
-            AddAttachment(wc.MessageID, groupID, WaterCoolerAttachmentType.Group);
-            if (wc.MessageParent != -1)
-                AddAttachment((int)wc.MessageParent, groupID, WaterCoolerAttachmentType.Group);
-        }
-
+        if (wc.MessageParent == -1 && info.PageType == 1)
+            AddAttachment((int)wc.MessageID, info.PageID, WaterCoolerAttachmentType.Product);
         foreach (int productID in info.Products)
         {
             AddAttachment(wc.MessageID, productID, WaterCoolerAttachmentType.Product);
@@ -223,42 +222,19 @@ namespace TSWebServices
                 AddAttachment((int)wc.MessageParent, CompanyID, WaterCoolerAttachmentType.Company);
         }
 
+        foreach (int groupID in info.Groups)
+        {
+            AddAttachment(wc.MessageID, groupID, WaterCoolerAttachmentType.Group);
+            if (wc.MessageParent != -1)
+                AddAttachment((int)wc.MessageParent, groupID, WaterCoolerAttachmentType.Group);
+        }
+
         foreach (int UserID in info.User)
         {
             AddAttachment(wc.MessageID, UserID, WaterCoolerAttachmentType.User);
             if (wc.MessageParent != -1)
                 AddAttachment((int)wc.MessageParent, UserID, WaterCoolerAttachmentType.User);
         }
-
-        //WaterCoolerThread result = new WaterCoolerThread();
-        //WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
-        //wcv.LoadByMessageID(wc.MessageID);
-
-        //WaterCoolerView replies = new WaterCoolerView(TSAuthentication.GetLoginUser());
-        //replies.LoadReplies(wc.MessageID);
-
-        //WatercoolerGroupAtt wcgroups = new WatercoolerGroupAtt(TSAuthentication.GetLoginUser());
-        //wcgroups.LoadByMessageID(resultid);
-
-        //WatercoolerTicketAtt wctickets = new WatercoolerTicketAtt(TSAuthentication.GetLoginUser());
-        //wctickets.LoadByMessageID(resultid);
-
-        //WatercoolerProductAtt wcprods = new WatercoolerProductAtt(TSAuthentication.GetLoginUser());
-        //wcprods.LoadByMessageID(resultid);
-
-        //WatercoolerCompanyAtt wccompany = new WatercoolerCompanyAtt(TSAuthentication.GetLoginUser());
-        //wccompany.LoadByMessageID(resultid);
-
-        //WatercoolerUserAtt wcuseratt = new WatercoolerUserAtt(TSAuthentication.GetLoginUser());
-        //wcuseratt.LoadByMessageID(resultid);
-
-        //result.Message = wcv.GetWaterCoolerViewItemProxies()[0];
-        //result.Groups = wcgroups.GetWatercoolerGroupAttItemProxies();
-        //result.Tickets = wctickets.GetWatercoolerTicketAttItemProxies();
-        //result.Replies = replies.GetWaterCoolerViewItemProxies();
-        //result.Products = wcprods.GetWatercoolerProductAttItemProxies();
-        //result.Company = wccompany.GetWatercoolerCompanyAttItemProxies();
-        //result.User = wcuseratt.GetWatercoolerUserAttItemProxies();
 
         return wc.MessageID;
     }
@@ -479,6 +455,8 @@ namespace TSWebServices
       [DataMember] public List<int> Company { get; set; }
       [DataMember] public List<int> User { get; set; }
       [DataMember] public int ParentTicketID { get; set; }
+      [DataMember] public int PageType { get; set; }
+      [DataMember] public int PageID { get; set; }
   }
 
 
