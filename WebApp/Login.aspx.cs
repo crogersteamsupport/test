@@ -118,11 +118,11 @@ public partial class Login : System.Web.UI.Page
 
       }
 
-      if (password == "rememberme") 
+      if (password == "sl") 
       {
         try
         {
-          password = HttpContext.Current.Request.Cookies["rememberme"]["sessionhash"];
+          password = HttpContext.Current.Request.Cookies["sl"]["b"];
         }
         catch (Exception)
         {
@@ -225,12 +225,12 @@ public partial class Login : System.Web.UI.Page
 
       }
     }
-    else if (Request.Cookies["rememberme"] != null && Request.Cookies["rememberme"].Value != "")
+    else if (Request.Cookies["sl"] != null && Request.Cookies["sl"].Value != "")
     {
       try
       {
-        userID = int.Parse(Request.Cookies["rememberme"]["sessionid"]);
-        password = Request.Cookies["rememberme"]["sessionhash"];
+        userID = int.Parse(Request.Cookies["sl"]["a"]);
+        password = Request.Cookies["sl"]["b"];
         storeInfo = true;
       }
       catch (Exception)
@@ -281,14 +281,14 @@ public partial class Login : System.Web.UI.Page
 
     if (storeInfo)
     {
-      HttpContext.Current.Response.Cookies["rememberme"]["sessionid"] = user.UserID.ToString();
-      HttpContext.Current.Response.Cookies["rememberme"]["sessionhash"] = user.CryptedPassword;
-      HttpContext.Current.Response.Cookies["rememberme"].Expires = DateTime.UtcNow.AddYears(14);
+      HttpContext.Current.Response.Cookies["sl"]["a"] = user.UserID.ToString();
+      HttpContext.Current.Response.Cookies["sl"]["b"] = user.CryptedPassword;
+      HttpContext.Current.Response.Cookies["sl"].Expires = DateTime.UtcNow.AddYears(14);
      
     }
     else
     {
-      HttpContext.Current.Response.Cookies["rememberme"].Value = "";
+      HttpContext.Current.Response.Cookies["sl"].Value = "";
     }
 
     if (user.IsPasswordExpired)

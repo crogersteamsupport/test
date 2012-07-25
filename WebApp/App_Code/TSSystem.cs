@@ -82,7 +82,7 @@ namespace TSWebServices
     [WebMethod(true)]
     public void SignOut()
     {
-      HttpContext.Current.Response.Cookies["rememberme"].Value = null;
+      HttpContext.Current.Response.Cookies["sl"].Value = null;
       HttpContext.Current.Response.Cookies[FormsAuthentication.FormsCookieName].Value = null;
       HttpContext.Current.Session.Clear();
       HttpContext.Current.Session.Abandon();
