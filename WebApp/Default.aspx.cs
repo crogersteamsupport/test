@@ -22,7 +22,7 @@ using System.Text;
 using System.Net.Mail;
 using dtSearch.Engine;
 
-public partial class _Default : System.Web.UI.Page
+public partial class _Default : BasePage
 {
   protected override void InitializeCulture()
   {
