@@ -8,7 +8,6 @@
 var waterCoolerPage = null;
 $(document).ready(function () {
     waterCoolerPage = new WaterCoolerPage();
-    $("input[type=text], textarea").autoGrow();
 });
 
 jQuery(document).ready(function () {
@@ -22,31 +21,36 @@ function onShow() {
 WaterCoolerPage = function () {
 
     var pageType = top.Ts.Utils.getQueryValue("pagetype", window);
-    var pageID = top.Ts.Utils.getQueryValue("typeid", window);
+    var pageID = top.Ts.Utils.getQueryValue("pageid", window);
 
-    if (pageType == null) {
+    if (pageType == null)
         pageType = -1;
-    }
-    else {
-        $('#leftcontent').removeClass("span9");
-        $('#leftcontent').addClass("span12");
-        $('#sidebar').remove();
-    }
 
     if (pageID == null)
         pageID = -1;
 
+    if (pageType != -1) {
+        $('#leftcontent').removeClass();
+        $('#leftcontent').addClass("span12");
+        $('#sidebar').remove();
+    }
 
     //Start the polling service
-    var chatHubClient = $.connection.chat1;
+    var chatHubClient = $.connection.socket;
 
     chatHubClient.addThread = function (message) {
         var firstpost = $('#maincontainer');
+
         top.Ts.Services.WaterCooler.IsValid(pageType, pageID, message.Message.MessageID, function (valid) {
             if (valid) {
                 $('.discussioncontainer').show();
-                var nmdiv = createThread(message);
-                firstpost.prepend(nmdiv.fadeIn(1500));
+                var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + message.Message.MessageID + ')');
+                if (parentThread.length == 0) {
+                    var nmdiv = createThread(message);
+                    firstpost.prepend(nmdiv.fadeIn(1500));
+                    top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
+                }
+
             }
 
         });
@@ -201,6 +205,10 @@ WaterCoolerPage = function () {
         }
     };
 
+    //Debug reasons
+    $.connection.hub.logging = true;
+    //$.connection.hub.url = "http://socket-beta.teamsupport.com/signalr";
+    $.connection.hub.url = "http://127.0.0.1:81/signalr";
     // Start the connection
     $.connection.hub.start();
 
@@ -284,8 +292,9 @@ WaterCoolerPage = function () {
         $('#commentatt').find('.group-queue').empty();
         $('#commentatt').find('.customer-queue').empty();
         $('#commentatt').find('.user-queue').empty();
-        //$(".newticket-group").combobox('setValue', -1);
-
+        $('#commentatt').find('.product-queue').empty();
+        $(".newticket-group").val(-1);
+        $(".newticket-product").val(-1);
     }
 
     function createThread(thread) {
@@ -337,7 +346,7 @@ WaterCoolerPage = function () {
 
         var sptm = $('<span>')
             .addClass('topictm timeago')
-            .attr('title', jQuery.timeago(thread.Message.TimeStamp))
+            .attr('title', thread.Message.TimeStamp)
             .text(jQuery.timeago(thread.Message.TimeStamp))
             .timeago()
             .appendTo(dv);
@@ -398,7 +407,8 @@ WaterCoolerPage = function () {
         if (tixatt.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixatt.length; i++) {
-                tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket <a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + tixatt[i].AttachmentID + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + tixatt[i].AttachmentID + '); return false;">' + tixatt[i].TicketName + '</a><br/>';
+                //tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket <a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + tixatt[i].AttachmentID + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + tixatt[i].AttachmentID + '); return false;">' + tixatt[i].TicketName + '</a><br/>';
+                tixattstr = tixattstr + ' ' + tixatt[i].CreatorName + ' added ticket ' + tixatt[i].TicketName + '<br/>';
             }
         }
 
@@ -727,6 +737,7 @@ WaterCoolerPage = function () {
             $(this).parent().find("#productinput").hide();
             $(this).parent().find("#userinput").hide();
             $(this).parent().find("#attachmentinput").show();
+            $(this).parent().find("#ticketinsert").show();
 
         })
         .appendTo(pc);
@@ -770,12 +781,15 @@ WaterCoolerPage = function () {
             $(this).parent().parent().find("#productinput").hide();
             $(this).parent().parent().find("#userinput").hide();
             $(this).parent().parent().find("#attachmentinput").show();
+            $(this).parent().parent().find("#ticketinsert").show();
+            $(this).parent().find(".arrow-up").css('left', '7px');
         })
+        .tooltip('show')
         .appendTo(attrow);
 
         var tixbtn = $('<span>')
         .addClass('addticket')
-        .attr('title', 'Add Ticket')
+        .attr('title', 'Associate Ticket')
         .click(function (e) {
             e.preventDefault();
             $(this).parent().parent().find("#ticketinput").show();
@@ -784,12 +798,15 @@ WaterCoolerPage = function () {
             $(this).parent().parent().find("#productinput").hide();
             $(this).parent().parent().find("#userinput").hide();
             $(this).parent().parent().find("#attachmentinput").hide();
+            $(this).parent().parent().find("#ticketinsert").hide();
+            $(this).parent().find(".arrow-up").css('left', '30px');
         })
+        .tooltip('show')
         .appendTo(attrow);
 
         var usrbtn = $('<span>')
         .addClass('adduser')
-        .attr('title', 'Add User')
+        .attr('title', 'Associate User')
         .click(function (e) {
             e.preventDefault();
             $(this).parent().parent().find("#ticketinput").hide();
@@ -798,12 +815,15 @@ WaterCoolerPage = function () {
             $(this).parent().parent().find("#productinput").hide();
             $(this).parent().parent().find("#userinput").show();
             $(this).parent().parent().find("#attachmentinput").hide();
+            $(this).parent().parent().find("#ticketinsert").hide();
+            $(this).parent().find(".arrow-up").css('left', '53px');
         })
+        .tooltip('show')
         .appendTo(attrow);
 
         var custbtn = $('<span>')
         .addClass('addcustomer')
-        .attr('title', 'Add Company')
+        .attr('title', 'Associate Company')
         .click(function (e) {
             e.preventDefault();
             $(this).parent().parent().find("#ticketinput").hide();
@@ -812,12 +832,15 @@ WaterCoolerPage = function () {
             $(this).parent().parent().find("#productinput").hide();
             $(this).parent().parent().find("#userinput").hide();
             $(this).parent().parent().find("#attachmentinput").hide();
+            $(this).parent().parent().find("#ticketinsert").hide();
+            $(this).parent().find(".arrow-up").css('left', '78px');
         })
+        .tooltip('show')
         .appendTo(attrow);
 
         var grpbtn = $('<span>')
         .addClass('addgroup')
-        .attr('title', 'Add Group')
+        .attr('title', 'Associate Group')
         .click(function (e) {
             e.preventDefault();
             $(this).parent().parent().find("#ticketinput").hide();
@@ -826,12 +849,15 @@ WaterCoolerPage = function () {
             $(this).parent().parent().find("#productinput").hide();
             $(this).parent().parent().find("#userinput").hide();
             $(this).parent().parent().find("#attachmentinput").hide();
+            $(this).parent().parent().find("#ticketinsert").hide();
+            $(this).parent().find(".arrow-up").css('left', '104px');
         })
+        .tooltip('show')
         .appendTo(attrow);
 
         var prodbtn = $('<span>')
         .addClass('addproduct')
-        .attr('title', 'Add Product')
+        .attr('title', 'Associate Product')
         .click(function (e) {
             e.preventDefault();
             $(this).parent().parent().find("#ticketinput").hide();
@@ -840,7 +866,10 @@ WaterCoolerPage = function () {
             $(this).parent().parent().find("#productinput").show();
             $(this).parent().parent().find("#userinput").hide();
             $(this).parent().parent().find("#attachmentinput").hide();
+            $(this).parent().parent().find("#ticketinsert").hide();
+            $(this).parent().find(".arrow-up").css('left', '125px');
         })
+        .tooltip('show')
         .appendTo(attrow);
 
         var postbtn = $('<button>')
@@ -904,12 +933,13 @@ WaterCoolerPage = function () {
                     cc.find('.product-queue').empty();
                     cc.find('.customer-queue').empty();
                     cc.find('.user-queue').empty();
-                    //                cc.find('#commentticket').find('.ticket-queue').empty();
-                    //                cc.find('#commentgroups').find('.group-queue').empty();
-                    //                //cc.find(".newticket-group").combobox('setValue', -1);
                 });
             }
         })
+        .appendTo(attrow);
+
+        var arrowdiv = $('<div>')
+        .addClass('arrow-up')
         .appendTo(attrow);
 
         var attcont = $('<div>')
@@ -1012,9 +1042,11 @@ WaterCoolerPage = function () {
         .appendTo(ulform);
 
         var tinput = $('<input>')
-        .addClass('main-quick-ticket  ui-widget-content')
+        .addClass('main-quick-ticket')
         .attr({ type: 'text' })
         .attr({ id: 'ticketinput' })
+        .css('width', '200px')
+        .autoGrow()
         .focusin(function () { $(this).val('').removeClass('main-quick-ticket-blur'); })
         .focusout(function () { $(this).val('Search for a ticket...').addClass('main-quick-ticket-blur').removeClass('ui-autocomplete-loading'); })
         .click(function () { $(this).val('').removeClass('main-quick-ticket-blur'); })
@@ -1054,10 +1086,33 @@ WaterCoolerPage = function () {
         })
         .appendTo(spnur);
 
+        var inserttixinput = $('<input>')
+        .addClass('insert-ticket')
+        .attr({ type: 'text' })
+        .attr({ id: 'ticketinsert' })
+        .css('width', '200px')
+        .autoGrow()
+        .focusin(function () { $(this).val('').removeClass('insert-ticket-blur'); })
+        .focusout(function () { $(this).val('insert ticket link...').addClass('insert-ticket-blur').removeClass('ui-autocomplete-loading'); })
+        .click(function () { $(this).val('').removeClass('insert-ticket-blur'); })
+        .val('insert ticket link...')
+        .autocomplete({ minLength: 2, source: getTicketsByTerm, delay: 300,
+            select: function (event, ui) {
+                if (ui.item) {
+                    ta.val(ta.val() + " &ticket" + ui.item.id);
+                }
+                $('.insert-ticket').removeClass('ui-autocomplete-loading');
+                return false;
+            }
+        })
+        .appendTo(spnur);
+
         var userinput = $('<input>')
         .addClass('user-search ui-widget-content')
         .attr({ type: 'text' })
         .attr({ id: 'userinput' })
+        .css('width', '200px')
+        .autoGrow()
         .focusin(function () { $(this).val('').removeClass('user-search-blur'); })
         .focusout(function () { $(this).val('Search for a user...').addClass('user-search-blur').removeClass('ui-autocomplete-loading'); })
         .click(function () { $(this).val('').removeClass('user-search-blur'); })
@@ -1101,6 +1156,8 @@ WaterCoolerPage = function () {
         .addClass('company-search ui-widget-content')
         .attr({ type: 'text' })
         .attr({ id: 'customerinput' })
+        .css('width', '200px')
+        .autoGrow()
         .focusin(function () { $(this).val('').removeClass('company-search-blur'); })
         .focusout(function () { $(this).val('Search for a company...').addClass('company-search-blur').removeClass('ui-autocomplete-loading'); })
         .click(function () { $(this).val('').removeClass('company-search-blur'); })
@@ -1140,97 +1197,96 @@ WaterCoolerPage = function () {
         })
         .appendTo(spnur);
 
-        var grinpt = $('<div>')
+        var groupinput = $('<input>')
+        .addClass('group-search ui-widget-content')
+        .attr({ type: 'text' })
         .attr({ id: 'groupinput' })
-        .appendTo(attcont);
-
-        var gsel = $('<select>')
-        .addClass('newticket-group')
-        .appendTo(grinpt);
-
-        var groups = top.Ts.Cache.getGroups();
-        for (var i = 0; i < groups.length; i++) {
-            $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo(gsel);
-        }
-        addUnassignedComboItem(gsel);
-
-        gsel.change(function () {
-            var selectedtext = $(this).find(":selected").text();
-            var selectedval = $(this).find(":selected").val();
-            if (selectedtext != "Unassigned") {
-                var isDupe;
-                var id = selectedval;
-
-                $(this).parent().parent().find('.group-queue').find('.ticket-removable-item').each(function () {
-                    if (id == $(this).data('Group')) {
-                        isDupe = true;
-                    }
-
-                });
-                if (!isDupe) {
-                    var bg = $('<div>')
+        .css('width', '200px')
+        .autoGrow()
+        .focusin(function () { $(this).val('').removeClass('group-search-blur'); })
+        .focusout(function () { $(this).val('Search for a group...').addClass('group-search-blur').removeClass('ui-autocomplete-loading'); })
+        .click(function () { $(this).val('').removeClass('group-search-blur'); })
+        .val('Search for a group...')
+        .autocomplete({ minLength: 4, source: getGroupsByTerm, delay: 300,
+            select: function (event, ui) {
+                if (ui.item) {
+                    var isDupe;
+                    $(this).parent().parent().find('.group-queue').find('.ticket-removable-item').each(function () {
+                        if (ui.item.id == $(this).data('Group')) {
+                            isDupe = true;
+                        }
+                    });
+                    if (!isDupe) {
+                        var bg = $('<div>')
                     .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
-                    .appendTo($(this).parent().parent().find('.group-queue')).data('Group', selectedval);
+                    .appendTo($(this).parent().parent().find('.group-queue')).data('Group', ui.item.id);
 
-                    $('<span>')
-                    .text(selectedtext)
+
+                        $('<span>')
+                    .text(ui.item.value)
+                    .addClass('filename')
                     .appendTo(bg);
 
-                    $('<span>')
+                        $('<span>')
                     .addClass('ui-icon ui-icon-close')
                     .click(function (e) {
                         e.preventDefault();
                         $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-                    }).appendTo(bg);
-                }
-            }
-        }).trigger('change');
-
-        var prodinpt = $('<div>')
-                .attr({ id: 'productinput' })
-                .appendTo(attcont);
-
-        var prodsel = $('<select>')
-                .addClass('newticket-product')
-                .appendTo(prodinpt);
-
-        var products = top.Ts.Cache.getProducts();
-        for (var i = 0; i < products.length; i++) {
-            $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo(prodsel);
-        }
-        addUnassignedComboItem(prodsel);
-
-        prodsel.change(function () {
-            var selectedtext = $(this).find(":selected").text();
-            var selectedval = $(this).find(":selected").val();
-            if (selectedtext != "Unassigned") {
-                var isDupe;
-                var id = selectedval;
-
-                $(this).parent().parent().find('.product-queue').find('.ticket-removable-item').each(function () {
-                    if (id == $(this).data('Product')) {
-                        isDupe = true;
+                    })
+                    .appendTo(bg);
                     }
-
-                });
-                if (!isDupe) {
-                    var bg = $('<div>')
-            .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
-            .appendTo($(this).parent().parent().find('.product-queue')).data('Product', selectedval);
-
-                    $('<span>')
-            .text(selectedtext)
-            .appendTo(bg);
-
-                    $('<span>')
-            .addClass('ui-icon ui-icon-close')
-            .click(function (e) {
-                e.preventDefault();
-                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-            }).appendTo(bg);
                 }
+                $('.group-search').removeClass('ui-autocomplete-loading');
+                return false;
             }
-        });
+        })
+        .appendTo(spnur);
+
+        var prodinput = $('<input>')
+        .addClass('product-search ui-widget-content')
+        .attr({ type: 'text' })
+        .attr({ id: 'productinput' })
+        .css('width', '200px')
+        .autoGrow()
+        .focusin(function () { $(this).val('').removeClass('product-search-blur'); })
+        .focusout(function () { $(this).val('Search for a product...').addClass('product-search-blur').removeClass('ui-autocomplete-loading'); })
+        .click(function () { $(this).val('').removeClass('product-search-blur'); })
+        .val('Search for a product...')
+        .autocomplete({ minLength: 4, source: getProductByTerm, delay: 300,
+            select: function (event, ui) {
+                if (ui.item) {
+                    var isDupe;
+                    $(this).parent().parent().find('.product-queue').find('.ticket-removable-item').each(function () {
+                        if (ui.item.id == $(this).data('Product')) {
+                            isDupe = true;
+                        }
+                    });
+                    if (!isDupe) {
+                        var bg = $('<div>')
+                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                    .appendTo($(this).parent().parent().find('.product-queue')).data('Product', ui.item.id);
+
+
+                        $('<span>')
+                    .text(ui.item.value)
+                    .addClass('filename')
+                    .appendTo(bg);
+
+                        $('<span>')
+                    .addClass('ui-icon ui-icon-close')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
+                    }
+                }
+                $('.product-search').removeClass('ui-autocomplete-loading');
+                return false;
+            }
+        })
+        .appendTo(spnur);
+
         return pc;
     }
 
@@ -1263,7 +1319,8 @@ WaterCoolerPage = function () {
         $(this).parent().find("#productinput").hide();
         $(this).parent().find("#userinput").hide();
         $(this).parent().find("#attachmentinput").show();
-
+        $(this).parent().find("#ticketinsert").show();
+        $(this).parent().find(".arrow-up").css('left', '7px');
         $(this).parent().find('#messagecontents').focus();
     });
 
@@ -1282,6 +1339,8 @@ WaterCoolerPage = function () {
         $(this).parent().parent().find("#productinput").hide();
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").show();
+        $(this).parent().parent().find("#ticketinsert").show();
+        $(this).parent().find(".arrow-up").css('left', '7px');
     });
     $('.addticket').click(function (e) {
         e.preventDefault();
@@ -1291,6 +1350,8 @@ WaterCoolerPage = function () {
         $(this).parent().parent().find("#productinput").hide();
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
+        $(this).parent().parent().find("#ticketinsert").hide();
+        $(this).parent().find(".arrow-up").css('left', '30px');
     });
     $('.adduser').click(function (e) {
         e.preventDefault();
@@ -1300,15 +1361,8 @@ WaterCoolerPage = function () {
         $(this).parent().parent().find("#productinput").hide();
         $(this).parent().parent().find("#userinput").show();
         $(this).parent().parent().find("#attachmentinput").hide();
-    });
-    $('.addgroup').click(function (e) {
-        e.preventDefault();
-        $(this).parent().parent().find("#ticketinput").hide();
-        $(this).parent().parent().find("#groupinput").show();
-        $(this).parent().parent().find("#customerinput").hide();
-        $(this).parent().parent().find("#productinput").hide();
-        $(this).parent().parent().find("#userinput").hide();
-        $(this).parent().parent().find("#attachmentinput").hide();
+        $(this).parent().parent().find("#ticketinsert").hide();
+        $(this).parent().find(".arrow-up").css('left', '53px');
     });
     $('.addcustomer').click(function (e) {
         e.preventDefault();
@@ -1318,7 +1372,19 @@ WaterCoolerPage = function () {
         $(this).parent().parent().find("#productinput").hide();
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
-
+        $(this).parent().parent().find("#ticketinsert").hide();
+        $(this).parent().find(".arrow-up").css('left', '78px');
+    });
+    $('.addgroup').click(function (e) {
+        e.preventDefault();
+        $(this).parent().parent().find("#ticketinput").hide();
+        $(this).parent().parent().find("#groupinput").show();
+        $(this).parent().parent().find("#customerinput").hide();
+        $(this).parent().parent().find("#productinput").hide();
+        $(this).parent().parent().find("#userinput").hide();
+        $(this).parent().parent().find("#attachmentinput").hide();
+        $(this).parent().parent().find("#ticketinsert").hide();
+        $(this).parent().find(".arrow-up").css('left', '104px');
     });
     $('.addproduct').click(function (e) {
         e.preventDefault();
@@ -1328,6 +1394,8 @@ WaterCoolerPage = function () {
         $(this).parent().parent().find("#productinput").show();
         $(this).parent().parent().find("#userinput").hide();
         $(this).parent().parent().find("#attachmentinput").hide();
+        $(this).parent().parent().find("#ticketinsert").hide();
+        $(this).parent().find(".arrow-up").css('left', '125px');
 
     });
 
@@ -1421,6 +1489,18 @@ WaterCoolerPage = function () {
 
     }
 
+    var execGetGroups = null;
+    function getGroupsByTerm(request, response) {
+        if (execGetGroups) { execGetGroups._executor.abort(); }
+        execGetTicket = top.Ts.Services.WaterCooler.GetGroupsByTerm(request.term, function (result) { response(result); });
+    }
+
+    var execGetProducts = null;
+    function getProductByTerm(request, response) {
+        if (execGetProducts) { execGetProducts._executor.abort(); }
+        execGetProducts = top.Ts.Services.WaterCooler.GetProductsByTerm(request.term, function (result) { response(result); });
+    }
+
     $('.user-search').autocomplete({
         minLength: 4,
         source: getUsers,
@@ -1496,19 +1576,6 @@ WaterCoolerPage = function () {
         }
     });
 
-    $('.user-search')
-    .focusin(function () { $(this).val('').removeClass('user-search-blur'); })
-    .focusout(function () { $(this).val('Search for a user...').addClass('user-search-blur').removeClass('ui-autocomplete-loading'); })
-    .click(function () { $(this).val('').removeClass('user-search-blur'); })
-    .val('Search for a user...');
-
-
-    $('.company-search')
-    .focusin(function () { $(this).val('').removeClass('company-search-blur'); })
-    .focusout(function () { $(this).val('Search for a company...').addClass('company-search-blur').removeClass('ui-autocomplete-loading'); })
-    .click(function () { $(this).val('').removeClass('company-search-blur'); })
-    .val('Search for a company...');
-
     $('.main-quick-ticket').autocomplete({ minLength: 2, source: getTicketsByTerm, delay: 300,
         select: function (event, ui) {
             if (ui.item) {
@@ -1543,101 +1610,131 @@ WaterCoolerPage = function () {
         }
     });
 
+    $('.insert-ticket').autocomplete({ minLength: 2, source: getTicketsByTerm, delay: 300,
+        select: function (event, ui) {
+            if (ui.item) {
+                $('#messagecontents').val($('#messagecontents').val() + " &ticket" + ui.item.id);
+            }
+            $('.insert-ticket').removeClass('ui-autocomplete-loading');
+            return false;
+        }
+    });
+
+    $('.group-search').autocomplete({
+        minLength: 4,
+        source: getGroupsByTerm,
+        select: function (event, ui) {
+            if (ui.item) {
+                var isDupe;
+                $(this).parent().parent().find('.group-queue').find('.ticket-removable-item').each(function () {
+                    if (ui.item.id == $(this).data('Group')) {
+                        isDupe = true;
+                    }
+                });
+                if (!isDupe) {
+                    var bg = $('<div>')
+                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                    .appendTo($(this).parent().parent().find('.group-queue')).data('Group', ui.item.id);
+
+
+                    $('<span>')
+                    .text(ui.item.value)
+                    .addClass('filename')
+                    .appendTo(bg);
+
+                    $('<span>')
+                    .addClass('ui-icon ui-icon-close')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
+                }
+            }
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading');
+        }
+    });
+
+    $('.product-search').autocomplete({
+        minLength: 4,
+        source: getProductByTerm,
+        select: function (event, ui) {
+            if (ui.item) {
+                var isDupe;
+                $(this).parent().parent().find('.product-queue').find('.ticket-removable-item').each(function () {
+                    if (ui.item.id == $(this).data('Product')) {
+                        isDupe = true;
+                    }
+                });
+                if (!isDupe) {
+                    var bg = $('<div>')
+                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
+                    .appendTo($(this).parent().parent().find('.product-queue')).data('Product', ui.item.id);
+
+
+                    $('<span>')
+                    .text(ui.item.value)
+                    .addClass('filename')
+                    .appendTo(bg);
+
+                    $('<span>')
+                    .addClass('ui-icon ui-icon-close')
+                    .click(function (e) {
+                        e.preventDefault();
+                        $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
+                    })
+                    .appendTo(bg);
+                }
+            }
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading');
+        }
+    });
+
+    $('.user-search')
+    .focusin(function () { $(this).val('').removeClass('user-search-blur'); })
+    .focusout(function () { $(this).val('Search for a user...').addClass('user-search-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('user-search-blur'); })
+    .val('Search for a user...');
+
+    $('.company-search')
+    .focusin(function () { $(this).val('').removeClass('company-search-blur'); })
+    .focusout(function () { $(this).val('Search for a company...').addClass('company-search-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('company-search-blur'); })
+    .val('Search for a company...');
+
     $('.main-quick-ticket')
     .focusin(function () { $(this).val('').removeClass('main-quick-ticket-blur'); })
     .focusout(function () { $(this).val('Search for a ticket...').addClass('main-quick-ticket-blur').removeClass('ui-autocomplete-loading'); })
     .click(function () { $(this).val('').removeClass('main-quick-ticket-blur'); })
     .val('Search for a ticket...');
 
-    function addUnassignedComboItem(el) {
-        $('<option>').attr('value', -1).text('Unassigned').data('o', null).prependTo(el);
-        el.val(-1);
-    }
+    $('.insert-ticket')
+    .focusin(function () { $(this).val('').removeClass('insert-ticket-blur'); })
+    .focusout(function () { $(this).val('insert ticket link...').addClass('insert-ticket-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('insert-ticket-blur'); })
+    .val('insert ticket link...');
 
-    var products = top.Ts.Cache.getProducts();
-    for (var i = 0; i < products.length; i++) {
-        $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('.newticket-product');
-    }
-    addUnassignedComboItem($('.newticket-product'));
+    $('.group-search')
+    .focusin(function () { $(this).val('').removeClass('group-search-blur'); })
+    .focusout(function () { $(this).val('Search for a group...').addClass('group-search-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('group-search-blur'); })
+    .val('Search for a group...');
 
-    $('.newticket-product').change(function () {
-        var selectedtext = $(this).find(":selected").text();
-        var selectedval = $(this).find(":selected").val();
-        if (selectedtext != "Unassigned") {
-            var isDupe;
-            var id = selectedval;
-
-            $(this).parent().parent().parent().find('.product-queue').find('.ticket-removable-item').each(function () {
-                if (id == $(this).data('Product')) {
-                    isDupe = true;
-                }
-
-            });
-            if (!isDupe) {
-                var bg = $('<div>')
-            .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
-            .appendTo($(this).parent().parent().parent().find('.product-queue')).data('Product', selectedval);
-
-                $('<span>')
-            .text(selectedtext)
-            .appendTo(bg);
-
-                $('<span>')
-            .addClass('ui-icon ui-icon-close')
-            .click(function (e) {
-                e.preventDefault();
-                $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-            }).appendTo(bg);
-            }
-        }
-    });
-
-
-    var groups = top.Ts.Cache.getGroups();
-    for (var i = 0; i < groups.length; i++) {
-        $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('.newticket-group');
-    }
-    addUnassignedComboItem($('.newticket-group'));
-
-    $('.newticket-group').change(function () {
-        var selectedtext = $(this).find(":selected").text();
-        var selectedval = $(this).find(":selected").val();
-        if (selectedtext != "Unassigned") {
-            var isDupe;
-            var id = selectedval;
-
-            $(this).parent().parent().parent().find('.group-queue').find('.ticket-removable-item').each(function () {
-                if (id == $(this).data('Group')) {
-                    isDupe = true;
-                }
-
-            });
-            if (!isDupe) {
-                var bg = $('<div>')
-                    .addClass('ui-corner-all ts-color-bg-accent ticket-removable-item ulfn')
-                    .appendTo($(this).parent().parent().parent().find('.group-queue')).data('Group', selectedval);
-
-                $('<span>')
-                    .text(selectedtext)
-                    .appendTo(bg);
-
-                $('<span>')
-                    .addClass('ui-icon ui-icon-close')
-                    .click(function (e) {
-                        e.preventDefault();
-                        $(this).closest('div').fadeOut(500, function () { $(this).remove(); });
-                    }).appendTo(bg);
-            }
-        }
-    }).trigger('change');
-
-    //    $(function () {
-    //        $(".someClass").tipTip({ defaultPosition: "top", edgeOffset: 7, keepAlive: true });
-    //    });
+    $('.product-search')
+    .focusin(function () { $(this).val('').removeClass('product-search-blur'); })
+    .focusout(function () { $(this).val('Search for a product...').addClass('product-search-blur').removeClass('ui-autocomplete-loading'); })
+    .click(function () { $(this).val('').removeClass('product-search-blur'); })
+    .val('Search for a product...');
 
     // set up the refresh button so we can just click that to see our dev changes
     $('#btnRefresh').click(function (e) { e.preventDefault(); window.location = window.location; }).toggle(window.location.hostname.indexOf('127.0.0.1') > -1);
 
+    $('span').tooltip('show');
+    $("input[type=text], textarea").autoGrow();
     $('.testbtn').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -1652,48 +1749,6 @@ WaterCoolerPage = function () {
         $('.loading-section').hide().next().show();
 
     });
-
-    var start = new Date().getTime(),
-    time = 0, delay = 10;
-
-    var threadresults;
-
-
-
-    //    var timer = new UpdateTimer(function () {
-    //        var menuID = top.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
-    //        if ($('.commentcontainer').is(":visible") || menuID != "mniwc2") {
-    //            pausedtime = pausedtime + 10;
-    //            //$('#maincontainer').find('.postcontainer:first').after("paused for " + pausedtime);
-    //        }
-    //        else {
-    //            //$('#maincontainer').find('.postcontainer:first').after("searching post in past " + pausedtime);
-    //            top.Ts.Services.WaterCooler.GetUpdatedThreads($('#maincontainer').find('.topic_container').length, pausedtime, function (threads) {
-
-    //                for (var i = 0; i < threads.length; i++) {
-    //                    var test = $('.topic_container:data(MessageID=' + threads[i].Message.MessageID + ')');
-    //                    if (test.length > 0) {
-    //                        test.remove();
-    //                        var div = createThread(threads[i]);
-    //                        $('#maincontainer').find('.postcontainer:first').after(div).fadeIn(3000);
-    //                        //div.hide();
-    //                        //test.replaceWith(div);
-    //                        //div.fadeIn(3000);
-    //                    }
-    //                    else {
-    //                        var div = createThread(threads[i]);
-    //                        $('#maincontainer').find('.postcontainer:first').after(div).fadeIn(3000);
-    //                        div.fadeIn(3000);
-    //                    }
-
-    //                }
-    //            });
-    //        }
-
-    //    }, 10000);
-
-
-
 
     function ellipseString(text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
     // change the style of some stuff

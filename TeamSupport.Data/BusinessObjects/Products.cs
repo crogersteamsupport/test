@@ -279,6 +279,20 @@ namespace TeamSupport.Data
 
     }
 
+    public void LoadByProductName(int parentID, string name, int maxRows)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT TOP (@MaxRows) * FROM Products WHERE ((Name LIKE '%'+@Name+'%') OR (Description LIKE '%'+@Name+'%')) AND (OrganizationID = @ParentID) ORDER BY Name";
+            command.CommandType = CommandType.Text;
+
+            command.Parameters.AddWithValue("@Name", name);
+            command.Parameters.AddWithValue("@ParentID", parentID);
+            command.Parameters.AddWithValue("@MaxRows", maxRows);
+            Fill(command);
+        }
+    }
+
 
 
   }

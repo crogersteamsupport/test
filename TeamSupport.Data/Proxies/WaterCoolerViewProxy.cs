@@ -58,6 +58,29 @@ namespace TeamSupport.Data
             txt = txt.Replace(match.Value, "<a target='_blank' class='ts-link ui-state-default' href='" + (match.Value.StartsWith("http://") ? match.Value : "http://" + match.Value) + "'>" + match.Value + "</a>");
         }
 
+        return GenerateTicketLink(txt);
+    }
+
+    public string GenerateTicketLink(string txt)
+    {
+        Regex regx = new Regex(@"&ticket\d+", RegexOptions.IgnoreCase);
+        MatchCollection mactches = regx.Matches(txt);
+        int ticketnum;
+        Tickets tix = new Tickets(BaseCollection.LoginUser);
+        
+        foreach (Match match in mactches)
+        {
+            ticketnum = Convert.ToInt32(Regex.Replace(match.Value, "[^0-9]+", string.Empty));
+            tix.LoadByTicketNumber(BaseCollection.LoginUser.OrganizationID, ticketnum);
+            if (!tix.IsEmpty)
+            {
+                if (tix[0].OrganizationID == BaseCollection.LoginUser.OrganizationID)
+                {
+                    txt = txt.Replace(match.Value, "<a class='ts-link ui-state-default' href='#' onclick='top.Ts.MainPage.openTicket(" + ticketnum + "); return false;'>ticket " + ticketnum + "</a>");
+                }
+            }
+        }
+
         return txt;
     }
   }

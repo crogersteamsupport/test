@@ -655,8 +655,8 @@ Ts.Pages.Main.prototype =
 
           Ts.Services.Settings.WriteUserSetting('main-menu-selected', item.getId());
 
-          if (item.getType() == 'wc') {
-            self.MainMenu.find('mniWC', 'wc').setIsHighlighted(false);
+          if (item.getType() == 'wc2') {
+            self.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(false);
             Ts.Services.System.UpdateLastWaterCoolerID();
           }
 

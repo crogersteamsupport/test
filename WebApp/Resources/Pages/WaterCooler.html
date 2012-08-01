@@ -1,5 +1,5 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+﻿<!DOCTYPE html">
+<html lang="en">
 <head>
   <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
   <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
@@ -42,7 +42,7 @@
   <script src="../Js/jquery.data-selector.js" type="text/javascript"></script>
   <script src="../Js/jquery.timeago.js" type="text/javascript"></script>
   <script src="../Js/jquery.signalR-0.5.2.min.js" type="text/javascript"></script>
-  <script src="../../../signalr/hubs" type="text/javascript"></script>
+  <script src="http://socket-beta.teamsupport.com/signalr/hubs" type="text/javascript"></script>
   <script src="WaterCooler.js" type="text/javascript"></script>
 
   <title></title>
@@ -54,7 +54,6 @@
       <div class="ts-loading">
       </div>
     </div>
-
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span9" id="leftcontent">
@@ -62,20 +61,18 @@
         <div class="postcontainer">
             <div class="mainavatar"><img class="mainavatarlrg"></div>
             <div class="faketextcontainer">
-                <span class="faketext" title="Share to Watercooler">Share to Watercooler</span>
+                <span class="faketext">Share to Watercooler</span>
             </div>
             <div class="commentcontainer">
                 <span>
                     <textarea rows="5" class="boxsizingBorder" id="messagecontents" placeholder="Share to Watercooler"></textarea>
                 </span>
-                <div class="attachrow">
-                    <span class="addatt" title="Add Attachments"></span>
-                    <span class="addticket" title="Add Ticket"></span>
-                    <span class="adduser" title="Add User"></span>
-                    <span class="addcustomer" title="Add Company"></span>
-                    <span class="addgroup" title="Add Group"></span>
-                    <span class="addproduct" title="Add Product"></span>
-                    <button id="newcomment" class="btn btn-primary" title="Post Comment">post</button>
+<div class="attachrow">
+<span class="addatt" title="Add Attachments"></span><span class="addticket" title="Associate Ticket"></span>
+<span class="adduser" title="Associate User"></span><span class="addcustomer" title="Associate Company"></span>
+<span class="addgroup" title="Associate Group"></span><span class="addproduct" title="Associate Product"></span>
+<button id="newcomment" class="btn btn-primary" title="Post Comment">post</button>
+<div class="arrow-up"></div>
                 </div>
                 <div class="attcontainer subcontainer" id="commentatt">
                     <div class="upload-queue"></div>
@@ -84,17 +81,19 @@
                     <div class="group-queue"></div>
                     <div class="customer-queue"></div>
                     <div class="product-queue"></div>
+                    
                     <span class="ur">
                       <form id="attachmentinput" class="file-upload" action="Upload/Actions/555" method="POST" enctype="multipart/form-data" title="You can drag and drop your attachments here.">
                         <input type="file" name="file[]">
                         <a class="ui-state-default ts-link" href="#" title="You can drag and drop your attachments here.">+add attachment</a>
                       </form>
-                      <input id="ticketinput" class="ui-corner-all ui-widget-content main-quick-ticket" type="text" />
-                      <input id="userinput" class="ui-corner-all ui-widget-content user-search" type="text" />
-                      <input id="customerinput" class="ui-corner-all ui-widget-content company-search" type="text" />
+                      <input id="ticketinsert" class="insert-ticket" type="text" />
+                      <input id="ticketinput" class="main-quick-ticket" type="text" />
+                      <input id="userinput" class="user-search" type="text" />
+                      <input id="customerinput" class="company-search" type="text" />
+                      <input id="groupinput" class="group-search" type="text" />
+                      <input id="productinput" class="product-search" type="text" />
                     </span>
-                      <div id="groupinput"><select class="newticket-group"></select></div>
-                      <div id="productinput"><select class="newticket-product"></select></div>
                 </div>
             </div>
         </div>

@@ -115,7 +115,10 @@ public partial class Frames_Products : BaseFramePage
     }
     else if (tsMain.SelectedIndex > 3)
     {
-      url = url + "ProductID=" + productID.ToString();
+        if (url.ToLower().Contains("watercooler.html") == true)
+            url = url + "pagetype=1&pageid=" + productID.ToString();
+        else
+            url = url + "ProductID=" + productID.ToString();
 
       if (versionID > -1)
       {
@@ -129,6 +132,7 @@ public partial class Frames_Products : BaseFramePage
     }
     else
     {
+
       url = url + "ProductID=" + productID.ToString();
 
       if (versionID > -1 && tsMain.SelectedIndex > 0)
@@ -294,6 +298,7 @@ public partial class Frames_Products : BaseFramePage
 
     RadTab tab = new RadTab("History", "History.aspx?");
     tsMain.Tabs.Add(tab);
+    tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/142/Pages/Watercooler.html?"));
     tsMain.Tabs.Add(new RadTab("All Tickets", "TicketTabsAll.aspx?"));
 
     TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);

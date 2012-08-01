@@ -82,21 +82,22 @@ resize:none;}
 
 .attachment-list{padding: 10px 0 0 0}
 .attfilename{margin-right: 5px; line-height: 16px;}
-
 .ts-icon-attachment{float:left; margin-right: 10px}
 
-.addatt{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/icons/Add.png');cursor:pointer}
-.addticket{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
-.addgroup{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
-.addcustomer{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
-.addproduct{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
-.adduser{margin:4px;width: 16px;height: 16px;display: inline-block;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
+.addatt{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/icons/attachment.png');cursor:pointer}
+.addticket{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Tickets.png');cursor:pointer}
+.addgroup{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Groups.png');cursor:pointer}
+.addcustomer{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Customers.png');cursor:pointer}
+.addproduct{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Products.png');cursor:pointer}
+.adduser{margin:2px 4px;width: 16px;height: 16px;float: left;background-image:url('../Images/nav/16/Users.png');cursor:pointer}
 
 .postcontainer{/*padding:10px 0 10px 0*/}
 
 .singlelinecomment {overflow:hidden; height: auto !important}
+
 textarea{
     width:100%;
+    border-color: White;
     margin: 0 !important;
     padding:3px;}
 
@@ -129,6 +130,8 @@ height: 23px;
 line-height: 0;
 margin-bottom: 0 !important;
 margin-top: 0em;
+display: inline-block;
+vertical-align: bottom;
 }
 
 input, select
@@ -156,11 +159,22 @@ form.file-upload input {
 .deletepadding {margin: .5em}
 
 .ts-linkb{font-weight:bold !important}
-.main-quick-ticket, .company-search, .user-search {width:250px}
-.main-quick-ticket-blur, .company-search-blur, .user-search-blur { font-style: italic;}
+/*.main-quick-ticket, .company-search, .user-search, .insert-ticket, .group-search, .product-search {width:250px}*/
+.main-quick-ticket-blur, .company-search-blur, .user-search-blur, .insert-ticket-blur, .group-search-blur,.product-search-blur { font-style: italic;}
 
 #preview{
 	position:absolute;
 	display:none;
 	color:#fff;
 	}
+
+.arrow-up {
+	width: 0; 
+	height: 0; 
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid black;
+	position: relative;
+	left: 7px;
+	clear: both;
+}

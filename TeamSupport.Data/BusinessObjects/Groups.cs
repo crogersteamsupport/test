@@ -157,5 +157,19 @@ namespace TeamSupport.Data
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
     }
 
+    public void LoadByGroupName(int parentID, string name, int maxRows)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT TOP (@MaxRows) * FROM Groups WHERE ((Name LIKE '%'+@Name+'%') OR (Description LIKE '%'+@Name+'%')) AND (OrganizationID = @ParentID) ORDER BY Name";
+            command.CommandType = CommandType.Text;
+
+            command.Parameters.AddWithValue("@Name", name);
+            command.Parameters.AddWithValue("@ParentID", parentID);
+            command.Parameters.AddWithValue("@MaxRows", maxRows);
+            Fill(command);
+        }
+    }
+
   }
 }

@@ -116,6 +116,7 @@ public partial class Frames_Organizations : BaseFramePage
 
     if (UserSession.CurrentUser.IsInventoryEnabled)
       tsMain.Tabs.Add(new RadTab("Inventory", "../Inventory/CustomerInventory.aspx?CustID="));
+    tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/142/Pages/Watercooler.html?"));
 
     if (!UserSession.CurrentUser.IsTSUser)
     {
@@ -133,6 +134,7 @@ public partial class Frames_Organizations : BaseFramePage
     {
       tsMain.Tabs.Add(new RadTab("All Tickets (READONLY - DO NOT MODIFY!!!)", "Tickets.aspx?CustomerID="));
     }
+
 
   }
 

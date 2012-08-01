@@ -89,16 +89,16 @@ namespace TeamSupport.Data
                                     or (RefType in (0,1,2))) group by MessageID))
                                     order by LastModified desc", WaterCoolerAttachmentType.Group.GetHashCode(), LoginUser.UserID, LoginUser.UserID, LoginUser.UserID, WaterCoolerAttachmentType.User.GetHashCode());
                       break;
-                  case 1:  //ticket page
-                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0) and AttachmentID = {1})) group by MessageID))
+                  case 0:  //ticket page
+                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0} and AttachmentID = {1})) group by MessageID))
                                     order by LastModified desc", WaterCoolerAttachmentType.Ticket.GetHashCode(), itemID);
                       break;
-                  case 2: //product page
-                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0) and AttachmentID = {1})) group by MessageID))
+                  case 1: //product page
+                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0} and AttachmentID = {1})) group by MessageID))
                                     order by LastModified desc", WaterCoolerAttachmentType.Product.GetHashCode(), itemID);
                       break;
-                  case 3: //company page
-                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0) and AttachmentID = {1})) group by MessageID))
+                  case 2: //company page
+                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0} and AttachmentID = {1})) group by MessageID))
                                     order by LastModified desc", WaterCoolerAttachmentType.Company.GetHashCode(), itemID);
                       break;
                   default:
@@ -144,18 +144,18 @@ namespace TeamSupport.Data
                                     select * from threads where rowid between @start and @end
                                     order by LastModified desc", WaterCoolerAttachmentType.Group.GetHashCode(), LoginUser.UserID, LoginUser.UserID, LoginUser.UserID, WaterCoolerAttachmentType.User.GetHashCode());
                       break;
-                  case 1:  //ticket page
-                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0) and AttachmentID = {1})) group by MessageID))
+                  case 0:  //ticket page
+                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0} and AttachmentID = {1})) group by MessageID))
                                     select * from threads where rowid between @start and @end
                                     order by LastModified desc", WaterCoolerAttachmentType.Ticket.GetHashCode(), itemID);
                       break;
-                  case 2: //product page
-                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0) and AttachmentID = {1})) group by MessageID))
+                  case 1: //product page
+                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0} and AttachmentID = {1})) group by MessageID))
                                     select * from threads where rowid between @start and @end
                                     order by LastModified desc", WaterCoolerAttachmentType.Product.GetHashCode(), itemID);
                       break;
-                  case 3: //company page
-                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0) and AttachmentID = {1})) group by MessageID))
+                  case 2: //company page
+                      command.CommandText += string.Format(@"and((RefType is not null and RefType={0} and AttachmentID = {1})) group by MessageID))
                                     select * from threads where rowid between @start and @end
                                     order by LastModified desc", WaterCoolerAttachmentType.Company.GetHashCode(), itemID);
                       break;
@@ -170,33 +170,6 @@ namespace TeamSupport.Data
               command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
               command.Parameters.AddWithValue("@start", msgcount + 1);
               command.Parameters.AddWithValue("@end", msgcount + 5);
-              Fill(command);
-          }
-      }
-
-
-      public void LoadUpdatedThreads(int msgcount, int pausetime)
-      {
-          if (msgcount == 0)
-              msgcount += 10;
-          if (pausetime < 10)
-              pausetime = 10;
-          using (SqlCommand command = new SqlCommand())
-          {
-              // This query isn't right just a sample to pull the top 25.
-              //command.CommandText = @"WITH threads AS(SELECT   *, ROW_NUMBER() OVER (ORDER BY TimeStamp desc) AS rowid FROM WaterCoolerView)select rowid, MessageID, UserID, OrganizationID, TimeStamp, Message, MessageParent, IsDeleted, Avatar, UserName from threads WHERE OrganizationID = @OrganizationID AND MessageParent = -1 and rowid BETWEEN @start AND @end ORDER BY TimeStamp DESC";
-              command.CommandText = @"WITH threads AS(
-                                    SELECT wcv.MessageID, wcv.UserID, OrganizationID, TimeStamp, Message, MessageParent, IsDeleted, Avatar, UserName, lastmodified, LastModifiedUserID, ROW_NUMBER() OVER (ORDER BY TimeStamp desc) AS rowid FROM NewWaterCoolerView as wcv left join watercoolergroupatt as wcg on wcv.messageid = wcg.messageid
-                                    WHERE organizationid = @OrganizationID and MessageParent = -1 and DATEDIFF(second,wcv.LastModified,GETUTCDATE()) <= @timedelay and isdeleted=0 and isnull(wcg.groupid,0) = 0 or isnull(wcg.groupid,0) in (select groupid from groupusers where userid = @UserID))
-                                    select rowid, threads.MessageID, threads.UserID, OrganizationID, TimeStamp, Message, MessageParent, IsDeleted, Avatar, UserName from threads where DATEDIFF(second,threads.LastModified,GETUTCDATE()) <= @timedelay
-                                    ORDER BY LastModified asc";
-              command.CommandType = CommandType.Text;
-              command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
-              command.Parameters.AddWithValue("@UserID", LoginUser.UserID);
-              command.Parameters.AddWithValue("@start", 0);
-              command.Parameters.AddWithValue("@end", msgcount);
-              command.Parameters.AddWithValue("@timedelay", pausetime + 2);
-
               Fill(command);
           }
       }

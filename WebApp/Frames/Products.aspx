@@ -208,8 +208,12 @@
           }
         }
         else if (index > 3) {
-          url = url + 'ProductID=' + productNode.get_value();
-
+        if (url.indexOf("Watercooler.html") != -1) {
+            url = url + 'pagetype=1&pageid=' + productNode.get_value();
+        } else {
+            url = url + 'ProductID=' + productNode.get_value();
+        }
+          
           if (versionNode != null) {
             var radio = $get("<%=rbReported.ClientID %>");
             if (radio.checked)

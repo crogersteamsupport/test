@@ -324,7 +324,13 @@
         var tab = GetSelectedTab();
         var index = tab.get_index();
         if (id == _loadedID && index == _selectedTab) return;
-        var url = tab.get_value() + id;
+        var tabval = tab.get_value();
+        if (tabval.indexOf("Watercooler.html") != -1) {
+            var url = tab.get_value() + 'pagetype=2&pageid=' + id;
+        }
+        else{
+            var url = tab.get_value() + id;
+        }
         
         if (index == 1) {
           var userID = getData(getSelectedItemID()).UserID;
