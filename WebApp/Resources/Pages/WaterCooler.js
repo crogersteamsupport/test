@@ -207,8 +207,7 @@ WaterCoolerPage = function () {
 
     //Debug reasons
     $.connection.hub.logging = true;
-    //$.connection.hub.url = "http://socket-beta.teamsupport.com/signalr";
-    $.connection.hub.url = "https://app.tsdev.com/signalr/signalr";
+    $.connection.hub.url = "/signalr/signalr";
     // Start the connection
     $.connection.hub.start();
 
