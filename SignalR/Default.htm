@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Socket</title>
+    <script src="Scripts/jquery-1.7.2.js"></script>
+    <script src="Scripts/jquery.signalR-0.5.2.js" type="text/javascript"></script>
+    <script src="signalr/hubs"></script>
+    <script type="text/javascript">
+       $(function () {
+            // Proxy created on the fly
+            var chat = $.connection.socket;
+
+            // Declare a function on the chat hub so the server can invoke it
+            chat.addMessage = function (message) {
+                $('#messages').append('<li>' + message + '</li>');
+            };
+
+            chat.joined = function (user, date) {
+                $('#messages').append('<li>' + user + ' joined ' + date +'</li>');
+            };
+
+            chat.leave = function (user, date) {
+                $('#messages').append('<li>' + user + ' left ' + date + '</li>');
+            };
+
+            chat.reconnect = function (user, date) {
+                $('#messages').append('<li>' + user + ' reconnect ' + date + '</li>');
+            };
+
+            $("#broadcast").click(function () {
+                // Call the chat method on the server
+                chat.send($('#msg').val());
+            });
+
+            // Start the connection
+            $.connection.hub.logging = true;
+            $.connection.hub.start();
+        });
+    </script>
+</head>
+<body>
+  <input type="text" id="msg" />
+  <input type="button" id="broadcast" value="broadcast" />
+
+  <ul id="messages">
+  </ul>
+</body>
+</html>
