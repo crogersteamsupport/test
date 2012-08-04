@@ -6,6 +6,8 @@
 /// <reference path="~/Default.aspx" />
 
 var waterCoolerPage = null;
+var chatHubClient = $.connection.socket;
+
 $(document).ready(function () {
     waterCoolerPage = new WaterCoolerPage();
 });
@@ -35,8 +37,14 @@ WaterCoolerPage = function () {
         $('#sidebar').remove();
     }
 
+    var notify;
+    nSnd = new Audio('http://cycle1500.com/sounds/infbego.wav');
+
+    $(window).blur(function () {
+        notify = true;
+    });
+
     //Start the polling service
-    var chatHubClient = $.connection.socket;
 
     chatHubClient.addThread = function (message) {
         var firstpost = $('#maincontainer');
@@ -205,11 +213,75 @@ WaterCoolerPage = function () {
         }
     };
 
+    chatHubClient.chatMessage = function (message, chatID, chatname) {
+
+        chatWith(chatname, chatID);
+        chatAddMsg(chatID, message, chatname);
+        if (notify) {
+            nSnd.play();
+            notify = false;
+        }
+
+    };
+
+    chatHubClient.disconnect = function (windowid) {
+        $('.sidebarusers').find('.onlineUser:data(ChatID=' + windowid + ')').remove();
+        chatAddMsg(windowid, "User is currently offline", "system");
+    };
+
+    chatHubClient.updateUsers = function () {
+
+        top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
+            for (var i = 0; i < users.length; i++) {
+                var name = users[i].FirstName + ' ' + users[i].LastName;
+                var chatID = users[i].AppChatID;
+
+                var user = $('.sidebarusers').find('.onlineUser:data(ChatID=' + chatID + ')');
+
+                if (user.length > 0) {
+                    user.data('ChatID', chatID);
+                }
+                else {
+                    var onlineuser = $('<li>')
+                    .data('ChatID', chatID)
+                    .data('Name', name)
+                    .addClass('onlineUser')
+                    .click(function () {
+                        chatWith(name, chatID);
+                    })
+                    .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].FirstName + ' ' + users[i].LastName + '</a>')
+                    .appendTo($('.sidebarusers'));
+                }
+            }
+        });
+
+    };
+
     //Debug reasons
     $.connection.hub.logging = true;
     $.connection.hub.url = "/signalr/signalr";
     // Start the connection
-    $.connection.hub.start();
+    $.connection.hub.start(function () {
+        chatHubClient.login(top.Ts.System.User.UserID);
+
+        top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
+            for (var i = 0; i < users.length; i++) {
+                var name = users[i].FirstName + ' ' + users[i].LastName;
+                var chatID = users[i].AppChatID;
+                var onlineuser = $('<li>')
+            .data('ChatID', chatID)
+            .data('Name', name)
+            .addClass('onlineUser')
+            .click(function () {
+                chatWith(name, chatID);
+            })
+            .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].FirstName + ' ' + users[i].LastName + '</a>')
+            .appendTo($('.sidebarusers'));
+            }
+        });
+    });
+
+
 
     top.Ts.Services.Users.GetUserPhoto(-99, function (att) {
         $('.mainavatarlrg').attr("src", att);

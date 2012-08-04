@@ -418,14 +418,16 @@ namespace TSWebServices
     public bool DeleteMessage(int messageID)
     {
 
-        WatercoolerMsg wcm = new WatercoolerMsg(TSAuthentication.GetLoginUser());
-        wcm.LoadByMessageID(messageID);
+        //WatercoolerMsg wcm = new WatercoolerMsg(TSAuthentication.GetLoginUser());
+        //wcm.LoadByMessageID(messageID);
 
-        if (wcm[0].OrganizationID != TSAuthentication.OrganizationID) return false;
-        if (wcm[0].UserID != TSAuthentication.UserID && !TSAuthentication.IsSystemAdmin) return false;
+        WatercoolerMsgItem wcm = WatercoolerMsg.GetWatercoolerMsgItem(TSAuthentication.GetLoginUser(), messageID);
 
-        wcm[0].IsDeleted = true;
-        wcm[0].Collection.Save();
+        if (wcm.OrganizationID != TSAuthentication.OrganizationID) return false;
+        if (wcm.UserID != TSAuthentication.UserID && !TSAuthentication.IsSystemAdmin) return false;
+
+        wcm.IsDeleted = true;
+        wcm.Collection.Save();
 
         //wcm[0].Delete();
         //wcm[0].Collection.Save();
@@ -462,6 +464,22 @@ namespace TSWebServices
 
         return list.ToArray();
     }
+
+    [WebMethod]
+    public UserProxy[] GetOnlineChatUsers(int orgID)
+    {
+        List<UserProxy> onlineusers = new List<UserProxy>();
+        Users u = new Users(TSAuthentication.GetLoginUser());
+        u.LoadChatOnlineUsers(orgID, TSAuthentication.GetLoginUser().UserID);
+
+        foreach (User online in u)
+        {
+            onlineusers.Add(online.GetProxy());
+        }
+
+        return onlineusers.ToArray();
+    }
+
 
   }
 

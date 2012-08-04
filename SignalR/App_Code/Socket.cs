@@ -15,7 +15,6 @@ using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
 using SignalR.Hubs;
 using System.Threading.Tasks;
-using SignalR;
 
 /// <summary>
 /// Summary description for Socket
@@ -28,6 +27,17 @@ public class Socket : Hub, IConnected, IDisconnect
 
     public Task Disconnect()
     {
+        LoginUser nulluser = new LoginUser(-1, -1);
+        Users u = new Users(nulluser);
+        u.LoadByChatID(Context.ConnectionId);
+        if (!u.IsEmpty)
+        {
+            u[0].AppChatID = "";
+            u[0].AppChatStatus = false;
+            u[0].Collection.Save();
+        }
+        Clients.disconnect(Context.ConnectionId);
+
         return Clients.leave(Context.ConnectionId, DateTime.Now.ToString());
     }
 
@@ -47,10 +57,27 @@ public class Socket : Hub, IConnected, IDisconnect
         Clients.addMessage(message);
     }
 
+    public void SendChat(string message, string chatID, string name)
+    {
+        // Call the addMessage method on all clients
+        Clients.addMessage(message + " _ " + chatID);
+        Clients[chatID].chatMessage(message, Context.ConnectionId, name);
+    }
+
+    public void login(int userID)
+    {
+        User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        u.AppChatID = Context.ConnectionId;
+        u.AppChatStatus = true;
+        u.Collection.Save();
+
+        Clients.updateUsers();
+    }
+
     public void NewThread(int messageID)
     {
         WaterCoolerThread thread = new WaterCoolerThread();
-        
+
         WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
         wcv.LoadByMessageID(messageID);
 
@@ -177,5 +204,3 @@ public class WatercoolerJsonInfo
     [DataMember]
     public int PageID { get; set; }
 }
-
-

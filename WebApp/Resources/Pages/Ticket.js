@@ -12,6 +12,9 @@ $(document).ready(function () {
 
     $('.page-loading').show().next().hide();
 
+    if (top.Ts.System.User.OrganizationID != 1078 || top.Ts.System.User.OrganizationID != 13679)
+        $('#optionsContainer').remove();
+
     $(".dialog-emailinput").dialog({
         height: 200,
         width: 400,

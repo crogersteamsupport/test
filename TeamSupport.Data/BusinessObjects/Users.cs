@@ -181,6 +181,30 @@ namespace TeamSupport.Data
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, user.UserID, description);
     }
 
+    public void LoadByChatID(string chatID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * FROM Users WHERE (AppChatID = @chatid)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@chatid", chatID);
+            Fill(command);
+        }
+    }
+
+
+    public void LoadChatOnlineUsers(int organizationID, int userID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * FROM Users WHERE (AppChatstatus = 1) AND (organizationid = @orgid) and (AppChatID != '') and (userid != @userid)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@orgid", organizationID);
+            command.Parameters.AddWithValue("@userid", userID);
+            Fill(command);
+        }
+    }
+
     public void LoadByImportID(string importID)
     {
       using (SqlCommand command = new SqlCommand())

@@ -56,7 +56,9 @@ namespace TeamSupport.Data
     [DataMember] public bool IsClassicView { get; set; }
     [DataMember] public string timeZoneDisplay { get; set; }
     [DataMember] public string CultureDisplay { get; set; }
-    [DataMember] public string UserInformation { get; set; }   
+    [DataMember] public string UserInformation { get; set; }
+    [DataMember] public bool AppChatStatus { get; set; }
+    [DataMember] public string AppChatID { get; set; }   
   }
   
   public partial class User : BaseItem
@@ -119,6 +121,8 @@ namespace TeamSupport.Data
         if (culture != null) result.CultureDisplay = culture.DisplayName;
       }
       result.UserInformation = this.UserInformation;
+      result.AppChatID = this.AppChatID;
+      result.AppChatStatus = this.AppChatStatus;
 
       return result;
     }	

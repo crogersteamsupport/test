@@ -298,7 +298,8 @@ public partial class Frames_Products : BaseFramePage
 
     RadTab tab = new RadTab("History", "History.aspx?");
     tsMain.Tabs.Add(tab);
-    tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/142/Pages/Watercooler.html?"));
+    if (TSAuthentication.OrganizationID == 1078 || TSAuthentication.OrganizationID == 13679)
+        tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/142/Pages/Watercooler.html?"));
     tsMain.Tabs.Add(new RadTab("All Tickets", "TicketTabsAll.aspx?"));
 
     TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
