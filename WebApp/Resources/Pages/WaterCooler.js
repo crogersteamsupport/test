@@ -215,13 +215,14 @@ WaterCoolerPage = function () {
 
     chatHubClient.chatMessage = function (message, chatID, chatname) {
 
-        chatWith(chatname, chatID);
-        chatAddMsg(chatID, message, chatname);
-        if (notify) {
-            nSnd.play();
-            notify = false;
+        if (pageType == -1) {
+            chatWith(chatname, chatID);
+            chatAddMsg(chatID, message, chatname);
+            if (notify) {
+                nSnd.play();
+                notify = false;
+            }
         }
-
     };
 
     chatHubClient.disconnect = function (windowid) {
@@ -260,7 +261,8 @@ WaterCoolerPage = function () {
     //Debug reasons
     $.connection.hub.logging = true;
     $.connection.hub.url = "/signalr/signalr";
-    // Start the connection
+    // Start the connection only if on main wc page
+
     $.connection.hub.start(function () {
         chatHubClient.login(top.Ts.System.User.UserID);
 
@@ -280,8 +282,6 @@ WaterCoolerPage = function () {
             }
         });
     });
-
-
 
     top.Ts.Services.Users.GetUserPhoto(-99, function (att) {
         $('.mainavatarlrg').attr("src", att);
