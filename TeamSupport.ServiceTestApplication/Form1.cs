@@ -116,7 +116,6 @@ namespace TeamSupport.ServiceTestApplication
       setup.ApplicationBase = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
       setup.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
       AppDomain domain = AppDomain.CreateDomain(domainName, AppDomain.CurrentDomain.Evidence, setup);
-      MessageBox.Show(type.AssemblyQualifiedName);
       ServiceThread thread = (ServiceThread)domain.CreateInstanceFromAndUnwrap(Path.Combine(servicePath, assemblyName), type.FullName);
       _threads.Add(thread);
       _domains.Add(domain);
