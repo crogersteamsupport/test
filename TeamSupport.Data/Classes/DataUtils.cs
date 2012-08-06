@@ -282,10 +282,23 @@ namespace TeamSupport.Data
       if (writeAlias)
       {
         builder.Append("AS [");
+
+        StringBuilder alias = new StringBuilder(field.Name);
+
+        if (field.AuxID > 0 && field.RefType == ReferenceType.Tickets)
+        {
+          TicketType ticketType = TicketTypes.GetTicketType(loginUser, field.AuxID);
+          if (ticketType != null && ticketType.OrganizationID == field.OrganizationID)
+          {
+            alias.Append(" (" + ticketType.Name + ")");
+          }
+        
+        }
+
         if (allowSpaces)
-          builder.Append(field.Name);
+          builder.Append(alias.ToString());
         else
-          builder.Append(field.Name.Replace(' ', '_'));
+          builder.Append(alias.ToString().Replace(' ', '_'));
         builder.Append("]");
       }
       return builder.ToString();
