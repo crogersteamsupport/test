@@ -29,6 +29,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CreatedDate", "CreatedDate", false, false, true);
       _fieldMap.AddMap("ModifiedBy", "ModifiedBy", false, false, true);
       _fieldMap.AddMap("ModifiedDate", "ModifiedDate", false, false, true);
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
       _fieldMap.AddMap("Creator", "Creator", false, false, true);
       _fieldMap.AddMap("Modifier", "Modifier", false, false, true);
       _fieldMap.AddMap("Organization", "Organization", false, false, false);

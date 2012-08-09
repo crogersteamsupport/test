@@ -105,9 +105,15 @@ namespace TeamSupport.Data
       get { return Row["ModifiedBy"] != DBNull.Value ? (int?)Row["ModifiedBy"] : null; }
       set { Row["ModifiedBy"] = CheckValue("ModifiedBy", value); }
     }
-    
 
-    
+
+
+    public bool NeedsIndexing
+    {
+      get { return (bool)Row["NeedsIndexing"]; }
+      set { Row["NeedsIndexing"] = CheckValue("NeedsIndexing", value); }
+    }
+
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
@@ -239,7 +245,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WikiArticles] SET     [ParentID] = @ParentID,    [OrganizationID] = @OrganizationID,    [ArticleName] = @ArticleName,    [Body] = @Body,    [Version] = @Version,    [PublicView] = @PublicView,    [PublicEdit] = @PublicEdit,    [PortalView] = @PortalView,    [PortalEdit] = @PortalEdit,    [Private] = @Private,    [IsDeleted] = @IsDeleted,    [CreatedBy] = @CreatedBy,    [CreatedDate] = @CreatedDate,    [ModifiedBy] = @ModifiedBy,    [ModifiedDate] = @ModifiedDate  WHERE ([ArticleID] = @ArticleID);";
+    updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WikiArticles] SET     [ParentID] = @ParentID,    [OrganizationID] = @OrganizationID,    [ArticleName] = @ArticleName,    [Body] = @Body,    [Version] = @Version,    [PublicView] = @PublicView,    [PublicEdit] = @PublicEdit,    [PortalView] = @PortalView,    [PortalEdit] = @PortalEdit,    [Private] = @Private,    [IsDeleted] = @IsDeleted,    [CreatedBy] = @CreatedBy,    [CreatedDate] = @CreatedDate,    [ModifiedBy] = @ModifiedBy,    [ModifiedDate] = @ModifiedDate,    [NeedsIndexing] = @NeedsIndexing  WHERE ([ArticleID] = @ArticleID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ArticleID", SqlDbType.Int, 4);
@@ -353,16 +359,30 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 23;
 		  tempParameter.Scale = 23;
 		}
-		
+
+    tempParameter = updateCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+    if (tempParameter.SqlDbType == SqlDbType.Float)
+    {
+      tempParameter.Precision = 255;
+      tempParameter.Scale = 255;
+    }
+
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WikiArticles] (    [ParentID],    [OrganizationID],    [ArticleName],    [Body],    [Version],    [PublicView],    [PublicEdit],    [PortalView],    [PortalEdit],    [Private],    [IsDeleted],    [CreatedBy],    [CreatedDate],    [ModifiedBy],    [ModifiedDate]) VALUES ( @ParentID, @OrganizationID, @ArticleName, @Body, @Version, @PublicView, @PublicEdit, @PortalView, @PortalEdit, @Private, @IsDeleted, @CreatedBy, @CreatedDate, @ModifiedBy, @ModifiedDate); SET @Identity = SCOPE_IDENTITY();";
+    insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WikiArticles] (    [ParentID],    [OrganizationID],    [ArticleName],    [Body],    [Version],    [PublicView],    [PublicEdit],    [PortalView],    [PortalEdit],    [Private],    [IsDeleted],    [CreatedBy],    [CreatedDate],    [ModifiedBy],    [ModifiedDate],    [NeedsIndexing]) VALUES ( @ParentID, @OrganizationID, @ArticleName, @Body, @Version, @PublicView, @PublicEdit, @PortalView, @PortalEdit, @Private, @IsDeleted, @CreatedBy, @CreatedDate, @ModifiedBy, @ModifiedDate, @NeedsIndexing); SET @Identity = SCOPE_IDENTITY();";
 
-		
-		tempParameter = insertCommand.Parameters.Add("ModifiedDate", SqlDbType.DateTime, 8);
+
+    tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+    if (tempParameter.SqlDbType == SqlDbType.Float)
+    {
+      tempParameter.Precision = 255;
+      tempParameter.Scale = 255;
+    }
+
+    tempParameter = insertCommand.Parameters.Add("ModifiedDate", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 23;
@@ -579,7 +599,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ArticleID], [ParentID], [OrganizationID], [ArticleName], [Body], [Version], [PublicView], [PublicEdit], [PortalView], [PortalEdit], [Private], [IsDeleted], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate] FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ArticleID], [ParentID], [OrganizationID], [ArticleName], [Body], [Version], [PublicView], [PublicEdit], [PortalView], [PortalEdit], [Private], [IsDeleted], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [NeedsIndexing] FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ArticleID", articleID);
         Fill(command);

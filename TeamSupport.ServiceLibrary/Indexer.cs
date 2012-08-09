@@ -25,7 +25,8 @@ namespace TeamSupport.ServiceLibrary
         {
           cnt++;
           Logs.WriteEvent(string.Format("Started Indexing for org: {0}, [{1}/{2}]",org.OrganizationID.ToString(), cnt.ToString(), orgs.Count.ToString()));
-          ProcessTicketIndex(org);
+          ProcessIndex(org, ReferenceType.Tickets);
+          ProcessIndex(org, ReferenceType.Wikis);
           UpdateHealth();
         }
 
@@ -42,23 +43,53 @@ namespace TeamSupport.ServiceLibrary
     }
 
 
-    private void ProcessTicketIndex(Organization organization)
+    private void ProcessIndex(Organization organization, ReferenceType referenceType)
     {
-      string path = Path.Combine(Settings.ReadString("Tickets Index Path", "c:\\Indexes"), organization.OrganizationID.ToString() + "\\Tickets");
+      string indexPath                            = string.Empty;
+      string deletedIndexItemsFileName            = string.Empty;
+      string storedFields                         = string.Empty;
+      string tableName                            = string.Empty;
+      string primaryKeyName                       = string.Empty;
+
+      IndexDataSource indexDataSource = null;
+
+      switch(referenceType)
+      {
+        case ReferenceType.Tickets:
+           indexPath                            = "\\Tickets";
+           deletedIndexItemsFileName            = "DeletedTickets.txt";
+           storedFields                         = "TicketID OrganizationID TicketNumber Name IsKnowledgeBase Status Severity DateModified DateCreated DateClosed SlaViolationDate SlaWarningDate";
+           tableName                            = "Tickets";
+           primaryKeyName                       = "TicketID";
+           indexDataSource                      = new TicketIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
+           break;
+        case ReferenceType.Wikis:
+           indexPath                            = "\\Wikis";
+           deletedIndexItemsFileName            = "DeletedWikis.txt";
+           storedFields                         = "OrganizationID Creator Modifier";
+           tableName                            = "WikiArticles";
+           primaryKeyName                       = "ArticleID";
+           indexDataSource                      = new WikiIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
+           break;
+        default:
+          throw new System.ArgumentException("ReferenceType " + referenceType.ToString() + " is not supported by indexer."); 
+      }
+
+
+      string path = Path.Combine(Settings.ReadString("Tickets Index Path", "c:\\Indexes"), organization.OrganizationID.ToString() + indexPath);
       Logs.WriteEvent("Path: " + path);
       bool isNew = !System.IO.Directory.Exists(path);
 
       if (isNew) { Directory.CreateDirectory(path); }
 
-
       try
       {
-        RemoveOldTicketIndexes(LoginUser, path, organization);
+        RemoveOldIndexItems(LoginUser, path, organization, referenceType, deletedIndexItemsFileName);
       }
       catch (Exception ex)
       {
         Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Indexer.RemoveOldTicketIndexes - " + organization.OrganizationID.ToString()); 
+        ExceptionLogs.LogException(LoginUser, ex, "Indexer.RemoveOldIndexItems - " + referenceType.ToString() + " - " + organization.OrganizationID.ToString()); 
       }
 
       Options options = new Options();
@@ -66,14 +97,14 @@ namespace TeamSupport.ServiceLibrary
 
       using (IndexJob job = new IndexJob())
       {
-        TicketIndexDataSource dataSource = new TicketIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
-        job.DataSourceToIndex = dataSource;
-        
+        job.DataSourceToIndex = indexDataSource;
+
         job.IndexPath = path;
         job.ActionCreate = isNew;
         job.ActionAdd = true;
         job.CreateRelativePaths = false;
-        job.StoredFields = Server.Tokenize("TicketID OrganizationID TicketNumber Name");
+        job.StoredFields = Server.Tokenize(storedFields);
+
         job.IndexingFlags =
             IndexingFlags.dtsAlwaysAdd |
             IndexingFlags.dtsIndexCacheOriginalFile |
@@ -90,47 +121,45 @@ namespace TeamSupport.ServiceLibrary
           {
             if (IsStopped) { job.AbortThread(); }
           }
-
         }
         catch (Exception ex)
         {
-          ExceptionLogs.LogException(LoginUser, ex, "Index Job Processor - " + organization.OrganizationID.ToString());
+          ExceptionLogs.LogException(LoginUser, ex, "Index Job Processor - " + referenceType.ToString() + " - " + organization.OrganizationID.ToString());
           Logs.WriteException(ex);
           throw;
         }
-        
-        UpdateTickets(dataSource);
+
+        UpdateItems(indexDataSource, tableName, primaryKeyName);
       }
     }
 
-    private void UpdateTickets(TicketIndexDataSource dataSource)
+    private void UpdateItems(IndexDataSource dataSource, string tableName, string primaryKeyName)
     {
       UpdateHealth();
-      if (dataSource.UpdatedTickets.Count < 1) return;
 
-      /*
-      StringBuilder builder = new StringBuilder();
-      foreach (KeyValuePair<int, int> item in dataSource.UpdatedTickets)
-      {
-        string sql = string.Format("UPDATE Tickets SET NeedsIndexing = 0, DocID = {1} WHERE TicketID = {0};", item.Key.ToString(), item.Value.ToString());
-        builder.AppendLine(sql);
-      }
-      */
-      string updateSql = "UPDATE Tickets SET NeedsIndexing = 0 WHERE TicketID IN (" + DataUtils.IntArrayToCommaString(dataSource.UpdatedTickets.ToArray()) + ")";
+      if (dataSource.UpdatedItems.Count < 1) return;
+
+      string updateSql = "UPDATE " + tableName + " SET NeedsIndexing = 0 WHERE " + primaryKeyName + " IN (" + DataUtils.IntArrayToCommaString(dataSource.UpdatedItems.ToArray()) + ")";
       Logs.WriteEvent(updateSql);
       SqlCommand command = new SqlCommand();
       command.CommandText = updateSql;
       command.CommandType = System.Data.CommandType.Text;
 
       SqlExecutor.ExecuteNonQuery(LoginUser, command);
-      Logs.WriteEvent("Ticket Indexes Statuses UPdated");
+      Logs.WriteEvent(tableName + " Indexes Statuses UPdated");
     }
 
-    private void RemoveOldTicketIndexes(LoginUser loginUser, string indexPath, Organization organization)
+    private void RemoveOldIndexItems(
+      LoginUser loginUser
+      , string indexPath
+      , Organization organization
+      , ReferenceType referenceType
+      , string deletedIndexItemsFileName
+    )
     {
       if (!Directory.Exists(indexPath)) return;
       DeletedIndexItems items = new DeletedIndexItems(loginUser);
-      items.LoadByReferenceType(ReferenceType.Tickets, organization.OrganizationID);
+      items.LoadByReferenceType(referenceType, organization.OrganizationID);
       if (items.IsEmpty) return;
       if (!Directory.Exists(indexPath)) return;
 
@@ -140,7 +169,7 @@ namespace TeamSupport.ServiceLibrary
         builder.AppendLine(item.RefID.ToString());
       }
 
-      string fileName = Path.Combine(indexPath, "DeletedTickets.txt");
+      string fileName = Path.Combine(indexPath, deletedIndexItemsFileName);
       if (File.Exists(fileName)) File.Delete(fileName);
       using (StreamWriter writer = new StreamWriter(fileName))
       {
@@ -162,71 +191,8 @@ namespace TeamSupport.ServiceLibrary
       UpdateHealth();
       items.DeleteAll();
       items.Save();
-      Logs.WriteEvent("Finished Removing Old Ticket Indexes - OrgID = " + organization.OrganizationID);
+      Logs.WriteEvent("Finished Removing Old Indexes - OrgID = " + organization.OrganizationID + " - " + referenceType.ToString());
     }
-    /*
-    private void CompressTicketIndexes(LoginUser loginUser, string indexPath)
-    {
-      if (!Settings.ReadBool("Compress Indexes", false)) return;
 
-      if (!Settings.ReadBool("Force Compress", false))
-      {
-        DateTime last = DateTime.Parse(Settings.ReadString("Last Compressed", DateTime.Now.AddYears(-1).ToString()));
-        if (last.Subtract(DateTime.Now).TotalHours < 12) return;
-        if (DateTime.Now.Hour > 2) return;
-      }
-      else
-      {
-        Logs.WriteEvent("Forced Compress");
-        Settings.WriteBool("Force Compress", false);
-      }
-
-
-
-      Logs.WriteEvent("Starting Compression Job");
-
-      using (IndexJob job = new IndexJob())
-      {
-        job.IndexPath = indexPath;
-        job.ActionCreate = false;
-        job.ActionAdd = false;
-        job.ActionRemoveListed = false;
-        job.ActionCompress = true;
-        job.CreateRelativePaths = false;
-        job.IndexingFlags = 
-            IndexingFlags.dtsIndexKeepExistingDocIds | 
-            IndexingFlags.dtsIndexCacheOriginalFile |
-            IndexingFlags.dtsIndexCacheText |
-            IndexingFlags.dtsIndexCacheTextWithoutFields;
-
-        Settings.WriteString("Compress Status", "Compressing");
-
-        job.ExecuteInThread();
-
-        bool flag = false;
-        DateTime start = DateTime.Now;
-        IndexProgressInfo status = new IndexProgressInfo();
-        while (job.IsThreadDone(1000, status) == false)
-        {
-          if (IsStopped || !Settings.ReadBool("Compress Indexes", false)) 
-          {
-            Settings.WriteString("Compress Status", "Aborted");
-            flag = true;
-            job.AbortThread(); 
-          }
-        }
-
-        if (!flag)
-        {
-          Settings.WriteString("Compress Status", "Success");
-          Settings.WriteString("Last Compressed", DateTime.Now.ToString());
-          Settings.WriteInt("Last Compress Time", (int)DateTime.Now.Subtract(start).TotalSeconds);
-        }
-        Logs.WriteEvent("Finished Compressing Ticket Indexes");
-        Settings.WriteBool("Force Compress", false);
-
-      }
-    }
-    */
   }
 }

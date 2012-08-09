@@ -96,7 +96,36 @@ namespace TeamSupport.Data
 
     }
 
+    public void LoadForIndexing(int organizationID, int max)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        string text = @"
+        SELECT TOP {0} ArticleID
+        FROM WikiArticlesView w WITH(NOLOCK)
+        WHERE w.NeedsIndexing = 1
+        AND w.OrganizationID= @OrganizationID
+        ORDER BY ModifiedDate DESC";
 
+        command.CommandText = string.Format(text, max.ToString());
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
+    public void LoadColumnNames()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT *
+        FROM WikiArticlesView w WITH(NOLOCK)
+        WHERE 1 = 2";
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }
   }
   
 }

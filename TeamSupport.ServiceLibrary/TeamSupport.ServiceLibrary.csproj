@@ -120,6 +120,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IndexDataSource.cs" />
     <Compile Include="ServiceManager.cs" />
     <Compile Include="ReportSender.cs" />
     <Compile Include="ReminderProcessor.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="SlaProcessor.cs" />
     <Compile Include="TicketIndexDataSource.cs" />
+    <Compile Include="WikiIndexDataSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HtmlAgilityPack\HtmlAgilityPack\HtmlAgilityPack.csproj">

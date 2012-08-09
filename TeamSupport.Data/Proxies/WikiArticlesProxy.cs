@@ -29,7 +29,8 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? CreatedDate { get; set; }
     [DataMember] public int? ModifiedBy { get; set; }
     [DataMember] public DateTime? ModifiedDate { get; set; }
-          
+    [DataMember] public bool NeedsIndexing { get; set; }     
+         
   }
   
   public partial class WikiArticle : BaseItem
@@ -37,6 +38,7 @@ namespace TeamSupport.Data
     public WikiArticleProxy GetProxy()
     {
       WikiArticleProxy result = new WikiArticleProxy();
+      result.NeedsIndexing = this.NeedsIndexing;
       result.ModifiedBy = this.ModifiedBy;
       result.CreatedBy = this.CreatedBy;
       result.IsDeleted = this.IsDeleted;

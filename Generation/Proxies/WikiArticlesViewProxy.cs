@@ -29,6 +29,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? CreatedDate { get; set; }
     [DataMember] public int? ModifiedBy { get; set; }
     [DataMember] public DateTime? ModifiedDate { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public string Creator { get; set; }
     [DataMember] public string Modifier { get; set; }
     [DataMember] public string Organization { get; set; }
@@ -43,6 +44,7 @@ namespace TeamSupport.Data
       result.Organization = this.Organization;
       result.Modifier = this.Modifier;
       result.Creator = this.Creator;
+      result.NeedsIndexing = this.NeedsIndexing;
       result.ModifiedBy = this.ModifiedBy;
       result.CreatedBy = this.CreatedBy;
       result.IsDeleted = this.IsDeleted;
