@@ -30,7 +30,7 @@ namespace TeamSupport.ServiceLibrary
 
         _lastItemID = wiki.ArticleID;
 
-        DocText = string.Format("<html><body>{0}</body></html>", wiki.Body);
+        DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(wiki.Body));
 
         DocFields = string.Empty;
         foreach (DataColumn column in wiki.Collection.Table.Columns)
