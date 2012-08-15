@@ -106,10 +106,13 @@ namespace TeamSupport.Data
     {
       if (row != null)
       {
+        int orgID = BaseCollection.LoginUser.UserID < 1 ? _organizationID : BaseCollection.LoginUser.OrganizationID;
+        LoginUser loginUser = new LoginUser(BaseCollection.LoginUser.ConnectionString, BaseCollection.LoginUser.UserID, orgID, null);
+
         foreach (DataColumn column in row.Table.Columns)
         {
           if (column.DataType == System.Type.GetType("System.DateTime") && row[column] != DBNull.Value)
-            ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(BaseCollection.LoginUser, (DateTime)row[column]).ToString("g", BaseCollection.LoginUser.OrganizationCulture));
+            ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(loginUser, (DateTime)row[column]).ToString("g", loginUser.OrganizationCulture));
           else
             ReplaceField(objectName, column.ColumnName, row[column].ToString());
         }
