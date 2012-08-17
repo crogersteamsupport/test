@@ -144,7 +144,7 @@ namespace TeamSupport.Data
         {
           command.CommandText = @"
 SELECT cp.*, cc.FirstName, cc.LastName, cc.Email, cc.CompanyName,
-CASE WHEN DATEDIFF(second, cc.LastPing, GETUTCDATE()) < 7 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
+CASE WHEN DATEDIFF(second, cc.LastPing, GETUTCDATE()) < 15 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
 FROM ChatParticipants cp
 LEFT JOIN ChatClients cc ON cc.ChatClientID = cp.ParticipantID
 WHERE cp.ChatID = @ChatID
@@ -157,7 +157,7 @@ AND cp.ParticipantID = @ParticipantID
         {
           command.CommandText = @"
 SELECT cp.*, u.FirstName, u.LastName, u.Email, o.Name, 
-CASE WHEN DATEDIFF(second, u.LastPing, GETUTCDATE()) < 7 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
+CASE WHEN DATEDIFF(second, u.LastPing, GETUTCDATE()) < 15 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
 FROM ChatParticipants cp
 LEFT JOIN Users u ON u.UserID = cp.ParticipantID
 LEFT JOIN Organizations o ON o.OrganizationID = u.OrganizationID
@@ -195,7 +195,7 @@ AND cp.ParticipantID = @ParticipantID
         string text = @"
 (
 SELECT cp.*, cc.FirstName, cc.LastName, cc.Email, cc.CompanyName, 
-CASE WHEN DATEDIFF(second, cc.LastPing, GETUTCDATE()) < 7 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline,
+CASE WHEN DATEDIFF(second, cc.LastPing, GETUTCDATE()) < 15 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline,
 ISNULL((SELECT TOP 1 cm.ChatMessageID FROM ChatMessages cm WHERE cm.ChatID= cp.ChatID ORDER BY cm.ChatMessageID DESC), 0) AS 'LastPostedMessageID',
 ISNULL((SELECT TOP 1 cp2.LastMessageID FROM ChatParticipants cp2 WHERE cp2.ChatID= cp.ChatID AND cp2.ParticipantType=0 AND cp2.ParticipantID=@UserID), 0) AS 'MyLastMessageID'
 FROM ChatParticipants cp
@@ -207,7 +207,7 @@ AND cp.ParticipantType = 1
 UNION
 
 SELECT cp.*, u.FirstName, u.LastName, u.Email, o.Name, 
-CASE WHEN DATEDIFF(second, u.LastPing, GETUTCDATE()) < 7 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline,
+CASE WHEN DATEDIFF(second, u.LastPing, GETUTCDATE()) < 15 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline,
 ISNULL((SELECT TOP 1 cm.ChatMessageID FROM ChatMessages cm WHERE cm.ChatID= cp.ChatID ORDER BY cm.ChatMessageID DESC), 0) AS 'LastPostedMessageID',
 ISNULL((SELECT TOP 1 cp2.LastMessageID FROM ChatParticipants cp2 WHERE cp2.ChatID= cp.ChatID AND cp2.ParticipantType=0 AND cp2.ParticipantID=@UserID), 0) AS 'MyLastMessageID'
 FROM ChatParticipants cp
@@ -236,7 +236,7 @@ ORDER BY ChatID
         string text = @"
 (
 SELECT cp.*, cc.FirstName, cc.LastName, cc.Email, cc.CompanyName, 
-CASE WHEN DATEDIFF(second, cc.LastPing, GETUTCDATE()) < 7 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
+CASE WHEN DATEDIFF(second, cc.LastPing, GETUTCDATE()) < 15 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
 FROM ChatParticipants cp
 LEFT JOIN ChatClients cc ON cc.ChatClientID = cp.ParticipantID
 WHERE cp.ChatID = @ChatID
@@ -246,7 +246,7 @@ AND cp.ParticipantType = 1
 UNION
 
 SELECT cp.*, u.FirstName, u.LastName, u.Email, o.Name, 
-CASE WHEN DATEDIFF(second, u.LastPing, GETUTCDATE()) < 7 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
+CASE WHEN DATEDIFF(second, u.LastPing, GETUTCDATE()) < 15 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
 FROM ChatParticipants cp
 LEFT JOIN Users u ON u.UserID = cp.ParticipantID
 LEFT JOIN Organizations o ON o.OrganizationID = u.OrganizationID
@@ -271,10 +271,10 @@ ORDER BY ChatID
       {
         string text = @"
 SELECT cp.*, cc.FirstName, cc.LastName, cc.Email, cc.CompanyName, 
-CASE WHEN DATEDIFF(second, cc.LastPing, GETUTCDATE()) < 7 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
+CASE WHEN DATEDIFF(second, cc.LastPing, GETUTCDATE()) < 15 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
 FROM ChatParticipants cp
 LEFT JOIN ChatClients cc ON cc.ChatClientID = cp.ParticipantID AND cp.ParticipantType=1 AND cp.DateLeft IS NULL
-WHERE DATEADD(second, 20, cc.LastPing) < GETUTCDATE()
+WHERE DATEADD(second, 60, cc.LastPing) < GETUTCDATE()
 AND cp.ParticipantType = 1
 AND cc.OrganizationID=@OrganizationID
 ";
@@ -292,7 +292,7 @@ AND cc.OrganizationID=@OrganizationID
       {
         command.CommandText = @"  
 SELECT cp.*, cc.FirstName, cc.LastName, cc.Email, cc.CompanyName, 
-CASE WHEN DATEDIFF(second, cc.LastPing, GETUTCDATE()) < 7 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
+CASE WHEN DATEDIFF(second, cc.LastPing, GETUTCDATE()) < 15 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
 FROM ChatParticipants cp
 LEFT JOIN ChatClients cc ON cc.ChatClientID = cp.ParticipantID
 WHERE GETUTCDATE() < DATEADD(second, @Seconds, cp.LastTyped)
@@ -303,7 +303,7 @@ AND cp.ParticipantTYpe = 1
 UNION
 
 SELECT cp.*, u.FirstName, u.LastName, u.Email, o.Name, 
-CASE WHEN DATEDIFF(second, u.LastPing, GETUTCDATE()) < 7 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
+CASE WHEN DATEDIFF(second, u.LastPing, GETUTCDATE()) < 15 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsOnline
 FROM ChatParticipants cp
 LEFT JOIN Users u ON u.UserID = cp.ParticipantID
 LEFT JOIN Organizations o ON o.OrganizationID = u.OrganizationID

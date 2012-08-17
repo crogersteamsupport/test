@@ -36,6 +36,7 @@ public partial class UserControls_ReportFilterControl : System.Web.UI.UserContro
     }
     set
     {
+      if (value == null) value = new TeamSupport.Data.ReportConditions(UserSession.LoginUser);
       value.LoginUser = UserSession.LoginUser;
       fieldFilterObject.Value = DataUtils.ObjectToString(value);
       LoadAll(ReportSubcategoryID);
