@@ -136,8 +136,15 @@
       {
         showLoadingPanel("<%=groupContentFrame.ClientID %>");
         var groupID = GetSelectedGroupID();
-        var url = GetSelectedTabValue() + groupID;
+
         var frame = $get("<%=groupContentFrame.ClientID %>");
+
+        if (GetSelectedTabValue().indexOf("Watercooler.html") != -1) {
+            var url = GetSelectedTabValue() + 'pagetype=2&pageid=' + groupID;
+        } else {
+            var url = GetSelectedTabValue() + groupID;
+        }
+
         frame.setAttribute('src', url);
         hideLoadingPanel("<%=groupContentFrame.ClientID %>");
       }

@@ -48,7 +48,7 @@ resize:none;}
 
 .topic_container{margin-top:10px}
 .topic{border: 1px solid #ddd; padding: 5px;min-height:55px}
-.topicavatar{float:left}
+.topicavatar{float:left;height:48px;width:48px;}
 .topicavatarlrg{float:left;height:48px;width:48px;margin-right: 15px}
 .topicavatarsm{float:left;height:32px;width:32px;margin-right: 15px;padding-top:5px;padding-left: 5px;}
 /*.tpic{display:table-cell;width: 500px;}*/
@@ -56,12 +56,12 @@ resize:none;}
 .topicln {line-height:2em;}
 .topicts{color:#666;font-size:10px;margin-left:1em}
 .topicrel{color:#666;float:right}
-.topictext{padding-top:4px;padding-bottom:15px;display: inline-block;}
+.topictext{padding-top:4px;padding-bottom:5px;display: block; word-wrap: break-word;}
 .treplycontainer{display:block;border: 1px solid #E3E3E3;background-color: #F7F7F7;margin-bottom: .5em}
 .topicrpy{margin:0 5px 0 52px}
 .topictm{color:#666;font-size:10px;margin: 0 1em 0 1em}
 .topicreplytxt{padding-top:4px;padding-bottom: 15px;line-height:1.4;display:table-row}
-.topicComments{padding:1em 0px 1em 5px;display: inline-block;font-weight: bold;color:#0057C2; cursor:pointer}
+.topicComments{padding:1em 0px 1em 5px;display: inline-block;font-weight: bold;color:#0057C2; cursor:pointer;width: 100%;}
 .hiddenComments{display:none}
 .topiclike{font-size: 10px;padding-left: 5px}
 .likestar{width:10px;}
@@ -93,6 +93,15 @@ resize:none;}
 
 .postcontainer{/*padding:10px 0 10px 0*/}
 
+form.file-upload { position: relative; overflow: hidden; direction: ltr; cursor: pointer; color: #333; height: 16px; line-height: 16px; float:left; margin-top: 4px !important; margin-right: 5px !important; }
+form.file-upload input { position: absolute; top: 0; right: 0; margin: 0; border: 300px solid transparent; opacity: 0; -ms-filter: 'alpha(opacity=0)'; filter: alpha(opacity=0); -o-transform: translate(-300px, -300px) scale(10); -moz-transform: translate(-800px, 0) scale(10); cursor: pointer; height: 100%; }
+:root form.file-upload input { height: auto; }
+
+form
+{
+    margin-bottom: 0px !important;
+}
+
 .singlelinecomment {overflow:hidden; height: auto !important}
 
 textarea{
@@ -119,21 +128,6 @@ float: left;
     font-weight: bold;
 }
 
-form.file-upload {
-position: relative;
-overflow: hidden;
-direction: ltr;
-cursor: pointer;
-color: #333;
-width: 8em;
-height: 23px;
-line-height: 0;
-margin-bottom: 0 !important;
-margin-top: 0em;
-display: inline-block;
-vertical-align: bottom;
-}
-
 input, select
 {
     margin-bottom: 0 !important; /*override bootstrap*/
@@ -144,16 +138,6 @@ input, select
 .ui-combobox-table
 {
     padding: 1px 0 1px 0 !important;    
-}
-
-form.file-upload input {
-    -moz-transform: translate(-800px, 0pt) scale(10);
-    /*border: 300px solid transparent;*/
-    cursor: pointer;
-    height: 1em;
-    margin: 0;
-    opacity: 0;
-    /*margin: 0 0 0 -210px;*/
 }
 
 .deletepadding {margin: .5em}
@@ -285,4 +269,15 @@ form.file-upload input {
 {
     color:Red;
     font-style:italic;
+}
+
+.onlineUser
+{
+    margin: 0 !important;
+}
+
+.onlineList
+{
+    overflow-y:auto;
+    max-height: 500px;
 }

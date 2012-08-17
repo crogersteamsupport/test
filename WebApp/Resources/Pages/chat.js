@@ -54,6 +54,7 @@ function chatAddMsg(chatboxtitle, message, chatname) {
     else
         $("#chatbox_" + chatboxtitle + " .chatboxcontent").append('<div class="chatboxmessage"><span class="chatboxmessageto">' + chatname + '</span>:<span class="chatboxmessagecontent">' + message + '</span></div>');
 
+    $("#chatbox_" + chatboxtitle + " .chatboxcontent").scrollTop($("#chatbox_" + chatboxtitle + " .chatboxcontent")[0].scrollHeight);
 
 }
 
@@ -76,7 +77,7 @@ $("#chatbox_" + chatboxtitle + " .boxsizingBorder").focus();
 			   
 	$("#chatbox_"+chatboxtitle).css('bottom', '0px');
 	
-	chatBoxeslength = 0;
+	var chatBoxeslength = 0;
 
 	for (x in chatBoxes) {
 		if ($("#chatbox_"+chatBoxes[x]).css('display') != 'none') {
@@ -91,7 +92,7 @@ $("#chatbox_" + chatboxtitle + " .boxsizingBorder").focus();
 		$("#chatbox_"+chatboxtitle).css('right', width+'px');
 	}
 	
-	//chatBoxes.push(chatboxtitle);
+	chatBoxes.push(chatboxtitle);
 
 //	if (minimizeChatBox == 1) {
 //		minimizedChatBoxes = new Array();
@@ -166,9 +167,6 @@ function checkChatBoxInputKey(event,chatboxtextarea,chatboxtitle, name) {
 		    message = message.replace(/\n/g, "<br>");
 		    $("#chatbox_" + chatboxtitle + " .chatboxcontent").append('<div class="chatboxmessage"><span class="chatboxmessageto">' + top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + '</span>:<span class="chatboxmessagecontent">' + message + '</span></div>');
 		    $("#chatbox_" + chatboxtitle + " .chatboxcontent").scrollTop($("#chatbox_" + chatboxtitle + " .chatboxcontent")[0].scrollHeight);
-
-//			$.post("chat.php?action=sendchat", {to: chatboxtitle, message: message} , function(data){
-//			});
 		}
 		$(chatboxtextarea).val('');
 		$(chatboxtextarea).focus();
