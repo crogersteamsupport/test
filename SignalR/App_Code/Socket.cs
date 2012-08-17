@@ -15,6 +15,7 @@ using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
 using SignalR.Hubs;
 using System.Threading.Tasks;
+using SignalR;
 
 /// <summary>
 /// Summary description for Socket
@@ -203,4 +204,15 @@ public class WatercoolerJsonInfo
     public int PageType { get; set; }
     [DataMember]
     public int PageID { get; set; }
+}
+
+public class UserIdClientIdFactory : IConnectionIdGenerator
+{
+    public string GenerateConnectionId(IRequest request)
+    {
+        if (TSAuthentication.GetLoginUser() != null)
+            return TSAuthentication.GetLoginUser().UserID.ToString();
+        else
+            return Guid.NewGuid().ToString();
+    }
 }
