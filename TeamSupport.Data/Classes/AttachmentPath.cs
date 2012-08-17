@@ -175,15 +175,22 @@ namespace TeamSupport.Data
     /// <returns></returns>
     public static string FindImageFileName(LoginUser loginUser, int organizationID, Folder folder, string fileName)
     {
-      string path = GetPath(loginUser, organizationID, folder);
-      string result = GetImageFileName(path, fileName);
-      if (!File.Exists(result)) 
+      try
       {
-        path = GetDefaultPath(loginUser, folder);
-        result = GetImageFileName(path, fileName);
+        string path = GetPath(loginUser, organizationID, folder);
+        string result = GetImageFileName(path, fileName);
+        if (!File.Exists(result))
+        {
+          path = GetDefaultPath(loginUser, folder);
+          result = GetImageFileName(path, fileName);
+        }
+        return result;
       }
-
-      return result;
+      catch (Exception ex)
+      {
+        
+      }
+      return "";
     }
 
     /// <summary>
