@@ -82,14 +82,14 @@
     function GetRequestID() { return "<%=fieldRequestID.Value %>"; }
 
     function GetChatStatus() {
-      PageMethods.GetChatStatus(GetChatID(), _lastMessageID, GetRequestID(), function(status) {
+      PageMethods.GetChatStatus(GetChatID(), _lastMessageID, GetRequestID(), function (status) {
         if (_isAccepted) {
           $('#typers').html(status.Typers)
           _lastMessageID = status.LastMessageID;
           if (status.ChatHtml != null) {
             var atBottom = 10 > $('#divChatMessagesWrapper')[0].scrollHeight - $('#divChatMessagesWrapper')[0].offsetHeight - $('#divChatMessagesWrapper').scrollTop();
             $('#divChatMessages').html(status.ChatHtml.replace(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/igm, '<a href="$1" target="_blank">$1</a>'));
-            
+
             if (atBottom) $('#divChatMessagesWrapper').scrollTop($('#divChatMessagesWrapper')[0].scrollHeight);
           }
           if (status.ParticipantCount < 2) {
@@ -102,7 +102,9 @@
         } else {
           var now = new Date();
           var diff = (now - _startTime) / 1000;
-          if (diff > 180) window.location = 'ChatOffline.aspx' + window.location.search;
+          if (diff > 120) {
+            window.location = 'ChatMissed.aspx' + window.location.search;
+          }
           _isAccepted = status.IsAccepted;
 
         }
