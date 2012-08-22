@@ -228,7 +228,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ImportID", SqlDbType.VarChar, 50);
+		tempParameter = updateCommand.Parameters.Add("ImportID", SqlDbType.VarChar, 500);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -285,7 +285,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("ImportID", SqlDbType.VarChar, 50);
+		tempParameter = insertCommand.Parameters.Add("ImportID", SqlDbType.VarChar, 500);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

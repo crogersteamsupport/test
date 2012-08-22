@@ -31,7 +31,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertProduct
   @OrganizationID int,
   @Name varchar(255),
   @Description varchar(1024),
-  @ImportID varchar(50),
+  @ImportID varchar(500),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
@@ -73,7 +73,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateProduct
   @OrganizationID int,
   @Name varchar(255),
   @Description varchar(1024),
-  @ImportID varchar(50),
+  @ImportID varchar(500),
   @DateModified datetime,
   @ModifierID int
 )
@@ -595,7 +595,10 @@ AS
     [ApprovedTerms],
     [ShowWelcomePage],
     [UserInformation],
-    [PortalAutoReg]
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [DefaultTicketsVisible]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -649,6 +652,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
   @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @DefaultTicketsVisible bit,
   @Identity int OUT
 )
 AS
@@ -697,7 +703,10 @@ AS
     [ApprovedTerms],
     [ShowWelcomePage],
     [UserInformation],
-    [PortalAutoReg])
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [DefaultTicketsVisible])
   VALUES (
     @Email,
     @FirstName,
@@ -741,7 +750,10 @@ AS
     @ApprovedTerms,
     @ShowWelcomePage,
     @UserInformation,
-    @PortalAutoReg)
+    @PortalAutoReg,
+    @AppChatID,
+    @AppChatStatus,
+    @DefaultTicketsVisible)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -793,7 +805,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
-  @PortalAutoReg bit
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @DefaultTicketsVisible bit
 )
 AS
   SET NOCOUNT OFF;
@@ -839,7 +854,10 @@ AS
     [ApprovedTerms] = @ApprovedTerms,
     [ShowWelcomePage] = @ShowWelcomePage,
     [UserInformation] = @UserInformation,
-    [PortalAutoReg] = @PortalAutoReg
+    [PortalAutoReg] = @PortalAutoReg,
+    [AppChatID] = @AppChatID,
+    [AppChatStatus] = @AppChatStatus,
+    [DefaultTicketsVisible] = @DefaultTicketsVisible
   WHERE ([UserID] = @UserID)
 GO
 
@@ -948,167 +966,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkFields]
   WHERE ([CRMFieldID] = @CRMFieldID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
-
-(
-  @CustomFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [CustomFieldID],
-    [OrganizationID],
-    [Name],
-    [ApiFieldName],
-    [RefType],
-    [FieldType],
-    [AuxID],
-    [Position],
-    [ListValues],
-    [Description],
-    [IsVisibleOnPortal],
-    [IsFirstIndexSelect],
-    [IsRequired],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [CustomFieldCategoryID]
-  FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
-
-(
-  @OrganizationID int,
-  @Name varchar(50),
-  @ApiFieldName varchar(100),
-  @RefType int,
-  @FieldType int,
-  @AuxID int,
-  @Position int,
-  @ListValues varchar(MAX),
-  @Description varchar(250),
-  @IsVisibleOnPortal bit,
-  @IsFirstIndexSelect bit,
-  @IsRequired bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @CustomFieldCategoryID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomFields]
-  (
-    [OrganizationID],
-    [Name],
-    [ApiFieldName],
-    [RefType],
-    [FieldType],
-    [AuxID],
-    [Position],
-    [ListValues],
-    [Description],
-    [IsVisibleOnPortal],
-    [IsFirstIndexSelect],
-    [IsRequired],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [CustomFieldCategoryID])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @ApiFieldName,
-    @RefType,
-    @FieldType,
-    @AuxID,
-    @Position,
-    @ListValues,
-    @Description,
-    @IsVisibleOnPortal,
-    @IsFirstIndexSelect,
-    @IsRequired,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @CustomFieldCategoryID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
-
-(
-  @CustomFieldID int,
-  @OrganizationID int,
-  @Name varchar(50),
-  @ApiFieldName varchar(100),
-  @RefType int,
-  @FieldType int,
-  @AuxID int,
-  @Position int,
-  @ListValues varchar(MAX),
-  @Description varchar(250),
-  @IsVisibleOnPortal bit,
-  @IsFirstIndexSelect bit,
-  @IsRequired bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @CustomFieldCategoryID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomFields]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ApiFieldName] = @ApiFieldName,
-    [RefType] = @RefType,
-    [FieldType] = @FieldType,
-    [AuxID] = @AuxID,
-    [Position] = @Position,
-    [ListValues] = @ListValues,
-    [Description] = @Description,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsFirstIndexSelect] = @IsFirstIndexSelect,
-    [IsRequired] = @IsRequired,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [CustomFieldCategoryID] = @CustomFieldCategoryID
-  WHERE ([CustomFieldID] = @CustomFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
-
-(
-  @CustomFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
 
@@ -1502,93 +1359,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ChatRequests]
   WHERE ([ChatRequestID] = @ChatRequestID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
-
-(
-  @DeletedIndexID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [DeletedIndexID],
-    [OrganizationID],
-    [RefID],
-    [RefType],
-    [DateDeleted]
-  FROM [dbo].[DeletedIndexItems]
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
-
-(
-  @OrganizationID int,
-  @RefID int,
-  @RefType int,
-  @DateDeleted datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[DeletedIndexItems]
-  (
-    [OrganizationID],
-    [RefID],
-    [RefType],
-    [DateDeleted])
-  VALUES (
-    @OrganizationID,
-    @RefID,
-    @RefType,
-    @DateDeleted)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
-
-(
-  @DeletedIndexID int,
-  @OrganizationID int,
-  @RefID int,
-  @RefType int,
-  @DateDeleted datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[DeletedIndexItems]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [RefID] = @RefID,
-    [RefType] = @RefType,
-    [DateDeleted] = @DateDeleted
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
-
-(
-  @DeletedIndexID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[DeletedIndexItems]
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
 GO
 
 
@@ -2425,6 +2195,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [DeletedIndexID],
+    [OrganizationID],
+    [RefID],
+    [RefType],
+    [DateDeleted]
+  FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+
+(
+  @OrganizationID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[DeletedIndexItems]
+  (
+    [OrganizationID],
+    [RefID],
+    [RefType],
+    [DateDeleted])
+  VALUES (
+    @OrganizationID,
+    @RefID,
+    @RefType,
+    @DateDeleted)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+
+(
+  @DeletedIndexID int,
+  @OrganizationID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[DeletedIndexItems]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [RefID] = @RefID,
+    [RefType] = @RefType,
+    [DateDeleted] = @DateDeleted
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChat
 GO
 
@@ -2865,105 +2722,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReportView
-
-(
-  @ReportViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportViewID],
-    [ReportID],
-    [UserID],
-    [DateViewed],
-    [DurationToLoad],
-    [SQLExecuted],
-    [ErrorMessage]
-  FROM [dbo].[ReportViews]
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReportView
-
-(
-  @ReportID int,
-  @UserID int,
-  @DateViewed datetime,
-  @DurationToLoad float,
-  @SQLExecuted nvarchar(MAX),
-  @ErrorMessage nvarchar(MAX),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ReportViews]
-  (
-    [ReportID],
-    [UserID],
-    [DateViewed],
-    [DurationToLoad],
-    [SQLExecuted],
-    [ErrorMessage])
-  VALUES (
-    @ReportID,
-    @UserID,
-    @DateViewed,
-    @DurationToLoad,
-    @SQLExecuted,
-    @ErrorMessage)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReportView
-
-(
-  @ReportViewID int,
-  @ReportID int,
-  @UserID int,
-  @DateViewed datetime,
-  @DurationToLoad float,
-  @SQLExecuted nvarchar(MAX),
-  @ErrorMessage nvarchar(MAX)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ReportViews]
-  SET
-    [ReportID] = @ReportID,
-    [UserID] = @UserID,
-    [DateViewed] = @DateViewed,
-    [DurationToLoad] = @DurationToLoad,
-    [SQLExecuted] = @SQLExecuted,
-    [ErrorMessage] = @ErrorMessage
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReportView
-
-(
-  @ReportViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ReportViews]
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectBillingInfoItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectBillingInfoItem
 GO
 
@@ -3223,144 +2981,96 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedSelectArticleStat
 
 (
-  @CRMLinkID int
+  @ArticleViewID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CRMLinkID],
+    [ArticleViewID],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [ArticleID],
+    [ViewDateTime],
+    [ViewIP],
+    [UserID]
+  FROM [dbo].[ArticleStats]
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedInsertArticleStat
 
 (
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
+  @ArticleID int,
+  @ViewDateTime datetime,
+  @ViewIP varchar(100),
+  @UserID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
+  INSERT INTO [dbo].[ArticleStats]
   (
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail])
+    [ArticleID],
+    [ViewDateTime],
+    [ViewIP],
+    [UserID])
   VALUES (
     @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail)
+    @ArticleID,
+    @ViewDateTime,
+    @ViewIP,
+    @UserID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateArticleStat
 
 (
-  @CRMLinkID int,
+  @ArticleViewID int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit
+  @ArticleID int,
+  @ViewDateTime datetime,
+  @ViewIP varchar(100),
+  @UserID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
+  UPDATE [dbo].[ArticleStats]
   SET
     [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [ArticleID] = @ArticleID,
+    [ViewDateTime] = @ViewDateTime,
+    [ViewIP] = @ViewIP,
+    [UserID] = @UserID
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteArticleStat
 
 (
-  @CRMLinkID int
+  @ArticleViewID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+  DELETE FROM [dbo].[ArticleStats]
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
 
@@ -4358,7 +4068,9 @@ AS
     [SlaLevelID],
     [DefaultWikiArticleID],
     [DefaultSupportGroupID],
-    [DefaultSupportUserID]
+    [DefaultSupportUserID],
+    [DefaultSupportUser],
+    [DefaultSupportGroup]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -4480,7 +4192,9 @@ AS
     [SlaWarningDate],
     [TicketSource],
     [ForumCategory],
-    [CategoryName]
+    [CategoryName],
+    [CreatorEmail],
+    [ModifierEmail]
   FROM [dbo].[TicketsView]
   WHERE ([TicketID] = @TicketID)
 GO
@@ -4948,99 +4662,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[Notes]
   WHERE ([NoteID] = @NoteID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectArticleStat
-
-(
-  @ArticleViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ArticleViewID],
-    [OrganizationID],
-    [ArticleID],
-    [ViewDateTime],
-    [ViewIP],
-    [UserID]
-  FROM [dbo].[ArticleStats]
-  WHERE ([ArticleViewID] = @ArticleViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertArticleStat
-
-(
-  @OrganizationID int,
-  @ArticleID int,
-  @ViewDateTime datetime,
-  @ViewIP varchar(100),
-  @UserID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ArticleStats]
-  (
-    [OrganizationID],
-    [ArticleID],
-    [ViewDateTime],
-    [ViewIP],
-    [UserID])
-  VALUES (
-    @OrganizationID,
-    @ArticleID,
-    @ViewDateTime,
-    @ViewIP,
-    @UserID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateArticleStat
-
-(
-  @ArticleViewID int,
-  @OrganizationID int,
-  @ArticleID int,
-  @ViewDateTime datetime,
-  @ViewIP varchar(100),
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ArticleStats]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [ArticleID] = @ArticleID,
-    [ViewDateTime] = @ViewDateTime,
-    [ViewIP] = @ViewIP,
-    [UserID] = @UserID
-  WHERE ([ArticleViewID] = @ArticleViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteArticleStat
-
-(
-  @ArticleViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ArticleStats]
-  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
 
@@ -5762,93 +5383,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectForumLog
-
-(
-  @ForumLogID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ForumLogID],
-    [TopicID],
-    [UserID],
-    [OrgID],
-    [ViewTime]
-  FROM [dbo].[ForumLogs]
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertForumLog
-
-(
-  @TopicID int,
-  @UserID int,
-  @OrgID int,
-  @ViewTime datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ForumLogs]
-  (
-    [TopicID],
-    [UserID],
-    [OrgID],
-    [ViewTime])
-  VALUES (
-    @TopicID,
-    @UserID,
-    @OrgID,
-    @ViewTime)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateForumLog
-
-(
-  @ForumLogID int,
-  @TopicID int,
-  @UserID int,
-  @OrgID int,
-  @ViewTime datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ForumLogs]
-  SET
-    [TopicID] = @TopicID,
-    [UserID] = @UserID,
-    [OrgID] = @OrgID,
-    [ViewTime] = @ViewTime
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteForumLog
-
-(
-  @ForumLogID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ForumLogs]
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketAutomationTrigger' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketAutomationTrigger
 GO
 
@@ -6325,6 +5859,105 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketQueue]
   WHERE ([TicketQueueID] = @TicketQueueID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReportView
+
+(
+  @ReportViewID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReportViewID],
+    [ReportID],
+    [UserID],
+    [DateViewed],
+    [DurationToLoad],
+    [SQLExecuted],
+    [ErrorMessage]
+  FROM [dbo].[ReportViews]
+  WHERE ([ReportViewID] = @ReportViewID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReportView
+
+(
+  @ReportID int,
+  @UserID int,
+  @DateViewed datetime,
+  @DurationToLoad float,
+  @SQLExecuted nvarchar(MAX),
+  @ErrorMessage nvarchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ReportViews]
+  (
+    [ReportID],
+    [UserID],
+    [DateViewed],
+    [DurationToLoad],
+    [SQLExecuted],
+    [ErrorMessage])
+  VALUES (
+    @ReportID,
+    @UserID,
+    @DateViewed,
+    @DurationToLoad,
+    @SQLExecuted,
+    @ErrorMessage)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReportView
+
+(
+  @ReportViewID int,
+  @ReportID int,
+  @UserID int,
+  @DateViewed datetime,
+  @DurationToLoad float,
+  @SQLExecuted nvarchar(MAX),
+  @ErrorMessage nvarchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ReportViews]
+  SET
+    [ReportID] = @ReportID,
+    [UserID] = @UserID,
+    [DateViewed] = @DateViewed,
+    [DurationToLoad] = @DurationToLoad,
+    [SQLExecuted] = @SQLExecuted,
+    [ErrorMessage] = @ErrorMessage
+  WHERE ([ReportViewID] = @ReportViewID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReportView
+
+(
+  @ReportViewID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ReportViews]
+  WHERE ([ReportViewID] = @ReportViewID)
 GO
 
 
@@ -7219,6 +6852,167 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
+
+(
+  @CustomFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CustomFieldID],
+    [OrganizationID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
+    [IsVisibleOnPortal],
+    [IsFirstIndexSelect],
+    [IsRequired],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [CustomFieldCategoryID]
+  FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
+
+(
+  @OrganizationID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
+  @IsVisibleOnPortal bit,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @CustomFieldCategoryID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CustomFields]
+  (
+    [OrganizationID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
+    [IsVisibleOnPortal],
+    [IsFirstIndexSelect],
+    [IsRequired],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [CustomFieldCategoryID])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @ApiFieldName,
+    @RefType,
+    @FieldType,
+    @AuxID,
+    @Position,
+    @ListValues,
+    @Description,
+    @IsVisibleOnPortal,
+    @IsFirstIndexSelect,
+    @IsRequired,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @CustomFieldCategoryID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
+
+(
+  @CustomFieldID int,
+  @OrganizationID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
+  @IsVisibleOnPortal bit,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
+  @DateModified datetime,
+  @ModifierID int,
+  @CustomFieldCategoryID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CustomFields]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ApiFieldName] = @ApiFieldName,
+    [RefType] = @RefType,
+    [FieldType] = @FieldType,
+    [AuxID] = @AuxID,
+    [Position] = @Position,
+    [ListValues] = @ListValues,
+    [Description] = @Description,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsFirstIndexSelect] = @IsFirstIndexSelect,
+    [IsRequired] = @IsRequired,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [CustomFieldCategoryID] = @CustomFieldCategoryID
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
+
+(
+  @CustomFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectFacebookOption
 GO
 
@@ -7323,7 +7117,8 @@ AS
     [CreatedBy],
     [CreatedDate],
     [ModifiedBy],
-    [ModifiedDate]
+    [ModifiedDate],
+    [NeedsIndexing]
   FROM [dbo].[WikiArticles]
   WHERE ([ArticleID] = @ArticleID)
 GO
@@ -7349,6 +7144,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticle
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Identity int OUT
 )
 AS
@@ -7369,7 +7165,8 @@ AS
     [CreatedBy],
     [CreatedDate],
     [ModifiedBy],
-    [ModifiedDate])
+    [ModifiedDate],
+    [NeedsIndexing])
   VALUES (
     @ParentID,
     @OrganizationID,
@@ -7385,7 +7182,8 @@ AS
     @CreatedBy,
     @CreatedDate,
     @ModifiedBy,
-    @ModifiedDate)
+    @ModifiedDate,
+    @NeedsIndexing)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -7411,7 +7209,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticle
   @CreatedBy int,
   @CreatedDate datetime,
   @ModifiedBy int,
-  @ModifiedDate datetime
+  @ModifiedDate datetime,
+  @NeedsIndexing bit
 )
 AS
   SET NOCOUNT OFF;
@@ -7431,7 +7230,8 @@ AS
     [CreatedBy] = @CreatedBy,
     [CreatedDate] = @CreatedDate,
     [ModifiedBy] = @ModifiedBy,
-    [ModifiedDate] = @ModifiedDate
+    [ModifiedDate] = @ModifiedDate,
+    [NeedsIndexing] = @NeedsIndexing
   WHERE ([ArticleID] = @ArticleID)
 GO
 
@@ -7929,6 +7729,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectForumLog
+
+(
+  @ForumLogID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ForumLogID],
+    [TopicID],
+    [UserID],
+    [OrgID],
+    [ViewTime]
+  FROM [dbo].[ForumLogs]
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertForumLog
+
+(
+  @TopicID int,
+  @UserID int,
+  @OrgID int,
+  @ViewTime datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ForumLogs]
+  (
+    [TopicID],
+    [UserID],
+    [OrgID],
+    [ViewTime])
+  VALUES (
+    @TopicID,
+    @UserID,
+    @OrgID,
+    @ViewTime)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateForumLog
+
+(
+  @ForumLogID int,
+  @TopicID int,
+  @UserID int,
+  @OrgID int,
+  @ViewTime datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ForumLogs]
+  SET
+    [TopicID] = @TopicID,
+    [UserID] = @UserID,
+    [OrgID] = @OrgID,
+    [ViewTime] = @ViewTime
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteForumLog
+
+(
+  @ForumLogID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ForumLogs]
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectService
 GO
 
@@ -8388,6 +8275,153 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketRatings]
   WHERE ([TicketID] = @TicketID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CRMLinkID],
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+
+(
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CRMLinkTable]
+  (
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID])
+  VALUES (
+    @OrganizationID,
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+
+(
+  @CRMLinkID int,
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CRMLinkTable]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
@@ -9740,6 +9774,7 @@ AS
     [CreatedDate],
     [ModifiedBy],
     [ModifiedDate],
+    [NeedsIndexing],
     [Creator],
     [Modifier],
     [Organization]
@@ -9769,6 +9804,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticlesViewItem
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Creator varchar(202),
   @Modifier varchar(202),
   @Organization varchar(255),
@@ -9794,6 +9830,7 @@ AS
     [CreatedDate],
     [ModifiedBy],
     [ModifiedDate],
+    [NeedsIndexing],
     [Creator],
     [Modifier],
     [Organization])
@@ -9814,6 +9851,7 @@ AS
     @CreatedDate,
     @ModifiedBy,
     @ModifiedDate,
+    @NeedsIndexing,
     @Creator,
     @Modifier,
     @Organization)
@@ -9843,6 +9881,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticlesViewItem
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Creator varchar(202),
   @Modifier varchar(202),
   @Organization varchar(255)
@@ -9866,6 +9905,7 @@ AS
     [CreatedDate] = @CreatedDate,
     [ModifiedBy] = @ModifiedBy,
     [ModifiedDate] = @ModifiedDate,
+    [NeedsIndexing] = @NeedsIndexing,
     [Creator] = @Creator,
     [Modifier] = @Modifier,
     [Organization] = @Organization
@@ -10778,32 +10818,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-
-(
-  @MessageID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [GroupFor],
-    [ReplyTo],
-    [Message],
-    [MessageType],
-    [UserName],
-    [GroupName]
-  FROM [dbo].[WaterCoolerView]
-  WHERE ([MessageID] = @MessageID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSystemSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSystemSetting
 GO
 
@@ -11028,7 +11042,8 @@ AS
     [TermsAndConditions],
     [RequestType],
     [RequestGroup],
-    [AutoRegister]
+    [AutoRegister],
+    [RequestAccess]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -11079,6 +11094,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @RequestType int,
   @RequestGroup int,
   @AutoRegister bit,
+  @RequestAccess bit,
   @Identity int OUT
 )
 AS
@@ -11124,7 +11140,8 @@ AS
     [TermsAndConditions],
     [RequestType],
     [RequestGroup],
-    [AutoRegister])
+    [AutoRegister],
+    [RequestAccess])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -11165,7 +11182,8 @@ AS
     @TermsAndConditions,
     @RequestType,
     @RequestGroup,
-    @AutoRegister)
+    @AutoRegister,
+    @RequestAccess)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -11215,7 +11233,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
   @RequestGroup int,
-  @AutoRegister bit
+  @AutoRegister bit,
+  @RequestAccess bit
 )
 AS
   SET NOCOUNT OFF;
@@ -11259,7 +11278,8 @@ AS
     [TermsAndConditions] = @TermsAndConditions,
     [RequestType] = @RequestType,
     [RequestGroup] = @RequestGroup,
-    [AutoRegister] = @AutoRegister
+    [AutoRegister] = @AutoRegister,
+    [RequestAccess] = @RequestAccess
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -11935,6 +11955,32 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+
+(
+
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [Message],
+    [MessageParent],
+    [IsDeleted],
+    [LastModified],
+    [RefType],
+    [AttachmentID]
+  FROM [dbo].[WaterCoolerView]
+  WH)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserSetting
 GO
 
@@ -12589,103 +12635,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[PhoneQueue]
   WHERE ([PhoneQueueID] = @PhoneQueueID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReportEmail
-
-(
-  @ReportEmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportEmailID],
-    [UserID],
-    [ReportID],
-    [DateCreated],
-    [DateSent],
-    [DateFailed],
-    [IsWaiting]
-  FROM [dbo].[ReportEmails]
-  WHERE ([ReportEmailID] = @ReportEmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReportEmail
-
-(
-  @UserID int,
-  @ReportID int,
-  @DateCreated datetime,
-  @DateSent datetime,
-  @DateFailed datetime,
-  @IsWaiting bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ReportEmails]
-  (
-    [UserID],
-    [ReportID],
-    [DateCreated],
-    [DateSent],
-    [DateFailed],
-    [IsWaiting])
-  VALUES (
-    @UserID,
-    @ReportID,
-    @DateCreated,
-    @DateSent,
-    @DateFailed,
-    @IsWaiting)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReportEmail
-
-(
-  @ReportEmailID int,
-  @UserID int,
-  @ReportID int,
-  @DateSent datetime,
-  @DateFailed datetime,
-  @IsWaiting bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ReportEmails]
-  SET
-    [UserID] = @UserID,
-    [ReportID] = @ReportID,
-    [DateSent] = @DateSent,
-    [DateFailed] = @DateFailed,
-    [IsWaiting] = @IsWaiting
-  WHERE ([ReportEmailID] = @ReportEmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReportEmail
-
-(
-  @ReportEmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ReportEmails]
-  WHERE ([ReportEmailID] = @ReportEmailID)
 GO
 
 
@@ -12821,7 +12770,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertProduct
   @OrganizationID int,
   @Name varchar(255),
   @Description varchar(1024),
-  @ImportID varchar(50),
+  @ImportID varchar(500),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
@@ -12863,7 +12812,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateProduct
   @OrganizationID int,
   @Name varchar(255),
   @Description varchar(1024),
-  @ImportID varchar(50),
+  @ImportID varchar(500),
   @DateModified datetime,
   @ModifierID int
 )
@@ -13385,7 +13334,10 @@ AS
     [ApprovedTerms],
     [ShowWelcomePage],
     [UserInformation],
-    [PortalAutoReg]
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [DefaultTicketsVisible]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -13439,6 +13391,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
   @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @DefaultTicketsVisible bit,
   @Identity int OUT
 )
 AS
@@ -13487,7 +13442,10 @@ AS
     [ApprovedTerms],
     [ShowWelcomePage],
     [UserInformation],
-    [PortalAutoReg])
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [DefaultTicketsVisible])
   VALUES (
     @Email,
     @FirstName,
@@ -13531,7 +13489,10 @@ AS
     @ApprovedTerms,
     @ShowWelcomePage,
     @UserInformation,
-    @PortalAutoReg)
+    @PortalAutoReg,
+    @AppChatID,
+    @AppChatStatus,
+    @DefaultTicketsVisible)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -13583,7 +13544,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
-  @PortalAutoReg bit
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @DefaultTicketsVisible bit
 )
 AS
   SET NOCOUNT OFF;
@@ -13629,7 +13593,10 @@ AS
     [ApprovedTerms] = @ApprovedTerms,
     [ShowWelcomePage] = @ShowWelcomePage,
     [UserInformation] = @UserInformation,
-    [PortalAutoReg] = @PortalAutoReg
+    [PortalAutoReg] = @PortalAutoReg,
+    [AppChatID] = @AppChatID,
+    [AppChatStatus] = @AppChatStatus,
+    [DefaultTicketsVisible] = @DefaultTicketsVisible
   WHERE ([UserID] = @UserID)
 GO
 
@@ -13738,167 +13705,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkFields]
   WHERE ([CRMFieldID] = @CRMFieldID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
-
-(
-  @CustomFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [CustomFieldID],
-    [OrganizationID],
-    [Name],
-    [ApiFieldName],
-    [RefType],
-    [FieldType],
-    [AuxID],
-    [Position],
-    [ListValues],
-    [Description],
-    [IsVisibleOnPortal],
-    [IsFirstIndexSelect],
-    [IsRequired],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [CustomFieldCategoryID]
-  FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
-
-(
-  @OrganizationID int,
-  @Name varchar(50),
-  @ApiFieldName varchar(100),
-  @RefType int,
-  @FieldType int,
-  @AuxID int,
-  @Position int,
-  @ListValues varchar(MAX),
-  @Description varchar(250),
-  @IsVisibleOnPortal bit,
-  @IsFirstIndexSelect bit,
-  @IsRequired bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @CustomFieldCategoryID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomFields]
-  (
-    [OrganizationID],
-    [Name],
-    [ApiFieldName],
-    [RefType],
-    [FieldType],
-    [AuxID],
-    [Position],
-    [ListValues],
-    [Description],
-    [IsVisibleOnPortal],
-    [IsFirstIndexSelect],
-    [IsRequired],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [CustomFieldCategoryID])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @ApiFieldName,
-    @RefType,
-    @FieldType,
-    @AuxID,
-    @Position,
-    @ListValues,
-    @Description,
-    @IsVisibleOnPortal,
-    @IsFirstIndexSelect,
-    @IsRequired,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @CustomFieldCategoryID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
-
-(
-  @CustomFieldID int,
-  @OrganizationID int,
-  @Name varchar(50),
-  @ApiFieldName varchar(100),
-  @RefType int,
-  @FieldType int,
-  @AuxID int,
-  @Position int,
-  @ListValues varchar(MAX),
-  @Description varchar(250),
-  @IsVisibleOnPortal bit,
-  @IsFirstIndexSelect bit,
-  @IsRequired bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @CustomFieldCategoryID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomFields]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ApiFieldName] = @ApiFieldName,
-    [RefType] = @RefType,
-    [FieldType] = @FieldType,
-    [AuxID] = @AuxID,
-    [Position] = @Position,
-    [ListValues] = @ListValues,
-    [Description] = @Description,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsFirstIndexSelect] = @IsFirstIndexSelect,
-    [IsRequired] = @IsRequired,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [CustomFieldCategoryID] = @CustomFieldCategoryID
-  WHERE ([CustomFieldID] = @CustomFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
-
-(
-  @CustomFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
 
@@ -14292,93 +14098,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ChatRequests]
   WHERE ([ChatRequestID] = @ChatRequestID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
-
-(
-  @DeletedIndexID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [DeletedIndexID],
-    [OrganizationID],
-    [RefID],
-    [RefType],
-    [DateDeleted]
-  FROM [dbo].[DeletedIndexItems]
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
-
-(
-  @OrganizationID int,
-  @RefID int,
-  @RefType int,
-  @DateDeleted datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[DeletedIndexItems]
-  (
-    [OrganizationID],
-    [RefID],
-    [RefType],
-    [DateDeleted])
-  VALUES (
-    @OrganizationID,
-    @RefID,
-    @RefType,
-    @DateDeleted)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
-
-(
-  @DeletedIndexID int,
-  @OrganizationID int,
-  @RefID int,
-  @RefType int,
-  @DateDeleted datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[DeletedIndexItems]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [RefID] = @RefID,
-    [RefType] = @RefType,
-    [DateDeleted] = @DateDeleted
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
-
-(
-  @DeletedIndexID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[DeletedIndexItems]
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
 GO
 
 
@@ -15215,6 +14934,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [DeletedIndexID],
+    [OrganizationID],
+    [RefID],
+    [RefType],
+    [DateDeleted]
+  FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+
+(
+  @OrganizationID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[DeletedIndexItems]
+  (
+    [OrganizationID],
+    [RefID],
+    [RefType],
+    [DateDeleted])
+  VALUES (
+    @OrganizationID,
+    @RefID,
+    @RefType,
+    @DateDeleted)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+
+(
+  @DeletedIndexID int,
+  @OrganizationID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[DeletedIndexItems]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [RefID] = @RefID,
+    [RefType] = @RefType,
+    [DateDeleted] = @DateDeleted
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChat
 GO
 
@@ -15655,105 +15461,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReportView
-
-(
-  @ReportViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportViewID],
-    [ReportID],
-    [UserID],
-    [DateViewed],
-    [DurationToLoad],
-    [SQLExecuted],
-    [ErrorMessage]
-  FROM [dbo].[ReportViews]
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReportView
-
-(
-  @ReportID int,
-  @UserID int,
-  @DateViewed datetime,
-  @DurationToLoad float,
-  @SQLExecuted nvarchar(MAX),
-  @ErrorMessage nvarchar(MAX),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ReportViews]
-  (
-    [ReportID],
-    [UserID],
-    [DateViewed],
-    [DurationToLoad],
-    [SQLExecuted],
-    [ErrorMessage])
-  VALUES (
-    @ReportID,
-    @UserID,
-    @DateViewed,
-    @DurationToLoad,
-    @SQLExecuted,
-    @ErrorMessage)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReportView
-
-(
-  @ReportViewID int,
-  @ReportID int,
-  @UserID int,
-  @DateViewed datetime,
-  @DurationToLoad float,
-  @SQLExecuted nvarchar(MAX),
-  @ErrorMessage nvarchar(MAX)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ReportViews]
-  SET
-    [ReportID] = @ReportID,
-    [UserID] = @UserID,
-    [DateViewed] = @DateViewed,
-    [DurationToLoad] = @DurationToLoad,
-    [SQLExecuted] = @SQLExecuted,
-    [ErrorMessage] = @ErrorMessage
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReportView
-
-(
-  @ReportViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ReportViews]
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectBillingInfoItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectBillingInfoItem
 GO
 
@@ -16013,144 +15720,96 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedSelectArticleStat
 
 (
-  @CRMLinkID int
+  @ArticleViewID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CRMLinkID],
+    [ArticleViewID],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [ArticleID],
+    [ViewDateTime],
+    [ViewIP],
+    [UserID]
+  FROM [dbo].[ArticleStats]
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedInsertArticleStat
 
 (
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
+  @ArticleID int,
+  @ViewDateTime datetime,
+  @ViewIP varchar(100),
+  @UserID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
+  INSERT INTO [dbo].[ArticleStats]
   (
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail])
+    [ArticleID],
+    [ViewDateTime],
+    [ViewIP],
+    [UserID])
   VALUES (
     @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail)
+    @ArticleID,
+    @ViewDateTime,
+    @ViewIP,
+    @UserID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateArticleStat
 
 (
-  @CRMLinkID int,
+  @ArticleViewID int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit
+  @ArticleID int,
+  @ViewDateTime datetime,
+  @ViewIP varchar(100),
+  @UserID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
+  UPDATE [dbo].[ArticleStats]
   SET
     [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [ArticleID] = @ArticleID,
+    [ViewDateTime] = @ViewDateTime,
+    [ViewIP] = @ViewIP,
+    [UserID] = @UserID
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteArticleStat
 
 (
-  @CRMLinkID int
+  @ArticleViewID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+  DELETE FROM [dbo].[ArticleStats]
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
 
@@ -17148,7 +16807,9 @@ AS
     [SlaLevelID],
     [DefaultWikiArticleID],
     [DefaultSupportGroupID],
-    [DefaultSupportUserID]
+    [DefaultSupportUserID],
+    [DefaultSupportUser],
+    [DefaultSupportGroup]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -17270,7 +16931,9 @@ AS
     [SlaWarningDate],
     [TicketSource],
     [ForumCategory],
-    [CategoryName]
+    [CategoryName],
+    [CreatorEmail],
+    [ModifierEmail]
   FROM [dbo].[TicketsView]
   WHERE ([TicketID] = @TicketID)
 GO
@@ -17738,99 +17401,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[Notes]
   WHERE ([NoteID] = @NoteID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectArticleStat
-
-(
-  @ArticleViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ArticleViewID],
-    [OrganizationID],
-    [ArticleID],
-    [ViewDateTime],
-    [ViewIP],
-    [UserID]
-  FROM [dbo].[ArticleStats]
-  WHERE ([ArticleViewID] = @ArticleViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertArticleStat
-
-(
-  @OrganizationID int,
-  @ArticleID int,
-  @ViewDateTime datetime,
-  @ViewIP varchar(100),
-  @UserID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ArticleStats]
-  (
-    [OrganizationID],
-    [ArticleID],
-    [ViewDateTime],
-    [ViewIP],
-    [UserID])
-  VALUES (
-    @OrganizationID,
-    @ArticleID,
-    @ViewDateTime,
-    @ViewIP,
-    @UserID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateArticleStat
-
-(
-  @ArticleViewID int,
-  @OrganizationID int,
-  @ArticleID int,
-  @ViewDateTime datetime,
-  @ViewIP varchar(100),
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ArticleStats]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [ArticleID] = @ArticleID,
-    [ViewDateTime] = @ViewDateTime,
-    [ViewIP] = @ViewIP,
-    [UserID] = @UserID
-  WHERE ([ArticleViewID] = @ArticleViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteArticleStat
-
-(
-  @ArticleViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ArticleStats]
-  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
 
@@ -18552,93 +18122,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectForumLog
-
-(
-  @ForumLogID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ForumLogID],
-    [TopicID],
-    [UserID],
-    [OrgID],
-    [ViewTime]
-  FROM [dbo].[ForumLogs]
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertForumLog
-
-(
-  @TopicID int,
-  @UserID int,
-  @OrgID int,
-  @ViewTime datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ForumLogs]
-  (
-    [TopicID],
-    [UserID],
-    [OrgID],
-    [ViewTime])
-  VALUES (
-    @TopicID,
-    @UserID,
-    @OrgID,
-    @ViewTime)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateForumLog
-
-(
-  @ForumLogID int,
-  @TopicID int,
-  @UserID int,
-  @OrgID int,
-  @ViewTime datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ForumLogs]
-  SET
-    [TopicID] = @TopicID,
-    [UserID] = @UserID,
-    [OrgID] = @OrgID,
-    [ViewTime] = @ViewTime
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteForumLog
-
-(
-  @ForumLogID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ForumLogs]
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketAutomationTrigger' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketAutomationTrigger
 GO
 
@@ -19115,6 +18598,105 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketQueue]
   WHERE ([TicketQueueID] = @TicketQueueID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReportView
+
+(
+  @ReportViewID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReportViewID],
+    [ReportID],
+    [UserID],
+    [DateViewed],
+    [DurationToLoad],
+    [SQLExecuted],
+    [ErrorMessage]
+  FROM [dbo].[ReportViews]
+  WHERE ([ReportViewID] = @ReportViewID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReportView
+
+(
+  @ReportID int,
+  @UserID int,
+  @DateViewed datetime,
+  @DurationToLoad float,
+  @SQLExecuted nvarchar(MAX),
+  @ErrorMessage nvarchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ReportViews]
+  (
+    [ReportID],
+    [UserID],
+    [DateViewed],
+    [DurationToLoad],
+    [SQLExecuted],
+    [ErrorMessage])
+  VALUES (
+    @ReportID,
+    @UserID,
+    @DateViewed,
+    @DurationToLoad,
+    @SQLExecuted,
+    @ErrorMessage)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReportView
+
+(
+  @ReportViewID int,
+  @ReportID int,
+  @UserID int,
+  @DateViewed datetime,
+  @DurationToLoad float,
+  @SQLExecuted nvarchar(MAX),
+  @ErrorMessage nvarchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ReportViews]
+  SET
+    [ReportID] = @ReportID,
+    [UserID] = @UserID,
+    [DateViewed] = @DateViewed,
+    [DurationToLoad] = @DurationToLoad,
+    [SQLExecuted] = @SQLExecuted,
+    [ErrorMessage] = @ErrorMessage
+  WHERE ([ReportViewID] = @ReportViewID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReportView
+
+(
+  @ReportViewID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ReportViews]
+  WHERE ([ReportViewID] = @ReportViewID)
 GO
 
 
@@ -20009,6 +19591,167 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
+
+(
+  @CustomFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CustomFieldID],
+    [OrganizationID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
+    [IsVisibleOnPortal],
+    [IsFirstIndexSelect],
+    [IsRequired],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [CustomFieldCategoryID]
+  FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
+
+(
+  @OrganizationID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
+  @IsVisibleOnPortal bit,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @CustomFieldCategoryID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CustomFields]
+  (
+    [OrganizationID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
+    [IsVisibleOnPortal],
+    [IsFirstIndexSelect],
+    [IsRequired],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [CustomFieldCategoryID])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @ApiFieldName,
+    @RefType,
+    @FieldType,
+    @AuxID,
+    @Position,
+    @ListValues,
+    @Description,
+    @IsVisibleOnPortal,
+    @IsFirstIndexSelect,
+    @IsRequired,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @CustomFieldCategoryID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
+
+(
+  @CustomFieldID int,
+  @OrganizationID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
+  @IsVisibleOnPortal bit,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
+  @DateModified datetime,
+  @ModifierID int,
+  @CustomFieldCategoryID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CustomFields]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ApiFieldName] = @ApiFieldName,
+    [RefType] = @RefType,
+    [FieldType] = @FieldType,
+    [AuxID] = @AuxID,
+    [Position] = @Position,
+    [ListValues] = @ListValues,
+    [Description] = @Description,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsFirstIndexSelect] = @IsFirstIndexSelect,
+    [IsRequired] = @IsRequired,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [CustomFieldCategoryID] = @CustomFieldCategoryID
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
+
+(
+  @CustomFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectFacebookOption
 GO
 
@@ -20113,7 +19856,8 @@ AS
     [CreatedBy],
     [CreatedDate],
     [ModifiedBy],
-    [ModifiedDate]
+    [ModifiedDate],
+    [NeedsIndexing]
   FROM [dbo].[WikiArticles]
   WHERE ([ArticleID] = @ArticleID)
 GO
@@ -20139,6 +19883,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticle
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Identity int OUT
 )
 AS
@@ -20159,7 +19904,8 @@ AS
     [CreatedBy],
     [CreatedDate],
     [ModifiedBy],
-    [ModifiedDate])
+    [ModifiedDate],
+    [NeedsIndexing])
   VALUES (
     @ParentID,
     @OrganizationID,
@@ -20175,7 +19921,8 @@ AS
     @CreatedBy,
     @CreatedDate,
     @ModifiedBy,
-    @ModifiedDate)
+    @ModifiedDate,
+    @NeedsIndexing)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -20201,7 +19948,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticle
   @CreatedBy int,
   @CreatedDate datetime,
   @ModifiedBy int,
-  @ModifiedDate datetime
+  @ModifiedDate datetime,
+  @NeedsIndexing bit
 )
 AS
   SET NOCOUNT OFF;
@@ -20221,7 +19969,8 @@ AS
     [CreatedBy] = @CreatedBy,
     [CreatedDate] = @CreatedDate,
     [ModifiedBy] = @ModifiedBy,
-    [ModifiedDate] = @ModifiedDate
+    [ModifiedDate] = @ModifiedDate,
+    [NeedsIndexing] = @NeedsIndexing
   WHERE ([ArticleID] = @ArticleID)
 GO
 
@@ -20719,6 +20468,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectForumLog
+
+(
+  @ForumLogID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ForumLogID],
+    [TopicID],
+    [UserID],
+    [OrgID],
+    [ViewTime]
+  FROM [dbo].[ForumLogs]
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertForumLog
+
+(
+  @TopicID int,
+  @UserID int,
+  @OrgID int,
+  @ViewTime datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ForumLogs]
+  (
+    [TopicID],
+    [UserID],
+    [OrgID],
+    [ViewTime])
+  VALUES (
+    @TopicID,
+    @UserID,
+    @OrgID,
+    @ViewTime)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateForumLog
+
+(
+  @ForumLogID int,
+  @TopicID int,
+  @UserID int,
+  @OrgID int,
+  @ViewTime datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ForumLogs]
+  SET
+    [TopicID] = @TopicID,
+    [UserID] = @UserID,
+    [OrgID] = @OrgID,
+    [ViewTime] = @ViewTime
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteForumLog
+
+(
+  @ForumLogID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ForumLogs]
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectService
 GO
 
@@ -21178,6 +21014,153 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketRatings]
   WHERE ([TicketID] = @TicketID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CRMLinkID],
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+
+(
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CRMLinkTable]
+  (
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID])
+  VALUES (
+    @OrganizationID,
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+
+(
+  @CRMLinkID int,
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CRMLinkTable]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
@@ -22530,6 +22513,7 @@ AS
     [CreatedDate],
     [ModifiedBy],
     [ModifiedDate],
+    [NeedsIndexing],
     [Creator],
     [Modifier],
     [Organization]
@@ -22559,6 +22543,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticlesViewItem
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Creator varchar(202),
   @Modifier varchar(202),
   @Organization varchar(255),
@@ -22584,6 +22569,7 @@ AS
     [CreatedDate],
     [ModifiedBy],
     [ModifiedDate],
+    [NeedsIndexing],
     [Creator],
     [Modifier],
     [Organization])
@@ -22604,6 +22590,7 @@ AS
     @CreatedDate,
     @ModifiedBy,
     @ModifiedDate,
+    @NeedsIndexing,
     @Creator,
     @Modifier,
     @Organization)
@@ -22633,6 +22620,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticlesViewItem
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Creator varchar(202),
   @Modifier varchar(202),
   @Organization varchar(255)
@@ -22656,6 +22644,7 @@ AS
     [CreatedDate] = @CreatedDate,
     [ModifiedBy] = @ModifiedBy,
     [ModifiedDate] = @ModifiedDate,
+    [NeedsIndexing] = @NeedsIndexing,
     [Creator] = @Creator,
     [Modifier] = @Modifier,
     [Organization] = @Organization
@@ -23568,32 +23557,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-
-(
-  @MessageID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [GroupFor],
-    [ReplyTo],
-    [Message],
-    [MessageType],
-    [UserName],
-    [GroupName]
-  FROM [dbo].[WaterCoolerView]
-  WHERE ([MessageID] = @MessageID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSystemSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSystemSetting
 GO
 
@@ -23818,7 +23781,8 @@ AS
     [TermsAndConditions],
     [RequestType],
     [RequestGroup],
-    [AutoRegister]
+    [AutoRegister],
+    [RequestAccess]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -23869,6 +23833,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @RequestType int,
   @RequestGroup int,
   @AutoRegister bit,
+  @RequestAccess bit,
   @Identity int OUT
 )
 AS
@@ -23914,7 +23879,8 @@ AS
     [TermsAndConditions],
     [RequestType],
     [RequestGroup],
-    [AutoRegister])
+    [AutoRegister],
+    [RequestAccess])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -23955,7 +23921,8 @@ AS
     @TermsAndConditions,
     @RequestType,
     @RequestGroup,
-    @AutoRegister)
+    @AutoRegister,
+    @RequestAccess)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -24005,7 +23972,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
   @RequestGroup int,
-  @AutoRegister bit
+  @AutoRegister bit,
+  @RequestAccess bit
 )
 AS
   SET NOCOUNT OFF;
@@ -24049,7 +24017,8 @@ AS
     [TermsAndConditions] = @TermsAndConditions,
     [RequestType] = @RequestType,
     [RequestGroup] = @RequestGroup,
-    [AutoRegister] = @AutoRegister
+    [AutoRegister] = @AutoRegister,
+    [RequestAccess] = @RequestAccess
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -24725,6 +24694,32 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+
+(
+
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [Message],
+    [MessageParent],
+    [IsDeleted],
+    [LastModified],
+    [RefType],
+    [AttachmentID]
+  FROM [dbo].[WaterCoolerView]
+  WH)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserSetting
 GO
 
@@ -25379,103 +25374,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[PhoneQueue]
   WHERE ([PhoneQueueID] = @PhoneQueueID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReportEmail
-
-(
-  @ReportEmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportEmailID],
-    [UserID],
-    [ReportID],
-    [DateCreated],
-    [DateSent],
-    [DateFailed],
-    [IsWaiting]
-  FROM [dbo].[ReportEmails]
-  WHERE ([ReportEmailID] = @ReportEmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReportEmail
-
-(
-  @UserID int,
-  @ReportID int,
-  @DateCreated datetime,
-  @DateSent datetime,
-  @DateFailed datetime,
-  @IsWaiting bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ReportEmails]
-  (
-    [UserID],
-    [ReportID],
-    [DateCreated],
-    [DateSent],
-    [DateFailed],
-    [IsWaiting])
-  VALUES (
-    @UserID,
-    @ReportID,
-    @DateCreated,
-    @DateSent,
-    @DateFailed,
-    @IsWaiting)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReportEmail
-
-(
-  @ReportEmailID int,
-  @UserID int,
-  @ReportID int,
-  @DateSent datetime,
-  @DateFailed datetime,
-  @IsWaiting bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ReportEmails]
-  SET
-    [UserID] = @UserID,
-    [ReportID] = @ReportID,
-    [DateSent] = @DateSent,
-    [DateFailed] = @DateFailed,
-    [IsWaiting] = @IsWaiting
-  WHERE ([ReportEmailID] = @ReportEmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReportEmail
-
-(
-  @ReportEmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ReportEmails]
-  WHERE ([ReportEmailID] = @ReportEmailID)
 GO
 
 
@@ -25611,7 +25509,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertProduct
   @OrganizationID int,
   @Name varchar(255),
   @Description varchar(1024),
-  @ImportID varchar(50),
+  @ImportID varchar(500),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
@@ -25653,7 +25551,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateProduct
   @OrganizationID int,
   @Name varchar(255),
   @Description varchar(1024),
-  @ImportID varchar(50),
+  @ImportID varchar(500),
   @DateModified datetime,
   @ModifierID int
 )
@@ -26175,7 +26073,10 @@ AS
     [ApprovedTerms],
     [ShowWelcomePage],
     [UserInformation],
-    [PortalAutoReg]
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [DefaultTicketsVisible]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -26229,6 +26130,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
   @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @DefaultTicketsVisible bit,
   @Identity int OUT
 )
 AS
@@ -26277,7 +26181,10 @@ AS
     [ApprovedTerms],
     [ShowWelcomePage],
     [UserInformation],
-    [PortalAutoReg])
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [DefaultTicketsVisible])
   VALUES (
     @Email,
     @FirstName,
@@ -26321,7 +26228,10 @@ AS
     @ApprovedTerms,
     @ShowWelcomePage,
     @UserInformation,
-    @PortalAutoReg)
+    @PortalAutoReg,
+    @AppChatID,
+    @AppChatStatus,
+    @DefaultTicketsVisible)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -26373,7 +26283,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
-  @PortalAutoReg bit
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @DefaultTicketsVisible bit
 )
 AS
   SET NOCOUNT OFF;
@@ -26419,7 +26332,10 @@ AS
     [ApprovedTerms] = @ApprovedTerms,
     [ShowWelcomePage] = @ShowWelcomePage,
     [UserInformation] = @UserInformation,
-    [PortalAutoReg] = @PortalAutoReg
+    [PortalAutoReg] = @PortalAutoReg,
+    [AppChatID] = @AppChatID,
+    [AppChatStatus] = @AppChatStatus,
+    [DefaultTicketsVisible] = @DefaultTicketsVisible
   WHERE ([UserID] = @UserID)
 GO
 
@@ -26528,167 +26444,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkFields]
   WHERE ([CRMFieldID] = @CRMFieldID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
-
-(
-  @CustomFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [CustomFieldID],
-    [OrganizationID],
-    [Name],
-    [ApiFieldName],
-    [RefType],
-    [FieldType],
-    [AuxID],
-    [Position],
-    [ListValues],
-    [Description],
-    [IsVisibleOnPortal],
-    [IsFirstIndexSelect],
-    [IsRequired],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [CustomFieldCategoryID]
-  FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
-
-(
-  @OrganizationID int,
-  @Name varchar(50),
-  @ApiFieldName varchar(100),
-  @RefType int,
-  @FieldType int,
-  @AuxID int,
-  @Position int,
-  @ListValues varchar(MAX),
-  @Description varchar(250),
-  @IsVisibleOnPortal bit,
-  @IsFirstIndexSelect bit,
-  @IsRequired bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @CustomFieldCategoryID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomFields]
-  (
-    [OrganizationID],
-    [Name],
-    [ApiFieldName],
-    [RefType],
-    [FieldType],
-    [AuxID],
-    [Position],
-    [ListValues],
-    [Description],
-    [IsVisibleOnPortal],
-    [IsFirstIndexSelect],
-    [IsRequired],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [CustomFieldCategoryID])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @ApiFieldName,
-    @RefType,
-    @FieldType,
-    @AuxID,
-    @Position,
-    @ListValues,
-    @Description,
-    @IsVisibleOnPortal,
-    @IsFirstIndexSelect,
-    @IsRequired,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @CustomFieldCategoryID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
-
-(
-  @CustomFieldID int,
-  @OrganizationID int,
-  @Name varchar(50),
-  @ApiFieldName varchar(100),
-  @RefType int,
-  @FieldType int,
-  @AuxID int,
-  @Position int,
-  @ListValues varchar(MAX),
-  @Description varchar(250),
-  @IsVisibleOnPortal bit,
-  @IsFirstIndexSelect bit,
-  @IsRequired bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @CustomFieldCategoryID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomFields]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ApiFieldName] = @ApiFieldName,
-    [RefType] = @RefType,
-    [FieldType] = @FieldType,
-    [AuxID] = @AuxID,
-    [Position] = @Position,
-    [ListValues] = @ListValues,
-    [Description] = @Description,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsFirstIndexSelect] = @IsFirstIndexSelect,
-    [IsRequired] = @IsRequired,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [CustomFieldCategoryID] = @CustomFieldCategoryID
-  WHERE ([CustomFieldID] = @CustomFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
-
-(
-  @CustomFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
 
@@ -27082,93 +26837,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ChatRequests]
   WHERE ([ChatRequestID] = @ChatRequestID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
-
-(
-  @DeletedIndexID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [DeletedIndexID],
-    [OrganizationID],
-    [RefID],
-    [RefType],
-    [DateDeleted]
-  FROM [dbo].[DeletedIndexItems]
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
-
-(
-  @OrganizationID int,
-  @RefID int,
-  @RefType int,
-  @DateDeleted datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[DeletedIndexItems]
-  (
-    [OrganizationID],
-    [RefID],
-    [RefType],
-    [DateDeleted])
-  VALUES (
-    @OrganizationID,
-    @RefID,
-    @RefType,
-    @DateDeleted)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
-
-(
-  @DeletedIndexID int,
-  @OrganizationID int,
-  @RefID int,
-  @RefType int,
-  @DateDeleted datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[DeletedIndexItems]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [RefID] = @RefID,
-    [RefType] = @RefType,
-    [DateDeleted] = @DateDeleted
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
-
-(
-  @DeletedIndexID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[DeletedIndexItems]
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
 GO
 
 
@@ -28005,6 +27673,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [DeletedIndexID],
+    [OrganizationID],
+    [RefID],
+    [RefType],
+    [DateDeleted]
+  FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+
+(
+  @OrganizationID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[DeletedIndexItems]
+  (
+    [OrganizationID],
+    [RefID],
+    [RefType],
+    [DateDeleted])
+  VALUES (
+    @OrganizationID,
+    @RefID,
+    @RefType,
+    @DateDeleted)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+
+(
+  @DeletedIndexID int,
+  @OrganizationID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[DeletedIndexItems]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [RefID] = @RefID,
+    [RefType] = @RefType,
+    [DateDeleted] = @DateDeleted
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChat
 GO
 
@@ -28445,105 +28200,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReportView
-
-(
-  @ReportViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportViewID],
-    [ReportID],
-    [UserID],
-    [DateViewed],
-    [DurationToLoad],
-    [SQLExecuted],
-    [ErrorMessage]
-  FROM [dbo].[ReportViews]
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReportView
-
-(
-  @ReportID int,
-  @UserID int,
-  @DateViewed datetime,
-  @DurationToLoad float,
-  @SQLExecuted nvarchar(MAX),
-  @ErrorMessage nvarchar(MAX),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ReportViews]
-  (
-    [ReportID],
-    [UserID],
-    [DateViewed],
-    [DurationToLoad],
-    [SQLExecuted],
-    [ErrorMessage])
-  VALUES (
-    @ReportID,
-    @UserID,
-    @DateViewed,
-    @DurationToLoad,
-    @SQLExecuted,
-    @ErrorMessage)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReportView
-
-(
-  @ReportViewID int,
-  @ReportID int,
-  @UserID int,
-  @DateViewed datetime,
-  @DurationToLoad float,
-  @SQLExecuted nvarchar(MAX),
-  @ErrorMessage nvarchar(MAX)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ReportViews]
-  SET
-    [ReportID] = @ReportID,
-    [UserID] = @UserID,
-    [DateViewed] = @DateViewed,
-    [DurationToLoad] = @DurationToLoad,
-    [SQLExecuted] = @SQLExecuted,
-    [ErrorMessage] = @ErrorMessage
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReportView
-
-(
-  @ReportViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ReportViews]
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectBillingInfoItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectBillingInfoItem
 GO
 
@@ -28803,144 +28459,96 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedSelectArticleStat
 
 (
-  @CRMLinkID int
+  @ArticleViewID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CRMLinkID],
+    [ArticleViewID],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [ArticleID],
+    [ViewDateTime],
+    [ViewIP],
+    [UserID]
+  FROM [dbo].[ArticleStats]
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedInsertArticleStat
 
 (
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
+  @ArticleID int,
+  @ViewDateTime datetime,
+  @ViewIP varchar(100),
+  @UserID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
+  INSERT INTO [dbo].[ArticleStats]
   (
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail])
+    [ArticleID],
+    [ViewDateTime],
+    [ViewIP],
+    [UserID])
   VALUES (
     @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail)
+    @ArticleID,
+    @ViewDateTime,
+    @ViewIP,
+    @UserID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateArticleStat
 
 (
-  @CRMLinkID int,
+  @ArticleViewID int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit
+  @ArticleID int,
+  @ViewDateTime datetime,
+  @ViewIP varchar(100),
+  @UserID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
+  UPDATE [dbo].[ArticleStats]
   SET
     [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [ArticleID] = @ArticleID,
+    [ViewDateTime] = @ViewDateTime,
+    [ViewIP] = @ViewIP,
+    [UserID] = @UserID
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteArticleStat
 
 (
-  @CRMLinkID int
+  @ArticleViewID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+  DELETE FROM [dbo].[ArticleStats]
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
 
@@ -29938,7 +29546,9 @@ AS
     [SlaLevelID],
     [DefaultWikiArticleID],
     [DefaultSupportGroupID],
-    [DefaultSupportUserID]
+    [DefaultSupportUserID],
+    [DefaultSupportUser],
+    [DefaultSupportGroup]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -30060,7 +29670,9 @@ AS
     [SlaWarningDate],
     [TicketSource],
     [ForumCategory],
-    [CategoryName]
+    [CategoryName],
+    [CreatorEmail],
+    [ModifierEmail]
   FROM [dbo].[TicketsView]
   WHERE ([TicketID] = @TicketID)
 GO
@@ -30528,99 +30140,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[Notes]
   WHERE ([NoteID] = @NoteID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectArticleStat
-
-(
-  @ArticleViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ArticleViewID],
-    [OrganizationID],
-    [ArticleID],
-    [ViewDateTime],
-    [ViewIP],
-    [UserID]
-  FROM [dbo].[ArticleStats]
-  WHERE ([ArticleViewID] = @ArticleViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertArticleStat
-
-(
-  @OrganizationID int,
-  @ArticleID int,
-  @ViewDateTime datetime,
-  @ViewIP varchar(100),
-  @UserID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ArticleStats]
-  (
-    [OrganizationID],
-    [ArticleID],
-    [ViewDateTime],
-    [ViewIP],
-    [UserID])
-  VALUES (
-    @OrganizationID,
-    @ArticleID,
-    @ViewDateTime,
-    @ViewIP,
-    @UserID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateArticleStat
-
-(
-  @ArticleViewID int,
-  @OrganizationID int,
-  @ArticleID int,
-  @ViewDateTime datetime,
-  @ViewIP varchar(100),
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ArticleStats]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [ArticleID] = @ArticleID,
-    [ViewDateTime] = @ViewDateTime,
-    [ViewIP] = @ViewIP,
-    [UserID] = @UserID
-  WHERE ([ArticleViewID] = @ArticleViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteArticleStat
-
-(
-  @ArticleViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ArticleStats]
-  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
 
@@ -31342,93 +30861,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectForumLog
-
-(
-  @ForumLogID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ForumLogID],
-    [TopicID],
-    [UserID],
-    [OrgID],
-    [ViewTime]
-  FROM [dbo].[ForumLogs]
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertForumLog
-
-(
-  @TopicID int,
-  @UserID int,
-  @OrgID int,
-  @ViewTime datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ForumLogs]
-  (
-    [TopicID],
-    [UserID],
-    [OrgID],
-    [ViewTime])
-  VALUES (
-    @TopicID,
-    @UserID,
-    @OrgID,
-    @ViewTime)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateForumLog
-
-(
-  @ForumLogID int,
-  @TopicID int,
-  @UserID int,
-  @OrgID int,
-  @ViewTime datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ForumLogs]
-  SET
-    [TopicID] = @TopicID,
-    [UserID] = @UserID,
-    [OrgID] = @OrgID,
-    [ViewTime] = @ViewTime
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteForumLog
-
-(
-  @ForumLogID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ForumLogs]
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketAutomationTrigger' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketAutomationTrigger
 GO
 
@@ -31905,6 +31337,105 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketQueue]
   WHERE ([TicketQueueID] = @TicketQueueID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReportView
+
+(
+  @ReportViewID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReportViewID],
+    [ReportID],
+    [UserID],
+    [DateViewed],
+    [DurationToLoad],
+    [SQLExecuted],
+    [ErrorMessage]
+  FROM [dbo].[ReportViews]
+  WHERE ([ReportViewID] = @ReportViewID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReportView
+
+(
+  @ReportID int,
+  @UserID int,
+  @DateViewed datetime,
+  @DurationToLoad float,
+  @SQLExecuted nvarchar(MAX),
+  @ErrorMessage nvarchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ReportViews]
+  (
+    [ReportID],
+    [UserID],
+    [DateViewed],
+    [DurationToLoad],
+    [SQLExecuted],
+    [ErrorMessage])
+  VALUES (
+    @ReportID,
+    @UserID,
+    @DateViewed,
+    @DurationToLoad,
+    @SQLExecuted,
+    @ErrorMessage)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReportView
+
+(
+  @ReportViewID int,
+  @ReportID int,
+  @UserID int,
+  @DateViewed datetime,
+  @DurationToLoad float,
+  @SQLExecuted nvarchar(MAX),
+  @ErrorMessage nvarchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ReportViews]
+  SET
+    [ReportID] = @ReportID,
+    [UserID] = @UserID,
+    [DateViewed] = @DateViewed,
+    [DurationToLoad] = @DurationToLoad,
+    [SQLExecuted] = @SQLExecuted,
+    [ErrorMessage] = @ErrorMessage
+  WHERE ([ReportViewID] = @ReportViewID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReportView
+
+(
+  @ReportViewID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ReportViews]
+  WHERE ([ReportViewID] = @ReportViewID)
 GO
 
 
@@ -32799,6 +32330,167 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
+
+(
+  @CustomFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CustomFieldID],
+    [OrganizationID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
+    [IsVisibleOnPortal],
+    [IsFirstIndexSelect],
+    [IsRequired],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [CustomFieldCategoryID]
+  FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
+
+(
+  @OrganizationID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
+  @IsVisibleOnPortal bit,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @CustomFieldCategoryID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CustomFields]
+  (
+    [OrganizationID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
+    [IsVisibleOnPortal],
+    [IsFirstIndexSelect],
+    [IsRequired],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [CustomFieldCategoryID])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @ApiFieldName,
+    @RefType,
+    @FieldType,
+    @AuxID,
+    @Position,
+    @ListValues,
+    @Description,
+    @IsVisibleOnPortal,
+    @IsFirstIndexSelect,
+    @IsRequired,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @CustomFieldCategoryID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
+
+(
+  @CustomFieldID int,
+  @OrganizationID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
+  @IsVisibleOnPortal bit,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
+  @DateModified datetime,
+  @ModifierID int,
+  @CustomFieldCategoryID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CustomFields]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ApiFieldName] = @ApiFieldName,
+    [RefType] = @RefType,
+    [FieldType] = @FieldType,
+    [AuxID] = @AuxID,
+    [Position] = @Position,
+    [ListValues] = @ListValues,
+    [Description] = @Description,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsFirstIndexSelect] = @IsFirstIndexSelect,
+    [IsRequired] = @IsRequired,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [CustomFieldCategoryID] = @CustomFieldCategoryID
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
+
+(
+  @CustomFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectFacebookOption
 GO
 
@@ -32903,7 +32595,8 @@ AS
     [CreatedBy],
     [CreatedDate],
     [ModifiedBy],
-    [ModifiedDate]
+    [ModifiedDate],
+    [NeedsIndexing]
   FROM [dbo].[WikiArticles]
   WHERE ([ArticleID] = @ArticleID)
 GO
@@ -32929,6 +32622,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticle
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Identity int OUT
 )
 AS
@@ -32949,7 +32643,8 @@ AS
     [CreatedBy],
     [CreatedDate],
     [ModifiedBy],
-    [ModifiedDate])
+    [ModifiedDate],
+    [NeedsIndexing])
   VALUES (
     @ParentID,
     @OrganizationID,
@@ -32965,7 +32660,8 @@ AS
     @CreatedBy,
     @CreatedDate,
     @ModifiedBy,
-    @ModifiedDate)
+    @ModifiedDate,
+    @NeedsIndexing)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -32991,7 +32687,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticle
   @CreatedBy int,
   @CreatedDate datetime,
   @ModifiedBy int,
-  @ModifiedDate datetime
+  @ModifiedDate datetime,
+  @NeedsIndexing bit
 )
 AS
   SET NOCOUNT OFF;
@@ -33011,7 +32708,8 @@ AS
     [CreatedBy] = @CreatedBy,
     [CreatedDate] = @CreatedDate,
     [ModifiedBy] = @ModifiedBy,
-    [ModifiedDate] = @ModifiedDate
+    [ModifiedDate] = @ModifiedDate,
+    [NeedsIndexing] = @NeedsIndexing
   WHERE ([ArticleID] = @ArticleID)
 GO
 
@@ -33509,6 +33207,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectForumLog
+
+(
+  @ForumLogID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ForumLogID],
+    [TopicID],
+    [UserID],
+    [OrgID],
+    [ViewTime]
+  FROM [dbo].[ForumLogs]
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertForumLog
+
+(
+  @TopicID int,
+  @UserID int,
+  @OrgID int,
+  @ViewTime datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ForumLogs]
+  (
+    [TopicID],
+    [UserID],
+    [OrgID],
+    [ViewTime])
+  VALUES (
+    @TopicID,
+    @UserID,
+    @OrgID,
+    @ViewTime)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateForumLog
+
+(
+  @ForumLogID int,
+  @TopicID int,
+  @UserID int,
+  @OrgID int,
+  @ViewTime datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ForumLogs]
+  SET
+    [TopicID] = @TopicID,
+    [UserID] = @UserID,
+    [OrgID] = @OrgID,
+    [ViewTime] = @ViewTime
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteForumLog
+
+(
+  @ForumLogID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ForumLogs]
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectService
 GO
 
@@ -33968,6 +33753,153 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketRatings]
   WHERE ([TicketID] = @TicketID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CRMLinkID],
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+
+(
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CRMLinkTable]
+  (
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID])
+  VALUES (
+    @OrganizationID,
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+
+(
+  @CRMLinkID int,
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CRMLinkTable]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
@@ -35320,6 +35252,7 @@ AS
     [CreatedDate],
     [ModifiedBy],
     [ModifiedDate],
+    [NeedsIndexing],
     [Creator],
     [Modifier],
     [Organization]
@@ -35349,6 +35282,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticlesViewItem
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Creator varchar(202),
   @Modifier varchar(202),
   @Organization varchar(255),
@@ -35374,6 +35308,7 @@ AS
     [CreatedDate],
     [ModifiedBy],
     [ModifiedDate],
+    [NeedsIndexing],
     [Creator],
     [Modifier],
     [Organization])
@@ -35394,6 +35329,7 @@ AS
     @CreatedDate,
     @ModifiedBy,
     @ModifiedDate,
+    @NeedsIndexing,
     @Creator,
     @Modifier,
     @Organization)
@@ -35423,6 +35359,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticlesViewItem
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Creator varchar(202),
   @Modifier varchar(202),
   @Organization varchar(255)
@@ -35446,6 +35383,7 @@ AS
     [CreatedDate] = @CreatedDate,
     [ModifiedBy] = @ModifiedBy,
     [ModifiedDate] = @ModifiedDate,
+    [NeedsIndexing] = @NeedsIndexing,
     [Creator] = @Creator,
     [Modifier] = @Modifier,
     [Organization] = @Organization
@@ -36358,32 +36296,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-
-(
-  @MessageID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [GroupFor],
-    [ReplyTo],
-    [Message],
-    [MessageType],
-    [UserName],
-    [GroupName]
-  FROM [dbo].[WaterCoolerView]
-  WHERE ([MessageID] = @MessageID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSystemSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSystemSetting
 GO
 
@@ -36608,7 +36520,8 @@ AS
     [TermsAndConditions],
     [RequestType],
     [RequestGroup],
-    [AutoRegister]
+    [AutoRegister],
+    [RequestAccess]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -36659,6 +36572,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @RequestType int,
   @RequestGroup int,
   @AutoRegister bit,
+  @RequestAccess bit,
   @Identity int OUT
 )
 AS
@@ -36704,7 +36618,8 @@ AS
     [TermsAndConditions],
     [RequestType],
     [RequestGroup],
-    [AutoRegister])
+    [AutoRegister],
+    [RequestAccess])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -36745,7 +36660,8 @@ AS
     @TermsAndConditions,
     @RequestType,
     @RequestGroup,
-    @AutoRegister)
+    @AutoRegister,
+    @RequestAccess)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -36795,7 +36711,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
   @RequestGroup int,
-  @AutoRegister bit
+  @AutoRegister bit,
+  @RequestAccess bit
 )
 AS
   SET NOCOUNT OFF;
@@ -36839,7 +36756,8 @@ AS
     [TermsAndConditions] = @TermsAndConditions,
     [RequestType] = @RequestType,
     [RequestGroup] = @RequestGroup,
-    [AutoRegister] = @AutoRegister
+    [AutoRegister] = @AutoRegister,
+    [RequestAccess] = @RequestAccess
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -37515,6 +37433,32 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+
+(
+
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [Message],
+    [MessageParent],
+    [IsDeleted],
+    [LastModified],
+    [RefType],
+    [AttachmentID]
+  FROM [dbo].[WaterCoolerView]
+  WH)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserSetting
 GO
 
@@ -38169,103 +38113,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[PhoneQueue]
   WHERE ([PhoneQueueID] = @PhoneQueueID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReportEmail
-
-(
-  @ReportEmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportEmailID],
-    [UserID],
-    [ReportID],
-    [DateCreated],
-    [DateSent],
-    [DateFailed],
-    [IsWaiting]
-  FROM [dbo].[ReportEmails]
-  WHERE ([ReportEmailID] = @ReportEmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReportEmail
-
-(
-  @UserID int,
-  @ReportID int,
-  @DateCreated datetime,
-  @DateSent datetime,
-  @DateFailed datetime,
-  @IsWaiting bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ReportEmails]
-  (
-    [UserID],
-    [ReportID],
-    [DateCreated],
-    [DateSent],
-    [DateFailed],
-    [IsWaiting])
-  VALUES (
-    @UserID,
-    @ReportID,
-    @DateCreated,
-    @DateSent,
-    @DateFailed,
-    @IsWaiting)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReportEmail
-
-(
-  @ReportEmailID int,
-  @UserID int,
-  @ReportID int,
-  @DateSent datetime,
-  @DateFailed datetime,
-  @IsWaiting bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ReportEmails]
-  SET
-    [UserID] = @UserID,
-    [ReportID] = @ReportID,
-    [DateSent] = @DateSent,
-    [DateFailed] = @DateFailed,
-    [IsWaiting] = @IsWaiting
-  WHERE ([ReportEmailID] = @ReportEmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReportEmail
-
-(
-  @ReportEmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ReportEmails]
-  WHERE ([ReportEmailID] = @ReportEmailID)
 GO
 
 
@@ -38401,7 +38248,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertProduct
   @OrganizationID int,
   @Name varchar(255),
   @Description varchar(1024),
-  @ImportID varchar(50),
+  @ImportID varchar(500),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
@@ -38443,7 +38290,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateProduct
   @OrganizationID int,
   @Name varchar(255),
   @Description varchar(1024),
-  @ImportID varchar(50),
+  @ImportID varchar(500),
   @DateModified datetime,
   @ModifierID int
 )
@@ -38965,7 +38812,10 @@ AS
     [ApprovedTerms],
     [ShowWelcomePage],
     [UserInformation],
-    [PortalAutoReg]
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [DefaultTicketsVisible]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -39019,6 +38869,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
   @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @DefaultTicketsVisible bit,
   @Identity int OUT
 )
 AS
@@ -39067,7 +38920,10 @@ AS
     [ApprovedTerms],
     [ShowWelcomePage],
     [UserInformation],
-    [PortalAutoReg])
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [DefaultTicketsVisible])
   VALUES (
     @Email,
     @FirstName,
@@ -39111,7 +38967,10 @@ AS
     @ApprovedTerms,
     @ShowWelcomePage,
     @UserInformation,
-    @PortalAutoReg)
+    @PortalAutoReg,
+    @AppChatID,
+    @AppChatStatus,
+    @DefaultTicketsVisible)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -39163,7 +39022,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
-  @PortalAutoReg bit
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @DefaultTicketsVisible bit
 )
 AS
   SET NOCOUNT OFF;
@@ -39209,7 +39071,10 @@ AS
     [ApprovedTerms] = @ApprovedTerms,
     [ShowWelcomePage] = @ShowWelcomePage,
     [UserInformation] = @UserInformation,
-    [PortalAutoReg] = @PortalAutoReg
+    [PortalAutoReg] = @PortalAutoReg,
+    [AppChatID] = @AppChatID,
+    [AppChatStatus] = @AppChatStatus,
+    [DefaultTicketsVisible] = @DefaultTicketsVisible
   WHERE ([UserID] = @UserID)
 GO
 
@@ -39318,167 +39183,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkFields]
   WHERE ([CRMFieldID] = @CRMFieldID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
-
-(
-  @CustomFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [CustomFieldID],
-    [OrganizationID],
-    [Name],
-    [ApiFieldName],
-    [RefType],
-    [FieldType],
-    [AuxID],
-    [Position],
-    [ListValues],
-    [Description],
-    [IsVisibleOnPortal],
-    [IsFirstIndexSelect],
-    [IsRequired],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [CustomFieldCategoryID]
-  FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
-
-(
-  @OrganizationID int,
-  @Name varchar(50),
-  @ApiFieldName varchar(100),
-  @RefType int,
-  @FieldType int,
-  @AuxID int,
-  @Position int,
-  @ListValues varchar(MAX),
-  @Description varchar(250),
-  @IsVisibleOnPortal bit,
-  @IsFirstIndexSelect bit,
-  @IsRequired bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @CustomFieldCategoryID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomFields]
-  (
-    [OrganizationID],
-    [Name],
-    [ApiFieldName],
-    [RefType],
-    [FieldType],
-    [AuxID],
-    [Position],
-    [ListValues],
-    [Description],
-    [IsVisibleOnPortal],
-    [IsFirstIndexSelect],
-    [IsRequired],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [CustomFieldCategoryID])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @ApiFieldName,
-    @RefType,
-    @FieldType,
-    @AuxID,
-    @Position,
-    @ListValues,
-    @Description,
-    @IsVisibleOnPortal,
-    @IsFirstIndexSelect,
-    @IsRequired,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @CustomFieldCategoryID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
-
-(
-  @CustomFieldID int,
-  @OrganizationID int,
-  @Name varchar(50),
-  @ApiFieldName varchar(100),
-  @RefType int,
-  @FieldType int,
-  @AuxID int,
-  @Position int,
-  @ListValues varchar(MAX),
-  @Description varchar(250),
-  @IsVisibleOnPortal bit,
-  @IsFirstIndexSelect bit,
-  @IsRequired bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @CustomFieldCategoryID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomFields]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ApiFieldName] = @ApiFieldName,
-    [RefType] = @RefType,
-    [FieldType] = @FieldType,
-    [AuxID] = @AuxID,
-    [Position] = @Position,
-    [ListValues] = @ListValues,
-    [Description] = @Description,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsFirstIndexSelect] = @IsFirstIndexSelect,
-    [IsRequired] = @IsRequired,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [CustomFieldCategoryID] = @CustomFieldCategoryID
-  WHERE ([CustomFieldID] = @CustomFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
-
-(
-  @CustomFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
 
@@ -39872,93 +39576,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ChatRequests]
   WHERE ([ChatRequestID] = @ChatRequestID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
-
-(
-  @DeletedIndexID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [DeletedIndexID],
-    [OrganizationID],
-    [RefID],
-    [RefType],
-    [DateDeleted]
-  FROM [dbo].[DeletedIndexItems]
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
-
-(
-  @OrganizationID int,
-  @RefID int,
-  @RefType int,
-  @DateDeleted datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[DeletedIndexItems]
-  (
-    [OrganizationID],
-    [RefID],
-    [RefType],
-    [DateDeleted])
-  VALUES (
-    @OrganizationID,
-    @RefID,
-    @RefType,
-    @DateDeleted)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
-
-(
-  @DeletedIndexID int,
-  @OrganizationID int,
-  @RefID int,
-  @RefType int,
-  @DateDeleted datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[DeletedIndexItems]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [RefID] = @RefID,
-    [RefType] = @RefType,
-    [DateDeleted] = @DateDeleted
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
-
-(
-  @DeletedIndexID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[DeletedIndexItems]
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
 GO
 
 
@@ -40795,6 +40412,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [DeletedIndexID],
+    [OrganizationID],
+    [RefID],
+    [RefType],
+    [DateDeleted]
+  FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+
+(
+  @OrganizationID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[DeletedIndexItems]
+  (
+    [OrganizationID],
+    [RefID],
+    [RefType],
+    [DateDeleted])
+  VALUES (
+    @OrganizationID,
+    @RefID,
+    @RefType,
+    @DateDeleted)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+
+(
+  @DeletedIndexID int,
+  @OrganizationID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[DeletedIndexItems]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [RefID] = @RefID,
+    [RefType] = @RefType,
+    [DateDeleted] = @DateDeleted
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChat
 GO
 
@@ -41235,105 +40939,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReportView
-
-(
-  @ReportViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportViewID],
-    [ReportID],
-    [UserID],
-    [DateViewed],
-    [DurationToLoad],
-    [SQLExecuted],
-    [ErrorMessage]
-  FROM [dbo].[ReportViews]
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReportView
-
-(
-  @ReportID int,
-  @UserID int,
-  @DateViewed datetime,
-  @DurationToLoad float,
-  @SQLExecuted nvarchar(MAX),
-  @ErrorMessage nvarchar(MAX),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ReportViews]
-  (
-    [ReportID],
-    [UserID],
-    [DateViewed],
-    [DurationToLoad],
-    [SQLExecuted],
-    [ErrorMessage])
-  VALUES (
-    @ReportID,
-    @UserID,
-    @DateViewed,
-    @DurationToLoad,
-    @SQLExecuted,
-    @ErrorMessage)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReportView
-
-(
-  @ReportViewID int,
-  @ReportID int,
-  @UserID int,
-  @DateViewed datetime,
-  @DurationToLoad float,
-  @SQLExecuted nvarchar(MAX),
-  @ErrorMessage nvarchar(MAX)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ReportViews]
-  SET
-    [ReportID] = @ReportID,
-    [UserID] = @UserID,
-    [DateViewed] = @DateViewed,
-    [DurationToLoad] = @DurationToLoad,
-    [SQLExecuted] = @SQLExecuted,
-    [ErrorMessage] = @ErrorMessage
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReportView
-
-(
-  @ReportViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ReportViews]
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectBillingInfoItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectBillingInfoItem
 GO
 
@@ -41593,144 +41198,96 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedSelectArticleStat
 
 (
-  @CRMLinkID int
+  @ArticleViewID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CRMLinkID],
+    [ArticleViewID],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [ArticleID],
+    [ViewDateTime],
+    [ViewIP],
+    [UserID]
+  FROM [dbo].[ArticleStats]
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedInsertArticleStat
 
 (
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
+  @ArticleID int,
+  @ViewDateTime datetime,
+  @ViewIP varchar(100),
+  @UserID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
+  INSERT INTO [dbo].[ArticleStats]
   (
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail])
+    [ArticleID],
+    [ViewDateTime],
+    [ViewIP],
+    [UserID])
   VALUES (
     @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail)
+    @ArticleID,
+    @ViewDateTime,
+    @ViewIP,
+    @UserID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateArticleStat
 
 (
-  @CRMLinkID int,
+  @ArticleViewID int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit
+  @ArticleID int,
+  @ViewDateTime datetime,
+  @ViewIP varchar(100),
+  @UserID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
+  UPDATE [dbo].[ArticleStats]
   SET
     [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [ArticleID] = @ArticleID,
+    [ViewDateTime] = @ViewDateTime,
+    [ViewIP] = @ViewIP,
+    [UserID] = @UserID
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteArticleStat
 
 (
-  @CRMLinkID int
+  @ArticleViewID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+  DELETE FROM [dbo].[ArticleStats]
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
 
@@ -42728,7 +42285,9 @@ AS
     [SlaLevelID],
     [DefaultWikiArticleID],
     [DefaultSupportGroupID],
-    [DefaultSupportUserID]
+    [DefaultSupportUserID],
+    [DefaultSupportUser],
+    [DefaultSupportGroup]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -42850,7 +42409,9 @@ AS
     [SlaWarningDate],
     [TicketSource],
     [ForumCategory],
-    [CategoryName]
+    [CategoryName],
+    [CreatorEmail],
+    [ModifierEmail]
   FROM [dbo].[TicketsView]
   WHERE ([TicketID] = @TicketID)
 GO
@@ -43318,99 +42879,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[Notes]
   WHERE ([NoteID] = @NoteID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectArticleStat
-
-(
-  @ArticleViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ArticleViewID],
-    [OrganizationID],
-    [ArticleID],
-    [ViewDateTime],
-    [ViewIP],
-    [UserID]
-  FROM [dbo].[ArticleStats]
-  WHERE ([ArticleViewID] = @ArticleViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertArticleStat
-
-(
-  @OrganizationID int,
-  @ArticleID int,
-  @ViewDateTime datetime,
-  @ViewIP varchar(100),
-  @UserID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ArticleStats]
-  (
-    [OrganizationID],
-    [ArticleID],
-    [ViewDateTime],
-    [ViewIP],
-    [UserID])
-  VALUES (
-    @OrganizationID,
-    @ArticleID,
-    @ViewDateTime,
-    @ViewIP,
-    @UserID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateArticleStat
-
-(
-  @ArticleViewID int,
-  @OrganizationID int,
-  @ArticleID int,
-  @ViewDateTime datetime,
-  @ViewIP varchar(100),
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ArticleStats]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [ArticleID] = @ArticleID,
-    [ViewDateTime] = @ViewDateTime,
-    [ViewIP] = @ViewIP,
-    [UserID] = @UserID
-  WHERE ([ArticleViewID] = @ArticleViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteArticleStat
-
-(
-  @ArticleViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ArticleStats]
-  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
 
@@ -44132,93 +43600,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectForumLog
-
-(
-  @ForumLogID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ForumLogID],
-    [TopicID],
-    [UserID],
-    [OrgID],
-    [ViewTime]
-  FROM [dbo].[ForumLogs]
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertForumLog
-
-(
-  @TopicID int,
-  @UserID int,
-  @OrgID int,
-  @ViewTime datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ForumLogs]
-  (
-    [TopicID],
-    [UserID],
-    [OrgID],
-    [ViewTime])
-  VALUES (
-    @TopicID,
-    @UserID,
-    @OrgID,
-    @ViewTime)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateForumLog
-
-(
-  @ForumLogID int,
-  @TopicID int,
-  @UserID int,
-  @OrgID int,
-  @ViewTime datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ForumLogs]
-  SET
-    [TopicID] = @TopicID,
-    [UserID] = @UserID,
-    [OrgID] = @OrgID,
-    [ViewTime] = @ViewTime
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteForumLog
-
-(
-  @ForumLogID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ForumLogs]
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketAutomationTrigger' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketAutomationTrigger
 GO
 
@@ -44695,6 +44076,105 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketQueue]
   WHERE ([TicketQueueID] = @TicketQueueID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReportView
+
+(
+  @ReportViewID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReportViewID],
+    [ReportID],
+    [UserID],
+    [DateViewed],
+    [DurationToLoad],
+    [SQLExecuted],
+    [ErrorMessage]
+  FROM [dbo].[ReportViews]
+  WHERE ([ReportViewID] = @ReportViewID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReportView
+
+(
+  @ReportID int,
+  @UserID int,
+  @DateViewed datetime,
+  @DurationToLoad float,
+  @SQLExecuted nvarchar(MAX),
+  @ErrorMessage nvarchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ReportViews]
+  (
+    [ReportID],
+    [UserID],
+    [DateViewed],
+    [DurationToLoad],
+    [SQLExecuted],
+    [ErrorMessage])
+  VALUES (
+    @ReportID,
+    @UserID,
+    @DateViewed,
+    @DurationToLoad,
+    @SQLExecuted,
+    @ErrorMessage)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReportView
+
+(
+  @ReportViewID int,
+  @ReportID int,
+  @UserID int,
+  @DateViewed datetime,
+  @DurationToLoad float,
+  @SQLExecuted nvarchar(MAX),
+  @ErrorMessage nvarchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ReportViews]
+  SET
+    [ReportID] = @ReportID,
+    [UserID] = @UserID,
+    [DateViewed] = @DateViewed,
+    [DurationToLoad] = @DurationToLoad,
+    [SQLExecuted] = @SQLExecuted,
+    [ErrorMessage] = @ErrorMessage
+  WHERE ([ReportViewID] = @ReportViewID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReportView
+
+(
+  @ReportViewID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ReportViews]
+  WHERE ([ReportViewID] = @ReportViewID)
 GO
 
 
@@ -45589,6 +45069,167 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
+
+(
+  @CustomFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CustomFieldID],
+    [OrganizationID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
+    [IsVisibleOnPortal],
+    [IsFirstIndexSelect],
+    [IsRequired],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [CustomFieldCategoryID]
+  FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
+
+(
+  @OrganizationID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
+  @IsVisibleOnPortal bit,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @CustomFieldCategoryID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CustomFields]
+  (
+    [OrganizationID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
+    [IsVisibleOnPortal],
+    [IsFirstIndexSelect],
+    [IsRequired],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [CustomFieldCategoryID])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @ApiFieldName,
+    @RefType,
+    @FieldType,
+    @AuxID,
+    @Position,
+    @ListValues,
+    @Description,
+    @IsVisibleOnPortal,
+    @IsFirstIndexSelect,
+    @IsRequired,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @CustomFieldCategoryID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
+
+(
+  @CustomFieldID int,
+  @OrganizationID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
+  @IsVisibleOnPortal bit,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
+  @DateModified datetime,
+  @ModifierID int,
+  @CustomFieldCategoryID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CustomFields]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ApiFieldName] = @ApiFieldName,
+    [RefType] = @RefType,
+    [FieldType] = @FieldType,
+    [AuxID] = @AuxID,
+    [Position] = @Position,
+    [ListValues] = @ListValues,
+    [Description] = @Description,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsFirstIndexSelect] = @IsFirstIndexSelect,
+    [IsRequired] = @IsRequired,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [CustomFieldCategoryID] = @CustomFieldCategoryID
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
+
+(
+  @CustomFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectFacebookOption
 GO
 
@@ -45693,7 +45334,8 @@ AS
     [CreatedBy],
     [CreatedDate],
     [ModifiedBy],
-    [ModifiedDate]
+    [ModifiedDate],
+    [NeedsIndexing]
   FROM [dbo].[WikiArticles]
   WHERE ([ArticleID] = @ArticleID)
 GO
@@ -45719,6 +45361,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticle
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Identity int OUT
 )
 AS
@@ -45739,7 +45382,8 @@ AS
     [CreatedBy],
     [CreatedDate],
     [ModifiedBy],
-    [ModifiedDate])
+    [ModifiedDate],
+    [NeedsIndexing])
   VALUES (
     @ParentID,
     @OrganizationID,
@@ -45755,7 +45399,8 @@ AS
     @CreatedBy,
     @CreatedDate,
     @ModifiedBy,
-    @ModifiedDate)
+    @ModifiedDate,
+    @NeedsIndexing)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -45781,7 +45426,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticle
   @CreatedBy int,
   @CreatedDate datetime,
   @ModifiedBy int,
-  @ModifiedDate datetime
+  @ModifiedDate datetime,
+  @NeedsIndexing bit
 )
 AS
   SET NOCOUNT OFF;
@@ -45801,7 +45447,8 @@ AS
     [CreatedBy] = @CreatedBy,
     [CreatedDate] = @CreatedDate,
     [ModifiedBy] = @ModifiedBy,
-    [ModifiedDate] = @ModifiedDate
+    [ModifiedDate] = @ModifiedDate,
+    [NeedsIndexing] = @NeedsIndexing
   WHERE ([ArticleID] = @ArticleID)
 GO
 
@@ -46299,6 +45946,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectForumLog
+
+(
+  @ForumLogID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ForumLogID],
+    [TopicID],
+    [UserID],
+    [OrgID],
+    [ViewTime]
+  FROM [dbo].[ForumLogs]
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertForumLog
+
+(
+  @TopicID int,
+  @UserID int,
+  @OrgID int,
+  @ViewTime datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ForumLogs]
+  (
+    [TopicID],
+    [UserID],
+    [OrgID],
+    [ViewTime])
+  VALUES (
+    @TopicID,
+    @UserID,
+    @OrgID,
+    @ViewTime)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateForumLog
+
+(
+  @ForumLogID int,
+  @TopicID int,
+  @UserID int,
+  @OrgID int,
+  @ViewTime datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ForumLogs]
+  SET
+    [TopicID] = @TopicID,
+    [UserID] = @UserID,
+    [OrgID] = @OrgID,
+    [ViewTime] = @ViewTime
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteForumLog
+
+(
+  @ForumLogID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ForumLogs]
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectService
 GO
 
@@ -46758,6 +46492,153 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketRatings]
   WHERE ([TicketID] = @TicketID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CRMLinkID],
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+
+(
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CRMLinkTable]
+  (
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID])
+  VALUES (
+    @OrganizationID,
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+
+(
+  @CRMLinkID int,
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CRMLinkTable]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
@@ -48110,6 +47991,7 @@ AS
     [CreatedDate],
     [ModifiedBy],
     [ModifiedDate],
+    [NeedsIndexing],
     [Creator],
     [Modifier],
     [Organization]
@@ -48139,6 +48021,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticlesViewItem
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Creator varchar(202),
   @Modifier varchar(202),
   @Organization varchar(255),
@@ -48164,6 +48047,7 @@ AS
     [CreatedDate],
     [ModifiedBy],
     [ModifiedDate],
+    [NeedsIndexing],
     [Creator],
     [Modifier],
     [Organization])
@@ -48184,6 +48068,7 @@ AS
     @CreatedDate,
     @ModifiedBy,
     @ModifiedDate,
+    @NeedsIndexing,
     @Creator,
     @Modifier,
     @Organization)
@@ -48213,6 +48098,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticlesViewItem
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Creator varchar(202),
   @Modifier varchar(202),
   @Organization varchar(255)
@@ -48236,6 +48122,7 @@ AS
     [CreatedDate] = @CreatedDate,
     [ModifiedBy] = @ModifiedBy,
     [ModifiedDate] = @ModifiedDate,
+    [NeedsIndexing] = @NeedsIndexing,
     [Creator] = @Creator,
     [Modifier] = @Modifier,
     [Organization] = @Organization
@@ -49148,32 +49035,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-
-(
-  @MessageID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [GroupFor],
-    [ReplyTo],
-    [Message],
-    [MessageType],
-    [UserName],
-    [GroupName]
-  FROM [dbo].[WaterCoolerView]
-  WHERE ([MessageID] = @MessageID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSystemSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSystemSetting
 GO
 
@@ -49398,7 +49259,8 @@ AS
     [TermsAndConditions],
     [RequestType],
     [RequestGroup],
-    [AutoRegister]
+    [AutoRegister],
+    [RequestAccess]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -49449,6 +49311,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @RequestType int,
   @RequestGroup int,
   @AutoRegister bit,
+  @RequestAccess bit,
   @Identity int OUT
 )
 AS
@@ -49494,7 +49357,8 @@ AS
     [TermsAndConditions],
     [RequestType],
     [RequestGroup],
-    [AutoRegister])
+    [AutoRegister],
+    [RequestAccess])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -49535,7 +49399,8 @@ AS
     @TermsAndConditions,
     @RequestType,
     @RequestGroup,
-    @AutoRegister)
+    @AutoRegister,
+    @RequestAccess)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -49585,7 +49450,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
   @RequestGroup int,
-  @AutoRegister bit
+  @AutoRegister bit,
+  @RequestAccess bit
 )
 AS
   SET NOCOUNT OFF;
@@ -49629,7 +49495,8 @@ AS
     [TermsAndConditions] = @TermsAndConditions,
     [RequestType] = @RequestType,
     [RequestGroup] = @RequestGroup,
-    [AutoRegister] = @AutoRegister
+    [AutoRegister] = @AutoRegister,
+    [RequestAccess] = @RequestAccess
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -50305,6 +50172,32 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+
+(
+
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [Message],
+    [MessageParent],
+    [IsDeleted],
+    [LastModified],
+    [RefType],
+    [AttachmentID]
+  FROM [dbo].[WaterCoolerView]
+  WH)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserSetting
 GO
 
@@ -50959,103 +50852,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[PhoneQueue]
   WHERE ([PhoneQueueID] = @PhoneQueueID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReportEmail
-
-(
-  @ReportEmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportEmailID],
-    [UserID],
-    [ReportID],
-    [DateCreated],
-    [DateSent],
-    [DateFailed],
-    [IsWaiting]
-  FROM [dbo].[ReportEmails]
-  WHERE ([ReportEmailID] = @ReportEmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReportEmail
-
-(
-  @UserID int,
-  @ReportID int,
-  @DateCreated datetime,
-  @DateSent datetime,
-  @DateFailed datetime,
-  @IsWaiting bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ReportEmails]
-  (
-    [UserID],
-    [ReportID],
-    [DateCreated],
-    [DateSent],
-    [DateFailed],
-    [IsWaiting])
-  VALUES (
-    @UserID,
-    @ReportID,
-    @DateCreated,
-    @DateSent,
-    @DateFailed,
-    @IsWaiting)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReportEmail
-
-(
-  @ReportEmailID int,
-  @UserID int,
-  @ReportID int,
-  @DateSent datetime,
-  @DateFailed datetime,
-  @IsWaiting bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ReportEmails]
-  SET
-    [UserID] = @UserID,
-    [ReportID] = @ReportID,
-    [DateSent] = @DateSent,
-    [DateFailed] = @DateFailed,
-    [IsWaiting] = @IsWaiting
-  WHERE ([ReportEmailID] = @ReportEmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReportEmail
-
-(
-  @ReportEmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ReportEmails]
-  WHERE ([ReportEmailID] = @ReportEmailID)
 GO
 
 
@@ -51191,7 +50987,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertProduct
   @OrganizationID int,
   @Name varchar(255),
   @Description varchar(1024),
-  @ImportID varchar(50),
+  @ImportID varchar(500),
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
@@ -51233,7 +51029,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateProduct
   @OrganizationID int,
   @Name varchar(255),
   @Description varchar(1024),
-  @ImportID varchar(50),
+  @ImportID varchar(500),
   @DateModified datetime,
   @ModifierID int
 )
@@ -51755,7 +51551,10 @@ AS
     [ApprovedTerms],
     [ShowWelcomePage],
     [UserInformation],
-    [PortalAutoReg]
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [DefaultTicketsVisible]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -51809,6 +51608,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
   @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @DefaultTicketsVisible bit,
   @Identity int OUT
 )
 AS
@@ -51857,7 +51659,10 @@ AS
     [ApprovedTerms],
     [ShowWelcomePage],
     [UserInformation],
-    [PortalAutoReg])
+    [PortalAutoReg],
+    [AppChatID],
+    [AppChatStatus],
+    [DefaultTicketsVisible])
   VALUES (
     @Email,
     @FirstName,
@@ -51901,7 +51706,10 @@ AS
     @ApprovedTerms,
     @ShowWelcomePage,
     @UserInformation,
-    @PortalAutoReg)
+    @PortalAutoReg,
+    @AppChatID,
+    @AppChatStatus,
+    @DefaultTicketsVisible)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -51953,7 +51761,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ApprovedTerms bit,
   @ShowWelcomePage bit,
   @UserInformation varchar(MAX),
-  @PortalAutoReg bit
+  @PortalAutoReg bit,
+  @AppChatID varchar(200),
+  @AppChatStatus bit,
+  @DefaultTicketsVisible bit
 )
 AS
   SET NOCOUNT OFF;
@@ -51999,7 +51810,10 @@ AS
     [ApprovedTerms] = @ApprovedTerms,
     [ShowWelcomePage] = @ShowWelcomePage,
     [UserInformation] = @UserInformation,
-    [PortalAutoReg] = @PortalAutoReg
+    [PortalAutoReg] = @PortalAutoReg,
+    [AppChatID] = @AppChatID,
+    [AppChatStatus] = @AppChatStatus,
+    [DefaultTicketsVisible] = @DefaultTicketsVisible
   WHERE ([UserID] = @UserID)
 GO
 
@@ -52108,167 +51922,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[CRMLinkFields]
   WHERE ([CRMFieldID] = @CRMFieldID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
-
-(
-  @CustomFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [CustomFieldID],
-    [OrganizationID],
-    [Name],
-    [ApiFieldName],
-    [RefType],
-    [FieldType],
-    [AuxID],
-    [Position],
-    [ListValues],
-    [Description],
-    [IsVisibleOnPortal],
-    [IsFirstIndexSelect],
-    [IsRequired],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [CustomFieldCategoryID]
-  FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
-
-(
-  @OrganizationID int,
-  @Name varchar(50),
-  @ApiFieldName varchar(100),
-  @RefType int,
-  @FieldType int,
-  @AuxID int,
-  @Position int,
-  @ListValues varchar(MAX),
-  @Description varchar(250),
-  @IsVisibleOnPortal bit,
-  @IsFirstIndexSelect bit,
-  @IsRequired bit,
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @CustomFieldCategoryID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomFields]
-  (
-    [OrganizationID],
-    [Name],
-    [ApiFieldName],
-    [RefType],
-    [FieldType],
-    [AuxID],
-    [Position],
-    [ListValues],
-    [Description],
-    [IsVisibleOnPortal],
-    [IsFirstIndexSelect],
-    [IsRequired],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [CustomFieldCategoryID])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @ApiFieldName,
-    @RefType,
-    @FieldType,
-    @AuxID,
-    @Position,
-    @ListValues,
-    @Description,
-    @IsVisibleOnPortal,
-    @IsFirstIndexSelect,
-    @IsRequired,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @CustomFieldCategoryID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
-
-(
-  @CustomFieldID int,
-  @OrganizationID int,
-  @Name varchar(50),
-  @ApiFieldName varchar(100),
-  @RefType int,
-  @FieldType int,
-  @AuxID int,
-  @Position int,
-  @ListValues varchar(MAX),
-  @Description varchar(250),
-  @IsVisibleOnPortal bit,
-  @IsFirstIndexSelect bit,
-  @IsRequired bit,
-  @DateModified datetime,
-  @ModifierID int,
-  @CustomFieldCategoryID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomFields]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [ApiFieldName] = @ApiFieldName,
-    [RefType] = @RefType,
-    [FieldType] = @FieldType,
-    [AuxID] = @AuxID,
-    [Position] = @Position,
-    [ListValues] = @ListValues,
-    [Description] = @Description,
-    [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [IsFirstIndexSelect] = @IsFirstIndexSelect,
-    [IsRequired] = @IsRequired,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [CustomFieldCategoryID] = @CustomFieldCategoryID
-  WHERE ([CustomFieldID] = @CustomFieldID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
-
-(
-  @CustomFieldID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
 
@@ -52662,93 +52315,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[ChatRequests]
   WHERE ([ChatRequestID] = @ChatRequestID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
-
-(
-  @DeletedIndexID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [DeletedIndexID],
-    [OrganizationID],
-    [RefID],
-    [RefType],
-    [DateDeleted]
-  FROM [dbo].[DeletedIndexItems]
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
-
-(
-  @OrganizationID int,
-  @RefID int,
-  @RefType int,
-  @DateDeleted datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[DeletedIndexItems]
-  (
-    [OrganizationID],
-    [RefID],
-    [RefType],
-    [DateDeleted])
-  VALUES (
-    @OrganizationID,
-    @RefID,
-    @RefType,
-    @DateDeleted)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
-
-(
-  @DeletedIndexID int,
-  @OrganizationID int,
-  @RefID int,
-  @RefType int,
-  @DateDeleted datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[DeletedIndexItems]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [RefID] = @RefID,
-    [RefType] = @RefType,
-    [DateDeleted] = @DateDeleted
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
-
-(
-  @DeletedIndexID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[DeletedIndexItems]
-  WHERE ([DeletedIndexID] = @DeletedIndexID)
 GO
 
 
@@ -53585,6 +53151,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [DeletedIndexID],
+    [OrganizationID],
+    [RefID],
+    [RefType],
+    [DateDeleted]
+  FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertDeletedIndexItem
+
+(
+  @OrganizationID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[DeletedIndexItems]
+  (
+    [OrganizationID],
+    [RefID],
+    [RefType],
+    [DateDeleted])
+  VALUES (
+    @OrganizationID,
+    @RefID,
+    @RefType,
+    @DateDeleted)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateDeletedIndexItem
+
+(
+  @DeletedIndexID int,
+  @OrganizationID int,
+  @RefID int,
+  @RefType int,
+  @DateDeleted datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[DeletedIndexItems]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [RefID] = @RefID,
+    [RefType] = @RefType,
+    [DateDeleted] = @DateDeleted
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteDeletedIndexItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteDeletedIndexItem
+
+(
+  @DeletedIndexID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[DeletedIndexItems]
+  WHERE ([DeletedIndexID] = @DeletedIndexID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectChat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectChat
 GO
 
@@ -54025,105 +53678,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReportView
-
-(
-  @ReportViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportViewID],
-    [ReportID],
-    [UserID],
-    [DateViewed],
-    [DurationToLoad],
-    [SQLExecuted],
-    [ErrorMessage]
-  FROM [dbo].[ReportViews]
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReportView
-
-(
-  @ReportID int,
-  @UserID int,
-  @DateViewed datetime,
-  @DurationToLoad float,
-  @SQLExecuted nvarchar(MAX),
-  @ErrorMessage nvarchar(MAX),
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ReportViews]
-  (
-    [ReportID],
-    [UserID],
-    [DateViewed],
-    [DurationToLoad],
-    [SQLExecuted],
-    [ErrorMessage])
-  VALUES (
-    @ReportID,
-    @UserID,
-    @DateViewed,
-    @DurationToLoad,
-    @SQLExecuted,
-    @ErrorMessage)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReportView
-
-(
-  @ReportViewID int,
-  @ReportID int,
-  @UserID int,
-  @DateViewed datetime,
-  @DurationToLoad float,
-  @SQLExecuted nvarchar(MAX),
-  @ErrorMessage nvarchar(MAX)
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ReportViews]
-  SET
-    [ReportID] = @ReportID,
-    [UserID] = @UserID,
-    [DateViewed] = @DateViewed,
-    [DurationToLoad] = @DurationToLoad,
-    [SQLExecuted] = @SQLExecuted,
-    [ErrorMessage] = @ErrorMessage
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportView
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReportView
-
-(
-  @ReportViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ReportViews]
-  WHERE ([ReportViewID] = @ReportViewID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectBillingInfoItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectBillingInfoItem
 GO
 
@@ -54383,144 +53937,96 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedSelectArticleStat
 
 (
-  @CRMLinkID int
+  @ArticleViewID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [CRMLinkID],
+    [ArticleViewID],
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail]
-  FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [ArticleID],
+    [ViewDateTime],
+    [ViewIP],
+    [UserID]
+  FROM [dbo].[ArticleStats]
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedInsertArticleStat
 
 (
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit,
+  @ArticleID int,
+  @ViewDateTime datetime,
+  @ViewIP varchar(100),
+  @UserID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CRMLinkTable]
+  INSERT INTO [dbo].[ArticleStats]
   (
     [OrganizationID],
-    [Active],
-    [CRMType],
-    [Username],
-    [Password],
-    [SecurityToken],
-    [TypeFieldMatch],
-    [LastLink],
-    [SendBackTicketData],
-    [LastProcessed],
-    [LastTicketID],
-    [AllowPortalAccess],
-    [SendWelcomeEmail])
+    [ArticleID],
+    [ViewDateTime],
+    [ViewIP],
+    [UserID])
   VALUES (
     @OrganizationID,
-    @Active,
-    @CRMType,
-    @Username,
-    @Password,
-    @SecurityToken,
-    @TypeFieldMatch,
-    @LastLink,
-    @SendBackTicketData,
-    @LastProcessed,
-    @LastTicketID,
-    @AllowPortalAccess,
-    @SendWelcomeEmail)
+    @ArticleID,
+    @ViewDateTime,
+    @ViewIP,
+    @UserID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateArticleStat
 
 (
-  @CRMLinkID int,
+  @ArticleViewID int,
   @OrganizationID int,
-  @Active bit,
-  @CRMType varchar(100),
-  @Username varchar(100),
-  @Password varchar(100),
-  @SecurityToken varchar(1000),
-  @TypeFieldMatch varchar(500),
-  @LastLink datetime,
-  @SendBackTicketData bit,
-  @LastProcessed datetime,
-  @LastTicketID int,
-  @AllowPortalAccess bit,
-  @SendWelcomeEmail bit
+  @ArticleID int,
+  @ViewDateTime datetime,
+  @ViewIP varchar(100),
+  @UserID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CRMLinkTable]
+  UPDATE [dbo].[ArticleStats]
   SET
     [OrganizationID] = @OrganizationID,
-    [Active] = @Active,
-    [CRMType] = @CRMType,
-    [Username] = @Username,
-    [Password] = @Password,
-    [SecurityToken] = @SecurityToken,
-    [TypeFieldMatch] = @TypeFieldMatch,
-    [LastLink] = @LastLink,
-    [SendBackTicketData] = @SendBackTicketData,
-    [LastProcessed] = @LastProcessed,
-    [LastTicketID] = @LastTicketID,
-    [AllowPortalAccess] = @AllowPortalAccess,
-    [SendWelcomeEmail] = @SendWelcomeEmail
-  WHERE ([CRMLinkID] = @CRMLinkID)
+    [ArticleID] = @ArticleID,
+    [ViewDateTime] = @ViewDateTime,
+    [ViewIP] = @ViewIP,
+    [UserID] = @UserID
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteArticleStat
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteArticleStat
 
 (
-  @CRMLinkID int
+  @ArticleViewID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CRMLinkTable]
-  WHERE ([CRMLinkID] = @CRMLinkID)
+  DELETE FROM [dbo].[ArticleStats]
+  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
 
@@ -55518,7 +55024,9 @@ AS
     [SlaLevelID],
     [DefaultWikiArticleID],
     [DefaultSupportGroupID],
-    [DefaultSupportUserID]
+    [DefaultSupportUserID],
+    [DefaultSupportUser],
+    [DefaultSupportGroup]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -55640,7 +55148,9 @@ AS
     [SlaWarningDate],
     [TicketSource],
     [ForumCategory],
-    [CategoryName]
+    [CategoryName],
+    [CreatorEmail],
+    [ModifierEmail]
   FROM [dbo].[TicketsView]
   WHERE ([TicketID] = @TicketID)
 GO
@@ -56108,99 +55618,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[Notes]
   WHERE ([NoteID] = @NoteID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectArticleStat
-
-(
-  @ArticleViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ArticleViewID],
-    [OrganizationID],
-    [ArticleID],
-    [ViewDateTime],
-    [ViewIP],
-    [UserID]
-  FROM [dbo].[ArticleStats]
-  WHERE ([ArticleViewID] = @ArticleViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertArticleStat
-
-(
-  @OrganizationID int,
-  @ArticleID int,
-  @ViewDateTime datetime,
-  @ViewIP varchar(100),
-  @UserID int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ArticleStats]
-  (
-    [OrganizationID],
-    [ArticleID],
-    [ViewDateTime],
-    [ViewIP],
-    [UserID])
-  VALUES (
-    @OrganizationID,
-    @ArticleID,
-    @ViewDateTime,
-    @ViewIP,
-    @UserID)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateArticleStat
-
-(
-  @ArticleViewID int,
-  @OrganizationID int,
-  @ArticleID int,
-  @ViewDateTime datetime,
-  @ViewIP varchar(100),
-  @UserID int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ArticleStats]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [ArticleID] = @ArticleID,
-    [ViewDateTime] = @ViewDateTime,
-    [ViewIP] = @ViewIP,
-    [UserID] = @UserID
-  WHERE ([ArticleViewID] = @ArticleViewID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteArticleStat' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteArticleStat
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteArticleStat
-
-(
-  @ArticleViewID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ArticleStats]
-  WHERE ([ArticleViewID] = @ArticleViewID)
 GO
 
 
@@ -56922,93 +56339,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectForumLog
-
-(
-  @ForumLogID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ForumLogID],
-    [TopicID],
-    [UserID],
-    [OrgID],
-    [ViewTime]
-  FROM [dbo].[ForumLogs]
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertForumLog
-
-(
-  @TopicID int,
-  @UserID int,
-  @OrgID int,
-  @ViewTime datetime,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ForumLogs]
-  (
-    [TopicID],
-    [UserID],
-    [OrgID],
-    [ViewTime])
-  VALUES (
-    @TopicID,
-    @UserID,
-    @OrgID,
-    @ViewTime)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateForumLog
-
-(
-  @ForumLogID int,
-  @TopicID int,
-  @UserID int,
-  @OrgID int,
-  @ViewTime datetime
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ForumLogs]
-  SET
-    [TopicID] = @TopicID,
-    [UserID] = @UserID,
-    [OrgID] = @OrgID,
-    [ViewTime] = @ViewTime
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteForumLog
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteForumLog
-
-(
-  @ForumLogID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ForumLogs]
-  WHERE ([ForumLogID] = @ForumLogID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketAutomationTrigger' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketAutomationTrigger
 GO
 
@@ -57485,6 +56815,105 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketQueue]
   WHERE ([TicketQueueID] = @TicketQueueID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReportView
+
+(
+  @ReportViewID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReportViewID],
+    [ReportID],
+    [UserID],
+    [DateViewed],
+    [DurationToLoad],
+    [SQLExecuted],
+    [ErrorMessage]
+  FROM [dbo].[ReportViews]
+  WHERE ([ReportViewID] = @ReportViewID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReportView
+
+(
+  @ReportID int,
+  @UserID int,
+  @DateViewed datetime,
+  @DurationToLoad float,
+  @SQLExecuted nvarchar(MAX),
+  @ErrorMessage nvarchar(MAX),
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ReportViews]
+  (
+    [ReportID],
+    [UserID],
+    [DateViewed],
+    [DurationToLoad],
+    [SQLExecuted],
+    [ErrorMessage])
+  VALUES (
+    @ReportID,
+    @UserID,
+    @DateViewed,
+    @DurationToLoad,
+    @SQLExecuted,
+    @ErrorMessage)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReportView
+
+(
+  @ReportViewID int,
+  @ReportID int,
+  @UserID int,
+  @DateViewed datetime,
+  @DurationToLoad float,
+  @SQLExecuted nvarchar(MAX),
+  @ErrorMessage nvarchar(MAX)
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ReportViews]
+  SET
+    [ReportID] = @ReportID,
+    [UserID] = @UserID,
+    [DateViewed] = @DateViewed,
+    [DurationToLoad] = @DurationToLoad,
+    [SQLExecuted] = @SQLExecuted,
+    [ErrorMessage] = @ErrorMessage
+  WHERE ([ReportViewID] = @ReportViewID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportView' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportView
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReportView
+
+(
+  @ReportViewID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ReportViews]
+  WHERE ([ReportViewID] = @ReportViewID)
 GO
 
 
@@ -58379,6 +57808,167 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
+
+(
+  @CustomFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CustomFieldID],
+    [OrganizationID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
+    [IsVisibleOnPortal],
+    [IsFirstIndexSelect],
+    [IsRequired],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [CustomFieldCategoryID]
+  FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
+
+(
+  @OrganizationID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
+  @IsVisibleOnPortal bit,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @CustomFieldCategoryID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CustomFields]
+  (
+    [OrganizationID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
+    [IsVisibleOnPortal],
+    [IsFirstIndexSelect],
+    [IsRequired],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [CustomFieldCategoryID])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @ApiFieldName,
+    @RefType,
+    @FieldType,
+    @AuxID,
+    @Position,
+    @ListValues,
+    @Description,
+    @IsVisibleOnPortal,
+    @IsFirstIndexSelect,
+    @IsRequired,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @CustomFieldCategoryID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
+
+(
+  @CustomFieldID int,
+  @OrganizationID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
+  @IsVisibleOnPortal bit,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
+  @DateModified datetime,
+  @ModifierID int,
+  @CustomFieldCategoryID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CustomFields]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ApiFieldName] = @ApiFieldName,
+    [RefType] = @RefType,
+    [FieldType] = @FieldType,
+    [AuxID] = @AuxID,
+    [Position] = @Position,
+    [ListValues] = @ListValues,
+    [Description] = @Description,
+    [IsVisibleOnPortal] = @IsVisibleOnPortal,
+    [IsFirstIndexSelect] = @IsFirstIndexSelect,
+    [IsRequired] = @IsRequired,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [CustomFieldCategoryID] = @CustomFieldCategoryID
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
+
+(
+  @CustomFieldID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectFacebookOption' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectFacebookOption
 GO
 
@@ -58483,7 +58073,8 @@ AS
     [CreatedBy],
     [CreatedDate],
     [ModifiedBy],
-    [ModifiedDate]
+    [ModifiedDate],
+    [NeedsIndexing]
   FROM [dbo].[WikiArticles]
   WHERE ([ArticleID] = @ArticleID)
 GO
@@ -58509,6 +58100,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticle
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Identity int OUT
 )
 AS
@@ -58529,7 +58121,8 @@ AS
     [CreatedBy],
     [CreatedDate],
     [ModifiedBy],
-    [ModifiedDate])
+    [ModifiedDate],
+    [NeedsIndexing])
   VALUES (
     @ParentID,
     @OrganizationID,
@@ -58545,7 +58138,8 @@ AS
     @CreatedBy,
     @CreatedDate,
     @ModifiedBy,
-    @ModifiedDate)
+    @ModifiedDate,
+    @NeedsIndexing)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -58571,7 +58165,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticle
   @CreatedBy int,
   @CreatedDate datetime,
   @ModifiedBy int,
-  @ModifiedDate datetime
+  @ModifiedDate datetime,
+  @NeedsIndexing bit
 )
 AS
   SET NOCOUNT OFF;
@@ -58591,7 +58186,8 @@ AS
     [CreatedBy] = @CreatedBy,
     [CreatedDate] = @CreatedDate,
     [ModifiedBy] = @ModifiedBy,
-    [ModifiedDate] = @ModifiedDate
+    [ModifiedDate] = @ModifiedDate,
+    [NeedsIndexing] = @NeedsIndexing
   WHERE ([ArticleID] = @ArticleID)
 GO
 
@@ -59089,6 +58685,93 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectForumLog
+
+(
+  @ForumLogID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ForumLogID],
+    [TopicID],
+    [UserID],
+    [OrgID],
+    [ViewTime]
+  FROM [dbo].[ForumLogs]
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertForumLog
+
+(
+  @TopicID int,
+  @UserID int,
+  @OrgID int,
+  @ViewTime datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ForumLogs]
+  (
+    [TopicID],
+    [UserID],
+    [OrgID],
+    [ViewTime])
+  VALUES (
+    @TopicID,
+    @UserID,
+    @OrgID,
+    @ViewTime)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateForumLog
+
+(
+  @ForumLogID int,
+  @TopicID int,
+  @UserID int,
+  @OrgID int,
+  @ViewTime datetime
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ForumLogs]
+  SET
+    [TopicID] = @TopicID,
+    [UserID] = @UserID,
+    [OrgID] = @OrgID,
+    [ViewTime] = @ViewTime
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteForumLog' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteForumLog
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteForumLog
+
+(
+  @ForumLogID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ForumLogs]
+  WHERE ([ForumLogID] = @ForumLogID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectService' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectService
 GO
 
@@ -59548,6 +59231,153 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketRatings]
   WHERE ([TicketID] = @TicketID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [CRMLinkID],
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID]
+  FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
+
+(
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[CRMLinkTable]
+  (
+    [OrganizationID],
+    [Active],
+    [CRMType],
+    [Username],
+    [Password],
+    [SecurityToken],
+    [TypeFieldMatch],
+    [LastLink],
+    [SendBackTicketData],
+    [LastProcessed],
+    [LastTicketID],
+    [AllowPortalAccess],
+    [SendWelcomeEmail],
+    [DefaultSlaLevelID])
+  VALUES (
+    @OrganizationID,
+    @Active,
+    @CRMType,
+    @Username,
+    @Password,
+    @SecurityToken,
+    @TypeFieldMatch,
+    @LastLink,
+    @SendBackTicketData,
+    @LastProcessed,
+    @LastTicketID,
+    @AllowPortalAccess,
+    @SendWelcomeEmail,
+    @DefaultSlaLevelID)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
+
+(
+  @CRMLinkID int,
+  @OrganizationID int,
+  @Active bit,
+  @CRMType varchar(100),
+  @Username varchar(100),
+  @Password varchar(100),
+  @SecurityToken varchar(1000),
+  @TypeFieldMatch varchar(500),
+  @LastLink datetime,
+  @SendBackTicketData bit,
+  @LastProcessed datetime,
+  @LastTicketID int,
+  @AllowPortalAccess bit,
+  @SendWelcomeEmail bit,
+  @DefaultSlaLevelID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[CRMLinkTable]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Active] = @Active,
+    [CRMType] = @CRMType,
+    [Username] = @Username,
+    [Password] = @Password,
+    [SecurityToken] = @SecurityToken,
+    [TypeFieldMatch] = @TypeFieldMatch,
+    [LastLink] = @LastLink,
+    [SendBackTicketData] = @SendBackTicketData,
+    [LastProcessed] = @LastProcessed,
+    [LastTicketID] = @LastTicketID,
+    [AllowPortalAccess] = @AllowPortalAccess,
+    [SendWelcomeEmail] = @SendWelcomeEmail,
+    [DefaultSlaLevelID] = @DefaultSlaLevelID
+  WHERE ([CRMLinkID] = @CRMLinkID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCRMLinkTableItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteCRMLinkTableItem
+
+(
+  @CRMLinkID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[CRMLinkTable]
+  WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
 
@@ -60900,6 +60730,7 @@ AS
     [CreatedDate],
     [ModifiedBy],
     [ModifiedDate],
+    [NeedsIndexing],
     [Creator],
     [Modifier],
     [Organization]
@@ -60929,6 +60760,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertWikiArticlesViewItem
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Creator varchar(202),
   @Modifier varchar(202),
   @Organization varchar(255),
@@ -60954,6 +60786,7 @@ AS
     [CreatedDate],
     [ModifiedBy],
     [ModifiedDate],
+    [NeedsIndexing],
     [Creator],
     [Modifier],
     [Organization])
@@ -60974,6 +60807,7 @@ AS
     @CreatedDate,
     @ModifiedBy,
     @ModifiedDate,
+    @NeedsIndexing,
     @Creator,
     @Modifier,
     @Organization)
@@ -61003,6 +60837,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateWikiArticlesViewItem
   @CreatedDate datetime,
   @ModifiedBy int,
   @ModifiedDate datetime,
+  @NeedsIndexing bit,
   @Creator varchar(202),
   @Modifier varchar(202),
   @Organization varchar(255)
@@ -61026,6 +60861,7 @@ AS
     [CreatedDate] = @CreatedDate,
     [ModifiedBy] = @ModifiedBy,
     [ModifiedDate] = @ModifiedDate,
+    [NeedsIndexing] = @NeedsIndexing,
     [Creator] = @Creator,
     [Modifier] = @Modifier,
     [Organization] = @Organization
@@ -61938,32 +61774,6 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-
-(
-  @MessageID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [GroupFor],
-    [ReplyTo],
-    [Message],
-    [MessageType],
-    [UserName],
-    [GroupName]
-  FROM [dbo].[WaterCoolerView]
-  WHERE ([MessageID] = @MessageID)
-GO
-
-
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectSystemSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectSystemSetting
 GO
 
@@ -62188,7 +61998,8 @@ AS
     [TermsAndConditions],
     [RequestType],
     [RequestGroup],
-    [AutoRegister]
+    [AutoRegister],
+    [RequestAccess]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -62239,6 +62050,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @RequestType int,
   @RequestGroup int,
   @AutoRegister bit,
+  @RequestAccess bit,
   @Identity int OUT
 )
 AS
@@ -62284,7 +62096,8 @@ AS
     [TermsAndConditions],
     [RequestType],
     [RequestGroup],
-    [AutoRegister])
+    [AutoRegister],
+    [RequestAccess])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -62325,7 +62138,8 @@ AS
     @TermsAndConditions,
     @RequestType,
     @RequestGroup,
-    @AutoRegister)
+    @AutoRegister,
+    @RequestAccess)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -62375,7 +62189,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @TermsAndConditions nvarchar(MAX),
   @RequestType int,
   @RequestGroup int,
-  @AutoRegister bit
+  @AutoRegister bit,
+  @RequestAccess bit
 )
 AS
   SET NOCOUNT OFF;
@@ -62419,7 +62234,8 @@ AS
     [TermsAndConditions] = @TermsAndConditions,
     [RequestType] = @RequestType,
     [RequestGroup] = @RequestGroup,
-    [AutoRegister] = @AutoRegister
+    [AutoRegister] = @AutoRegister,
+    [RequestAccess] = @RequestAccess
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -63095,6 +62911,32 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
+
+(
+
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [MessageID],
+    [UserID],
+    [OrganizationID],
+    [TimeStamp],
+    [Message],
+    [MessageParent],
+    [IsDeleted],
+    [LastModified],
+    [RefType],
+    [AttachmentID]
+  FROM [dbo].[WaterCoolerView]
+  WH)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectUserSetting' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectUserSetting
 GO
 
@@ -63749,103 +63591,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[PhoneQueue]
   WHERE ([PhoneQueueID] = @PhoneQueueID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReportEmail
-
-(
-  @ReportEmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportEmailID],
-    [UserID],
-    [ReportID],
-    [DateCreated],
-    [DateSent],
-    [DateFailed],
-    [IsWaiting]
-  FROM [dbo].[ReportEmails]
-  WHERE ([ReportEmailID] = @ReportEmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReportEmail
-
-(
-  @UserID int,
-  @ReportID int,
-  @DateCreated datetime,
-  @DateSent datetime,
-  @DateFailed datetime,
-  @IsWaiting bit,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[ReportEmails]
-  (
-    [UserID],
-    [ReportID],
-    [DateCreated],
-    [DateSent],
-    [DateFailed],
-    [IsWaiting])
-  VALUES (
-    @UserID,
-    @ReportID,
-    @DateCreated,
-    @DateSent,
-    @DateFailed,
-    @IsWaiting)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReportEmail
-
-(
-  @ReportEmailID int,
-  @UserID int,
-  @ReportID int,
-  @DateSent datetime,
-  @DateFailed datetime,
-  @IsWaiting bit
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[ReportEmails]
-  SET
-    [UserID] = @UserID,
-    [ReportID] = @ReportID,
-    [DateSent] = @DateSent,
-    [DateFailed] = @DateFailed,
-    [IsWaiting] = @IsWaiting
-  WHERE ([ReportEmailID] = @ReportEmailID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportEmail' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportEmail
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReportEmail
-
-(
-  @ReportEmailID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[ReportEmails]
-  WHERE ([ReportEmailID] = @ReportEmailID)
 GO
 
 

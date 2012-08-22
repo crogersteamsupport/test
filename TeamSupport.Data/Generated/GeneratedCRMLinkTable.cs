@@ -278,7 +278,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("SecurityToken", SqlDbType.VarChar, 100);
+		tempParameter = updateCommand.Parameters.Add("SecurityToken", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -405,7 +405,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("SecurityToken", SqlDbType.VarChar, 100);
+		tempParameter = insertCommand.Parameters.Add("SecurityToken", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

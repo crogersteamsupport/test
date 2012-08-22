@@ -74,6 +74,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("TicketSource", "TicketSource", false, false, false);
       _fieldMap.AddMap("ForumCategory", "ForumCategory", false, false, false);
       _fieldMap.AddMap("CategoryName", "CategoryName", false, false, false);
+      _fieldMap.AddMap("CreatorEmail", "CreatorEmail", false, false, false);
+      _fieldMap.AddMap("ModifierEmail", "ModifierEmail", false, false, false);
             
     }
   }

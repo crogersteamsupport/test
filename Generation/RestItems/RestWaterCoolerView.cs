@@ -13,9 +13,9 @@ namespace TeamSupport.Api
   
   public class RestWaterCoolerView
   {
-    public static string GetWaterCoolerViewItem(RestCommand command, int messageID)
+    public static string GetWaterCoolerViewItem(RestCommand command, int )
     {
-      WaterCoolerViewItem waterCoolerViewItem = WaterCoolerView.GetWaterCoolerViewItem(command.LoginUser, messageID);
+      WaterCoolerViewItem waterCoolerViewItem = WaterCoolerView.GetWaterCoolerViewItem(command.LoginUser, );
       if (waterCoolerViewItem.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       return waterCoolerViewItem.GetXml("WaterCoolerViewItem", true);
     }

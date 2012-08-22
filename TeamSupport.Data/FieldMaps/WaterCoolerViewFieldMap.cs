@@ -17,12 +17,12 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("UserID", "UserID", false, false, false);
       _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, false);
       _fieldMap.AddMap("TimeStamp", "TimeStamp", false, false, false);
+      _fieldMap.AddMap("GroupFor", "GroupFor", false, false, false);
+      _fieldMap.AddMap("ReplyTo", "ReplyTo", false, false, false);
       _fieldMap.AddMap("Message", "Message", false, false, false);
-      _fieldMap.AddMap("MessageParent", "MessageParent", false, false, false);
-      _fieldMap.AddMap("IsDeleted", "IsDeleted", false, false, false);
-      _fieldMap.AddMap("LastModified", "LastModified", false, false, false);
-      _fieldMap.AddMap("RefType", "RefType", false, false, false);
-      _fieldMap.AddMap("AttachmentID", "AttachmentID", false, false, false);
+      _fieldMap.AddMap("MessageType", "MessageType", false, false, false);
+      _fieldMap.AddMap("UserName", "UserName", false, false, false);
+      _fieldMap.AddMap("GroupName", "GroupName", false, false, false);
             
     }
   }

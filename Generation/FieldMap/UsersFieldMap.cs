@@ -57,6 +57,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ShowWelcomePage", "ShowWelcomePage", false, false, false);
       _fieldMap.AddMap("UserInformation", "UserInformation", false, false, false);
       _fieldMap.AddMap("PortalAutoReg", "PortalAutoReg", false, false, false);
+      _fieldMap.AddMap("AppChatID", "AppChatID", false, false, false);
+      _fieldMap.AddMap("AppChatStatus", "AppChatStatus", false, false, false);
+      _fieldMap.AddMap("DefaultTicketsVisible", "DefaultTicketsVisible", false, false, false);
             
     }
   }

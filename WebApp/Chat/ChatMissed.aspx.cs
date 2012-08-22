@@ -30,7 +30,7 @@ public partial class Chat_ChatOffline : System.Web.UI.Page
         ticket.GroupID = organization.DefaultPortalGroupID;
         ticket.IsKnowledgeBase = false;
         ticket.IsVisibleOnPortal = true;
-        ticket.Name = "Missed Chat Question";
+        ticket.Name = "Missed Chat";
         ticket.TicketSeverityID = TicketSeverities.GetTop(LoginUser.Anonymous, organization.OrganizationID).TicketSeverityID;
         ticket.TicketTypeID = TicketTypes.GetTop(LoginUser.Anonymous, organization.OrganizationID).TicketTypeID;
         ticket.TicketStatusID = TicketStatuses.GetTop(LoginUser.Anonymous, ticket.TicketTypeID).TicketStatusID;
@@ -39,13 +39,13 @@ public partial class Chat_ChatOffline : System.Web.UI.Page
         ticket.Collection.Save();
 
         StringBuilder builder = new StringBuilder();
-        builder.Append("<h2>Offline Chat Request</h2>");
+        builder.Append("<h2>Missed Chat Request</h2>");
         builder.Append("<table cellspacing=\"0\" cellpadding=\"5\" border=\"0\">");
         builder.Append("<tr><td><strong>First Name:</strong></td><td>" + client.FirstName + "</td></tr>");
         builder.Append("<tr><td><strong>Last Name:</strong></td><td>" + client.LastName + "</td></tr>");
         builder.Append("<tr><td><strong>Email:</strong></td><td><a href=\"mailto:" + client.Email + "\">" + client.Email + "</td></tr>");
         builder.Append("<tr><td colspan=\"2\"><strong>Question:</strong></td></tr>");
-        builder.Append("<tr><td colspan=\"2\">" + textMessage.Text + "</td></tr>");
+        builder.Append("<tr><td colspan=\"2\">" + request.Message + "</td></tr>");
         builder.Append("</table>");
 
 

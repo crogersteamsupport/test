@@ -87,17 +87,25 @@ namespace TeamSupport.Data
       get { return Row["OrgsUserCanSeeOnPortal"] != DBNull.Value ? (string)Row["OrgsUserCanSeeOnPortal"] : null; }
       set { Row["OrgsUserCanSeeOnPortal"] = CheckValue("OrgsUserCanSeeOnPortal", value); }
     }
-
-    public bool AppChatStatus
-    {
-        get { return (bool)Row["AppChatStatus"]; }
-        set { Row["AppChatStatus"] = CheckValue("AppChatStatus", value); }
-    }
-
+    
     public string AppChatID
     {
-        get { return Row["AppChatID"] != DBNull.Value ? (string)Row["AppChatID"] : null; }
-        set { Row["AppChatID"] = CheckValue("AppChatID", value); }
+      get { return Row["AppChatID"] != DBNull.Value ? (string)Row["AppChatID"] : null; }
+      set { Row["AppChatID"] = CheckValue("AppChatID", value); }
+    }
+    
+
+    
+    public bool DefaultTicketsVisible
+    {
+      get { return (bool)Row["DefaultTicketsVisible"]; }
+      set { Row["DefaultTicketsVisible"] = CheckValue("DefaultTicketsVisible", value); }
+    }
+    
+    public bool AppChatStatus
+    {
+      get { return (bool)Row["AppChatStatus"]; }
+      set { Row["AppChatStatus"] = CheckValue("AppChatStatus", value); }
     }
     
     public bool PortalAutoReg
@@ -442,7 +450,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,    [IsClassicView] = @IsClassicView,    [SubscribeToNewActions] = @SubscribeToNewActions,    [ApprovedTerms] = @ApprovedTerms,    [ShowWelcomePage] = @ShowWelcomePage,    [UserInformation] = @UserInformation,    [PortalAutoReg] = @PortalAutoReg, [AppChatStatus] = @AppChatStatus, [AppChatID] = @AppChatID  WHERE ([UserID] = @UserID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,    [IsClassicView] = @IsClassicView,    [SubscribeToNewActions] = @SubscribeToNewActions,    [ApprovedTerms] = @ApprovedTerms,    [ShowWelcomePage] = @ShowWelcomePage,    [UserInformation] = @UserInformation,    [PortalAutoReg] = @PortalAutoReg,    [AppChatID] = @AppChatID,    [AppChatStatus] = @AppChatStatus,    [DefaultTicketsVisible] = @DefaultTicketsVisible  WHERE ([UserID] = @UserID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
@@ -724,21 +732,7 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
-
-        tempParameter = updateCommand.Parameters.Add("AppChatStatus", SqlDbType.Bit, 1);
-        if (tempParameter.SqlDbType == SqlDbType.Float)
-        {
-            tempParameter.Precision = 255;
-            tempParameter.Scale = 255;
-        }
-
-        tempParameter = updateCommand.Parameters.Add("AppChatID", SqlDbType.VarChar, 200);
-        if (tempParameter.SqlDbType == SqlDbType.Float)
-        {
-            tempParameter.Precision = 255;
-            tempParameter.Scale = 255;
-        }
-
+		
 		tempParameter = updateCommand.Parameters.Add("UserInformation", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -753,13 +747,55 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("AppChatID", SqlDbType.VarChar, 200);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("AppChatStatus", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DefaultTicketsVisible", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Users] (    [Email],    [FirstName],    [MiddleName],    [LastName],    [Title],    [CryptedPassword],    [IsActive],    [MarkDeleted],    [TimeZoneID],    [CultureName],    [LastLogin],    [LastActivity],    [LastPing],    [LastWaterCoolerID],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [IsChatUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ReceiveTicketNotifications],    [ReceiveAllGroupNotifications],    [SubscribeToNewTickets],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [LastVersion],    [SessionID],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrgsUserCanSeeOnPortal],    [DoNotAutoSubscribe],    [IsClassicView],    [SubscribeToNewActions],    [ApprovedTerms],    [ShowWelcomePage],    [UserInformation],    [PortalAutoReg], [AppChatStatus], [AppChatID]) VALUES ( @Email, @FirstName, @MiddleName, @LastName, @Title, @CryptedPassword, @IsActive, @MarkDeleted, @TimeZoneID, @CultureName, @LastLogin, @LastActivity, @LastPing, @LastWaterCoolerID, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @IsChatUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ReceiveTicketNotifications, @ReceiveAllGroupNotifications, @SubscribeToNewTickets, @ActivatedOn, @DeactivatedOn, @OrganizationID, @LastVersion, @SessionID, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrgsUserCanSeeOnPortal, @DoNotAutoSubscribe, @IsClassicView, @SubscribeToNewActions, @ApprovedTerms, @ShowWelcomePage, @UserInformation, @PortalAutoReg, @AppChatStatus, @AppChatID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Users] (    [Email],    [FirstName],    [MiddleName],    [LastName],    [Title],    [CryptedPassword],    [IsActive],    [MarkDeleted],    [TimeZoneID],    [CultureName],    [LastLogin],    [LastActivity],    [LastPing],    [LastWaterCoolerID],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [IsChatUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ReceiveTicketNotifications],    [ReceiveAllGroupNotifications],    [SubscribeToNewTickets],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [LastVersion],    [SessionID],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrgsUserCanSeeOnPortal],    [DoNotAutoSubscribe],    [IsClassicView],    [SubscribeToNewActions],    [ApprovedTerms],    [ShowWelcomePage],    [UserInformation],    [PortalAutoReg],    [AppChatID],    [AppChatStatus],    [DefaultTicketsVisible]) VALUES ( @Email, @FirstName, @MiddleName, @LastName, @Title, @CryptedPassword, @IsActive, @MarkDeleted, @TimeZoneID, @CultureName, @LastLogin, @LastActivity, @LastPing, @LastWaterCoolerID, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @IsChatUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ReceiveTicketNotifications, @ReceiveAllGroupNotifications, @SubscribeToNewTickets, @ActivatedOn, @DeactivatedOn, @OrganizationID, @LastVersion, @SessionID, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrgsUserCanSeeOnPortal, @DoNotAutoSubscribe, @IsClassicView, @SubscribeToNewActions, @ApprovedTerms, @ShowWelcomePage, @UserInformation, @PortalAutoReg, @AppChatID, @AppChatStatus, @DefaultTicketsVisible); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("DefaultTicketsVisible", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("AppChatStatus", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("AppChatID", SqlDbType.VarChar, 200);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("PortalAutoReg", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -767,21 +803,7 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
-
-        tempParameter = insertCommand.Parameters.Add("AppChatStatus", SqlDbType.Bit, 1);
-        if (tempParameter.SqlDbType == SqlDbType.Float)
-        {
-            tempParameter.Precision = 255;
-            tempParameter.Scale = 255;
-        }
-
-        tempParameter = insertCommand.Parameters.Add("AppChatID", SqlDbType.VarChar, 200);
-        if (tempParameter.SqlDbType == SqlDbType.Float)
-        {
-            tempParameter.Precision = 255;
-            tempParameter.Scale = 255;
-        }
-
+		
 		tempParameter = insertCommand.Parameters.Add("UserInformation", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -1188,7 +1210,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-          command.CommandText = "SET NOCOUNT OFF; SELECT [UserID], [Email], [FirstName], [MiddleName], [LastName], [Title], [CryptedPassword], [IsActive], [MarkDeleted], [TimeZoneID], [CultureName], [LastLogin], [LastActivity], [LastPing], [LastWaterCoolerID], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [IsChatUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ReceiveTicketNotifications], [ReceiveAllGroupNotifications], [SubscribeToNewTickets], [ActivatedOn], [DeactivatedOn], [OrganizationID], [LastVersion], [SessionID], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrgsUserCanSeeOnPortal], [DoNotAutoSubscribe], [IsClassicView], [SubscribeToNewActions], [ApprovedTerms], [ShowWelcomePage], [UserInformation], [PortalAutoReg] , [AppChatStatus] , [AppChatID] FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [UserID], [Email], [FirstName], [MiddleName], [LastName], [Title], [CryptedPassword], [IsActive], [MarkDeleted], [TimeZoneID], [CultureName], [LastLogin], [LastActivity], [LastPing], [LastWaterCoolerID], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [IsChatUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ReceiveTicketNotifications], [ReceiveAllGroupNotifications], [SubscribeToNewTickets], [ActivatedOn], [DeactivatedOn], [OrganizationID], [LastVersion], [SessionID], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrgsUserCanSeeOnPortal], [DoNotAutoSubscribe], [IsClassicView], [SubscribeToNewActions], [ApprovedTerms], [ShowWelcomePage], [UserInformation], [PortalAutoReg], [AppChatID], [AppChatStatus], [DefaultTicketsVisible] FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("UserID", userID);
         Fill(command);

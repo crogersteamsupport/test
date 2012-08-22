@@ -40,6 +40,11 @@ namespace TeamSupport.Data
       get { return Row["LastModifiedBy"] != DBNull.Value ? (string)Row["LastModifiedBy"] : null; }
     }
     
+    public string DefaultSupportUser
+    {
+      get { return Row["DefaultSupportUser"] != DBNull.Value ? (string)Row["DefaultSupportUser"] : null; }
+    }
+    
     
     
 
@@ -108,6 +113,12 @@ namespace TeamSupport.Data
     {
       get { return Row["DefaultSupportUserID"] != DBNull.Value ? (int?)Row["DefaultSupportUserID"] : null; }
       set { Row["DefaultSupportUserID"] = CheckValue("DefaultSupportUserID", value); }
+    }
+    
+    public string DefaultSupportGroup
+    {
+      get { return Row["DefaultSupportGroup"] != DBNull.Value ? (string)Row["DefaultSupportGroup"] : null; }
+      set { Row["DefaultSupportGroup"] = CheckValue("DefaultSupportGroup", value); }
     }
     
 
@@ -290,7 +301,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationsView] SET     [Name] = @Name,    [Description] = @Description,    [Website] = @Website,    [IsActive] = @IsActive,    [InActiveReason] = @InActiveReason,    [PrimaryUserID] = @PrimaryUserID,    [PrimaryContact] = @PrimaryContact,    [ParentID] = @ParentID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [HasPortalAccess] = @HasPortalAccess,    [CreatedBy] = @CreatedBy,    [LastModifiedBy] = @LastModifiedBy,    [SAExpirationDate] = @SAExpirationDate,    [SlaName] = @SlaName,    [CRMLinkID] = @CRMLinkID,    [PortalGuid] = @PortalGuid,    [SlaLevelID] = @SlaLevelID,    [DefaultWikiArticleID] = @DefaultWikiArticleID,    [DefaultSupportGroupID] = @DefaultSupportGroupID,    [DefaultSupportUserID] = @DefaultSupportUserID  WHERE ([OrganizationID] = @OrganizationID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationsView] SET     [Name] = @Name,    [Description] = @Description,    [Website] = @Website,    [IsActive] = @IsActive,    [InActiveReason] = @InActiveReason,    [PrimaryUserID] = @PrimaryUserID,    [PrimaryContact] = @PrimaryContact,    [ParentID] = @ParentID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [HasPortalAccess] = @HasPortalAccess,    [CreatedBy] = @CreatedBy,    [LastModifiedBy] = @LastModifiedBy,    [SAExpirationDate] = @SAExpirationDate,    [SlaName] = @SlaName,    [CRMLinkID] = @CRMLinkID,    [PortalGuid] = @PortalGuid,    [SlaLevelID] = @SlaLevelID,    [DefaultWikiArticleID] = @DefaultWikiArticleID,    [DefaultSupportGroupID] = @DefaultSupportGroupID,    [DefaultSupportUserID] = @DefaultSupportUserID,    [DefaultSupportUser] = @DefaultSupportUser,    [DefaultSupportGroup] = @DefaultSupportGroup  WHERE ([OrganizationID] = @OrganizationID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -447,13 +458,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("DefaultSupportUser", SqlDbType.VarChar, 202);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DefaultSupportGroup", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationsView] (    [OrganizationID],    [Name],    [Description],    [Website],    [IsActive],    [InActiveReason],    [PrimaryUserID],    [PrimaryContact],    [ParentID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [HasPortalAccess],    [CreatedBy],    [LastModifiedBy],    [SAExpirationDate],    [SlaName],    [CRMLinkID],    [PortalGuid],    [SlaLevelID],    [DefaultWikiArticleID],    [DefaultSupportGroupID],    [DefaultSupportUserID]) VALUES ( @OrganizationID, @Name, @Description, @Website, @IsActive, @InActiveReason, @PrimaryUserID, @PrimaryContact, @ParentID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @HasPortalAccess, @CreatedBy, @LastModifiedBy, @SAExpirationDate, @SlaName, @CRMLinkID, @PortalGuid, @SlaLevelID, @DefaultWikiArticleID, @DefaultSupportGroupID, @DefaultSupportUserID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationsView] (    [OrganizationID],    [Name],    [Description],    [Website],    [IsActive],    [InActiveReason],    [PrimaryUserID],    [PrimaryContact],    [ParentID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [HasPortalAccess],    [CreatedBy],    [LastModifiedBy],    [SAExpirationDate],    [SlaName],    [CRMLinkID],    [PortalGuid],    [SlaLevelID],    [DefaultWikiArticleID],    [DefaultSupportGroupID],    [DefaultSupportUserID],    [DefaultSupportUser],    [DefaultSupportGroup]) VALUES ( @OrganizationID, @Name, @Description, @Website, @IsActive, @InActiveReason, @PrimaryUserID, @PrimaryContact, @ParentID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @HasPortalAccess, @CreatedBy, @LastModifiedBy, @SAExpirationDate, @SlaName, @CRMLinkID, @PortalGuid, @SlaLevelID, @DefaultWikiArticleID, @DefaultSupportGroupID, @DefaultSupportUserID, @DefaultSupportUser, @DefaultSupportGroup); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("DefaultSupportGroup", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DefaultSupportUser", SqlDbType.VarChar, 202);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DefaultSupportUserID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -735,7 +774,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [Name], [Description], [Website], [IsActive], [InActiveReason], [PrimaryUserID], [PrimaryContact], [ParentID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [HasPortalAccess], [CreatedBy], [LastModifiedBy], [SAExpirationDate], [SlaName], [CRMLinkID], [PortalGuid], [SlaLevelID], [DefaultWikiArticleID], [DefaultSupportGroupID], [DefaultSupportUserID] FROM [dbo].[OrganizationsView] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [Name], [Description], [Website], [IsActive], [InActiveReason], [PrimaryUserID], [PrimaryContact], [ParentID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [HasPortalAccess], [CreatedBy], [LastModifiedBy], [SAExpirationDate], [SlaName], [CRMLinkID], [PortalGuid], [SlaLevelID], [DefaultWikiArticleID], [DefaultSupportGroupID], [DefaultSupportUserID], [DefaultSupportUser], [DefaultSupportGroup] FROM [dbo].[OrganizationsView] WHERE ([OrganizationID] = @OrganizationID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);

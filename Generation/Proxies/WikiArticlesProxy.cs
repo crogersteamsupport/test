@@ -29,8 +29,8 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? CreatedDate { get; set; }
     [DataMember] public int? ModifiedBy { get; set; }
     [DataMember] public DateTime? ModifiedDate { get; set; }
-    [DataMember] public bool NeedsIndexing { get; set; }     
-         
+    [DataMember] public bool NeedsIndexing { get; set; }
+          
   }
   
   public partial class WikiArticle : BaseItem

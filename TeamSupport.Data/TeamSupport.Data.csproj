@@ -208,7 +208,6 @@
     <Compile Include="BusinessObjects\WatercoolerAttachments.cs" />
     <Compile Include="BusinessObjects\WatercoolerLikes.cs" />
     <Compile Include="BusinessObjects\WatercoolerMsg.cs" />
-    <Compile Include="BusinessObjects\WaterCoolerView.cs" />
     <Compile Include="Classes\AccountClone.cs" />
     <Compile Include="Classes\AttachmentPath.cs" />
     <Compile Include="Classes\CheckSums.cs" />
@@ -222,6 +221,7 @@
     <Compile Include="Classes\LookupField.cs" />
     <Compile Include="Classes\NamedGZipStream.cs" />
     <Compile Include="Classes\SqlExecutor.cs" />
+    <Compile Include="FieldMaps\ArticleStatsFieldMap.cs" />
     <Compile Include="FieldMaps\AssetHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\AssetsFieldMap.cs" />
     <Compile Include="FieldMaps\AttachmentDownloadsFieldMap.cs" />
@@ -237,9 +237,12 @@
     <Compile Include="FieldMaps\EmailTemplateTablesFieldMap.cs" />
     <Compile Include="FieldMaps\FacebookOptionsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumCategoriesFieldMap.cs" />
+    <Compile Include="FieldMaps\ForumLogsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumPermissionsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumTicketsFieldMap.cs" />
     <Compile Include="FieldMaps\OrganizationEmailsFieldMap.cs" />
+    <Compile Include="FieldMaps\PhoneOptionsFieldMap.cs" />
+    <Compile Include="FieldMaps\PhoneQueueFieldMap.cs" />
     <Compile Include="FieldMaps\RemindersFieldMap.cs" />
     <Compile Include="FieldMaps\ReportEmailsFieldMap.cs" />
     <Compile Include="FieldMaps\ReportViewsFieldMap.cs" />
@@ -260,6 +263,8 @@
     <Compile Include="FieldMaps\WatercoolerLikesFieldMap.cs" />
     <Compile Include="FieldMaps\WatercoolerMsgFieldMap.cs" />
     <Compile Include="FieldMaps\WaterCoolerViewFieldMap.cs" />
+    <Compile Include="FieldMaps\WikiArticlesViewFieldMap.cs" />
+    <Compile Include="Generated\GeneratedArticleStats.cs" />
     <Compile Include="Generated\GeneratedAssetHistory.cs" />
     <Compile Include="Generated\GeneratedAssets.cs" />
     <Compile Include="Generated\GeneratedAttachmentDownloads.cs" />
@@ -399,7 +404,6 @@
     <Compile Include="FieldMaps\UsersViewFieldMap.cs" />
     <Compile Include="FieldMaps\WaterCoolerFieldMap.cs" />
     <Compile Include="FieldMaps\WikiArticlesFieldMap.cs" />
-    <Compile Include="FieldMaps\WikiArticlesViewFieldMap.cs" />
     <Compile Include="FieldMaps\WikiHistoryCollectionFieldMap.cs" />
     <Compile Include="Generated\GeneratedActionLogs.cs" />
     <Compile Include="Generated\GeneratedActionLogsView.cs" />
@@ -437,6 +441,7 @@
     <Compile Include="Generated\GeneratedExceptionLogView.cs" />
     <Compile Include="Generated\GeneratedFacebookOptions.cs" />
     <Compile Include="Generated\GeneratedForumCategories.cs" />
+    <Compile Include="Generated\GeneratedForumLogs.cs" />
     <Compile Include="Generated\GeneratedForumPermissions.cs" />
     <Compile Include="Generated\GeneratedForumTickets.cs" />
     <Compile Include="Generated\GeneratedGroups.cs" />
@@ -453,6 +458,8 @@
     <Compile Include="Generated\GeneratedOrganizationsView.cs" />
     <Compile Include="Generated\GeneratedPhoneNumbers.cs" />
     <Compile Include="Generated\GeneratedPhoneNumbersView.cs" />
+    <Compile Include="Generated\GeneratedPhoneOptions.cs" />
+    <Compile Include="Generated\GeneratedPhoneQueue.cs" />
     <Compile Include="Generated\GeneratedPhoneTypes.cs" />
     <Compile Include="Generated\GeneratedPortalLoginHistory.cs" />
     <Compile Include="Generated\GeneratedPortalOptions.cs" />
@@ -525,6 +532,7 @@
     <Compile Include="Proxies\ActionTypesProxy.cs" />
     <Compile Include="Proxies\AddressesProxy.cs" />
     <Compile Include="Proxies\ApiLogsProxy.cs" />
+    <Compile Include="Proxies\ArticleStatsProxy.cs" />
     <Compile Include="Proxies\AssetHistoryProxy.cs" />
     <Compile Include="Proxies\AssetsProxy.cs" />
     <Compile Include="Proxies\AttachmentDownloadsProxy.cs" />
@@ -559,6 +567,7 @@
     <Compile Include="Proxies\ExceptionLogViewProxy.cs" />
     <Compile Include="Proxies\FacebookOptionsProxy.cs" />
     <Compile Include="Proxies\ForumCategoriesProxy.cs" />
+    <Compile Include="Proxies\ForumLogsProxy.cs" />
     <Compile Include="Proxies\ForumPermissionsProxy.cs" />
     <Compile Include="Proxies\ForumTicketsProxy.cs" />
     <Compile Include="Proxies\GroupsProxy.cs" />
@@ -575,6 +584,8 @@
     <Compile Include="Proxies\OrganizationsViewProxy.cs" />
     <Compile Include="Proxies\PhoneNumbersProxy.cs" />
     <Compile Include="Proxies\PhoneNumbersViewProxy.cs" />
+    <Compile Include="Proxies\PhoneOptionsProxy.cs" />
+    <Compile Include="Proxies\PhoneQueueProxy.cs" />
     <Compile Include="Proxies\PhoneTypesProxy.cs" />
     <Compile Include="Proxies\PortalLoginHistoryProxy.cs" />
     <Compile Include="Proxies\PortalOptionsProxy.cs" />

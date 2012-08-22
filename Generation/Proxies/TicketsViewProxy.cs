@@ -74,6 +74,8 @@ namespace TeamSupport.Data
     [DataMember] public string TicketSource { get; set; }
     [DataMember] public int? ForumCategory { get; set; }
     [DataMember] public string CategoryName { get; set; }
+    [DataMember] public string CreatorEmail { get; set; }
+    [DataMember] public string ModifierEmail { get; set; }
           
   }
   
@@ -82,6 +84,8 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
+      result.ModifierEmail = this.ModifierEmail;
+      result.CreatorEmail = this.CreatorEmail;
       result.CategoryName = this.CategoryName;
       result.ForumCategory = this.ForumCategory;
       result.TicketSource = this.TicketSource;

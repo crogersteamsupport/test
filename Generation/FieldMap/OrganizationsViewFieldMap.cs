@@ -37,6 +37,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DefaultWikiArticleID", "DefaultWikiArticleID", false, false, false);
       _fieldMap.AddMap("DefaultSupportGroupID", "DefaultSupportGroupID", false, false, false);
       _fieldMap.AddMap("DefaultSupportUserID", "DefaultSupportUserID", false, false, false);
+      _fieldMap.AddMap("DefaultSupportUser", "DefaultSupportUser", false, false, false);
+      _fieldMap.AddMap("DefaultSupportGroup", "DefaultSupportGroup", false, false, false);
             
     }
   }

@@ -53,6 +53,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("RequestType", "RequestType", false, false, false);
       _fieldMap.AddMap("RequestGroup", "RequestGroup", false, false, false);
       _fieldMap.AddMap("AutoRegister", "AutoRegister", false, false, false);
+      _fieldMap.AddMap("RequestAccess", "RequestAccess", false, false, false);
             
     }
   }

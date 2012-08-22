@@ -53,6 +53,7 @@ namespace TeamSupport.Data
     [DataMember] public int? RequestType { get; set; }
     [DataMember] public int? RequestGroup { get; set; }
     [DataMember] public bool AutoRegister { get; set; }
+    [DataMember] public bool RequestAccess { get; set; }
           
   }
   
@@ -61,6 +62,7 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.RequestAccess = this.RequestAccess;
       result.AutoRegister = this.AutoRegister;
       result.RequestGroup = this.RequestGroup;
       result.RequestType = this.RequestType;
