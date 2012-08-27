@@ -56,6 +56,8 @@ function chatAddMsg(chatboxtitle, message, chatname) {
 
     $("#chatbox_" + chatboxtitle + " .chatboxcontent").scrollTop($("#chatbox_" + chatboxtitle + " .chatboxcontent")[0].scrollHeight);
 
+    //if (!windowFocus)
+        //alert("audio");
 }
 
 function createChatBox(chatboxtitle,name) {
@@ -80,7 +82,7 @@ $("#chatbox_" + chatboxtitle + " .boxsizingBorder").focus();
 	var chatBoxeslength = 0;
 
 	for (x in chatBoxes) {
-		if ($("#chatbox_"+chatBoxes[x]).css('display') != 'none') {
+		if ( chatBoxes[x] ) {
 			chatBoxeslength++;
 		}
 	}

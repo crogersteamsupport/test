@@ -6,7 +6,7 @@
 /// <reference path="~/Default.aspx" />
 
 var waterCoolerPage = null;
-var chatHubClient = $.connection.socket;
+//var chatHubClient = $window.top.connection.socket;
 
 $(document).ready(function () {
     waterCoolerPage = new WaterCoolerPage();
@@ -23,6 +23,7 @@ function onShow() {
 WaterCoolerPage = function () {
     var pageType = top.Ts.Utils.getQueryValue("pagetype", window);
     var pageID = top.Ts.Utils.getQueryValue("pageid", window);
+    var newMsg = 1;
 
     if (pageType == null)
         pageType = -1;
@@ -38,24 +39,24 @@ WaterCoolerPage = function () {
 
     var notify;
 
-    soundManager.setup({
-        // disable or enable debug output
-        debugMode: true,
-        // use HTML5 audio for MP3/MP4, if available
-        preferFlash: false,
-        useFlashBlock: true,
-        // path to directory containing SM2 SWF
-        url: '../Audio/swf/',
-        // optional: enable MPEG-4/AAC support (requires flash 9)
-        flashVersion: 9, // optionally, enable when you're ready to dive in/**
-        onready: function () {
-            soundManager.createSound({
-                id: 'chime',
-                url: '../Audio/chime.mp3'
-            });
-        }
+    //    soundManager.setup({
+    //        // disable or enable debug output
+    //        debugMode: true,
+    //        // use HTML5 audio for MP3/MP4, if available
+    //        preferFlash: false,
+    //        useFlashBlock: true,
+    //        // path to directory containing SM2 SWF
+    //        url: '../Audio/swf/',
+    //        // optional: enable MPEG-4/AAC support (requires flash 9)
+    //        flashVersion: 9, // optionally, enable when you're ready to dive in/**
+    //        onready: function () {
+    //            soundManager.createSound({
+    //                id: 'chime',
+    //                url: '../Audio/chime.mp3'
+    //            });
+    //        }
 
-    });
+    //    });
 
     $(window).blur(function () {
         notify = true;
@@ -63,21 +64,27 @@ WaterCoolerPage = function () {
 
     $(window).focus(function () {
         notify = false;
+        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(false);
+        newMsg = 1;
+        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler");
     });
 
     //Start the polling service
 
-    chatHubClient.addThread = function (message) {
+    window.top.chatHubClient.addThread = function (message) {
         var firstpost = $('#maincontainer');
 
         top.Ts.Services.WaterCooler.IsValid(pageType, pageID, message.Message.MessageID, function (valid) {
             if (valid) {
-                $('.discussioncontainer').show();
                 var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + message.Message.MessageID + ')');
                 if (parentThread.length == 0) {
                     var nmdiv = createThread(message);
                     firstpost.prepend(nmdiv.fadeIn(1500));
-                    top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
+                    if (message.Message.UserID != top.Ts.System.User.UserID) {
+                        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
+                        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
+                    }
+                    
                 }
 
             }
@@ -86,30 +93,68 @@ WaterCoolerPage = function () {
 
     };
 
-    chatHubClient.addComment = function (message) {
+    window.top.chatHubClient.addComment = function (message) {
         var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + message.Message.MessageParent + ')');
         var commentcount = $(parentThread).find('.treplycontainer').length + 1;
         var comments = $(parentThread).find('.treplycontainer');
         var firstpost = $('#maincontainer');
         top.Ts.Services.WaterCooler.IsValid(pageType, pageID, message.Message.MessageParent, function (valid) {
             if (valid) {
-                //If over 6 comments compact it
-                if (commentcount > 6) {
-                    parentThread.find('.treplycontainer:first').find('.topicComments').html(commentcount - 1 + " comments");
-                    var moverply = $(parentThread).find('.treplycontainer').get(commentcount - 3);
-                    $(moverply).appendTo(parentThread.find('.hiddenComments'));
-                }
+                if (parentThread) {
+                    //If over 6 comments compact it
+                    if (commentcount > 6) {
+                        var topicComments = parentThread.find('.treplycontainer:first').find('.topicComments');
 
-                var replydiv = createReply(message.Message);
-                var lastreply = $(parentThread).find('.treplycontainer:last');
-                if (lastreply.length > 0) {
-                    lastreply.after(replydiv.fadeIn(1500));
+                        if (topicComments.length > 0) {
+                            topicComments.html(commentcount - 1 + " comments");
+                            var moverply = $(parentThread).find('.treplycontainer').get(commentcount - 3);
+                            $(moverply).appendTo(parentThread.find('.hiddenComments'));
+
+                        }
+                        else {
+                            var movedivs = $(parentThread).find('.treplycontainer').slice(0, commentcount - 2);
+
+                            var trepCont = $('<div>')
+                            .addClass('treplycontainer')
+                            .insertAfter(parentThread.find('.topictext:first'));
+
+                            var tpcommenttxt = $('<div>')
+                            .addClass('topicComments slim')
+                            .html(commentcount + " comments")
+                            .click(function (e) {
+                                e.preventDefault();
+                                $(this).parent().parent().find('.hiddenComments').slideToggle("fast");
+                            })
+                            .appendTo(trepCont);
+
+                            var hidden = $('<div>')
+                            .addClass('hiddenComments')
+                            .insertAfter(trepCont);
+
+
+                            $(movedivs).appendTo(hidden);
+                        }
+
+                    }
+
+                    var replydiv = createReply(message.Message);
+                    var lastreply = $(parentThread).find('.treplycontainer:last');
+                    if (lastreply.length > 0) {
+                        lastreply.after(replydiv.fadeIn(1500));
+                    }
+                    else {
+                        $(parentThread).find('.topictext').after(replydiv.fadeIn(1500));
+                    }
+
+                    if (message.Message.UserID != top.Ts.System.User.UserID) {
+                        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
+                        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
+                    }
+
+                    firstpost.prepend(parentThread.fadeIn(1500));
+                } else {
+
                 }
-                else {
-                    $(parentThread).find('.topictext').after(replydiv.fadeIn(1500));
-                }
-                top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
-                firstpost.prepend(parentThread.fadeIn(1500));
             }
             else {
                 parentThread.hide();
@@ -119,7 +164,7 @@ WaterCoolerPage = function () {
 
     };
 
-    chatHubClient.deleteMessage = function (messageID, parentID) {
+    window.top.chatHubClient.deleteMessage = function (messageID, parentID) {
         if (parentID == -1) {
             var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + messageID + ')');
             parentThread.remove();
@@ -129,7 +174,7 @@ WaterCoolerPage = function () {
         }
     }
 
-    chatHubClient.updateLikes = function (likes, messageID, messageParentID) {
+    window.top.chatHubClient.updateLikes = function (likes, messageID, messageParentID) {
         if (messageParentID == -1) {
 
             var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + messageID + ')');
@@ -158,7 +203,7 @@ WaterCoolerPage = function () {
         //                    .appendTo(parent);
     };
 
-    chatHubClient.updateattachments = function (message) {
+    window.top.chatHubClient.updateattachments = function (message) {
         var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + message.Message.MessageID + ')');
         var tixHasAtt = false;
         parentThread.find('.topicHistory').remove();
@@ -217,26 +262,26 @@ WaterCoolerPage = function () {
         }
     };
 
-    chatHubClient.chatMessage = function (message, chatID, chatname) {
+    //    chatHubClient.chatMessage = function (message, chatID, chatname) {
 
-        if (pageType == -1) {
-            chatWith(chatname, chatID);
-            chatAddMsg(chatID, message, chatname);
-            if (notify) {
-                soundManager.play('chime');
-                top.Ts.MainPage.newChatAlert(chatname, ellipseString(message,20));
-            }
-        }
-    };
+    //        if (pageType == -1) {
+    //            chatWith(chatname, chatID);
+    //            chatAddMsg(chatID, message, chatname);
+    //            if (notify) {
+    //                soundManager.play('chime');
+    //                top.Ts.MainPage.newChatAlert(chatname, ellipseString(message,20));
+    //            }
+    //        }
+    //    };
 
-    chatHubClient.disconnect = function (windowid) {
+    window.top.chatHubClient.disconnect = function (windowid) {
         if (pageType == -1) {
             $('.sidebarusers').find('.onlineUser:data(ChatID=' + windowid + ')').remove();
         }
         //chatAddMsg(windowid, "User is currently offline", "system");
     };
 
-    chatHubClient.updateUsers = function () {
+    window.top.chatHubClient.updateUsers = function () {
         if (pageType == -1) {
             top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
                 var name;
@@ -256,7 +301,7 @@ WaterCoolerPage = function () {
                     .data('Name', name)
                     .addClass('onlineUser')
                     .click(function () {
-                        chatWith($(this).data('Name'), $(this).data('ChatID'));
+                        top.Ts.MainPage.openChat($(this).data('Name'), $(this).data('ChatID'));
                     })
                     .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].FirstName + ' ' + users[i].LastName + '</a>')
                     .appendTo($('.sidebarusers'));
@@ -266,32 +311,50 @@ WaterCoolerPage = function () {
         }
     };
 
+    top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
+        var name;
+        var chatID;
+        for (var i = 0; i < users.length; i++) {
+            name = users[i].FirstName + ' ' + users[i].LastName;
+            chatID = users[i].AppChatID;
+            var onlineuser = $('<li>')
+        .data('ChatID', chatID)
+        .data('Name', name)
+        .addClass('onlineUser')
+        .click(function () {
+            top.Ts.MainPage.openChat($(this).data('Name'), $(this).data('ChatID'));
+        })
+        .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].FirstName + ' ' + users[i].LastName + '</a>')
+        .appendTo($('.sidebarusers'));
+        }
+    });
+
     //Debug reasons
     //$.connection.hub.logging = true;
-    $.connection.hub.url = "/signalr/signalr";
+    //$.connection.hub.url = "/signalr/signalr";
     // Start the connection only if on main wc page
 
-    $.connection.hub.start(function () {
-        chatHubClient.login(top.Ts.System.User.UserID);
+    //    $.connection.hub.start(function () {
+    //        //chatHubClient.login(top.Ts.System.User.UserID);
 
-        top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
-            var name;
-            var chatID;
-            for (var i = 0; i < users.length; i++) {
-                name = users[i].FirstName + ' ' + users[i].LastName;
-                chatID = users[i].AppChatID;
-                var onlineuser = $('<li>')
-            .data('ChatID', chatID)
-            .data('Name', name)
-            .addClass('onlineUser')
-            .click(function () {
-                chatWith($(this).data('Name'), $(this).data('ChatID'));
-            })
-            .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].FirstName + ' ' + users[i].LastName + '</a>')
-            .appendTo($('.sidebarusers'));
-            }
-        });
-    });
+    //        top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
+    //            var name;
+    //            var chatID;
+    //            for (var i = 0; i < users.length; i++) {
+    //                name = users[i].FirstName + ' ' + users[i].LastName;
+    //                chatID = users[i].AppChatID;
+    //                var onlineuser = $('<li>')
+    //            .data('ChatID', chatID)
+    //            .data('Name', name)
+    //            .addClass('onlineUser')
+    //            .click(function () {
+    //                top.Ts.MainPage.openChat($(this).data('Name'), $(this).data('ChatID'));
+    //            })
+    //            .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].FirstName + ' ' + users[i].LastName + '</a>')
+    //            .appendTo($('.sidebarusers'));
+    //            }
+    //        });
+    //    });
 
     top.Ts.Services.Users.GetUserPhoto(-99, function (att) {
         $('.mainavatarlrg').attr("src", att);
@@ -301,12 +364,11 @@ WaterCoolerPage = function () {
     top.Ts.Services.WaterCooler.GetThreads(pageType, pageID, function (threads) {
         var threadContainer = $('#maincontainer');
         if (threads.length > 0)
-            $('.discussioncontainer').show();
 
-        for (var i = 0; i < threads.length; i++) {
-            var div = createThread(threads[i]);
-            threadContainer.append(div);
-        }
+            for (var i = 0; i < threads.length; i++) {
+                var div = createThread(threads[i]);
+                threadContainer.append(div);
+            }
 
         $('.loading-section').hide().next().show();
     });
@@ -358,7 +420,7 @@ WaterCoolerPage = function () {
                         $(o).data('data', data);
                     });
                 }
-                chatHubClient.newThread(MessageID);
+                window.top.chatHubClient.newThread(MessageID);
                 $('.commentcontainer').hide();
                 $('.faketextcontainer').show();
                 $('#messagecontents').val('');
@@ -473,7 +535,7 @@ WaterCoolerPage = function () {
                 //parent.find('#likeCounter').remove();
                 $(this).hide();
                 top.Ts.Services.WaterCooler.AddCommentLike(thread.Message.MessageID, function (likes) {
-                    chatHubClient.addLike(likes, thread.Message.MessageID, thread.Message.MessageParent);
+                    window.top.chatHubClient.addLike(likes, thread.Message.MessageID, thread.Message.MessageParent);
                 });
 
             })
@@ -609,7 +671,7 @@ WaterCoolerPage = function () {
             .appendTo(tpic);
 
             var tpcommenttxt = $('<div>')
-            .addClass('topicComments')
+            .addClass('topicComments slim')
             .html(thread.Replies.length + " comments")
             .click(function (e) {
                 e.preventDefault();
@@ -728,7 +790,7 @@ WaterCoolerPage = function () {
                 //parent.find('#likeCounter').remove();
                 $(this).hide();
                 top.Ts.Services.WaterCooler.AddCommentLike(thread.MessageID, function (likes) {
-                    chatHubClient.addLike(likes, thread.MessageID, thread.MessageParent);
+                    window.top.chatHubClient.addLike(likes, thread.MessageID, thread.MessageParent);
                 });
 
             })
@@ -745,7 +807,7 @@ WaterCoolerPage = function () {
                 if (confirm('Are you sure you would like to remove this reply?')) {
                     top.Ts.Services.WaterCooler.DeleteMessage(thread.MessageID, function () {
                     });
-                    chatHubClient.del(thread.MessageID);
+                    window.top.chatHubClient.del(thread.MessageID);
                 }
                 else {
                     $(this).prev().hide();
@@ -1003,7 +1065,7 @@ WaterCoolerPage = function () {
                         });
                     }
 
-                    chatHubClient.newThread(MessageID);
+                    window.top.chatHubClient.newThread(MessageID);
 
                     cc.hide();
                     ftc.show();
@@ -1014,6 +1076,7 @@ WaterCoolerPage = function () {
                     cc.find('.product-queue').empty();
                     cc.find('.customer-queue').empty();
                     cc.find('.user-queue').empty();
+                    cc.find(".arrow-up").css('left', '7px');
                 });
             }
         })
@@ -1288,7 +1351,7 @@ WaterCoolerPage = function () {
         .focusout(function () { $(this).val('Search for a group...').addClass('group-search-blur').removeClass('ui-autocomplete-loading'); })
         .click(function () { $(this).val('').removeClass('group-search-blur'); })
         .val('Search for a group...')
-        .autocomplete({ minLength: 4, source: getGroupsByTerm, delay: 300,
+        .autocomplete({ minLength: 2, source: getGroupsByTerm, delay: 300,
             select: function (event, ui) {
                 if (ui.item) {
                     var isDupe;
@@ -1378,7 +1441,7 @@ WaterCoolerPage = function () {
         top.Ts.Services.WaterCooler.DeleteMessage(message.MessageID, function (result) {
             if (result == true)
                 parent.remove();
-            chatHubClient.deleteMessage(message.MessageID);
+            window.top.chatHubClient.deleteMessage(message.MessageID);
         });
 
     });
@@ -1702,7 +1765,7 @@ WaterCoolerPage = function () {
     });
 
     $('.group-search').autocomplete({
-        minLength: 4,
+        minLength: 2,
         source: getGroupsByTerm,
         select: function (event, ui) {
             if (ui.item) {

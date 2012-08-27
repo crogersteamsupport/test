@@ -17,9 +17,13 @@
   <link href="vcr/142/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
   <!--[if IE 7]><link href="vcr/142/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/142/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="vcr/142/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
+    <link href="vcr/142/Css/chat.css" rel="stylesheet" type="text/css" />
 
-  <script src="vcr/142/Js/jquery-1.5.1.min.js" type="text/javascript"></script>
+  <script src="vcr/142/Js/jquery-1.7.2.min.js" type="text/javascript"></script>
   <script src="vcr/142/Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+  <script src="vcr/142/Js/chat.js" type="text/javascript"></script>
+  <script src="vcr/142/Js/jquery.signalR-0.5.2.min.js" type="text/javascript"></script>
+  <script src="/signalr/signalr/hubs" type="text/javascript"></script>
 
   <script type="text/javascript" language="javascript">
 
@@ -79,7 +83,7 @@
         <asp:ServiceReference Path="~/Services/PrivateServices.asmx" />
       </services>
     <scripts>
-        
+    
           <asp:ScriptReference Path="vcr/142/Js/json2.js" />
           <asp:ScriptReference Path="vcr/142/Js/jquery.layout.min.js" />
           <asp:ScriptReference Path="vcr/142/Js/jquery.jgrowl_minimized.js" />
@@ -92,7 +96,11 @@
           <asp:ScriptReference Path="vcr/142/Js/ts/ts.cache.js" />
           <asp:ScriptReference Path="vcr/142/Js/ts/ts.ui.tabs.js" />
           <asp:ScriptReference Path="vcr/142/Js/ts/ts.ui.menutree.js" />
+
           <asp:ScriptReference Path="vcr/142/Js/ts/ts.pages.main.js" />
+
+
+
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>

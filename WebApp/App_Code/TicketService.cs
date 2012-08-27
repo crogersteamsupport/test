@@ -1131,7 +1131,7 @@ namespace TSWebServices
       info.Reminders = reminders.GetReminderProxies();
 
       Assets assets = new Assets(ticket.Collection.LoginUser);
-      assets.LoadByTicketID(ticket.TicketID);
+      //assets.LoadByTicketID(ticket.TicketID);
       info.Assets = assets.GetAssetProxies();
 
       Actions actions = new Actions(ticket.Collection.LoginUser);
@@ -1709,6 +1709,12 @@ namespace TSWebServices
     
     }
 
+    [WebMethod]
+    public int GetTicketWaterCoolerCount(int ticketID)
+    {
+        WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+        return wcv.GetTicketWaterCoolerCount(ticketID);
+    }
 
   }
 

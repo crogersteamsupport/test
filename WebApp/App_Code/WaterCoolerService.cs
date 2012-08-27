@@ -224,6 +224,8 @@ namespace TSWebServices
                 AddAttachment((int)wc.MessageParent, CompanyID, WaterCoolerAttachmentType.Company);
         }
 
+        if (wc.MessageParent == -1 && info.PageType == 4)
+            AddAttachment((int)wc.MessageID, info.PageID, WaterCoolerAttachmentType.Group);
         foreach (int groupID in info.Groups)
         {
             AddAttachment(wc.MessageID, groupID, WaterCoolerAttachmentType.Group);

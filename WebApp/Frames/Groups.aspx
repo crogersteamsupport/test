@@ -140,7 +140,7 @@
         var frame = $get("<%=groupContentFrame.ClientID %>");
 
         if (GetSelectedTabValue().indexOf("Watercooler.html") != -1) {
-            var url = GetSelectedTabValue() + 'pagetype=2&pageid=' + groupID;
+            var url = GetSelectedTabValue() + 'pagetype=4&pageid=' + groupID;
         } else {
             var url = GetSelectedTabValue() + groupID;
         }

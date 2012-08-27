@@ -10,6 +10,7 @@
 
 
 window.name = "TSMain";
+var chatHubClient = $.connection.socket;
 
 Ts.Pages.Main = function () {
   this.MainLayout = null;
@@ -818,6 +819,24 @@ Ts.Pages.Main.prototype =
 
         this.WndScreenR = $('<iframe>', { id: 'wndScreenR', name: 'wndScreenR', src: 'ScreenR.html', width: '0', height: '0', frameborder: '0', scrolling: 'no' }).appendTo('body')[0];
 
+        //Debug reasons
+        //$.connection.hub.logging = true;
+        $.connection.hub.url = "/signalr/signalr";
+        // Start the connection only if on main wc page
+
+        $.connection.hub.start(function () {
+            chatHubClient.login(top.Ts.System.User.UserID);
+        });
+
+        chatHubClient.chatMessage = function (message, chatID, chatname) {
+
+            chatWith(chatname, chatID);
+            chatAddMsg(chatID, message, chatname);
+            //        if (notify) {
+            //            soundManager.play('chime');
+            //            top.Ts.MainPage.newChatAlert(chatname, ellipseString(message, 20));
+            //        }
+        };
 
     }, // end init
 
@@ -1079,11 +1098,10 @@ Ts.Pages.Main.prototype =
         //$('.reminder-description').val((params.Description ? params.Description : ''));
     },
 
-    newChatAlert: function (name, message) {
-        //noty.clearQueue();
-        //noty({ text: '<b>New Message</b><br /> ' + name + ' : ' + message, layout: 'topRight', type: 'warning' });
-        $.jGrowl("<b>New Message</b><br /><br /> " + name + ' : ' + message, { life: 5000 });
+    openChat: function (name, chatid) {
+        chatWith(name, chatid);
     }
 
 };
+
 

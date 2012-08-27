@@ -2241,7 +2241,16 @@ $(document).ready(function () {
             $('.ticket-content a').addClass('ui-state-default ts-link');
             $('.ticket-rail a').addClass('ui-state-default ts-link');
             $('.ts-icon-info').removeClass('ui-state-default ts-link');
-            $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=0&pageid=" + _ticketNumber);
+
+            if (top.Ts.System.User.OrganizationID == 1078 || top.Ts.System.User.OrganizationID == 13679)
+            {
+                $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=0&pageid=" + _ticketNumber);
+                top.Ts.Services.Tickets.GetTicketWaterCoolerCount(_ticketNumber, function (result) {
+                    $('#watercoolerLink').html('Water Cooler (' + result + ')')
+                });
+            }
+
+
         });
     }
 
