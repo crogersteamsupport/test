@@ -597,8 +597,7 @@ AS
     [UserInformation],
     [PortalAutoReg],
     [AppChatID],
-    [AppChatStatus],
-    [DefaultTicketsVisible]
+    [AppChatStatus]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -654,7 +653,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @PortalAutoReg bit,
   @AppChatID varchar(200),
   @AppChatStatus bit,
-  @DefaultTicketsVisible bit,
   @Identity int OUT
 )
 AS
@@ -705,8 +703,7 @@ AS
     [UserInformation],
     [PortalAutoReg],
     [AppChatID],
-    [AppChatStatus],
-    [DefaultTicketsVisible])
+    [AppChatStatus])
   VALUES (
     @Email,
     @FirstName,
@@ -752,8 +749,7 @@ AS
     @UserInformation,
     @PortalAutoReg,
     @AppChatID,
-    @AppChatStatus,
-    @DefaultTicketsVisible)
+    @AppChatStatus)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -807,8 +803,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @UserInformation varchar(MAX),
   @PortalAutoReg bit,
   @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @DefaultTicketsVisible bit
+  @AppChatStatus bit
 )
 AS
   SET NOCOUNT OFF;
@@ -856,8 +851,7 @@ AS
     [UserInformation] = @UserInformation,
     [PortalAutoReg] = @PortalAutoReg,
     [AppChatID] = @AppChatID,
-    [AppChatStatus] = @AppChatStatus,
-    [DefaultTicketsVisible] = @DefaultTicketsVisible
+    [AppChatStatus] = @AppChatStatus
   WHERE ([UserID] = @UserID)
 GO
 
@@ -1756,7 +1750,8 @@ AS
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
     [IsPublicArticles],
-    [UseForums]
+    [UseForums],
+    [SetNewActionsVisibleToCustomers]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -1829,6 +1824,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
   @UseForums bit,
+  @SetNewActionsVisibleToCustomers bit,
   @Identity int OUT
 )
 AS
@@ -1896,7 +1892,8 @@ AS
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
     [IsPublicArticles],
-    [UseForums])
+    [UseForums],
+    [SetNewActionsVisibleToCustomers])
   VALUES (
     @Name,
     @Description,
@@ -1959,7 +1956,8 @@ AS
     @AddAdditionalContacts,
     @ChangeStatusIfClosed,
     @IsPublicArticles,
-    @UseForums)
+    @UseForums,
+    @SetNewActionsVisibleToCustomers)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -2030,7 +2028,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
-  @UseForums bit
+  @UseForums bit,
+  @SetNewActionsVisibleToCustomers bit
 )
 AS
   SET NOCOUNT OFF;
@@ -2095,7 +2094,8 @@ AS
     [AddAdditionalContacts] = @AddAdditionalContacts,
     [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
     [IsPublicArticles] = @IsPublicArticles,
-    [UseForums] = @UseForums
+    [UseForums] = @UseForums,
+    [SetNewActionsVisibleToCustomers] = @SetNewActionsVisibleToCustomers
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -11043,7 +11043,8 @@ AS
     [RequestType],
     [RequestGroup],
     [AutoRegister],
-    [RequestAccess]
+    [RequestAccess],
+    [DisablePublicMyTickets]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -11095,6 +11096,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @RequestGroup int,
   @AutoRegister bit,
   @RequestAccess bit,
+  @DisablePublicMyTickets bit,
   @Identity int OUT
 )
 AS
@@ -11141,7 +11143,8 @@ AS
     [RequestType],
     [RequestGroup],
     [AutoRegister],
-    [RequestAccess])
+    [RequestAccess],
+    [DisablePublicMyTickets])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -11183,7 +11186,8 @@ AS
     @RequestType,
     @RequestGroup,
     @AutoRegister,
-    @RequestAccess)
+    @RequestAccess,
+    @DisablePublicMyTickets)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -11234,7 +11238,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @RequestType int,
   @RequestGroup int,
   @AutoRegister bit,
-  @RequestAccess bit
+  @RequestAccess bit,
+  @DisablePublicMyTickets bit
 )
 AS
   SET NOCOUNT OFF;
@@ -11279,7 +11284,8 @@ AS
     [RequestType] = @RequestType,
     [RequestGroup] = @RequestGroup,
     [AutoRegister] = @AutoRegister,
-    [RequestAccess] = @RequestAccess
+    [RequestAccess] = @RequestAccess,
+    [DisablePublicMyTickets] = @DisablePublicMyTickets
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -11952,32 +11958,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketAutomationHistory]
   WHERE ([HistoryID] = @HistoryID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [Message],
-    [MessageParent],
-    [IsDeleted],
-    [LastModified],
-    [RefType],
-    [AttachmentID]
-  FROM [dbo].[WaterCoolerView]
-  WH)
 GO
 
 
@@ -13336,8 +13316,7 @@ AS
     [UserInformation],
     [PortalAutoReg],
     [AppChatID],
-    [AppChatStatus],
-    [DefaultTicketsVisible]
+    [AppChatStatus]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -13393,7 +13372,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @PortalAutoReg bit,
   @AppChatID varchar(200),
   @AppChatStatus bit,
-  @DefaultTicketsVisible bit,
   @Identity int OUT
 )
 AS
@@ -13444,8 +13422,7 @@ AS
     [UserInformation],
     [PortalAutoReg],
     [AppChatID],
-    [AppChatStatus],
-    [DefaultTicketsVisible])
+    [AppChatStatus])
   VALUES (
     @Email,
     @FirstName,
@@ -13491,8 +13468,7 @@ AS
     @UserInformation,
     @PortalAutoReg,
     @AppChatID,
-    @AppChatStatus,
-    @DefaultTicketsVisible)
+    @AppChatStatus)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -13546,8 +13522,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @UserInformation varchar(MAX),
   @PortalAutoReg bit,
   @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @DefaultTicketsVisible bit
+  @AppChatStatus bit
 )
 AS
   SET NOCOUNT OFF;
@@ -13595,8 +13570,7 @@ AS
     [UserInformation] = @UserInformation,
     [PortalAutoReg] = @PortalAutoReg,
     [AppChatID] = @AppChatID,
-    [AppChatStatus] = @AppChatStatus,
-    [DefaultTicketsVisible] = @DefaultTicketsVisible
+    [AppChatStatus] = @AppChatStatus
   WHERE ([UserID] = @UserID)
 GO
 
@@ -14495,7 +14469,8 @@ AS
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
     [IsPublicArticles],
-    [UseForums]
+    [UseForums],
+    [SetNewActionsVisibleToCustomers]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -14568,6 +14543,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
   @UseForums bit,
+  @SetNewActionsVisibleToCustomers bit,
   @Identity int OUT
 )
 AS
@@ -14635,7 +14611,8 @@ AS
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
     [IsPublicArticles],
-    [UseForums])
+    [UseForums],
+    [SetNewActionsVisibleToCustomers])
   VALUES (
     @Name,
     @Description,
@@ -14698,7 +14675,8 @@ AS
     @AddAdditionalContacts,
     @ChangeStatusIfClosed,
     @IsPublicArticles,
-    @UseForums)
+    @UseForums,
+    @SetNewActionsVisibleToCustomers)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -14769,7 +14747,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
-  @UseForums bit
+  @UseForums bit,
+  @SetNewActionsVisibleToCustomers bit
 )
 AS
   SET NOCOUNT OFF;
@@ -14834,7 +14813,8 @@ AS
     [AddAdditionalContacts] = @AddAdditionalContacts,
     [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
     [IsPublicArticles] = @IsPublicArticles,
-    [UseForums] = @UseForums
+    [UseForums] = @UseForums,
+    [SetNewActionsVisibleToCustomers] = @SetNewActionsVisibleToCustomers
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -23782,7 +23762,8 @@ AS
     [RequestType],
     [RequestGroup],
     [AutoRegister],
-    [RequestAccess]
+    [RequestAccess],
+    [DisablePublicMyTickets]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -23834,6 +23815,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @RequestGroup int,
   @AutoRegister bit,
   @RequestAccess bit,
+  @DisablePublicMyTickets bit,
   @Identity int OUT
 )
 AS
@@ -23880,7 +23862,8 @@ AS
     [RequestType],
     [RequestGroup],
     [AutoRegister],
-    [RequestAccess])
+    [RequestAccess],
+    [DisablePublicMyTickets])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -23922,7 +23905,8 @@ AS
     @RequestType,
     @RequestGroup,
     @AutoRegister,
-    @RequestAccess)
+    @RequestAccess,
+    @DisablePublicMyTickets)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -23973,7 +23957,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @RequestType int,
   @RequestGroup int,
   @AutoRegister bit,
-  @RequestAccess bit
+  @RequestAccess bit,
+  @DisablePublicMyTickets bit
 )
 AS
   SET NOCOUNT OFF;
@@ -24018,7 +24003,8 @@ AS
     [RequestType] = @RequestType,
     [RequestGroup] = @RequestGroup,
     [AutoRegister] = @AutoRegister,
-    [RequestAccess] = @RequestAccess
+    [RequestAccess] = @RequestAccess,
+    [DisablePublicMyTickets] = @DisablePublicMyTickets
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -24691,32 +24677,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketAutomationHistory]
   WHERE ([HistoryID] = @HistoryID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [Message],
-    [MessageParent],
-    [IsDeleted],
-    [LastModified],
-    [RefType],
-    [AttachmentID]
-  FROM [dbo].[WaterCoolerView]
-  WH)
 GO
 
 
@@ -26075,8 +26035,7 @@ AS
     [UserInformation],
     [PortalAutoReg],
     [AppChatID],
-    [AppChatStatus],
-    [DefaultTicketsVisible]
+    [AppChatStatus]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -26132,7 +26091,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @PortalAutoReg bit,
   @AppChatID varchar(200),
   @AppChatStatus bit,
-  @DefaultTicketsVisible bit,
   @Identity int OUT
 )
 AS
@@ -26183,8 +26141,7 @@ AS
     [UserInformation],
     [PortalAutoReg],
     [AppChatID],
-    [AppChatStatus],
-    [DefaultTicketsVisible])
+    [AppChatStatus])
   VALUES (
     @Email,
     @FirstName,
@@ -26230,8 +26187,7 @@ AS
     @UserInformation,
     @PortalAutoReg,
     @AppChatID,
-    @AppChatStatus,
-    @DefaultTicketsVisible)
+    @AppChatStatus)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -26285,8 +26241,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @UserInformation varchar(MAX),
   @PortalAutoReg bit,
   @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @DefaultTicketsVisible bit
+  @AppChatStatus bit
 )
 AS
   SET NOCOUNT OFF;
@@ -26334,8 +26289,7 @@ AS
     [UserInformation] = @UserInformation,
     [PortalAutoReg] = @PortalAutoReg,
     [AppChatID] = @AppChatID,
-    [AppChatStatus] = @AppChatStatus,
-    [DefaultTicketsVisible] = @DefaultTicketsVisible
+    [AppChatStatus] = @AppChatStatus
   WHERE ([UserID] = @UserID)
 GO
 
@@ -27234,7 +27188,8 @@ AS
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
     [IsPublicArticles],
-    [UseForums]
+    [UseForums],
+    [SetNewActionsVisibleToCustomers]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -27307,6 +27262,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
   @UseForums bit,
+  @SetNewActionsVisibleToCustomers bit,
   @Identity int OUT
 )
 AS
@@ -27374,7 +27330,8 @@ AS
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
     [IsPublicArticles],
-    [UseForums])
+    [UseForums],
+    [SetNewActionsVisibleToCustomers])
   VALUES (
     @Name,
     @Description,
@@ -27437,7 +27394,8 @@ AS
     @AddAdditionalContacts,
     @ChangeStatusIfClosed,
     @IsPublicArticles,
-    @UseForums)
+    @UseForums,
+    @SetNewActionsVisibleToCustomers)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -27508,7 +27466,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
-  @UseForums bit
+  @UseForums bit,
+  @SetNewActionsVisibleToCustomers bit
 )
 AS
   SET NOCOUNT OFF;
@@ -27573,7 +27532,8 @@ AS
     [AddAdditionalContacts] = @AddAdditionalContacts,
     [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
     [IsPublicArticles] = @IsPublicArticles,
-    [UseForums] = @UseForums
+    [UseForums] = @UseForums,
+    [SetNewActionsVisibleToCustomers] = @SetNewActionsVisibleToCustomers
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -36521,7 +36481,8 @@ AS
     [RequestType],
     [RequestGroup],
     [AutoRegister],
-    [RequestAccess]
+    [RequestAccess],
+    [DisablePublicMyTickets]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -36573,6 +36534,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @RequestGroup int,
   @AutoRegister bit,
   @RequestAccess bit,
+  @DisablePublicMyTickets bit,
   @Identity int OUT
 )
 AS
@@ -36619,7 +36581,8 @@ AS
     [RequestType],
     [RequestGroup],
     [AutoRegister],
-    [RequestAccess])
+    [RequestAccess],
+    [DisablePublicMyTickets])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -36661,7 +36624,8 @@ AS
     @RequestType,
     @RequestGroup,
     @AutoRegister,
-    @RequestAccess)
+    @RequestAccess,
+    @DisablePublicMyTickets)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -36712,7 +36676,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @RequestType int,
   @RequestGroup int,
   @AutoRegister bit,
-  @RequestAccess bit
+  @RequestAccess bit,
+  @DisablePublicMyTickets bit
 )
 AS
   SET NOCOUNT OFF;
@@ -36757,7 +36722,8 @@ AS
     [RequestType] = @RequestType,
     [RequestGroup] = @RequestGroup,
     [AutoRegister] = @AutoRegister,
-    [RequestAccess] = @RequestAccess
+    [RequestAccess] = @RequestAccess,
+    [DisablePublicMyTickets] = @DisablePublicMyTickets
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -37430,32 +37396,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketAutomationHistory]
   WHERE ([HistoryID] = @HistoryID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [Message],
-    [MessageParent],
-    [IsDeleted],
-    [LastModified],
-    [RefType],
-    [AttachmentID]
-  FROM [dbo].[WaterCoolerView]
-  WH)
 GO
 
 
@@ -38814,8 +38754,7 @@ AS
     [UserInformation],
     [PortalAutoReg],
     [AppChatID],
-    [AppChatStatus],
-    [DefaultTicketsVisible]
+    [AppChatStatus]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -38871,7 +38810,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @PortalAutoReg bit,
   @AppChatID varchar(200),
   @AppChatStatus bit,
-  @DefaultTicketsVisible bit,
   @Identity int OUT
 )
 AS
@@ -38922,8 +38860,7 @@ AS
     [UserInformation],
     [PortalAutoReg],
     [AppChatID],
-    [AppChatStatus],
-    [DefaultTicketsVisible])
+    [AppChatStatus])
   VALUES (
     @Email,
     @FirstName,
@@ -38969,8 +38906,7 @@ AS
     @UserInformation,
     @PortalAutoReg,
     @AppChatID,
-    @AppChatStatus,
-    @DefaultTicketsVisible)
+    @AppChatStatus)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -39024,8 +38960,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @UserInformation varchar(MAX),
   @PortalAutoReg bit,
   @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @DefaultTicketsVisible bit
+  @AppChatStatus bit
 )
 AS
   SET NOCOUNT OFF;
@@ -39073,8 +39008,7 @@ AS
     [UserInformation] = @UserInformation,
     [PortalAutoReg] = @PortalAutoReg,
     [AppChatID] = @AppChatID,
-    [AppChatStatus] = @AppChatStatus,
-    [DefaultTicketsVisible] = @DefaultTicketsVisible
+    [AppChatStatus] = @AppChatStatus
   WHERE ([UserID] = @UserID)
 GO
 
@@ -39973,7 +39907,8 @@ AS
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
     [IsPublicArticles],
-    [UseForums]
+    [UseForums],
+    [SetNewActionsVisibleToCustomers]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -40046,6 +39981,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
   @UseForums bit,
+  @SetNewActionsVisibleToCustomers bit,
   @Identity int OUT
 )
 AS
@@ -40113,7 +40049,8 @@ AS
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
     [IsPublicArticles],
-    [UseForums])
+    [UseForums],
+    [SetNewActionsVisibleToCustomers])
   VALUES (
     @Name,
     @Description,
@@ -40176,7 +40113,8 @@ AS
     @AddAdditionalContacts,
     @ChangeStatusIfClosed,
     @IsPublicArticles,
-    @UseForums)
+    @UseForums,
+    @SetNewActionsVisibleToCustomers)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -40247,7 +40185,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
-  @UseForums bit
+  @UseForums bit,
+  @SetNewActionsVisibleToCustomers bit
 )
 AS
   SET NOCOUNT OFF;
@@ -40312,7 +40251,8 @@ AS
     [AddAdditionalContacts] = @AddAdditionalContacts,
     [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
     [IsPublicArticles] = @IsPublicArticles,
-    [UseForums] = @UseForums
+    [UseForums] = @UseForums,
+    [SetNewActionsVisibleToCustomers] = @SetNewActionsVisibleToCustomers
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -49260,7 +49200,8 @@ AS
     [RequestType],
     [RequestGroup],
     [AutoRegister],
-    [RequestAccess]
+    [RequestAccess],
+    [DisablePublicMyTickets]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -49312,6 +49253,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @RequestGroup int,
   @AutoRegister bit,
   @RequestAccess bit,
+  @DisablePublicMyTickets bit,
   @Identity int OUT
 )
 AS
@@ -49358,7 +49300,8 @@ AS
     [RequestType],
     [RequestGroup],
     [AutoRegister],
-    [RequestAccess])
+    [RequestAccess],
+    [DisablePublicMyTickets])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -49400,7 +49343,8 @@ AS
     @RequestType,
     @RequestGroup,
     @AutoRegister,
-    @RequestAccess)
+    @RequestAccess,
+    @DisablePublicMyTickets)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -49451,7 +49395,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @RequestType int,
   @RequestGroup int,
   @AutoRegister bit,
-  @RequestAccess bit
+  @RequestAccess bit,
+  @DisablePublicMyTickets bit
 )
 AS
   SET NOCOUNT OFF;
@@ -49496,7 +49441,8 @@ AS
     [RequestType] = @RequestType,
     [RequestGroup] = @RequestGroup,
     [AutoRegister] = @AutoRegister,
-    [RequestAccess] = @RequestAccess
+    [RequestAccess] = @RequestAccess,
+    [DisablePublicMyTickets] = @DisablePublicMyTickets
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -50169,32 +50115,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketAutomationHistory]
   WHERE ([HistoryID] = @HistoryID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [Message],
-    [MessageParent],
-    [IsDeleted],
-    [LastModified],
-    [RefType],
-    [AttachmentID]
-  FROM [dbo].[WaterCoolerView]
-  WH)
 GO
 
 
@@ -51553,8 +51473,7 @@ AS
     [UserInformation],
     [PortalAutoReg],
     [AppChatID],
-    [AppChatStatus],
-    [DefaultTicketsVisible]
+    [AppChatStatus]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -51610,7 +51529,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @PortalAutoReg bit,
   @AppChatID varchar(200),
   @AppChatStatus bit,
-  @DefaultTicketsVisible bit,
   @Identity int OUT
 )
 AS
@@ -51661,8 +51579,7 @@ AS
     [UserInformation],
     [PortalAutoReg],
     [AppChatID],
-    [AppChatStatus],
-    [DefaultTicketsVisible])
+    [AppChatStatus])
   VALUES (
     @Email,
     @FirstName,
@@ -51708,8 +51625,7 @@ AS
     @UserInformation,
     @PortalAutoReg,
     @AppChatID,
-    @AppChatStatus,
-    @DefaultTicketsVisible)
+    @AppChatStatus)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -51763,8 +51679,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @UserInformation varchar(MAX),
   @PortalAutoReg bit,
   @AppChatID varchar(200),
-  @AppChatStatus bit,
-  @DefaultTicketsVisible bit
+  @AppChatStatus bit
 )
 AS
   SET NOCOUNT OFF;
@@ -51812,8 +51727,7 @@ AS
     [UserInformation] = @UserInformation,
     [PortalAutoReg] = @PortalAutoReg,
     [AppChatID] = @AppChatID,
-    [AppChatStatus] = @AppChatStatus,
-    [DefaultTicketsVisible] = @DefaultTicketsVisible
+    [AppChatStatus] = @AppChatStatus
   WHERE ([UserID] = @UserID)
 GO
 
@@ -52712,7 +52626,8 @@ AS
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
     [IsPublicArticles],
-    [UseForums]
+    [UseForums],
+    [SetNewActionsVisibleToCustomers]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -52785,6 +52700,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
   @UseForums bit,
+  @SetNewActionsVisibleToCustomers bit,
   @Identity int OUT
 )
 AS
@@ -52852,7 +52768,8 @@ AS
     [AddAdditionalContacts],
     [ChangeStatusIfClosed],
     [IsPublicArticles],
-    [UseForums])
+    [UseForums],
+    [SetNewActionsVisibleToCustomers])
   VALUES (
     @Name,
     @Description,
@@ -52915,7 +52832,8 @@ AS
     @AddAdditionalContacts,
     @ChangeStatusIfClosed,
     @IsPublicArticles,
-    @UseForums)
+    @UseForums,
+    @SetNewActionsVisibleToCustomers)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -52986,7 +52904,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @AddAdditionalContacts bit,
   @ChangeStatusIfClosed bit,
   @IsPublicArticles bit,
-  @UseForums bit
+  @UseForums bit,
+  @SetNewActionsVisibleToCustomers bit
 )
 AS
   SET NOCOUNT OFF;
@@ -53051,7 +52970,8 @@ AS
     [AddAdditionalContacts] = @AddAdditionalContacts,
     [ChangeStatusIfClosed] = @ChangeStatusIfClosed,
     [IsPublicArticles] = @IsPublicArticles,
-    [UseForums] = @UseForums
+    [UseForums] = @UseForums,
+    [SetNewActionsVisibleToCustomers] = @SetNewActionsVisibleToCustomers
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -61999,7 +61919,8 @@ AS
     [RequestType],
     [RequestGroup],
     [AutoRegister],
-    [RequestAccess]
+    [RequestAccess],
+    [DisablePublicMyTickets]
   FROM [dbo].[PortalOptions]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -62051,6 +61972,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertPortalOption
   @RequestGroup int,
   @AutoRegister bit,
   @RequestAccess bit,
+  @DisablePublicMyTickets bit,
   @Identity int OUT
 )
 AS
@@ -62097,7 +62019,8 @@ AS
     [RequestType],
     [RequestGroup],
     [AutoRegister],
-    [RequestAccess])
+    [RequestAccess],
+    [DisablePublicMyTickets])
   VALUES (
     @OrganizationID,
     @PortalHTMLHeader,
@@ -62139,7 +62062,8 @@ AS
     @RequestType,
     @RequestGroup,
     @AutoRegister,
-    @RequestAccess)
+    @RequestAccess,
+    @DisablePublicMyTickets)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -62190,7 +62114,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdatePortalOption
   @RequestType int,
   @RequestGroup int,
   @AutoRegister bit,
-  @RequestAccess bit
+  @RequestAccess bit,
+  @DisablePublicMyTickets bit
 )
 AS
   SET NOCOUNT OFF;
@@ -62235,7 +62160,8 @@ AS
     [RequestType] = @RequestType,
     [RequestGroup] = @RequestGroup,
     [AutoRegister] = @AutoRegister,
-    [RequestAccess] = @RequestAccess
+    [RequestAccess] = @RequestAccess,
+    [DisablePublicMyTickets] = @DisablePublicMyTickets
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -62908,32 +62834,6 @@ AS
   SET NOCOUNT OFF;
   DELETE FROM [dbo].[TicketAutomationHistory]
   WHERE ([HistoryID] = @HistoryID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectWaterCoolerViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectWaterCoolerViewItem
-
-(
-
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [MessageID],
-    [UserID],
-    [OrganizationID],
-    [TimeStamp],
-    [Message],
-    [MessageParent],
-    [IsDeleted],
-    [LastModified],
-    [RefType],
-    [AttachmentID]
-  FROM [dbo].[WaterCoolerView]
-  WH)
 GO
 
 

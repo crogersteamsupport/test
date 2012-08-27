@@ -76,6 +76,7 @@ namespace TeamSupport.Data
     [DataMember] public bool? ChangeStatusIfClosed { get; set; }
     [DataMember] public bool IsPublicArticles { get; set; }
     [DataMember] public bool UseForums { get; set; }
+    [DataMember] public bool SetNewActionsVisibleToCustomers { get; set; }
           
   }
   
@@ -84,6 +85,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.SetNewActionsVisibleToCustomers = this.SetNewActionsVisibleToCustomers;
       result.UseForums = this.UseForums;
       result.IsPublicArticles = this.IsPublicArticles;
       result.ChangeStatusIfClosed = this.ChangeStatusIfClosed;

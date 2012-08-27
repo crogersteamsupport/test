@@ -59,7 +59,6 @@ namespace TeamSupport.Data
     [DataMember] public bool PortalAutoReg { get; set; }
     [DataMember] public string AppChatID { get; set; }
     [DataMember] public bool AppChatStatus { get; set; }
-    [DataMember] public bool DefaultTicketsVisible { get; set; }
           
   }
   
@@ -68,7 +67,6 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
-      result.DefaultTicketsVisible = this.DefaultTicketsVisible;
       result.AppChatStatus = this.AppChatStatus;
       result.AppChatID = this.AppChatID;
       result.PortalAutoReg = this.PortalAutoReg;
