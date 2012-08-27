@@ -49,6 +49,13 @@ public class Socket : Hub, IConnected, IDisconnect
 
     public Task Reconnect(IEnumerable<string> groups)
     {
+        User u = Users.GetUser(TSAuthentication.GetLoginUser(), Convert.ToInt32(Context.ConnectionId));
+        u.AppChatID = Context.ConnectionId;
+        u.AppChatStatus = true;
+        u.Collection.Save();
+
+        Clients.updateUsers();
+
         return Clients.rejoined(Context.ConnectionId, DateTime.Now.ToString());
     }
 
@@ -210,9 +217,10 @@ public class UserIdClientIdFactory : IConnectionIdGenerator
 {
     public string GenerateConnectionId(IRequest request)
     {
-        if (TSAuthentication.GetLoginUser() != null)
-            return TSAuthentication.GetLoginUser().UserID.ToString();
-        else
+        if (request.Headers[6].Contains("Signalr") || TSAuthentication.GetLoginUser() == null)
             return Guid.NewGuid().ToString();
+        else
+            return TSAuthentication.GetLoginUser().UserID.ToString();
+            
     }
 }
