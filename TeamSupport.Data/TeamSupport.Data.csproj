@@ -208,6 +208,7 @@
     <Compile Include="BusinessObjects\WatercoolerAttachments.cs" />
     <Compile Include="BusinessObjects\WatercoolerLikes.cs" />
     <Compile Include="BusinessObjects\WatercoolerMsg.cs" />
+    <Compile Include="BusinessObjects\WaterCoolerView.cs" />
     <Compile Include="Classes\AccountClone.cs" />
     <Compile Include="Classes\AttachmentPath.cs" />
     <Compile Include="Classes\CheckSums.cs" />

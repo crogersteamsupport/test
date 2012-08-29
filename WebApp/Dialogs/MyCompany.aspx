@@ -84,6 +84,7 @@
             <asp:CheckBox ID="cbDisableStatusNotifications" runat="server" Text="Disable ticket status update emails"/>
           </td>
           <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbNewActionsVisible" runat="server" Text="Visible to customers is initially enabled for new actions"/>
           </td>
         </tr>
         <tr>

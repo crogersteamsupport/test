@@ -147,6 +147,9 @@ AdminPortal = function () {
     $('#portal_adv_wiki').prop('checked', portalOption.DisplayAdvArticles == true);
     $('#portal_adv_enable_toc').prop('checked', portalOption.DisplayTandC == true);
     $('#portal_adv_toc').val(portalOption.TermsAndConditions);
+    $('#portal_adv_autoregister').prop('checked', portalOption.AutoRegister == true);
+
+    
 
     $('#portal_captcha').prop('checked', portalOption.UseRecaptcha == null ? false : portalOption.UseRecaptcha);
     $('#portal_basic_header').val(portalOption.BasicPortalDirections);
@@ -190,6 +193,8 @@ AdminPortal = function () {
     portalOption.DisplayAdvKB = $('#portal_adv_kb').prop('checked');
     portalOption.DisplayAdvArticles = $('#portal_adv_wiki').prop('checked');
     portalOption.DisplayTandC = $('#portal_adv_enable_toc').prop('checked');
+    portalOption.AutoRegister = $('#portal_adv_autoregister').prop('checked');
+
     portalOption.TermsAndConditions = $('#portal_adv_toc').val();
 
     portalOption.UseRecaptcha = $('#portal_captcha').prop('checked');

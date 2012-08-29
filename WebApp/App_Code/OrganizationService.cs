@@ -180,6 +180,7 @@ namespace TSWebServices
       option.DisplayForum = proxy.DisplayForum;
       option.DisplayTandC = proxy.DisplayTandC;
       option.TermsAndConditions = proxy.TermsAndConditions;
+      option.AutoRegister = proxy.AutoRegister;
 
       option.Collection.Save();
 

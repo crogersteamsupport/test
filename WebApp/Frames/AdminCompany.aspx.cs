@@ -142,6 +142,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Require customer for new ticket:", Settings.OrganizationDB.ReadBool("RequireNewTicketCustomer", false).ToString() });
     table.Rows.Add(new string[] { "Require time spent on timed actions:", organization.TimedActionsRequired.ToString() });
     table.Rows.Add(new string[] { "Disable ticket status update emails:", Settings.OrganizationDB.ReadBool("DisableStatusNotification", false).ToString() });
+    table.Rows.Add(new string[] { "Visible to customers is initially enabled for new actions:", organization.SetNewActionsVisibleToCustomers.ToString() });
     table.Rows.Add(new string[] { "Chat ID:", organization.ChatID.ToString() });
     
 /*    string email = organization.SystemEmailID + "@teamsupport.com";
