@@ -305,7 +305,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("QueryObject", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("QueryObject", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -390,7 +390,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("QueryObject", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("QueryObject", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
