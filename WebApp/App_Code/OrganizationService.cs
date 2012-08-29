@@ -181,6 +181,7 @@ namespace TSWebServices
       option.DisplayTandC = proxy.DisplayTandC;
       option.TermsAndConditions = proxy.TermsAndConditions;
       option.AutoRegister = proxy.AutoRegister;
+      option.RequestAccess = proxy.RequestAccess;
 
       option.Collection.Save();
 

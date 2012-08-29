@@ -148,6 +148,7 @@ AdminPortal = function () {
     $('#portal_adv_enable_toc').prop('checked', portalOption.DisplayTandC == true);
     $('#portal_adv_toc').val(portalOption.TermsAndConditions);
     $('#portal_adv_autoregister').prop('checked', portalOption.AutoRegister == true);
+    $('#portal_adv_showrequestaccess').prop('checked', portalOption.RequestAccess == true);
 
     
 
@@ -194,6 +195,7 @@ AdminPortal = function () {
     portalOption.DisplayAdvArticles = $('#portal_adv_wiki').prop('checked');
     portalOption.DisplayTandC = $('#portal_adv_enable_toc').prop('checked');
     portalOption.AutoRegister = $('#portal_adv_autoregister').prop('checked');
+    portalOption.RequestAccess = $('#portal_adv_showrequestaccess').prop('checked');
 
     portalOption.TermsAndConditions = $('#portal_adv_toc').val();
 

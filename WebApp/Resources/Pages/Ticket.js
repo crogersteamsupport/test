@@ -1003,7 +1003,12 @@ $(document).ready(function () {
         selectType.combobox();
         element.find('.ticket-action-form-date').datetimepicker().datetimepicker('setDate', new Date());
         element.find('.ticket-action-form-hours').spinner({ min: 0 });
-        element.find('.ticket-action-form-minutes').spinner({ min: 0 });
+        element.find('.ticket-action-form-minutes').spinner({ min: 0 }); 
+
+
+        if (top.Ts.System.Organization.SetNewActionsVisibleToCustomers == true) {
+          element.find('.ticket-action-form-portal').prop('checked', true);
+        }
         initEditor(element.find('.ticket-action-form-description'), function (ed) {
             if (action != null && action.Description != null) {
                 ed.setContent(action.Description);
