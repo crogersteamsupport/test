@@ -43,6 +43,8 @@ namespace TeamSupport.Data
               command.Parameters.AddWithValue("UserID", LoginUser.UserID);
               command.Parameters.AddWithValue("OrgID", LoginUser.OrganizationID);
               command.Parameters.AddWithValue("MessageID", messageID);
+              command.Parameters.AddWithValue("PageID", pageID);
+              command.Parameters.AddWithValue("AttID", itemID);
               Fill(command);
           }
       }
