@@ -98,6 +98,8 @@
       function clearCache() {
         top.Ts.Cache.checkAll();
         top.Ts.Settings.clearCache();
+        setTimeout(function () { top.Ts.System.refreshUser(); }, 2000);
+        
       }
 
       function GetRadWindow() {
