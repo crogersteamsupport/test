@@ -1877,7 +1877,7 @@ AND RTRIM(LastName) = @LastName
       {
         _currentRow = row;
         Ticket ticket = tickets.FindByImportID(row["TicketID"].ToString().Trim());
-        User user = users.FindByImportID("[contact]" + row["ContactID"].ToString().Trim());
+        User user = users.FindByImportID(row["ContactID"].ToString().Trim());
 
         if (user == null || ticket == null)
         {

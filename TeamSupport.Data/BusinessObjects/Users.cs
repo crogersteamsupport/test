@@ -595,7 +595,8 @@ AND u.IsPortalUser = 1";
 
       foreach (User user in this)
       {
-        if ((user.ImportID != null && user.ImportID.Trim().ToLower() == importID) || 
+        if ((user.ImportID != null && user.ImportID.Trim().ToLower() == importID) ||
+            (user.ImportID != null && user.ImportID.Trim().ToLower() == "[contact]" + importID) || 
             user.Email.Trim().ToLower() == importID ||
             user.IsSameName(importID))
         {
