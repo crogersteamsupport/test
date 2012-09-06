@@ -24,26 +24,19 @@ namespace TeamSupport.ServiceLibrary
     private static int[] _nextAttempts = new int[] { 10, 15, 20, 30, 60, 120, 360, 720, 1440 };
 
     private bool _isDebug = false;
-    private List<MailAddress> _debugAddresses;
+    private string _debugAddresses;
 
     public EmailSender()
     {
-      _debugAddresses = new List<MailAddress>();
     }
 
     public override void Run()
     {
       _isDebug = Settings.ReadBool("Debug", false);
-      _debugAddresses.Clear();
-      try
+      if (_isDebug)
       {
-        string[] addresses = Settings.ReadString("Debug Email Address").Split(';');
-        foreach (string item in addresses) { _debugAddresses.Add(new MailAddress(item.Trim())); }
+        _debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
       }
-      catch (Exception)
-      {
-      }
-
 
       try
       {
@@ -95,6 +88,12 @@ namespace TeamSupport.ServiceLibrary
             MailMessage message = email.GetMailMessage();
             message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
             message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
+            if (_isDebug == true)
+            {
+              message.To.Clear();
+              message.To.Add(_debugAddresses);
+              message.Subject = "[DEBUG] " + message.Subject;
+            }
             client.Send(message);
             email.IsSuccess = true;
             email.IsWaiting = false;

@@ -25,7 +25,11 @@ namespace TeamSupport.ServiceLibrary
 
         Tickets tickets = new Tickets(LoginUser);
         tickets.LoadAllUnnotifiedAndExpiredSla();
-
+        Logs.WriteLine();
+        Logs.WriteLine();
+        Logs.WriteEvent("*************** Processing " + tickets.Count.ToString() + " Tickets ***************", true);
+        Logs.WriteLine();
+        Logs.WriteLine();
         foreach (Ticket ticket in tickets)
         {
           if (IsStopped) break;
@@ -45,7 +49,6 @@ namespace TeamSupport.ServiceLibrary
       UpdateHealth();
       SlaTriggersView triggers = new SlaTriggersView(LoginUser);
       triggers.LoadByTicket(ticket.TicketID);
-
       bool warnGroup = false;
       bool warnUser = false;
       bool vioGroup = false;
@@ -68,26 +71,26 @@ namespace TeamSupport.ServiceLibrary
 
       DateTime notifyTime;
 
-      if (ticket.SlaViolationInitialResponse != null && ticket.SlaViolationInitialResponse <= DateTime.UtcNow)
+      if (ticket.SlaViolationInitialResponse != null && ticket.SlaViolationInitialResponseUtc <= DateTime.UtcNow)
       {
 
-        notifyTime = (DateTime)ticket.SlaViolationInitialResponse;
+        notifyTime = (DateTime)ticket.SlaViolationInitialResponseUtc;
         if (!IsTooOld(notifyTime))
         {
-          if (notification.InitialResponseViolationDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.InitialResponseViolationDate) - notifyTime).TotalMinutes) > 5)
+          if (notification.InitialResponseViolationDate == null || Math.Abs(((DateTime)notification.InitialResponseViolationDateUtc - notifyTime).TotalMinutes) > 5)
           {
             NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, NotificationType.InitialResponse);
             notification.InitialResponseViolationDate = notifyTime;
           }
         }
       }
-      else if (ticket.SlaWarningInitialResponse != null && ticket.SlaWarningInitialResponse <= DateTime.UtcNow)
+      else if (ticket.SlaWarningInitialResponse != null && ticket.SlaWarningInitialResponseUtc <= DateTime.UtcNow)
       {
-        notifyTime = (DateTime) ticket.SlaWarningInitialResponse;
+        notifyTime = (DateTime)ticket.SlaWarningInitialResponseUtc;
 
         if (!IsTooOld(notifyTime))
         {
-          if (notification.InitialResponseWarningDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.InitialResponseWarningDate) - notifyTime).TotalMinutes) > 5)
+          if (notification.InitialResponseWarningDate == null || Math.Abs(((DateTime)notification.InitialResponseWarningDateUtc - notifyTime).TotalMinutes) > 5)
           {
             NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, NotificationType.InitialResponse);
             notification.InitialResponseWarningDate = notifyTime;
@@ -96,26 +99,26 @@ namespace TeamSupport.ServiceLibrary
       }
 
 
-      if (ticket.SlaViolationLastAction != null && ticket.SlaViolationLastAction <= DateTime.UtcNow)
+      if (ticket.SlaViolationLastAction != null && ticket.SlaViolationLastActionUtc <= DateTime.UtcNow)
       {
-        notifyTime = (DateTime) ticket.SlaViolationLastAction;
+        notifyTime = (DateTime)ticket.SlaViolationLastActionUtc;
 
         if (!IsTooOld(notifyTime))
         {
-          if (notification.LastActionViolationDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.LastActionViolationDate) - notifyTime).TotalMinutes) > 5)
+          if (notification.LastActionViolationDate == null || Math.Abs(((DateTime)notification.LastActionViolationDateUtc - notifyTime).TotalMinutes) > 5)
           {
             NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, NotificationType.LastAction);
             notification.LastActionViolationDate = notifyTime;
           }
         }
       }
-      else if (ticket.SlaWarningLastAction != null && ticket.SlaWarningLastAction <= DateTime.UtcNow)
+      else if (ticket.SlaWarningLastAction != null && ticket.SlaWarningLastActionUtc <= DateTime.UtcNow)
       {
-        notifyTime = (DateTime) ticket.SlaWarningLastAction;
+        notifyTime = (DateTime)ticket.SlaWarningLastActionUtc;
 
         if (!IsTooOld(notifyTime))
         {
-          if (notification.LastActionWarningDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.LastActionWarningDate) - notifyTime).TotalMinutes) > 5)
+          if (notification.LastActionWarningDate == null || Math.Abs(((DateTime)notification.LastActionWarningDateUtc - notifyTime).TotalMinutes) > 5)
           {
             NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, NotificationType.LastAction);
             notification.LastActionWarningDate = notifyTime;
@@ -124,26 +127,26 @@ namespace TeamSupport.ServiceLibrary
       }
 
 
-      if (ticket.SlaViolationTimeClosed != null && ticket.SlaViolationTimeClosed <= DateTime.UtcNow)
+      if (ticket.SlaViolationTimeClosed != null && ticket.SlaViolationTimeClosedUtc <= DateTime.UtcNow)
       {
-        notifyTime = (DateTime)ticket.SlaViolationTimeClosed;
+        notifyTime = (DateTime)ticket.SlaViolationTimeClosedUtc;
 
         if (!IsTooOld(notifyTime))
         {
-          if (notification.TimeClosedViolationDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.TimeClosedViolationDate) - notifyTime).TotalMinutes) > 5)
+          if (notification.TimeClosedViolationDate == null || Math.Abs(((DateTime)notification.TimeClosedViolationDateUtc - notifyTime).TotalMinutes) > 5)
           {
             NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, NotificationType.TimeClosed);
             notification.TimeClosedViolationDate = notifyTime;
           }
         }
       }
-      else if (ticket.SlaWarningTimeClosed != null && ticket.SlaWarningTimeClosed <= DateTime.UtcNow)
+      else if (ticket.SlaWarningTimeClosed != null && ticket.SlaWarningTimeClosedUtc <= DateTime.UtcNow)
       {
-        notifyTime = (DateTime)ticket.SlaWarningTimeClosed;
+        notifyTime = (DateTime)ticket.SlaWarningTimeClosedUtc;
 
         if (!IsTooOld(notifyTime))
         {
-          if (notification.TimeClosedWarningDate == null || Math.Abs((notification.DateToUtc((DateTime)notification.TimeClosedWarningDate) - notifyTime).TotalMinutes) > 5)
+          if (notification.TimeClosedWarningDate == null || Math.Abs(((DateTime)notification.TimeClosedWarningDateUtc - notifyTime).TotalMinutes) > 5)
           {
             NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, NotificationType.TimeClosed);
             notification.TimeClosedWarningDate = notifyTime;
@@ -162,7 +165,6 @@ namespace TeamSupport.ServiceLibrary
 
     private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, NotificationType notificationType)
     {
-
       Users users = new Users(LoginUser);
       User user = null;
 
@@ -178,6 +180,9 @@ namespace TeamSupport.ServiceLibrary
         case NotificationType.TimeClosed: violationType = "Time to Close"; break;
         default: break;
       }
+      Logs.WriteEvent(string.Format("NOTIFYING TicketID:{0}  TicketNumber:{1}  OrganizationID:{2} ", ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.OrganizationID.ToString()));
+      Logs.WriteEvent(string.Format("User:{1}  Group:{2}  IsWarning:{3}  NoficationType:{4}", ticketID.ToString(), useUser.ToString(), useGroup.ToString(), isWarning.ToString(), notificationType));
+      
 
       MailMessage message = EmailTemplates.GetSlaEmail(LoginUser, ticket, violationType, isWarning);
 
@@ -198,11 +203,16 @@ namespace TeamSupport.ServiceLibrary
       }
 
       if (user != null)
+      {
         message.To.Add(new MailAddress(user.Email, user.FirstLastName));
+        Logs.WriteEvent(string.Format("Adding Main User, Name:{0}  Email:{1}  UserID:{2}", user.FirstLastName, user.Email, user.UserID.ToString()));
+
+      }
 
       if (message.To.Count > 0)
       {
-        Emails.AddEmail(LoginUser, ticket.OrganizationID, null, "Sla Message", message);
+        Email email = Emails.AddEmail(LoginUser, ticket.OrganizationID, null, "Sla Message", message);
+        Logs.WriteEvent("Email Added (EmailID: " + email.EmailID.ToString() + ")", true);        
       }
 
     }

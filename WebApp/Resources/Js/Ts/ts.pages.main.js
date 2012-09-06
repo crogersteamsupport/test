@@ -6,8 +6,6 @@
 /// <reference path="ts/ts.ui.tabs.js" />
 /// <reference path="~/Default.aspx" />
 /// <reference path="ts/ts.pages.tickets.js" />
-/// <reference path="../noty/jquery.noty.js" />
-
 
 window.name = "TSMain";
 var chatHubClient = $.connection.socket;
@@ -677,7 +675,6 @@ Ts.Pages.Main.prototype =
 
                     if (item.getType() == 'chat') {
                         self.MainMenu.find('mniChat', 'chat').setIsHighlighted(false);
-                        noty.closeAll();
                     }
                     div = $('.main-tab-content-item-' + item.getId());
                     if (div.length < 1) {

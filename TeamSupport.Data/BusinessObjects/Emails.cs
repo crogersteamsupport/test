@@ -129,7 +129,7 @@ namespace TeamSupport.Data
       return builder.ToString();
     }
 
-    public void AddEmail(int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
+    public Email AddEmail(int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
     {
       Email email = AddNewEmail();
 
@@ -165,6 +165,7 @@ namespace TeamSupport.Data
       }
       if (attachments.Count > 0) email.Attachments = string.Join(";", attachments.ToArray());
       email.Size = size;
+      return email;
     }
 
     public void AddEmail(int organizationID, int? emailPostID, string description, MailMessage message)
@@ -172,16 +173,17 @@ namespace TeamSupport.Data
       AddEmail(organizationID, emailPostID, description, message, null);
     }
 
-    public static void AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
+    public static Email AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
     {
       Emails emails = new Emails(loginUser);
-      emails.AddEmail(organizationID, emailPostID, description, message, attachmentFileNames);
+      Email email = emails.AddEmail(organizationID, emailPostID, description, message, attachmentFileNames);
       emails.Save();
+      return email;
     }
 
-    public static void AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message)
+    public static Email AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message)
     {
-      Emails.AddEmail(loginUser, organizationID, emailPostID, description, message, null);
+      return Emails.AddEmail(loginUser, organizationID, emailPostID, description, message, null);
     }
 
   }

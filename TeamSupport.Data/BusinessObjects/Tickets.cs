@@ -1270,16 +1270,44 @@ AND u.OrganizationID = @OrganizationID
 SELECT ticketnumber, t.*, sn.*
 FROM Tickets t
 LEFT JOIN SlaNotifications sn ON t.TicketID = sn.TicketID
-
 WHERE  
-t.organizationID in (13679,362372)  and
 (
- DATEDIFF(minute,  t.SlaViolationTimeClosed, ISNULL(sn.TimeClosedViolationDate, '1/1/1980')) < 10 OR
- DATEDIFF(minute,  t.SlaWarningTimeClosed, ISNULL(sn.TimeClosedWarningDate, '1/1/1980')) < 10 OR
- DATEDIFF(minute,  t.SlaViolationLastAction, ISNULL(sn.LastActionViolationDate, '1/1/1980')) < 10 OR
- DATEDIFF(minute,  t.SlaWarningLastAction, ISNULL(sn.LastActionWarningDate, '1/1/1980')) < 10 OR
- DATEDIFF(minute,  t.SlaViolationInitialResponse, ISNULL(sn.InitialResponseViolationDate, '1/1/1980')) < 10 OR
- DATEDIFF(minute,  t.SlaWarningInitialResponse, ISNULL(sn.InitialResponseWarningDate, '1/1/1980')) < 10 
+( 
+    t.SlaViolationTimeClosed IS NOT NULL AND
+    ABS(DATEDIFF(day, t.SlaViolationTimeClosed, GETUTCDATE())) < 1 AND
+    DATEDIFF(minute,  t.SlaViolationTimeClosed, ISNULL(sn.TimeClosedViolationDate, '1/1/1980')) < 10 
+  )
+  OR
+  (
+    t.SlaWarningTimeClosed IS NOT NULL AND
+    ABS(DATEDIFF(day, t.SlaWarningTimeClosed, GETUTCDATE())) < 1 AND
+    DATEDIFF(minute,  t.SlaWarningTimeClosed, ISNULL(sn.TimeClosedWarningDate, '1/1/1980')) < 10 
+  )
+  OR
+  (
+    t.SlaViolationLastAction IS NOT NULL AND
+    ABS(DATEDIFF(day, t.SlaViolationLastAction, GETUTCDATE())) < 1 AND
+    DATEDIFF(minute,  t.SlaViolationLastAction, ISNULL(sn.LastActionViolationDate, '1/1/1980')) < 10 
+  )
+  OR
+  (
+    t.SlaWarningLastAction IS NOT NULL AND
+    ABS(DATEDIFF(day, t.SlaWarningLastAction, GETUTCDATE())) < 1 AND
+    DATEDIFF(minute,  t.SlaWarningLastAction, ISNULL(sn.LastActionWarningDate, '1/1/1980')) < 10 
+  )
+  OR
+  (
+    t.SlaViolationInitialResponse IS NOT NULL AND
+    ABS(DATEDIFF(day, t.SlaViolationInitialResponse, GETUTCDATE())) < 1 AND
+    DATEDIFF(minute,  t.SlaViolationInitialResponse, ISNULL(sn.InitialResponseViolationDate, '1/1/1980')) < 10 
+  )
+  OR
+  (
+    t.SlaWarningInitialResponse IS NOT NULL AND
+    ABS(DATEDIFF(day, t.SlaWarningInitialResponse, GETUTCDATE())) < 1 AND
+    DATEDIFF(minute,  t.SlaWarningInitialResponse, ISNULL(sn.InitialResponseWarningDate, '1/1/1980')) < 10 
+  )
+
 )";
 
 
