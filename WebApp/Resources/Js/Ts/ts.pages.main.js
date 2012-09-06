@@ -11,6 +11,7 @@
 
 window.name = "TSMain";
 var chatHubClient = $.connection.socket;
+var notify = false;
 
 Ts.Pages.Main = function () {
   this.MainLayout = null;
@@ -72,6 +73,16 @@ Ts.Pages.Main.prototype =
         var chatMessageCount = 0;
         var wcMessageCount = 0;
         var isDebug = false;
+
+        $("#jquery_jplayer_1").jPlayer({
+            ready: function () {
+                $(this).jPlayer("setMedia", {
+                    mp3: "vcr/142/Audio/chime.mp3"
+                });
+            },
+            loop: false,
+            swfPath: "vcr/142/Js"
+        });
 
         $('head').append(this.getCalcStyle());
         $('.main-loading').hide();
@@ -820,7 +831,7 @@ Ts.Pages.Main.prototype =
         this.WndScreenR = $('<iframe>', { id: 'wndScreenR', name: 'wndScreenR', src: 'ScreenR.html', width: '0', height: '0', frameborder: '0', scrolling: 'no' }).appendTo('body')[0];
 
         //Debug reasons
-        //$.connection.hub.logging = true;
+        $.connection.hub.logging = true;
         $.connection.hub.url = "/signalr/signalr";
         // Start the connection only if on main wc page
 
@@ -832,10 +843,10 @@ Ts.Pages.Main.prototype =
 
             chatWith(chatname, chatID);
             chatAddMsg(chatID, message, chatname);
-            //        if (notify) {
-            //            soundManager.play('chime');
-            //            top.Ts.MainPage.newChatAlert(chatname, ellipseString(message, 20));
-            //        }
+
+            if (notify) {
+                $("#jquery_jplayer_1").jPlayer("play", 0);
+            }
         };
 
     }, // end init
@@ -1105,3 +1116,10 @@ Ts.Pages.Main.prototype =
 };
 
 
+$(window).blur(function () {
+    notify = true;
+});
+
+$(window).focus(function () {
+    notify = false;
+});

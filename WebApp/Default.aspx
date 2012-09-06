@@ -22,9 +22,10 @@
   <script src="vcr/142/Js/jquery-1.7.2.min.js" type="text/javascript"></script>
   <script src="vcr/142/Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
   <script src="vcr/142/Js/chat.js" type="text/javascript"></script>
+  <script src="vcr/142/Js/json2.min.js" type="text/javascript"></script>
   <script src="vcr/142/Js/jquery.signalR-0.5.2.min.js" type="text/javascript"></script>
   <script src="/signalr/signalr/hubs" type="text/javascript"></script>
-
+  <script src="vcr/142/Js/jquery.jplayer.min.js" type="text/javascript"></script>
   <script type="text/javascript" language="javascript">
 
     var g_uac = ''
@@ -113,6 +114,7 @@
       </compositescript>
   </asp:ScriptManager>
   <asp:HiddenField ID="fieldSID" runat="server" Value="1234"></asp:HiddenField>
+  <div id="jquery_jplayer_1"></div>
   <div class="main-loading ts-loading">
   </div>
   <div class="main-container ui-widget ui-helper-hidden">

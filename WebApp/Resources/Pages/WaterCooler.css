@@ -185,3 +185,9 @@ input, select
     padding-top: .5em !important;
     padding-bottom: .5em !important;
 }
+
+.chatavatar
+{
+    width: 20px;
+    margin-right: 1em;
+}

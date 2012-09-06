@@ -23,8 +23,10 @@ $(document).ready(function(){
 });
 
 function restructureChatBoxes() {
-	align = 0;
-	for (x in chatBoxes) {
+    align = 0;
+
+    for (x=0;x<chatBoxes.length;x++)
+    {
 		chatboxtitle = chatBoxes[x];
 
 		if ($("#chatbox_"+chatboxtitle).css('display') != 'none') {
@@ -42,6 +44,7 @@ function restructureChatBoxes() {
 function chatWith(name, chatuserID) {
     createChatBox(chatuserID, name);
     $("#chatbox_" + chatuserID + " .boxsizingBorder").focus();
+    restructureChatBoxes();
 }
 
 function chatAddMsg(chatboxtitle, message, chatname) {
@@ -81,11 +84,13 @@ $("#chatbox_" + chatboxtitle + " .boxsizingBorder").focus();
 	
 	var chatBoxeslength = 0;
 
-	for (x in chatBoxes) {
-		if ( chatBoxes[x] ) {
-			chatBoxeslength++;
-		}
-	}
+
+	    for (x=0;x<chatBoxes.length;x++){
+	        var test = $("#chatbox_" + chatBoxes[x]).css('display');
+	        if (test != 'none') {
+	            chatBoxeslength++;
+	        }
+	    }
 
 	if (chatBoxeslength == 0) {
 		$("#chatbox_"+chatboxtitle).css('right', '20px');

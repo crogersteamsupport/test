@@ -39,25 +39,6 @@ WaterCoolerPage = function () {
 
     var notify;
 
-    //    soundManager.setup({
-    //        // disable or enable debug output
-    //        debugMode: true,
-    //        // use HTML5 audio for MP3/MP4, if available
-    //        preferFlash: false,
-    //        useFlashBlock: true,
-    //        // path to directory containing SM2 SWF
-    //        url: '../Audio/swf/',
-    //        // optional: enable MPEG-4/AAC support (requires flash 9)
-    //        flashVersion: 9, // optionally, enable when you're ready to dive in/**
-    //        onready: function () {
-    //            soundManager.createSound({
-    //                id: 'chime',
-    //                url: '../Audio/chime.mp3'
-    //            });
-    //        }
-
-    //    });
-
     $(window).blur(function () {
         notify = true;
     });
@@ -84,7 +65,7 @@ WaterCoolerPage = function () {
                         top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
                         top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
                     }
-                    
+
                 }
 
             }
@@ -328,6 +309,7 @@ WaterCoolerPage = function () {
         .appendTo($('.sidebarusers'));
         }
     });
+
 
     //Debug reasons
     //$.connection.hub.logging = true;
@@ -613,11 +595,7 @@ WaterCoolerPage = function () {
                 if (confirm('Are you sure you would like to remove this post?')) {
                     top.Ts.Services.WaterCooler.DeleteMessage(thread.Message.MessageID, function () {
                     });
-                    chatHubClient.del(thread.Message.MessageID);
-                }
-                else {
-                    $(this).prev().hide();
-                    $(this).hide();
+                    window.top.chatHubClient.del(thread.Message.MessageID);
                 }
             }).hide()
             .text('x')
@@ -808,10 +786,6 @@ WaterCoolerPage = function () {
                     top.Ts.Services.WaterCooler.DeleteMessage(thread.MessageID, function () {
                     });
                     window.top.chatHubClient.del(thread.MessageID);
-                }
-                else {
-                    $(this).prev().hide();
-                    $(this).hide();
                 }
             }).hide()
             .text('x')
