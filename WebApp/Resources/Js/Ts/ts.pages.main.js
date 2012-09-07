@@ -8,7 +8,7 @@
 /// <reference path="ts/ts.pages.tickets.js" />
 
 window.name = "TSMain";
-var chatHubClient = $.connection.socket;
+//var chatHubClient = $.connection.socket;
 var notify = false;
 
 Ts.Pages.Main = function () {
@@ -826,7 +826,7 @@ Ts.Pages.Main.prototype =
         });
 
         this.WndScreenR = $('<iframe>', { id: 'wndScreenR', name: 'wndScreenR', src: 'ScreenR.html', width: '0', height: '0', frameborder: '0', scrolling: 'no' }).appendTo('body')[0];
-
+/*
         //Debug reasons
         $.connection.hub.logging = true;
         $.connection.hub.url = "/signalr/signalr";
@@ -845,7 +845,7 @@ Ts.Pages.Main.prototype =
                 $("#jquery_jplayer_1").jPlayer("play", 0);
             }
         };
-
+        */
     }, // end init
 
     recordScreen: function (params, onComplete, onCancel) {
