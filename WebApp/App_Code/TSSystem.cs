@@ -136,7 +136,8 @@ namespace TSWebServices
           items.Add(new TsMenuItem("wiki", "mniWiki", "Wiki", "vcr/142/images/nav/16/wiki.png", string.Format(data, wikiLink, "vcr/142/PaneInfo/Wiki.html")));
         }
 
-        items.Add(new TsMenuItem("search", "mniSearch", "Search", "vcr/142/images/nav/16/search.png", string.Format(data, "Frames/Search.aspx", "vcr/142/PaneInfo/Search.html")));
+        //items.Add(new TsMenuItem("search", "mniSearch", "Search", "vcr/142/images/nav/16/search.png", string.Format(data, "Frames/Search.aspx", "vcr/141/PaneInfo/Search.html")));
+        items.Add(new TsMenuItem("search", "mniSearch", "Search", "vcr/142/images/nav/16/search.png", string.Format(data, "vcr/142/Pages/Search.html", "vcr/142/PaneInfo/Search.html")));
 
         if (user.IsChatUser && org.ChatSeats > 0)
         {

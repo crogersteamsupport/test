@@ -1,3 +1,4 @@
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -687,6 +688,53 @@ namespace TeamSupport.Data
     
     }
 
+    public static SearchResults GetSearchTicketResultsv2(string searchTerm, LoginUser loginUser)
+    {
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+      using (SearchJob job = new SearchJob())
+      {
+
+        searchTerm = searchTerm.Trim();
+        job.Request = searchTerm;
+        job.FieldWeights = "Name: 1000";
+
+
+        StringBuilder conditions = new StringBuilder();
+        //if (filter != null)
+        //{
+        //  if (filter.IsKnowledgeBase != null) conditions.Append("(IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString() + ")");
+        //}
+        job.BooleanConditions = conditions.ToString();
+
+
+        job.MaxFilesToRetrieve = 1000;
+        job.AutoStopLimit = 1000000;
+        job.TimeoutSeconds = 30;
+        job.SearchFlags =
+          //SearchFlags.dtsSearchSelectMostRecent |
+          SearchFlags.dtsSearchDelayDocInfo;
+
+        int num = 0;
+        if (!int.TryParse(searchTerm, out num))
+        {
+          job.Fuzziness = 1;
+          job.SearchFlags = job.SearchFlags | 
+            SearchFlags.dtsSearchFuzzy | 
+            SearchFlags.dtsSearchStemming |
+            SearchFlags.dtsSearchPositionalScoring |
+            SearchFlags.dtsSearchAutoTermWeight;
+        }
+
+        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+        job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(loginUser));
+        job.Execute();
+
+        return job.Results;
+      }
+
+    }
+
     public static int[] GetTicketIDs(string searchTerm, LoginUser loginUser)
     {
       return GetTicketIDs(searchTerm, loginUser, null);
@@ -712,7 +760,31 @@ namespace TeamSupport.Data
       return items.ToArray();
     }
 
-    
+    public static List<SqlDataRecord> GetSearchResultsList(string searchTerm, LoginUser loginUser)
+    {
+      SqlMetaData recordIDColumn  = new SqlMetaData("recordID", SqlDbType.Int);
+      SqlMetaData relevanceColumn = new SqlMetaData("relevance", SqlDbType.Int);
+
+      SqlMetaData[] columns = new SqlMetaData[] { recordIDColumn, relevanceColumn };
+
+      List<SqlDataRecord> result = new List<SqlDataRecord>();
+
+      SearchResults results = GetSearchTicketResultsv2(searchTerm, loginUser);
+
+      List<int> items = new List<int>();
+      for (int i = 0; i < results.Count; i++)
+      {
+        results.GetNthDoc(i);
+
+        SqlDataRecord record = new SqlDataRecord(columns);
+        record.SetInt32(0, int.Parse(results.CurrentItem.Filename));
+        record.SetInt32(1, results.CurrentItem.ScorePercent);
+
+        result.Add(record);
+      }
+
+      return result;
+    } 
 
     private static void AddTicketParameter(string name, object value, bool isUnassignableInt, StringBuilder builder, SqlCommand command)
     {
@@ -1007,6 +1079,20 @@ WHERE tgv.OrganizationID = @OrganizationID"
        }*/
     }
 
+    public static string GetSearchResultsWhereClause(LoginUser loginUser)
+    {
+      StringBuilder resultBuilder = new StringBuilder();
+
+      SearchStandardFilters searchStandardFilters = new SearchStandardFilters(loginUser);
+      searchStandardFilters.LoadByUserID(loginUser.UserID);
+      resultBuilder.Append(searchStandardFilters.ConvertToWhereClause());
+
+      SearchCustomFilters searchCustomFilters = new SearchCustomFilters(loginUser);
+      searchCustomFilters.LoadByUserID(loginUser.UserID);
+      resultBuilder.Append(searchCustomFilters.ConvertToWhereClause());
+
+      return resultBuilder.ToString();
+    }
   }
 
 

@@ -82,6 +82,12 @@ Ts.Services = {};
     Ts.Services.Assets = new TSWebServices.AssetService();
     Ts.Services.Assets.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Assets.set_defaultFailedCallback(defaultFailedCallback);
+
+
+    Ts.Services.Search = new TSWebServices.SearchService();
+    Ts.Services.Search.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.Search.set_defaultFailedCallback(defaultFailedCallback);
+
     callback();
   }
 
