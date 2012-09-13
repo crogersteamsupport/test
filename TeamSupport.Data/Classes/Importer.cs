@@ -1281,6 +1281,12 @@ AND RTRIM(LastName) = @LastName
         if (row.Table.Columns.Contains("TicketNumber") && row["TicketNumber"].ToString().Trim() != "")
         {
           ticketNumber = int.Parse(row["TicketNumber"].ToString());
+          Ticket tempTicket = Tickets.GetTicketByNumber(_loginUser, _organizationID, ticketNumber);
+          if (tempTicket != null)
+          {
+            _log.AppendError(row, "Ticket already exists, skipping.");
+            continue;          
+          }
         }
         else
         {
