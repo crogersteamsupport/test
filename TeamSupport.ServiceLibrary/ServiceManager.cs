@@ -174,7 +174,9 @@ namespace TeamSupport.ServiceLibrary
 
           if (FindServiceThread(service.Name) == null)
           {
-            RecreateThread(service);
+            _logs.WriteEvent("Unable to find thread: " + service.Name);
+
+            //RecreateThread(service);
           }
         }
 
@@ -227,11 +229,18 @@ namespace TeamSupport.ServiceLibrary
           }
 
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-          
+          _logs.WriteEvent("Exception finding thread: " + serviceName);
+          _logs.WriteException(ex);
+          _logs.WriteEvent("Thread Count: " + _threads.Count.ToString());
+          foreach (ServiceThread item in _threads)
+          {
+            _logs.WriteEvent("Thread: " + item.ServiceName);
+          }
         }
       }
+      _logs.WriteEvent("Thread not found: " + serviceName);
       return null;
     }
 

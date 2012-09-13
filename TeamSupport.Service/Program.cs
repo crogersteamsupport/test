@@ -19,8 +19,7 @@ namespace TeamSupport.Service
   {
     Logs _logs;
     ServiceManager _serviceManager;
-    
-
+ 
     static void Main(string[] args)
     {
       ServiceBase.Run(new Program());
