@@ -57,6 +57,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SignalR", "SignalR\", "{47E
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "32883"
 	EndProjectSection
 EndProject
 Global
