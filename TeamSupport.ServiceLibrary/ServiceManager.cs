@@ -231,12 +231,15 @@ namespace TeamSupport.ServiceLibrary
         }
         catch (Exception ex)
         {
-          _logs.WriteEvent("Exception finding thread: " + serviceName);
-          _logs.WriteException(ex);
-          _logs.WriteEvent("Thread Count: " + _threads.Count.ToString());
-          foreach (ServiceThread item in _threads)
+          try
           {
-            _logs.WriteEvent("Thread: " + item.ServiceName);
+            _logs.WriteEvent("Exception finding thread: " + serviceName);
+            _logs.WriteException(ex);
+            _logs.WriteEvent("Thread Count: " + _threads.Count.ToString());
+          }
+          catch (Exception)
+          {
+            
           }
         }
       }
