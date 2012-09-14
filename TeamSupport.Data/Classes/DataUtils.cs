@@ -1586,6 +1586,7 @@ namespace TeamSupport.Data
       }
       return result;
     }
+<<<<<<< .working
 
     public static string GetWikiIndexPath(LoginUser loginUser)
     {
@@ -1647,5 +1648,123 @@ namespace TeamSupport.Data
       return result;
     }
 
+=======
+
+    public static string GetWikiIndexPath(LoginUser loginUser)
+    {
+      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
+      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Wikis");
+      if (!Directory.Exists(result))
+      {
+        result = Path.Combine(root, "Wikis");
+      }
+      return result;
+    }
+
+    public static string GetNotesIndexPath(LoginUser loginUser)
+    {
+      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
+      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Notes");
+      if (!Directory.Exists(result))
+      {
+        result = Path.Combine(root, "Notes");
+      }
+      return result;
+    }
+
+    public static string GetProductVersionsIndexPath(LoginUser loginUser)
+    {
+      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
+      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\ProductVersions");
+      if (!Directory.Exists(result))
+      {
+        result = Path.Combine(root, "ProductVersions");
+      }
+      return result;
+    }
+
+    public static bool GetIsColumnInBaseCollection(BaseCollection baseCollection, string columnName)
+    {
+      bool result = false;
+      foreach (DataColumn column in baseCollection.Table.Columns)
+      {
+        if (String.Equals(column.ColumnName, columnName, StringComparison.OrdinalIgnoreCase))
+        {
+          result = true;
+          break;
+        }
+      }
+      return result;
+    }
+
+    public static string GetWikiEquivalentFieldName(string ticketFieldName)
+    {
+      string result = string.Empty;
+
+      switch (ticketFieldName)
+      {
+        case "Name":
+          result = "ArticleName";
+          break;
+        case "CreatorID":
+          result = "CreatedBy";
+          break;
+        case "CreatorName":
+          result = "Creator";
+          break;
+        case "DateCreated":
+          result = "CreatedDate";
+          break;
+        case "ModifierID":
+          result = "ModifiedBy";
+          break;
+        case "ModifierName":
+          result = "Modifier";
+          break;
+        case "DateModified":
+          result = "ModifiedDate";
+          break;
+        default:
+          result = ticketFieldName;
+          break;
+      }
+
+      return result;
+    }
+
+    public static string GetNotesEquivalentFieldName(string ticketFieldName)
+    {
+      string result = string.Empty;
+
+      switch (ticketFieldName)
+      {
+        case "Name":
+          result = "Title";
+          break;
+        default:
+          result = ticketFieldName;
+          break;
+      }
+
+      return result;
+    }
+
+    public static string GetProductVersionsEquivalentFieldName(string ticketFieldName)
+    {
+      string result = string.Empty;
+
+      switch (ticketFieldName)
+      {
+        case "TicketNumber":
+          result = "VersionNumber";
+          break;
+        default:
+          result = ticketFieldName;
+          break;
+      }
+
+      return result;
+    }
+>>>>>>> .merge-right.r555
   }
 }

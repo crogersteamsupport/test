@@ -121,6 +121,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IndexDataSource.cs" />
+    <Compile Include="NoteIndexDataSource.cs" />
+    <Compile Include="ProductVersionIndexDataSource.cs" />
     <Compile Include="ServiceManager.cs" />
     <Compile Include="ReportSender.cs" />
     <Compile Include="ReminderProcessor.cs" />

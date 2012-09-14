@@ -354,7 +354,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
             directionText.html('Descending');
           }
           else {
-            directionText.html('Ascending');
+            direction.html('Ascending');
           }
 
           if (clickedSorterID == null) {
