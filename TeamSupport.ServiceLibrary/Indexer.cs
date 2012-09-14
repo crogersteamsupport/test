@@ -27,8 +27,6 @@ namespace TeamSupport.ServiceLibrary
           Logs.WriteEvent(string.Format("Started Indexing for org: {0}, [{1}/{2}]",org.OrganizationID.ToString(), cnt.ToString(), orgs.Count.ToString()));
           ProcessIndex(org, ReferenceType.Tickets);
           ProcessIndex(org, ReferenceType.Wikis);
-          ProcessIndex(org, ReferenceType.Notes);
-          ProcessIndex(org, ReferenceType.ProductVersions);
           UpdateHealth();
         }
 
@@ -72,20 +70,6 @@ namespace TeamSupport.ServiceLibrary
            tableName                            = "WikiArticles";
            primaryKeyName                       = "ArticleID";
            indexDataSource                      = new WikiIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
-           break;
-        case ReferenceType.Notes:
-           indexPath                            = "\\Notes";
-           deletedIndexItemsFileName            = "DeletedNotes.txt";
-           tableName                            = "Notes";
-           primaryKeyName                       = "NoteID";
-           indexDataSource                      = new NoteIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
-           break;
-        case ReferenceType.ProductVersions:
-           indexPath                            = "\\ProductVersions";
-           deletedIndexItemsFileName            = "DeletedProductVersions.txt";
-           tableName                            = "ProductVersions";
-           primaryKeyName                       = "ProductVersionID";
-           indexDataSource                      = new ProductVersionIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
            break;
         default:
           throw new System.ArgumentException("ReferenceType " + referenceType.ToString() + " is not supported by indexer."); 

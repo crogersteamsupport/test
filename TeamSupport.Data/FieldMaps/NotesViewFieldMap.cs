@@ -24,9 +24,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DateCreated", "DateCreated", true, true, true);
       _fieldMap.AddMap("CreatorName", "CreatorName", true, true, true);
       _fieldMap.AddMap("ModifierName", "ModifierName", true, true, true);
-      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
-      _fieldMap.AddMap("ParentOrganizationID", "ParentOrganizationID", false, false, false);
-      _fieldMap.AddMap("OrganizationName", "OrganizationName", false, false, false);
             
     }
   }

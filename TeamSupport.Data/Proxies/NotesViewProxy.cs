@@ -22,11 +22,8 @@ namespace TeamSupport.Data
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
-    [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public string CreatorName { get; set; }
     [DataMember] public string ModifierName { get; set; }
-    [DataMember] public int? ParentOrganizationID { get; set; }
-    [DataMember] public string OrganizationName { get; set; }
           
   }
   
@@ -35,11 +32,8 @@ namespace TeamSupport.Data
     public NotesViewItemProxy GetProxy()
     {
       NotesViewItemProxy result = new NotesViewItemProxy();
-      result.OrganizationName = this.OrganizationName;
-      result.ParentOrganizationID = this.ParentOrganizationID;
       result.ModifierName = this.ModifierName;
       result.CreatorName = this.CreatorName;
-      result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.Description = this.Description;

@@ -1130,8 +1130,6 @@ namespace TeamSupport.Data
 @"SELECT * FROM Organizations o 
 WHERE EXISTS (SELECT * FROM Tickets t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
 OR EXISTS (SELECT * FROM WikiArticles w WHERE w.OrganizationID = o.OrganizationID And w.NeedsIndexing=1)
-OR EXISTS (SELECT * FROM NotesView nv WHERE nv.ParentOrganizationID = o.OrganizationID AND nv.NeedsIndexing=1)
-OR EXISTS (SELECT * FROM ProductVersionsView pvv WHERE pvv.OrganizationID = o.OrganizationID AND pvv.NeedsIndexing=1)
 OR EXISTS (
   SELECT * FROM DeletedIndexItems dii 
   WHERE dii.RefType IN (17, 39)

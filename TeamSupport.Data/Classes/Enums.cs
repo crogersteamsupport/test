@@ -50,8 +50,7 @@ namespace TeamSupport.Data
      ForumCategories = 36,
      UserPhoto = 37,
      WaterCooler = 38,
-     Wikis = 39,
-     Notes = 40
+     Wikis = 39
   };
 
   public enum SystemUser
