@@ -47,6 +47,9 @@ namespace TSWebServices
       CustomFields customs = new CustomFields(fields.LoginUser);
       customs.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets);
 
+      TicketTypes ticketTypes = new TicketTypes(fields.LoginUser);
+      ticketTypes.LoadAllPositions(TSAuthentication.OrganizationID);
+
       foreach (ReportTableField field in fields)
       {
         fieldItems.Add(new AutoFieldItem(field));
@@ -54,7 +57,8 @@ namespace TSWebServices
 
       foreach (CustomField custom in customs)
       {
-        fieldItems.Add(new AutoFieldItem(custom));
+        TicketType ticketType = ticketTypes.FindByTicketTypeID(custom.AuxID);
+        fieldItems.Add(new AutoFieldItem(custom, string.Format("{0} ({1})", custom.Name, ticketType.Name)));
       }
 
       ReportTableField actionsViewDescription = ReportTableFields.GetReportTableField(fields.LoginUser, 6);
@@ -90,8 +94,6 @@ namespace TSWebServices
       }
       result.Severities = severityItems.ToArray();
 
-      TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
-      ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
       List<AutocompleteItem> statusItems = new List<AutocompleteItem>();
 
       foreach (TicketType ticketType in ticketTypes)
@@ -296,14 +298,20 @@ namespace TSWebServices
   public class AutoFieldItem
   {
     public AutoFieldItem() { }
-    public AutoFieldItem(CustomField field) 
+
+    public AutoFieldItem(CustomField field)
+    {
+      new AutoFieldItem(field, field.Name);
+    }
+
+    public AutoFieldItem(CustomField field, string aliasName) 
     {
       this.FieldID = field.CustomFieldID;
       this.RefType = ReferenceType.Tickets;
       this.AuxID = field.AuxID;
       this.IsCustom = true;
       this.FieldName = field.Name;
-      this.Alias = field.Name;
+      this.Alias = aliasName;
 
       switch (field.FieldType)
       {

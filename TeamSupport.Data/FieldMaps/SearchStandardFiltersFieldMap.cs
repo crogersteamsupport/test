@@ -18,6 +18,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Tickets", "Tickets", false, false, false);
       _fieldMap.AddMap("KnowledgeBase", "KnowledgeBase", false, false, false);
       _fieldMap.AddMap("Wikis", "Wikis", false, false, false);
+      _fieldMap.AddMap("Notes", "Notes", false, false, false);
+      _fieldMap.AddMap("ProductVersions", "ProductVersions", false, false, false);
             
     }
   }

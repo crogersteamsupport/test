@@ -161,6 +161,7 @@ namespace TSWebServices
       option.HonorSupportExpiration = proxy.HonorSupportExpiration;
       option.DisplayProducts = proxy.DisplayProducts;
       option.KBAccess = proxy.KBAccess;
+      option.DisablePublicMyTickets = proxy.DisablePublicMyTickets;
       //option.PortalName = proxy.PortalName;
       option.DisplayGroups = proxy.DisplayGroups;
       option.BasicPortalColumnWidth = proxy.BasicPortalColumnWidth;
@@ -182,6 +183,8 @@ namespace TSWebServices
       option.TermsAndConditions = proxy.TermsAndConditions;
       option.AutoRegister = proxy.AutoRegister;
       option.RequestAccess = proxy.RequestAccess;
+      option.RequestGroup = proxy.RequestGroup;
+      option.RequestType = proxy.RequestType;
 
       option.Collection.Save();
 

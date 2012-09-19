@@ -259,28 +259,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HtmlAgilityPack\HtmlAgilityPack\HtmlAgilityPack.csproj">
-      <Project>{193BB801-054F-4729-9D5D-FCE1E32594BF}</Project>
-      <Name>HtmlAgilityPack</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SharpZipLib\SharpZipLib.csproj">
-      <Project>{53D27B3B-92A1-4246-94D9-390124F447EC}</Project>
-      <Name>SharpZipLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
-      <Project>{1943AC11-1F2D-4B85-9F0F-4D67284814BE}</Project>
-      <Name>TeamSupport.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TeamSupport.ServiceLibrary\TeamSupport.ServiceLibrary.csproj">
-      <Project>{6AD9D48C-DDBA-4045-BFAA-362A1FCB0AA0}</Project>
-      <Name>TeamSupport.ServiceLibrary</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TidyNet\TidyNet.csproj">
-      <Project>{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}</Project>
-      <Name>TidyNet</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +276,16 @@
       <CachedAppSettingsObjectName>MySettings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>SF_Text_App_2_sForce_SforceService</CachedSettingsPropName>
     </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TeamSupport.Data\TeamSupport.Data.csproj">
+      <Project>{1943AC11-1F2D-4B85-9F0F-4D67284814BE}</Project>
+      <Name>TeamSupport.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TeamSupport.ServiceLibrary\TeamSupport.ServiceLibrary.csproj">
+      <Project>{6AD9D48C-DDBA-4045-BFAA-362A1FCB0AA0}</Project>
+      <Name>TeamSupport.ServiceLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

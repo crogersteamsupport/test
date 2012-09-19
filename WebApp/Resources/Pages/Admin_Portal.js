@@ -78,8 +78,13 @@ AdminPortal = function () {
     for (var i = 0; i < groups.length; i++) {
       $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('#portal_def_group');
     }
-
     $('#portal_def_group').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
+
+    $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#portal_req_group');
+    for (var i = 0; i < groups.length; i++) {
+      $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('#portal_req_group');
+    }
+    $('#portal_req_group').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
 
     $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_group');
     for (var i = 0; i < groups.length; i++) {
@@ -94,6 +99,13 @@ AdminPortal = function () {
     }
     $('#com_cat_tickettype').combobox({ selected: function (e, ui) { $('.com-cat-save-panel').show(); } });
 
+    $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#portal_req_tickettype');
+    for (var i = 0; i < ticketTypes.length; i++) {
+      $('<option>').attr('value', ticketTypes[i].TicketTypeID).text(ticketTypes[i].Name).data('o', ticketTypes[i]).appendTo('#portal_req_tickettype');
+    }
+    $('#portal_req_tickettype').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
+
+    portal_req_tickettype
     var products = top.Ts.Cache.getProducts();
     $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_product');
     for (var i = 0; i < products.length; i++) {
@@ -127,6 +139,8 @@ AdminPortal = function () {
     $('#portal_name').val(portalOption.PortalName);
     $('#portal_deflection').prop('checked', portalOption.DeflectionEnabled == null ? false : portalOption.DeflectionEnabled);
     $('#portal_def_group').combobox('setValue', organization.DefaultPortalGroupID);
+    $('#portal_req_group').combobox('setValue', portalOption.RequestGroup);
+    $('#portal_req_tickettype').combobox('setValue', portalOption.RequestType);
     $('#portal_show_grouplist').prop('checked', portalOption.DisplayGroups == null ? false : portalOption.DisplayGroups);
     $('#portal_show_product').prop('checked', portalOption.DisplayProducts == null ? false : portalOption.DisplayProducts);
     $('#portal_show_version').prop('checked', portalOption.DisplayProductVersion == null ? false : portalOption.DisplayProductVersion);
@@ -150,7 +164,7 @@ AdminPortal = function () {
     $('#portal_adv_autoregister').prop('checked', portalOption.AutoRegister == true);
     $('#portal_adv_showrequestaccess').prop('checked', portalOption.RequestAccess == true);
 
-    
+
 
     $('#portal_captcha').prop('checked', portalOption.UseRecaptcha == null ? false : portalOption.UseRecaptcha);
     $('#portal_basic_header').val(portalOption.BasicPortalDirections);
@@ -160,6 +174,7 @@ AdminPortal = function () {
     $('#portal_company_required').prop('checked', portalOption.CompanyRequiredInBasic == null ? false : portalOption.CompanyRequiredInBasic);
     $('#portal_kb_url').text('https://kb.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://kb.teamsupport.com/' + portalOption.PortalName);
     $('#portal_allow_kb').prop('checked', portalOption.KBAccess == null ? false : portalOption.KBAccess);
+    $('#portal_allow_mytickets').prop('checked', !portalOption.DisablePublicMyTickets);
     $('#portal_wiki_url').text('https://articles.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://articles.teamsupport.com/' + portalOption.PortalName);
     $('#portal_allow_wiki').prop('checked', organization.IsPublicArticles);
     $('#portal_landing_url').text('https://publicportal.teamsupport.com/' + portalOption.PortalName).attr('href', 'https://publicportal.teamsupport.com/' + portalOption.PortalName);
@@ -180,6 +195,8 @@ AdminPortal = function () {
     portalOption.DisplayProducts = $('#portal_show_product').prop('checked');
     portalOption.DisplayProductVersion = $('#portal_show_version').prop('checked');
     portalOption.Theme = $('#portal_theme').val();
+    portalOption.RequestGroup = $('#portal_req_group').val();
+    portalOption.RequestType = $('#portal_req_tickettype').val();
     portalOption.PortalHTMLHeader = $('#portal_header').val();
     portalOption.PortalHTMLFooter = $('#portal_footer').val();
     portalOption.EnableScreenr = $('#portal_screen_rec').prop('checked');
@@ -205,6 +222,7 @@ AdminPortal = function () {
     portalOption.UseCompanyInBasic = $('#portal_use_company').prop('checked');
     portalOption.CompanyRequiredInBasic = $('#portal_company_required').prop('checked');
     portalOption.KBAccess = $('#portal_allow_kb').prop('checked');
+    portalOption.DisablePublicMyTickets = !$('#portal_allow_mytickets').prop('checked');
     //organization.IsPublicArticles = $('#portal_allow_wiki').prop('checked');
     portalOption.PublicLandingPageBody = $('#portal_public_landing_body').val();
     portalOption.PublicLandingPageHeader = $('#portal_public_landing_header').val();

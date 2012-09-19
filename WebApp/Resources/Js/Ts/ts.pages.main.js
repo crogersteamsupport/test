@@ -6,10 +6,11 @@
 /// <reference path="ts/ts.ui.tabs.js" />
 /// <reference path="~/Default.aspx" />
 /// <reference path="ts/ts.pages.tickets.js" />
+/// <reference path="../noty/jquery.noty.js" />
+
 
 window.name = "TSMain";
-//var chatHubClient = $.connection.socket;
-var notify = false;
+
 
 Ts.Pages.Main = function () {
   this.MainLayout = null;
@@ -71,16 +72,6 @@ Ts.Pages.Main.prototype =
         var chatMessageCount = 0;
         var wcMessageCount = 0;
         var isDebug = false;
-
-        $("#jquery_jplayer_1").jPlayer({
-            ready: function () {
-                $(this).jPlayer("setMedia", {
-                    mp3: "vcr/142/Audio/chime.mp3"
-                });
-            },
-            loop: false,
-            swfPath: "vcr/142/Js"
-        });
 
         $('head').append(this.getCalcStyle());
         $('.main-loading').hide();
@@ -671,6 +662,7 @@ Ts.Pages.Main.prototype =
                     if (item.getType() == 'wc2') {
                         self.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(false);
                         Ts.Services.System.UpdateLastWaterCoolerID();
+                        self.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler");
                     }
 
                     if (item.getType() == 'chat') {
@@ -685,6 +677,7 @@ Ts.Pages.Main.prototype =
                         var frame = $('<iframe>')
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
+              .attr('id', 'iframe-' + item.getId())
               .appendTo(div)
               .attr('src', item.getData().ContentUrl);
                     }
@@ -713,6 +706,7 @@ Ts.Pages.Main.prototype =
                         $('<iframe>')
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
+              .addClass('ticketIframe')
               .appendTo(div)
               .attr('src', 'vcr/142/Pages/Ticket.html?TicketNumber=' + tab.getId());
                     }
@@ -826,26 +820,9 @@ Ts.Pages.Main.prototype =
         });
 
         this.WndScreenR = $('<iframe>', { id: 'wndScreenR', name: 'wndScreenR', src: 'ScreenR.html', width: '0', height: '0', frameborder: '0', scrolling: 'no' }).appendTo('body')[0];
-/*
-        //Debug reasons
-        $.connection.hub.logging = true;
-        $.connection.hub.url = "/signalr/signalr";
-        // Start the connection only if on main wc page
 
-        $.connection.hub.start(function () {
-            chatHubClient.login(top.Ts.System.User.UserID);
-        });
+ 
 
-        chatHubClient.chatMessage = function (message, chatID, chatname) {
-
-            chatWith(chatname, chatID);
-            chatAddMsg(chatID, message, chatname);
-
-            if (notify) {
-                $("#jquery_jplayer_1").jPlayer("play", 0);
-            }
-        };
-        */
     }, // end init
 
     recordScreen: function (params, onComplete, onCancel) {
@@ -968,6 +945,19 @@ Ts.Pages.Main.prototype =
         if (contentFrame && contentFrame.contentWindow.selectCustomer) {
             contentFrame.contentWindow.selectCustomer(customerID);
         }
+    },
+    openGroup: function (groupID) {
+        var self = this;
+        Ts.Services.Settings.WriteUserSetting('SelectedGroupID', groupID, function () {
+            Ts.Services.Settings.WriteUserSetting('SelectedGroupTabIndex', 0, function () {
+                self.MainMenu.find('mniGroups', 'groups').select();
+                var element = $('.main-tab-content-item:visible');
+                var contentFrame = $(element).children('iframe')[0];
+                if (contentFrame && contentFrame.contentWindow.refreshData) {
+                    contentFrame.contentWindow.refreshData;
+                }
+            });
+        });
     },
     openAdmin: function (tabText) {
         var self = this;
@@ -1104,19 +1094,11 @@ Ts.Pages.Main.prototype =
         }
         //$('.reminder-description').val((params.Description ? params.Description : ''));
         //$('.reminder-description').val((params.Description ? params.Description : ''));
-    },
-
-    openChat: function (name, chatid) {
-        chatWith(name, chatid);
     }
 
 };
 
 
-$(window).blur(function () {
-    notify = true;
-});
 
-$(window).focus(function () {
-    notify = false;
-});
+
+

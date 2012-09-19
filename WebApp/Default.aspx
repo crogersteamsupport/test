@@ -24,7 +24,7 @@
   <script src="vcr/142/Js/chat.js" type="text/javascript"></script>
   <script src="vcr/142/Js/json2.min.js" type="text/javascript"></script>
   <script src="vcr/142/Js/jquery.signalR-0.5.2.min.js" type="text/javascript"></script>
-  <script src="/signalr/signalr/hubs" type="text/javascript"></script>
+  <script src="signalr/signalr/hubs" type="text/javascript"></script>
   <script src="vcr/142/Js/jquery.jplayer.min.js" type="text/javascript"></script>
   <script type="text/javascript" language="javascript">
 
@@ -98,7 +98,7 @@
           <asp:ScriptReference Path="vcr/142/Js/ts/ts.cache.js" />
           <asp:ScriptReference Path="vcr/142/Js/ts/ts.ui.tabs.js" />
           <asp:ScriptReference Path="vcr/142/Js/ts/ts.ui.menutree.js" />
-
+          <asp:ScriptReference Path="vcr/142/Js/ts/ts.wc.signalr.js" />
           <asp:ScriptReference Path="vcr/142/Js/ts/ts.pages.main.js" />
 
 

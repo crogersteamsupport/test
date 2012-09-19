@@ -191,3 +191,24 @@ input, select
     width: 20px;
     margin-right: 1em;
 }
+
+.placeholder
+{
+    margin: 0 auto;
+    text-align: center;
+}
+
+.scrollup{
+    width:40px;
+    height:40px;
+    opacity:0.3;
+    position:fixed;
+    bottom:50px;
+    right:100px;
+    display:none;
+    text-indent:-9999px;
+    background: url('../Images/icons/icon_top.png') no-repeat;
+    border-color: #D5E5F7;
+    outline-style:none !important;
+}
+

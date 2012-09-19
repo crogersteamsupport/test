@@ -25,6 +25,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public string VersionStatus { get; set; }
     [DataMember] public string ProductName { get; set; }
     [DataMember] public int OrganizationID { get; set; }
@@ -39,6 +40,7 @@ namespace TeamSupport.Data
       result.OrganizationID = this.OrganizationID;
       result.ProductName = this.ProductName;
       result.VersionStatus = this.VersionStatus;
+      result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.ImportID = this.ImportID;

@@ -312,7 +312,26 @@
                     <p></p>
                   </div>
                 </div>
-
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Request Ticket Type</div>
+                  <div class="ts-setting-field-content">
+                    <select id="portal_req_tickettype"></select>
+                    <div class="ts-clearfix">
+                      &nbsp</div>
+                    <p>Ticket type for when a customer requests access to the portal.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Request Group</div>
+                  <div class="ts-setting-field-content">
+                    <select id="portal_req_group"></select>
+                    <div class="ts-clearfix">
+                      &nbsp</div>
+                    <p>Group to assign ticket when a customer requests access to the portal.</p>
+                  </div>
+                </div>
                 <div class="ts-setting-field two-column ui-widget-content">
                   <div class="ts-setting-field-description">
                     Require Terms and Conditions</div>
@@ -330,8 +349,11 @@
                     <textarea id="portal_adv_toc" class="ui-corner-all ui-widget-content"></textarea>
                   </div>
                 </div>
+     
+
                 <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
               </div>
+
               <div id="tabs-basic" class="tabs-modifiable">
                 <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
                 <div class="ts-setting-field two-column ui-widget-content">
@@ -428,6 +450,15 @@
                       for="portal_allow_kb">Enabled</label>
                     <p>When a ticket is marked "visible to customers" and "knowledgebase", the ticket added to the public knowledgebase where customers can search. In some cases, companies do not want or need this ability since it is non-authenticated . If you do not want or have a need for this, you can turn off the public knowledgebase.</p>
                     <p>Note:  This setting does not impact the KB button on the landing page.  If you turn this off, the KB button will still be present on the landing page.  If you do not want the KB to appear at all on your landing page, you need to edit the Portal Landing Page Header HTML located above.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Allow Access to My Tickets</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_allow_mytickets" /><label class="checkbox"
+                      for="portal_allow_mytickets">Enabled</label>
+                    <p></p>
                   </div>
                 </div>
                 <div class="ts-setting-field two-column ui-widget-content">

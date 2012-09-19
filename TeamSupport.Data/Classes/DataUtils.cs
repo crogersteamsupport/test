@@ -162,7 +162,7 @@ namespace TeamSupport.Data
     {
       if (text.Length > 0 && text[0] != '"')
       {
-       // if (text.IndexOf('*') > -1) return "\"" + text + "\"";
+        // if (text.IndexOf('*') > -1) return "\"" + text + "\"";
       }
       return text;
     }
@@ -266,7 +266,7 @@ namespace TeamSupport.Data
       builder.Append(") AND (RefID = ");
       builder.Append(refIDFieldName);
       builder.Append(")) ");
-      
+
 
       //"(SELECT CustomValue FROM CustomValues WHERE (CustomFieldID = 654) AND (RefID = TicketsView.TicketID)) AS [Approved By Manager]"
       if (field.FieldType == CustomFieldType.PickList)
@@ -292,7 +292,7 @@ namespace TeamSupport.Data
           {
             alias.Append(" (" + ticketType.Name + ")");
           }
-        
+
         }
 
         if (allowSpaces)
@@ -1003,7 +1003,7 @@ namespace TeamSupport.Data
             if (i > 0) builder.Append(",");
             string value = reader[i].ToString();
             if (value.Length > 8000) value = value.Substring(0, 8000);
-            
+
             value = "\"" + value.Replace("\"", "\"\"") + "\"";
             if (replaceNewLineWithHtml) value = value.Replace(Environment.NewLine, "<br />");
             Encoding ascii = Encoding.GetEncoding("us-ascii", new EncoderReplacementFallback("*"), new DecoderReplacementFallback("*"));
@@ -1598,6 +1598,28 @@ namespace TeamSupport.Data
       return result;
     }
 
+    public static string GetNotesIndexPath(LoginUser loginUser)
+    {
+      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
+      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Notes");
+      if (!Directory.Exists(result))
+      {
+        result = Path.Combine(root, "Notes");
+      }
+      return result;
+    }
+
+    public static string GetProductVersionsIndexPath(LoginUser loginUser)
+    {
+      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
+      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\ProductVersions");
+      if (!Directory.Exists(result))
+      {
+        result = Path.Combine(root, "ProductVersions");
+      }
+      return result;
+    }
+
     public static bool GetIsColumnInBaseCollection(BaseCollection baseCollection, string columnName)
     {
       bool result = false;
@@ -1647,5 +1669,38 @@ namespace TeamSupport.Data
       return result;
     }
 
+    public static string GetNotesEquivalentFieldName(string ticketFieldName)
+    {
+      string result = string.Empty;
+
+      switch (ticketFieldName)
+      {
+        case "Name":
+          result = "Title";
+          break;
+        default:
+          result = ticketFieldName;
+          break;
+      }
+
+      return result;
+    }
+
+    public static string GetProductVersionsEquivalentFieldName(string ticketFieldName)
+    {
+      string result = string.Empty;
+
+      switch (ticketFieldName)
+      {
+        case "TicketNumber":
+          result = "VersionNumber";
+          break;
+        default:
+          result = ticketFieldName;
+          break;
+      }
+
+      return result;
+    }
   }
 }

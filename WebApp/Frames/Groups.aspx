@@ -100,7 +100,12 @@
 
             window.location = window.location;
 
-          }
+        }
+
+        function pageLoad() {
+            LoadContentPage();
+        }
+
       function GridResized(sender, args)
       {
         top.privateServices.SetUserSetting('GroupGridWidth', sender.get_width());

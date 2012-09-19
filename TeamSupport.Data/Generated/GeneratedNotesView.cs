@@ -39,7 +39,25 @@ namespace TeamSupport.Data
     
 
     
+    public int? ParentOrganizationID
+    {
+      get { return Row["ParentOrganizationID"] != DBNull.Value ? (int?)Row["ParentOrganizationID"] : null; }
+      set { Row["ParentOrganizationID"] = CheckValue("ParentOrganizationID", value); }
+    }
+    
+    public string OrganizationName
+    {
+      get { return Row["OrganizationName"] != DBNull.Value ? (string)Row["OrganizationName"] : null; }
+      set { Row["OrganizationName"] = CheckValue("OrganizationName", value); }
+    }
+    
 
+    
+    public bool NeedsIndexing
+    {
+      get { return (bool)Row["NeedsIndexing"]; }
+      set { Row["NeedsIndexing"] = CheckValue("NeedsIndexing", value); }
+    }
     
     public int ModifierID
     {
@@ -208,7 +226,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[NotesView] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName  WHERE ([NoteID] = @NoteID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[NotesView] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName,    [ParentOrganizationID] = @ParentOrganizationID,    [OrganizationName] = @OrganizationName  WHERE ([NoteID] = @NoteID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("NoteID", SqlDbType.Int, 4);
@@ -260,6 +278,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 		tempParameter = updateCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -274,13 +299,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ParentOrganizationID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("OrganizationName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[NotesView] (    [NoteID],    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateModified],    [DateCreated],    [CreatorName],    [ModifierName]) VALUES ( @NoteID, @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateModified, @DateCreated, @CreatorName, @ModifierName); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[NotesView] (    [NoteID],    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateModified],    [DateCreated],    [NeedsIndexing],    [CreatorName],    [ModifierName],    [ParentOrganizationID],    [OrganizationName]) VALUES ( @NoteID, @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateModified, @DateCreated, @NeedsIndexing, @CreatorName, @ModifierName, @ParentOrganizationID, @OrganizationName); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("OrganizationName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ParentOrganizationID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -290,6 +343,13 @@ namespace TeamSupport.Data
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -471,7 +531,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateModified], [DateCreated], [CreatorName], [ModifierName] FROM [dbo].[NotesView] WHERE ([NoteID] = @NoteID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateModified], [DateCreated], [NeedsIndexing], [CreatorName], [ModifierName], [ParentOrganizationID], [OrganizationName] FROM [dbo].[NotesView] WHERE ([NoteID] = @NoteID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("NoteID", noteID);
         Fill(command);

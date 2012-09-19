@@ -14,12 +14,12 @@ var chatBoxes = new Array();
 $(document).ready(function(){
 	originalTitle = document.title;
 
-	$([window, document]).blur(function(){
-		windowFocus = false;
-	}).focus(function(){
-		windowFocus = true;
-		document.title = originalTitle;
-	});
+//	$([window, document]).blur(function(){
+//		windowFocus = false;
+//	}).focus(function(){
+//		windowFocus = true;
+//		document.title = originalTitle;
+//	});
 });
 
 function restructureChatBoxes() {
@@ -44,6 +44,7 @@ function restructureChatBoxes() {
 function chatWith(name, chatuserID) {
     createChatBox(chatuserID, name);
     $("#chatbox_" + chatuserID + " .boxsizingBorder").focus();
+    maximizeChatBox(chatuserID);
     restructureChatBoxes();
 }
 
@@ -144,6 +145,17 @@ $("#chatbox_" + chatboxtitle + " .boxsizingBorder").focus();
 function closeChatBox(chatboxtitle) {
 	$('#chatbox_'+chatboxtitle).css('display','none');
 	restructureChatBoxes();
+}
+
+function maximizeChatBox(chatboxtitle) {
+    if ($('#chatbox_' + chatboxtitle + ' .chatboxcontent').css('display') == 'none') {
+
+        var minimizedChatBoxes = new Array();
+
+        $('#chatbox_' + chatboxtitle + ' .chatboxcontent').css('display', 'block');
+        $('#chatbox_' + chatboxtitle + ' .chatboxinput').css('display', 'block');
+        $("#chatbox_" + chatboxtitle + " .chatboxcontent").scrollTop($("#chatbox_" + chatboxtitle + " .chatboxcontent")[0].scrollHeight);
+    }
 }
 
 function toggleChatBoxGrowth(chatboxtitle) {

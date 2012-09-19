@@ -29,6 +29,8 @@ namespace TeamSupport.ServiceLibrary
       _domain = SystemSettings.ReadString(_loginUser, "AppDomain", "Unknown Domain");
     }
 
+
+
     private Thread _thread;
     public Thread Thread
     {

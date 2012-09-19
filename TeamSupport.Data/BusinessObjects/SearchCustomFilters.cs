@@ -104,6 +104,41 @@ namespace TeamSupport.Data
 
       return resultBuilder.ToString();
     }
+
+    public string ConvertToNotesEquivalentWhereClause()
+    {
+      StringBuilder resultBuilder = new StringBuilder();
+
+      ReportTableFields ticketsViewFields = new ReportTableFields(base.LoginUser);
+      ticketsViewFields.LoadByReportTableID(10);
+
+      foreach (SearchCustomFilter filter in this)
+      {
+        string fieldName = ticketsViewFields.FindByReportTableFieldID(filter.FieldID).FieldName;
+        string notesEquivalentFieldName = DataUtils.GetNotesEquivalentFieldName(fieldName);
+        resultBuilder.Append(" AND nv.[" + notesEquivalentFieldName + "] " + filter.Measure + " '" + filter.TestValue + "'");
+      }
+
+      return resultBuilder.ToString();
+    }
+
+    public string ConvertToProductVersionEquivalentWhereClause()
+    {
+      StringBuilder resultBuilder = new StringBuilder();
+
+      ReportTableFields ticketsViewFields = new ReportTableFields(base.LoginUser);
+      ticketsViewFields.LoadByReportTableID(10);
+
+      foreach (SearchCustomFilter filter in this)
+      {
+        string fieldName = ticketsViewFields.FindByReportTableFieldID(filter.FieldID).FieldName;
+        string productVersionEquivalentFieldName = DataUtils.GetProductVersionsEquivalentFieldName(fieldName);
+        resultBuilder.Append(" AND pvv.[" + productVersionEquivalentFieldName + "] " + filter.Measure + " '" + filter.TestValue + "'");
+      }
+
+      return resultBuilder.ToString();
+    }
+
   }
   
 }

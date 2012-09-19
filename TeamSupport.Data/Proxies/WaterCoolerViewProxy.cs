@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace TeamSupport.Data
 {
@@ -50,6 +51,9 @@ namespace TeamSupport.Data
         //Regex regx = new Regex("http://([\\w+?\\.\\w+])+([a-zA-Z0-9\\~\\!\\@\\#\\$\\%\\^\\&amp;\\*\\(\\)_\\-\\=\\+\\\\\\/\\?\\.\\:\\;\\'\\,]*)?", RegexOptions.IgnoreCase);
         //(http://|)(www\.)?([^\.]+)\.(\w{2})$
         //(?<http>(http:[/][/]|www.)([a-z]|[A-Z]|[0-9]|[/.]|[~])*)
+
+        string testb = HtmlToText.ConvertHtml(txt);
+
         Regex regx = new Regex(@"((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)", RegexOptions.IgnoreCase);
         MatchCollection mactches = regx.Matches(txt);
 
@@ -58,7 +62,7 @@ namespace TeamSupport.Data
             txt = txt.Replace(match.Value, "<a target='_blank' class='ts-link ui-state-default' href='" + (match.Value.StartsWith("http://") ? match.Value : "http://" + match.Value) + "'>" + match.Value + "</a>");
         }
 
-        return GenerateTicketLink(txt);
+        return GenerateTicketLink(testb);
     }
 
     public string GenerateTicketLink(string txt)
