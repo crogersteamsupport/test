@@ -86,11 +86,8 @@ namespace TeamSupport.ServiceLibrary
 
       while (_isStopped == false)
       {
-        Thread.Sleep(1000);
-
         CheckHealth();
-
-
+        Thread.Sleep(1000);
       }
 
       ServiceThread.ServiceStopped = true;
