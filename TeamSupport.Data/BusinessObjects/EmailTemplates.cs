@@ -78,9 +78,6 @@ namespace TeamSupport.Data
       return builder.ToString();
     }
 
-
-
-
     public EmailTemplate ReplaceParameter(string parameterName, string value)
     {
       parameterName = "{{" + parameterName + "}}";
@@ -150,6 +147,8 @@ namespace TeamSupport.Data
         Header = emails[0].Header;
         UseGlobalTemplate = emails[0].UseGlobalTemplate;
       }
+
+      if (string.IsNullOrWhiteSpace(Body)) return;
 
       if (IsEmail && UseGlobalTemplate)
       {
@@ -311,6 +310,35 @@ namespace TeamSupport.Data
 
       template.ReplaceParameter("ModifierName", modifierName);
       template.ReplaceActions(ticket, true, includeActions);
+
+      try
+      {
+        StringBuilder builder = new StringBuilder();
+        ContactsView contacts = new ContactsView(loginUser);
+        contacts.LoadByTicketID(ticket.TicketID);
+
+        foreach (ContactsViewItem contact in contacts)
+        {
+          if (builder.Length > 0) builder.Append(", ");
+          if (template.IsHtml)
+            builder.Append(System.Web.HttpUtility.HtmlEncode(string.Format("{0} {1} <{2}>", contact.FirstName, contact.LastName, contact.Email)));
+          else
+            builder.Append(string.Format("{0} {1} <{2}>", contact.FirstName, contact.LastName, contact.Email));
+        }
+
+        if (builder.Length > 0)
+        {
+          template.ReplaceParameter("ContactEmails", builder.ToString());
+        }
+
+
+      }
+      catch (Exception)
+      {
+        
+      }
+
+
       return template.GetMessage();
     }
 

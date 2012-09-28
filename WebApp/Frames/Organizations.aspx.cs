@@ -117,7 +117,7 @@ public partial class Frames_Organizations : BaseFramePage
     if (UserSession.CurrentUser.IsInventoryEnabled)
       tsMain.Tabs.Add(new RadTab("Inventory", "../Inventory/CustomerInventory.aspx?CustID="));
 
-    if (TSAuthentication.OrganizationID == 1078 || TSAuthentication.OrganizationID == 13679)
+    if (TSAuthentication.IsNewWCTemp)
         tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/142/Pages/Watercooler.html?"));
 
     if (!UserSession.CurrentUser.IsTSUser)

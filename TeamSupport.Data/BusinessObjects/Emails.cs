@@ -132,7 +132,7 @@ namespace TeamSupport.Data
     public Email AddEmail(int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
     {
       Email email = AddNewEmail();
-
+      
       email.OrganizationID = organizationID;
       email.Description = description;
       email.FromAddress = message.From.ToString();
@@ -146,7 +146,7 @@ namespace TeamSupport.Data
       email.LastFailedReason = "";
       email.IsSuccess = false;
       email.NextAttempt = DateTime.UtcNow;
-      email.IsWaiting = true;
+      email.IsWaiting = !string.IsNullOrWhiteSpace(message.Body);
       email.EmailPostID = emailPostID;
       email.Attempts = 0;
 

@@ -146,7 +146,7 @@ namespace TSWebServices
 
         if (org.ProductType != ProductType.Express)
         {
-          string wcLink = TSAuthentication.OrganizationID == 1078 || TSAuthentication.OrganizationID == 13679 ? "vcr/142/Pages/WaterCooler.html" : "WaterCooler/WaterCooler.aspx";
+          string wcLink = TSAuthentication.IsNewWCTemp ? "vcr/142/Pages/WaterCooler.html" : "WaterCooler/WaterCooler.aspx";
           items.Add(new TsMenuItem("wc2", "mniWC2", "Water Cooler", "vcr/142/images/nav/16/watercooler.png", string.Format(data, wcLink, "vcr/142/PaneInfo/WaterCooler.html")));
         }
 

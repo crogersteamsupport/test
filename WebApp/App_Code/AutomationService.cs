@@ -58,7 +58,14 @@ namespace TSWebServices
       foreach (CustomField custom in customs)
       {
         TicketType ticketType = ticketTypes.FindByTicketTypeID(custom.AuxID);
-        fieldItems.Add(new AutoFieldItem(custom, string.Format("{0} ({1})", custom.Name, ticketType.Name)));
+        if (ticketType == null)
+        {
+          fieldItems.Add(new AutoFieldItem(custom));
+        }
+        else
+        {
+          fieldItems.Add(new AutoFieldItem(custom, string.Format("{0} ({1})", custom.Name, ticketType.Name)));
+        }
       }
 
       ReportTableField actionsViewDescription = ReportTableFields.GetReportTableField(fields.LoginUser, 6);
@@ -299,10 +306,7 @@ namespace TSWebServices
   {
     public AutoFieldItem() { }
 
-    public AutoFieldItem(CustomField field)
-    {
-      new AutoFieldItem(field, field.Name);
-    }
+    public AutoFieldItem(CustomField field) : this(field, field.Name){}
 
     public AutoFieldItem(CustomField field, string aliasName) 
     {

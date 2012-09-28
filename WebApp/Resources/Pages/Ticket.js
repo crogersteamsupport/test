@@ -10,9 +10,19 @@ $(document).ready(function () {
     var _ticketCreatorID = null;
     if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
 
+    var _isNewWC = top.Ts.System.User.OrganizationID == 1078 ||
+        top.Ts.System.User.OrganizationID == 13679 ||
+        top.Ts.System.User.OrganizationID == 405245 ||
+        top.Ts.System.User.OrganizationID == 496155 ||
+        top.Ts.System.User.OrganizationID == 463217 ||
+        top.Ts.System.User.OrganizationID == 425409 ||
+        top.Ts.System.User.OrganizationID == 294204 ||
+        top.Ts.System.User.OrganizationID == 515961 ||
+        top.Ts.System.User.OrganizationID == 1088; 
+
     $('.page-loading').show().next().hide();
 
-    if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679)
+    if (_isNewWC != true)
         $('#optionsContainer').remove();
 
     $(".dialog-emailinput").dialog({
@@ -2247,7 +2257,7 @@ $(document).ready(function () {
             $('.ticket-rail a').addClass('ui-state-default ts-link');
             $('.ts-icon-info').removeClass('ui-state-default ts-link');
 
-            if (top.Ts.System.User.OrganizationID == 1078 || top.Ts.System.User.OrganizationID == 13679)
+            if (_isNewWC)
             {
                 $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=0&pageid=" + _ticketNumber);
                 top.Ts.Services.Tickets.GetTicketWaterCoolerCount(_ticketNumber, function (result) {

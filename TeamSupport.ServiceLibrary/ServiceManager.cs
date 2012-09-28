@@ -20,6 +20,7 @@ namespace TeamSupport.ServiceLibrary
     LoginUser _loginUser;
     Logs _logs;
     string _domain;
+    int _errorCount; 
 
     public ServiceManager()
     {
@@ -86,10 +87,24 @@ namespace TeamSupport.ServiceLibrary
         thread.Start();
       }
 
+      _errorCount = 0;
+      int day = 0;
+
       while (_isStopped == false)
       {
         CheckHealth();
         Thread.Sleep(1000);
+
+        if (DateTime.Now.DayOfYear != day)
+        {
+          day = DateTime.Now.DayOfYear;
+          _errorCount = 0;
+        }
+
+        if (_errorCount > 50)
+        {
+          Environment.Exit(1);
+        }
       }
 
       ServiceThread.ServiceStopped = true;
@@ -203,6 +218,7 @@ namespace TeamSupport.ServiceLibrary
 	          }
 	          catch (Exception)
 	          {
+              throw ex;
 	          }
 	        }
         }
@@ -211,6 +227,7 @@ namespace TeamSupport.ServiceLibrary
       }
       catch (Exception ex)
       {
+        _errorCount++;
         _logs.WriteException(ex);
         ExceptionLogs.LogException(_loginUser, ex, "Service Manager: Health Timer");
       }

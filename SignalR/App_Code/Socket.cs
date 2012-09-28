@@ -22,9 +22,9 @@ using SignalR;
 /// </summary>
 public class Socket : Hub, IConnected, IDisconnect
 {
-	public Socket()
-	{
-	}
+    public Socket()
+    {
+    }
 
     public Task Disconnect()
     {
@@ -36,6 +36,7 @@ public class Socket : Hub, IConnected, IDisconnect
             u[0].AppChatID = "";
             u[0].AppChatStatus = false;
             u[0].Collection.Save();
+            Groups.Remove(u[0].UserID.ToString(), u[0].OrganizationID.ToString());
         }
         Clients.disconnect(Context.ConnectionId);
 
@@ -54,7 +55,7 @@ public class Socket : Hub, IConnected, IDisconnect
         u.AppChatStatus = true;
         u.Collection.Save();
 
-        Clients.updateUsers();
+        Clients[u.OrganizationID.ToString()].updateUsers();
 
         return Clients.rejoined(Context.ConnectionId, DateTime.Now.ToString());
     }
@@ -68,7 +69,7 @@ public class Socket : Hub, IConnected, IDisconnect
     public void SendChat(string message, string chatID, string name)
     {
         // Call the addMessage method on all clients
-        Clients.addMessage(message + " _ " + chatID);
+        //Clients.addMessage(message + " _ " + chatID);
         Clients[chatID].chatMessage(message, Context.ConnectionId, name);
     }
 
@@ -79,10 +80,11 @@ public class Socket : Hub, IConnected, IDisconnect
         u.AppChatStatus = true;
         u.Collection.Save();
 
-        Clients.updateUsers();
+        Groups.Add(Context.ConnectionId, u.OrganizationID.ToString());
+        Clients[u.OrganizationID.ToString()].updateUsers();
     }
 
-    public void NewThread(int messageID)
+    public void NewThread(int messageID, string organizationID)
     {
         WaterCoolerThread thread = new WaterCoolerThread();
 
@@ -118,11 +120,11 @@ public class Socket : Hub, IConnected, IDisconnect
         //If this is a new thread
         if (thread.Message.MessageParent == -1)
         {
-            Clients.addThread(thread);
+            Clients[organizationID].addThread(thread);
         }
         else
         {
-            Clients.addComment(thread);
+            Clients[organizationID].addComment(thread);
             int parentThreadID = (int)thread.Message.MessageParent;
 
             WaterCoolerThread parentThread = new WaterCoolerThread();
@@ -151,7 +153,7 @@ public class Socket : Hub, IConnected, IDisconnect
             parentThread.Company = parentThreadwccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
             parentThread.User = parentThreadwcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
 
-            Clients.updateattachments(parentThread);
+            Clients[organizationID].updateattachments(parentThread);
         }
     }
 
@@ -221,6 +223,6 @@ public class UserIdClientIdFactory : IConnectionIdGenerator
             return Guid.NewGuid().ToString();
         else
             return TSAuthentication.GetLoginUser().UserID.ToString();
-            
+
     }
 }

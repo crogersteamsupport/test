@@ -305,23 +305,23 @@ $(document).ready(function () {
     .click(function () { $(this).val('').removeClass('product-search-blur'); })
     .val('Search for a product...');
 
-    top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
-        var name;
-        var chatID;
-        for (var i = 0; i < users.length; i++) {
-            name = users[i].FirstName + ' ' + users[i].LastName;
-            chatID = users[i].AppChatID;
-            var onlineuser = $('<li>')
+        top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
+            var name;
+            var chatID;
+            for (var i = 0; i < users.length; i++) {
+                name = users[i].Name;
+                chatID = users[i].AppChatID;
+                var onlineuser = $('<li>')
         .data('ChatID', chatID)
         .data('Name', name)
         .addClass('onlineUser')
         .click(function () {
             window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
         })
-        .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].FirstName + ' ' + users[i].LastName + '</a>')
+        .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].Name + '</a>')
         .appendTo($('.sidebarusers'));
-        }
-    });
+            }
+        });
 
     top.Ts.Services.Users.GetUserPhoto(-99, function (att) {
         $('.mainavatarlrg').attr("src", att);
@@ -340,22 +340,21 @@ $(document).ready(function () {
             var placeholder = $('<div>')
             .addClass("placeholder");
 
-            switch(pageType)
-            {
-            case -1:
-                placeholder.html('The WaterCooler allows you to have conversations with colleagues about tickets, customers, and even products - Collaborate with your entire team to better support your customers!');
-                break;
-            case "0":
-                placeholder.html('Start a conversation about this ticket in the WaterCooler.  If you have questions or comments that are for a broader audience than the ticket actions allow, just post a comment here and you co-workers will see it in their WaterCooler.');
-                break;
-            case "1":
-                placeholder.html('Share information or ask questions about products through the WaterCooler!');
-                break;
-            case "2":
-                placeholder.html('Share information or ask questions about customers through the WaterCooler!');
-                break;
-            case "4":
-                placeholder.html('Have conversation just with the people in this specific group through the WaterCooler.  Only members of this group will be able to see the conversations.');
+            switch (pageType) {
+                case -1:
+                    placeholder.html('The WaterCooler allows you to have conversations with colleagues about tickets, customers, and even products - Collaborate with your entire team to better support your customers!');
+                    break;
+                case "0":
+                    placeholder.html('Start a conversation about this ticket in the WaterCooler.  If you have questions or comments that are for a broader audience than the ticket actions allow, just post a comment here and you co-workers will see it in their WaterCooler.');
+                    break;
+                case "1":
+                    placeholder.html('Share information or ask questions about products through the WaterCooler!');
+                    break;
+                case "2":
+                    placeholder.html('Share information or ask questions about customers through the WaterCooler!');
+                    break;
+                case "4":
+                    placeholder.html('Have conversation just with the people in this specific group through the WaterCooler.  Only members of this group will be able to see the conversations.');
             }
 
             $('#maincontainer').append(placeholder);
@@ -416,7 +415,7 @@ $(document).ready(function () {
                         $(o).data('data', data);
                     });
                 }
-                window.top.chatHubClient.newThread(MessageID);
+                window.top.chatHubClient.newThread(MessageID, top.Ts.System.User.OrganizationID);
                 $('.commentcontainer').hide();
                 $('.faketextcontainer').show();
                 $('#messagecontents').val('');
@@ -737,11 +736,12 @@ if (pageID == null)
 
 function placeHolder() {
     var topics = $('#maincontainer').find('.topic_container');
+    var dummyText = $('#maincontainer').find('.placeholder');
 
     if (topics.length > 0) {
         $('#maincontainer').find('.placeholder').remove();
     }
-    else {
+    else if (dummyText.length == 0) {
 
         var placeholder = $('<div>')
             .addClass("placeholder");
@@ -798,7 +798,7 @@ function addComment (message) {
         var firstpost = $('#maincontainer');
         top.Ts.Services.WaterCooler.IsValid(pageType, pageID, message.Message.MessageParent, function (valid) {
             if (valid) {
-                if (parentThread) {
+                if (parentThread.length > 0) {
                     //If over 6 comments compact it
                     if (commentcount > 6) {
                         var topicComments = parentThread.find('.treplycontainer:first').find('.topicComments');
@@ -844,12 +844,21 @@ function addComment (message) {
                         $(parentThread).find('.topictext').after(replydiv.fadeIn(1500));
                     }
 
-                    if (message.Message.UserID != top.Ts.System.User.UserID) {
-                        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
-                        top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
-                    }
 
                     firstpost.prepend(parentThread.fadeIn(1500));
+                }
+                else {
+                    top.Ts.Services.WaterCooler.GetMessage(message.Message.MessageParent, function (message) {
+                        var firstpost = $('#maincontainer');
+                        var nmdiv = createThread(message);
+                        firstpost.prepend(nmdiv.fadeIn(1500));
+                        placeHolder();
+                    });
+                }
+
+                if (message.Message.UserID != top.Ts.System.User.UserID) {
+                    top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
+                    top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
                 }
             }
             else {
@@ -920,7 +929,7 @@ function updateattachments (message) {
         if (tixgrp.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixgrp.length; i++) {
-                tixgrpstr = tixgrpstr + ' ' + tixgrp[i].CreatorName + ' added group ' + tixgrp[i].GroupName + '<br/>';
+                tixgrpstr = tixgrpstr + ' ' + tixgrp[i].CreatorName + ' added group <a href="#" target="_blank" onclick="top.Ts.MainPage.openGroup(' + tixgrp[i].AttachmentID + '); return false;">' + tixgrp[i].GroupName + '</a><br/>';
             }
         }
 
@@ -974,7 +983,7 @@ function updateUsers () {
                 var name;
                 var chatID;
                 for (var i = 0; i < users.length; i++) {
-                    name = users[i].FirstName + ' ' + users[i].LastName;
+                    name = users[i].Name;
                     chatID = users[i].AppChatID;
 
                     var user = $('.sidebarusers').find('.onlineUser:data(ChatID=' + chatID + ')');
@@ -990,7 +999,7 @@ function updateUsers () {
                     .click(function () {
                         window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
                     })
-                    .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].FirstName + ' ' + users[i].LastName + '</a>')
+                    .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].Name + '</a>')
                     .appendTo($('.sidebarusers'));
                     }
                 }
@@ -1627,7 +1636,7 @@ function createCommentContainer(messageid) {
                         });
                     }
 
-                    window.top.chatHubClient.newThread(MessageID);
+                    window.top.chatHubClient.newThread(MessageID, top.Ts.System.User.OrganizationID);
 
                     cc.hide();
                     ftc.show();

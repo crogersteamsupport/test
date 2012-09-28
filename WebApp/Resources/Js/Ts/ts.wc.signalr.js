@@ -15,7 +15,7 @@ $(document).ready(function () {
     });
 
     //Debug reasons
-    $.connection.hub.logging = true;
+    //$.connection.hub.logging = true;
     $.connection.hub.url = "signalr/signalr";
     // Start the connection only if on main wc page
 
@@ -236,27 +236,6 @@ $(document).ready(function () {
             mainWC[0].contentWindow.updateUsers();
         } catch (err) { }
 
-        var ticketWC = $(".ticketIframe").contents().find("#watercoolerIframe");
-        try {
-            for (var i = 0; i < ticketWC.length; i++) {
-                ticketWC[i].contentWindow.updateUsers();
-            }
-        } catch (err) { }
-
-        var groupWC = $("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame");
-        try {
-            groupWC[0].contentWindow.updateUsers();
-        } catch (err) { }
-
-        var customerWC = $("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            customerWC[0].contentWindow.updateUsers();
-        } catch (err) { }
-
-        var productWC = $("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            productWC[0].contentWindow.updateUsers();
-        } catch (err) { }
     };
 
     originalTitle = document.title;

@@ -350,7 +350,8 @@ function AddCustomSorter(sorterID, fieldID, descending) {
           }
 
           fieldText.html(fields.find('option:selected').text());
-          if (descending) {
+
+          if (descending == 'true') {
             directionText.html('Descending');
           }
           else {

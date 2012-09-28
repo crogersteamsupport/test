@@ -58,7 +58,7 @@
       </div>
       <div class="groupBodyWrapperDiv">
         <div class="groupBodyDiv">
-          <telerik:RadGrid ID="gridNext" runat="server" Width="100%" Height="300px" AutoGenerateColumns="False" GridLines="None" OnItemCommand="gridNext_ItemCommand" BorderWidth="0px" ShowHeader="False">
+          <telerik:RadGrid ID="gridNext" runat="server" Width="100%" Height="100%" AutoGenerateColumns="False" GridLines="None" OnItemCommand="gridNext_ItemCommand" BorderWidth="0px" ShowHeader="False">
             <MasterTableView DataKeyNames="TicketNextStatusID" ClientDataKeyNames="TicketNextStatusID">
               <RowIndicatorColumn>
                 <HeaderStyle Width="20px"></HeaderStyle>

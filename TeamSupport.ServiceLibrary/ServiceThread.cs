@@ -14,6 +14,12 @@ namespace TeamSupport.ServiceLibrary
   [Serializable]
   public abstract class ServiceThread : MarshalByRefObject
   {
+
+    public override object InitializeLifetimeService()
+    {
+      return null;
+    }
+    
     public ServiceThread()
     {
       _loginUser = GetLoginUser(ServiceName);

@@ -171,6 +171,44 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public WaterCoolerThread GetMessage(int messageID)
+    {
+        WaterCoolerThread thread = new WaterCoolerThread();
+
+        WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+        wcv.LoadByMessageID(messageID);
+
+        WaterCoolerView replies = new WaterCoolerView(TSAuthentication.GetLoginUser());
+        replies.LoadReplies(messageID);
+
+        WatercoolerAttachments wcgroups = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+        wcgroups.LoadByType(messageID, WaterCoolerAttachmentType.Group);
+
+        WatercoolerAttachments wctickets = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+        wctickets.LoadByType(messageID, WaterCoolerAttachmentType.Ticket);
+
+        WatercoolerAttachments wcprods = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+        wcprods.LoadByType(messageID, WaterCoolerAttachmentType.Product);
+
+        WatercoolerAttachments wccompany = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+        wccompany.LoadByType(messageID, WaterCoolerAttachmentType.Company);
+
+        WatercoolerAttachments wcuseratt = new WatercoolerAttachments(TSAuthentication.GetLoginUser());
+        wcuseratt.LoadByType(messageID, WaterCoolerAttachmentType.User);
+
+        thread.Message = wcv.GetWaterCoolerViewItemProxies()[0];
+        thread.Replies = replies.GetWaterCoolerViewItemProxies();
+        thread.Groups = wcgroups.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Group);
+        thread.Tickets = wctickets.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Ticket);
+        thread.Products = wcprods.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Product);
+        thread.Company = wccompany.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.Company);
+        thread.User = wcuseratt.GetWatercoolerAttachmentProxies(WaterCoolerAttachmentType.User);
+
+        return thread;
+    }
+
+
+    [WebMethod]
     public int NewComment(string data)
     {
         WatercoolerJsonInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<WatercoolerJsonInfo>(data);
@@ -468,15 +506,19 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public UserProxy[] GetOnlineChatUsers(int orgID)
+    public OnlineUser[] GetOnlineChatUsers(int orgID)
     {
-        List<UserProxy> onlineusers = new List<UserProxy>();
+        List<OnlineUser> onlineusers = new List<OnlineUser>();
         Users u = new Users(TSAuthentication.GetLoginUser());
         u.LoadChatOnlineUsers(orgID, TSAuthentication.GetLoginUser().UserID);
 
         foreach (User online in u)
         {
-            onlineusers.Add(online.GetProxy());
+            OnlineUser ou = new OnlineUser();
+            ou.Name = online.FirstLastName;
+            ou.AppChatID = online.AppChatID;
+
+            onlineusers.Add(ou);
         }
 
         return onlineusers.ToArray();
@@ -484,6 +526,16 @@ namespace TSWebServices
 
 
   }
+
+  [DataContract]
+  public class OnlineUser
+  {
+      [DataMember]
+      public string Name { get; set; }
+      [DataMember]
+      public string AppChatID { get; set; }
+  }
+
 
   [DataContract]
   public class WaterCoolerThread

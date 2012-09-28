@@ -42,6 +42,23 @@ namespace TeamSupport.WebUtils
       }
     }
 
+    public static bool IsNewWCTemp
+    {
+      get 
+      {
+        return OrganizationID == 1078 ||
+        OrganizationID == 13679 ||
+        OrganizationID == 405245 ||
+        OrganizationID == 496155 ||
+        OrganizationID == 463217 ||
+        OrganizationID == 425409 ||
+        OrganizationID == 294204 ||
+        OrganizationID == 515961 ||
+        OrganizationID == 1088;      
+      }
+    }
+
+
     public static string UserData
     {
       get 
