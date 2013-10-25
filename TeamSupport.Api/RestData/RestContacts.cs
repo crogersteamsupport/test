@@ -22,27 +22,48 @@ namespace TeamSupport.Api
       return item.GetXml("Contact", true);
     }
 
-    public static string GetItems(RestCommand command)
+    public static string GetItems(RestCommand command, bool orderByDateCreated = false)
     {
       ContactsView items = new ContactsView(command.LoginUser);
-      items.LoadByParentOrganizationID(command.Organization.OrganizationID);
+      if (orderByDateCreated)
+      {
+        items.LoadByParentOrganizationID(command.Organization.OrganizationID, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByParentOrganizationID(command.Organization.OrganizationID);
+      }
       return items.GetXml("Contacts", "Contact", true, command.Filters);
     }
 
-    public static string GetItems(RestCommand command, int organizationID)
+    public static string GetItems(RestCommand command, int organizationID, bool orderByDateCreated = false)
     {
       if (Organizations.GetOrganization(command.LoginUser, organizationID).ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       ContactsView items = new ContactsView(command.LoginUser);
-      items.LoadByOrganizationID(organizationID);
+      if (orderByDateCreated)
+      {
+        items.LoadByOrganizationID(organizationID, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByOrganizationID(organizationID);
+      }
       return items.GetXml("Contacts", "Contact", true, command.Filters);
     }
 
-    public static string GetTicketContacts(RestCommand command, int ticketID)
+    public static string GetTicketContacts(RestCommand command, int ticketID, bool orderByDateCreated = false)
     {
       Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
       if (ticket == null || ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       ContactsView contacts = new ContactsView(command.LoginUser);
-      contacts.LoadByTicketID(ticketID);
+      if (orderByDateCreated)
+      {
+        contacts.LoadByTicketID(ticketID, "ut.DateCreated DESC");
+      }
+      else
+      {
+        contacts.LoadByTicketID(ticketID);
+      }
       return contacts.GetXml("Contacts", "Contact", true, command.Filters);
     }
 

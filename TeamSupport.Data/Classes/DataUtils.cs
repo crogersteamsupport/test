@@ -14,6 +14,7 @@ using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Globalization;
 
 namespace TeamSupport.Data
 {
@@ -797,7 +798,7 @@ namespace TeamSupport.Data
     {
       if (row == null) return "[Row is NULL]";
       StringBuilder builder = new StringBuilder();
-      string format = "<strong>{0}:</strong> \"{1}\"";
+      string format = "{0}: \"{1}\"";
       foreach (DataColumn column in row.Table.Columns)
       {
         if (builder.Length > 0) builder.Append(", ");
@@ -982,6 +983,7 @@ namespace TeamSupport.Data
 
     public static string CommandToCsv(LoginUser loginUser, SqlCommand command, bool replaceNewLineWithHtml)
     {
+      DateTime dateValue;
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
       {
         connection.Open();
@@ -1004,7 +1006,13 @@ namespace TeamSupport.Data
             string value = reader[i].ToString();
             if (value.Length > 8000) value = value.Substring(0, 8000);
 
+            if (DateTime.TryParse(value, out dateValue))
+            {
+              value = TimeZoneInfo.ConvertTimeFromUtc(dateValue, loginUser.TimeZoneInfo).ToString(loginUser.CultureInfo);
+            }
+              
             value = "\"" + value.Replace("\"", "\"\"") + "\"";
+
             if (replaceNewLineWithHtml) value = value.Replace(Environment.NewLine, "<br />");
             Encoding ascii = Encoding.GetEncoding("us-ascii", new EncoderReplacementFallback("*"), new DecoderReplacementFallback("*"));
             //Encoding utf8 = Encoding.GetEncoding("utf-8", new EncoderReplacementFallback("*"), new DecoderReplacementFallback("*"));
@@ -1620,6 +1628,17 @@ namespace TeamSupport.Data
       return result;
     }
 
+    public static string GetWaterCoolerIndexPath(LoginUser loginUser)
+    {
+      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
+      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\WaterCooler");
+      if (!Directory.Exists(result))
+      {
+        result = Path.Combine(root, "WaterCooler");
+      }
+      return result;
+    }
+
     public static bool GetIsColumnInBaseCollection(BaseCollection baseCollection, string columnName)
     {
       bool result = false;
@@ -1692,8 +1711,25 @@ namespace TeamSupport.Data
 
       switch (ticketFieldName)
       {
-        case "TicketNumber":
-          result = "VersionNumber";
+        default:
+          result = ticketFieldName;
+          break;
+      }
+
+      return result;
+    }
+
+    public static string GetWaterCoolerEquivalentFieldName(string ticketFieldName)
+    {
+      string result = string.Empty;
+
+      switch (ticketFieldName)
+      {
+        case "DateCreated":
+          result = "TimeStamp";
+          break;
+        case "DateModified":
+          result = "LastModified";
           break;
         default:
           result = ticketFieldName;
@@ -1701,6 +1737,62 @@ namespace TeamSupport.Data
       }
 
       return result;
+    }
+
+    public static string StripInvalidXmlCharacters(string input)
+    {
+      StringBuilder result = new StringBuilder();
+
+      for (int i = 0; i < input.Length; i++)
+      { 
+        if (XmlConvert.IsXmlChar(input[i]))
+        {
+          result.Append(input[i]);
+        }
+      }
+
+      return result.ToString();
+    }
+
+    public static string GetEncodedCredentials(string username, string password)
+    {
+      string mergedCredentials = string.Format("{0}:{1}", username, password);
+      byte[] byteCredentials = UTF8Encoding.UTF8.GetBytes(mergedCredentials);
+      return Convert.ToBase64String(byteCredentials);
+    }
+
+    public static string GetJsonCompatibleString(string input)
+    {
+      if (input == null) return null;
+
+      StringBuilder result = new StringBuilder();
+      char ch;
+
+      // I implemented this method after finding control characters after the StripHTML method was applied.
+      // I noticed that running the StripHTML method twice end up getting the correct string format.
+      // Not sure if is needed to run this method but decided to keep it in case it is.
+      for (int i = 0; i < input.Length; i++)
+      {
+        ch = input[i];
+
+        if (!char.IsControl(ch))
+        {
+          result.Append(ch);
+        }
+      }
+
+      //The single quote is supported in json and do not need to be scaped.
+      result.
+        Replace(@"\\", @"\").
+        Replace(@"""""", @"""").
+        //Replace(@"''", @"'").
+        Replace(@"\""", @"""").
+        //Replace(@"\'", @"'").
+        Replace(@"\", @"\\").
+        Replace(@"""", @"\""");
+        //Replace(@"'", @"\'");
+
+      return result.ToString();
     }
   }
 }

@@ -249,6 +249,24 @@ namespace TeamSupport.Data
       set { Row["ModifierEmail"] = CheckValue("ModifierEmail", value); }
     }
     
+    public int? KnowledgeBaseCategoryID
+    {
+      get { return Row["KnowledgeBaseCategoryID"] != DBNull.Value ? (int?)Row["KnowledgeBaseCategoryID"] : null; }
+      set { Row["KnowledgeBaseCategoryID"] = CheckValue("KnowledgeBaseCategoryID", value); }
+    }
+    
+    public string KnowledgeBaseCategoryName
+    {
+      get { return Row["KnowledgeBaseCategoryName"] != DBNull.Value ? (string)Row["KnowledgeBaseCategoryName"] : null; }
+      set { Row["KnowledgeBaseCategoryName"] = CheckValue("KnowledgeBaseCategoryName", value); }
+    }
+    
+    public string SalesForceID
+    {
+      get { return Row["SalesForceID"] != DBNull.Value ? (string)Row["SalesForceID"] : null; }
+      set { Row["SalesForceID"] = CheckValue("SalesForceID", value); }
+    }
+    
 
     
     public bool NeedsIndexing
@@ -427,6 +445,28 @@ namespace TeamSupport.Data
       get { return Row["SlaWarningInitialResponse"] != DBNull.Value ? (DateTime?)Row["SlaWarningInitialResponse"] : null; }
     }
     
+    public DateTime? DueDate
+    {
+      get { return Row["DueDate"] != DBNull.Value ? DateToLocal((DateTime?)Row["DueDate"]) : null; }
+      set { Row["DueDate"] = CheckValue("DueDate", value); }
+    }
+
+    public DateTime? DueDateUtc
+    {
+      get { return Row["DueDate"] != DBNull.Value ? (DateTime?)Row["DueDate"] : null; }
+    }
+    
+    public DateTime? DateModifiedBySalesForceSync
+    {
+      get { return Row["DateModifiedBySalesForceSync"] != DBNull.Value ? DateToLocal((DateTime?)Row["DateModifiedBySalesForceSync"]) : null; }
+      set { Row["DateModifiedBySalesForceSync"] = CheckValue("DateModifiedBySalesForceSync", value); }
+    }
+
+    public DateTime? DateModifiedBySalesForceSyncUtc
+    {
+      get { return Row["DateModifiedBySalesForceSync"] != DBNull.Value ? (DateTime?)Row["DateModifiedBySalesForceSync"] : null; }
+    }
+    
 
     
     public DateTime DateCreated
@@ -545,7 +585,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketsView] SET     [ProductName] = @ProductName,    [ReportedVersion] = @ReportedVersion,    [SolvedVersion] = @SolvedVersion,    [GroupName] = @GroupName,    [TicketTypeName] = @TicketTypeName,    [UserName] = @UserName,    [Status] = @Status,    [StatusPosition] = @StatusPosition,    [SeverityPosition] = @SeverityPosition,    [IsClosed] = @IsClosed,    [Severity] = @Severity,    [TicketNumber] = @TicketNumber,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [ReportedVersionID] = @ReportedVersionID,    [SolvedVersionID] = @SolvedVersionID,    [ProductID] = @ProductID,    [GroupID] = @GroupID,    [UserID] = @UserID,    [TicketStatusID] = @TicketStatusID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [OrganizationID] = @OrganizationID,    [Name] = @Name,    [ParentID] = @ParentID,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [DateClosed] = @DateClosed,    [CloserID] = @CloserID,    [DaysClosed] = @DaysClosed,    [DaysOpened] = @DaysOpened,    [CloserName] = @CloserName,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName,    [HoursSpent] = @HoursSpent,    [Tags] = @Tags,    [SlaViolationTime] = @SlaViolationTime,    [SlaWarningTime] = @SlaWarningTime,    [SlaViolationHours] = @SlaViolationHours,    [SlaWarningHours] = @SlaWarningHours,    [MinsSinceCreated] = @MinsSinceCreated,    [DaysSinceCreated] = @DaysSinceCreated,    [MinsSinceModified] = @MinsSinceModified,    [DaysSinceModified] = @DaysSinceModified,    [Contacts] = @Contacts,    [Customers] = @Customers,    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,    [SlaViolationLastAction] = @SlaViolationLastAction,    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,    [SlaWarningLastAction] = @SlaWarningLastAction,    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,    [NeedsIndexing] = @NeedsIndexing,    [SlaViolationDate] = @SlaViolationDate,    [SlaWarningDate] = @SlaWarningDate,    [TicketSource] = @TicketSource,    [ForumCategory] = @ForumCategory,    [CategoryName] = @CategoryName,    [CreatorEmail] = @CreatorEmail,    [ModifierEmail] = @ModifierEmail  WHERE ([TicketID] = @TicketID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketsView] SET     [ProductName] = @ProductName,    [ReportedVersion] = @ReportedVersion,    [SolvedVersion] = @SolvedVersion,    [GroupName] = @GroupName,    [TicketTypeName] = @TicketTypeName,    [UserName] = @UserName,    [Status] = @Status,    [StatusPosition] = @StatusPosition,    [SeverityPosition] = @SeverityPosition,    [IsClosed] = @IsClosed,    [Severity] = @Severity,    [TicketNumber] = @TicketNumber,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [ReportedVersionID] = @ReportedVersionID,    [SolvedVersionID] = @SolvedVersionID,    [ProductID] = @ProductID,    [GroupID] = @GroupID,    [UserID] = @UserID,    [TicketStatusID] = @TicketStatusID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [OrganizationID] = @OrganizationID,    [Name] = @Name,    [ParentID] = @ParentID,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [DateClosed] = @DateClosed,    [CloserID] = @CloserID,    [DaysClosed] = @DaysClosed,    [DaysOpened] = @DaysOpened,    [CloserName] = @CloserName,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName,    [HoursSpent] = @HoursSpent,    [Tags] = @Tags,    [SlaViolationTime] = @SlaViolationTime,    [SlaWarningTime] = @SlaWarningTime,    [SlaViolationHours] = @SlaViolationHours,    [SlaWarningHours] = @SlaWarningHours,    [MinsSinceCreated] = @MinsSinceCreated,    [DaysSinceCreated] = @DaysSinceCreated,    [MinsSinceModified] = @MinsSinceModified,    [DaysSinceModified] = @DaysSinceModified,    [Contacts] = @Contacts,    [Customers] = @Customers,    [SlaViolationTimeClosed] = @SlaViolationTimeClosed,    [SlaViolationLastAction] = @SlaViolationLastAction,    [SlaViolationInitialResponse] = @SlaViolationInitialResponse,    [SlaWarningTimeClosed] = @SlaWarningTimeClosed,    [SlaWarningLastAction] = @SlaWarningLastAction,    [SlaWarningInitialResponse] = @SlaWarningInitialResponse,    [NeedsIndexing] = @NeedsIndexing,    [SlaViolationDate] = @SlaViolationDate,    [SlaWarningDate] = @SlaWarningDate,    [TicketSource] = @TicketSource,    [ForumCategory] = @ForumCategory,    [CategoryName] = @CategoryName,    [CreatorEmail] = @CreatorEmail,    [ModifierEmail] = @ModifierEmail,    [KnowledgeBaseCategoryID] = @KnowledgeBaseCategoryID,    [KnowledgeBaseCategoryName] = @KnowledgeBaseCategoryName,    [DueDate] = @DueDate,    [SalesForceID] = @SalesForceID,    [DateModifiedBySalesForceSync] = @DateModifiedBySalesForceSync  WHERE ([TicketID] = @TicketID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
@@ -975,13 +1015,83 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("KnowledgeBaseCategoryID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("KnowledgeBaseCategoryName", SqlDbType.NVarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DueDate", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("SalesForceID", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DateModifiedBySalesForceSync", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketsView] (    [TicketID],    [ProductName],    [ReportedVersion],    [SolvedVersion],    [GroupName],    [TicketTypeName],    [UserName],    [Status],    [StatusPosition],    [SeverityPosition],    [IsClosed],    [Severity],    [TicketNumber],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [ReportedVersionID],    [SolvedVersionID],    [ProductID],    [GroupID],    [UserID],    [TicketStatusID],    [TicketTypeID],    [TicketSeverityID],    [OrganizationID],    [Name],    [ParentID],    [ModifierID],    [CreatorID],    [DateModified],    [DateCreated],    [DateClosed],    [CloserID],    [DaysClosed],    [DaysOpened],    [CloserName],    [CreatorName],    [ModifierName],    [HoursSpent],    [Tags],    [SlaViolationTime],    [SlaWarningTime],    [SlaViolationHours],    [SlaWarningHours],    [MinsSinceCreated],    [DaysSinceCreated],    [MinsSinceModified],    [DaysSinceModified],    [Contacts],    [Customers],    [SlaViolationTimeClosed],    [SlaViolationLastAction],    [SlaViolationInitialResponse],    [SlaWarningTimeClosed],    [SlaWarningLastAction],    [SlaWarningInitialResponse],    [NeedsIndexing],    [SlaViolationDate],    [SlaWarningDate],    [TicketSource],    [ForumCategory],    [CategoryName],    [CreatorEmail],    [ModifierEmail]) VALUES ( @TicketID, @ProductName, @ReportedVersion, @SolvedVersion, @GroupName, @TicketTypeName, @UserName, @Status, @StatusPosition, @SeverityPosition, @IsClosed, @Severity, @TicketNumber, @IsVisibleOnPortal, @IsKnowledgeBase, @ReportedVersionID, @SolvedVersionID, @ProductID, @GroupID, @UserID, @TicketStatusID, @TicketTypeID, @TicketSeverityID, @OrganizationID, @Name, @ParentID, @ModifierID, @CreatorID, @DateModified, @DateCreated, @DateClosed, @CloserID, @DaysClosed, @DaysOpened, @CloserName, @CreatorName, @ModifierName, @HoursSpent, @Tags, @SlaViolationTime, @SlaWarningTime, @SlaViolationHours, @SlaWarningHours, @MinsSinceCreated, @DaysSinceCreated, @MinsSinceModified, @DaysSinceModified, @Contacts, @Customers, @SlaViolationTimeClosed, @SlaViolationLastAction, @SlaViolationInitialResponse, @SlaWarningTimeClosed, @SlaWarningLastAction, @SlaWarningInitialResponse, @NeedsIndexing, @SlaViolationDate, @SlaWarningDate, @TicketSource, @ForumCategory, @CategoryName, @CreatorEmail, @ModifierEmail); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketsView] (    [TicketID],    [ProductName],    [ReportedVersion],    [SolvedVersion],    [GroupName],    [TicketTypeName],    [UserName],    [Status],    [StatusPosition],    [SeverityPosition],    [IsClosed],    [Severity],    [TicketNumber],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [ReportedVersionID],    [SolvedVersionID],    [ProductID],    [GroupID],    [UserID],    [TicketStatusID],    [TicketTypeID],    [TicketSeverityID],    [OrganizationID],    [Name],    [ParentID],    [ModifierID],    [CreatorID],    [DateModified],    [DateCreated],    [DateClosed],    [CloserID],    [DaysClosed],    [DaysOpened],    [CloserName],    [CreatorName],    [ModifierName],    [HoursSpent],    [Tags],    [SlaViolationTime],    [SlaWarningTime],    [SlaViolationHours],    [SlaWarningHours],    [MinsSinceCreated],    [DaysSinceCreated],    [MinsSinceModified],    [DaysSinceModified],    [Contacts],    [Customers],    [SlaViolationTimeClosed],    [SlaViolationLastAction],    [SlaViolationInitialResponse],    [SlaWarningTimeClosed],    [SlaWarningLastAction],    [SlaWarningInitialResponse],    [NeedsIndexing],    [SlaViolationDate],    [SlaWarningDate],    [TicketSource],    [ForumCategory],    [CategoryName],    [CreatorEmail],    [ModifierEmail],    [KnowledgeBaseCategoryID],    [KnowledgeBaseCategoryName],    [DueDate],    [SalesForceID],    [DateModifiedBySalesForceSync]) VALUES ( @TicketID, @ProductName, @ReportedVersion, @SolvedVersion, @GroupName, @TicketTypeName, @UserName, @Status, @StatusPosition, @SeverityPosition, @IsClosed, @Severity, @TicketNumber, @IsVisibleOnPortal, @IsKnowledgeBase, @ReportedVersionID, @SolvedVersionID, @ProductID, @GroupID, @UserID, @TicketStatusID, @TicketTypeID, @TicketSeverityID, @OrganizationID, @Name, @ParentID, @ModifierID, @CreatorID, @DateModified, @DateCreated, @DateClosed, @CloserID, @DaysClosed, @DaysOpened, @CloserName, @CreatorName, @ModifierName, @HoursSpent, @Tags, @SlaViolationTime, @SlaWarningTime, @SlaViolationHours, @SlaWarningHours, @MinsSinceCreated, @DaysSinceCreated, @MinsSinceModified, @DaysSinceModified, @Contacts, @Customers, @SlaViolationTimeClosed, @SlaViolationLastAction, @SlaViolationInitialResponse, @SlaWarningTimeClosed, @SlaWarningLastAction, @SlaWarningInitialResponse, @NeedsIndexing, @SlaViolationDate, @SlaWarningDate, @TicketSource, @ForumCategory, @CategoryName, @CreatorEmail, @ModifierEmail, @KnowledgeBaseCategoryID, @KnowledgeBaseCategoryName, @DueDate, @SalesForceID, @DateModifiedBySalesForceSync); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("DateModifiedBySalesForceSync", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("SalesForceID", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DueDate", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("KnowledgeBaseCategoryName", SqlDbType.NVarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("KnowledgeBaseCategoryID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierEmail", SqlDbType.VarChar, 1024);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -1536,7 +1646,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketID], [ProductName], [ReportedVersion], [SolvedVersion], [GroupName], [TicketTypeName], [UserName], [Status], [StatusPosition], [SeverityPosition], [IsClosed], [Severity], [TicketNumber], [IsVisibleOnPortal], [IsKnowledgeBase], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [Name], [ParentID], [ModifierID], [CreatorID], [DateModified], [DateCreated], [DateClosed], [CloserID], [DaysClosed], [DaysOpened], [CloserName], [CreatorName], [ModifierName], [HoursSpent], [Tags], [SlaViolationTime], [SlaWarningTime], [SlaViolationHours], [SlaWarningHours], [MinsSinceCreated], [DaysSinceCreated], [MinsSinceModified], [DaysSinceModified], [Contacts], [Customers], [SlaViolationTimeClosed], [SlaViolationLastAction], [SlaViolationInitialResponse], [SlaWarningTimeClosed], [SlaWarningLastAction], [SlaWarningInitialResponse], [NeedsIndexing], [SlaViolationDate], [SlaWarningDate], [TicketSource], [ForumCategory], [CategoryName], [CreatorEmail], [ModifierEmail] FROM [dbo].[TicketsView] WHERE ([TicketID] = @TicketID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TicketID], [ProductName], [ReportedVersion], [SolvedVersion], [GroupName], [TicketTypeName], [UserName], [Status], [StatusPosition], [SeverityPosition], [IsClosed], [Severity], [TicketNumber], [IsVisibleOnPortal], [IsKnowledgeBase], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [Name], [ParentID], [ModifierID], [CreatorID], [DateModified], [DateCreated], [DateClosed], [CloserID], [DaysClosed], [DaysOpened], [CloserName], [CreatorName], [ModifierName], [HoursSpent], [Tags], [SlaViolationTime], [SlaWarningTime], [SlaViolationHours], [SlaWarningHours], [MinsSinceCreated], [DaysSinceCreated], [MinsSinceModified], [DaysSinceModified], [Contacts], [Customers], [SlaViolationTimeClosed], [SlaViolationLastAction], [SlaViolationInitialResponse], [SlaWarningTimeClosed], [SlaWarningLastAction], [SlaWarningInitialResponse], [NeedsIndexing], [SlaViolationDate], [SlaWarningDate], [TicketSource], [ForumCategory], [CategoryName], [CreatorEmail], [ModifierEmail], [KnowledgeBaseCategoryID], [KnowledgeBaseCategoryName], [DueDate], [SalesForceID], [DateModifiedBySalesForceSync] FROM [dbo].[TicketsView] WHERE ([TicketID] = @TicketID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketID", ticketID);
         Fill(command);

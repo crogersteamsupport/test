@@ -1,14 +1,13 @@
-﻿body
-{
-  background: #fff url(  '../images/page_bg.gif' ) repeat;
-}
+﻿body { background: #dfdfdf; font: normal 13px/21px Arial, Helvetica, sans-serif; color: #58595b }
 
 .pageDiv
 {
   text-align: center;
   margin: 0 auto;
   width: 782px;
-  padding: 20px 0 20px 0;
+  background: #fff;
+  padding-bottom: 20px;
+  box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.2);
 }
 
 .headerDivChristmas
@@ -21,9 +20,15 @@
 
 .headerDiv
 {
+  background: #3d6da7;
+  padding: 20px 20px;
+}
+
+.headerLogo
+{
   background: transparent url(  '../images/page_header.png' ) no-repeat;
-  height: 101px;
-  padding-bottom: 20px;
+  height: 63px;
+  width: 252px;
 }
 
 .contentTopDiv
@@ -40,8 +45,9 @@
 
 .pageDiv .contentCenterDiv
 {
-  background: transparent url(  '../images/page_body_center.png' ) repeat-y;
-  min-height: 100px;
+clear:both;
+  background: #fff;
+  min-height: 200px;
   border:none;
 }
 

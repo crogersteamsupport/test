@@ -82,6 +82,11 @@ public partial class Dialogs_User : BaseDialogPage
         cmbTimeZones.SelectedValue = organization.TimeZoneID;
       }
 
+      cmbRights.Items.Add(new RadComboBoxItem("All tickets", "0"));
+      cmbRights.Items.Add(new RadComboBoxItem("Only assigned tickets", "1"));
+      cmbRights.Items.Add(new RadComboBoxItem("Only assigned and user's groups", "2"));
+      cmbRights.Items.Add(new RadComboBoxItem("Only assigned and tickets associated with specific customers", "3"));
+
       if (_userID > -1) LoadUser(_userID);
       cbEmail.Visible = _userID < 0;
       _fieldControls.RefID = _userID;
@@ -145,6 +150,7 @@ public partial class Dialogs_User : BaseDialogPage
       cbNoAutoSubscribe.Checked = users[0].DoNotAutoSubscribe;
 
 
+
       cmbTimeZones.SelectedValue = "Central Standard Time";
       
       if (string.IsNullOrEmpty(users[0].TimeZoneID))
@@ -173,7 +179,7 @@ public partial class Dialogs_User : BaseDialogPage
         cmbDateFormat.SelectedValue = users[0].CultureName;
       }
 
-
+      cmbRights.SelectedValue = ((int) users[0].TicketRights).ToString();
     }
   }
 
@@ -183,7 +189,6 @@ public partial class Dialogs_User : BaseDialogPage
     Users users = new Users(UserSession.LoginUser);
 
     Organization organization = Organizations.GetOrganization(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
-
 
     string email = textEmail.Text.Trim();
     if (email.Length < 1 || email.IndexOf('@') < 0 || email.IndexOf('.') < 0 ||  !users.IsEmailValid(email, _userID, _organizationID))
@@ -221,6 +226,7 @@ public partial class Dialogs_User : BaseDialogPage
       user.LastActivity = DateTime.UtcNow;
       user.IsPasswordExpired = true;
       user.ReceiveTicketNotifications = true;
+      user.EnforceSingleSession = true;
     }
     else
     {
@@ -232,7 +238,12 @@ public partial class Dialogs_User : BaseDialogPage
       } 
 
       user = users[0];
-      if (user.IsActive && !cbActive.Checked) user.DeactivatedOn = DateTime.UtcNow;
+      if (user.IsActive && !cbActive.Checked)
+      {
+          user.DeactivatedOn = DateTime.UtcNow;
+          Organizations orgs = new Organizations(TSAuthentication.GetLoginUser());
+          orgs.ResetDefaultSupportUser(TSAuthentication.GetLoginUser(), user.UserID);
+      }
 
       if (true)
       {
@@ -244,10 +255,10 @@ public partial class Dialogs_User : BaseDialogPage
       }
     }
 
-    user.Email = textEmail.Text;
-    user.FirstName = textFirstName.Text;
-    user.LastName = textLastName.Text;
-    user.MiddleName = textMiddleName.Text;
+    user.Email = textEmail.Text.Trim();
+    user.FirstName = textFirstName.Text.Trim();
+    user.LastName = textLastName.Text.Trim();
+    user.MiddleName = textMiddleName.Text.Trim();
     user.Title = textTitle.Text;
     user.IsPortalUser = true;
     user.TimeZoneID = cmbTimeZones.SelectedValue;
@@ -257,6 +268,8 @@ public partial class Dialogs_User : BaseDialogPage
     user.SubscribeToNewActions = cbSubscribeAction.Checked;
     user.ReceiveAllGroupNotifications = cbReceiveGroup.Checked;
     user.DoNotAutoSubscribe = cbNoAutoSubscribe.Checked;
+    user.TicketRights = (TicketRightType) int.Parse(cmbRights.SelectedValue);
+    user.ShowWelcomePage = true;
     UserSession.LoginUser.TimeZoneInfo = null;
 
     if (UserSession.CurrentUser.IsSystemAdmin)
@@ -266,7 +279,17 @@ public partial class Dialogs_User : BaseDialogPage
       user.IsChatUser = cbChat.Checked;
     }
 
+    
+    string checkRequired = _fieldControls.CheckRequiredCustomFields();
+    if (checkRequired != "")
+    {
+        _manager.Alert(checkRequired);
+        return false;
+    }
+
     user.Collection.Save();
+
+    if (user.IsActive) user.EmailCountToMuroc(true);
 
     _fieldControls.RefID = user.UserID;
     _fieldControls.SaveCustomFields();

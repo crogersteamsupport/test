@@ -156,6 +156,152 @@ namespace TSWebServices
      }
    }
     
+    /// <summary>
+    /// Knowledge Base Categories
+    /// </summary>
+    /// <returns></returns>
+    [WebMethod]
+    public KnowledgeBaseCategoryInfo[] GetKnowledgeBaseCategories()
+    {
+      List<KnowledgeBaseCategoryInfo> result = new List<KnowledgeBaseCategoryInfo>();
+      KnowledgeBaseCategories cats = new KnowledgeBaseCategories(TSAuthentication.GetLoginUser());
+      cats.LoadCategories(TSAuthentication.OrganizationID);
+
+      foreach (KnowledgeBaseCategory cat in cats)
+      {
+        KnowledgeBaseCategoryInfo info = new KnowledgeBaseCategoryInfo();
+        info.Category = cat.GetProxy();
+
+        KnowledgeBaseCategories subs = new KnowledgeBaseCategories(cats.LoginUser);
+        subs.LoadSubcategories(cat.CategoryID);
+        info.Subcategories = subs.GetKnowledgeBaseCategoryProxies();
+
+        result.Add(info);
+      }
+
+      return result.ToArray();
+    }
+
+    [WebMethod]
+    public KnowledgeBaseCategoryProxy UpdateKnowledgeBaseCategory(int categoryID, string name, string description, bool visibleOnPortal)
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+      KnowledgeBaseCategory cat = KnowledgeBaseCategories.GetKnowledgeBaseCategory(TSAuthentication.GetLoginUser(), categoryID);
+      if (cat.OrganizationID != TSAuthentication.OrganizationID) return null;
+      cat.CategoryName = name;
+      cat.CategoryDesc = description;
+      cat.VisibleOnPortal = visibleOnPortal;
+      cat.Collection.Save();
+      return cat.GetProxy();
+    }
+
+    [WebMethod]
+    public KnowledgeBaseCategoryProxy AddKnowledgeBaseCategory(int? parentID)
+    {
+      if (!TSAuthentication.IsSystemAdmin) return null;
+
+
+      KnowledgeBaseCategory cat = (new KnowledgeBaseCategories(TSAuthentication.GetLoginUser())).AddNewKnowledgeBaseCategory();
+      cat.OrganizationID = TSAuthentication.OrganizationID;
+      cat.CategoryName = parentID == null ? "Untitled Category" : "Untitled Subcategory";
+      cat.ParentID = parentID ?? -1;
+      cat.Position = GetKnowledgeBaseCategoryMaxPosition(parentID) + 1;
+      cat.VisibleOnPortal = true;
+      cat.Collection.Save();
+      return cat.GetProxy();
+    }
+
+    private int GetKnowledgeBaseCategoryMaxPosition(int? parentID)
+    { 
+      parentID = parentID ?? -1;
+
+      KnowledgeBaseCategories cats = new KnowledgeBaseCategories(TSAuthentication.GetLoginUser());
+      if (parentID < 0) cats.LoadCategories(TSAuthentication.OrganizationID);
+      else cats.LoadSubcategories((int)parentID);
+
+      int max = -1;
+
+      foreach (KnowledgeBaseCategory cat in cats)
+	    {
+        if (cat.Position != null && cat.Position > max) max = (int)cat.Position;
+	    }
+
+      return max;
+    }
+
+    [WebMethod]
+    public bool DeleteKnowledgeBaseCategory(int categoryID)
+    {
+      if (!TSAuthentication.IsSystemAdmin) return false;
+      KnowledgeBaseCategory cat = KnowledgeBaseCategories.GetKnowledgeBaseCategory(TSAuthentication.GetLoginUser(), categoryID);
+      if (cat.OrganizationID != TSAuthentication.OrganizationID) return false;
+
+      if (cat.ParentID < 0)
+      {
+        KnowledgeBaseCategories cats = new KnowledgeBaseCategories(TSAuthentication.GetLoginUser());
+        cats.LoadSubcategories(cat.CategoryID);
+
+        foreach (KnowledgeBaseCategory item in cats)
+        {
+          item.Delete();
+        }
+        cats.Save();
+      }
+
+      cat.Delete();
+      cat.Collection.Save();
+      return true;
+    }
+
+    [WebMethod]
+    public void UpdateKnowledgeBaseCategoryOrder(string data)
+   {
+     List<KnowledgeBaseCategoryOrder> orders = JsonConvert.DeserializeObject<List<KnowledgeBaseCategoryOrder>>(data);
+
+     if (!TSAuthentication.IsSystemAdmin) return;
+
+     LoginUser loginUser = TSAuthentication.GetLoginUser();
+     int catPos = 0;
+     foreach (KnowledgeBaseCategoryOrder order in orders)
+     {
+       KnowledgeBaseCategory cat = KnowledgeBaseCategories.GetKnowledgeBaseCategory(loginUser, (int)order.ParentID);
+       cat.Position = catPos;
+       cat.Collection.Save();
+
+       int subPos = 0;
+       foreach (int id in order.CategoryIDs)
+       {
+         KnowledgeBaseCategory sub = KnowledgeBaseCategories.GetKnowledgeBaseCategory(loginUser, id);
+         sub.Position = subPos;
+         sub.ParentID = (int)order.ParentID;
+         sub.Collection.Save();
+         subPos++;
+       }
+       catPos++;
+     }
+   }
+    
+    /// <summary>
+    /// Is Jira Link Active
+    /// </summary>
+    /// <returns></returns>
+    [WebMethod]
+    public bool GetIsJiraLinkActive()
+    {
+      bool result = false;
+      CRMLinkTable organizationLinks = new CRMLinkTable(TSAuthentication.GetLoginUser());
+      organizationLinks.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+      foreach (CRMLinkTableItem link in organizationLinks)
+      {
+        if (link.CRMType == "Jira" && link.Active) 
+        {
+          result = true;
+        }
+      }
+
+      return result;
+    }    
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]
@@ -172,5 +318,25 @@ namespace TSWebServices
     public ForumCategoryOrder() {}
     [DataMember] public int? ParentID {get; set;}
     [DataMember] public List<int> CategoryIDs {get; set;}
+  }
+
+  [DataContract(Namespace = "http://teamsupport.com/")]
+  public class KnowledgeBaseCategoryInfo
+  {
+    public KnowledgeBaseCategoryInfo() { }
+    [DataMember]
+    public KnowledgeBaseCategoryProxy Category { get; set; }
+    [DataMember]
+    public KnowledgeBaseCategoryProxy[] Subcategories { get; set; }
+  }
+
+  [DataContract(Namespace = "http://teamsupport.com/")]
+  public class KnowledgeBaseCategoryOrder
+  {
+    public KnowledgeBaseCategoryOrder() { }
+    [DataMember]
+    public int? ParentID { get; set; }
+    [DataMember]
+    public List<int> CategoryIDs { get; set; }
   }
 }

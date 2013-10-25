@@ -61,21 +61,13 @@ namespace TeamSupport.Api
 
     public string GetData()
     {
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(_command.LoginUser, _ticketID);
+      CustomFields customFields = new CustomFields(_command.LoginUser);
+      customFields.LoadByTicketTypeID(_command.Organization.OrganizationID, ticket.TicketTypeID);
 
-      if (_command.Format == RestFormat.XML)
-      {
-        TicketsViewItem ticket = TicketsView.GetTicketsViewItem(_command.LoginUser, _ticketID);
-        CustomFields customFields = new CustomFields(_command.LoginUser);
-        customFields.LoadByTicketTypeID(_command.Organization.OrganizationID, ticket.TicketTypeID);
-
-        RestXmlWriter writer = new RestXmlWriter("Ticket");
-        WriteTicketsViewItemXml(_command, writer.XmlWriter, ticket, customFields);
-        return writer.GetXml();
-      }
-      else
-      {
-        throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
-      }
+      RestXmlWriter writer = new RestXmlWriter("Ticket");
+      WriteTicketsViewItemXml(_command, writer.XmlWriter, ticket, customFields);
+      return writer.GetXml();
     }
 
     #endregion
@@ -136,24 +128,15 @@ namespace TeamSupport.Api
         customFields.LoadByTicketTypeID(_command.Organization.OrganizationID, ticketType.TicketTypeID);
       }
       
+      RestXmlWriter writer = new RestXmlWriter(elementName + "s");
 
-      if (_command.Format == RestFormat.XML)
+      foreach (TicketsViewItem ticket in tickets)
       {
-        RestXmlWriter writer = new RestXmlWriter(elementName + "s");
-
-        foreach (TicketsViewItem ticket in tickets)
-        {
-          writer.XmlWriter.WriteStartElement(elementName);
-          RestTicketsViewItem.WriteTicketsViewItemXml(_command, writer.XmlWriter, ticket, customFields);
-          writer.XmlWriter.WriteEndElement();
-        }
-        return writer.GetXml();
+        writer.XmlWriter.WriteStartElement(elementName);
+        RestTicketsViewItem.WriteTicketsViewItemXml(_command, writer.XmlWriter, ticket, customFields);
+        writer.XmlWriter.WriteEndElement();
       }
-      else
-      {
-        throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
-      }
-      
+      return writer.GetXml();
     }
 
     #endregion

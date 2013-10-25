@@ -49,6 +49,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("RequireNewKeyword", "RequireNewKeyword", false, false, false);
       _fieldMap.AddMap("RequireKnownUserForNewEmail", "RequireKnownUserForNewEmail", false, false, false);
       _fieldMap.AddMap("OrganizationReplyToAddress", "OrganizationReplyToAddress", false, false, false);
+      _fieldMap.AddMap("CompanyDomains", "Domains", true, true, true);
       _fieldMap.AddMap("ShowWiki", "ShowWiki", false, false, false);
       _fieldMap.AddMap("DefaultWikiArticleID", "DefaultWikiArticleID", false, false, false);
       _fieldMap.AddMap("SlaLevelID", "SlaLevelID", true, true, true);
@@ -60,7 +61,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CultureName", "CultureName", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, true);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, true);
-            
+      _fieldMap.AddMap("SupportHoursMonth", "SupportHoursMonth", true, true, true);            
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
     }
   }
   

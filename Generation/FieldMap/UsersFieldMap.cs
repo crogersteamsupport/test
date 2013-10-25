@@ -59,6 +59,18 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("PortalAutoReg", "PortalAutoReg", false, false, false);
       _fieldMap.AddMap("AppChatID", "AppChatID", false, false, false);
       _fieldMap.AddMap("AppChatStatus", "AppChatStatus", false, false, false);
+      _fieldMap.AddMap("MenuItems", "MenuItems", false, false, false);
+      _fieldMap.AddMap("TicketRights", "TicketRights", false, false, false);
+      _fieldMap.AddMap("Signature", "Signature", false, false, false);
+      _fieldMap.AddMap("LinkedIn", "LinkedIn", false, false, false);
+      _fieldMap.AddMap("OnlyEmailAfterHours", "OnlyEmailAfterHours", false, false, false);
+      _fieldMap.AddMap("BlockInboundEmail", "BlockInboundEmail", false, false, false);
+      _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
+      _fieldMap.AddMap("ChangeTicketVisibility", "ChangeTicketVisibility", false, false, false);
+      _fieldMap.AddMap("ChangeKBVisibility", "ChangeKBVisibility", false, false, false);
+      _fieldMap.AddMap("EnforceSingleSession", "EnforceSingleSession", false, false, false);
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
+      _fieldMap.AddMap("AllowAnyTicketCustomer", "AllowAnyTicketCustomer", false, false, false);
             
     }
   }

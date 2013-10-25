@@ -27,6 +27,7 @@ namespace TeamSupport.Data
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public int TicketID { get; set; }
+    [DataMember] public string ActionSource { get; set; }
     [DataMember] public string CreatorName { get; set; }
     [DataMember] public string ModifierName { get; set; }
     [DataMember] public string ActionType { get; set; }
@@ -96,6 +97,7 @@ namespace TeamSupport.Data
       result.ActionType = this.ActionType;
       result.ModifierName = this.ModifierName;
       result.CreatorName = this.CreatorName;
+      result.ActionSource = this.ActionSource;
       result.TicketID = this.TicketID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;

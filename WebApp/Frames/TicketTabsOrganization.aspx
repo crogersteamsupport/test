@@ -24,6 +24,8 @@
         frame.setAttribute('src', tab.get_value());
 
         top.privateServices.SetUserSetting('SelectedOrganizationTicketTabIndex' + window.location, tab.get_index());
+        top.Ts.System.logAction('Organizations Tickets - Tab Selected (' + tab.get_text() + ')');
+
       }
       function onShow() { try { var frame = $get("<%=ticketsFrame.ClientID %>").contentWindow.onShow() } catch (err) { }; }
 

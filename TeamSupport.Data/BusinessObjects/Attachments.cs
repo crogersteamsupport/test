@@ -33,9 +33,9 @@ namespace TeamSupport.Data
   public partial class Attachments
   {
 
-    public void LoadByActionID(int actionID)
+    public void LoadByActionID(int actionID, string orderBy = "")
     {
-      LoadByReference(ReferenceType.Actions, actionID);
+      LoadByReference(ReferenceType.Actions, actionID, orderBy);
     }
 
     public void LoadByWatercoolerID(int WaterCoolerID)
@@ -48,11 +48,15 @@ namespace TeamSupport.Data
       LoadByReference(ReferenceType.Organizations, organizationID);
     }
 
-    public void LoadByReference(ReferenceType refType, int refID)
+    public void LoadByReference(ReferenceType refType, int refID, string orderBy = "")
     {
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = "SELECT a.*, (u.FirstName + ' ' + u.LastName) AS CreatorName FROM Attachments a LEFT JOIN Users u ON u.UserID = a.CreatorID WHERE (RefID = @RefID) AND (RefType = @RefType)";
+        if (orderBy != string.Empty)
+        {
+          command.CommandText += " ORDER BY " + orderBy;
+        }
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefID", refID);
         command.Parameters.AddWithValue("@RefType", refType);

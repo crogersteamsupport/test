@@ -70,7 +70,7 @@ namespace TeamSupport.Data
       {
         command.CommandText = @"SELECT 
 	        op.OrganizationProductID, p.Name AS ProductName, pvs.Name AS VersionStatus, pv.VersionNumber, op.SupportExpiration, pv.IsReleased, pv.ReleaseDate"
-          + DataUtils.GetCustomFieldColumns(LoginUser, ReferenceType.OrganizationProducts, LoginUser.OrganizationID, "op.OrganizationProductID", 5, true) +
+          + DataUtils.GetCustomFieldColumns(LoginUser, ReferenceType.OrganizationProducts, LoginUser.OrganizationID, "op.OrganizationProductID", 25, true) +
           @" FROM OrganizationProducts op
           LEFT JOIN Products p ON op.ProductID = p.ProductID
           LEFT JOIN ProductVersions pv ON op.ProductVersionID = pv.ProductVersionID

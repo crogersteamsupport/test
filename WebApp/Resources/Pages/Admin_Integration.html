@@ -4,23 +4,18 @@
   <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
   <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery.ui.panel.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
   <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="vcr/142/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/142/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <!--[if IE 7]><link href="vcr/1_7_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_7_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="Admin_Integration.css" rel="stylesheet" type="text/css" />
 
-  <script src="../Js/jquery-1.5.1.min.js" type="text/javascript"></script>
-  <script src="../Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
-  <script src="../Js/jquery.ui.panel.js" type="text/javascript"></script>
   <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
-  <script src="../Js/jquery.color.js" type="text/javascript"></script>
   <script src="../Js/jquery.ui.timepicker.js" type="text/javascript"></script>
-
-  <script src="../Js/Ts/ts.style.js" type="text/javascript"></script>
   <script src="../Js/Ts/ts.utils.js" type="text/javascript"></script>
   <script src="Admin_Integration.js" type="text/javascript"></script>
 
@@ -137,6 +132,69 @@
           </div>
         </div>
       </li>
+      <li class="int-type jira">
+        <h1 class="collapsable"><span class="ui-icon ui-icon-triangle-1-e"/></span><img src="../Images/party3/Jira.png" /><span>Jira</span></h1>
+        <div class="int-panel">
+
+          <h3>TeamSupport has native integration with Jira.</h3>
+          <p>TeamSupport Tickets can be synced with new or existing Jira Issues.  This integration allows your company to use best of breed solutions for issues and bug tracking as well as customer service and support!</p>
+          <div class="int-content-wrapper">
+            <div class="int-content-center">
+              <div class="mappings ui-helper-hidden">
+                <h2>Custom Field Mapping (Optional)</h2>
+                <div>
+                  <div class="label-block">
+                    <span class="label">Jira Field</span>
+                    <input type="text" class="int-jira-map-crmfield text ui-widget-content ui-corner-all"
+                      style="width: 200px;" />
+                  </div>
+                  <div class="label-block">
+                    <span class="label">TeamSupport Ticket Field</span>
+                    <select class="int-jira-map-tsfield"></select>
+                  </div>
+                  <div class="label-block">
+                    <button class="jira-map-add">Add Mapping</button>
+                  </div>
+                </div>
+                <div class="ts-clearfix">
+                </div>
+                <div>
+                  <h3>Ticket Mappings</h3>
+                  <div class="ui-widget-content ts-separator">
+                  </div>
+                  <div class="map-ticket"></div>
+                  <div class="ts-clearfix"></div>
+              </div>
+              </div>
+              <div>&nbsp</div>
+            </div>
+          </div>
+          <div class="int-content-left">
+            <label>Jira Host Name</label>
+            <input type="text" class="text ui-widget-content ui-corner-all int-crm-host" />
+            <label>Jira User Name</label>
+            <input type="text" class="text ui-widget-content ui-corner-all int-crm-user" />
+            <label>Jira Password</label>
+            <input type="password" class="text ui-widget-content ui-corner-all int-crm-password" />
+            <label>Confirm Password</label>
+            <input type="password" class="text ui-widget-content ui-corner-all int-crm-password-confirm" />
+            <label>Default Project KEY</label>
+            <input type="text" class="text ui-widget-content ui-corner-all int-crm-project" />
+            <span class="label">Actions type to push to Jira as comments</span>
+            <select class="int-actionTypeToPush"></select>
+            <div>&nbsp</div>
+            <div class="checkboxes">
+              <input id="Checkbox1" type="checkbox" class="checkbox int-crm-update-status" />
+              <label for="cb-jira-update-status" class="checkbox">Update TeamSupport Tickets Statuses</label>
+              <div class="clearfix"></div>
+              <input id="Checkbox2" type="checkbox" class="checkbox int-crm-active" />
+              <label for="cb-salesforce" class="checkbox">Synchronization Active</label>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          <div style="clear:both;"></div>
+        </div>
+      </li>
       <li class="int-type mailchimp">
         <h1 class="collapsable"><span class="ui-icon ui-icon-triangle-1-e"/></span><img src="../Images/party3/mailchimp.png" /><span>MailChimp</span></h1>
         <div class="int-panel">
@@ -171,6 +229,29 @@
         </p>
       
         
+        </div>
+      </li>
+      <li class="int-type oracle">
+        <h1 class="collapsable"><span class="ui-icon ui-icon-triangle-1-e"/></span><img src="../Images/party3/oracle.ico" /><span>Oracle Sales Cloud</span></h1>
+        <div class="int-panel">
+
+          <h3>TeamSupport has native integration with Oracle Sales Cloud.</h3>
+          <p>Company and contact information can by synced from your Oracle Sales Cloud account into your TeamSupport account.  This integration allows your company to use best of breed solutions for sales, marketing and contact management as well as customer service and support!</p>
+          <label>Host Name</label>
+          <input type="text" class="text ui-widget-content ui-corner-all int-crm-host" />
+          <label>User Name</label>
+          <input type="text" class="text ui-widget-content ui-corner-all int-crm-user" />
+          <label>Password</label>
+          <input type="password" class="text ui-widget-content ui-corner-all int-crm-password" />
+          <label>Confirm Password</label>
+          <input type="password" class="text ui-widget-content ui-corner-all int-crm-password-confirm" />
+          <div class="checkboxes">
+            <input id="cb-oracle-active" type="checkbox" class="checkbox int-crm-active" />
+            <label for="cb-oracle-active" class="checkbox">Synchronization Active</label>
+            <!--<div class="clearfix"></div>
+            <input id="cb-oracle-push-tickets-as-account-comments" type="checkbox" class="checkbox int-crm-push-tickets-as-account-comments" />
+            <label for="cb-oracle-push-tickets-as-account-comments" class="checkbox">Push-Out Tickets As Account Notes</label>-->
+          </div>
         </div>
       </li>
       <li class="int-type salesforce">
@@ -215,6 +296,11 @@
                   </div>
                   <div class="map-contact"></div>
                   <div class="ts-clearfix"></div>
+                  <h3>Ticket Mappings</h3>
+                  <div class="ui-widget-content ts-separator">
+                  </div>
+                  <div class="map-ticket"></div>
+                  <div class="ts-clearfix"></div>
               </div>
               </div>
               <div>&nbsp</div>
@@ -240,11 +326,23 @@
               <input id="cb-salesforce" type="checkbox" class="checkbox int-crm-active" />
               <label for="cb-salesforce" class="checkbox">Synchronization Active</label>
               <div class="clearfix"></div>
+              <input id="cb-salesforce-pull-cases-as-tickets" type="checkbox" class="checkbox int-crm-pull-cases-as-tickets" />
+              <label for="cb-salesforce-pull-cases-as-tickets" class="checkbox">Pull-In Cases As Tickets</label>
+              <div class="clearfix"></div>
+              <input id="cb-salesforce-push-tickets-as-cases" type="checkbox" class="checkbox int-crm-push-tickets-as-cases" />
+              <label for="cb-salesforce-push-tickets-as-cases" class="checkbox">Push-Out Tickets As Cases</label>
+              <div class="clearfix"></div>
+              <input id="cb-salesforce-push-tickets-as-account-comments" type="checkbox" class="checkbox int-crm-push-tickets-as-account-comments" />
+              <label for="cb-salesforce-push-tickets-as-account-comments" class="checkbox">Push-Out Tickets As Account Notes</label>
+              <div class="clearfix"></div>
               <input id="cb-salesforce-portal" type="checkbox" class="checkbox int-crm-portal" />
               <label for="cb-salesforce-portal" class="checkbox">Give portal access to customers imported (advanced portal option required.  If you do not have the advanced portal, please email sales@teamsupport.com)</label>
               <div class="clearfix"></div>
               <input id="cb-salesforce-email" type="checkbox" class="checkbox int-crm-email" />
               <label for="cb-salesforce-email" class="checkbox">Send welcome email to imported contacts</label>
+              <div class="clearfix"></div>
+              <input id="cb-salesforce-match-accounts-by-name" type="checkbox" class="checkbox int-crm-match-accounts-by-name" />
+              <label for="cb-salesforce-match-accounts-by-name" class="checkbox">Match accounts by name</label>
             </div>
           </div>
           <div style="clear:both;"></div>
@@ -256,20 +354,59 @@
           <h3>TeamSupport has native integration with Zoho.</h3>
           <p>Company and contact information can by synced from your Zoho account into your TeamSupport account, and ticket information can be sent back to Zoho.  This integration allows your company to use best of breed solutions for sales, marketing and contact management as well as customer service and support!</p>
 
+          <div class="int-content-wrapper">
+            <div class="int-content-center">
+              <div class="mappings ui-helper-hidden">
+                <h2>Custom Field Mapping (Optional)</h2>
+                <div>
+                  <div class="label-block">
+                    <span class="label">Mapping Type</span>
+                    <select class="int-zoho-map-type">
+                    </select>
+                  </div>
+                  <div class="label-block">
+                    <span class="label">Zoho CRM Field</span>
+                    <input type="text" class="int-zoho-map-crmfield text ui-widget-content ui-corner-all"
+                      style="width: 200px;" />
+                  </div>
+                  <div class="label-block">
+                    <span class="label">TeamSupport Field</span>
+                    <select class="int-zoho-map-tsfield"></select>
+                  </div>
+                  <div class="label-block">
+                    <button class="zoho-map-add">Add Mapping</button>
+                  </div>
+                </div>
+                <div class="ts-clearfix">
+                </div>
+                <div>
+                  <h3>Account Mappings</h3>
+                  <div class="ui-widget-content ts-separator">
+                  </div>
+                  <div class="map-account"></div>
+                  <div class="ts-clearfix"></div>
+                  <h3>Contact Mappings</h3>
+                  <div class="ui-widget-content ts-separator">
+                  </div>
+                  <div class="map-contact"></div>
+                  <div class="ts-clearfix"></div>
+              </div>
+              </div>
+              <div>&nbsp</div>
+            </div>
+          </div>
+
+          <div class="int-content-left">
           <label>Zoho User Name</label>
           <input type="text" class="text ui-widget-content ui-corner-all int-crm-user"/>
           <label>Password</label>
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-password"/>
           <label>Confirm Password</label>
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-password-confirm"/>
-          <label>Zoho API Key</label>
+          <label>Zoho CRM Authentication Token</label>
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-token"/>
-          <label>Confirm API Key</label>
+          <label>Confirm Zoho CRM Authentication Token</label>
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-token-confirm"/>
-          <label>New Zoho CRM Authentication Token</label>
-          <input type="password" class="text ui-widget-content ui-corner-all int-crm-token2"/>
-          <label>Confirm new CRM Authentication Token</label>
-          <input type="password" class="text ui-widget-content ui-corner-all int-crm-token2-confirm"/>
           <label>Account Type to Link to TeamSupport</label>
           <input type="text" class="text ui-widget-content ui-corner-all int-crm-tag"/>
           <span class="label">Default SLA</span>
@@ -279,12 +416,17 @@
             <input id="cb-zoho" type="checkbox" class="checkbox int-crm-active"/>
             <label for="cb-zoho" class="checkbox">Synchronization Active</label>
             <div class="clearfix"></div>
+            <input id="cb-zoho-pull-customer-products" type="checkbox" class="checkbox int-crm-pull-customer-products" />
+            <label for="cb-zoho-pull-customer-products" class="checkbox">Pull-In Customer Products</label>
+            <div class="clearfix"></div>
             <input id="cb-zoho-portal" type="checkbox" class="checkbox int-crm-portal" />
             <label for="cb-zoho-portal" class="checkbox">Give portal access to customers imported (advanced portal option required.  If you do not have the advanced portal, please email sales@teamsupport.com)</label>
             <div class="clearfix"></div>
             <input id="cb-zoho-email" type="checkbox" class="checkbox int-crm-email" />
             <label for="cb-zoho-email" class="checkbox">Send welcome email to imported contacts</label>
           </div>
+          </div>
+          <div style="clear:both;"></div>
         </div>
       </li>
       <li class="int-type zohoreports">
@@ -299,9 +441,9 @@
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-password"/>
           <label>Confirm Password</label>
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-password-confirm"/>
-          <label>Zoho API Key</label>
+          <label>Zoho Reports Authentication Token</label>
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-token"/>
-          <label>Confirm API Key</label>
+          <label>Confirm Zoho Reports Authentication Token</label>
           <input type="password" class="text ui-widget-content ui-corner-all int-crm-token-confirm"/>
           <div class="checkboxes">
             <input id="cb-zohoreports" type="checkbox" class="checkbox int-crm-active"/>

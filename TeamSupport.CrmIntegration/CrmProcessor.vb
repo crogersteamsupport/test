@@ -1,6 +1,7 @@
 ﻿Imports TeamSupport.Data
 Imports TeamSupport.ServiceLibrary
 Imports System.IO
+Imports System.Text
 
 Namespace TeamSupport
     Namespace CrmIntegration
@@ -106,6 +107,18 @@ Namespace TeamSupport
               Else
                 Return
               End If
+            Case IntegrationType.Jira
+              If Settings.ReadBool("Jira Enabled", True) Then
+                CRM = New Jira(CRMLinkTableItem, Log, LoginUser, Me)
+              Else
+                Return
+              End If
+            Case IntegrationType.Oracle
+              If Settings.ReadBool("Oracle Enabled", True) Then
+                CRM = New Oracle(CRMLinkTableItem, Log, LoginUser, Me)
+              Else
+                Return
+              End If
           End Select
 
           If CRM IsNot Nothing Then
@@ -116,9 +129,34 @@ Namespace TeamSupport
               If CRM.PerformSync() Then
                 CRMLinkTableItem.LastLink = DateTime.UtcNow
                 CRMLinkTableItem.Collection.Save()
+                Dim synchedOrganizations As New CRMLinkSynchedOrganizations(LoginUser)
+                synchedOrganizations.DeleteByCRMLinkTableID(CRMLinkTableItem.CRMLinkID)
                 Log.Write("Finished processing successfully.")
 
-                Integration.LogSyncResult(CRMType.ToString() & " Sync Completed", CRMLinkTableItem.OrganizationID, LoginUser)
+                Dim pushTicketsAndPullCasesMessage As StringBuilder = New StringBuilder()
+                If CRMLinkTableItem.PullCasesAsTickets Then
+                  pushTicketsAndPullCasesMessage.Append(" pulling cases")
+                End If
+                If CRMLinkTableItem.PushTicketsAsCases Then
+                  If pushTicketsAndPullCasesMessage.Length > 0 Then
+                    pushTicketsAndPullCasesMessage.Append(" and")
+                  End If
+                  pushTicketsAndPullCasesMessage.Append(" pushing tickets as cases")
+                End If
+                If CRMLinkTableItem.SendBackTicketData Then
+                  If pushTicketsAndPullCasesMessage.Length > 0 Then
+                    pushTicketsAndPullCasesMessage.Append(" and")                    
+                  End If
+                  pushTicketsAndPullCasesMessage.Append(" pushing ticktes as ")
+                  If CRMLinkTableItem.CRMType = "Jira" Then
+                    pushTicketsAndPullCasesMessage.Append("issues")
+                  Else
+                    pushTicketsAndPullCasesMessage.Append("notes")                
+                  End If
+                End If
+                Integration.LogSyncResult(CRMType.ToString() & " Sync Completed" & pushTicketsAndPullCasesMessage.ToString() & ".",
+                  CRMLinkTableItem.OrganizationID,
+                  LoginUser)
               Else
                 'migrating towards using IntegrationException instead of IntegrationError
                 If CRM.Exception IsNot Nothing Then

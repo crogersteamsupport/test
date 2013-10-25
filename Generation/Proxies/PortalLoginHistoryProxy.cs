@@ -20,6 +20,7 @@ namespace TeamSupport.Data
     [DataMember] public bool? Success { get; set; }
     [DataMember] public DateTime? LoginDateTime { get; set; }
     [DataMember] public string IPAddress { get; set; }
+    [DataMember] public string Browser { get; set; }
           
   }
   
@@ -28,6 +29,7 @@ namespace TeamSupport.Data
     public PortalLoginHistoryItemProxy GetProxy()
     {
       PortalLoginHistoryItemProxy result = new PortalLoginHistoryItemProxy();
+      result.Browser = this.Browser;
       result.IPAddress = this.IPAddress;
       result.Success = this.Success;
       result.OrganizationName = this.OrganizationName;

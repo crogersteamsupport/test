@@ -74,8 +74,9 @@ AdminAuto = function () {
         selectTrigger(trigger.TriggerID);
       }
       else {
-        selectFirstTrigger();
+        $('.triggers li.trigger-selected').click();
       }
+      top.Ts.System.logAction('Admin Automation - Trigger Saved');
     });
   });
 
@@ -114,6 +115,7 @@ AdminAuto = function () {
     _triggerID = -1;
     hideNoTrigger();
     clearTrigger();
+    top.Ts.System.logAction('Admin Automation - Started New Trigger');
   }
 
 
@@ -135,7 +137,7 @@ AdminAuto = function () {
       }
       _triggerID = getSelectedTriggerID();
       if (_triggerID == null) showNoTrigger();
-
+      top.Ts.System.logAction('Admin Automation - Trigger Deleted');
     });
 
   });
@@ -241,6 +243,15 @@ AdminAuto = function () {
     select.html('');
     for (var i = 0; i < _data.Severities.length; i++) {
       select.append('<option value="' + _data.Severities[i].id + '">' + _data.Severities[i].label + '</option>');
+    }
+    select.find('option:first').attr('selected', 'selected');
+    return select;
+  }
+
+  function loadComboTicketTypes(select) {
+    select.html('');
+    for (var i = 0; i < _data.TicketTypes.length; i++) {
+      select.append('<option value="' + _data.TicketTypes[i].id + '">' + _data.TicketTypes[i].label + '</option>');
     }
     select.find('option:first').attr('selected', 'selected');
     return select;
@@ -377,11 +388,13 @@ AdminAuto = function () {
   $('#btnAddAllCondition').click(function (e) {
     e.preventDefault();
     addCondition('.conditions-all');
+    top.Ts.System.logAction('Admin Automation - All Condition Added');
   });
 
   $('#btnAddAnyCondition').click(function (e) {
     e.preventDefault();
     addCondition('.conditions-any');
+    top.Ts.System.logAction('Admin Automation - Any Condition Added');
   });
 
 
@@ -402,9 +415,12 @@ AdminAuto = function () {
     if (measure) { measures.combobox('setValue', measure); }
     $('<span>').addClass('condition-value-container').appendTo(div);
     createConditionValue(div, fields.find('option:selected').data('field'), value);
-    $('<span>').addClass('ts-icon ts-icon-remove').appendTo(div).click(function (e) { $(this).parent().remove(); isModified(true); });
+    $('<span>').addClass('ts-icon ts-icon-remove').appendTo(div).click(function (e) {
+      $(this).parent().remove(); isModified(true); top.Ts.System.logAction('Admin Automation - Condition Removed');
+    });
     $('<div>').css('clear', 'both').appendTo(div);
     div.appendTo(selector);
+
   }
 
   function createConditionValue(condition, field, value) {
@@ -468,6 +484,7 @@ AdminAuto = function () {
         proxy.Measure = $(this).find('.condition-measure').val();
         proxy.TestValue = $(this).find('.condition-value').val();
         proxy.MatchAll = isAny;
+        proxy.OtherTrigger = $(this).find('.condition-field option:selected').data('field').OtherTrigger;
         items[items.length] = proxy;
       });
     }
@@ -480,6 +497,8 @@ AdminAuto = function () {
   $('#btnAddAction').click(function (e) {
     e.preventDefault();
     addAction('.actions');
+    top.Ts.System.logAction('Admin Automation - Action Added');
+
   });
 
   function addAction(selector, actionID, value1, value2) {
@@ -505,7 +524,9 @@ AdminAuto = function () {
       .appendTo(main)
       .combobox({ selected: function () { isModified(true); } });
 
-    $('<span>').addClass('ts-icon ts-icon-remove').appendTo(main).click(function (e) { $(this).parents('.action').remove(); isModified(true); });
+    $('<span>').addClass('ts-icon ts-icon-remove').appendTo(main).click(function (e) {
+      $(this).parents('.action').remove(); isModified(true); top.Ts.System.logAction('Admin Automation - Action Removed');
+    });
 
     var actionEditor = $('<div>')
     .addClass('action-editor ui-helper-hidden')
@@ -525,7 +546,11 @@ AdminAuto = function () {
       var selectedAction = getAction(actions.val());
       setActionValues(div, selectedAction, value1);
       if (value2) { ed.setContent(value2); }
-      if (value1) { values.combobox('setValue', value1); }
+      if (value1 && values.data('combobox')) {
+        values.combobox('setValue', value1);
+      } else {
+        values.val(value1);
+      }
     }
     initEditor(editorID, onEditorInit);
 
@@ -577,6 +602,9 @@ AdminAuto = function () {
         break;
       case 'TicketSeverities':
         loadComboSeverities(select).combobox('update');
+        break;
+      case 'TicketType':
+        loadComboTicketTypes(select).combobox('update');
         break;
       case 'Users':
         loadComboUsers(select).combobox('update');

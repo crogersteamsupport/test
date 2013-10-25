@@ -66,48 +66,58 @@ namespace TeamSupport.Api
         xml = Tickets.EndXmlWrite(writer);
 	    }
 
-      if (command.Format == RestFormat.XML)
+      //return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
+      return xml;
+    }
+
+    public static string GetZapierTickets(RestCommand command)
+    {
+      string xml = "";
+
+      TicketsView tickets = new TicketsView(command.LoginUser);
+      XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
+
+      tickets.LoadByOrganizationIDOrderByNumberDESC(command.Organization.OrganizationID);
+      foreach (DataRow row in tickets.Table.Rows)
       {
-        //return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
-        return xml;
+        tickets.WriteXml(writer, row, "Ticket", true, command.Filters);
+      }
+
+      xml = Tickets.EndXmlWrite(writer);
+
+      //return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
+      return xml;
+    }
+
+    public static string GetTicketsByCustomerID(RestCommand command, int customerID, bool orderByDateCreated = false)
+    {
+      TicketsView tickets = new TicketsView(command.LoginUser);
+      if (orderByDateCreated)
+      {
+        tickets.LoadByCustomerID(customerID, "ot.DateCreated DESC");
       }
       else
       {
-        throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
+        tickets.LoadByCustomerID(customerID);
       }
-      
+
+      return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
     }
 
-    public static string GetTicketsByCustomerID(RestCommand command, int customerID)
+    public static string GetTicketsByContactID(RestCommand command, int contactID, bool orderByDateCreated = false)
     {
       TicketsView tickets = new TicketsView(command.LoginUser);
 
-      tickets.LoadByCustomerID(customerID);
-
-      if (command.Format == RestFormat.XML)
+      if (orderByDateCreated)
       {
-        return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
+        tickets.LoadByContactID(contactID, "ut.DateCreated DESC");
       }
       else
       {
-        throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
+        tickets.LoadByContactID(contactID);
       }
-    }
 
-    public static string GetTicketsByContactID(RestCommand command, int contactID)
-    {
-      TicketsView tickets = new TicketsView(command.LoginUser);
-
-      tickets.LoadByContactID(contactID);
-
-      if (command.Format == RestFormat.XML)
-      {
-        return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
-      }
-      else
-      {
-        throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
-      }
+      return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
     }
 
     public static string CreateTicket(RestCommand command)
@@ -143,6 +153,15 @@ namespace TeamSupport.Api
       return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
     }
 
+    public static string DeleteTicket(RestCommand command, int ticketID)
+    {
+      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
+      string result = TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
+      if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+      ticket.Delete();
+      ticket.Collection.Save();
+      return result;
+    }
 
     // Customer Only Methods
     
@@ -182,14 +201,7 @@ namespace TeamSupport.Api
         tickets.LoadByCustomerID(command.Organization.OrganizationID);
       }
 
-      if (command.Format == RestFormat.XML)
-      {
-        return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
-      }
-      else
-      {
-        throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
-      }
+      return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
     }
 
     public static string CreateCustomerTicket(RestCommand command)

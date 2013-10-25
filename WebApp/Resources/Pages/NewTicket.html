@@ -5,11 +5,7 @@
   <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery.ui.menu.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery.ui.spinner.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery.ui.tooltip.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery.fileupload-ui.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.cluetip.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
   <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
@@ -18,20 +14,22 @@
   <link href="NewTicket.css" rel="stylesheet" type="text/css" />
   <link href="Ticket.css" rel="stylesheet" type="text/css" />
 
-  <script src="../Js/jquery-1.7.2.min.js" type="text/javascript"></script>
-  <script src="../Js/jquery.bgiframe-2.1.2.js" type="text/javascript"></script>
-  <script src="../Js/jquery-ui-1.9.8.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.hoverIntent.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.cluetip.js" type="text/javascript"></script>
   <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
-  <script src="../Js/jquery.ui.timepicker-2.0.js" type="text/javascript"></script>
+  <script src="../Js/jquery.ui.timepicker.js" type="text/javascript"></script>
   <script src="../Js/jquery.numeric.js" type="text/javascript"></script>
-  <script src="../tiny_mce_3.5b1/tiny_mce.js" type="text/javascript"></script>
-  <script src="../tiny_mce_3.5b1/jquery.tinymce.js" type="text/javascript"></script>
+  <script src="/tiny_mce/tiny_mce.js" type="text/javascript"></script>
+  <script src="/tiny_mce/jquery.tinymce.js" type="text/javascript"></script>
   <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
   <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
   <script src="NewTicket.js" type="text/javascript"></script>
+  <script src="../Js/browser.js" type="text/javascript"></script>
+
+  <script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropbox.js" id="dropboxjs" data-app-key="ebdoql1dhyy7l72"></script>
 
   <style type="text/css">
     .newticket-fields { padding: 0; margin: 0; clear: both; }
@@ -82,8 +80,12 @@
           <div class="label-block checkbox">
             <input type="checkbox" class="newticket-portal"><label>Visible to Customers</label>
           </div>
-          <div class="label-block checkbox">
+          <div class="label-block checkbox new-ticket-div">
             <input type="checkbox" class="newticket-kb"><label>Knowledgebase</label>
+          </div>
+          <div id="knowledgeBaseCategoryDiv" class="label-block">
+            <span class="label">KB Category</span>
+            <select class="newticket-kbCategory"></select>
           </div>
 
 
@@ -157,9 +159,9 @@
     <div class="ticket-rail-wrapper">
       <div class="ticket-rail">
           <div class="ticket-widget-customers ticket-widget ui-widget-content ui-corner-all no-express">
-            <h3 class="collapsable">Customers<a href="#" class="ticket-customer-add">Add</a><span class="separator"></span><a href="#" class="ticket-customer-new ui-helper-hidden">New</a></h3>
+            <h3 class="collapsable">Customers<a href="#" class="ticket-customer-add">Add</a><span class="separator"></span><a href="#" class="ticket-customer-new">New</a></h3>
             <div id="divCustomers">
-              <div class="ticket-rail-input ticket-new-customer ui-helper-hidden">
+              <div class="ticket-new-customer ui-helper-hidden">
                 <div class="label-block">
                   <span class="label">First Name</span>
                   <input type="text" class="text ui-corner-all ui-widget-content ticket-new-customer-first" />

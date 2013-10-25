@@ -42,6 +42,8 @@ namespace TeamSupport.Data
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public int? OrganizationParentID { get; set; }
     [DataMember] public string CryptedPassword { get; set; }
+    [DataMember] public string SalesForceID { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
           
   }
   
@@ -50,6 +52,8 @@ namespace TeamSupport.Data
     public ContactsViewItemProxy GetProxy()
     {
       ContactsViewItemProxy result = new ContactsViewItemProxy();
+      result.NeedsIndexing = this.NeedsIndexing;
+      result.SalesForceID = this.SalesForceID;
       result.CryptedPassword = this.CryptedPassword;
       result.OrganizationParentID = this.OrganizationParentID;
       result.ModifierID = this.ModifierID;

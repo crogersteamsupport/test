@@ -72,6 +72,80 @@ namespace TSWebServices
       actionsViewDescription.Alias = "Action Text";
       fieldItems.Add(new AutoFieldItem(actionsViewDescription));
 
+      ReportTableField actionsViewName = ReportTableFields.GetReportTableField(fields.LoginUser, 5);
+      fieldItems.Add(new AutoFieldItem(actionsViewName));
+
+      ReportTableField actionsViewType = ReportTableFields.GetReportTableField(fields.LoginUser, 18);
+      fieldItems.Add(new AutoFieldItem(actionsViewType));
+
+      AutoFieldItem afiDayOfWeekCreated = new AutoFieldItem();
+      afiDayOfWeekCreated.Alias = "Day of Week Created";
+      afiDayOfWeekCreated.DataType = "list";
+      afiDayOfWeekCreated.FieldID = 101001;
+      afiDayOfWeekCreated.FieldName = "Day of Week Created";
+      afiDayOfWeekCreated.IsCustom = false;
+      afiDayOfWeekCreated.IsVisible = true;
+      afiDayOfWeekCreated.ListValues = new string[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+      afiDayOfWeekCreated.LookupTableID = null;
+      afiDayOfWeekCreated.Size = 0;
+      afiDayOfWeekCreated.Description = "";
+      afiDayOfWeekCreated.TableID = -2;
+      afiDayOfWeekCreated.RefType = ReferenceType.Tickets;
+      afiDayOfWeekCreated.AuxID = null;
+      afiDayOfWeekCreated.OtherTrigger = "ticketsview.dayofweekcreated";
+      fieldItems.Add(afiDayOfWeekCreated);
+
+      AutoFieldItem afiHourOfDayCreated = new AutoFieldItem();
+      afiHourOfDayCreated.Alias = "Hour of Day Created";
+      afiHourOfDayCreated.DataType = "text";
+      afiHourOfDayCreated.FieldID = 101002;
+      afiHourOfDayCreated.FieldName = "Hour of Day Created";
+      afiHourOfDayCreated.IsCustom = false;
+      afiHourOfDayCreated.IsVisible = true;
+      afiHourOfDayCreated.ListValues = null;
+      afiHourOfDayCreated.LookupTableID = null;
+      afiHourOfDayCreated.Size = 0;
+      afiHourOfDayCreated.Description = "";
+      afiHourOfDayCreated.TableID = -2;
+      afiHourOfDayCreated.RefType = ReferenceType.Tickets;
+      afiHourOfDayCreated.AuxID = null;
+      afiHourOfDayCreated.OtherTrigger = "ticketsview.hourofdaycreated";
+      fieldItems.Add(afiHourOfDayCreated);
+
+      AutoFieldItem afiMinSinceLastAction = new AutoFieldItem();
+      afiMinSinceLastAction.Alias = "Minutes Since last Action Added";
+      afiMinSinceLastAction.DataType = "text";
+      afiMinSinceLastAction.FieldID = 101003;
+      afiMinSinceLastAction.FieldName = "Minutes Since last Action Added";
+      afiMinSinceLastAction.IsCustom = false;
+      afiMinSinceLastAction.IsVisible = true;
+      afiMinSinceLastAction.ListValues = null;
+      afiMinSinceLastAction.LookupTableID = null;
+      afiMinSinceLastAction.Size = 0;
+      afiMinSinceLastAction.Description = "";
+      afiMinSinceLastAction.TableID = -2;
+      afiMinSinceLastAction.RefType = ReferenceType.Tickets;
+      afiMinSinceLastAction.AuxID = null;
+      afiMinSinceLastAction.OtherTrigger = "ticketsview.minutessincelastactionadded";
+      fieldItems.Add(afiMinSinceLastAction);
+
+      AutoFieldItem afiHoursSinceAction = new AutoFieldItem();
+      afiHoursSinceAction.Alias = "Hours Since Last Action Added";
+      afiHoursSinceAction.DataType = "text";
+      afiHoursSinceAction.FieldID = 101004;
+      afiHoursSinceAction.FieldName = "Hours Since Last Action Added";
+      afiHoursSinceAction.IsCustom = false;
+      afiHoursSinceAction.IsVisible = true;
+      afiHoursSinceAction.ListValues = null;
+      afiHoursSinceAction.LookupTableID = null;
+      afiHoursSinceAction.Size = 0;
+      afiHoursSinceAction.Description = "";
+      afiHoursSinceAction.TableID = -2;
+      afiHoursSinceAction.RefType = ReferenceType.Tickets;
+      afiHoursSinceAction.AuxID = null;
+      afiHoursSinceAction.OtherTrigger = "ticketsview.hourssincelastactionadded";
+      fieldItems.Add(afiHoursSinceAction);
+
       result.Fields = fieldItems.ToArray();
       
       Users users = new Users(UserSession.LoginUser);
@@ -103,8 +177,12 @@ namespace TSWebServices
 
       List<AutocompleteItem> statusItems = new List<AutocompleteItem>();
 
+      List<AutocompleteItem> ticketTypeItems = new List<AutocompleteItem>();
       foreach (TicketType ticketType in ticketTypes)
       {
+        ticketTypeItems.Add(new AutocompleteItem(ticketType.Name, ticketType.TicketTypeID.ToString()));
+
+
         TicketStatuses statuses = new TicketStatuses(UserSession.LoginUser);
         statuses.LoadAllPositions(ticketType.TicketTypeID);
 
@@ -114,6 +192,7 @@ namespace TSWebServices
         }
       }
       result.Statuses = statusItems.ToArray();
+      result.TicketTypes = ticketTypeItems.ToArray();
       return result;
     }
 
@@ -227,6 +306,7 @@ namespace TSWebServices
         logicItem.TestValue = logicItemProxy.TestValue;
         logicItem.Measure = logicItemProxy.Measure;
         logicItem.MatchAll = logicItemProxy.MatchAll;
+        logicItem.OtherTrigger = logicItemProxy.OtherTrigger;
       }
       logic.Save();
 
@@ -280,6 +360,8 @@ namespace TSWebServices
     [DataMember]
     public AutocompleteItem[] Severities { get; set; }
     [DataMember]
+    public AutocompleteItem[] TicketTypes { get; set; }
+    [DataMember]
     public AutocompleteItem[] Users { get; set; }
     [DataMember]
     public AutocompleteItem[] Groups { get; set; }
@@ -299,6 +381,8 @@ namespace TSWebServices
     [DataMember] public string TestValue { get; set; }
     [DataMember] public bool IsCustom { get; set; }
     [DataMember] public bool MatchAll { get; set; }
+    [DataMember] public string OtherTrigger { get; set; }
+    
   }
   [DataContract(Namespace = "http://teamsupport.com/")]
   [KnownType(typeof(AutoFieldItem))]
@@ -376,6 +460,7 @@ namespace TSWebServices
     [DataMember] public bool IsVisible { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public int? LookupTableID { get; set; }
+    [DataMember] public string OtherTrigger { get; set; }
 
   }
 

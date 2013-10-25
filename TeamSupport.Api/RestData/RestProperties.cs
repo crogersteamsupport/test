@@ -13,46 +13,101 @@ namespace TeamSupport.Api
   public class RestProperties
   {
 
-    public static string GetActionTypes(RestCommand command)
+    public static string GetActionTypes(RestCommand command, bool orderByDateCreated = false)
     {
       ActionTypes items = new ActionTypes(command.LoginUser);
-      items.LoadByOrganizationID(command.Organization.OrganizationID);
+      if (orderByDateCreated)
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID);
+      }
       return items.GetXml("ActionTypes", "ActionType", true, command.Filters);
     }
 
-    public static string GetPhoneTypes(RestCommand command)
+    public static string GetPhoneTypes(RestCommand command, bool orderByDateCreated = false)
     {
       PhoneTypes items = new PhoneTypes(command.LoginUser);
-      items.LoadByOrganizationID(command.Organization.OrganizationID);
+      if (orderByDateCreated)
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID);
+      }
       return items.GetXml("PhoneTypes", "PhoneType", true, command.Filters);
     }
 
-    public static string GetTicketStatuses(RestCommand command)
+    public static string GetTicketStatuses(RestCommand command, bool orderByDateCreated = false)
     {
       TicketStatuses items = new TicketStatuses(command.LoginUser);
-      items.LoadByOrganizationID(command.Organization.OrganizationID);
+      if (orderByDateCreated)
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID);
+      }
       return items.GetXml("TicketStatuses", "TicketStatus", true, command.Filters);
     }
-    public static string GetTicketSeverities(RestCommand command)
+    public static string GetTicketSeverities(RestCommand command, bool orderByDateCreated = false)
     {
       TicketSeverities items = new TicketSeverities(command.LoginUser);
-      items.LoadByOrganizationID(command.Organization.OrganizationID);
+      if (orderByDateCreated)
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID);
+      }
       return items.GetXml("TicketSeverities", "TicketSeverity", true, command.Filters);
     }
 
-    public static string GetTicketTypes(RestCommand command)
+    public static string GetTicketTypes(RestCommand command, bool orderByDateCreated = false)
     {
       TicketTypes items = new TicketTypes(command.LoginUser);
-      items.LoadByOrganizationID(command.Organization.OrganizationID);
+      if (orderByDateCreated)
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID);
+      }
       return items.GetXml("TicketTypes", "TicketType", true, command.Filters);
     }
 
-    public static string GetProductVersionStatuses(RestCommand command)
+    public static string GetProductVersionStatuses(RestCommand command, bool orderByDateCreated = false)
     {
       ProductVersionStatuses items = new ProductVersionStatuses(command.LoginUser);
-      items.LoadByOrganizationID(command.Organization.OrganizationID);
+      if (orderByDateCreated)
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID);
+      }
       return items.GetXml("ProductVersionStatuses", "ProductVersionStatus", true, command.Filters);
     }
 
+    public static string GetKnowledgeBaseCategories(RestCommand command, bool orderByDateCreated = false)
+    {
+      KnowledgeBaseCategories categories = new KnowledgeBaseCategories(command.LoginUser);
+      if (orderByDateCreated)
+      {
+        categories.LoadAllCategories(command.Organization.OrganizationID, "DateCreated DESC");
+      }
+      else
+      {
+        categories.LoadAllCategories(command.Organization.OrganizationID);
+      }
+      return categories.GetXml("KnowledgeBaseCategories", "KnowledgeBaseCategory", false, command.Filters);
+    }
   }
 }

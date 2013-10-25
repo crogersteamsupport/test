@@ -203,25 +203,30 @@
       function DeleteSlaLevel() {
         if (!confirm("Are you sure you would like to delete '" + GetSelectedLevelName() + "'?")) return;
         _slaID = ''
-        PageMethods.DeleteLevel(GetSelectedLevelID(), function() { PageMethods.GetComboLevels(OnLevelsLoad); });
+        PageMethods.DeleteLevel(GetSelectedLevelID(), function () { PageMethods.GetComboLevels(OnLevelsLoad); });
+        top.Ts.System.logAction('Admin SLA - SLA Level Deleted');
       }
 
       function AddTrigger() {
         ShowTriggerDialog(top.GetSlaTriggerDialog(true, GetSelectedLevelID(), GetSelectedTicketTypeID()));
+        top.Ts.System.logAction('Admin SLA - Add Trigger Dialog Opened');
       }
       function EditTrigger(id) {
         ShowTriggerDialog(top.GetSlaTriggerDialog(false, id));
       }
       function DeleteTrigger(id) {
         if (!confirm("Are you sure you would like to delete this trigger?")) return;
-        PageMethods.DeleteTrigger(id, function() { RefreshTriggers(); });
+        PageMethods.DeleteTrigger(id, function () {
+          RefreshTriggers();
+          top.Ts.System.logAction('Admin SLA - Trigger Deleted');
+         });
 
       }
 
       function OnToolBarButtonClicked(sender, args) {
         var value = args.get_item().get_value();
-        if (value == 'NewSLA') { ShowLevelDialog(top.GetSlaLevelDialog(true)); }
-        else if (value == 'EditSLA') { ShowLevelDialog(top.GetSlaLevelDialog(false, GetSelectedLevelID())); }
+        if (value == 'NewSLA') { ShowLevelDialog(top.GetSlaLevelDialog(true)); top.Ts.System.logAction('Admin SLA - New SLA Level Dialog Opened'); }
+        else if (value == 'EditSLA') { ShowLevelDialog(top.GetSlaLevelDialog(false, GetSelectedLevelID())); top.Ts.System.logAction('Admin SLA - Edit SLA Level Dialog Opened'); }
         else if (value == 'DeleteSLA') { DeleteSlaLevel(); }
         else if (value == 'AddTrigger') { AddTrigger(); }
       }

@@ -36,6 +36,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool WaterCooler
+    {
+      get { return (bool)Row["WaterCooler"]; }
+      set { Row["WaterCooler"] = CheckValue("WaterCooler", value); }
+    }
+    
     public bool ProductVersions
     {
       get { return (bool)Row["ProductVersions"]; }
@@ -175,7 +181,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SearchStandardFilters] SET     [UserID] = @UserID,    [Tickets] = @Tickets,    [KnowledgeBase] = @KnowledgeBase,    [Wikis] = @Wikis,    [Notes] = @Notes,    [ProductVersions] = @ProductVersions  WHERE ([StandardFilterID] = @StandardFilterID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SearchStandardFilters] SET     [UserID] = @UserID,    [Tickets] = @Tickets,    [KnowledgeBase] = @KnowledgeBase,    [Wikis] = @Wikis,    [Notes] = @Notes,    [ProductVersions] = @ProductVersions,    [WaterCooler] = @WaterCooler  WHERE ([StandardFilterID] = @StandardFilterID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("StandardFilterID", SqlDbType.Int, 4);
@@ -227,13 +233,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("WaterCooler", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SearchStandardFilters] (    [UserID],    [Tickets],    [KnowledgeBase],    [Wikis],    [Notes],    [ProductVersions]) VALUES ( @UserID, @Tickets, @KnowledgeBase, @Wikis, @Notes, @ProductVersions); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[SearchStandardFilters] (    [UserID],    [Tickets],    [KnowledgeBase],    [Wikis],    [Notes],    [ProductVersions],    [WaterCooler]) VALUES ( @UserID, @Tickets, @KnowledgeBase, @Wikis, @Notes, @ProductVersions, @WaterCooler); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("WaterCooler", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ProductVersions", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -389,7 +409,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [StandardFilterID], [UserID], [Tickets], [KnowledgeBase], [Wikis], [Notes], [ProductVersions] FROM [dbo].[SearchStandardFilters] WHERE ([StandardFilterID] = @StandardFilterID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [StandardFilterID], [UserID], [Tickets], [KnowledgeBase], [Wikis], [Notes], [ProductVersions], [WaterCooler] FROM [dbo].[SearchStandardFilters] WHERE ([StandardFilterID] = @StandardFilterID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("StandardFilterID", standardFilterID);
         Fill(command);

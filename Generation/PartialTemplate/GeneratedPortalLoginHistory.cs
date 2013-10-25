@@ -64,6 +64,12 @@ namespace TeamSupport.Data
       set { Row["IPAddress"] = CheckValue("IPAddress", value); }
     }
     
+    public string Browser
+    {
+      get { return Row["Browser"] != DBNull.Value ? (string)Row["Browser"] : null; }
+      set { Row["Browser"] = CheckValue("Browser", value); }
+    }
+    
 
     
 
@@ -180,7 +186,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[PortalLoginHistory] SET     [UserName] = @UserName,    [OrganizationID] = @OrganizationID,    [OrganizationName] = @OrganizationName,    [Success] = @Success,    [LoginDateTime] = @LoginDateTime,    [IPAddress] = @IPAddress  WHERE ([PortalLoginID] = @PortalLoginID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[PortalLoginHistory] SET     [UserName] = @UserName,    [OrganizationID] = @OrganizationID,    [OrganizationName] = @OrganizationName,    [Success] = @Success,    [LoginDateTime] = @LoginDateTime,    [IPAddress] = @IPAddress,    [Browser] = @Browser  WHERE ([PortalLoginID] = @PortalLoginID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("PortalLoginID", SqlDbType.Int, 4);
@@ -232,13 +238,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("Browser", SqlDbType.VarChar, 200);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[PortalLoginHistory] (    [UserName],    [OrganizationID],    [OrganizationName],    [Success],    [LoginDateTime],    [IPAddress]) VALUES ( @UserName, @OrganizationID, @OrganizationName, @Success, @LoginDateTime, @IPAddress); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[PortalLoginHistory] (    [UserName],    [OrganizationID],    [OrganizationName],    [Success],    [LoginDateTime],    [IPAddress],    [Browser]) VALUES ( @UserName, @OrganizationID, @OrganizationName, @Success, @LoginDateTime, @IPAddress, @Browser); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("Browser", SqlDbType.VarChar, 200);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("IPAddress", SqlDbType.VarChar, 1000);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -394,7 +414,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [PortalLoginID], [UserName], [OrganizationID], [OrganizationName], [Success], [LoginDateTime], [IPAddress] FROM [dbo].[PortalLoginHistory] WHERE ([PortalLoginID] = @PortalLoginID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [PortalLoginID], [UserName], [OrganizationID], [OrganizationName], [Success], [LoginDateTime], [IPAddress], [Browser] FROM [dbo].[PortalLoginHistory] WHERE ([PortalLoginID] = @PortalLoginID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("PortalLoginID", portalLoginID);
         Fill(command);

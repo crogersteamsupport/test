@@ -55,6 +55,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("AutoRegister", "AutoRegister", false, false, false);
       _fieldMap.AddMap("RequestAccess", "RequestAccess", false, false, false);
       _fieldMap.AddMap("DisablePublicMyTickets", "DisablePublicMyTickets", false, false, false);
+      _fieldMap.AddMap("EnableSaExpiration", "EnableSaExpiration", false, false, false);
             
     }
   }

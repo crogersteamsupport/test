@@ -144,7 +144,11 @@ namespace TeamSupport.Data
         foreach (WatercoolerAttachment item in this)
         {
             if (item.RefType == type)
-                list.Add(item.GetProxy());
+            {
+                WatercoolerAttachmentProxy wcAtt = item.GetProxy();
+                if (wcAtt != null)
+                    list.Add(wcAtt);
+            }
         }
 
         return list.ToArray();

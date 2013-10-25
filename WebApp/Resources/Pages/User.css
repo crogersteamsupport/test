@@ -17,6 +17,12 @@
     .user-name-value .ts-icon-saved { margin-top: 1px; margin-left: .5em; float:left; display:none;} 
     .user-name-value .ticket-name-value-noproperty { margin-left: 0;}
 
+    .user-cutstom-edit input, span{float:left;}
+    .user-cutstom-edit {width: 50%;}
+    .user-cutstom-edit .ts-icon{margin-left: 0.5em;}
+
+    #customProperties {margin-bottom: .5em;}
+
     #userAddressList,#userPhoneList, #userGroups{padding:0 .75em .5em 0; float:left; width: 250px}
     .user-address div, .user-address h3, .user-phone{line-height:16px; clear: both;}
     .user-address-desc {font-weight: bold;}
@@ -43,6 +49,11 @@
     .user-email-edit {float:left; margin: 0 !important; vertical-align: top; width: 50%}
     .user-email-edit input { float:left; width:50%; }
     .user-email-edit .ts-icon { float:left; margin-left: .5em; cursor:pointer; }
+
+    .user-linkedin-edit {float:left; margin: 0 !important; vertical-align: top; width: 50%}
+    .user-linkedin-edit input { float:left; width:50%; }
+    .user-linkedin-edit .ts-icon { float:left; margin-left: .5em; cursor:pointer; }
+
      
     .user-phone-edit {float:left; margin: 0 !important; vertical-align: top; width: 50%}
     .user-phone-edit input { float:left; width:50%; }
@@ -78,3 +89,20 @@
     a.disabledlink:hover   { text-decoration: none }
     #user-top-info img { display:none;}
     #user-top-info .ts-icon-saved {display: none;}
+
+    #divMenuItems .checkbox input { line-height: 20px; float:left; margin-left: -20px; vertical-align:middle; width:auto;}
+    #divMenuItems label.checkbox { display:block; margin-bottom: 5px; min-height: 20px; padding-left: 20px; font-weight: normal; vertical-align:middle; line-height: 20px;}
+    #divMenuItems ul { list-style: none;}
+
+    #divMenuItems .user-name-value { height: 1.5em;}
+    #divMenuItems .property-wide { line-height: 1.5em;}
+    #divMenuItems .user-name-value .value  { line-height: 1.5em;}
+
+    #divActionForm img {display:block}
+    .userSignature-form img {display:block;}
+    .userSignature-form {background-color: red;}
+    #user-top-info .mceIcon img {display:block;}
+    #userSignature img {display:block;}
+
+ #divAddCustomer { margin: 1em 0;}
+ #divAddCustomer input { padding: .3em .3em; margin-right: .5em; width: 200px !important;} 

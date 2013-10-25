@@ -3,12 +3,10 @@
 
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
-  <link href="../Resources/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="../Resources/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
-  <link href="../Resources/Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <link href="../Resources/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" />
-  <link href="../Resources/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" />
-  <link href="../Resources/Css/jquery.cluetip.css" rel="stylesheet" type="text/css" />
+  <link href="../vcr/1_7_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="../vcr/1_7_0/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="../vcr/1_7_0/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <link href="../vcr/1_7_0/Css/jquery.cluetip.css" rel="stylesheet" type="text/css" />
   <style>
     .tickets { padding: 0 1em 1em 1em;}
     .ticket { padding-top: 1em; lineheight: 16px;}
@@ -16,11 +14,11 @@
     .no-tickets { padding-top: 1em;}
   
   </style>
-  <script src="../Resources/Js/jquery-1.6.2.min.js" type="text/javascript"></script>
-  <script src="../Resources/Js/jquery-ui-1.9.5.min.js" type="text/javascript"></script>
+  <script src="../vcr/1_7_0/Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="../vcr/1_7_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
 
-  <script src="../Resources/Js/jquery.hoverIntent.js" type="text/javascript"></script>
-  <script src="../Resources/Js/jquery.cluetip.js" type="text/javascript"></script>
+  <script src="../vcr/1_7_0/Js/jquery.hoverIntent.min.js" type="text/javascript"></script>
+  <script src="../vcr/1_7_0/Js/jquery.cluetip.js" type="text/javascript"></script>
 
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">

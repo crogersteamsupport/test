@@ -1,12 +1,14 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/StandardForm.master" AutoEventWireup="false"
+﻿<%@ Page Language="C#" MasterPageFile="~/StandardForm.master" AutoEventWireup="false" EnableViewState="false"
   CodeFile="Login.aspx.cs" Inherits="Login" Title="TeamSupport - Login" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
+
+  <script src="vcr/1_7_0/Js/browser.js" type="text/javascript"></script>
   <style type="text/css">
     select, input.text { width: 250px; }
-    
+    a.login-link { font-size: 1em; color: #6D8093; display:block; margin-bottom: .5em;}
     .caption { font-size: 1.2em; padding-bottom: 3px; }
-    a.login-link { text-decoration: underline !important; font-size: 1.4em; }
+    .link-mobile { margin-left: 2em;}
   </style>
 
   <script type="text/javascript">
@@ -15,129 +17,12 @@
       setInterval("window.location=window.location", 300000)
       $('#companies').combobox();
       $('button').button();
-
-      var BrowserDetect = {
-        init: function () {
-          this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
-          this.version = this.searchVersion(navigator.userAgent)
-			|| this.searchVersion(navigator.appVersion)
-			|| "an unknown version";
-          this.OS = this.searchString(this.dataOS) || "an unknown OS";
-        },
-        searchString: function (data) {
-          for (var i = 0; i < data.length; i++) {
-            var dataString = data[i].string;
-            var dataProp = data[i].prop;
-            this.versionSearchString = data[i].versionSearch || data[i].identity;
-            if (dataString) {
-              if (dataString.indexOf(data[i].subString) != -1)
-                return data[i].identity;
-            }
-            else if (dataProp)
-              return data[i].identity;
-          }
-        },
-        searchVersion: function (dataString) {
-          var index = dataString.indexOf(this.versionSearchString);
-          if (index == -1) return;
-          return parseFloat(dataString.substring(index + this.versionSearchString.length + 1));
-        },
-        dataBrowser: [
-		{
-		  string: navigator.userAgent,
-		  subString: "Chrome",
-		  identity: "Chrome"
-		},
-		{ string: navigator.userAgent,
-		  subString: "OmniWeb",
-		  versionSearch: "OmniWeb/",
-		  identity: "OmniWeb"
-		},
-		{
-		  string: navigator.vendor,
-		  subString: "Apple",
-		  identity: "Safari",
-		  versionSearch: "Version"
-		},
-		{
-		  prop: window.opera,
-		  identity: "Opera"
-		},
-		{
-		  string: navigator.vendor,
-		  subString: "iCab",
-		  identity: "iCab"
-		},
-		{
-		  string: navigator.vendor,
-		  subString: "KDE",
-		  identity: "Konqueror"
-		},
-		{
-		  string: navigator.userAgent,
-		  subString: "Firefox",
-		  identity: "Firefox"
-		},
-		{
-		  string: navigator.vendor,
-		  subString: "Camino",
-		  identity: "Camino"
-		},
-		{		// for newer Netscapes (6+)
-		  string: navigator.userAgent,
-		  subString: "Netscape",
-		  identity: "Netscape"
-		},
-		{
-		  string: navigator.userAgent,
-		  subString: "MSIE",
-		  identity: "Explorer",
-		  versionSearch: "MSIE"
-		},
-		{
-		  string: navigator.userAgent,
-		  subString: "Gecko",
-		  identity: "Mozilla",
-		  versionSearch: "rv"
-		},
-		{ 		// for older Netscapes (4-)
-		  string: navigator.userAgent,
-		  subString: "Mozilla",
-		  identity: "Netscape",
-		  versionSearch: "Mozilla"
-		}
-	],
-        dataOS: [
-		{
-		  string: navigator.platform,
-		  subString: "Win",
-		  identity: "Windows"
-		},
-		{
-		  string: navigator.platform,
-		  subString: "Mac",
-		  identity: "Mac"
-		},
-		{
-		  string: navigator.userAgent,
-		  subString: "iPhone",
-		  identity: "iPhone/iPod"
-		},
-		{
-		  string: navigator.platform,
-		  subString: "Linux",
-		  identity: "Linux"
-		}
-	]
-
-      };
-      BrowserDetect.init();
-
+      $("#email").focus();
 
       $('#btnLogin').click(function () {
         $('#divAlert').hide();
         $.cookie('LastCompany_' + $('#email').val(), $('#companies').val());
-        PageMethods.SignIn($('#email').val(), $('#password').val(), $('#companies').val(), $('#remember').attr('checked'),
+        PageMethods.SignIn($('#email').val(), $('#password').val(), $('#companies').val(), $('#remember').prop('checked'),
           BrowserDetect.browser, BrowserDetect.version, navigator.cookieEnabled, BrowserDetect.OS,
           navigator.userAgent, screen.height, screen.width, screen.pixelDepth ? screen.pixelDepth : -1,
           navigator.language ? navigator.language : 'undefined',
@@ -270,18 +155,17 @@
           <input type="checkbox" id="remember" />Remember me on this computer</div>
         <br />
         <div>
-          <button id="btnLogin">Login</button>
+          <button id="btnLogin">Login</button><a href="https://m.teamsupport.com" class="link-mobile ts-link ui-state-default">Visit Mobile Site</a>
         </div>
         <div style="clear: both;">
           &nbsp</div>
-        <br />
         <a class="ts-link login-link" href="ResetPassword.aspx?reason=forgot">Forgot your
           password?</a>
-        <br />
-        <br />
         <a class="ts-link login-link" href="SignUp.aspx">Don't have an account? Sign up for
           free.</a>
+          
       </div>
     </div>
   </div>
+  <a target="TSEarn25" href="http://www.teamsupport.com/web-support-software-contact-us/refer-your-friends-to-teamsupport-the-industrys-best-help-desk-software/"><img src="vcr/1_7_0/images/earn25.jpg" /></a>
 </asp:Content>

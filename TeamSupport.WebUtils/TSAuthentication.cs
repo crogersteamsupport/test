@@ -42,23 +42,6 @@ namespace TeamSupport.WebUtils
       }
     }
 
-    public static bool IsNewWCTemp
-    {
-      get 
-      {
-        return OrganizationID == 1078 ||
-        OrganizationID == 13679 ||
-        OrganizationID == 405245 ||
-        OrganizationID == 496155 ||
-        OrganizationID == 463217 ||
-        OrganizationID == 425409 ||
-        OrganizationID == 294204 ||
-        OrganizationID == 515961 ||
-        OrganizationID == 1088;      
-      }
-    }
-
-
     public static string UserData
     {
       get 
@@ -128,7 +111,7 @@ namespace TeamSupport.WebUtils
       HttpContext.Current.Response.Cookies.Add(cookie);
     }
 
-    public static void Authenticate(User user, bool isBackdoor)
+    public static void Authenticate(User user, bool isBackdoor, string deviceID)
     {
       if (IsAuthenticated(user, isBackdoor))
       {
@@ -136,13 +119,22 @@ namespace TeamSupport.WebUtils
       }
       else
       {
-        string userData = GetUserDataString(user.UserID, user.OrganizationID, isBackdoor, Guid.NewGuid().ToString(), user.IsSystemAdmin);
+        Guid guid = Guid.NewGuid();
+        string userData = GetUserDataString(user.UserID, user.OrganizationID, isBackdoor, guid.ToString(), user.IsSystemAdmin);
         FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, user.DisplayName, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(TimeOut), false, userData, FormsAuthentication.FormsCookiePath);
         string encTicket = FormsAuthentication.Encrypt(ticket);
         HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
         cookie.Domain = FormsAuthentication.CookieDomain;
         cookie.Expires = DateTime.UtcNow.AddYears(1);
         HttpContext.Current.Response.Cookies.Add(cookie);
+
+        if (!isBackdoor){
+
+          user.LastLogin = DateTime.UtcNow;
+          user.SessionID = guid;
+          user.LastActivity = DateTime.UtcNow;
+          user.Collection.Save();
+        }
 
         HttpBrowserCapabilities bc = HttpContext.Current.Request.Browser;
         LoginHistoryItem history = (new LoginHistory(LoginUser.Anonymous)).AddNewLoginHistoryItem();
@@ -159,8 +151,11 @@ namespace TeamSupport.WebUtils
         history.ScreenHeight = bc.ScreenPixelsHeight.ToString();
         history.ScreenWidth = bc.ScreenPixelsWidth.ToString();
         history.URL = (isBackdoor ? "BACKDOOR - " : "") + HttpContext.Current.Request.Url.OriginalString;
-        history.Collection.Save();
+        history.DeviceID = deviceID;
+        history.IsSupport = isBackdoor;
 
+        history.Collection.Save();
+        
       }
     }
 

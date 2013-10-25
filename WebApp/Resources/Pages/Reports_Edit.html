@@ -1,0 +1,295 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
+  <link href="reports_edit.css" rel="stylesheet" type="text/css" />
+
+  <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+
+  <script src="../Js/jquery-ui.min.js" type="text/javascript"></script>
+
+  <script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
+
+  <script src="reports_edit.js" type="text/javascript"></script>
+
+  <title>Edit Report</title>
+  <style>
+    .report-section { display: none; }
+    .action-save { display: none; }
+    .action-cancel { float: right; }
+    .report-type ul { list-style: none outside none; margin: 0 20px; padding: 10px 0; }
+    .report-typex li { padding: 10px 0; }
+    .report-type input { margin: 3px 15px 0 0; }
+    .report-type label { font-size: 16px; color: #676767; }
+    .report-fieldsx ul { list-style: none outside none; margin: 0 20px; padding: 5px 0; }
+    .report-fields-selected li { cursor: url(../cursors/move.cur), pointer; margin: 10px 0; }
+    .report-fields-selected li i { opacity: 0; filter: alpha(opacity=0); padding-right: 7px; }
+    .report-fields-selected li:hover i { opacity: 0.5; filter: alpha(opacity=50); }
+    li.ui-sortable-helper { cursor: url(../cursors/grab.cur), move !important; }
+    .filter-left { border-right: 2px solid #428BCA; padding: 10px 10px; }
+    .filter-content { padding-left: 0; }
+    .filter-cond, .filter-actions { padding: 5px 0; }
+    .filter-cond .form-control { display: inline-block; }
+    .filter-cond input, .filter-cond select { width: 200px; }
+    .filter-cond i { opacity: 0; filter: alpha(opacity=0); padding-left: 10px; }
+    .filter-cond:hover i { opacity: 0.5; filter: alpha(opacity=50); }
+    .filter table { border-collapse: separate; border-spacing: 15px; }
+    .filter-field, .filter-comp { margin-right: 15px;}
+  </style>
+</head>
+<body>
+  <div class="container frame-container">
+    <div class="box">
+      <div class="box-header">
+        <h3><i class="icon-bar-chart"></i>Report</h3>
+      </div>
+      <div class="box-content">
+        <form role="form">
+        <div class="report-section report-info">
+          <fieldset>
+            <div class="form-group">
+              <label>Report Name</label>
+              <input value="TEST" id="input-name" class="form-control input-name" type="text" placeholder="Enter report name…"
+                data-title="Report Name" data-placement="top" data-content="You must enter a report name before moving on."
+                data-trigger="manual">
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea rows="3" class="form-control"></textarea>
+            </div>
+          </fieldset>
+        </div>
+        <div class="report-section report-type">
+          <h3>What type of report would you like?</h3>
+          <ul>
+            <li>
+              <label class="radio">
+                <input type="radio" name="optRadioType" id="radioTabular" value="tabular" checked>
+                <i class="icon-table"></i>&nbsp;Tabular</label>
+            </li>
+            <li>
+              <label class="radio">
+                <input type="radio" name="optRadioType" id="radioChart" value="chart">
+                <i class="icon-bar-chart"></i>&nbsp;Chart</label>
+            </li>
+            <li>
+              <label class="radio">
+                <input type="radio" name="optRadioType" id="radioSummary" value="summary">
+                <i class="icon-tasks"></i>&nbsp;Summary</label>
+            </li>
+            <li>
+              <label class="radio">
+                <input type="radio" name="optRadioType" id="radioExternal" value="external">
+                <i class="icon-globe"></i>&nbsp;External Web Page</label>
+            </li>
+            <li></li>
+          </ul>
+        </div>
+        <div class="report-section report-tables">
+          <fieldset>
+            <div class="form-group">
+              <label>Primary Table</label>
+              <select id="selectCat" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label>Secondary Table</label>
+              <select id="selectSubCat" class="form-control"></select>
+            </div>
+          </fieldset>
+        </div>
+        <div class="report-section report-fields">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Available Fields</h3>
+                </div>
+                <div class="panel-body  report-fields-available">
+                  <ul class="list-unstyled">
+                    <li></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Selected Fields</h3>
+                </div>
+                <div class="panel-body  report-fields-selected">
+                  <ul class="list-unstyled">
+                    <li></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="report-section report-filters report-wizard-end">
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Filtering</h3>
+                </div>
+                <div class="panel-body">
+                  <div class="filter-templates" style="display: none">
+                    <ul class="filter-template-cond">
+                      <li class="filter-cond">
+                        <select class="form-control filter-field"></select><a href="#" class="filter-remove-cond"><i class="icon-remove"></i></a></li>
+                    </ul>
+                    <div class="filter-template-comps">
+                        <select class="form-control filter-comp filter-comp-number">
+                          <option>Is</option>
+                          <option>Is Not</option>
+                          <option data-argtype-1="float">Less Than</option>
+                          <option data-argtype-1="float">Greater Than</option>
+                          <option>Is Empty</option>
+                          <option>Is Not Empty</option>
+                        </select>
+                        <select class="form-control filter-comp filter-comp-text">
+                          <option data-argtype-1="text">Contains</option>
+                          <option data-argtype-1="text">Does Not Contain</option>
+                          <option data-argtype-1="text">Is</option>
+                          <option data-argtype-1="text">Is Not</option>
+                          <option data-argtype-1="text">Starts With</option>
+                          <option data-argtype-1="text">Ends With</option>
+                          <option>Is Empty</option>
+                          <option>Is Not Empty</option>
+                        </select>
+                        <select class="form-control filter-comp filter-comp-bool">
+                          <option>Is True</option>
+                          <option>Is False</option>
+                          <option>Is Empty</option>
+                          <option>Is Not Empty</option>
+                        </select>
+                        <select class="form-control filter-comp filter-comp-datetime">
+                          <optgroup label="Date Filters">
+                          <option data-argtype-1="date">Is</option>
+                          <option data-argtype-1="date">Is Not</option>
+                          <option data-argtype-1="datetime">Is Before</option>
+                          <option data-argtype-1="datetime">Is After</option>
+                          <option>Is Empty</option>
+                          <option>Is Not Empty</option>
+                          </optgroup>
+
+                          <optgroup label="Year Filters">
+                          <option>Current Year</option>
+                          <option>Previous Year</option>
+                          <option>Next Year</option>
+                          <option data-argtype-1="int">Previous # Years</option>
+                          <option data-argtype-1="int">Last # Years</option>
+                          <option data-argtype-1="int">Next # Years</option>
+                          </optgroup>
+
+                          <optgroup label="Quarter Filters">
+                          <option>Current Quarter</option>
+                          <option>Previous Quarter</option>
+                          <option>Next Quarter</option>
+                          <option data-argtype-1="int">Specific Quarter</option>
+                          <option data-argtype-1="int">Previous # Quarters</option>
+                          <option data-argtype-1="int">Last # Quarters</option>
+                          <option data-argtype-1="int">Next # Quarters</option>
+                          </optgroup>
+
+                          <optgroup label="Month Filters">
+                          <option>Current Month</option>
+                          <option>Previous Month</option>
+                          <option>Next Month</option>
+                          <option data-argtype-1="int">Specific Month</option>
+                          <option data-argtype-1="int">Previous # Months</option>
+                          <option data-argtype-1="int">Last # Months</option>
+                          <option data-argtype-1="int">Next # Months</option>
+                          </optgroup>
+
+                          <optgroup label="Week Filters">
+                          <option>Current Week</option>
+                          <option>Previous Week</option>
+                          <option>Next Week</option>
+                          <option data-argtype-1="int">Previous # Weeks</option>
+                          <option data-argtype-1="int">Last # Weeks</option>
+                          <option data-argtype-1="int">Next # Weeks</option>
+                          </optgroup>
+
+                          <optgroup label="Day Filters">
+                          <option>Today</option>
+                          <option>Yesterday</option>
+                          <option>Tomorrow</option>
+                          <option data-argtype-1="day">Specific Day</option>
+                          <option data-argtype-1="int">Previous # Days</option>
+                          <option data-argtype-1="int">Last # Days</option>
+                          <option data-argtype-1="int">Next # Days</option>
+                          </optgroup>
+
+                          <optgroup label="Hour Filters">
+                          <option>Current Hour</option>
+                          <option>Previous Hour</option>
+                          <option>Next Hour</option>
+                          <option>Specific Hour</option>
+                          <option data-argtype-1="int">Previous # Hours</option>
+                          <option data-argtype-1="int">Last # Hours</option>
+                          <option data-argtype-1="int">Next # Hours</option>
+                          </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="filter-template-body">
+                      <table>
+                        <tr>
+                          <td class="filter-left">
+                            <button type="button" class="filter-conj btn btn-primary btn-xs">And</button>
+                          </td>
+                          <td class="filter-right">
+                            <div class="filter-content">
+                              <ul class="filter-conds list-unstyled"></ul>
+                              <div class="filter-actions">
+                                <div class="btn-group btn-group-xs">
+                                  <button type="button" class="btn btn-default filter-add-cond"><i class="icon-plus">
+                                  </i>&nbsp;Condition</button>
+                                  <button type="button" class="btn btn-default filter-add-group"><i class="icon-plus">
+                                  </i>&nbsp;Group</button>
+                                </div>
+                              </div>
+                              <div class="filter-subs">
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="filter">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="report-section report-series">
+          series
+        </div>
+        <div class="report-section report-external report-wizard-end">
+          <fieldset>
+            <div class="form-group">
+              <label>External URL</label>
+              <input id="input-url" class="form-control" type="text" placeholder="Enter a website's url…"
+                data-title="External URL" data-placement="bottom" data-content="You must enter a website's url before moving on."
+                data-trigger="manual">
+            </div>
+          </fieldset>
+        </div>
+        <div class="form-actions clearfix">
+          <button class="btn btn-warning action-cancel">Cancel</button>
+          <button class="btn btn-default action-back disabled" disabled><i class="icon-long-arrow-left">
+          </i>&nbsp;Back</button>
+          <button class="btn btn-primary action-next">Next&nbsp;<i class="icon-long-arrow-right"></i></button>
+          <button class="btn btn-primary action-save">Save</button>
+        </div>
+        </form>
+      </div>
+    </div>
+</body>
+</html>

@@ -53,19 +53,44 @@ namespace TeamSupport.Data
             result.CreatorName = Users.GetUserFullName(BaseCollection.LoginUser, this.CreatorID);
 
             if (this.RefType == WaterCoolerAttachmentType.Group)
-                result.GroupName = Groups.GetGroup(BaseCollection.LoginUser, this.AttachmentID).Name;
+            {
+                if (Groups.GetGroup(BaseCollection.LoginUser, this.AttachmentID) != null)
+                    result.GroupName = Groups.GetGroup(BaseCollection.LoginUser, this.AttachmentID).Name;
+                else
+                    return null;
+            }
 
             if (this.RefType == WaterCoolerAttachmentType.Ticket)
-                result.TicketName = Tickets.GetTicketByNumber(BaseCollection.LoginUser, this.AttachmentID).Name;
+            {
+                if (Tickets.GetTicketByNumber(BaseCollection.LoginUser, this.AttachmentID) != null)
+                    result.TicketName = Tickets.GetTicketByNumber(BaseCollection.LoginUser, this.AttachmentID).Name;
+                else
+                    return null;
+            }
 
             if (this.RefType == WaterCoolerAttachmentType.Product)
-                result.ProductName = Products.GetProduct(BaseCollection.LoginUser, this.AttachmentID).Name;
+            {
+                if (Products.GetProduct(BaseCollection.LoginUser, this.AttachmentID) != null)
+                    result.ProductName = Products.GetProduct(BaseCollection.LoginUser, this.AttachmentID).Name;
+                else
+                    return null;
+            }
 
             if (this.RefType == WaterCoolerAttachmentType.Company)
-                result.CompanyName = Organizations.GetOrganization(BaseCollection.LoginUser, this.AttachmentID).Name;
+            {
+                if (Organizations.GetOrganization(BaseCollection.LoginUser, this.AttachmentID) != null)
+                    result.CompanyName = Organizations.GetOrganization(BaseCollection.LoginUser, this.AttachmentID).Name;
+                else
+                    return null;
+            }
 
             if (this.RefType == WaterCoolerAttachmentType.User)
-                result.UserName = Users.GetUserFullName(BaseCollection.LoginUser, this.AttachmentID);
+            {
+                if (Users.GetUserFullName(BaseCollection.LoginUser, this.AttachmentID) != null)
+                    result.UserName = Users.GetUserFullName(BaseCollection.LoginUser, this.AttachmentID);
+                else
+                    return null;
+            }
 
             return result;
         }

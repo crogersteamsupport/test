@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -36,6 +37,10 @@ public partial class Frames_ProductVersions : BaseFramePage
   {
     ProductVersions versions = new ProductVersions(UserSession.LoginUser);
     versions.LoadForGrid(_productID);
+    foreach (DataRow row in versions.Table.Rows)
+    {
+      row["ReleaseDate"] = row["ReleaseDate"] != DBNull.Value ? DataUtils.DateToLocal(UserSession.LoginUser, (DateTime?)row["ReleaseDate"]) : row["ReleaseDate"];
+    }
     gridVersions.DataSource = versions.Table;
   }
 }

@@ -55,7 +55,9 @@ namespace TeamSupport.Data
     [DataMember] public bool AutoRegister { get; set; }
     [DataMember] public bool RequestAccess { get; set; }
     [DataMember] public bool DisablePublicMyTickets { get; set; }
-          
+    [DataMember] public bool DisplayFbArticles { get; set; }
+    [DataMember] public bool DisplayFbKB { get; set; }
+    [DataMember] public bool EnableSaExpiration { get; set; }
   }
   
   public partial class PortalOption : BaseItem
@@ -63,6 +65,7 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.EnableSaExpiration = this.EnableSaExpiration;
       result.DisablePublicMyTickets = this.DisablePublicMyTickets;
       result.RequestAccess = this.RequestAccess;
       result.AutoRegister = this.AutoRegister;
@@ -105,8 +108,19 @@ namespace TeamSupport.Data
       result.PortalHTMLFooter = this.PortalHTMLFooter;
       result.PortalHTMLHeader = this.PortalHTMLHeader;
       result.OrganizationID = this.OrganizationID;
-       
-       
+
+      FacebookOptions fb = new FacebookOptions(BaseCollection.LoginUser);
+      fb.LoadByOrganizationID(result.OrganizationID);
+      if (fb.IsEmpty)
+      {
+          result.DisplayFbArticles = false;
+          result.DisplayFbKB = false;
+      }
+      else
+      {
+          result.DisplayFbArticles = fb[0].DisplayArticles;
+          result.DisplayFbKB = fb[0].DisplayKB;
+      }       
        
       return result;
     }	

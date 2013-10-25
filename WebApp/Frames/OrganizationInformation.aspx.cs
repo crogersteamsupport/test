@@ -55,9 +55,9 @@ public partial class Frames_OrganizationInformation : BaseFramePage
     }
 
 
-    if (btnNewAddress.Visible) btnNewAddress.OnClientClick = "ShowDialog(top.GetAddressDialog(" + _organizationID.ToString() + ", 9)); return false;";
-    if (btnNewPhone.Visible) btnNewPhone.OnClientClick = "ShowDialog(top.GetPhoneDialog(" + _organizationID.ToString() + ", 9)); return false;";
-    if (btnEditProperties.Visible) btnEditProperties.OnClientClick = "ShowDialog(top.GetOrganizationDialog(" + _organizationID.ToString() + ")); return false;";
+    if (btnNewAddress.Visible) btnNewAddress.OnClientClick = "ShowDialog(top.GetAddressDialog(" + _organizationID.ToString() + ", 9)); top.Ts.System.logAction('Organization Info - Add Address'); return false;";
+    if (btnNewPhone.Visible) btnNewPhone.OnClientClick = "ShowDialog(top.GetPhoneDialog(" + _organizationID.ToString() + ", 9)); top.Ts.System.logAction('Organization Info - Add Phone'); return false;";
+    if (btnEditProperties.Visible) btnEditProperties.OnClientClick = "ShowDialog(top.GetOrganizationDialog(" + _organizationID.ToString() + ")); top.Ts.System.logAction('Organization Info - Edit Properties'); return false;";
 
   }
 
@@ -157,7 +157,7 @@ public partial class Frames_OrganizationInformation : BaseFramePage
     else
     {
       SlaLevel level = SlaLevels.GetSlaLevel(UserSession.LoginUser, (int)organization.SlaLevelID);
-      table.Rows.Add(new string[] { "Service Level Agreement:", level.Name });
+      if (level != null) table.Rows.Add(new string[] { "Service Level Agreement:", level.Name });
     }
 
     if (organizationID != UserSession.LoginUser.OrganizationID)
@@ -199,7 +199,12 @@ public partial class Frames_OrganizationInformation : BaseFramePage
       table.Rows.Add(new string[] { "Default Support Group:", "[None]" });
     }
     table.Rows.Add(new string[] { "Domains:", organization.CompanyDomains == null ? "[None Assigned]" : organization.CompanyDomains });
+      
 
+    if(organization.SupportHoursMonth != 0)
+        table.Rows.Add(new string[] { "Support hours per month:", organization.SupportHoursMonth.ToString() });
+    else
+        table.Rows.Add(new string[] { "Support hours per month:", "0" });
 
 
     CustomFields fields = new CustomFields(UserSession.LoginUser);
@@ -258,7 +263,7 @@ public partial class Frames_OrganizationInformation : BaseFramePage
 
     foreach (PhoneNumber phoneNumber in phoneNumbers)
     {
-      table.Rows.Add(new string[] { phoneNumber.PhoneID.ToString(), phoneNumber.PhoneTypeName, phoneNumber.Number, phoneNumber.Extension == "" ? "" : " Ext: " + phoneNumber.Extension });
+      table.Rows.Add(new string[] { phoneNumber.PhoneID.ToString(), phoneNumber.PhoneTypeName, phoneNumber.FormattedNumber, phoneNumber.Extension == "" ? "" : " Ext: " + phoneNumber.Extension });
     }
 
     rptPhone.DataSource = table;

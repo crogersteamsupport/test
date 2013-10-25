@@ -28,6 +28,8 @@ namespace TeamSupport.Data
     [DataMember] public string ScreenWidth { get; set; }
     [DataMember] public string URL { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public bool IsSupport { get; set; }
+    [DataMember] public string DeviceID { get; set; }
           
   }
   
@@ -36,6 +38,8 @@ namespace TeamSupport.Data
     public LoginHistoryItemProxy GetProxy()
     {
       LoginHistoryItemProxy result = new LoginHistoryItemProxy();
+      result.DeviceID = this.DeviceID;
+      result.IsSupport = this.IsSupport;
       result.URL = this.URL;
       result.ScreenWidth = this.ScreenWidth;
       result.ScreenHeight = this.ScreenHeight;

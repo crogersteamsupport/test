@@ -64,7 +64,56 @@ namespace TeamSupport.Data
       set { Row["DefaultSlaLevelID"] = CheckValue("DefaultSlaLevelID", value); }
     }
     
+    public bool? PullCasesAsTickets
+    {
+      get { return Row["PullCasesAsTickets"] != DBNull.Value ? (bool?)Row["PullCasesAsTickets"] : null; }
+      set { Row["PullCasesAsTickets"] = CheckValue("PullCasesAsTickets", value); }
+    }
+    
+    public bool? PushTicketsAsCases
+    {
+      get { return Row["PushTicketsAsCases"] != DBNull.Value ? (bool?)Row["PushTicketsAsCases"] : null; }
+      set { Row["PushTicketsAsCases"] = CheckValue("PushTicketsAsCases", value); }
+    }
+    
+    public bool? PullCustomerProducts
+    {
+      get { return Row["PullCustomerProducts"] != DBNull.Value ? (bool?)Row["PullCustomerProducts"] : null; }
+      set { Row["PullCustomerProducts"] = CheckValue("PullCustomerProducts", value); }
+    }
+    
+    public bool? UpdateStatus
+    {
+      get { return Row["UpdateStatus"] != DBNull.Value ? (bool?)Row["UpdateStatus"] : null; }
+      set { Row["UpdateStatus"] = CheckValue("UpdateStatus", value); }
+    }
+    
+    public int? ActionTypeIDToPush
+    {
+      get { return Row["ActionTypeIDToPush"] != DBNull.Value ? (int?)Row["ActionTypeIDToPush"] : null; }
+      set { Row["ActionTypeIDToPush"] = CheckValue("ActionTypeIDToPush", value); }
+    }
+    
+    public string HostName
+    {
+      get { return Row["HostName"] != DBNull.Value ? (string)Row["HostName"] : null; }
+      set { Row["HostName"] = CheckValue("HostName", value); }
+    }
+    
+    public string DefaultProject
+    {
+      get { return Row["DefaultProject"] != DBNull.Value ? (string)Row["DefaultProject"] : null; }
+      set { Row["DefaultProject"] = CheckValue("DefaultProject", value); }
+    }
+    
 
+    
+    
+    public bool MatchAccountsByName
+    {
+      get { return (bool)Row["MatchAccountsByName"]; }
+      set { Row["MatchAccountsByName"] = CheckValue("MatchAccountsByName", value); }
+    }
     
     public bool SendWelcomeEmail
     {
@@ -233,7 +282,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed,    [LastTicketID] = @LastTicketID,    [AllowPortalAccess] = @AllowPortalAccess,    [SendWelcomeEmail] = @SendWelcomeEmail,    [DefaultSlaLevelID] = @DefaultSlaLevelID  WHERE ([CRMLinkID] = @CRMLinkID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed,    [LastTicketID] = @LastTicketID,    [AllowPortalAccess] = @AllowPortalAccess,    [SendWelcomeEmail] = @SendWelcomeEmail,    [DefaultSlaLevelID] = @DefaultSlaLevelID,    [PushTicketsAsCases] = @PushTicketsAsCases,    [PullCasesAsTickets] = @PullCasesAsTickets,    [PullCustomerProducts] = @PullCustomerProducts,    [ActionTypeIDToPush] = @ActionTypeIDToPush,    [HostName] = @HostName,    [DefaultProject] = @DefaultProject,    [UpdateStatus] = @UpdateStatus,    [MatchAccountsByName] = @MatchAccountsByName  WHERE ([CRMLinkID] = @CRMLinkID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CRMLinkID", SqlDbType.Int, 4);
@@ -341,13 +390,125 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("PullCasesAsTickets", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("PushTicketsAsCases", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("PullCustomerProducts", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("UpdateStatus", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ActionTypeIDToPush", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("HostName", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("DefaultProject", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("MatchAccountsByName", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkTable] (    [OrganizationID],    [Active],    [CRMType],    [Username],    [Password],    [SecurityToken],    [TypeFieldMatch],    [LastLink],    [SendBackTicketData],    [LastProcessed],    [LastTicketID],    [AllowPortalAccess],    [SendWelcomeEmail],    [DefaultSlaLevelID]) VALUES ( @OrganizationID, @Active, @CRMType, @Username, @Password, @SecurityToken, @TypeFieldMatch, @LastLink, @SendBackTicketData, @LastProcessed, @LastTicketID, @AllowPortalAccess, @SendWelcomeEmail, @DefaultSlaLevelID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkTable] (    [OrganizationID],    [Active],    [CRMType],    [Username],    [Password],    [SecurityToken],    [TypeFieldMatch],    [LastLink],    [SendBackTicketData],    [LastProcessed],    [LastTicketID],    [AllowPortalAccess],    [SendWelcomeEmail],    [DefaultSlaLevelID],    [PushTicketsAsCases],    [PullCasesAsTickets],    [PullCustomerProducts],    [ActionTypeIDToPush],    [HostName],    [DefaultProject],    [UpdateStatus],    [MatchAccountsByName]) VALUES ( @OrganizationID, @Active, @CRMType, @Username, @Password, @SecurityToken, @TypeFieldMatch, @LastLink, @SendBackTicketData, @LastProcessed, @LastTicketID, @AllowPortalAccess, @SendWelcomeEmail, @DefaultSlaLevelID, @PushTicketsAsCases, @PullCasesAsTickets, @PullCustomerProducts, @ActionTypeIDToPush, @HostName, @DefaultProject, @UpdateStatus, @MatchAccountsByName); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("MatchAccountsByName", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DefaultProject", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("HostName", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ActionTypeIDToPush", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("UpdateStatus", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("PullCustomerProducts", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("PushTicketsAsCases", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("PullCasesAsTickets", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DefaultSlaLevelID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -559,7 +720,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkID], [OrganizationID], [Active], [CRMType], [Username], [Password], [SecurityToken], [TypeFieldMatch], [LastLink], [SendBackTicketData], [LastProcessed], [LastTicketID], [AllowPortalAccess], [SendWelcomeEmail], [DefaultSlaLevelID] FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkID], [OrganizationID], [Active], [CRMType], [Username], [Password], [SecurityToken], [TypeFieldMatch], [LastLink], [SendBackTicketData], [LastProcessed], [LastTicketID], [AllowPortalAccess], [SendWelcomeEmail], [DefaultSlaLevelID], [PushTicketsAsCases], [PullCasesAsTickets], [PullCustomerProducts], [ActionTypeIDToPush], [HostName], [DefaultProject], [UpdateStatus], [MatchAccountsByName] FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CRMLinkID", cRMLinkID);
         Fill(command);

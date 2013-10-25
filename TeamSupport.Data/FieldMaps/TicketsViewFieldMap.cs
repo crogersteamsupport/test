@@ -55,6 +55,10 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SlaWarningTime", "SlaWarningTime", true, true, true);
       _fieldMap.AddMap("SlaViolationHours", "SlaViolationHours", true, true, true);
       _fieldMap.AddMap("SlaWarningHours", "SlaWarningHours", true, true, true);
+      _fieldMap.AddMap("KnowledgeBaseCategoryID", "KnowledgeBaseCategoryID", true, true, true);
+      _fieldMap.AddMap("KnowledgeBaseCategoryName", "KnowledgeBaseCategoryName", false, false, true);
+      _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
+      _fieldMap.AddMap("DateModifiedBySalesForceSync", "DateModifiedBySalesForceSync", false, false, false);
             
     }
   }

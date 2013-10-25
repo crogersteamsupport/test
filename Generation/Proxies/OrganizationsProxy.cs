@@ -77,6 +77,16 @@ namespace TeamSupport.Data
     [DataMember] public bool IsPublicArticles { get; set; }
     [DataMember] public bool UseForums { get; set; }
     [DataMember] public bool SetNewActionsVisibleToCustomers { get; set; }
+    [DataMember] public int SupportHoursMonth { get; set; }
+    [DataMember] public bool ProductRequired { get; set; }
+    [DataMember] public bool ProductVersionRequired { get; set; }
+    [DataMember] public bool AllowUnsecureAttachmentViewing { get; set; }
+    [DataMember] public bool ForceBCCEmailsPrivate { get; set; }
+    [DataMember] public int? UnknownCompanyID { get; set; }
+    [DataMember] public bool IsRebuildingIndex { get; set; }
+    [DataMember] public DateTime LastIndexRebuilt { get; set; }
+    [DataMember] public bool IsIndexLocked { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
           
   }
   
@@ -85,6 +95,15 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.NeedsIndexing = this.NeedsIndexing;
+      result.IsIndexLocked = this.IsIndexLocked;
+      result.IsRebuildingIndex = this.IsRebuildingIndex;
+      result.UnknownCompanyID = this.UnknownCompanyID;
+      result.ForceBCCEmailsPrivate = this.ForceBCCEmailsPrivate;
+      result.AllowUnsecureAttachmentViewing = this.AllowUnsecureAttachmentViewing;
+      result.ProductVersionRequired = this.ProductVersionRequired;
+      result.ProductRequired = this.ProductRequired;
+      result.SupportHoursMonth = this.SupportHoursMonth;
       result.SetNewActionsVisibleToCustomers = this.SetNewActionsVisibleToCustomers;
       result.UseForums = this.UseForums;
       result.IsPublicArticles = this.IsPublicArticles;
@@ -149,6 +168,7 @@ namespace TeamSupport.Data
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
       result.BusinessDayStart = DateTime.SpecifyKind(this.BusinessDayStartUtc, DateTimeKind.Utc);
       result.BusinessDayEnd = DateTime.SpecifyKind(this.BusinessDayEndUtc, DateTimeKind.Utc);
+      result.LastIndexRebuilt = DateTime.SpecifyKind(this.LastIndexRebuiltUtc, DateTimeKind.Utc);
        
       result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc); 
        

@@ -1,0 +1,106 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+using System.Xml;
+using System.Data;
+using TeamSupport.Data;
+using System.Net;
+using System.Web;
+
+namespace TeamSupport.Api
+{
+  
+  public class RestAttachments
+  {
+    public static string GetAttachment(RestCommand command, int attachmentID)
+    {
+      Attachment attachment = Attachments.GetAttachment(command.LoginUser, attachmentID);
+      if (attachment.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+      if (!File.Exists(attachment.Path))
+      {
+        command.Context.Response.Write("Invalid attachment.");
+        command.Context.Response.ContentType = "text/html";
+      }
+      else
+      {
+        command.Context.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + attachment.FileName + "\"");
+        command.Context.Response.AddHeader("Content-Length", attachment.FileSize.ToString());
+        command.Context.Response.ContentType = attachment.FileType;
+        command.Context.Response.WriteFile(attachment.Path);
+      }
+
+      return "attachment";
+    }
+
+    public static string GetAttachments(RestCommand command, int actionID, bool orderByDateCreated = false)
+    {
+      Attachments attachments = new Attachments(command.LoginUser);
+      if (orderByDateCreated)
+      {
+        attachments.LoadByActionID(actionID, "DateCreated DESC");
+      }
+      else
+      {
+        attachments.LoadByActionID(actionID);
+      }
+
+      return attachments.GetXml("Attachments", "Attachment", true, command.Filters);
+    }
+
+    public static string CreateAttachment(RestCommand command, int ticketID, int actionID)
+    {
+      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
+      if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+
+      string path = AttachmentPath.GetPath(command.LoginUser, command.Organization.OrganizationID, AttachmentPath.Folder.Actions);
+      path = Path.Combine(path, actionID.ToString());
+      if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+      HttpFileCollection files = command.Context.Request.Files;
+
+      if (files.Count > 0)
+      {
+        if (files[0].ContentLength > 0)
+        {
+          string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[0].FileName)));
+
+          files[0].SaveAs(Path.Combine(path, fileName));
+
+          Attachment attachment = (new Attachments(command.LoginUser)).AddNewAttachment();
+          attachment.RefType = ReferenceType.Actions;
+          attachment.RefID = (int)actionID;
+          attachment.OrganizationID = command.Organization.OrganizationID;
+          attachment.FileName = fileName;
+          attachment.Path = Path.Combine(path, fileName);
+          attachment.FileType = files[0].ContentType;
+          attachment.FileSize = files[0].ContentLength;
+          attachment.Collection.Save();
+          return attachment.Collection.GetXml("Attachments", "Attachment", true, command.Filters);
+        }
+        else
+        {
+          throw new RestException(HttpStatusCode.BadRequest, "The file to attach is empty.");
+        }
+      }
+      else
+      {
+        throw new RestException(HttpStatusCode.BadRequest, "No file to attach.");
+      }
+    }
+
+    private static string RemoveSpecialCharacters(string text)
+    {
+      return Path.GetInvalidFileNameChars().Aggregate(text, (current, c) => current.Replace(c.ToString(), "_"));
+    }
+
+
+  }
+  
+}
+
+
+
+
+
+  

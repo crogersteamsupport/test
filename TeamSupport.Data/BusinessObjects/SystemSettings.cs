@@ -41,24 +41,36 @@ namespace TeamSupport.Data
     public static void WriteString(LoginUser loginUser, string key, string value)
     {
 
-
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
       {
         connection.Open();
-
+        
         using (SqlCommand command = new SqlCommand())
         {
           command.Connection = connection;
-          command.CommandText = "uspWriteSystemSetting";
-          command.CommandType = CommandType.StoredProcedure;
+          command.CommandText = @"
+IF EXISTS(SELECT * FROM SystemSettings WHERE (SettingKey=@SettingKey))
+  BEGIN
+    UPDATE SystemSettings
+  	SET SettingValue = @SettingValue
+    WHERE (SettingKey = @SettingKey)
+  END
+  ELSE
+  BEGIN
+	  INSERT INTO SystemSettings
+	  (
+		[SettingKey],
+		[SettingValue])
+	  VALUES (
+		@SettingKey,
+		@SettingValue)
+  END";
           command.Parameters.AddWithValue("@SettingKey", key);
           command.Parameters.AddWithValue("@SettingValue", value);
-          command.Parameters.AddWithValue("@ModifierID", loginUser.UserID);
           command.ExecuteNonQuery();
         }
         connection.Close();
       }
     }
-
   }
 }

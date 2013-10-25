@@ -21,7 +21,7 @@ namespace TeamSupport.Data
         setting = (new ChatUserSettings(loginUser)).AddNewChatUserSetting();
 
         setting.CurrentChatID = -1;
-        setting.IsAvailable = false;
+        setting.IsAvailable = true;
         setting.LastChatRequestID = -1;
         setting.UserID = userID;
         

@@ -313,6 +313,8 @@ namespace TeamSupport.Data
               GC.WaitForPendingFinalizers();
               ImportAssets();
               GC.WaitForPendingFinalizers();
+              ImportAssetHistory();
+              GC.WaitForPendingFinalizers();
               ImportTickets();
               GC.WaitForPendingFinalizers();
               
@@ -434,14 +436,21 @@ namespace TeamSupport.Data
         string name = table.Columns[i].ColumnName;
         if (name.Trim() == "") continue;
         CustomField field = customFields.FindByName(name);
+
         if (field == null)
         {
+          string apiFieldName = CustomFields.GenerateApiFieldName(auxID < 0 ? tableName + "_" + name : tableName + "_" + name + "_" + auxID.ToString());
+          int apiCopyInt = 1;
+          while (customFields.FindByApiFieldName(apiFieldName) != null)
+          {
+            apiFieldName = apiFieldName + "_" + apiCopyInt.ToString();
+            apiCopyInt++;
+          }
+
           field = (new CustomFields(_loginUser)).AddNewCustomField();
           field.OrganizationID = _organizationID;
-          field.Name = name.Trim();
-          field.ApiFieldName = tableName + "_" + field.Name;
-          if (auxID > -1) field.ApiFieldName = field.ApiFieldName + "_" + auxID.ToString();
-          field.ApiFieldName = CustomFields.GenerateApiFieldName(field.ApiFieldName);
+          field.Name = name;
+          field.ApiFieldName = apiFieldName;
           field.Position = customFields.GetMaxPosition(_organizationID, referenceType, auxID);
           field.AuxID = auxID;
           field.RefType = referenceType;
@@ -536,8 +545,9 @@ namespace TeamSupport.Data
       {
         case "description": result = SystemActionType.Description; break;
         case "resolution": result = SystemActionType.Resolution; break;
-        case "pingupdate": result = SystemActionType.PingUpdate; break;
+        case "updaterequest": result = SystemActionType.UpdateRequest; break;
         case "email": result = SystemActionType.Email; break;
+        case "reminder" : result = SystemActionType.Reminder; break;
         default:
           break;
       }
@@ -850,6 +860,7 @@ namespace TeamSupport.Data
         user.SubscribeToNewTickets = false;
         user.ReceiveTicketNotifications = true;
         user.Title = row["Title"].ToString().Trim();
+        user.EnforceSingleSession = true;
       }
       if (_IsBulk == true) users.BulkSave(); else users.Save();
       _log.AppendMessage(users.Count.ToString() + " Users Imported.");
@@ -1135,11 +1146,9 @@ AND RTRIM(LastName) = @LastName
     {
       Products products = new Products(_loginUser);
       products.LoadByOrganizationID(_organizationID);
-      IdList prodIds = GetIdList(products);
 
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
-      IdList orgIDs = GetIdList(organizations);
 
       Assets assets = new Assets(_loginUser);
       int orgCount = 0;
@@ -1151,6 +1160,7 @@ AND RTRIM(LastName) = @LastName
       {
 
         _currentRow = row;
+        string organizationID = row["AssignedTo"].ToString().Trim().ToLower();
 
         Asset asset = assets.AddNewAsset();
         asset.OrganizationID = _organizationID;
@@ -1161,7 +1171,9 @@ AND RTRIM(LastName) = @LastName
           case "assigned": asset.Location = "1"; break;
           case "warehouse": asset.Location = "2"; break;
           case "junkyard": asset.Location = "3"; break;
-		      default: asset.Location = ""; break;
+		      default: 
+            asset.Location = organizationID != "" ? "1" : "2"; 
+          break;
 	      }
         asset.Notes = GetDBString(row["Notes"], 0, true);
 
@@ -1187,7 +1199,7 @@ AND RTRIM(LastName) = @LastName
         }
 
 
-        string organizationID = row["AssignedTo"].ToString().Trim().ToLower();
+        
         if (organizationID != "")
         {
           Organization organization = organizations.FindByImportID(organizationID);
@@ -1234,6 +1246,57 @@ AND RTRIM(LastName) = @LastName
 
       _log.AppendMessage(orgCount.ToString() + " Assets Customers Imported.");
       _log.AppendMessage(prodCount.ToString() + " Assets Products Imported.");
+
+    }
+
+    private void ImportAssetHistory()
+    {
+      Organizations organizations = new Organizations(_loginUser);
+      organizations.LoadByParentID(_organizationID, false);
+
+      Assets assets = new Assets(_loginUser);
+      assets.LoadByOrganizationID(_organizationID);
+      
+      AssetHistory history = new AssetHistory(_loginUser);
+
+
+      DataTable table = ReadTable("AssetHistory");
+      int count = 0;
+      foreach (DataRow row in table.Rows)
+      {
+
+        _currentRow = row;
+        AssetHistoryItem item = history.AddNewAssetHistoryItem();
+        Asset asset = assets.FindByImportID(row["AssetID"].ToString());
+
+        if (asset == null) continue;
+
+        item.OrganizationID = _organizationID;
+        item.AssetID = asset.AssetID;
+        item.ActionTime = (DateTime?)GetDBDate(row["ActionTime"], true);
+        item.DateCreated = item.ActionTime;
+        item.ActionDescription = GetDBString(row["Description"], 500, true);
+        Organization organization = organizations.FindByImportID(row["ShippedFrom"].ToString());
+        if (organization != null) item.ShippedFrom = organization.OrganizationID;
+        organization = organizations.FindByImportID(row["ShippedTo"].ToString());
+        if (organization != null) item.ShippedTo = organization.OrganizationID;
+        item.TrackingNumber = GetDBString(row["TrackingNumber"], 200, true);
+        item.ShippingMethod = GetDBString(row["ShippingMethod"], 200, true);
+        item.ReferenceNum = GetDBString(row["ReferenceNum"], 200, true);
+        item.Comments = GetDBString(row["Comments"], 0, true);
+
+
+        if (++count % BULK_LIMIT == 0)
+        {
+          if (_IsBulk == true) history.BulkSave(); else history.Save();
+          history = new AssetHistory(_loginUser);
+          GC.WaitForPendingFinalizers();
+
+        }
+      }
+      if (_IsBulk == true) history.BulkSave(); else history.Save();
+
+      _log.AppendMessage(count.ToString() + " Asset Histories Imported.");
 
     }
 
@@ -1434,87 +1497,128 @@ AND RTRIM(LastName) = @LastName
       tickets.LoadByOrganizationID(_organizationID);
       Actions actions = new Actions(_loginUser);
       actions.LoadByOrganizationID(_organizationID);
-
+      Organizations customers = new Organizations(_loginUser);
+      customers.LoadByParentID(_organizationID, false);
       Attachments attachments = new Attachments(_loginUser);
       DataTable table = ReadTable("Attachments");
+      
       foreach (DataRow row in table.Rows)
       {
-        ReferenceType refType = ReferenceType.None;
-        int id = -1;
-        _currentRow = row;
-        string sourceFile = Path.Combine(Path.Combine(Path.GetDirectoryName(_fileName), row["Folder"].ToString().Trim()), row["FileName"].ToString().Trim());
-        if (!File.Exists(sourceFile))
+        string mask = row["FileName"].ToString().Trim();
+        if (mask == "*.*")
         {
-          _log.AppendError(row, "Attachment skipped due to file does not exist.");
-          continue;
-        }
-
-
-        string objectID = row["ObjectID"].ToString().Trim();
-        if (row["ReferenceObject"].ToString().ToLower().IndexOf("ticket") > -1)
-        {
-          Ticket ticket = tickets.FindByImportID(objectID);
-          if (ticket == null)
+          string path = Path.Combine(Path.GetDirectoryName(_fileName), row["Folder"].ToString().Trim());
+          if (!Directory.Exists(path))
           {
-            _log.AppendError(row, "Attachment skipped due to ticket does not exist.");
+            _log.AppendError(row, "Attachment skipped due to directory does not exist.");
             continue;
           }
 
-          TeamSupport.Data.Action action = Actions.GetTicketDescription(_loginUser, ticket.TicketID);
-          if (action == null)
+          string[] files = Directory.GetFiles(path);
+          foreach (string file in files)
           {
-            _log.AppendError(row, "Attachment skipped due to action description does not exist.");
-            continue;
+            ImportAttachment(row, file, attachments, actions, tickets, customers);
           }
-          refType = ReferenceType.Actions;
-          id = action.ActionID;
-        }
-        else if (row["ReferenceObject"].ToString().ToLower().IndexOf("action") > -1)
-        {
-          TeamSupport.Data.Action action = actions.FindByImportID(objectID);
-          if (action == null)
-          {
-            _log.AppendError(row, "Attachment skipped due to action does not exist.");
-            continue;
-          }
-          refType = ReferenceType.Actions;
-          id = action.ActionID;
         }
         else
         {
-          _log.AppendError(row, "Attachment skipped due to invalid reference object.");
-          continue;
-
-        }
-
-        string path = Attachments.GetAttachmentPath(_loginUser, refType, id);
-        Directory.CreateDirectory(path);
-        string ext = Path.GetExtension(sourceFile);
-        string fileName = Path.GetFileName(sourceFile);
-
-
-        try
-        {
-          FileInfo info = new FileInfo(sourceFile);
-          info.CopyTo(Path.Combine(path, fileName));
-          Attachment attachment = attachments.AddNewAttachment();
-          attachment.FileName = fileName;
-          attachment.FileSize = info.Length;
-          attachment.FileType = DataUtils.MimeTypeFromFileName(fileName);
-          attachment.OrganizationID = _organizationID;
-          attachment.Path = Path.Combine(path, fileName);
-          attachment.RefID = id;
-          attachment.RefType = refType;
-        }
-        catch (Exception ex)
-        {
-          _log.AppendError(row, "Attachment skipped due to error: " + ex.Message);
-
+          string sourceFile = Path.Combine(Path.Combine(Path.GetDirectoryName(_fileName), row["Folder"].ToString().Trim()), mask);
+          ImportAttachment(row, sourceFile, attachments, actions, tickets, customers);
         }
       }
+
       if (_IsBulk == true) attachments.BulkSave(); else attachments.Save();
       _log.AppendMessage(attachments.Count.ToString() + " Attachments Imported.");
 
+    }
+
+    private void ImportAttachment(DataRow row, string sourceFile, Attachments attachments, Actions actions, Tickets tickets, Organizations customers)
+    {
+      ReferenceType refType = ReferenceType.None;
+      int id = -1;
+      _currentRow = row;
+
+      if (!File.Exists(sourceFile))
+      {
+        _log.AppendError(row, "Attachment skipped due to file does not exist.");
+        return;
+      }
+
+
+      string objectID = row["ObjectID"].ToString().Trim();
+      if (row["ReferenceObject"].ToString().ToLower().IndexOf("ticket") > -1)
+      {
+        Ticket ticket = tickets.FindByImportID(objectID);
+        if (ticket == null)
+        {
+          _log.AppendError(row, "Attachment skipped due to ticket does not exist.");
+          return;
+        }
+
+        TeamSupport.Data.Action action = Actions.GetTicketDescription(_loginUser, ticket.TicketID);
+        if (action == null)
+        {
+          _log.AppendError(row, "Attachment skipped due to action description does not exist.");
+          return;
+        }
+        refType = ReferenceType.Actions;
+        id = action.ActionID;
+      }
+      else if (row["ReferenceObject"].ToString().ToLower().IndexOf("action") > -1)
+      {
+        TeamSupport.Data.Action action = actions.FindByImportID(objectID);
+        if (action == null)
+        {
+          _log.AppendError(row, "Attachment skipped due to action does not exist.");
+          return;
+        }
+        refType = ReferenceType.Actions;
+        id = action.ActionID;
+      }
+      else if (row["ReferenceObject"].ToString().ToLower().IndexOf("customer") > -1)
+      {
+        Organization customer = customers.FindByImportID(objectID);
+
+        if (customer == null)
+        {
+          _log.AppendError(row, "Attachment skipped due to customer does not exist.");
+          return;
+        }
+        refType = ReferenceType.Organizations;
+        id = customer.OrganizationID;
+      }
+      else
+      {
+        _log.AppendError(row, "Attachment skipped due to invalid reference object.");
+        return;
+
+      }
+
+      string path = Attachments.GetAttachmentPath(_loginUser, refType, id);
+      Directory.CreateDirectory(path);
+      string ext = Path.GetExtension(sourceFile);
+      string fileName = Path.GetFileName(sourceFile);
+
+
+      try
+      {
+        FileInfo info = new FileInfo(sourceFile);
+        info.CopyTo(Path.Combine(path, fileName));
+        Attachment attachment = attachments.AddNewAttachment();
+        attachment.FileName = fileName;
+        attachment.FileSize = info.Length;
+        attachment.FileType = DataUtils.MimeTypeFromFileName(fileName);
+        attachment.OrganizationID = _organizationID;
+        attachment.Path = Path.Combine(path, fileName);
+        attachment.RefID = id;
+        attachment.RefType = refType;
+      }
+      catch (Exception ex)
+      {
+        _log.AppendError(row, "Attachment skipped due to error: " + ex.Message);
+
+      }
+    
     }
 
     private void ImportWiki()
@@ -1979,42 +2083,56 @@ AND RTRIM(LastName) = @LastName
         {
           if (importField.TableName == tableName)
           {
-            string itemValue = row[importField.FieldName].ToString().Trim();
-            if (itemValue != "")
+            try
             {
-              int id;
-              if (idList.TryGetValue(idPrefix + row[fieldName].ToString().Trim().ToLower(), out id))
+
+              string itemValue = row[importField.FieldName].ToString().Trim();
+              if (itemValue != "")
               {
-
-                /*CustomValue value = values.AddNewCustomValue();
-                value.CustomFieldID = importField.TSFieldID;
-                value.Value = itemValue;
-                value.RefID = id;*/
-                try
+                int id;
+                if (idList.TryGetValue(idPrefix + row[fieldName].ToString().Trim().ToLower(), out id))
                 {
-                  CustomValues.UpdateValue(_loginUser, importField.TSFieldID, id, itemValue);
-                  //values.Save();
+
+                  /*CustomValue value = values.AddNewCustomValue();
+                  value.CustomFieldID = importField.TSFieldID;
+                  value.Value = itemValue;
+                  value.RefID = id;*/
+                  try
+                  {
+                    CustomValues.UpdateValue(_loginUser, importField.TSFieldID, id, itemValue);
+                    //values.Save();
+                  }
+                  catch (Exception ex)
+                  {
+                    _log.AppendError(row, string.Format("CustomField Skippedskipped. [Table={0}  CustomFieldID={1}  RefID={2}  Error={3}  Stack={4}",
+                                tableName,
+                                importField.TSFieldID.ToString(),
+                                id.ToString(),
+                                ex.Message,
+                                ex.StackTrace
+                                ));
+                  }
+                  count++;
+
+                  /*if (count % BULK_LIMIT == 0)
+                  {
+                    values.BulkSave();
+                    values = new CustomValues(_loginUser);
+                    GC.WaitForPendingFinalizers();
+                  }*/
+
                 }
-                catch (Exception ex)
-                {
-                  _log.AppendError(row, string.Format("CustomField Skippedskipped. [Table={0}  CustomFieldID={1}  RefID={2}  Error={3}  Stack={4}",
-                              tableName,
-                              importField.TSFieldID.ToString(),
-                              id.ToString(),
-                              ex.Message,
-                              ex.StackTrace
-                              )); 
-                }
-                count++;
-
-                /*if (count % BULK_LIMIT == 0)
-                {
-                  values.BulkSave();
-                  values = new CustomValues(_loginUser);
-                  GC.WaitForPendingFinalizers();
-                }*/
-
               }
+            }
+            catch (Exception ex)
+            {
+              _log.AppendError(row, string.Format("CustomField Skipped skipped. [Table={0}  CustomFieldID={1}  RefID={2}  Error={3}  Stack={4}",
+                          tableName,
+                          importField.TSFieldID.ToString(),
+                          "",
+                          ex.Message,
+                          ex.StackTrace
+                          ));
             }
           }
         }

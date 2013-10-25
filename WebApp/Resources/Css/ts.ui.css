@@ -1,9 +1,9 @@
 ﻿html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
-del, dfn, font, em, img, ins, kbd, q, s, samp,
+del, dfn, font, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
-dl, dt, dd, ul, ol, li,
+dl, dt, dd, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td {
 	margin: 0;
@@ -65,7 +65,7 @@ pre {border: 1px solid #92B4DE; margin: 1em 0; padding: .5em .5em; font-family:c
 
 .ui-widget-header a, .ui-widget-header a:link, .ui-widget-header a:visited, .ui-widget-header a:active { text-decoration: none;}
 .ui-widget-header a:hover { text-decoration: underline;}
-.ui-widget .ui-autocomplete-input, .ui-autocomplete-input, input.text  { padding: .2em .2em; text-align:left; height: 1.2em;}
+.ui-widget .ui-autocomplete-input, .ui-autocomplete-input, input.text  { padding: .2em .2em; text-align:left; height: 14px;}
 .ui-menu .ui-menu-item a { padding: 0 .1em 0 .2em; }
 .ui-button .ui-button-text-only, .ui-button-text-only .ui-button-text { line-height: 2em !important; padding: 0 .4em !important; }
 .ui-button, .ui-widget .ui-button{ font-weight:normal; padding:0; }
@@ -109,6 +109,8 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .ts-setting-field-content {}
 .ts-setting-field-description { opacity: .65;}
 
+.ts-checkbox input {line-height: 20px; float:left; margin-left: -20px; vertical-align:middle; width:auto;}
+label.ts-checkbox {display:block; margin-bottom: 5px; min-height: 20px; padding-left: 20px; font-weight: normal; vertical-align:middle; line-height: 20px;}
 
 .mceLayout .mceIframeContainer { background: #fff;}
 .mceLayout td.mceIframeContainer { vertical-align:top;}
@@ -144,7 +146,8 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 
 
 .ui-autocomplete-loading { background-image: url('../images/loading/loading_small2.gif'); background-position:  right center; background-repeat: no-repeat; }
-
+.ui-autocomplete { z-index:99999 !important;}
+.ui-datepicker { z-index:99999 !important;}
 
 /* states and images */
 .ts-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
@@ -214,6 +217,7 @@ input.checkbox { vertical-align: middle; margin: 0px; top:0; display: inline; wi
 .ts-icon-tsuser { background-position: -400px -16px; }
 .ts-icon-customer { background-position: -768px -16px; }
 .ts-icon-light { background-position: -128px -16px; }
+.ts-icon-columns { background-position: -880px -16px;}
 .ts-icon-ticket { background-image: url('../images/nav/16/tickets.png'); position: 0px 0px;}
 .ts-icon-contact { background-image: url('../images/nav/16/users.png'); position: 0px 0px;}
 .ts-icon-company { background-image: url('../images/nav/16/customers.png'); position: 0px 0px;}
@@ -283,11 +287,38 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .ts-layout-toolbar { height: 31px; }
 .ts-layout-container { height: 100%; }
 
-.ui-cluetip-content h1 { padding: 0 0 .5em 0; } 
-.ui-cluetip-content h2 { padding: 0 0 .5em 0; font-size: 1.2em; font-weight:normal;} 
+.ui-cluetip-content h1 { padding: 0 0 .5em 0; line-height: inherit; font-size: 1.5em;} 
+.ui-cluetip-content h2 { padding: 0 0 .5em 0; font-size: 1.2em; font-weight:normal;line-height: inherit;} 
 .ui-cluetip-content h3 { } 
-.ui-cluetip-content dl { font-size:1em; line-height: 1.5em; padding: 0 0 1em 0;} 
+.ui-cluetip-content dl { font-size:1em; line-height: 1.5em; padding: 0 0 1em 0;margin-bottom: 0px;} 
 .ui-cluetip-content dt { float:left; width: 25%; font-weight:bold; clear:both;} 
 .ui-cluetip-content dd { float:left; width: 70%;} 
 .ui-cluetip-content { padding: 1em 1em;  border:none;}
 
+.removable-item { padding: .25em .5em; margin: 0 .5em .5em 0; float:left;  }
+.removable-item .ts-icon-info { float:left; cursor:pointer; height: 16px; margin: 2px 0 0 .25em;}
+.removable-item .ui-icon-close { float:right; width: 16px; height: 16px; margin: 2px 0 0 .25em; cursor:pointer;  }
+.removable-item-title, .removable-item-title a.ui-state-default { font-weight:bold; float:left; line-height: 20px; font-size: 12px;}
+.removable-item-description { float:left; clear:left; line-height: 20px; font-size: 12px; margin-top: .25em;}
+.removable-item .removable-text, .removable-item a { float:left; margin-right: .25em; }
+ 
+.paste-dialog-instructions{
+    position: absolute;
+    top: 50%;
+    font-weight: bold;
+    font-size: larger;
+    text-align: center;
+    width: 98%; 
+}
+
+.image-cropper{
+    /*display:inline;*/
+    width: 98%; 
+}
+/*
+#mainImageDiv{
+    height:90%;
+    margin:0 auto;
+    overflow:auto;
+    min-height: 250px;
+}*/

@@ -43,18 +43,24 @@ namespace TeamSupport.Handlers
         app.Context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
         //check for old webservice privateservices
         if (path.IndexOf("privateservices.asmx") > -1) return;
-        if (path.IndexOf("getmainpageupdate") > -1) return;
+        if (path.IndexOf("publicservice.asmx") > -1) return;
+        if (path.IndexOf("getuserstatusupdate") > -1) return;
         if (path.IndexOf("signout") > -1) return;
-        
 
-        var bytes = new byte[request.InputStream.Length];
-        request.InputStream.Read(bytes, 0, bytes.Length);
-        request.InputStream.Position = 0;
-        string content = Encoding.ASCII.GetString(bytes);
-
-        if (TSAuthentication.Ticket == null || TSAuthentication.Ticket.Expired || content.ToLower().IndexOf(TSAuthentication.SessionID.ToLower() ) < 0)
+        bool isSessionValid = true;
+        if (app.Context.Request.HttpMethod == "POST")
         {
-          app.Response.StatusCode = (int)HttpStatusCode.NoContent;
+          var bytes = new byte[request.InputStream.Length];
+          request.InputStream.Read(bytes, 0, bytes.Length);
+          request.InputStream.Position = 0;
+          string content = Encoding.ASCII.GetString(bytes);
+          isSessionValid = content.ToLower().IndexOf(TSAuthentication.SessionID.ToLower()) > -1;
+        }
+
+        if (TSAuthentication.Ticket == null || TSAuthentication.Ticket.Expired || !isSessionValid)
+        {
+          
+          app.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
           app.Response.End();
           app.CompleteRequest();
         }

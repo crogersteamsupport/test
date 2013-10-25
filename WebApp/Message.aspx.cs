@@ -39,6 +39,6 @@ public partial class Message : System.Web.UI.Page
   }
   protected void btnContinue_Click(object sender, EventArgs e)
   {
-    RadAjaxManager.GetCurrent(Page).Redirect(_returnUrl);
+    Response.Redirect(_returnUrl);
   }
 }

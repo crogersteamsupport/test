@@ -11,7 +11,8 @@ namespace TeamSupport.ServiceLibrary
   {
     protected ProductVersionIndexDataSource() { }
 
-    public ProductVersionIndexDataSource(LoginUser loginUser, int maxCount, int organizationID) : base(loginUser, maxCount, organizationID)
+    public ProductVersionIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding)
+      : base(loginUser, maxCount, organizationID, isRebuilding)
     {
       _logs = new Logs("Product Version Indexer DataSource");
     }
@@ -30,7 +31,7 @@ namespace TeamSupport.ServiceLibrary
 
         _lastItemID = productVersion.ProductVersionID;
 
-        DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(productVersion.Description));
+        DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(productVersion.Description == null ? string.Empty : productVersion.Description));
 
         DocFields = string.Empty;
         foreach (DataColumn column in productVersion.Collection.Table.Columns)
@@ -71,7 +72,7 @@ namespace TeamSupport.ServiceLibrary
         _logs.WriteEvent("Rewound product versions, OrgID: " + _organizationID.ToString());
         _itemIDList = new List<int>();
         ProductVersionsView productVersions = new ProductVersionsView(_loginUser);
-        productVersions.LoadForIndexing(_organizationID, _maxCount);
+        productVersions.LoadForIndexing(_organizationID, _maxCount, _isRebuilding);
         foreach (ProductVersionsViewItem productVersion in productVersions)
         {
           _itemIDList.Add(productVersion.ProductVersionID);

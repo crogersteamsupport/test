@@ -167,7 +167,7 @@
 
 
         new AjaxUpload(button, {
-          action: 'Upload/Images/TicketTypes',
+          action: '/Upload/Images/TicketTypes',
           autoSubmit: true,
           responseType: false,
           onSubmit: function (file, ext) {
@@ -362,6 +362,7 @@
               loadCombo(combo, items);
               $('#itemNameDiv').html('"' + name + '"');
               if (_type == 5) $('#divDeleteReplace').hide(); else $('#divDeleteReplace').show();
+              top.Ts.System.logAction('Admin Custom Properties - Type Deleted');
 
               showWindow($find("<%=wndDeleteType.ClientID%>"), function(result) {
                 if (!result) return;
@@ -392,18 +393,21 @@
           wnd.add_close(fn);
         }
         wnd.show();
+        top.Ts.System.logAction('Admin Custom Properties - Type Dialog Opened');
       }
 
       function moveUp(id) {
         PageMethods.MoveUp(_type, id, _ticketType, function(result) {
           $('#divTypes').html(result);
           if (_type == 5) loadTicketTypeCombo();
+          top.Ts.System.logAction('Admin Custom Properties - Position Changed');
         });
       }
       function moveDown(id) {
         PageMethods.MoveDown(_type, id, _ticketType, function(result) {
           $('#divTypes').html(result);
           if (_type == 5) loadTicketTypeCombo();
+          top.Ts.System.logAction('Admin Custom Properties - Position Changed');
         });
       }
 

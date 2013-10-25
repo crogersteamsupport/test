@@ -23,6 +23,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("MessageType", "MessageType", false, false, false);
       _fieldMap.AddMap("UserName", "UserName", false, false, false);
       _fieldMap.AddMap("GroupName", "GroupName", false, false, false);
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
             
     }
   }

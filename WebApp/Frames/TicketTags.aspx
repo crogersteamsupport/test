@@ -8,7 +8,7 @@
   <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="../css_5/frame.css" rel="stylesheet" type="text/css" />
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
-  <script src="../vcr/142/Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+  <script src="../js_5/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
   <script src="../js_5/ts.system.old.js" type="text/javascript"></script>
   <script src="../js_5/ts.data.tickets.js" type="text/javascript"></script>
   <script src="../js_5/json2.js" type="text/javascript"></script>
@@ -155,6 +155,8 @@
           clearSelectedTags();
           if (first != null) first.addClass('tag-link-selected');
           $('#lnk-reset-tags').hide();
+          top.Ts.System.logAction('Ticket Tags - Multiple Tag Mode');
+
         }
 
         loadTickets();
@@ -172,6 +174,7 @@
         toggleRenameTag(false);
         var id = getItemID('tagid', $('.tag-link-selected')[0]);
         TSSystem.Services.Tickets.RenameTag(id, $('#tag-rename-edit input').val(), function (result) { loadTags(result); });
+        top.Ts.System.logAction('Ticket Tags - Tag Renamed');
       });
 
       $('#tag-rename-cancel').click(function (e) {
@@ -185,6 +188,7 @@
         var id = getItemID('tagid', $('.tag-link-selected')[0]);
         TSSystem.Services.Tickets.DeleteTag(id);
         loadTags();
+        top.Ts.System.logAction('Ticket Tags - Tag Deleted');
       });
     }
 
@@ -355,6 +359,8 @@
           }
           $(this).toggleClass('tag-link-selected');
           loadTickets();
+          top.Ts.System.logAction('Ticket Tags - Tag Selected');
+
         });
         loadTickets();
       });

@@ -39,10 +39,76 @@ namespace TeamSupport.Data
       ft.ViewCount = 0;
       ft.Collection.Save();
     }
+
+    public static bool UserHasRights(User user, int? groupID, int? userID, int? ticketID, bool isKB)
+    {
+      if (isKB) return true;
+
+      if (user.TicketRights == TicketRightType.Assigned && (userID == null || userID != user.UserID)) return false;
+      
+      if (user.TicketRights == TicketRightType.Groups && (userID != null || groupID != null))
+      {
+        if (userID == null || userID != user.UserID)
+        {
+          Groups groups = new Groups(user.Collection.LoginUser);
+          if (groupID != null)
+          {
+            groups.LoadByUserID(user.UserID);
+            foreach (Group group in groups)
+            {
+              if (group.GroupID == groupID) { return true; }
+            }
+          }
+          return false;
+        }
+      }
+      if (user.TicketRights == TicketRightType.Customers)
+      {
+        if (userID == null || userID != user.UserID)
+        {
+          SqlCommand command = new SqlCommand();
+          command.CommandText = @"
+SELECT COUNT(*) 
+FROM OrganizationTickets ot
+INNER JOIN UserRightsOrganizations uro ON ot.OrganizationID = uro.OrganizationID 
+WHERE uro.UserID = @UserID
+AND ot.TicketID = @TicketID
+";
+          command.Parameters.AddWithValue("UserID", user.UserID);
+          command.Parameters.AddWithValue("TicketID", ticketID);
+          return SqlExecutor.ExecuteInt(user.Collection.LoginUser, command) > 0;
+        }
+      }
+      return true;
+    }
+
+    public static bool UserHasRights(User user, Ticket ticket)
+    {
+      return UserHasRights(user, ticket.GroupID, ticket.UserID, ticket.TicketID, ticket.IsKnowledgeBase);
+    }
+
+    public bool UserHasRights(User user)
+    {
+      return UserHasRights(user, this.GroupID, this.UserID, this.TicketID, this.IsKnowledgeBase);
+    }
   }
 
   public partial class Tickets 
   {
+    private string _actionLogInstantMessage = null;
+
+    public string ActionLogInstantMessage
+    {
+      get
+      {
+        return _actionLogInstantMessage;
+      }
+      set
+      {
+        _actionLogInstantMessage = value;
+      }
+    }
+
     partial void BeforeRowInsert(Ticket ticket)
     {
       if (ticket.TicketNumber < 2)
@@ -63,8 +129,25 @@ namespace TeamSupport.Data
 
     partial void AfterRowInsert(Ticket ticket)
     {
-      string description = "Created Ticket Number " + ticket.TicketNumber.ToString();
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, description);
+      string description = "Created Ticket Number ";
+      if (_actionLogInstantMessage != null) 
+      {
+        description = _actionLogInstantMessage;
+      }
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, description + ticket.TicketNumber.ToString());
+      _actionLogInstantMessage = null;
+
+      // CHECK IF TICKET CLOSED
+      TicketStatus ticketStatus = TicketStatuses.GetTicketStatus(LoginUser, ticket.TicketStatusID);
+      if (ticketStatus.IsClosed)
+      {
+          ticket.CloserID = LoginUser.UserID;
+          ticket.DateClosed = DateTime.UtcNow;
+
+          description = "Closed " + GetTicketLink(ticket);
+          ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+      }
+
     }
 
     public static int GetMyOpenUnreadTicketCount(LoginUser loginUser, int userID)
@@ -543,6 +626,74 @@ AND ts.IsClosed = 0";
       string description = "Added '" + user.FirstName + " " + user.LastName + "' to the contact list for " + GetTicketLink(ticket);
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+    }
+
+    public void SetUserAsSentToSalesForce(int userID, int ticketID)
+    {
+      try
+      {
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText = "UPDATE OrganizationTickets SET SentToSalesForce = 0 WHERE TicketID = @TicketID";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@TicketID", ticketID);
+          ExecuteNonQuery(command, "UserTickets");
+        }
+
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText = "UPDATE UserTickets SET SentToSalesForce = 0 WHERE TicketID = @TicketID";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@TicketID", ticketID);
+          ExecuteNonQuery(command, "UserTickets");
+        }
+
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText = "UPDATE UserTickets SET SentToSalesForce = 1 WHERE UserID = @UserID AND TicketID = @TicketID";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@UserID", userID);
+          command.Parameters.AddWithValue("@TicketID", ticketID);
+          ExecuteNonQuery(command, "UserTickets");
+        }
+      }
+      catch (Exception)
+      {
+      }
+    }
+
+    public void SetOrganizationAsSentToSalesForce(int organizationID, int ticketID)
+    {
+      try
+      {
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText = "UPDATE OrganizationTickets SET SentToSalesForce = 0 WHERE TicketID = @TicketID";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@TicketID", ticketID);
+          ExecuteNonQuery(command, "UserTickets");
+        }
+
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText = "UPDATE UserTickets SET SentToSalesForce = 0 WHERE TicketID = @TicketID";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@TicketID", ticketID);
+          ExecuteNonQuery(command, "UserTickets");
+        }
+
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText = "UPDATE OrganizationTickets SET SentToSalesForce = 1 WHERE OrganizationID = @organizationID AND TicketID = @TicketID";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@organizationID", organizationID);
+          command.Parameters.AddWithValue("@TicketID", ticketID);
+          ExecuteNonQuery(command, "UserTickets");
+        }
+      }
+      catch (Exception)
+      {
+      }
     }
 
     public void LoadByContact(int userID)
@@ -1316,8 +1467,303 @@ WHERE
         command.CommandType = CommandType.Text;
         Fill(command);
       }
-    }    
+    }
 
+
+    public void AddTags(Tag tag, int ticketID)
+    {
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
+        string description = "Added '" + tag.Value + "' to the tag list for " + GetTicketLink(ticket);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, ticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tags, tag.TagID, description);
+
+    }
+
+    public void RemoveTags(Tag tag, int ticketID)
+    {
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, ticketID);
+        string description = "Removed '" + tag.Value + "' from the tag list for " + GetTicketLink(ticket);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tickets, ticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Delete, ReferenceType.Tags, tag.TagID, description);
+
+    }
+
+    public void LoadBySalesForceID(string salesForceID, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Tickets WHERE SalesForceID = @SalesForceID AND OrganizationID = @OrganizationID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@SalesForceID", salesForceID);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
+    public void GetUsersTickets(int ticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * FROM userstickets where ticketid = @ticketID";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ticketID", ticketID);
+            Fill(command);
+        }
+    }
+
+    public void MergeUpdateContact(int oldticketID, int newticketID)
+    {
+
+        try
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.CommandText = @"
+            BEGIN transaction
+
+            DELETE FROM UserTickets
+            WHERE TicketID = @oldticketID AND UserID IN(SELECT UserID FROM UserTickets WHERE TicketID=@newticketID);
+
+            UPDATE UserTickets
+            SET TicketID = @newticketID
+            WHERE TicketID = @oldticketID;
+
+            /*If no error run*/
+            COMMIT transaction
+            /*If error run*/
+            ROLLBACK transaction
+            ";
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@newticketID", newticketID);
+                command.Parameters.AddWithValue("@oldticketID", oldticketID);
+                ExecuteNonQuery(command, "UserTickets");
+            }
+        }
+        catch (Exception e){
+
+        }
+
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Customers";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
+    }
+
+    public void MergeUpdateOrganizations(int oldticketID, int newticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+            BEGIN transaction
+
+            DELETE FROM OrganizationTickets
+            WHERE TicketID = @oldticketID AND OrganizationID IN(SELECT OrganizationID FROM OrganizationTickets WHERE TicketID=@newticketID);
+
+            UPDATE OrganizationTickets
+            SET TicketID = @newticketID
+            WHERE TicketID = @oldticketID;
+
+            /*If no error run*/
+            COMMIT transaction
+            /*If error run*/
+            ROLLBACK transaction
+            ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            ExecuteNonQuery(command, "OrganizationTickets");
+        }
+
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Organizations";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Organizations, newticketID, description);
+    }
+
+    public void MergeUpdateTags(int oldticketID, int newticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE Taglinks SET RefID=@newticketID WHERE (RefID = @oldticketID) AND RefType = @refType";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            command.Parameters.AddWithValue("@refType", ReferenceType.Tickets);
+            ExecuteNonQuery(command, "Taglinks");
+        }
+
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Tags";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
+    }
+
+    public void MergeUpdateCustomFields(int oldticketID, int newticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE CustomValues SET RefID=@newticketID WHERE (RefID = @oldticketID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            ExecuteNonQuery(command, "CustomValues");
+        }
+
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Tags";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
+    }
+
+    public void MergeUpdateSubscribers(int oldticketID, int newticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE Subscriptions SET RefID=@newticketID WHERE (RefID = @oldticketID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            ExecuteNonQuery(command, "Subscriptions");
+        }
+
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Subscribers";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
+    }
+
+    public void MergeUpdateQueuers(int oldticketID, int newticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE TicketQueue SET TicketID=@newticketID WHERE (TicketID = @oldticketID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            ExecuteNonQuery(command, "TicketQueue");
+        }
+
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Queuers";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
+    }
+
+    public void MergeUpdateReminders(int oldticketID, int newticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE Reminders SET RefID=@newticketID WHERE (RefID = @oldticketID and RefType = @reftype)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            command.Parameters.AddWithValue("@reftype", ReferenceType.Tickets);
+            ExecuteNonQuery(command, "Reminders");
+        }
+
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Reminders";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
+    }
+
+    public void MergeUpdateAssets(int oldticketID, int newticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE AssetTickets SET TicketID=@newticketID WHERE (TicketID = @oldticketID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            ExecuteNonQuery(command, "AssetTickets");
+        }
+
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Assets";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
+    }
+
+    public void MergeUpdateActions(int oldticketID, int newticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE Actions SET TicketID=@newticketID WHERE (TicketID = @oldticketID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            ExecuteNonQuery(command, "Actions");
+        }
+
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Actions";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
+    }
+
+    public void MergeUpdateRelationships(int oldticketID, int newticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE TicketRelationships SET Ticket1ID=@newticketID WHERE (Ticket1ID = @oldticketID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            ExecuteNonQuery(command, "TicketRelationships");
+        }
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE TicketRelationships SET Ticket2ID=@newticketID WHERE (Ticket2ID = @oldticketID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            ExecuteNonQuery(command, "TicketRelationships");
+        }
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE Tickets SET ParentID=@newticketID WHERE (ParentID = @oldticketID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            ExecuteNonQuery(command, "Tickets");
+        }
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE Tickets SET ParentID=null WHERE (ParentID = ticketID)";
+            command.CommandType = CommandType.Text;
+            ExecuteNonQuery(command, "Tickets");
+        }
+
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "DELETE FROM TicketRelationships WHERE (Ticket1ID = @newticketID AND Ticket2ID = @newticketID)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            ExecuteNonQuery(command, "TicketRelationships");
+        }
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Relationships";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);
+    }
+
+    public void MergeAttachments(int oldticketID, int newticketID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE attachments SET RefID=@newticketID WHERE (RefID = @oldticketID) AND RefType = @refType";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@newticketID", newticketID);
+            command.Parameters.AddWithValue("@oldticketID", oldticketID);
+            command.Parameters.AddWithValue("@refType", ReferenceType.Actions);
+            ExecuteNonQuery(command, "attachments");
+        }
+
+        Ticket ticket = (Ticket)Tickets.GetTicket(LoginUser, oldticketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Action Attachments";
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, newticketID, description);
+        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);           
+    }
 
   }
 }

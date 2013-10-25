@@ -6,11 +6,7 @@
   <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery.ui.menu.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery.ui.spinner.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery.ui.tooltip.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery.fileupload-ui.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.cluetip.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
   <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
@@ -18,21 +14,23 @@
   <!--[if IE 8]><link href="../Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="Ticket.css" rel="stylesheet" type="text/css" />
 
-  <script src="../Js/jquery-1.6.4.min.js" type="text/javascript"></script>
-  <script src="../Js/jquery.bgiframe-2.1.2.js" type="text/javascript"></script>
-  <script src="../Js/jquery-ui-1.9.5.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.hoverIntent.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.cluetip.js" type="text/javascript"></script>
   <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
   <script src="../Js/jquery.ui.timepicker.js" type="text/javascript"></script>
   <script src="../Js/jquery.numeric.js" type="text/javascript"></script>
-  <script src="../tiny_mce_3.4.4/tiny_mce.js" type="text/javascript"></script>
-  <script src="../tiny_mce_3.4.4/jquery.tinymce.js" type="text/javascript"></script>
+  <script src="/tiny_mce/tiny_mce.js" type="text/javascript"></script>
+  <script src="/tiny_mce/jquery.tinymce.js" type="text/javascript"></script>
   <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
   <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
-
+  <script src="../Js/browser.js" type="text/javascript"></script>
+  <script src="../Js/jquery.data-selector.js" type="text/javascript"></script>
   <script src="Ticket.js" type="text/javascript"></script>
+
+<script type="text/javascript" src="https://www.dropbox.com/static/api/1/dropbox.js" id="dropboxjs" data-app-key="ebdoql1dhyy7l72"></script>
 
   <style type="text/css"></style>
   <!--[if IE 7]>
@@ -51,6 +49,7 @@
   <div class="ts-loading ui-helper-hidden page-loading">
   </div>
   <div class="ticket-layout ts-layout-container ui-widget ui-helper-hidden">
+    <a href="#" class="scrollup">Scroll</a>
     <div class="ticket-panel-content ui-widget-content ts-color-bg-accent">
       <div class="ticket-content-wrapper">
         <div class="ticket-content">
@@ -75,7 +74,7 @@
                   <input type="checkbox" class="ticket-action-form-portal" />
                   <label>Visible to Customers</label>
                 </div>
-                <div class="label-block checkbox">
+                <div class="label-block checkbox" id="ticket-action-kb-div">
                   <input type="checkbox" class="ticket-action-form-kb" />
                   <label>Knowledgebase</label>
                 </div>
@@ -98,6 +97,10 @@
                 </div>
                 <div class="label-block checkbox">
                   <span class="ui-state-error ts-error-text ui-helper-hidden">Please enter the time you worked on this action.</span>
+                </div>
+                <div class="label-block">
+                  <span class="label timerlabel">Start Timing</span>
+                  <span class="timerbutton"></span>
                 </div>
                 <div class="clearfix"></div>
               </div>
@@ -129,10 +132,13 @@
                     <span class="ts-icon ts-icon-attachment ticket-action-attachment-count"></span>
                   </span>
                   <span class="ticket-action-buttons">
+                      <span class="ticket-action-order">()</span>
                     <span class="ts-icon ticket-action-kb ts-icon-kb" title="Knowledgebase Status"></span>
                     <span class="ts-icon ticket-action-portal ts-icon-portal" title="Visible to Customer Status"></span>
                     <span class="ts-icon ts-icon-edit ticket-action-edit" title="Edit this action."></span>
                   <span class="ts-icon ts-icon-delete ticket-action-delete" title="Delete this action."></span>
+                      
+                      
                   </span>
                 </h1>
                 <div class="clearfix"></div>
@@ -154,6 +160,12 @@
 
               </div>
             </div>
+          </div>
+
+          <div class="ticket-now-viewing ui-widget-content ui-corner-all ticket-content-section ui-helper-hidden">
+              <b>Chat With Others Viewing: </b>
+              <div id="currentViewingUsers" style="display:inline">
+              </div>
           </div>
 
           <div class="ticket-content-header ui-widget-content ui-corner-all ticket-content-section">
@@ -211,6 +223,7 @@
             <div class="ticket-name-value"><span class="property">SLA Status: </span><span class="ts-icon ts-icon-sla-good ticket-sla-status"></span><span id="ticketSla">Sla</span><span class="ts-icon ts-icon-info ticket-sla-info"></span></div>
             <div class="ticket-name-value"><span class="property">Visible to Customers:</span><a class="value" id="isTicketPortal" href="#" title="This shows the customer visiblity."></a></div>
             <div class="ticket-name-value"><span class="property">Knowledgebase:</span><a class="value" id="isTicketKB" href="#" title="This indicates if the ticket is in the Knowledgebase."></a></div>
+            <div class="ticket-name-value" id="knowledgeBaseCategoryDiv"><span class="property">KB Category:</span><a class="value" id="knowledgeBaseCategoryAnchor" href="#" title="This indicates the knowledgebase ticket category."></a></div>
             <div class="ticket-name-value"><span class="property">Community:</span><a class="value" id="ticketCommunity" href="#" title="This indicates if the ticket is in the Community."></a></div>
             <div class="ticket-name-value"><span class="property">Days Opened:</span><span class="value" id="daysOpened"></span></div>
             <div class="ticket-name-value"><span class="property">Total Time Spent:</span><span class="value" id="timeSpent"></span></div>
@@ -218,8 +231,30 @@
           </div>
 
           <div class="ticket-widget-customers ticket-widget">
-            <h3 class="collapsable">Customers<a href="#" class="ticket-customer-add">Add</a></h3>
-            <div id="divCustomers"></div>
+            <h3 class="collapsable">Customers<a href="#" class="ticket-customer-add">Add</a><span class="separator"></span><a href="#" class="ticket-customer-new">New</a></h3>
+<div class="ticket-new-customer ui-helper-hidden">
+                <div class="label-block">
+                  <span class="label">First Name</span>
+                  <input type="text" class="text ui-corner-all ui-widget-content ticket-new-customer-first" />
+                </div>
+                <div class="label-block">
+                  <span class="label">Last Name</span>
+                  <input type="text" class="text ui-corner-all ui-widget-content ticket-new-customer-last" />
+                </div>
+                <div class="label-block">
+                  <span class="label">Email</span>
+                  <input type="text" class="text ui-corner-all ui-widget-content ticket-new-customer-email" />
+                </div>
+                <div class="label-block">
+                  <span class="label">Organization</span>
+                  <input type="text" class="text ui-corner-all ui-widget-content ticket-new-customer-company" />
+                </div>
+                <div class="clearfix"></div>
+                <div style="text-align:center; padding: 1em 0;"><button class="ticket-new-customer-save">Save</button> <button class="ticket-new-customer-cancel">Cancel</button></div>
+              </div>
+            <div id="divCustomers">
+              <div class="ts-separator ui-widget-content"></div>               
+            </div>
             <div class="clearfix"></div>
           </div>
 
@@ -244,6 +279,33 @@
             <div class="clearfix"></div>
           </div>
 
+          <div
+            class="ticket-widget-jira ticket-widget">
+            <h3 class="collapsable">Sync with Jira</h3>
+              <div class="ts-separator ui-widget-content"></div>
+              <div id="issueKey">
+                <div class="ticket-jira-issue">
+                  <span class="property ticket-jira-issue-property">Issue Key:</span>
+                  <span id="issueKeyValue" class="value" />
+                  <img id="savingIssueKeyImg" src="../Images/loading/loading_small2.gif" alt="Saving..."/>
+                  <span id="savedIssueKeyImg" class="ts-icon ts-icon-saved"></span>
+                </div>
+              </div>
+              <div id="enterIssueKey">
+                <div class="ticket-jira-issue">
+                  <span class="property ticket-jira-issue-property">Existing Issue Key:</span>
+                  <input id="issueKeyInput" type="text" class="ui-widget-content ui-corner-all"/>
+                </div>
+                <div style="text-align:right">
+                  <button id="saveIssueKeyButton">Save</button>
+                  <button id="cancelIssueyKeyButton">Cancel</button>
+                </div>
+              </div>
+              <div class="ts-jira-buttons-container">
+                <div id="newJiraIssue" class="ticket-jira-sync ui-widget-header ui-corner-all">New Issue</div>
+                <div id="existingJiraIssue" class="ticket-jira-sync ui-widget-header ui-corner-all">Existing Issue</div>
+              </div>
+          </div>
 
           <div class="ticket-widget-assets ticket-widget">
             <h3 class="collapsable">Inventory<a href="#" class="ticket-asset-add">Add</a></h3>
@@ -287,8 +349,35 @@
     <div class="ticket-panel-toolbar ui-widget-header ts-toolbar"></div>
   </div>
   <div class="dialog-emailinput ui-helper-hidden" title="Email Address">
-	  <p>Please enter the email addresses you would like to send this ticket too. (Comma separated)</p>
+	  <p>Please enter the email addresses you would like to send this ticket to. (Comma separated)</p>
     <input type="text" class="text ui-corner-all ui-widget-content" style="width:90%;"/>
+  </div>
+
+  <div class="dialog-ticketmerge ui-helper-hidden" title="Merge Ticket">
+
+   
+      <div style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
+        <h1>1. You have selected the "loser" of the merge</h1>
+        <p>All the actions, customers, tags, subscriptions, associations, queues, reminders and assets to this ticket will be moved to the "winner" you choose below. The "loser" will then be deleted.</p>
+      </div>
+
+      <div style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
+        <h1>2. Next choose the Ticket you want to keep the "winner"</h1>
+        <p>You can only choose one Ticket. If you'd like to merge more than two tickets together just go through the merge process again after the merge you are performing now is done.</p>
+      </div>
+
+      <input type="text" id="dialog-ticketmerge-search" class="text ui-corner-all ui-widget-content" placeholder="Search for the ticket you want to merge ..." style="margin:10px 0px;width: 99%"/>
+
+      <div class="ui-helper-hidden" id="dialog-ticketmerge-preview" style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;height:auto">
+        <div id="ticketmerge-preview-details">Here is some basic information about the ticket you have selected :</div>
+      </div>
+
+      <div class="ui-helper-hidden" id="dialog-ticketmerge-warning" style="border: 1px solid #fbfbfb;padding:10px;background-color: #fbfbfb;">
+        <h1>3. Finally, click "OK" to merge these Tickets.</h1>
+        <input class="checkbox" type="checkbox" name="dialog-ticketmerge-confirm" id="dialog-ticketmerge-confirm" />
+        <label for="dialog-ticketmerge-confirm" class="checkbox">I understand that I will be deleting the losing ticket, and there is no recovery from that action.</label>
+      </div>
+
   </div>
 
 </body>

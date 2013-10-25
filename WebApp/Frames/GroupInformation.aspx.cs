@@ -16,6 +16,18 @@ public partial class Frames_GroupInformation : BaseFramePage
   {
     int groupID = int.Parse(Request["GroupID"]);
 
+    try
+    {
+      Group group = Groups.GetGroup(UserSession.LoginUser, groupID);
+      if (group.OrganizationID != UserSession.LoginUser.OrganizationID) throw new Exception("Invalid group id");
+    }
+    catch (Exception)
+    {
+      Response.Write("[Unable to retrieve group information.]");
+      Response.End();
+      return;
+    }
+
     btnAddUser.Visible = UserSession.CurrentUser.IsSystemAdmin;
     if (btnAddUser.Visible) btnAddUser.OnClientClick = "ShowDialog(top.GetSelectUserDialog(" + groupID.ToString() + ", 6)); return false;";
 

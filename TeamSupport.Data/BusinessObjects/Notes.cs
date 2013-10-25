@@ -31,7 +31,7 @@ namespace TeamSupport.Data
       LoadByReferenceType(ReferenceType.Organizations, organizationID);
     }
 
-    public void LoadByReferenceType(ReferenceType refType, int refID)
+    public void LoadByReferenceType(ReferenceType refType, int refID, string orderBy = "DateCreated")
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -40,7 +40,7 @@ namespace TeamSupport.Data
                                 LEFT JOIN Users u ON n.CreatorID = u.UserID 
                                 WHERE (n.RefID = @ReferenceID)
                                 AND (n.RefType = @ReferenceType)
-                                ORDER BY n.DateCreated";
+                                ORDER BY n." + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ReferenceType", refType);
         command.Parameters.AddWithValue("@ReferenceID", refID);

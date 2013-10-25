@@ -24,6 +24,7 @@ namespace TeamSupport.Data
     [DataMember] public string Platform { get; set; }
     [DataMember] public string UserAgent { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public string DeviceID { get; set; }
           
   }
   
@@ -32,6 +33,7 @@ namespace TeamSupport.Data
     public LoginAttemptProxy GetProxy()
     {
       LoginAttemptProxy result = new LoginAttemptProxy();
+      result.DeviceID = this.DeviceID;
       result.UserAgent = this.UserAgent;
       result.Platform = this.Platform;
       result.CookiesEnabled = this.CookiesEnabled;

@@ -48,11 +48,11 @@ public partial class Frames_AdminCompany : BaseFramePage
     }
 
     divChat.Visible = UserSession.CurrentUser.HasChatRights;
-    
-    if (btnNewAddress.Visible) btnNewAddress.OnClientClick = "ShowDialog(top.GetAddressDialog(" + _organizationID.ToString() + ", 9)); return false;";
-    if (btnNewPhone.Visible) btnNewPhone.OnClientClick = "ShowDialog(top.GetPhoneDialog(" + _organizationID.ToString() + ", 9)); return false;";
-    if (btnEditProperties.Visible) btnEditProperties.OnClientClick = "ShowDialog(top.GetMyCompanyDialog(" + _organizationID.ToString() + ")); return false;";
-    if (btnChat.Visible) btnChat.OnClientClick = "ShowDialog(top.GetChatPropertiesDialog(" + _organizationID.ToString() + ")); return false;";
+
+    if (btnNewAddress.Visible) btnNewAddress.OnClientClick = "ShowDialog(top.GetAddressDialog(" + _organizationID.ToString() + ", 9)); top.Ts.System.logAction('Admin Organization - Address Dialog Opened'); return false;";
+    if (btnNewPhone.Visible) btnNewPhone.OnClientClick = "ShowDialog(top.GetPhoneDialog(" + _organizationID.ToString() + ", 9)); top.Ts.System.logAction('Admin Organization - Phone Dialog Opened'); return false;";
+    if (btnEditProperties.Visible) btnEditProperties.OnClientClick = "ShowDialog(top.GetMyCompanyDialog(" + _organizationID.ToString() + ")); top.Ts.System.logAction('Admin Organization - Properties Dialog Opened'); return false;";
+    if (btnChat.Visible) btnChat.OnClientClick = "ShowDialog(top.GetChatPropertiesDialog(" + _organizationID.ToString() + ")); top.Ts.System.logAction('Admin Organization - Chat Dialog Opened'); return false;";
 
   }
 
@@ -136,13 +136,15 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Business Day Start:", organization.BusinessDayStart == null ? "[None Assigned]" : ((DateTime)organization.BusinessDayStart).ToString("t", UserSession.LoginUser.CultureInfo) });
     table.Rows.Add(new string[] { "Business Day End:", organization.BusinessDayEnd == null ? "[None Assigned]" : ((DateTime)organization.BusinessDayEnd).ToString("t", UserSession.LoginUser.CultureInfo) });
 
-
+    table.Rows.Add(new string[] { "Product Required on Ticket:", organization.ProductRequired.ToString() });
+    table.Rows.Add(new string[] { "Product Version Required on ticket:", organization.ProductVersionRequired.ToString() });
     
     table.Rows.Add(new string[] { "Only show products for the customers of a ticket:", Settings.OrganizationDB.ReadBool("ShowOnlyCustomerProducts", false).ToString() });
     table.Rows.Add(new string[] { "Require customer for new ticket:", Settings.OrganizationDB.ReadBool("RequireNewTicketCustomer", false).ToString() });
     table.Rows.Add(new string[] { "Require time spent on timed actions:", organization.TimedActionsRequired.ToString() });
     table.Rows.Add(new string[] { "Disable ticket status update emails:", Settings.OrganizationDB.ReadBool("DisableStatusNotification", false).ToString() });
     table.Rows.Add(new string[] { "Visible to customers is initially enabled for new actions:", organization.SetNewActionsVisibleToCustomers.ToString() });
+    table.Rows.Add(new string[] { "Allow unauthenticated users to view attachments:", organization.AllowUnsecureAttachmentViewing.ToString() });
     table.Rows.Add(new string[] { "Chat ID:", organization.ChatID.ToString() });
     
 /*    string email = organization.SystemEmailID + "@teamsupport.com";
@@ -204,7 +206,7 @@ public partial class Frames_AdminCompany : BaseFramePage
 
     foreach (PhoneNumber phoneNumber in phoneNumbers)
     {
-      table.Rows.Add(new string[] { phoneNumber.PhoneID.ToString(), phoneNumber.PhoneTypeName, phoneNumber.Number, phoneNumber.Extension == "" ? "" : " Ext: " + phoneNumber.Extension });
+      table.Rows.Add(new string[] { phoneNumber.PhoneID.ToString(), phoneNumber.PhoneTypeName, phoneNumber.FormattedNumber, phoneNumber.Extension == "" ? "" : " Ext: " + phoneNumber.Extension });
     }
 
     rptPhone.DataSource = table;

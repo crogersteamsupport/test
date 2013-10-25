@@ -37,8 +37,12 @@ Namespace TeamSupport
 
             Protected Delegate Function GetCompanyXML() As XmlDocument
             Protected Delegate Function ParseCompanyXML(ByVal CompaniesToSync As XmlDocument) As List(Of CompanyData)
-            Protected Delegate Function GetPeopleXML(ByVal AccountID As String) As XmlDocument
+            Protected Delegate Function GetPeopleXML() As XmlDocument
             Protected Delegate Function ParsePeopleXML(ByVal PeopleToSync As XmlDocument) As List(Of EmployeeData)
+            Protected Delegate Function GetProductsXML(ByVal AccountID As String) As XmlDocument
+            Protected Delegate Function ParseProductsXML(ByVal PeopleToSync As XmlDocument, ByVal AccountID As String) As List(Of ProductData)
+
+            Protected Delegate Sub GetCustomFields(ByVal objType As String, ByVal AccountIDToUpdate As String)
 
             ''' <summary>
             ''' Sync company and customer data from an outside CRM into TeamSupport
@@ -49,48 +53,109 @@ Namespace TeamSupport
             ''' <param name="ParsePeopleXML">A function that will parse the XML customer data into a list of employeedata</param>
             ''' <returns>Whether or not the sync processed successfully</returns>
             ''' <remarks>This should be used for all new integrations and older integrations can be updated to use it as time permits</remarks>
-            Protected Function NewSyncAccounts(ByVal GetCompanyXML As GetCompanyXML, ByVal ParseCompanyXML As ParseCompanyXML, ByVal GetPeopleXML As GetPeopleXML, ByVal ParsePeopleXML As ParsePeopleXML) As Boolean
+            Protected Function NewSyncAccounts(
+              ByVal GetCompanyXML     As GetCompanyXML, 
+              ByVal ParseCompanyXML   As ParseCompanyXML, 
+              ByVal GetPeopleXML      As GetPeopleXML, 
+              ByVal ParsePeopleXML    As ParsePeopleXML,
+              ByVal GetProductsXML    As GetProductsXML, 
+              ByVal ParseProductsXML  As ParseProductsXML,
+              ByVal GetCustomFields   As GetCustomFields
+            ) As Boolean
                 Dim CompaniesToSync As XmlDocument
                 Dim CompanySyncData As List(Of CompanyData) = Nothing
 
                 'retrieve company data
                 CompaniesToSync = GetCompanyXML()
-
-                'parse company data
+                Log.Write("The GetCompanyXML method has been executed.")
                 If CompaniesToSync IsNot Nothing Then
-                    CompanySyncData = ParseCompanyXML(CompaniesToSync)
-                End If
+                  Dim companiesToSyncAsXElement As XElement = XElement.Load(New XmlNodeReader(CompaniesToSync))
+                  If companiesToSyncAsXElement.Descendants("error").Count() > 0 Then
+                    _exception = New IntegrationException(companiesToSyncAsXElement.Value)
+                    SyncError = True
+                  Else
+                    'parse company data
+                    Log.Write("CompaniesToSync Count: " + companiesToSyncAsXElement.Descendants("row").Count().ToString())
+                    If companiesToSyncAsXElement.Descendants("row").Count() > 0 Then
+                      CompanySyncData = ParseCompanyXML(CompaniesToSync)
+                      Log.Write("ParseCompanyXML method executed.")
+                      If CompanySyncData IsNot Nothing Then
+                          Log.Write(String.Format("Processed {0} accounts.", CompanySyncData.Count))
 
-                If CompanySyncData IsNot Nothing Then
-                    Log.Write(String.Format("Processed {0} accounts.", CompanySyncData.Count))
+                          'update info for organizations
+                          For Each company As CompanyData In CompanySyncData
+                              UpdateOrgInfo(company, CRMLinkRow.OrganizationID)
+                          Next
 
-                    'update info for organizations
-                    For Each company As CompanyData In CompanySyncData
-                        UpdateOrgInfo(company, CRMLinkRow.OrganizationID)
-                    Next
+                          Log.Write("Finished updating account information.")
+                          GetCustomFields("Account", String.Empty)
+                          Log.Write("Finished updating Accounts Custom Mappings")
 
-                    Log.Write("Finished updating account information.")
+                          If CRMLinkRow.PullCustomerProducts Then
+                            Log.Write("Updating products information...")
+
+                            For Each company As CompanyData In CompanySyncData
+                                'get products data for each company
+                                Dim ProductsToSync As XmlDocument = GetProductsXML(company.AccountID)
+
+                                If ProductsToSync IsNot Nothing Then
+                                    Dim ProductsSyncData As List(Of ProductData) = ParseProductsXML(ProductsToSync, company.AccountID)
+
+                                    If ProductsSyncData IsNot Nothing Then
+                                        For Each product As ProductData In ProductsSyncData
+                                            'update info for products
+                                            UpdateProductInfo(product, company.AccountID, CRMLinkRow.OrganizationID)
+                                        Next
+
+                                        Log.Write("Updated product information for " & company.AccountName)
+                                    End If
+                                End If
+                            Next
+                            Log.Write("Finished updating product information")
+                          End If
+                      End If
+                    End If
                     Log.Write("Updating people information...")
 
-                    For Each company As CompanyData In CompanySyncData
-                        'get customer data for each company
-                        Dim PeopleToSync As XmlDocument = GetPeopleXML(company.AccountID)
+                    Dim PeopleToSync As XmlDocument = GetPeopleXML()
+                    Log.Write("The GetCompanyXML method has been executed.")
+                    If PeopleToSync IsNot Nothing Then
+                      Dim peopleToSyncAsXElement As XElement = XElement.Load(New XmlNodeReader(PeopleToSync))
+                      If peopleToSyncAsXElement.Descendants("error").Count() > 0 Then
+                        _exception = New IntegrationException(peopleToSyncAsXElement.Value)
+                        SyncError = True
+                      Else
+                        Dim PeopleSyncData As List(Of EmployeeData) = Nothing
+                        Log.Write("PeopleToSync Count: " + peopleToSyncAsXElement.Descendants("row").Count().ToString())
+                        If peopleToSyncAsXElement.Descendants("row").Count() > 0 Then
+                          PeopleSyncData = ParsePeopleXML(PeopleToSync)
+                          Log.Write("ParsePeopleXML method executed.")
 
-                        If PeopleToSync IsNot Nothing Then
-                            Dim PeopleSyncData As List(Of EmployeeData) = ParsePeopleXML(PeopleToSync)
+                          If PeopleSyncData IsNot Nothing Then
+                              Log.Write(String.Format("Processed {0} contacts.", PeopleSyncData.Count))
 
-                            If PeopleSyncData IsNot Nothing Then
-                                For Each person As EmployeeData In PeopleSyncData
-                                    'update info for customers
-                                    UpdateContactInfo(person, company.AccountID, CRMLinkRow.OrganizationID)
-                                Next
+                              'update info for customers
+                              For Each person As EmployeeData In PeopleSyncData
+                                UpdateContactInfo(person, person.ZohoID, CRMLinkRow.OrganizationID)
+                              Next
 
-                                Log.Write("Updated people information for " & company.AccountName)
-                            End If
-                        End If
-                    Next
-                    Log.Write("Finished updating people information")
-                End If
+                              Log.Write("Finished updating people information")
+                              GetCustomFields("Contact", Nothing)
+                              Log.Write("Finished updating Contacts Custom Mappings")
+                          Else
+                            Log.Write("PeopleSyncData was nothing.")
+                          End If 
+                        End If 
+                      End If
+                    Else
+                      Log.Write("PeopleToSync was nothing.")
+                      SyncError = True
+                    End If 
+                  End If
+                Else
+                  Log.Write("CompaniesToSync was nothing.")
+                  SyncError = True
+                End If 
 
                 Return Not SyncError
             End Function
@@ -191,7 +256,7 @@ Namespace TeamSupport
                 Else
                     'look for parentid = parentorgid and name = accountname, and use that
                     findCompany.LoadByParentID(ParentOrgID, False)
-                    If findCompany.FindByName(company.AccountName) IsNot Nothing Then
+                    If findCompany.FindByName(company.AccountName) IsNot Nothing AndAlso CRMLinkRow.MatchAccountsByName Then
                         thisCompany = findCompany.FindByName(company.AccountName)
                         'update accountid
                         thisCompany.CRMLinkID = company.AccountID
@@ -410,6 +475,7 @@ Namespace TeamSupport
                         .LastName = person.LastName
                         .Title = person.Title
                         .MarkDeleted = False
+                        .SalesForceID = person.SalesForceID 
 
                         .Collection.Save()
                     End With
@@ -518,7 +584,12 @@ Namespace TeamSupport
                             If CRMPhoneType IsNot Nothing Then
                                 .PhoneTypeID = CRMPhoneType.PhoneTypeID
                             End If
-                        
+                            
+                            'Custom mapping for Tenmast.
+                            If Type = IntegrationType.ZohoCRM Then
+                              .Extension = person.Extension
+                            End If
+
                             .Collection.Save()
                         End With
                     End If
@@ -563,6 +634,60 @@ Namespace TeamSupport
                     Log.Write("Phone information updated.")
                 End If
 
+            End Sub
+
+            ''' <summary>
+            ''' Updates information about a OrganizationProduct in TeamSupport
+            ''' </summary>
+            ''' <param name="person">information about the customer to update</param>
+            ''' <param name="companyID">the CRM-specific ID of the company to which the customer belongs</param>
+            ''' <param name="ParentOrgID">the parent Organization</param>
+            ''' <remarks></remarks>
+            Protected Sub UpdateProductInfo(ByVal product As ProductData, ByVal companyID As String, ByVal ParentOrgID As String)
+                If Processor.IsStopped Then
+                    Return
+                End If
+
+                If product.Name = "" Then
+                    'we don't add products with no name
+                    Return
+                End If
+
+                Log.Write(String.Format("Adding product information for {0}.", product.Name))
+
+                Dim findCompany As New Organizations(User)
+
+                'make sure the company already exists
+                findCompany.LoadByCRMLinkID(companyID, ParentOrgID)
+                If findCompany.Count > 0 Then
+                  Dim thisCompany As Organization = findCompany(0)
+
+                  Dim products As Products = New Products(User)
+                  products.LoadByProductName(ParentOrgID, product.Name)
+                  Dim existingProduct As Product = Nothing
+                  If products.Count > 0 Then
+                    existingProduct = products(0)
+                  Else
+                    products = New Products(User)
+                    products.AddNewProduct()
+                    products(0).Name = product.Name
+                    products(0).OrganizationID = ParentOrgID
+                    products.Save()
+                    existingProduct = products(0)
+                    Log.Write(String.Format("Added product {0} in organization.", product.Name))
+                  End If
+
+                  Dim organizationProducts As New OrganizationProducts(User)
+                  organizationProducts.LoadByOrganizationAndProductID(thisCompany.OrganizationID, existingProduct.ProductID)
+                  If organizationProducts.Count = 0 Then
+                    organizationProducts = New OrganizationProducts(User)
+                    organizationProducts.AddNewOrganizationProduct()
+                    organizationProducts(0).OrganizationID = thisCompany.OrganizationID
+                    organizationProducts(0).ProductID = existingProduct.ProductID
+                    organizationProducts.Save()
+                    Log.Write(String.Format("Added product {0} in customer.", product.Name))
+                  End If
+                End If
             End Sub
 
             'helper method, should be moved to WebHelpers.vb
@@ -736,6 +861,14 @@ Namespace TeamSupport
                 result.AttemptResult = ResultText
                 result.OrganizationID = OrgID
                 result.AttemptDateTime = Now.ToUniversalTime()
+                result.Collection.Save()
+            End Sub
+
+            Public Shared Sub LogSynchedOrganization(ByVal CRMLinkTableID As Integer, ByVal OrganizationCRMID As String, ByVal User As LoginUser)
+                Dim result As CRMLinkSynchedOrganization
+                result = (New CRMLinkSynchedOrganizations(User)).AddNewCRMLinkSynchedOrganization()
+                result.CRMLinkTableID = CRMLinkTableID
+                result.OrganizationCRMID = OrganizationCRMID
                 result.Collection.Save()
             End Sub
 
@@ -976,8 +1109,12 @@ Namespace TeamSupport
             Private _title      As String
             Private _email      As String
             Private _phone      As String
+            Private _extension  As String
             Private _cell       As String
             Private _fax        As String
+            Private _salesForceID As String
+            Private _zohoId    As String
+
 
             Property FirstName As String
                 Get
@@ -1053,6 +1190,21 @@ Namespace TeamSupport
                     End If
                 End Set
             End Property
+
+            Property Extension As String
+                Get
+                    Return _extension
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 50 Then
+                            _extension = value.Substring(0, 50)
+                        Else
+                            _extension = value
+                        End If
+                    End If
+                End Set
+            End Property
             
             Property Cell As String
                 Get
@@ -1084,6 +1236,63 @@ Namespace TeamSupport
                 End Set
             End Property
 
+            Property SalesForceID As String
+                Get
+                    Return _salesForceID
+                End Get
+                Set(ByVal value As String)
+                    _salesForceID = value
+                End Set
+            End Property
+
+            Property ZohoID As String
+                Get
+                    Return _zohoId
+                End Get
+                Set(ByVal value As String)
+                    _zohoId = value
+                End Set
+            End Property
+
+        End Class
+
+        Public Class ProductData
+            Private _name As String
+            Private _expirationDate As DateTime
+            Private _createdTime As DateTime
+
+            Property Name As String
+                Get
+                    Return _name
+                End Get
+                Set(ByVal value As String)
+                    If value IsNot Nothing Then
+                        If value.Length > 255 Then
+                            _name = value.Substring(0, 255)
+                        Else
+                            _name = value
+                        End If
+                    End If
+                End Set
+            End Property
+
+            Property ExpirationDate As DateTime
+                Get
+                    Return _expirationDate
+                End Get
+                Set(ByVal value As DateTime)
+                    _expirationDate = value
+                End Set
+            End Property
+
+            Property CreatedTime As DateTime
+                Get
+                    Return _createdTime
+                End Get
+                Set(ByVal value As DateTime)
+                    _createdTime = value
+                End Set
+            End Property
         End Class
 
         ''' <summary>

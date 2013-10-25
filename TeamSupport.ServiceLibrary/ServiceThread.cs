@@ -213,34 +213,7 @@ namespace TeamSupport.ServiceLibrary
       string constring = "Application Name=TeamSupport Service: " + appName + "; " + ConfigurationManager.AppSettings["ConnectionString"];
       return new LoginUser(constring, -1, -1, null);
     }
-    /*
-    protected static string GetSettingString(string keyName) { return GetSettingString(keyName, ""); }
-    protected static string GetSettingString(string keyName, string defaultValue) { return (string)GetSetting(keyName, defaultValue, RegistryValueKind.String); }
-    protected static int GetSettingInt(string keyName, int defaultValue) { return (int)GetSetting(keyName, defaultValue, RegistryValueKind.DWord); }
-    protected static int GetSettingInt(string keyName) { return (int)GetSetting(keyName, -1, RegistryValueKind.DWord); }
-
-    protected static void SetSettingValue(string keyName, object value, RegistryValueKind kind)
-    {
-      RegistryKey key = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\TeamSupport\Service");
-      key.SetValue(keyName, value, kind);
-    }
-
-    protected static object GetSetting(string keyName, object defaultValue, RegistryValueKind kind)
-    {
-      RegistryKey key = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\TeamSupport\Service");
-      object o = key.GetValue(keyName);
-      if (o != null)
-      {
-        return o;
-      }
-      else
-      {
-        key.SetValue(keyName, defaultValue, kind);
-        return defaultValue;
-      }
-    }
-*/
-
+    
   }
 
 }

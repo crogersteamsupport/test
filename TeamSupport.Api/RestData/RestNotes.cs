@@ -22,12 +22,19 @@ namespace TeamSupport.Api
     }
 
 
-    public static string GetNotes(RestCommand command, ReferenceType refType, int refID)
+    public static string GetNotes(RestCommand command, ReferenceType refType, int refID, bool orderByDateCreated = false)
     {
       if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
 
       Notes items = new Notes(command.LoginUser);
-      items.LoadByReferenceType(refType, refID);
+      if (orderByDateCreated)
+      {
+        items.LoadByReferenceType(refType, refID, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByReferenceType(refType, refID);
+      }
       return items.GetXml("Notes", "Note", true, command.Filters);
     }
 

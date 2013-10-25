@@ -52,6 +52,8 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     public string Product { get; set; }
     public string Group { get; set; }
     public string TicketType { get; set; }
+    public string SendingEmailAddress { get; set; }
+
   }
   
 
@@ -129,6 +131,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
       altEmail.Product = item.Row["ProductName"].ToString();
       altEmail.Group = item.Row["GroupName"].ToString();
       altEmail.TicketType = item.Row["TicketTypeName"].ToString();
+      altEmail.SendingEmailAddress = item.Row["SendingEMailAddress"].ToString();
       result.Add(altEmail);
     }
     return result.ToArray();
@@ -147,11 +150,12 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     result.Product = item.Row["ProductName"].ToString();
     result.Group = item.Row["GroupName"].ToString();
     result.TicketType = item.Row["TicketTypeName"].ToString();
+    result.SendingEmailAddress = item.Row["SendingEMailAddress"].ToString();
     return result;
   }
 
   [WebMethod(true)]
-  public static void SaveAltEmail(string id, string description, int? groupID, int? ticketTypeID, int? productID)
+  public static void SaveAltEmail(string id, string description, int? groupID, int? ticketTypeID, int? productID, string sendingEmailAddress)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return;
     EMailAlternateInboundItem item = id != null ? EMailAlternateInbound.GetItem(UserSession.LoginUser, new Guid(id)) : (new EMailAlternateInbound(UserSession.LoginUser)).AddNewEMailAlternateInboundItem();
@@ -160,6 +164,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     item.GroupToAssign = groupID < 0 ? null : groupID;
     item.DefaultTicketType = ticketTypeID < 0 ? null : ticketTypeID;
     item.ProductID = productID < 0 ? null : productID;
+    item.SendingEMailAddress = sendingEmailAddress;
     item.Collection.Save();
   }
 
@@ -171,7 +176,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
   }
 
   [WebMethod(true)]
-  public static void SaveEmailSettings(string reply, bool reqNew, bool reqKnown, bool changeStatus, bool addContacts, bool matchSubject)
+  public static void SaveEmailSettings(string reply, bool reqNew, bool reqKnown, bool changeStatus, bool addContacts, bool matchSubject, bool forceBccPrivate)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return;
 
@@ -182,6 +187,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     organization.ChangeStatusIfClosed = changeStatus;
     organization.AddAdditionalContacts = addContacts;
     organization.MatchEmailSubject = matchSubject;
+    organization.ForceBCCEmailsPrivate = forceBccPrivate;
     organization.Collection.Save();
   }
 
@@ -302,6 +308,22 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         list.Add(ph);
       }
 
+
+      PlaceHolder phTo = new PlaceHolder();
+      phTo.Name = "ToEmailAddress";
+      phTo.Description = "This adds the recipient's email address.";
+      list.Add(phTo);
+
+      phTo = new PlaceHolder();
+      phTo.Name = "ToFirstName";
+      phTo.Description = "This adds the recipient's first name.";
+      list.Add(phTo);
+
+      phTo = new PlaceHolder();
+      phTo.Name = "ToLastName";
+      phTo.Description = "This adds the recipient's last name.";
+      list.Add(phTo);
+
       phs.Items = list.ToArray();
       result.Add(phs);
     }
@@ -345,6 +367,8 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
       ph.Description = field.Description ?? "";
       list.Add(ph);
     }
+
+
     phs.Items = list.ToArray();
     result.Add(phs);
 

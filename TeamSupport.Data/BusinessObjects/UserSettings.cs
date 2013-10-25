@@ -67,12 +67,29 @@ namespace TeamSupport.Data
         using (SqlCommand command = new SqlCommand())
         {
           command.Connection = connection;
-          command.CommandText = "uspWriteUserSetting";
-          command.CommandType = CommandType.StoredProcedure;
+          command.CommandText = @"
+IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@SettingKey))
+  BEGIN
+    UPDATE [dbo].[UserSettings]
+  	SET SettingValue = @SettingValue
+    WHERE (UserID = @UserID)
+	  AND (SettingKey = @SettingKey)
+  END
+  ELSE
+  BEGIN
+	  INSERT INTO [dbo].[UserSettings]
+	  (
+		[UserID],
+		[SettingKey],
+		[SettingValue])
+	  VALUES (
+		@UserID,
+		@SettingKey,
+		@SettingValue)
+  END";
           command.Parameters.AddWithValue("@UserID", loginUser.UserID);
           command.Parameters.AddWithValue("@SettingKey", key);
           command.Parameters.AddWithValue("@SettingValue", value);
-          command.Parameters.AddWithValue("@ModifierID", loginUser.UserID);
           command.ExecuteNonQuery();
         }
         connection.Close();

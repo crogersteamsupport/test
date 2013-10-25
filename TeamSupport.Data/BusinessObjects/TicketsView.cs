@@ -25,8 +25,8 @@ namespace TeamSupport.Data
     }
     [DataMember] public int? TicketTypeID { get; set; }
     [DataMember] public int? ProductID { get; set; }
-    [DataMember] public int? ResolvedID { get; set; }
-    [DataMember] public int? ReportedID { get; set; }
+    [DataMember] public int? SolvedVersionID { get; set; }
+    [DataMember] public int? ReportedVersionID { get; set; }
     [DataMember] public bool? IsClosed { get; set; }
     [DataMember] public int? TicketStatusID { get; set; }
     [DataMember] public int? TicketSeverityID { get; set; }
@@ -45,6 +45,11 @@ namespace TeamSupport.Data
     [DataMember] public string SortColumn { get; set; }
     [DataMember] public bool SortAsc { get; set; }
     [DataMember] public bool MatchAllTerms { get; set; }
+    [DataMember] public bool? IsSubscribed { get; set; }
+    [DataMember] public bool? IsFlagged { get; set; }
+    [DataMember] public bool? IsEnqueued { get; set; }
+    [DataMember] public int? KnowledgeBaseCategoryID { get; set; }
+    
   }
 
 
@@ -139,6 +144,14 @@ namespace TeamSupport.Data
         return (int)o > 0;
       }
     }
+
+    public bool UserHasRights(User user)
+    {
+      return Ticket.UserHasRights(user, this.GroupID, this.UserID, this.TicketID, this.IsKnowledgeBase);
+    }
+
+
+
   }
   
   public partial class TicketsView
@@ -153,6 +166,28 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);
       }
+    }
+
+    public void LoadByOrganizationIDOrderByNumberDESC(int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM TicketsView WHERE (OrganizationID = @OrganizationID) ORDER BY TicketNumber DESC";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
+    public void LoadLatest5Tickets(int organizationID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT top 5 tv.* FROM TicketsView tv LEFT JOIN OrganizationTickets ot ON ot.TicketID = tv.TicketID WHERE ot.OrganizationID = @OrganizationID ORDER BY TicketNumber desc";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            Fill(command);
+        }
     }
 
     public void LoadRelated(int ticketID)
@@ -205,11 +240,11 @@ namespace TeamSupport.Data
     /// Loads tickets that are associated with a customer's organizationid
     /// </summary>
     /// <param name="organizationID"></param>
-    public void LoadByCustomerID(int organizationID)
+    public void LoadByCustomerID(int organizationID, string orderBy = "TicketNumber")
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT tv.* FROM TicketsView tv LEFT JOIN OrganizationTickets ot ON ot.TicketID = tv.TicketID WHERE ot.OrganizationID = @OrganizationID ORDER BY TicketNumber";
+        command.CommandText = "SELECT tv.* FROM TicketsView tv LEFT JOIN OrganizationTickets ot ON ot.TicketID = tv.TicketID WHERE ot.OrganizationID = @OrganizationID ORDER BY " + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);
@@ -271,7 +306,7 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadForIndexing(int organizationID, int max)
+    public void LoadForIndexing(int organizationID, int max, bool isRebuilding)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -281,6 +316,15 @@ namespace TeamSupport.Data
         WHERE tv.NeedsIndexing = 1
         AND tv.OrganizationID= @OrganizationID
         ORDER BY DateModified DESC";
+
+        if (isRebuilding)
+        {
+        text = @"
+        SELECT TicketID
+        FROM TicketsView tv WITH(NOLOCK)
+        WHERE tv.OrganizationID= @OrganizationID
+        ORDER BY DateModified DESC";
+        }
 
         command.CommandText = string.Format(text, max.ToString());
         command.CommandType = CommandType.Text;
@@ -366,7 +410,8 @@ namespace TeamSupport.Data
 
     public void LoadByRange(int from, int to, TicketLoadFilter filter)
     {
-      Fill(GetLoadRangeCommand(LoginUser, from, to, filter));
+      SqlCommand command = GetLoadRangeCommand(LoginUser, from, to, filter);
+      Fill(command);
     }
 
     public static SqlCommand GetLoadExportCommand(LoginUser loginUser, TicketLoadFilter filter)
@@ -475,13 +520,16 @@ namespace TeamSupport.Data
         ,tv.IsSubscribed
         ,tv.IsEnqueued
         ,tv.IsRead
-        ,tv.IsFlagged";
+        ,tv.IsFlagged
+        ,tv.KnowledgeBaseCategoryID
+        ,tv.KnowledgeBaseCategoryName
+        ,tv.SalesForceID
+        ,tv.DateModifiedBySalesForceSync";
       StringBuilder where = new StringBuilder();
       GetFilterWhereClause(loginUser, filter, command, where);
 
       string query = @"
         DECLARE @TempItems TABLE( ID int IDENTITY, TicketID int )
-
         INSERT INTO @TempItems (TicketID)
         SELECT tv.TicketID {0}
         ORDER BY {1}
@@ -528,10 +576,14 @@ namespace TeamSupport.Data
       else AddTicketParameter("IsClosed", filter.IsClosed, false, builder, command);
       AddTicketParameter("TicketSeverityID", filter.TicketSeverityID, false, builder, command);
       AddTicketParameter("ProductID", filter.ProductID, true, builder, command);
-      AddTicketParameter("ReportedVersionID", filter.ReportedID, true, builder, command);
-      AddTicketParameter("SolvedVersionID", filter.ResolvedID, true, builder, command);
+      AddTicketParameter("ReportedVersionID", filter.ReportedVersionID, true, builder, command);
+      AddTicketParameter("SolvedVersionID", filter.SolvedVersionID, true, builder, command);
       AddTicketParameter("IsVisibleOnPortal", filter.IsVisibleOnPortal, false, builder, command);
-      AddTicketParameter("IsKnowledgeBase", filter.IsVisibleOnPortal, false, builder, command);
+      AddTicketParameter("IsKnowledgeBase", filter.IsKnowledgeBase, false, builder, command);
+      AddTicketParameter("KnowledgeBaseCategoryID", filter.KnowledgeBaseCategoryID, false, builder, command);
+      AddTicketParameter("IsSubscribed", filter.IsSubscribed, false, builder, command);
+      AddTicketParameter("IsFlagged", filter.IsFlagged, false, builder, command);
+      AddTicketParameter("IsEnqueued", filter.IsEnqueued, false, builder, command);
       AddTicketParameter("DateCreated", "DateCreatedBegin", filter.DateCreatedBegin, ">=", builder, command);
       AddTicketParameter("DateCreated", "DateCreatedEnd", filter.DateCreatedEnd, "<=", builder, command);
       AddTicketParameter("DateModified", "DateModifiedBegin", filter.DateModifiedBegin, ">=", builder, command);
@@ -545,13 +597,26 @@ namespace TeamSupport.Data
 
       if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -1)
       {
+        //User's all groups all tickets
         builder.Append(" AND (tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
         command.Parameters.AddWithValue("UserID", filter.UserID);
       }
       else if (filter.UserID != null && filter.GroupID != null && filter.GroupID == -2)
       {
+        //Users's all groups, unassigned tickets
         builder.Append(" AND (tv.UserID IS NULL AND tv.GroupID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID))");
         command.Parameters.AddWithValue("UserID", filter.UserID);
+      }
+      else if (filter.GroupID != null && filter.UserID != null && filter.UserID == -2)
+      {
+        //Group's unassigned tickets
+        builder.Append(" AND (tv.UserID IS NULL AND tv.GroupID = @GroupID)");
+        command.Parameters.AddWithValue("GroupID", filter.GroupID);
+      }
+      else if (filter.GroupID == null && filter.UserID != null && filter.UserID == -2)
+      {
+        //All unassigned tickets
+        builder.Append(" AND (tv.UserID IS NULL)");
       }
       else
       {
@@ -577,19 +642,6 @@ namespace TeamSupport.Data
         {
           builder.Append(" AND (tv.TicketID IN (-1)) ");
         }
-        //command.Parameters.AddWithValue("@TicketIDs", ids);
-        /*
-        command.Parameters.AddWithValue("@Search", DataUtils.BuildSearchString(search, filter.MatchAllTerms));
-        command.Parameters.AddWithValue("@SearchClean", search.Replace("*", "").Replace("%", "").Replace("\"", ""));
-        builder.Append(
-                        @" AND ( 
-                            (tv.TicketNumber LIKE '%'+@SearchClean+'%') OR
-                            (tv.Name LIKE @SearchClean+'%') OR
-                            EXISTS (SELECT * FROM Actions a WHERE (a.TicketID = tv.TicketID) AND CONTAINS((a.[Description], a.[Name]), @Search))
-                          )");
-        //--OR EXISTS (SELECT * FROM Tickets t WHERE (t.TicketID = tv.TicketID) AND CONTAINS((t.[Name]), @Search))
-        //--OR EXISTS (SELECT * FROM CustomValues cv LEFT JOIN CustomFields cf ON cv.CustomFieldID = cf.CustomFieldID WHERE (cf.RefType = 17) AND (cv.RefID = tv.TicketID) AND CONTAINS((cv.[CustomValue]), @Search))
-         */
       }
 
       if (filter.Tags != null && filter.Tags.Length > 0)
@@ -601,6 +653,43 @@ namespace TeamSupport.Data
         }
       }
 
+      string rightsClause = "";
+
+      User user = Users.GetUser(loginUser, loginUser.UserID);
+      switch (user.TicketRights)
+      {
+        case TicketRightType.All:
+          break;
+        case TicketRightType.Assigned:
+          builder.Append(" AND (tv.UserID=" + loginUser.UserID.ToString() + " OR tv.IsKnowledgeBase=1) ");
+          break;
+        case TicketRightType.Groups:
+          rightsClause = @" AND (
+              (tv.GroupID IN ({0})) OR
+              (tv.UserID = {1}) OR
+              (tv.IsKnowledgeBase = 1) OR
+              (tv.UserID IS NULL AND tv.GroupID IS NULL)) ";
+          Groups groups = new Groups(loginUser);
+          groups.LoadByUserID(loginUser.UserID);
+          List<int> groupList = new List<int>();
+          foreach (Group group in groups)
+	        {
+            groupList.Add(group.GroupID);
+	        }
+          builder.Append(string.Format(rightsClause, DataUtils.IntArrayToCommaString(groupList.ToArray()), loginUser.UserID.ToString()));
+          break;
+        case TicketRightType.Customers:
+          rightsClause = @" AND (TicketID in (
+            SELECT ot.TicketID FROM OrganizationTickets ot
+            INNER JOIN UserRightsOrganizations uro ON ot.OrganizationID = uro.OrganizationID 
+            WHERE uro.UserID={0}) OR
+            tv.UserID = {0} OR
+            tv.IsKnowledgeBase = 1)";
+          builder.Append(string.Format(rightsClause, loginUser.UserID.ToString()));
+          break;
+        default:
+          break;
+      }
     }
 
     public static SearchResults GetQuickSearchTicketResults(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
@@ -617,8 +706,9 @@ namespace TeamSupport.Data
           StringBuilder conditions = new StringBuilder();
           if (filter != null)
           {
-            if (filter.IsKnowledgeBase != null) conditions.Append("(IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString() + ")");
+            if (filter.IsKnowledgeBase != null) conditions.Append(" (IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString() + ") ");
           }
+          AppendTicketRightsConditions(loginUser, conditions);
 
           job.BooleanConditions = conditions.ToString();
           job.MaxFilesToRetrieve = 25;
@@ -636,59 +726,17 @@ namespace TeamSupport.Data
             job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
             //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
           }
+          
 
           if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
           job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(loginUser));
           job.Execute();
+          
           return job.Results;
         }
     }
 
-    public static SearchResults GetSearchTicketResults(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
-    {
-      Options options = new Options();
-      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
-      using (SearchJob job = new SearchJob())
-      {
-
-        searchTerm = searchTerm.Trim();
-        job.Request = searchTerm;
-        job.FieldWeights = "TicketNumber: 5000, Name: 1000";
-
-
-        StringBuilder conditions = new StringBuilder();
-        if (filter != null)
-        {
-          if (filter.IsKnowledgeBase != null) conditions.Append("(IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString() + ")");
-        }
-        job.BooleanConditions = conditions.ToString();
-
-
-        job.MaxFilesToRetrieve = 1000;
-        job.AutoStopLimit = 1000000;
-        job.TimeoutSeconds = 30;
-        job.SearchFlags =
-          SearchFlags.dtsSearchSelectMostRecent |
-          SearchFlags.dtsSearchStemming |
-          SearchFlags.dtsSearchDelayDocInfo;
-
-        int num = 0;
-        if (!int.TryParse(searchTerm, out num))
-        {
-          job.Fuzziness = 1;
-          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy;
-        }
-
-        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
-        job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(loginUser));
-        job.Execute();
-
-        return job.Results;
-      }
-    
-    }
-
-    public static SearchResults GetSearchTicketResultsv2(string searchTerm, LoginUser loginUser)
+    public static SearchResults GetSearchTicketResults(string searchTerm, LoginUser loginUser)
     {
       Options options = new Options();
       options.TextFlags = TextFlags.dtsoTfRecognizeDates;
@@ -701,15 +749,13 @@ namespace TeamSupport.Data
 
 
         StringBuilder conditions = new StringBuilder();
-        //if (filter != null)
-        //{
-        //  if (filter.IsKnowledgeBase != null) conditions.Append("(IsKnowledgeBase::" + filter.IsKnowledgeBase.ToString() + ")");
-        //}
+        AppendTicketRightsConditions(loginUser, conditions);
+
         job.BooleanConditions = conditions.ToString();
 
 
-        job.MaxFilesToRetrieve = 1000;
-        job.AutoStopLimit = 1000000;
+        //job.MaxFilesToRetrieve = 1000;
+        //job.AutoStopLimit = 1000000;
         job.TimeoutSeconds = 30;
         job.SearchFlags =
           //SearchFlags.dtsSearchSelectMostRecent |
@@ -718,10 +764,10 @@ namespace TeamSupport.Data
         int num = 0;
         if (!int.TryParse(searchTerm, out num))
         {
-          job.Fuzziness = 1;
+          //job.Fuzziness = 1;
           job.SearchFlags = job.SearchFlags | 
-            SearchFlags.dtsSearchFuzzy | 
-            SearchFlags.dtsSearchStemming |
+            //SearchFlags.dtsSearchFuzzy | 
+            //SearchFlags.dtsSearchStemming |
             SearchFlags.dtsSearchPositionalScoring |
             SearchFlags.dtsSearchAutoTermWeight;
         }
@@ -733,6 +779,45 @@ namespace TeamSupport.Data
         return job.Results;
       }
 
+    }
+
+    private static void AppendTicketRightsConditions(LoginUser loginUser, StringBuilder conditions)
+    {
+
+      User user = Users.GetUser(loginUser, loginUser.UserID);
+      if (user.TicketRights == TicketRightType.Assigned)
+      {
+        if (conditions.Length > 0) conditions.Append(" AND");
+        conditions.Append(" ((IsKnowledgeBase::True) OR (UserID::" + user.UserID.ToString() + ")) ");
+      }
+      else if (user.TicketRights == TicketRightType.Groups)
+      {
+        if (conditions.Length > 0) conditions.Append(" AND");
+        conditions.Append(" (");
+        Groups groups = new Groups(loginUser);
+        groups.LoadByUserID(user.UserID);
+        conditions.Append(" (IsKnowledgeBase::True) OR (UserID::" + user.UserID.ToString() + ") ");
+        foreach (Group group in groups)
+        {
+          conditions.Append("OR (GroupID::" + group.GroupID.ToString() + ") ");
+        }
+        conditions.Append(") ");
+      }
+      else if (user.TicketRights == TicketRightType.Customers)
+      {
+        if (conditions.Length > 0) conditions.Append(" AND");
+        conditions.Append(" (");
+        conditions.Append(" (IsKnowledgeBase::True) OR (UserID::" + user.UserID.ToString() + ") ");
+        Organizations orgs = new Organizations(loginUser);
+        orgs.LoadByUserRights(user.UserID);
+
+        foreach (Organization org in orgs)
+        {
+          conditions.Append("OR (Customers::" + org.Name + ") ");
+        }
+
+        conditions.Append(") ");
+      }
     }
 
     public static int[] GetTicketIDs(string searchTerm, LoginUser loginUser)
@@ -749,7 +834,7 @@ namespace TeamSupport.Data
     /// <returns></returns>
     public static int[] GetTicketIDs(string searchTerm, LoginUser loginUser, TicketLoadFilter filter)
     {
-      SearchResults results = GetSearchTicketResults(searchTerm, loginUser, filter);
+      SearchResults results = GetQuickSearchTicketResults(searchTerm, loginUser, filter);
 
       List<int> items = new List<int>();
       for (int i = 0; i < results.Count; i++)
@@ -769,7 +854,7 @@ namespace TeamSupport.Data
 
       List<SqlDataRecord> result = new List<SqlDataRecord>();
 
-      SearchResults results = GetSearchTicketResultsv2(searchTerm, loginUser);
+      SearchResults results = GetSearchTicketResults(searchTerm, loginUser);
 
       List<int> items = new List<int>();
       for (int i = 0; i < results.Count; i++)
@@ -1093,8 +1178,96 @@ WHERE tgv.OrganizationID = @OrganizationID"
 
       return resultBuilder.ToString();
     }
-  }
 
+    public void LoadModifiedByCRMLinkItem(CRMLinkTableItem item)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+        @"
+          SELECT 
+            * 
+          FROM 
+            TicketsView t
+          WHERE 
+            t.OrganizationID = @OrgID 
+            AND t.DateModified > @DateModified
+            AND 
+            (
+              t.DateModifiedBySalesForceSync IS NULL
+              OR t.DateModified > DATEADD(s, 2, t.DateModifiedBySalesForceSync)
+            )
+          ORDER BY 
+            t.DateCreated DESC
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
+        command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
 
-  
+        Fill(command);
+      }
+    }
+
+    public TicketsViewItem FindBySalesForceID(string salesForceID)
+    {
+      foreach (TicketsViewItem ticketsViewItem in this)
+      {
+        if (ticketsViewItem.SalesForceID != null && ticketsViewItem.SalesForceID.Trim().ToLower() == salesForceID.Trim().ToLower())
+        {
+          return ticketsViewItem;
+        }
+      }
+      return null;
+    }
+
+    //Changes to this method needs to be applied to TicketLinkToJira.LoadToPushToJira also.
+    public void LoadToPushToJira(CRMLinkTableItem item)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+        @"
+          SELECT 
+            t.* 
+          FROM 
+            TicketsView t
+            JOIN TicketLinkToJira j
+              ON t.TicketID = j.TicketID
+          WHERE 
+            j.SyncWithJira = 1
+            AND t.OrganizationID = @OrgID 
+            AND 
+            (
+              j.DateModifiedByJiraSync IS NULL
+              OR 
+              (
+                t.DateModified > DATEADD(s, 2, j.DateModifiedByJiraSync)
+                AND t.DateModified > @DateModified
+              )
+            )
+          ORDER BY 
+            t.DateCreated DESC
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
+        command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
+
+        Fill(command);
+      }
+    }
+
+    public void LoadForGridPointSalesOrders(CRMLinkTableItem item, string query)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = query;
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
+        command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
+
+        Fill(command, "TicketsView");
+      }
+    }
+
+  } 
 }

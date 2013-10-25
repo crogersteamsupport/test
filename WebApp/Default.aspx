@@ -7,25 +7,43 @@
 <html>
 <head id="Head1" runat="server">
   <title>Team Support</title>
-  <link rel="SHORTCUT ICON" href="~/favicon.ico" />
-  <link href="vcr/142/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/142/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/142/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/142/Css/jquery.ketchup.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/142/Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/142/Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/142/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="vcr/142/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/142/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
-  <link href="vcr/142/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
-    <link href="vcr/142/Css/chat.css" rel="stylesheet" type="text/css" />
+   <link rel="SHORTCUT ICON" href="~/favicon.ico" />
+  <link href="vcr/1_7_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_0/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_0/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_0/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_0/Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_0/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="vcr/1_7_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_7_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <link href="vcr/1_7_0/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_0/Css/chat.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_0/Css/jquery.pnotify.default.icons.css" rel="stylesheet" />
+  <link href="vcr/1_7_0/Css/jquery.pnotify.default.css" rel="stylesheet" />
 
-  <script src="vcr/142/Js/jquery-1.7.2.min.js" type="text/javascript"></script>
-  <script src="vcr/142/Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
-  <script src="vcr/142/Js/chat.js" type="text/javascript"></script>
-  <script src="vcr/142/Js/json2.min.js" type="text/javascript"></script>
-  <script src="vcr/142/Js/jquery.signalR-0.5.2.min.js" type="text/javascript"></script>
-  <script src="signalr/signalr/hubs" type="text/javascript"></script>
-  <script src="vcr/142/Js/jquery.jplayer.min.js" type="text/javascript"></script>
+  <script src="vcr/1_7_0/Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="vcr/1_7_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+  <script src="vcr/1_7_0/Js/chat.js" type="text/javascript"></script>
+  <script src="vcr/1_7_0/Js/json2.min.js" type="text/javascript"></script>
+  <script src="vcr/1_7_0/Js/browser.js" type="text/javascript"></script>
+  <script src="vcr/1_7_0/Js/jquery.signalR-1.1.1.min.js" type="text/javascript"></script>
+  <script src="vcr/1_7_0/Js/jquery.jplayer.min.js" type="text/javascript"></script>
+  <script src="vcr/1_7_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
+
+  <script src="../js_5/imagepaste.js" type="text/javascript"></script>
+  <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
+  <!-- Start Apptegic Code -->
+  <script type="text/javascript">
+    var _aaq = _aaq || [];
+    (function () {
+      var d = document,
+          g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+      g.type = 'text/javascript'; g.defer = true; g.async = true;
+      g.src = document.location.protocol + '//teamsupport.apptegic.com/scripts/apptegic-tw.min.js';
+      s.parentNode.insertBefore(g, s);
+    })();
+  </script>
+  <!-- End Apptegic Code -->
+
   <script type="text/javascript" language="javascript">
 
     var g_uac = ''
@@ -42,24 +60,20 @@
 
       g_PrivateServices = privateServices = new TeamSupport.Services.PrivateServices();
       g_PrivateServices.set_defaultSucceededCallback(function (result) { });
-      g_PrivateServices.set_defaultFailedCallback(function (error, userContext, methodName) {
-        //if (error !== null) { alert("An error occurred: " + error.get_message()) };
-      });
-      //document.write(unescape("%3Cscript charset='utf-8' id='screenr_recorder' src='https://teamsupport.viewscreencasts.com/api/recorder' type='text/javascript'%3E%3C/script%3E"));
-      /*$.getScript('https://teamsupport.viewscreencasts.com/api/recorder', function () {
-      alert('loaded');
-      var recorder = Screenr.Recorder({ id: "b67bdeab7c084032bc4f37e5308eae1e", hideAllFields: true, maxTimeLimit: 300 });
-      recorder.record();
-      });*/
+      g_PrivateServices.set_defaultFailedCallback(function (error, userContext, methodName) { });
 
+      if (BrowserDetect.browser != 'Safari' || BrowserDetect.isMobile != 1) {
+        try {
+          $.getScript("signalr/signalr/hubs", function (data, textStatus, jqxhr) {
+            $.getScript("vcr/1_7_0/Js/ts/ts.wc.signalr.js", function (data, textStatus, jqxhr) {
+              if (loadSignalR) { loadSignalR(); }
 
-
+            });
+          });
+        } catch (e) { }
+      }
     }
-
-    
-
   </script>
-
   <style type="text/css">
     html, body, form { height: 100%; margin: 0; padding: 0; overflow: hidden; }
   </style>
@@ -76,33 +90,30 @@
         <asp:ServiceReference Path="~/Services/AutomationService.asmx" />
         <asp:ServiceReference Path="~/Services/AdminService.asmx" />
         <asp:ServiceReference Path="~/Services/UserService.asmx" />
+        <asp:ServiceReference Path="~/Services/ReportService.asmx" />
         <asp:ServiceReference Path="~/Services/WaterCoolerService.asmx" />
         <asp:ServiceReference Path="~/Services/OrganizationService.asmx" />
         <asp:ServiceReference Path="~/Services/ProductService.asmx" />
         <asp:ServiceReference Path="~/Services/AssetService.asmx" />
         <asp:ServiceReference Path="~/Services/SearchService.asmx" />
-
+        <asp:ServiceReference Path="~/Services/CustomerService.asmx" />
+        <asp:ServiceReference Path="~/Services/PublicService.asmx" />
         <asp:ServiceReference Path="~/Services/PrivateServices.asmx" />
       </services>
     <scripts>
     
-          <asp:ScriptReference Path="vcr/142/Js/json2.js" />
-          <asp:ScriptReference Path="vcr/142/Js/jquery.layout.min.js" />
-          <asp:ScriptReference Path="vcr/142/Js/jquery.jgrowl_minimized.js" />
-          <asp:ScriptReference Path="vcr/142/Js/jquery.editlabel.js" />
-          <asp:ScriptReference Path="vcr/142/Js/jquery.ui.combobox.js" />
-          <asp:ScriptReference Path="vcr/142/Js/jquery.ui.timepicker.js" />
-          <asp:ScriptReference Path="vcr/142/Js/jquery.cookie.js" />
-          <asp:ScriptReference Path="vcr/142/Js/ts/ts.system.js" />
-          <asp:ScriptReference Path="vcr/142/Js/ts/ts.utils.js" />
-          <asp:ScriptReference Path="vcr/142/Js/ts/ts.cache.js" />
-          <asp:ScriptReference Path="vcr/142/Js/ts/ts.ui.tabs.js" />
-          <asp:ScriptReference Path="vcr/142/Js/ts/ts.ui.menutree.js" />
-          <asp:ScriptReference Path="vcr/142/Js/ts/ts.wc.signalr.js" />
-          <asp:ScriptReference Path="vcr/142/Js/ts/ts.pages.main.js" />
-
-
-
+          <asp:ScriptReference Path="vcr/1_7_0/Js/json2.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/jquery.layout.min.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/jquery.jgrowl_minimized.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/jquery.editlabel.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/jquery.ui.combobox.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/jquery.ui.timepicker.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/ts/ts.system.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/ts/ts.utils.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/ts/ts.cache.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/ts/ts.ui.tabs.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/ts/ts.ui.menutree.js" />
+          <asp:ScriptReference Path="vcr/1_7_0/Js/ts/ts.pages.main.js" />
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>
@@ -120,7 +131,6 @@
   </div>
   <div class="main-container ui-widget ui-helper-hidden">
     <div class="main-content">
-      <div class="ui-helper-hidden classic-tabs"></div>
       <div class="main-tab-content">
         <div class="ts-loading">
         </div>
@@ -149,28 +159,6 @@
         </div>
         <div class="main-tabs ui-widget-header"></div>
       </div>
-      <div class="ui-helper-hidden classic-view">
-        <div class="main-header-left">
-          <div class="main-header-logo"></div>
-          <div class="main-header-status">
-            <span>My Status:</span> <span class="main-status-chat ts-icon ts-icon-chat ts-clickable">
-            </span><span class="main-status-online ts-icon ts-icon-offline ts-clickable"></span>
-            <span class="main-header-status-text ts-clickable">What is your status?</span>
-          </div>
-        </div>
-        <div class="main-header-links">
-          <div class="old-header-links">
-            <a href="http://help.teamsupport.com" target="TSHelp">Documentation</a>
-            <a class="menu-help-chat" href="#">Chat With Us</a>
-            <a class="menu-help-support" href="#">Support</a>
-            <a class="menu-signout" href="#">Sign Out</a>
-          </div>
-          <ul class="ui-helper-hidden">
-            <li><a class="menu-help" href="#"><span>Help</span><span class="ui-icon ui-icon-triangle-1-s"></span></a></li>
-            <li><a class="menu-signout" href="#">Sign Out</a></li>
-          </ul>
-        </div>
-      </div>
     </div>
     <div class="main-footer ui-widget-header">
       <div class="main-status-left">
@@ -189,13 +177,6 @@
       </div>
     </div>
     <div class="main-nav ui-widget-content ts-noborder">
-      <div class="main-quick-panel ui-widget-header ui-helper-hidden classic-view">
-        <div>
-          <a href="#" class="main-link-newticket ui-corner-all ui-state-default"><span class="ts-icon ts-icon-new">
-          </span>Create New Ticket</a></div>
-        <div>
-          <input type="text" class="main-quick-ticket text ui-widget-content ui-corner-all" /></div>
-      </div>
       <div class="main-menutree">
       </div>
     </div>
@@ -223,6 +204,8 @@
       <telerik:RadWindow ID="wndPhone" runat="server" Style="display: none;">
       </telerik:RadWindow>
       <telerik:RadWindow ID="wndUser" runat="server" Style="display: none;">
+      </telerik:RadWindow>
+      <telerik:RadWindow ID="wndImagePaste" runat="server" Style="display: none;">
       </telerik:RadWindow>
       <telerik:RadWindow ID="wndContact" runat="server" Style="display: none;">
       </telerik:RadWindow>
@@ -264,17 +247,9 @@
       </telerik:RadWindow>
       <telerik:RadWindow ID="wndHelp" runat="server" Style="display: none;">
       </telerik:RadWindow>
-      <telerik:RadWindow ID="wndAction" runat="server" NavigateUrl="Dialogs/TicketAction.aspx"
-        Width="800px" Height="500px" Animation="None" KeepInScreenBounds="False" VisibleStatusbar="False"
-        VisibleTitlebar="True" IconUrl="~/images/icons/action.png" VisibleOnPageLoad="false"
-        ShowContentDuringLoad="False" Modal="True">
-      </telerik:RadWindow>
     </Windows>
-  </telerik:RadWindowManager> <telerik:RadWindow ID="wndIntroVideo" runat="server" VisibleStatusbar="False" VisibleTitlebar="True"
-    Width="460" Height="415" Behaviors="Close,Move" AutoSize="False" VisibleOnPageLoad="False"
-    NavigateUrl="Videos\Intro.aspx" IconUrl="images/icons/TeamSupportLogo16.png" Title="Introduction"
-    DestroyOnClose="True">
-  </telerik:RadWindow>
+  </telerik:RadWindowManager> 
+
   <telerik:RadWindow ID="wndSelectUserDialog" runat="server" Width="300px" Height="150px"
     Animation="None" KeepInScreenBounds="True" VisibleStatusbar="False" VisibleTitlebar="True"
     OnClientPageLoad="" Title="Select a User" Behaviors="Close,Move" IconUrl="images/icons/TeamSupportLogo16.png"
@@ -389,6 +364,36 @@
     <input type="text" class="text ui-corner-all ui-widget-content" style="width:90%;"/>
   </div>
 
+  <div id="dialog-paste-imageID" class="dialog-paste-image ui-helper-hidden" title="Paste Image">
+        <div class="image-cropper">
+            <div id="mainImageDiv" style="height:245px;margin:0 auto;overflow:auto">
+                <div class="paste-dialog-instructions"><p>Please click here and paste your image</p><br /> <p>Windows users Ctrl+V, Mac Users Cmd+V or from your browser menu select edit and then paste.</p></div>
+                <img id="testImage" class="image" style="opacity:0" src="" />
+            </div>
+            <div id="imageOptions" style="display:none">
+                <div style="text-align:center">
+                    <button id="resizeButton">Resize Image</button>
+                    <button id="cropButton">Crop Image</button>
+                    <button id="clearButton">Clear Image</button>
+                </div>
+
+                <br />
+                
+                <div id="resizeOptions" style="text-align:center;display:none">
+                    <input type="text" id="imgWidth" placeholder="width" />
+                    <span>x</span>
+                    <input type="text" id="imgHeight" placeholder="height" />   
+                    <button id="saveResizeButton">Resize</button>   
+                    <p><input type="checkbox" id="paste-dialog-aspectRatio" checked />Lock aspect ratio</p>                  
+                </div>                
+                <div style="text-align:center;display:none">
+                    <div class="preview" ></div>
+                    <input id="img1" type="hidden" class="result" value="" runat="server" />
+                </div>
+            </div>
+        </div>
+  </div>
+
   <div class="dialog-reminder ui-helper-hidden" title="Reminder">
     <div class="ts-loading"></div>
     <div class="dialog-reminder-form ui-helper-hidden">
@@ -425,11 +430,10 @@
 
   <div class="menu-popup menu-popup-help ui-widget-content ui-widget ui-corner-bottom new-view-menu">
     <ul>
-      <li><a class="ts-link ui-state-default" href="http://help.teamsupport.com" target="TSHelp">Documentation</a></li>
+      <li><a class="ts-link ui-state-default menu-help-docs" href="http://help.teamsupport.com" target="TSHelp">Documentation</a></li>
       <li><a class="menu-help-chat ts-link ui-state-default" href="#">Chat with us</a></li>
       <li><a class="menu-help-support ts-link ui-state-default" href="#">Support portal</a></li>
       <li><div class="ui-widget-content ts-separator"></div></li>
-      <li><a class="menu-help-switch ts-link ui-state-default" href="#">Switch to classic view</a></li>
       <input type="text"  class="menu-input menu-input-hidden"/>
     </ul>
   </div>

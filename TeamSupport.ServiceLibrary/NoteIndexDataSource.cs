@@ -11,7 +11,7 @@ namespace TeamSupport.ServiceLibrary
   {
     protected NoteIndexDataSource() { }
 
-    public NoteIndexDataSource(LoginUser loginUser, int maxCount, int organizationID) : base(loginUser, maxCount, organizationID)
+    public NoteIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding) : base(loginUser, maxCount, organizationID, isRebuilding)
     {
       _logs = new Logs("Note Indexer DataSource");
     }
@@ -61,7 +61,7 @@ namespace TeamSupport.ServiceLibrary
         _logs.WriteEvent("Rewound notes, OrgID: " + _organizationID.ToString());
         _itemIDList = new List<int>();
         NotesView notes = new NotesView(_loginUser);
-        notes.LoadForIndexing(_organizationID, _maxCount);
+        notes.LoadForIndexing(_organizationID, _maxCount, _isRebuilding);
         foreach (NotesViewItem note in notes)
         {
           _itemIDList.Add(note.NoteID);

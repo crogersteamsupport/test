@@ -40,6 +40,12 @@ namespace TeamSupport.Data
       set { Row["CustomSQL"] = CheckValue("CustomSQL", value); }
     }
     
+    public string LastSQLExecuted
+    {
+      get { return Row["LastSQLExecuted"] != DBNull.Value ? (string)Row["LastSQLExecuted"] : null; }
+      set { Row["LastSQLExecuted"] = CheckValue("LastSQLExecuted", value); }
+    }
+    
 
     
     public int ModifierID
@@ -209,7 +215,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketAutomationTriggers] SET     [Name] = @Name,    [Active] = @Active,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [UseCustomSQL] = @UseCustomSQL,    [CustomSQL] = @CustomSQL,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([TriggerID] = @TriggerID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketAutomationTriggers] SET     [Name] = @Name,    [Active] = @Active,    [Position] = @Position,    [OrganizationID] = @OrganizationID,    [UseCustomSQL] = @UseCustomSQL,    [CustomSQL] = @CustomSQL,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [LastSQLExecuted] = @LastSQLExecuted  WHERE ([TriggerID] = @TriggerID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TriggerID", SqlDbType.Int, 4);
@@ -275,13 +281,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("LastSQLExecuted", SqlDbType.VarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketAutomationTriggers] (    [Name],    [Active],    [Position],    [OrganizationID],    [UseCustomSQL],    [CustomSQL],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID]) VALUES ( @Name, @Active, @Position, @OrganizationID, @UseCustomSQL, @CustomSQL, @DateCreated, @DateModified, @CreatorID, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketAutomationTriggers] (    [Name],    [Active],    [Position],    [OrganizationID],    [UseCustomSQL],    [CustomSQL],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [LastSQLExecuted]) VALUES ( @Name, @Active, @Position, @OrganizationID, @UseCustomSQL, @CustomSQL, @DateCreated, @DateModified, @CreatorID, @ModifierID, @LastSQLExecuted); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("LastSQLExecuted", SqlDbType.VarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -465,7 +485,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TriggerID], [Name], [Active], [Position], [OrganizationID], [UseCustomSQL], [CustomSQL], [DateCreated], [DateModified], [CreatorID], [ModifierID] FROM [dbo].[TicketAutomationTriggers] WHERE ([TriggerID] = @TriggerID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TriggerID], [Name], [Active], [Position], [OrganizationID], [UseCustomSQL], [CustomSQL], [DateCreated], [DateModified], [CreatorID], [ModifierID], [LastSQLExecuted] FROM [dbo].[TicketAutomationTriggers] WHERE ([TriggerID] = @TriggerID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TriggerID", triggerID);
         Fill(command);

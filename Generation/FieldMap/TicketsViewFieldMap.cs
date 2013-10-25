@@ -76,6 +76,17 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CategoryName", "CategoryName", false, false, false);
       _fieldMap.AddMap("CreatorEmail", "CreatorEmail", false, false, false);
       _fieldMap.AddMap("ModifierEmail", "ModifierEmail", false, false, false);
+      _fieldMap.AddMap("KnowledgeBaseCategoryID", "KnowledgeBaseCategoryID", false, false, false);
+      _fieldMap.AddMap("KnowledgeBaseCategoryName", "KnowledgeBaseCategoryName", false, false, false);
+      _fieldMap.AddMap("DueDate", "DueDate", false, false, false);
+      _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
+      _fieldMap.AddMap("DateModifiedBySalesForceSync", "DateModifiedBySalesForceSync", false, false, false);
+      _fieldMap.AddMap("DateModifiedByJiraSync", "DateModifiedByJiraSync", false, false, false);
+      _fieldMap.AddMap("JiraID", "JiraID", false, false, false);
+      _fieldMap.AddMap("SyncWithJira", "SyncWithJira", false, false, false);
+      _fieldMap.AddMap("JiraKey", "JiraKey", false, false, false);
+      _fieldMap.AddMap("JiraLinkURL", "JiraLinkURL", false, false, false);
+      _fieldMap.AddMap("JiraStatus", "JiraStatus", false, false, false);
             
     }
   }

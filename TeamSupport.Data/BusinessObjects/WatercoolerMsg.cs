@@ -95,6 +95,28 @@ namespace TeamSupport.Data
           }
       }
 
+      public void LoadForIndexing(int organizationID, int max)
+      {
+        using (SqlCommand command = new SqlCommand())
+        {
+          string text = @"
+            SELECT 
+              TOP {0} 
+              MessageID
+            FROM 
+              WatercoolerMsg wcm WITH(NOLOCK)
+            WHERE 
+              wcm.NeedsIndexing = 1
+              AND wcm.OrganizationID = @OrganizationID
+            ORDER BY 
+              wcm.LastModified DESC";
+
+          command.CommandText = string.Format(text, max.ToString());
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@OrganizationID", organizationID);
+          Fill(command);
+        }        
+      }
   }
   
 }

@@ -117,12 +117,11 @@ public partial class Frames_Organizations : BaseFramePage
     if (UserSession.CurrentUser.IsInventoryEnabled)
       tsMain.Tabs.Add(new RadTab("Inventory", "../Inventory/CustomerInventory.aspx?CustID="));
 
-    if (TSAuthentication.IsNewWCTemp)
-        tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/142/Pages/Watercooler.html?"));
+    tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/1_7_0/Pages/Watercooler.html?"));
 
     if (!UserSession.CurrentUser.IsTSUser)
     {
-      tsMain.Tabs.Add(new RadTab("All Tickets", "TicketTabsAll.aspx?CustomerID="));
+      tsMain.Tabs.Add(new RadTab("All Tickets", "TicketTabsAll.aspx?tf_CustomerID="));
 
       //tsMain.Tabs.Add(new RadTab("All Tickets", "Tickets.aspx?CustomerID="));
       TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
@@ -147,10 +146,10 @@ public partial class Frames_Organizations : BaseFramePage
     if (filter.Length > 0 && filter.Length < 2) return "";
 
     UsersView users = new UsersView(UserSession.LoginUser);
-    if (filter.Length > 0) users.LoadByLikeName(UserSession.LoginUser.OrganizationID, filter, 100);
+    if (filter.Length > 0) users.LoadByLikeName(UserSession.LoginUser.OrganizationID, filter, 100, true);
 
     Organizations organizations = new Organizations(UserSession.LoginUser);
-    organizations.LoadByLikeOrganizationName(UserSession.LoginUser.OrganizationID, filter, false, 100);
+    organizations.LoadByLikeOrganizationName(UserSession.LoginUser.OrganizationID, filter, false, 100, true);
 
     StringBuilder builder = new StringBuilder();
     string data = @"{{""OrganizationID"":""{0}"",""UserID"":""{1}""}}";

@@ -3,39 +3,62 @@
 <html lang="en">
 <head>
     <title>Socket</title>
-    <script src="Scripts/jquery-1.7.2.js"></script>
-    <script src="Scripts/jquery.signalR-0.5.2.js" type="text/javascript"></script>
+    <script src="Scripts/jquery-2.0.1.js"></script>
+    <script src="Scripts/jquery.signalR-1.1.1.js" type="text/javascript"></script>
     <script src="signalr/hubs"></script>
     <script type="text/javascript">
         $(function () {
             // Proxy created on the fly
             var chat = $.connection.socket;
+            var ticketSocket = $.connection.ticketSocket;
 
             // Declare a function on the chat hub so the server can invoke it
-            chat.addMessage = function (message) {
+            chat.client.addMessage = function (message) {
                 $('#messages').append('<li>' + message + '</li>');
             };
 
-            chat.joined = function (user, date) {
-                $('#messages').append('<li>' + user + ' joined ' + date +'</li>');
+            ticketSocket.client.addMessage = function (message) {
+                $('#messages').append('<li>' + message + '</li>');
             };
 
-            chat.leave = function (user, date) {
-                $('#messages').append('<li>' + user + ' left ' + date + '</li>');
+            chat.client.joined = function (user, date) {
+                $('#messages').append('<li>' + user + ' connected to the server ' + date + '</li>');
             };
 
-            chat.reconnect = function (user, date) {
-                $('#messages').append('<li>' + user + ' reconnect ' + date + '</li>');
+            ticketSocket.client.joined = function (user, date) {
+                $('#messages').append('<li>' + user + ' connected to the server with the ticket socket ' + date + '</li>');
             };
+
+            chat.client.testupdateusers = function (message) {
+                $('#messages').append('<li>' + message + '</li>');
+            };
+
+            chat.client.serverleave = function (user, date) {
+                $('#messages').append('<li>' + user + ' disconnected from the server ' + date + '</li>');
+            };
+
+            ticketSocket.client.serverleave = function (user, date) {
+                $('#messages').append('<li>' + user + ' disconnected from the ticket server ' + date + '</li>');
+            };
+
+            chat.client.rejoined = function (user, date) {
+                $('#messages').append('<li>' + user + ' reconnected to the server ' + date + '</li>');
+            };
+
+            ticketSocket.client.displayTicketUpdate = function (message) {
+                $('#messages').append('<li> updated the ticket ' + message + '</li>');
+            }
 
             $("#broadcast").click(function () {
                 // Call the chat method on the server
-                chat.send($('#msg').val());
+                chat.server.send($('#msg').val());
             });
 
             // Start the connection
-            $.connection.hub.logging = true;
+            //$.connection.hub.logging = true;
             $.connection.hub.start();
+
+
         });
     </script>
 </head>

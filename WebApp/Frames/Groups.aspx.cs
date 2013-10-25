@@ -28,8 +28,7 @@ public partial class Frames_Groups : BaseFramePage
       tsMain.SelectedIndex = Settings.UserDB.ReadInt("SelectedGroupTabIndex", 0);
       pangGroupGrid.Width = new Unit(Settings.UserDB.ReadInt("GroupGridWidth", 250), UnitType.Pixel);
 
-      if (TSAuthentication.IsNewWCTemp)
-          tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/142/Pages/Watercooler.html?"));
+      tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/1_7_0/Pages/Watercooler.html?"));
     }
 
   }
@@ -58,7 +57,7 @@ public partial class Frames_Groups : BaseFramePage
   protected void gridGroups_NeedDataSource(object source, GridNeedDataSourceEventArgs e)
   {
     Groups groups = new Groups(UserSession.LoginUser);
-    groups.LoadByOrganizationIDForGrid(UserSession.LoginUser.OrganizationID);
+    groups.LoadByOrganizationIDForGrid(UserSession.LoginUser.OrganizationID, UserSession.LoginUser.UserID);
     gridGroups.DataSource = groups.Table;
   }
 

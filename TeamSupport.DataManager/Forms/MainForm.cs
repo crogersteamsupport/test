@@ -256,7 +256,6 @@ namespace TeamSupport.DataManager
       {
         case "description": result = SystemActionType.Description; break;
         case "resolution": result = SystemActionType.Resolution; break;
-        case "pingupdate": result = SystemActionType.PingUpdate; break;
         case "email": result = SystemActionType.Email; break;
         default:
           break;

@@ -43,7 +43,7 @@ function restructureChatBoxes() {
 
 function chatWith(name, chatuserID) {
     createChatBox(chatuserID, name);
-    $("#chatbox_" + chatuserID + " .boxsizingBorder").focus();
+    //$("#chatbox_" + chatuserID + " .boxsizingBorder").focus();
     maximizeChatBox(chatuserID);
     restructureChatBoxes();
 }
@@ -60,8 +60,6 @@ function chatAddMsg(chatboxtitle, message, chatname) {
 
     $("#chatbox_" + chatboxtitle + " .chatboxcontent").scrollTop($("#chatbox_" + chatboxtitle + " .chatboxcontent")[0].scrollHeight);
 
-    //if (!windowFocus)
-        //alert("audio");
 }
 
 function createChatBox(chatboxtitle,name) {
@@ -70,13 +68,13 @@ function createChatBox(chatboxtitle,name) {
 			$("#chatbox_"+chatboxtitle).css('display','block');
 			restructureChatBoxes();
 		}
-$("#chatbox_" + chatboxtitle + " .boxsizingBorder").focus();
+        //$("#chatbox_" + chatboxtitle + " .boxsizingBorder").focus();
 		return;
 	}
 
 	$(" <div />" ).attr("id","chatbox_"+chatboxtitle)
 	.addClass("chatbox")
-	.html('<div class="chatboxhead"><div class="chatboxtitle">' + name + '</div><div class="chatboxoptions"><a href="#" onclick="toggleChatBoxGrowth(\'' + chatboxtitle + '\')">-</a> <a href="#" onclick="closeChatBox(\'' + chatboxtitle + '\')">X</a></div><br clear="all"/></div><div class="chatboxcontent"></div><div class="chatboxinput"><textarea class="boxsizingBorder" onkeydown="return checkChatBoxInputKey(event,this,\'' + chatboxtitle + '\',\'' + name + '\');"></textarea></div>')
+	.html('<div class="chatboxhead"><div class="chatboxtitle">' + name + '</div><div class="chatboxoptions"><a href="#" onclick="toggleChatBoxGrowth(\'' + chatboxtitle + '\')">-</a> <a href="#" onclick="closeChatBox(\'' + chatboxtitle + '\')">X</a></div><br clear="all"/></div><div class="chatboxcontent"></div><div class="chatboxinput"><textarea class="boxsizingBorder" onkeydown="return checkChatBoxInputKey(event,this,\'' + chatboxtitle + '\');"></textarea></div>')
     .data('Chatid', chatboxtitle)
     .data('Name', name)
 	.appendTo($( "body" ));
@@ -174,7 +172,7 @@ function toggleChatBoxGrowth(chatboxtitle) {
 	
 }
 
-function checkChatBoxInputKey(event,chatboxtextarea,chatboxtitle, name) {
+function checkChatBoxInputKey(event,chatboxtextarea,chatboxtitle) {
 	 
 	if(event.keyCode == 13 && event.shiftKey == 0)  {
 		message = $(chatboxtextarea).val();
@@ -182,8 +180,9 @@ function checkChatBoxInputKey(event,chatboxtextarea,chatboxtitle, name) {
 
 
 		if (message != '') {
-		    chatHubClient.sendChat(message, chatboxtitle, top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName);
+		    chatHubClient.server.sendChat(message, chatboxtitle, top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName);
 		    message = message.replace(/\n/g, "<br>");
+		    message = message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
 		    $("#chatbox_" + chatboxtitle + " .chatboxcontent").append('<div class="chatboxmessage"><span class="chatboxmessageto">' + top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + '</span>:<span class="chatboxmessagecontent">' + message + '</span></div>');
 		    $("#chatbox_" + chatboxtitle + " .chatboxcontent").scrollTop($("#chatbox_" + chatboxtitle + " .chatboxcontent")[0].scrollHeight);
 		}

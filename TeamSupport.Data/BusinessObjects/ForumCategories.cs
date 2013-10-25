@@ -35,6 +35,23 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    public static string GetCategoryDisplayString(LoginUser loginUser, int categoryID)
+    {
+      ForumCategories forumCategories = new ForumCategories(loginUser);
+      ForumCategories forumParent = new ForumCategories(loginUser);
+
+      forumCategories.LoadByCategoryID(categoryID);
+      if (forumCategories.IsEmpty)
+        return null;
+      else
+      {
+        forumParent.LoadByCategoryID(forumCategories[0].ParentID);
+        return forumParent[0].CategoryName + " -> " + forumCategories[0].CategoryName;
+      }
+
+    }
+
   }
   
 }

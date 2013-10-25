@@ -52,6 +52,8 @@ Reminders = function () {
           var item = $(this).closest('.reminder').addClass('dismissed');
           top.Ts.Services.System.DismissReminder(item.data('o').ReminderID, function () {
             item.fadeOut(500, function () { $(this).remove(); });
+            top.Ts.System.logAction('Reminders - Reminder Dismissed');
+
 
           });
         })
@@ -121,7 +123,7 @@ Reminders = function () {
 
   $('body').delegate('.item-icon', 'mouseout', function (e) {
     if (tipTimer != null) clearTimeout(tipTimer);
-    tipTimer = setTimeout("$(document).trigger('hideCluetip');", 1000);
+    tipTimer = setTimeout("$(document).trigger('hideCluetip');", 3000);
   });
 
   var tipTimer = null;

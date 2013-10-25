@@ -23,10 +23,11 @@ namespace TeamSupport.Data
       if (!isIncluded) 
       {
         ReplaceParameter("Actions", "");
-        return this;
       }
-
-      ReplaceParameter("Actions", GetActionsText(ticket, publicOnly, 0));
+      else
+      {
+        ReplaceParameter("Actions", GetActionsText(ticket, publicOnly, 0));
+      }
       
       List<string> values = new List<string>();
 
@@ -45,7 +46,7 @@ namespace TeamSupport.Data
           int end = value.IndexOf('}');
           if (end < 11) continue;
           int max = int.Parse(value.Substring(10, end - 10));
-          ReplaceParameter("Actions:" + max.ToString(), GetActionsText(ticket, publicOnly, max));
+          ReplaceParameter("Actions:" + max.ToString(), !isIncluded ? "" : GetActionsText(ticket, publicOnly, max));
         }
         catch (Exception)
         {
@@ -75,11 +76,19 @@ namespace TeamSupport.Data
         if (count >= maxActions && maxActions > 0) break;
       }
 
-      return builder.ToString();
+      return count < 1 ? "" : builder.ToString();
+    }
+
+
+    private bool DoesParameterExist(string parameterName)
+    {
+      parameterName = "{{" + parameterName + "}}";
+      return Body.IndexOf(parameterName) > -1 || Subject.IndexOf(parameterName) > -1;
     }
 
     public EmailTemplate ReplaceParameter(string parameterName, string value)
     {
+      value = value ?? "";
       parameterName = "{{" + parameterName + "}}";
       Subject = Regex.Replace(Subject, parameterName, value, RegexOptions.IgnoreCase);
       Body = Regex.Replace(Body, parameterName, value, RegexOptions.IgnoreCase);
@@ -109,10 +118,50 @@ namespace TeamSupport.Data
         foreach (DataColumn column in row.Table.Columns)
         {
           if (column.DataType == System.Type.GetType("System.DateTime") && row[column] != DBNull.Value)
-            ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(loginUser, (DateTime)row[column]).ToString("g", loginUser.OrganizationCulture));
+            try 
+	          {
+              ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(loginUser, (DateTime)row[column]).ToString("g", loginUser.OrganizationCulture));
+            }
+	          catch (Exception ex)
+	          {
+              ExceptionLogs.LogException(BaseCollection.LoginUser, ex, "EmailTemplates");
+              ReplaceField(objectName, column.ColumnName, DataUtils.DateToLocal(loginUser, (DateTime)row[column]).ToString("g"));
+            }
           else
             ReplaceField(objectName, column.ColumnName, row[column].ToString());
         }
+      }
+      return this;
+    }
+
+    public EmailTemplate ReplaceContacts(TicketsViewItem ticket)
+    {
+      if (!DoesParameterExist("ContactEmails")) return this;
+      try
+      {
+        StringBuilder builder = new StringBuilder();
+        ContactsView contacts = new ContactsView(ticket.Collection.LoginUser);
+        contacts.LoadByTicketID(ticket.TicketID);
+
+        foreach (ContactsViewItem contact in contacts)
+        {
+          if (builder.Length > 0) builder.Append(", ");
+          if (IsHtml)
+            builder.Append(System.Web.HttpUtility.HtmlEncode(string.Format("{0} {1} <{2}>", contact.FirstName, contact.LastName, contact.Email)));
+          else
+            builder.Append(string.Format("{0} {1} <{2}>", contact.FirstName, contact.LastName, contact.Email));
+        }
+
+        if (builder.Length > 0)
+        {
+          ReplaceParameter("ContactEmails", builder.ToString());
+        }
+
+
+      }
+      catch (Exception)
+      {
+
       }
       return this;
     }
@@ -165,7 +214,7 @@ namespace TeamSupport.Data
       {
         Organization organization = Organizations.GetOrganization(BaseCollection.LoginUser, _organizationID);
         string delimiter;
-        if (IsHtml) delimiter = string.IsNullOrEmpty(organization.EmailDelimiter) ? "<div style=\"margin:0px auto;text-align:center;font-size:12px;color:#a4a4a4; padding-bottom:7px\">--- Please reply above this line ---</div>" : organization.EmailDelimiter;
+        if (IsHtml) delimiter = string.IsNullOrEmpty(organization.EmailDelimiter) ? "<div style=\"margin: 10px auto; text-align: center; font-size: 14px; font-weight: bold; color: #5e5e5e; background: #f2f2f2; padding: 7px 0;\">--- Please reply above this line ---</div>" : organization.EmailDelimiter;
         else delimiter = string.IsNullOrEmpty(organization.EmailDelimiter) ? "--- Please reply above this line ---" : organization.EmailDelimiter;
         string text = InsertAfterTag("body", Body, delimiter);
         if (text == "") text = InsertAfterTag("html", Body, delimiter);
@@ -207,6 +256,69 @@ namespace TeamSupport.Data
       }
     }
 
+    /// <summary>
+    /// Adds parameters for {{ToFirstName}},{{ToLastName}},{{ToEmailAddress}}
+    /// </summary>
+    /// <param name="message">MailMessage for params to be replaced</param>
+
+
+    public static void ReplaceMailAddressParameters(MailMessage message)
+    {
+      if (message.To.Count != 1)
+      {
+        ReplaceParameter(message, "ToEmailAddress", "");
+        ReplaceParameter(message, "ToFirstName", "");
+        ReplaceParameter(message, "ToLastName", "");
+        return;
+      }
+
+
+      ReplaceParameter(message, "ToEmailAddress",  message.To[0].Address.Trim());
+      if (!string.IsNullOrWhiteSpace(message.To[0].DisplayName))
+      {
+        List<string> names = new List<string>(message.To[0].DisplayName.Trim().Split(' '));
+        if (names.Count > 0)
+        {
+          ReplaceParameter(message, "ToFirstName", names[0]);
+
+          if (names.Count > 1)
+          {
+            ReplaceParameter(message, "ToLastName", names[names.Count-1]);
+          }
+          else
+          {
+            ReplaceParameter(message, "ToLastName", "");
+          }
+        }
+        else
+        {
+          ReplaceParameter(message, "ToFirstName", "");
+          ReplaceParameter(message, "ToLastName", "");
+        }
+      }
+      else
+      {
+        ReplaceParameter(message, "ToFirstName", "");
+        ReplaceParameter(message, "ToLastName", "");
+      }
+
+    }
+
+    public static void ReplaceParameter(MailMessage message, string parameterName, string value)
+    {
+      try
+      {
+        value = value ?? "";
+        parameterName = "{{" + parameterName + "}}";
+        message.Subject = Regex.Replace(message.Subject, parameterName, value, RegexOptions.IgnoreCase);
+        message.Body = Regex.Replace(message.Body, parameterName, value, RegexOptions.IgnoreCase);
+      }
+      catch (Exception)
+      {
+      }
+    }
+
+
     #region Utilities
 
     public static EmailTemplate GetTemplate(LoginUser loginUser, int organizationID, int emailTemplateID)
@@ -222,6 +334,7 @@ namespace TeamSupport.Data
       return organization != null && organization.ParentID != null ? (int)organization.ParentID : -1;
     }
 
+
     #endregion
 
     #region Mail Messages
@@ -232,6 +345,7 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
       template.ReplaceParameter("CreatorAddress", creatorAddress.ToString());
       template.ReplaceActions(ticket, true);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -241,6 +355,7 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
       template.ReplaceActions(ticket, true);
       if (creator != null) template.ReplaceFields("Creator", creator);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -250,6 +365,7 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
       if (creator != null) template.ReplaceFields("Creator", creator);
       template.ReplaceActions(ticket, false);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -263,8 +379,8 @@ namespace TeamSupport.Data
         if (assignee != null) template.ReplaceFields("Assignee", assignee);
       }
 
-
       template.ReplaceActions(ticket, false).ReplaceParameter("Assignor", assignor);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -279,6 +395,7 @@ namespace TeamSupport.Data
       }
 
       template.ReplaceActions(ticket, false).ReplaceParameter("Assignor", assignor);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -288,8 +405,9 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
-      template.ReplaceActions(ticket, false, includeActions);
+      template.ReplaceActions(ticket, false);
       template.ReplaceParameter("Changes", changeText);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -299,7 +417,8 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
-      template.ReplaceActions(ticket, true, includeActions);
+      template.ReplaceActions(ticket, true);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -309,36 +428,8 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
-      template.ReplaceActions(ticket, true, includeActions);
-
-      try
-      {
-        StringBuilder builder = new StringBuilder();
-        ContactsView contacts = new ContactsView(loginUser);
-        contacts.LoadByTicketID(ticket.TicketID);
-
-        foreach (ContactsViewItem contact in contacts)
-        {
-          if (builder.Length > 0) builder.Append(", ");
-          if (template.IsHtml)
-            builder.Append(System.Web.HttpUtility.HtmlEncode(string.Format("{0} {1} <{2}>", contact.FirstName, contact.LastName, contact.Email)));
-          else
-            builder.Append(string.Format("{0} {1} <{2}>", contact.FirstName, contact.LastName, contact.Email));
-        }
-
-        if (builder.Length > 0)
-        {
-          template.ReplaceParameter("ContactEmails", builder.ToString());
-        }
-
-
-      }
-      catch (Exception)
-      {
-        
-      }
-
-
+      template.ReplaceActions(ticket, true);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -348,7 +439,8 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.PortalUrl);
 
       template.ReplaceParameter("ModifierName", modifierName);
-      template.ReplaceActions(ticket, true, includeActions);
+      template.ReplaceActions(ticket, true);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -414,7 +506,8 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceParameter("TicketUrl", ticket.TicketUrl);
 
       if (requestor != null) template.ReplaceFields("Requestor", requestor);
-      template.ReplaceActions(ticket, false, includeActions);
+      template.ReplaceActions(ticket, false);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -422,9 +515,8 @@ namespace TeamSupport.Data
     {
       EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 21);
       template.ReplaceCommonParameters().ReplaceFields("Sender", sender).ReplaceFields("Ticket", ticket);
-
-
       template.ReplaceActions(ticket, true).ReplaceParameter("Recipient", recipient); ;
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -434,6 +526,7 @@ namespace TeamSupport.Data
       template.ReplaceCommonParameters().ReplaceFields("User", user).ReplaceFields("Ticket", ticket);
       template.ReplaceParameter("ReminderDescription", reminder.Description).ReplaceParameter("ReminderDueDate", reminder.DueDate.ToString("g", loginUser.OrganizationCulture));
       template.ReplaceActions(ticket, false);
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 
@@ -456,7 +549,8 @@ namespace TeamSupport.Data
     public static MailMessage GetSlaEmail(LoginUser loginUser, TicketsViewItem ticket, string violationType, bool isWarning)
     {
       EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, isWarning ? 26 : 25);
-      template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceActions(ticket, false).ReplaceParameter("ViolationType", violationType);
+      template.ReplaceCommonParameters().ReplaceFields("Ticket", ticket).ReplaceActions(ticket, false).ReplaceParameter("ViolationType", violationType).ReplaceParameter("TicketUrl", ticket.TicketUrl); ;
+      template.ReplaceContacts(ticket);
       return template.GetMessage();
     }
 

@@ -22,6 +22,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ModifierID", "ModifierID", true, true, true);
       _fieldMap.AddMap("DateCreated", "DateCreated", true, true, true);
       _fieldMap.AddMap("DateModified", "DateModified", true, true, true);
+      _fieldMap.AddMap("OrderByClause", "OrderByClause", false, false, false);
             
     }
   }

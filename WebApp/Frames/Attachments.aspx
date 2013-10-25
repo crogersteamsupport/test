@@ -73,6 +73,7 @@
       }
 
       function ShowDialog(wnd) {
+        top.Ts.System.logAction('Organization Attachments - Attachment Dialog Opened');
         wnd.add_close(DialogClosed);
         wnd.show();
       }
@@ -102,6 +103,8 @@
       function DeleteRow(id) {
         if (!confirm('Are you sure you would like to delete this attachment?')) return;
         top.privateServices.DeleteAttachment(id, RefreshGrid);
+        top.Ts.System.logAction('Organization Attachments - Attachment Deleted');
+
       }
     </script>
 

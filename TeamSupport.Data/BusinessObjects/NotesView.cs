@@ -15,7 +15,7 @@ namespace TeamSupport.Data
   
   public partial class NotesView
   {
-    public void LoadForIndexing(int organizationID, int max)
+    public void LoadForIndexing(int organizationID, int max, bool isRebuilding)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -31,6 +31,20 @@ namespace TeamSupport.Data
           AND nv.ParentOrganizationID = @OrganizationID
         ORDER BY 
           nv.DateModified DESC";
+
+        if (isRebuilding)
+        {
+          text = @"
+          SELECT 
+            NoteID
+          FROM 
+            NotesView nv WITH(NOLOCK)
+          WHERE 
+            nv.RefType = 9
+            AND nv.ParentOrganizationID = @OrganizationID
+          ORDER BY 
+            nv.DateModified DESC";
+        }
 
         command.CommandText = string.Format(text, max.ToString());
         command.CommandType = CommandType.Text;
@@ -80,8 +94,8 @@ namespace TeamSupport.Data
         //job.BooleanConditions = conditions.ToString();
 
 
-        job.MaxFilesToRetrieve = 1000;
-        job.AutoStopLimit = 1000000;
+        //job.MaxFilesToRetrieve = 1000;
+        //job.AutoStopLimit = 1000000;
         job.TimeoutSeconds = 30;
         job.SearchFlags =
           //SearchFlags.dtsSearchSelectMostRecent |
@@ -90,10 +104,10 @@ namespace TeamSupport.Data
         int num = 0;
         if (!int.TryParse(searchTerm, out num))
         {
-          job.Fuzziness = 1;
+          //job.Fuzziness = 1;
           job.SearchFlags = job.SearchFlags |
-            SearchFlags.dtsSearchFuzzy |
-            SearchFlags.dtsSearchStemming |
+            //SearchFlags.dtsSearchFuzzy |
+            //SearchFlags.dtsSearchStemming |
             SearchFlags.dtsSearchPositionalScoring |
             SearchFlags.dtsSearchAutoTermWeight;
         }

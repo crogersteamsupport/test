@@ -5,10 +5,11 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Web.Security;
 
 namespace TeamSupport.Data
 {
-  public partial class Organization 
+  public partial class Organization
   {
     public OrganizationsViewItem GetOrganizationView()
     {
@@ -22,6 +23,30 @@ namespace TeamSupport.Data
       return OrganizationReplyToAddress;
     }
 
+    public bool IsInBusinessHours(DateTime utcDateTime)
+    {
+      
+      if (IsDayInBusinessHours(utcDateTime.DayOfWeek))
+      {
+
+        if (BusinessDayEndUtc.TimeOfDay == BusinessDayStartUtc.TimeOfDay)
+        {
+          return true;
+        }
+        else if (BusinessDayEndUtc.TimeOfDay < BusinessDayStartUtc.TimeOfDay)
+        {
+          return utcDateTime.TimeOfDay <= BusinessDayEndUtc.TimeOfDay ||
+              utcDateTime.TimeOfDay >= BusinessDayStartUtc.TimeOfDay;
+        }
+        else
+        {
+          return utcDateTime.TimeOfDay >= BusinessDayStartUtc.TimeOfDay &&
+              utcDateTime.TimeOfDay <= BusinessDayEndUtc.TimeOfDay;
+        }
+      }
+      return false;
+    }
+
     public bool IsDayInBusinessHours(DayOfWeek dayOfWeek)
     {
       if (BusinessDays == null) return false;
@@ -30,7 +55,7 @@ namespace TeamSupport.Data
 
     public string BusinessDaysText
     {
-      get 
+      get
       {
         StringBuilder days = new StringBuilder();
         foreach (DayOfWeek dayOfWeek in Enum.GetValues(typeof(DayOfWeek)))
@@ -42,7 +67,7 @@ namespace TeamSupport.Data
           }
         }
         return days.ToString();
-      } 
+      }
     }
 
     public void ClearBusinessDays()
@@ -51,22 +76,447 @@ namespace TeamSupport.Data
     }
 
     public void AddBusinessDay(DayOfWeek dayOfWeek)
-    { 
+    {
       BusinessDays = BusinessDays | (int)Math.Pow(2, (int)dayOfWeek);
-    
+
+    }
+
+    public double GetTimeSpentMonth(LoginUser loginUser, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+SELECT ISNULL(SUM(a.TimeSpent), 0)  
+FROM Actions a 
+INNER JOIN Tickets t ON a.TicketID = t.TicketID
+INNER JOIN OrganizationTickets ot ON a.TicketID = ot.TicketID
+WHERE ot.OrganizationID = @OrganizationID
+AND YEAR(a.DateModified) = YEAR(GetDate())
+AND MONTH(a.DateModified)  = MONTH(GetDate())
+";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+
+        Organizations organizations = new Organizations(loginUser);
+
+        return Convert.ToDouble(organizations.ExecuteScalar(command, "TicketsView"));
+      }
     }
   }
 
-  public partial class Organizations 
+  public partial class Organizations
   {
+
+    public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, ProductType productType, string password, string promo, string interest, string seats, string process)
+    {
+      try
+      {
+
+        int sourceOrgID = -1;
+        Organizations tsCustomers = new Organizations(LoginUser.Anonymous);
+        tsCustomers.LoadByParentID(1, false);
+      
+        switch (productType)
+        {
+          case ProductType.Express: sourceOrgID = tsCustomers.FindByName("Trial Setup: Express").OrganizationID; break;
+          case ProductType.HelpDesk: sourceOrgID = tsCustomers.FindByName("Trial Setup: Support").OrganizationID; break;
+          case ProductType.Enterprise: sourceOrgID = tsCustomers.FindByName("Trial Setup: Enterprise").OrganizationID; break;
+          default: sourceOrgID = 563584; break;
+        }
+
+        Organization sourceOrg = Organizations.GetOrganization(LoginUser.Anonymous, sourceOrgID);
+
+        Organization organization = (new Organizations(LoginUser.Anonymous)).AddNewOrganization();
+        organization.Name = company.Trim();
+        organization.ParentID = 1;
+        organization.ProductType = productType;
+        organization.PortalSeats = organization.ProductType == ProductType.Enterprise || organization.ProductType == ProductType.HelpDesk ? 999999 : 0;
+        organization.IsApiActive = organization.ProductType != ProductType.Express;
+        organization.IsApiEnabled = true;
+        organization.IsAdvancedPortal = organization.PortalSeats > 0;
+        organization.IsInventoryEnabled = organization.ProductType == ProductType.Enterprise;
+        organization.WhereHeard = "Ya heard";
+        organization.TimeZoneID = sourceOrg.TimeZoneID;
+        organization.IsActive = true;
+        organization.IsCustomerFree = false;
+        organization.BusinessDays = sourceOrg.BusinessDays;
+        organization.BusinessDayStart = sourceOrg.BusinessDayStartUtc;
+        organization.BusinessDayEnd = sourceOrg.BusinessDayEndUtc;
+        organization.ExtraStorageUnits = 0;
+        organization.UserSeats = 100;
+        organization.ChatSeats = 999999;
+        organization.APIRequestLimit = 5000;
+        organization.CultureName = "en-US";
+        organization.PromoCode = promo.Trim();
+        organization.PrimaryInterest = interest;
+        organization.PotentialSeats = seats;
+        organization.EvalProcess = process;
+        organization.RequireKnownUserForNewEmail = sourceOrg.RequireKnownUserForNewEmail;
+        organization.RequireNewKeyword = sourceOrg.RequireNewKeyword;
+        organization.ChangeStatusIfClosed = sourceOrg.ChangeStatusIfClosed;
+        organization.AddAdditionalContacts = sourceOrg.AddAdditionalContacts;
+        organization.MatchEmailSubject = sourceOrg.MatchEmailSubject;
+        organization.IsPublicArticles = sourceOrg.IsPublicArticles;
+        organization.UseForums = sourceOrg.UseForums;
+        organization.UseEuropeDate = sourceOrg.UseEuropeDate;
+        organization.TimedActionsRequired = sourceOrg.TimedActionsRequired;
+        organization.ProductVersionRequired = sourceOrg.ProductVersionRequired;
+        organization.ProductRequired = sourceOrg.ProductRequired;
+        organization.IsBasicPortal = sourceOrg.IsBasicPortal;
+        organization.ShowWiki = sourceOrg.ShowWiki;
+        organization.HasPortalAccess = sourceOrg.HasPortalAccess;
+        organization.IsApiEnabled = sourceOrg.IsApiEnabled;
+        organization.SetNewActionsVisibleToCustomers = sourceOrg.SetNewActionsVisibleToCustomers;
+        organization.Collection.Save();
+        //374,826,378,703,377
+
+        Users users = new Users(LoginUser.Anonymous);
+        User user = users.AddNewUser();
+        user.ActivatedOn = DateTime.UtcNow;
+        user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password.Trim(), "MD5");
+        user.Email = email.Trim();
+        user.FirstName = firstName.Trim();
+        user.InOffice = true;
+        user.InOfficeComment = "";
+        user.IsActive = true;
+        user.IsSystemAdmin = true;
+        user.IsFinanceAdmin = true;
+        user.IsChatUser = true;
+        user.IsPasswordExpired = false;
+        user.LastLogin = DateTime.UtcNow;
+        user.LastActivity = DateTime.UtcNow;
+        user.LastName = lastName.Trim();
+        user.MiddleName = "";
+        user.EnforceSingleSession = true;
+        user.OrganizationID = organization.OrganizationID;
+        user.ReceiveTicketNotifications = true;
+        user.ShowWelcomePage = true;
+        user.Collection.Save();
+
+        LoginUser loginUser = new LoginUser(user.UserID, user.OrganizationID);
+
+        OrganizationSettings.WriteString(loginUser, "DisableStatusNotification", true.ToString());
+
+        PhoneNumber phoneNumber = (new PhoneNumbers(loginUser)).AddNewPhoneNumber();
+        phoneNumber.Number = phone.Trim();
+        phoneNumber.Extension = "";
+        phoneNumber.RefID = organization.OrganizationID;
+        phoneNumber.RefType = ReferenceType.Organizations;
+        phoneNumber.Collection.Save();
+
+        WikiArticles articles = new WikiArticles(LoginUser.Anonymous);
+        articles.LoadByOrganizationID(sourceOrgID);
+        foreach (WikiArticle article in articles)
+        {
+          WikiArticle wiki = (new WikiArticles(loginUser)).AddNewWikiArticle();
+          wiki.CopyRowData(article);
+          wiki.OrganizationID = organization.OrganizationID;
+          wiki.Collection.Save();
+          if (sourceOrg.DefaultWikiArticleID != null && article.ArticleID == sourceOrg.DefaultWikiArticleID) organization.DefaultWikiArticleID = wiki.ArticleID;
+        }
+
+
+        organization.PrimaryUserID = user.UserID;
+        organization.Collection.Save();
+
+        PortalOptions portalOptions = new PortalOptions(loginUser);
+        PortalOption portalOption = portalOptions.AddNewPortalOption();
+        portalOption.CopyRowData(PortalOptions.GetPortalOption(loginUser, sourceOrgID));
+        portalOption.OrganizationID = organization.OrganizationID;
+        portalOption.PortalName = PortalOptions.ValidatePortalNameChars(organization.Name);
+        portalOptions.Save();
+
+        ProductVersionStatuses pvsSources = new ProductVersionStatuses(loginUser);
+        pvsSources.LoadAllPositions(sourceOrgID);
+        ProductVersionStatuses pvDests = new ProductVersionStatuses(loginUser);
+        foreach (ProductVersionStatus pvsSource in pvsSources)
+        {
+          ProductVersionStatus pvsDest = pvDests.AddNewProductVersionStatus();
+          pvsDest.CopyRowData(pvsSource);
+          pvsDest.OrganizationID = organization.OrganizationID;
+        }
+        pvDests.Save();
+
+        ActionTypes atSources = new ActionTypes(loginUser);
+        atSources.LoadAllPositions(sourceOrgID);
+        ActionTypes atDests = new ActionTypes(loginUser);
+        foreach (ActionType atSource in atSources)
+        {
+          ActionType atDest = atDests.AddNewActionType();
+          atDest.CopyRowData(atSource);
+          atDest.OrganizationID = organization.OrganizationID;
+        }
+        atDests.Save();
+
+        PhoneTypes ptSources = new PhoneTypes(loginUser);
+        ptSources.LoadAllPositions(sourceOrgID);
+        PhoneTypes ptDests = new PhoneTypes(loginUser);
+        foreach (PhoneType ptSource in ptSources)
+        {
+          PhoneType ptDest = ptDests.AddNewPhoneType();
+          ptDest.CopyRowData(ptSource);
+          ptDest.OrganizationID = organization.OrganizationID;
+        }
+        ptDests.Save();
+
+        TicketSeverities tsSources = new TicketSeverities(loginUser);
+        tsSources.LoadAllPositions(sourceOrgID);
+        TicketSeverities tsDests = new TicketSeverities(loginUser);
+        foreach (TicketSeverity tsSource in tsSources)
+        {
+          TicketSeverity tsDest = tsDests.AddNewTicketSeverity();
+          tsDest.CopyRowData(tsSource);
+          tsDest.OrganizationID = organization.OrganizationID;
+        }
+        tsDests.Save();
+
+
+        TicketTypes ttSources = new TicketTypes(loginUser);
+        ttSources.LoadAllPositions(sourceOrgID);
+        TicketTypes ttDests = new TicketTypes(loginUser);
+        foreach (TicketType ttSource in ttSources)
+        {
+          TicketType ttDest = ttDests.AddNewTicketType();
+          ttDest.CopyRowData(ttSource);
+          ttDest.OrganizationID = organization.OrganizationID;
+        }
+        ttDests.Save();
+
+        TicketStatuses tstDests = new TicketStatuses(loginUser);
+        foreach (TicketType tt in ttSources)
+        {
+          TicketStatuses statuses = new TicketStatuses(loginUser);
+          statuses.LoadAllPositions(tt.TicketTypeID);
+          foreach (TicketStatus tstSource in statuses)
+          {
+            TicketStatus tstDest = tstDests.AddNewTicketStatus();
+            tstDest.CopyRowData(tstSource);
+            tstDest.OrganizationID = organization.OrganizationID;
+            tstDest.TicketTypeID = ttDests.FindByName(tt.Name).TicketTypeID;
+          }
+        }
+        TicketStatuses tstSources = new TicketStatuses(loginUser);
+        tstSources.LoadByOrganizationID(sourceOrgID);
+
+        tstDests.Save();
+
+        Groups grpSources = new Groups(loginUser);
+        grpSources.LoadByOrganizationID(sourceOrgID);
+        Groups grpDests = new Groups(loginUser);
+        foreach (Group grpSource in grpSources)
+        {
+          Group grpDest = grpDests.AddNewGroup();
+          grpDest.CopyRowData(grpSource);
+          grpDest.OrganizationID = organization.OrganizationID;
+          grpDests.Save();
+          grpDests.AddGroupUser(user.UserID, grpDest.GroupID);
+
+          if (sourceOrg.DefaultPortalGroupID != null && sourceOrg.DefaultPortalGroupID == grpSource.GroupID) sourceOrg.DefaultPortalGroupID = grpDest.GroupID;
+          if (sourceOrg.DefaultSupportGroupID != null && sourceOrg.DefaultSupportGroupID == grpSource.GroupID) sourceOrg.DefaultSupportGroupID = grpDest.GroupID;
+        }
+
+        Products prdSources = new Products(loginUser);
+        prdSources.LoadByOrganizationID(sourceOrgID);
+        Products prdDests = new Products(loginUser);
+        foreach (Product prdSource in prdSources)
+        {
+          Product prdDest = prdDests.AddNewProduct();
+          prdDest.CopyRowData(prdSource);
+          prdDest.OrganizationID = organization.OrganizationID;
+        }
+        prdDests.Save();
+
+        ProductVersions verSources = new ProductVersions(loginUser);
+        verSources.LoadAll(sourceOrgID);
+        ProductVersions verDests = new ProductVersions(loginUser);
+        foreach (ProductVersion verSource in verSources)
+        {
+          ProductVersion verDest = verDests.AddNewProductVersion();
+          verDest.CopyRowData(verSource);
+          verDest.NeedsIndexing = true;
+          verDest.ProductID = prdDests.FindByName(prdSources.FindByProductID(verDest.ProductID).Name).ProductID;
+          verDest.ProductVersionStatusID = pvDests.FindByName(pvsSources.FindByProductVersionStatusID(verDest.ProductVersionStatusID).Name).ProductVersionStatusID;
+        }
+        verDests.Save();
+
+        KnowledgeBaseCategories kbSources = new KnowledgeBaseCategories(loginUser);
+        kbSources.LoadAllCategories(sourceOrgID);
+        KnowledgeBaseCategories kbDests = new KnowledgeBaseCategories(loginUser);
+        foreach (KnowledgeBaseCategory kbSource in kbSources)
+        {
+          if (kbSource.ParentID < 0)
+          {
+            KnowledgeBaseCategory kbDest = kbDests.AddNewKnowledgeBaseCategory();
+            kbDest.CopyRowData(kbSource);
+            kbDest.OrganizationID = organization.OrganizationID;
+          }
+        }
+        kbDests.Save();
+        KnowledgeBaseCategories kbSubs = new KnowledgeBaseCategories(loginUser);
+
+        foreach (KnowledgeBaseCategory kbSource in kbSources)
+        {
+          if (kbSource.ParentID > 0)
+          {
+            KnowledgeBaseCategory kbDest = kbSubs.AddNewKnowledgeBaseCategory();
+            kbDest.CopyRowData(kbSource);
+            kbDest.ParentID = kbDests.FindByName(kbSources.FindByCategoryID(kbSource.ParentID).CategoryName, -1).CategoryID;
+            kbDest.OrganizationID = organization.OrganizationID;
+          }
+        }
+        kbSubs.Save();
+
+        kbDests = new KnowledgeBaseCategories(loginUser);
+        kbDests.LoadAllCategories(organization.OrganizationID);
+        Random random = new Random();
+        Tickets tktSources = new Tickets(loginUser);
+        tktSources.LoadByOrganizationID(sourceOrgID);
+        Tickets tktDests = new Tickets(loginUser);
+        for (int j = tktSources.Count-1; j >= 0 ; j--)
+        {
+          Ticket tktSource = tktSources[j];
+          try
+          {
+            Ticket tktDest = tktDests.AddNewTicket();
+            tktDest.CopyRowData(tktSource);
+            tktDest.OrganizationID = organization.OrganizationID;
+            tktDest.ParentID = null;
+            tktDest.UserID = user.UserID;
+            tktDest.NeedsIndexing = true;
+
+            tktDest.TicketTypeID = ttDests.FindByName(ttSources.FindByTicketTypeID(tktSource.TicketTypeID).Name).TicketTypeID;
+            tktDest.TicketSeverityID = tsDests.FindByName(tsSources.FindByTicketSeverityID(tktSource.TicketSeverityID).Name).TicketSeverityID;
+            tktDest.TicketStatusID = tstDests.FindByName(tstSources.FindByTicketStatusID(tktSource.TicketStatusID).Name, tktDest.TicketTypeID).TicketStatusID;
+            if (tktSource.GroupID != null)
+              tktDest.GroupID = grpDests.FindByName(grpSources.FindByGroupID((int)tktSource.GroupID).Name).GroupID;
+            if (tktSource.ProductID != null)
+            {
+              tktDest.ProductID = prdDests.FindByName(prdSources.FindByProductID((int)tktSource.ProductID).Name).ProductID;
+              if (tktSource.SolvedVersionID != null)
+                tktDest.SolvedVersionID = verDests.FindByVersionNumber(verSources.FindByProductVersionID((int)tktSource.SolvedVersionID).VersionNumber, (int)tktDest.ProductID).ProductVersionID;
+              if (tktSource.ReportedVersionID != null)
+                tktDest.ReportedVersionID = verDests.FindByVersionNumber(verSources.FindByProductVersionID((int)tktSource.ReportedVersionID).VersionNumber, (int)tktDest.ProductID).ProductVersionID;
+            }
+            if (tktSource.KnowledgeBaseCategoryID != null)
+            {
+              tktDest.KnowledgeBaseCategoryID = kbDests.FindByName(kbSources.FindByCategoryID((int)tktSource.KnowledgeBaseCategoryID).CategoryName).CategoryID;
+            }
+            int hours = random.Next(-168, 0);
+            tktDest.DateCreated = DateTime.UtcNow.AddHours(hours);
+            tktDest.DateModified = DateTime.UtcNow.AddHours(hours);
+
+            tktDests.Save();
+
+            Actions actSources = new Actions(loginUser);
+            actSources.LoadByTicketID(tktSource.TicketID);
+            Actions actDests = new Actions(loginUser);
+
+            foreach (Action actSource in actSources)
+            {
+              Action actDest = actDests.AddNewAction();
+              actDest.CopyRowData(actSource);
+              actDest.TicketID = tktDest.TicketID;
+              actDest.DateCreated = DateTime.UtcNow.AddHours(hours);
+              actDest.DateModified = DateTime.UtcNow.AddHours(hours);
+
+              if (actSource.ActionTypeID != null)
+                actDest.ActionTypeID = atDests.FindByName(atSources.FindByActionTypeID((int)actSource.ActionTypeID).Name).ActionTypeID;
+            }
+            actDests.Save();
+
+
+
+
+          }
+          catch (Exception ex)
+          {
+            ExceptionLogs.LogException(loginUser, ex, "sign up");
+          }
+
+        }
+
+
+
     
+        sourceOrg.Collection.Save();
+
+        EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, password);
+        EmailPosts.SendSignUpNotification(loginUser, user.UserID);
+        AddToMuroc(organization, user, phoneNumber.Number);
+        return user;
+      }
+      catch (Exception ex)
+      {
+        ExceptionLogs.LogException(LoginUser.Anonymous, ex, "sign up");
+      }
+      return null;
+    }
+
+
+    private static void AddToMuroc(Organization tsOrg, User tsUser, string phoneNumber)
+    {
+      Organization mOrg = (new Organizations(tsOrg.Collection.LoginUser)).AddNewOrganization();
+      mOrg.ParentID = 1078;
+      mOrg.Name = tsOrg.Name;
+      mOrg.ImportID = tsOrg.OrganizationID.ToString();
+      mOrg.HasPortalAccess = true;
+      mOrg.IsActive = true;
+      mOrg.Collection.Save();
+
+      User mUser = (new Users(tsOrg.Collection.LoginUser)).AddNewUser();
+      mUser.OrganizationID = mOrg.OrganizationID;
+      mUser.FirstName = tsUser.FirstName;
+      mUser.LastName = tsUser.LastName;
+      mUser.Email = tsUser.Email;
+      mUser.IsActive = true;
+      mUser.IsPortalUser = true;
+      mUser.ImportID = tsUser.UserID.ToString();
+      mUser.Collection.Save();
+
+      mOrg.PrimaryUserID = mUser.UserID;
+      mOrg.Collection.Save();
+
+      PhoneNumber phone = (new PhoneNumbers(tsOrg.Collection.LoginUser)).AddNewPhoneNumber();
+      phone.RefID = mOrg.OrganizationID;
+      phone.RefType = ReferenceType.Organizations;
+      phone.Number = phoneNumber;
+      phone.Collection.Save();
+
+      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 219); //TeamSupport
+      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 233); //Email Handler
+      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 234); //Adv Portal
+      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 1068); //Basic Portal
+      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 1970); //Chat
+      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 2580); //KB
+      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 1877); //API
+    }
+
+    private static void AddMurocProduct(LoginUser loginUser, int organizationID, int productID)
+    {
+      OrganizationProducts ops = new OrganizationProducts(loginUser);
+
+      try
+      {
+        OrganizationProduct op = ops.AddNewOrganizationProduct();
+        op.OrganizationID = organizationID;
+        op.ProductID = productID;
+        op.ProductVersionID = null;
+        op.IsVisibleOnPortal = true;
+        ops.Save();
+      }
+      catch (Exception)
+      {
+      }
+    }
+
+
     public static void CreateStandardData(LoginUser loginUser, Organization organization, bool createTypes, bool createWorkflow)
     {
-    
+
       Organizations organizations = new Organizations(loginUser);
       organizations.LoadByOrganizationID(loginUser.OrganizationID);
       if (organizations.IsEmpty || (organizations[0].ParentID != 1 && organizations[0].ParentID != null)) return;
-      
+
       TicketTypes typesTest = new TicketTypes(loginUser);
       typesTest.LoadByOrganizationID(organization.OrganizationID, organization.ProductType);
       if (!typesTest.IsEmpty) return;
@@ -74,100 +524,100 @@ namespace TeamSupport.Data
       if (createTypes)
       {
         #region Product Version Statuses
-      ProductVersionStatuses productVersionStatuses = new ProductVersionStatuses(loginUser);
-      ProductVersionStatus productVersionStatus;
-      
-      productVersionStatus = productVersionStatuses.AddNewProductVersionStatus();
-      productVersionStatus.Name = "Alpha";
-      productVersionStatus.Description = "In house release";
-      productVersionStatus.IsDiscontinued = false;
-      productVersionStatus.IsShipping = false;
-      productVersionStatus.OrganizationID = organization.OrganizationID;
-      productVersionStatus.Position = 0;
+        ProductVersionStatuses productVersionStatuses = new ProductVersionStatuses(loginUser);
+        ProductVersionStatus productVersionStatus;
 
-      productVersionStatus = productVersionStatuses.AddNewProductVersionStatus();
-      productVersionStatus.Name = "Beta";
-      productVersionStatus.Description = "External test release";
-      productVersionStatus.IsDiscontinued = false;
-      productVersionStatus.IsShipping = false;
-      productVersionStatus.OrganizationID = organization.OrganizationID;
-      productVersionStatus.Position = 1;
+        productVersionStatus = productVersionStatuses.AddNewProductVersionStatus();
+        productVersionStatus.Name = "Alpha";
+        productVersionStatus.Description = "In house release";
+        productVersionStatus.IsDiscontinued = false;
+        productVersionStatus.IsShipping = false;
+        productVersionStatus.OrganizationID = organization.OrganizationID;
+        productVersionStatus.Position = 0;
 
-      productVersionStatus = productVersionStatuses.AddNewProductVersionStatus();
-      productVersionStatus.Name = "Released";
-      productVersionStatus.Description = "Live customer use";
-      productVersionStatus.IsDiscontinued = false;
-      productVersionStatus.IsShipping = true;
-      productVersionStatus.OrganizationID = organization.OrganizationID;
-      productVersionStatus.Position = 2;
+        productVersionStatus = productVersionStatuses.AddNewProductVersionStatus();
+        productVersionStatus.Name = "Beta";
+        productVersionStatus.Description = "External test release";
+        productVersionStatus.IsDiscontinued = false;
+        productVersionStatus.IsShipping = false;
+        productVersionStatus.OrganizationID = organization.OrganizationID;
+        productVersionStatus.Position = 1;
 
-      productVersionStatus = productVersionStatuses.AddNewProductVersionStatus();
-      productVersionStatus.Name = "Discontinued";
-      productVersionStatus.Description = "";
-      productVersionStatus.IsDiscontinued = true;
-      productVersionStatus.IsShipping = false;
-      productVersionStatus.OrganizationID = organization.OrganizationID;
-      productVersionStatus.Position = 3;
-      productVersionStatuses.Save();
-      #endregion
+        productVersionStatus = productVersionStatuses.AddNewProductVersionStatus();
+        productVersionStatus.Name = "Released";
+        productVersionStatus.Description = "Live customer use";
+        productVersionStatus.IsDiscontinued = false;
+        productVersionStatus.IsShipping = true;
+        productVersionStatus.OrganizationID = organization.OrganizationID;
+        productVersionStatus.Position = 2;
+
+        productVersionStatus = productVersionStatuses.AddNewProductVersionStatus();
+        productVersionStatus.Name = "Discontinued";
+        productVersionStatus.Description = "";
+        productVersionStatus.IsDiscontinued = true;
+        productVersionStatus.IsShipping = false;
+        productVersionStatus.OrganizationID = organization.OrganizationID;
+        productVersionStatus.Position = 3;
+        productVersionStatuses.Save();
+        #endregion
       }
 
       if (createTypes)
       {
         #region Action Types
-      ActionTypes actionTypes = new ActionTypes(loginUser);
-      ActionType actionType;
+        ActionTypes actionTypes = new ActionTypes(loginUser);
+        ActionType actionType;
 
-      actionType = actionTypes.AddNewActionType();
-      actionType.Name = "Comment";
-      actionType.Description = "Add comments for a ticket.";
-      actionType.OrganizationID = organization.OrganizationID;
-      actionType.Position = 0;
-      actionType.IsTimed = true;
+        actionType = actionTypes.AddNewActionType();
+        actionType.Name = "Comment";
+        actionType.Description = "Add comments for a ticket.";
+        actionType.OrganizationID = organization.OrganizationID;
+        actionType.Position = 0;
+        actionType.IsTimed = true;
 
-      actionTypes.Save();
+        actionTypes.Save();
 
-      #endregion
+        #endregion
       }
 
       if (createTypes)
       {
         #region Phone Types
-      PhoneTypes phoneTypes = new PhoneTypes(loginUser);
-      PhoneType phoneType;
+        PhoneTypes phoneTypes = new PhoneTypes(loginUser);
+        PhoneType phoneType;
 
-      phoneType = phoneTypes.AddNewPhoneType();
-      phoneType.Name = "Work";
-      phoneType.Description = "Work";
-      phoneType.Position = 0;
-      phoneType.OrganizationID = organization.OrganizationID;
+        phoneType = phoneTypes.AddNewPhoneType();
+        phoneType.Name = "Work";
+        phoneType.Description = "Work";
+        phoneType.Position = 0;
+        phoneType.OrganizationID = organization.OrganizationID;
 
-      phoneType = phoneTypes.AddNewPhoneType();
-      phoneType.Name = "Mobile";
-      phoneType.Description = "Mobile";
-      phoneType.Position = 1;
-      phoneType.OrganizationID = organization.OrganizationID;
+        phoneType = phoneTypes.AddNewPhoneType();
+        phoneType.Name = "Mobile";
+        phoneType.Description = "Mobile";
+        phoneType.Position = 1;
+        phoneType.OrganizationID = organization.OrganizationID;
 
-      phoneType = phoneTypes.AddNewPhoneType();
-      phoneType.Name = "Home";
-      phoneType.Description = "Home";
-      phoneType.Position = 2;
-      phoneType.OrganizationID = organization.OrganizationID;
+        phoneType = phoneTypes.AddNewPhoneType();
+        phoneType.Name = "Home";
+        phoneType.Description = "Home";
+        phoneType.Position = 2;
+        phoneType.OrganizationID = organization.OrganizationID;
 
-      phoneType = phoneTypes.AddNewPhoneType();
-      phoneType.Name = "Fax";
-      phoneType.Description = "Fax";
-      phoneType.Position = 3;
-      phoneType.OrganizationID = organization.OrganizationID;
+        phoneType = phoneTypes.AddNewPhoneType();
+        phoneType.Name = "Fax";
+        phoneType.Description = "Fax";
+        phoneType.Position = 3;
+        phoneType.OrganizationID = organization.OrganizationID;
 
-      phoneTypes.Save();
-      #endregion
+        phoneTypes.Save();
+        #endregion
       }
 
       TicketTypes ticketTypes = new TicketTypes(loginUser);
       TicketStatuses ticketStatuses;
       TicketNextStatuses ticketNextStatuses;
-      
+
       TicketType ticketType;
       TicketStatus ticketStatus;
 
@@ -186,7 +636,7 @@ namespace TeamSupport.Data
       {
 
         ticketStatus = ticketStatuses.AddNewTicketStatus();
-        ticketStatus.Name= "New";
+        ticketStatus.Name = "New";
         ticketStatus.Description = "New";
         ticketStatus.Position = 0;
         ticketStatus.OrganizationID = organization.OrganizationID;
@@ -224,8 +674,8 @@ namespace TeamSupport.Data
         ticketStatus.Position = 4;
         ticketStatus.OrganizationID = organization.OrganizationID;
         ticketStatus.TicketTypeID = ticketType.TicketTypeID;
-        ticketStatus.IsClosed = false; 
-        
+        ticketStatus.IsClosed = false;
+
         ticketStatus = ticketStatuses.AddNewTicketStatus();
         ticketStatus.Name = "On Hold";
         ticketStatus.Description = "On Hold";
@@ -251,7 +701,7 @@ namespace TeamSupport.Data
         ticketStatus.IsClosed = true;
 
         ticketStatuses.Save();
-        
+
         if (createWorkflow)
         {
           ticketNextStatuses = new TicketNextStatuses(loginUser);
@@ -866,41 +1316,41 @@ namespace TeamSupport.Data
       }
       #endregion
 
-      
- 
+
+
       if (createTypes)
       {
 
         #region Ticket Severities
-      TicketSeverities ticketSeverities = new TicketSeverities(loginUser);
-      TicketSeverity ticketSeverity;
+        TicketSeverities ticketSeverities = new TicketSeverities(loginUser);
+        TicketSeverity ticketSeverity;
 
-      ticketSeverity = ticketSeverities.AddNewTicketSeverity();
-      ticketSeverity.Name = "Immediate Attention";
-      ticketSeverity.Description = "Immediate Attention";
-      ticketSeverity.Position = 0;
-      ticketSeverity.OrganizationID = organization.OrganizationID;
+        ticketSeverity = ticketSeverities.AddNewTicketSeverity();
+        ticketSeverity.Name = "Unassigned";
+        ticketSeverity.Description = "Unassigned";
+        ticketSeverity.Position = 0;
+        ticketSeverity.OrganizationID = organization.OrganizationID;
 
-      ticketSeverity = ticketSeverities.AddNewTicketSeverity();
-      ticketSeverity.Name = "High";
-      ticketSeverity.Description = "High";
-      ticketSeverity.Position = 1;
-      ticketSeverity.OrganizationID = organization.OrganizationID;
+        ticketSeverity = ticketSeverities.AddNewTicketSeverity();
+        ticketSeverity.Name = "High";
+        ticketSeverity.Description = "High";
+        ticketSeverity.Position = 1;
+        ticketSeverity.OrganizationID = organization.OrganizationID;
 
-      ticketSeverity = ticketSeverities.AddNewTicketSeverity();
-      ticketSeverity.Name = "Medium";
-      ticketSeverity.Description = "Medium";
-      ticketSeverity.Position = 2;
-      ticketSeverity.OrganizationID = organization.OrganizationID;
+        ticketSeverity = ticketSeverities.AddNewTicketSeverity();
+        ticketSeverity.Name = "Medium";
+        ticketSeverity.Description = "Medium";
+        ticketSeverity.Position = 2;
+        ticketSeverity.OrganizationID = organization.OrganizationID;
 
-      ticketSeverity = ticketSeverities.AddNewTicketSeverity();
-      ticketSeverity.Name = "Low";
-      ticketSeverity.Description = "Low";
-      ticketSeverity.Position = 3;
-      ticketSeverity.OrganizationID = organization.OrganizationID;
+        ticketSeverity = ticketSeverities.AddNewTicketSeverity();
+        ticketSeverity.Name = "Low";
+        ticketSeverity.Description = "Low";
+        ticketSeverity.Position = 3;
+        ticketSeverity.OrganizationID = organization.OrganizationID;
 
-      ticketSeverities.Save();
-      #endregion
+        ticketSeverities.Save();
+        #endregion
       }
 
       Groups groups = new Groups(loginUser);
@@ -924,8 +1374,8 @@ namespace TeamSupport.Data
       wc.MessageType = "Comment";
       wc.Collection.Save();
 
-      
-    
+
+
     }
 
     partial void BeforeRowDelete(int organizationID)
@@ -1026,25 +1476,91 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByOrganizationNameActive(string name, int parentID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Organizations WHERE Name = @Name AND IsActive = 1 AND ParentID = @ParentID ORDER BY Name ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@Name", name);
+        command.Parameters.AddWithValue("@ParentID", parentID);
+        Fill(command);
+      }
+    }
+
     public void LoadByLikeOrganizationName(int parentID, string name, bool loadOnlyActive)
     {
-      LoadByLikeOrganizationName(parentID, name, loadOnlyActive, int.MaxValue);
+      LoadByLikeOrganizationName(parentID, name, loadOnlyActive, int.MaxValue, false);
     }
 
     public void LoadByLikeOrganizationName(int parentID, string name, bool loadOnlyActive, int maxRows)
     {
+      LoadByLikeOrganizationName(parentID, name, loadOnlyActive, maxRows, false);
+    }
+
+    public void CustomerLoadByLikeOrganizationName(int parentID, string name, bool loadOnlyActive, int startIndex, bool filterByUserRights)
+    {
+        User user = Users.GetUser(LoginUser, LoginUser.UserID);
+        bool doFilter = filterByUserRights && user.TicketRights == TicketRightType.Customers;
+
+        using (SqlCommand command = new SqlCommand())
+        {
+            StringBuilder text = new StringBuilder(@"
+                WITH orderedrecords as( SELECT *, ROW_NUMBER() OVER (ORDER BY Name) AS 'RowNumber' 
+                FROM Organizations 
+                WHERE (ParentID = @ParentID) 
+                AND (@ActiveOnly = 0 OR IsActive = 1) 
+                AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = @UserID)))
+                ");
+            if (name.Trim() != "")
+            {
+                text.Append(" AND ((Name LIKE '%'+@Name+'%') OR (Description LIKE '%'+@Name+'%')) ");
+            }
+
+            text.Append(@" ) select * from orderedrecords where RowNumber between @startIndex and @endIndex ORDER BY name");
+            command.CommandText = text.ToString();
+            command.CommandType = CommandType.Text;
+
+            command.Parameters.AddWithValue("@Name", name.Trim());
+            command.Parameters.AddWithValue("@ParentID", parentID);
+            command.Parameters.AddWithValue("@startIndex", startIndex+1);
+            command.Parameters.AddWithValue("@endIndex", startIndex + 20);
+            command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+            command.Parameters.AddWithValue("@UserID", LoginUser.UserID);
+            command.Parameters.AddWithValue("@UseFilter", doFilter);
+            Fill(command);
+        }
+    }
+
+    public void LoadByLikeOrganizationName(int parentID, string name, bool loadOnlyActive, int maxRows, bool filterByUserRights)
+    {
+      User user = Users.GetUser(LoginUser, LoginUser.UserID);
+      bool doFilter = filterByUserRights && user.TicketRights == TicketRightType.Customers;
+
       using (SqlCommand command = new SqlCommand())
       {
-        if (name.Trim() == "")
-          command.CommandText = "SELECT TOP (@MaxRows) * FROM Organizations WHERE (ParentID = @ParentID) AND (@ActiveOnly = 0 OR IsActive = 1) ORDER BY Name";
-        else
-          command.CommandText = "SELECT TOP (@MaxRows) * FROM Organizations WHERE ((Name LIKE '%'+@Name+'%') OR (Description LIKE '%'+@Name+'%')) AND (ParentID = @ParentID) AND (@ActiveOnly = 0 OR IsActive = 1) ORDER BY Name";
+        StringBuilder text = new StringBuilder(@"
+SELECT TOP (@MaxRows) * 
+FROM Organizations 
+WHERE (ParentID = @ParentID) 
+AND (@ActiveOnly = 0 OR IsActive = 1) 
+AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = @UserID)))
+");
+        if (name.Trim() != "")
+        {
+          text.Append(" AND ((Name LIKE '%'+@Name+'%') OR (Description LIKE '%'+@Name+'%')) ");
+        }
+
+        text.Append(" ORDER BY Name ");
+        command.CommandText = text.ToString();
         command.CommandType = CommandType.Text;
 
-        command.Parameters.AddWithValue("@Name", name);
+        command.Parameters.AddWithValue("@Name", name.Trim());
         command.Parameters.AddWithValue("@ParentID", parentID);
         command.Parameters.AddWithValue("@MaxRows", maxRows);
         command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+        command.Parameters.AddWithValue("@UserID", LoginUser.UserID);
+        command.Parameters.AddWithValue("@UseFilter", doFilter);
         Fill(command);
       }
     }
@@ -1061,14 +1577,16 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByCRMLinkID(string crmlinkID, int parentID) {
-        using (SqlCommand command = new SqlCommand()) {
-            command.CommandText = "SELECT * FROM Organizations WHERE CRMLinkID = @CrmlinkID AND ParentID = @ParentID";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@CrmlinkID", crmlinkID);
-            command.Parameters.AddWithValue("@ParentID", parentID);
-            Fill(command);
-        }
+    public void LoadByCRMLinkID(string crmlinkID, int parentID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Organizations WHERE CRMLinkID = @CrmlinkID AND ParentID = @ParentID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@CrmlinkID", crmlinkID);
+        command.Parameters.AddWithValue("@ParentID", parentID);
+        Fill(command);
+      }
     }
 
     public void LoadNotTicketCustomers(int parentID, int ticketID)
@@ -1082,7 +1600,7 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
-      
+
     public void LoadByMostActive(int parentID, DateTime beginDate, int top)
     {
       using (SqlCommand command = new SqlCommand())
@@ -1122,6 +1640,28 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByTicketIDOrderedByDateCreated(int ticketID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT o.* FROM Organizations o LEFT JOIN OrganizationTickets ot ON ot.OrganizationID = o.OrganizationID WHERE ot.TicketID = @TicketID AND o.IsActive = 1 ORDER BY ot.DateCreated";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        Fill(command, "Organizations,OrganizationTickets");
+      }
+    }
+
+    public void LoadSentToSalesForce(int ticketID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT o.* FROM Organizations o LEFT JOIN OrganizationTickets ot ON ot.OrganizationID = o.OrganizationID WHERE ot.SentToSalesForce = 1 AND ot.TicketID = @TicketID AND o.IsActive = 1 ORDER BY ot.DateCreated";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        Fill(command, "Organizations,OrganizationTickets");
+      }
+    }
+
     public void LoadByNeedsIndexing()
     {
       using (SqlCommand command = new SqlCommand())
@@ -1132,11 +1672,31 @@ WHERE EXISTS (SELECT * FROM Tickets t WHERE t.OrganizationID = o.OrganizationID 
 OR EXISTS (SELECT * FROM WikiArticles w WHERE w.OrganizationID = o.OrganizationID And w.NeedsIndexing=1)
 OR EXISTS (SELECT * FROM NotesView nv WHERE nv.ParentOrganizationID = o.OrganizationID AND nv.NeedsIndexing=1)
 OR EXISTS (SELECT * FROM ProductVersionsView pvv WHERE pvv.OrganizationID = o.OrganizationID AND pvv.NeedsIndexing=1)
+OR EXISTS (SELECT * FROM WatercoolerMsg wcm WHERE wcm.OrganizationID = o.OrganizationID AND wcm.NeedsIndexing=1)
+OR EXISTS (SELECT * FROM Organizations o2 WHERE o2.ParentID = o.OrganizationID AND o2.NeedsIndexing=1)
+OR EXISTS (SELECT * FROM ContactsView cv WHERE cv.OrganizationParentID = o.OrganizationID AND cv.NeedsIndexing=1)
 OR EXISTS (
   SELECT * FROM DeletedIndexItems dii 
-  WHERE dii.RefType IN (17, 39)
+  WHERE dii.RefType IN (9, 14, 17, 32, 38, 39, 40)
   AND dii.OrganizationID = o.OrganizationID
 )";
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }
+
+    public void LoadByNeedsIndexRebuilt()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+          @"
+            SELECT TOP 1 * FROM Organizations o  
+            WHERE o.ParentID = 1 
+            AND o.IsActive = 1
+            AND DATEDIFF(day, o.LastIndexRebuilt, GETUTCDATE()) > 14
+            AND ISNULL((SELECT MAX(u.LastActivity) FROM Users u WHERE u.OrganizationID = o.OrganizationID),'1999-01-01 00:00:00.000') < DATEADD(hour, -2, GETUTCDATE())
+            ORDER BY o.LastIndexRebuilt ASC";
         command.CommandType = CommandType.Text;
         Fill(command);
       }
@@ -1155,7 +1715,7 @@ OR EXISTS (
 LEFT JOIN OrganizationTickets ot ON ot.OrganizationID = o.OrganizationID 
 WHERE ot.TicketID = @TicketID 
 AND ot.OrganizationID NOT IN (SELECT u.OrganizationID FROM UserTickets ut LEFT JOIN Users u ON u.UserID = ut.UserID WHERE TicketID = @TicketID AND u.MarkDeleted=0)
-AND o.IsActive = 1 ORDER BY o.Name";
+ORDER BY o.Name";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@TicketID", ticketID);
         Fill(command, "Organizations,OrganizationTickets");
@@ -1171,7 +1731,7 @@ AND o.IsActive = 1 ORDER BY o.Name";
         command.Parameters.AddWithValue("@WebServiceID", webServiceID);
         Fill(command, "Organizations");
       }
-    
+
     }
 
     public void LoadByChatID(Guid chatID)
@@ -1185,6 +1745,30 @@ AND o.IsActive = 1 ORDER BY o.Name";
       }
 
     }
+
+    public void LoadByUserRights(int userID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Organizations o WHERE o.OrganizationID IN (SELECT uro.OrganizationID FROM UserRightsOrganizations uro WHERE uro.UserID=@UserID)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@UserID", userID);
+        Fill(command, "Organizations");
+      }
+    }
+
+    public void LoadByUnknownCompany(int parentID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Organizations o WHERE o.ParentID = @ParentID AND o.Name = '_Unknown Company'";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ParentID", parentID);
+        Fill(command, "Organizations");
+      }
+
+    }
+
 
     public static int GetChatCount(LoginUser loginUser, int organizationID)
     {
@@ -1211,7 +1795,7 @@ AND o.IsActive = 1 ORDER BY o.Name";
         return (int)organizations.ExecuteScalar(command, "Users");
       }
     }
-    
+
     public static int GetPortalCount(LoginUser loginUser, int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -1224,8 +1808,8 @@ AND o.IsActive = 1 ORDER BY o.Name";
         Organizations organizations = new Organizations(loginUser);
         return (int)organizations.ExecuteScalar(command, "Organizations");
       }
-    }    
-    
+    }
+
     public static int GetStorageUsed(LoginUser loginUser, int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -1245,8 +1829,8 @@ AND o.IsActive = 1 ORDER BY o.Name";
           long value = (long)o;
           return (int)(value / 1024 / 1024);
         }
-        
-        
+
+
       }
     }
 
@@ -1279,8 +1863,8 @@ AND o.IsActive = 1 ORDER BY o.Name";
           break;
         default:
           break;
-      } 
-    
+      }
+
       return result;
     }
 
@@ -1347,6 +1931,23 @@ AND o.IsActive = 1 ORDER BY o.Name";
       DeleteAttachments(loginUser, organizationID);
     }
 
+    public void ResetDefaultSupportUser(LoginUser loginUser, int userID)
+    {
+        using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+        {
+            connection.Open();
+
+            SqlCommand command = connection.CreateCommand();
+            command.Connection = connection;
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@UserID", userID);
+
+            command.CommandText = "Update Organizations Set DefaultSupportUserID=null Where DefaultSupportUserID=@UserID";
+            command.ExecuteNonQuery();
+
+        }
+    }
+
     private static void DeleteAttachments(LoginUser loginUser, int organizationID)
     {
       string path = AttachmentPath.GetRoot(loginUser, organizationID);
@@ -1359,7 +1960,7 @@ AND o.IsActive = 1 ORDER BY o.Name";
         catch (Exception)
         {
         }
-        
+
       }
     }
 
@@ -1381,6 +1982,18 @@ AND o.IsActive = 1 ORDER BY o.Name";
       foreach (Organization organization in this)
       {
         if (organization.Name.ToLower().Trim() == name.ToLower().Trim())
+        {
+          return organization;
+        }
+      }
+      return null;
+    }
+
+    public Organization FindByCRMLinkID(string crmLinkID)
+    {
+      foreach (Organization organization in this)
+      {
+        if (organization.CRMLinkID.ToLower().Trim() == crmLinkID.ToLower().Trim())
         {
           return organization;
         }

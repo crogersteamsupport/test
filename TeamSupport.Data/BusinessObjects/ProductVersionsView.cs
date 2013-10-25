@@ -15,11 +15,11 @@ namespace TeamSupport.Data
   
   public partial class ProductVersionsView
   {
-    public void LoadByProductID(int productID)
+    public void LoadByProductID(int productID, string orderBy = "VersionNumber DESC")
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM ProductVersionsView WHERE ProductID = @ProductID ORDER BY VersionNumber DESC";
+        command.CommandText = "SELECT * FROM ProductVersionsView WHERE ProductID = @ProductID ORDER BY " + orderBy;
         command.CommandText = InjectCustomFields(command.CommandText, "ProductVersionID", ReferenceType.ProductVersions);
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ProductID", productID);
@@ -27,15 +27,13 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByProductAndCustomer(int productID, int organizationID)
+    public void LoadByProductAndCustomer(int productID, int organizationID, string orderBy = "VersionNumber")
     {
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = @"SELECT pv.* FROM ProductVersionsView pv WHERE pv.ProductID = @ProductID AND pv.ProductVersionID IN 
                                 (SELECT DISTINCT op.ProductVersionID FROM OrganizationProducts op 
-                                 WHERE op.OrganizationID = @OrganizationID)
-                                 ORDER BY pv.VersionNumber DESC";
-
+                                 WHERE op.OrganizationID = @OrganizationID) ORDER BY pv." + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ProductID", productID);
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
@@ -43,7 +41,7 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadForIndexing(int organizationID, int max)
+    public void LoadForIndexing(int organizationID, int max, bool isRebuilding)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -58,6 +56,18 @@ namespace TeamSupport.Data
           AND pvv.OrganizationID= @OrganizationID
         ORDER BY 
           DateModified DESC";
+
+        if (isRebuilding)
+        {
+          text = @"
+          SELECT 
+            pvv.ProductVersionID
+          FROM 
+            ProductVersionsView pvv WITH(NOLOCK)
+          WHERE pvv.OrganizationID= @OrganizationID
+          ORDER BY 
+            DateModified DESC";
+        }
 
         command.CommandText = string.Format(text, max.ToString());
         command.CommandType = CommandType.Text;
@@ -107,8 +117,8 @@ namespace TeamSupport.Data
         //job.BooleanConditions = conditions.ToString();
 
 
-        job.MaxFilesToRetrieve = 1000;
-        job.AutoStopLimit = 1000000;
+        //job.MaxFilesToRetrieve = 1000;
+        //job.AutoStopLimit = 1000000;
         job.TimeoutSeconds = 30;
         job.SearchFlags =
           //SearchFlags.dtsSearchSelectMostRecent |
@@ -117,10 +127,10 @@ namespace TeamSupport.Data
         int num = 0;
         if (!int.TryParse(searchTerm, out num))
         {
-          job.Fuzziness = 1;
+          //job.Fuzziness = 1;
           job.SearchFlags = job.SearchFlags |
-            SearchFlags.dtsSearchFuzzy |
-            SearchFlags.dtsSearchStemming |
+            //SearchFlags.dtsSearchFuzzy |
+            //SearchFlags.dtsSearchStemming |
             SearchFlags.dtsSearchPositionalScoring |
             SearchFlags.dtsSearchAutoTermWeight;
         }

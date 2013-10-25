@@ -183,18 +183,7 @@ function GetMyCompanyDialog(organizationID) {
     return wnd;
 }
 
-function GetCRMPropertiesDialog(organizationID) {
-    var manager = GetRadWindowManager();
-    var wnd = manager.getWindowByName('wndCRMProperties');
-    var url = 'Dialogs/CRMProperties.aspx';
-    if (organizationID != null) {
-        url = url + '?OrganizationID=' + organizationID;
-    }
-    wnd.setSize(350, 475);
 
-    wnd.setUrl(url);
-    return wnd;
-}
 
 function GetChatPropertiesDialog(organizationID) {
   var manager = GetRadWindowManager();
@@ -337,16 +326,6 @@ function GetNoteDialog(noteID, refID, refType) {
     return wnd;
 }
 
-function GetPortalOptionsDialog(organizationID) {
-    var manager = GetRadWindowManager();
-    var wnd = manager.getWindowByName('wndPortalOptions');
-    var url = 'Dialogs/PortalOptions.aspx' + '?OrganizationID=' + organizationID;
-
-    wnd.setSize(800, 500);
-
-    wnd.setUrl(url);
-    return wnd;
-}
 
 function GetGroupDialog(groupID) {
     var manager = GetRadWindowManager();
@@ -406,6 +385,16 @@ function GetProfileImageDialog(organizationID, userID) {
     }
     wnd.setSize(500, 600);
 
+    wnd.setUrl(url);
+    return wnd;
+}
+
+function GetPasteImageDialog() {
+    var manager = GetRadWindowManager();
+    var wnd = manager.getWindowByName('wndImagePaste');
+    var url = 'Dialogs/ImagePaste.aspx';
+
+    wnd.setSize(800, 400);
     wnd.setUrl(url);
     return wnd;
 }

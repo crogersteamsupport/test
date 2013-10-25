@@ -27,10 +27,10 @@ public partial class Frames_TicketTabsProduct : BaseFramePage
     {
       try 
       {
-        _productID = int.Parse(Request["ProductID"]);
-        if (Request["ResolvedVersionID"] != null) _resolvedVersionID = int.Parse(Request["ResolvedVersionID"]);
-        if (Request["ReportedVersionID"] != null) _reportedVersionID = int.Parse(Request["ReportedVersionID"]);
-        int ticketTypeID = int.Parse(Request["TicketTypeID"]);
+        _productID = int.Parse(Request["tf_ProductID"]);
+        if (Request["tf_SolvedVersionID"] != null) _resolvedVersionID = int.Parse(Request["tf_SolvedVersionID"]);
+        if (Request["tf_ReportedVersionID"] != null) _reportedVersionID = int.Parse(Request["tf_ReportedVersionID"]);
+        int ticketTypeID = int.Parse(Request["tf_TicketTypeID"]);
         TicketType ticketType = (TicketType)TicketTypes.GetTicketType(UserSession.LoginUser, ticketTypeID);
         if (ticketType.OrganizationID != UserSession.LoginUser.OrganizationID) throw new Exception("Unauthorized ticket type.");
         CreateTabButtons(ticketType);
@@ -58,38 +58,37 @@ public partial class Frames_TicketTabsProduct : BaseFramePage
     tsMain.Tabs.Clear();
 
     StringBuilder builder = new StringBuilder();
-    builder.Append("Tickets.aspx?TicketTypeID=" + ticketType.TicketTypeID);
-    builder.Append("&ProductID=" + _productID.ToString());
-    if (_reportedVersionID > -1) builder.Append("&ReportedVersionID=" + _reportedVersionID.ToString());
-    if (_resolvedVersionID > -1) builder.Append("&ResolvedVersionID=" + _resolvedVersionID.ToString());
-    builder.Append("&UserID=" + UserSession.LoginUser.UserID);
-    builder.Append("&TicketStatusID="+TicketFilters.Values.Opened);
+    builder.Append("../vcr/1_7_0/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
+    builder.Append("&tf_ProductID=" + _productID.ToString());
+    if (_reportedVersionID > -1) builder.Append("&tf_ReportedVersionID=" + _reportedVersionID.ToString());
+    if (_resolvedVersionID > -1) builder.Append("&tf_SolvedVersionID=" + _resolvedVersionID.ToString());
+    builder.Append("&tf_UserID=" + UserSession.LoginUser.UserID);
+    builder.Append("&tf_IsClosed=false");
     tsMain.Tabs.Add(CreateTab(ticketType, "My Tickets", builder.ToString()));
     
     builder = new StringBuilder();
-    builder.Append("Tickets.aspx?TicketTypeID=" + ticketType.TicketTypeID);
-    builder.Append("&ProductID=" + _productID.ToString());
-    if (_reportedVersionID > -1) builder.Append("&ReportedVersionID=" + _reportedVersionID.ToString());
-    if (_resolvedVersionID > -1) builder.Append("&ResolvedVersionID=" + _resolvedVersionID.ToString());
-    builder.Append("&TicketStatusID=" + TicketFilters.Values.Opened);
+    builder.Append("../vcr/1_7_0/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
+    builder.Append("&tf_ProductID=" + _productID.ToString());
+    if (_reportedVersionID > -1) builder.Append("&tf_ReportedVersionID=" + _reportedVersionID.ToString());
+    if (_resolvedVersionID > -1) builder.Append("&tf_SolvedVersionID=" + _resolvedVersionID.ToString());
+    builder.Append("&tf_IsClosed=false");
     tsMain.Tabs.Add(CreateTab(ticketType, "Open Tickets", builder.ToString()));
 
     builder = new StringBuilder();
-    builder.Append("Tickets.aspx?TicketTypeID=" + ticketType.TicketTypeID);
-    builder.Append("&ProductID=" + _productID.ToString());
-    if (_reportedVersionID > -1) builder.Append("&ReportedVersionID=" + _reportedVersionID.ToString());
-    if (_resolvedVersionID > -1) builder.Append("&ResolvedVersionID=" + _resolvedVersionID.ToString());
-    builder.Append("&TicketStatusID=" + TicketFilters.Values.Closed);
+    builder.Append("../vcr/1_7_0/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
+    builder.Append("&tf_ProductID=" + _productID.ToString());
+    if (_reportedVersionID > -1) builder.Append("&tf_ReportedVersionID=" + _reportedVersionID.ToString());
+    if (_resolvedVersionID > -1) builder.Append("&tf_SolvedVersionID=" + _resolvedVersionID.ToString());
+    builder.Append("&tf_IsClosed=true");
     tsMain.Tabs.Add(CreateTab(ticketType, "Closed Tickets", builder.ToString()));
 
 
     builder = new StringBuilder();
-    builder.Append("Tickets.aspx?TicketTypeID=" + ticketType.TicketTypeID);
-    builder.Append("&ProductID=" + _productID.ToString());
-    if (_reportedVersionID > -1) builder.Append("&ReportedVersionID=" + _reportedVersionID.ToString());
-    if (_resolvedVersionID > -1) builder.Append("&ResolvedVersionID=" + _resolvedVersionID.ToString());
-    builder.Append("&UserID=" + TicketFilters.Values.Unassigned);
-    builder.Append("&GroupID=" + TicketFilters.Values.Unassigned);
+    builder.Append("../vcr/1_7_0/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
+    builder.Append("&tf_ProductID=" + _productID.ToString());
+    if (_reportedVersionID > -1) builder.Append("&tf_ReportedVersionID=" + _reportedVersionID.ToString());
+    if (_resolvedVersionID > -1) builder.Append("&tf_SolvedVersionID=" + _resolvedVersionID.ToString());
+    builder.Append("&tf_UserID=-2");
     tsMain.Tabs.Add(CreateTab(ticketType, "Unassigned Tickets", builder.ToString()));
   }
 

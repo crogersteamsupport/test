@@ -28,6 +28,14 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("AllowPortalAccess", "AllowPortalAccess", false, false, false);
       _fieldMap.AddMap("SendWelcomeEmail", "SendWelcomeEmail", false, false, false);
       _fieldMap.AddMap("DefaultSlaLevelID", "DefaultSlaLevelID", false, false, false);
+      _fieldMap.AddMap("PullCasesAsTickets", "PullCasesAsTickets", false, false, false);
+      _fieldMap.AddMap("PushTicketsAsCases", "PushTicketsAsCases", false, false, false);
+      _fieldMap.AddMap("PullCustomerProducts", "PullCustomerProducts", false, false, false);
+      _fieldMap.AddMap("UpdateStatus", "UpdateStatus", false, false, false);
+      _fieldMap.AddMap("ActionTypeIDToPush", "ActionTypeIDToPush", false, false, false);
+      _fieldMap.AddMap("HostName", "HostName", false, false, false);
+      _fieldMap.AddMap("DefaultProject", "DefaultProject", false, false, false);
+      _fieldMap.AddMap("MatchAccountsByName", "MatchAccountsByName", false, false, false);
             
     }
   }

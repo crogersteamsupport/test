@@ -174,6 +174,31 @@ namespace TeamSupport.WebUtils
 
     }
 
+    public static void GetSortColumnAndDirection(ArrayList data, ref string sortColumn, ref string sortDirection)
+    {
+      int iterationIndex = 0;
+      foreach (object secondLayer in data)
+      {
+        if (iterationIndex == 3)
+        {
+          int subIterationIndex = 0;
+          foreach (object thirdLayer in (ArrayList)secondLayer)
+          {
+            if (subIterationIndex == 1)
+            {
+              sortColumn = "[" + thirdLayer.ToString().Replace("_", " ") + "]";
+            }
+            else if (subIterationIndex == 3)
+            {
+              sortDirection = thirdLayer.ToString();
+            }
+            subIterationIndex++;
+          }
+        }
+        iterationIndex++;
+      }
+    }
+
     /*
     public static string ObjectToString(object o)
     {

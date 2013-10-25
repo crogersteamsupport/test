@@ -25,6 +25,26 @@ namespace TeamSupport.Data
               
       }
     }
+
+    public string FormattedNumber
+    {
+      get
+      {
+        string phoneNumberString = (string)Row["PhoneNumber"];
+        long phoneNumberLong;
+        bool isNumber = long.TryParse(phoneNumberString, out phoneNumberLong);
+
+        if (phoneNumberString.Length == 10 && isNumber)
+        {
+          return string.Format("{0:(###) ###-####}", phoneNumberLong);
+        }
+        else
+        {
+          return phoneNumberString;
+        }
+      }
+      set { Row["PhoneNumber"] = CheckValue("PhoneNumber", value); }
+    }
   }
 
   public partial class PhoneNumbers

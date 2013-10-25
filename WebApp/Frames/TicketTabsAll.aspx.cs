@@ -49,33 +49,35 @@ public partial class Frames_TicketTabsAll : BaseFramePage
 
     
     StringBuilder builder = new StringBuilder();
-    builder.Append("Tickets.aspx?");
+
+
+    builder.Append("../vcr/1_7_0/pages/ticketgrid.html?");
     if (!string.IsNullOrEmpty(Request.QueryString.ToString())) builder.Append(Request.QueryString + "&");
-    builder.Append("UserID=" + UserSession.LoginUser.UserID.ToString());
+    builder.Append("tf_UserID=" + UserSession.LoginUser.UserID.ToString());
     tsMain.Tabs.Add(CreateTab("All My Tickets", builder.ToString()));
 
     builder = new StringBuilder();
-    builder.Append("Tickets.aspx?");
+    builder.Append("../vcr/1_7_0/pages/ticketgrid.html?");
     if (!string.IsNullOrEmpty(Request.QueryString.ToString())) builder.Append(Request.QueryString + "&");
-    builder.Append("TicketStatusID=" + TicketFilters.Values.Opened);
+    builder.Append("tf_IsClosed=false");
     tsMain.Tabs.Add(CreateTab("All Open Tickets", builder.ToString()));
 
     builder = new StringBuilder();
-    builder.Append("Tickets.aspx?");
+    builder.Append("../vcr/1_7_0/pages/ticketgrid.html?");
     if (!string.IsNullOrEmpty(Request.QueryString.ToString())) builder.Append(Request.QueryString + "&");
-    builder.Append("TicketStatusID=" + TicketFilters.Values.Closed);
+    builder.Append("tf_IsClosed=true");
     tsMain.Tabs.Add(CreateTab("All Closed Tickets", builder.ToString()));
 
 
     builder = new StringBuilder();
-    builder.Append("Tickets.aspx?");
+    builder.Append("../vcr/1_7_0/pages/ticketgrid.html?");
     if (!string.IsNullOrEmpty(Request.QueryString.ToString())) builder.Append(Request.QueryString + "&");
-    builder.Append("UserID=" + TicketFilters.Values.Unassigned);
+    builder.Append("tf_UserID=-2");
     tsMain.Tabs.Add(CreateTab("All Unassigned Tickets", builder.ToString()));
 
     builder = new StringBuilder();
-    builder.Append("Tickets.aspx");
-    if (!string.IsNullOrEmpty(Request.QueryString.ToString())) builder.Append("?" + Request.QueryString);
+    builder.Append("../vcr/1_7_0/pages/ticketgrid.html?");
+    if (!string.IsNullOrEmpty(Request.QueryString.ToString())) builder.Append(Request.QueryString);
     tsMain.Tabs.Add(CreateTab("All Tickets", builder.ToString()));
 
   }

@@ -39,7 +39,7 @@ namespace TeamSupport.Data
     }
 
 
-    public static void AddAttempt(LoginUser loginUser, int userID, bool success, string ipAddress, HttpBrowserCapabilities browser, string userAgent)
+    public static void AddAttempt(LoginUser loginUser, int userID, bool success, string ipAddress, HttpBrowserCapabilities browser, string userAgent, string deviceID)
     {
       LoginAttempts loginAttempts = new LoginAttempts(loginUser);
 
@@ -56,7 +56,8 @@ namespace TeamSupport.Data
            ,[CookiesEnabled]
            ,[Platform]
            ,[UserAgent]
-           ,[DateCreated])
+           ,[DateCreated]
+           ,[DeviceID])
      VALUES
            (@UserID
            ,@Success
@@ -67,7 +68,8 @@ namespace TeamSupport.Data
            ,@Cookies
            ,@Platform
            ,@UserAgent
-           ,GETUTCDATE())";
+           ,GETUTCDATE()
+           ,@DeviceID)";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@UserID", userID);
         command.Parameters.AddWithValue("@Success", success);
@@ -78,6 +80,7 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@Cookies", browser.Cookies);
         command.Parameters.AddWithValue("@Platform", browser.Platform);
         command.Parameters.AddWithValue("@UserAgent", userAgent);
+        command.Parameters.AddWithValue("@DeviceID", deviceID);
         loginAttempts.ExecuteNonQuery(command, "LoginAttempts");
       }
     }

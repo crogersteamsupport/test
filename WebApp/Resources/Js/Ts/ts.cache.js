@@ -17,7 +17,9 @@
         this._actionTypes = null;
         this._timeZones = null;
         this._cultures = null;
-    }
+        this._knowledgeBaseCategories = null;
+        this._isJiraLinkActive = null;
+      }
 
     TsCache.prototype =
   {
@@ -38,6 +40,8 @@
           this.getForumCategories();
           this.getTimeZones();
           this.getCultures();
+          this.getKnowledgeBaseCategories();
+          this.getIsJiraLinkActive();
       },
       getUsers: function () {
           var self = this;
@@ -136,6 +140,18 @@
           });
           return self._ticketSeverities;
       },
+      getKnowledgeBaseCategories: function () {
+        var self = this;
+        Ts.Services.System.GetCheckSum(Ts.ReferenceTypes.KnowledgeBaseCategories, function (checksum) {
+          if (!self._knowledgeBaseCategories || !self._knowledgeBaseCategories.CheckSum || checksum != self._knowledgeBaseCategories.CheckSum) {
+            Ts.Services.Admin.GetKnowledgeBaseCategories(function (result) {
+              self._knowledgeBaseCategories = result;
+              self._knowledgeBaseCategories.CheckSum = checksum;
+            });
+          }
+        });
+        return self._knowledgeBaseCategories;
+      },
       getForumCategories: function () {
           var self = this;
           Ts.Services.System.GetCheckSum(Ts.ReferenceTypes.ForumCategories, function (checksum) {
@@ -194,6 +210,15 @@
               self._cultures = result;
           });
           return self._cultures;
+      },
+      getIsJiraLinkActive: function () {
+          var self = this;
+          if (self._isJiraLinkActive == null) {
+            Ts.Services.Admin.GetIsJiraLinkActive(function (result) {
+              self._isJiraLinkActive = result;
+            });
+          }
+          return self._isJiraLinkActive
       }
   };
 

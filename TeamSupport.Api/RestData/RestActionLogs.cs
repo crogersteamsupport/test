@@ -21,10 +21,17 @@ namespace TeamSupport.Api
     }
 
 
-    public static string GetItems(RestCommand command, ReferenceType refType, int refID)
+    public static string GetItems(RestCommand command, ReferenceType refType, int refID, bool orderByDateCreated = false)
     {
       ActionLogsView items = new ActionLogsView(command.LoginUser);
-      items.LoadByReference(refID, refType);
+      if (orderByDateCreated)
+      {
+        items.LoadByReference(refID, refType, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByReference(refID, refType);
+      }
       return items.GetXml("History", "ActionItem", true, command.Filters);
     }
 

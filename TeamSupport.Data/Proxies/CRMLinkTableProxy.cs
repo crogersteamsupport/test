@@ -27,8 +27,15 @@ namespace TeamSupport.Data
     [DataMember] public int LastTicketID { get; set; }
     [DataMember] public bool AllowPortalAccess { get; set; }
     [DataMember] public bool SendWelcomeEmail { get; set; }
-    [DataMember] public string SecurityToken2 { get; set; }
     [DataMember] public int? DefaultSlaLevelID { get; set; }
+    [DataMember] public bool? PushTicketsAsCases { get; set; }
+    [DataMember] public bool? PullCasesAsTickets { get; set; }
+    [DataMember] public bool? PullCustomerProducts { get; set; }
+    [DataMember] public int? ActionTypeIDToPush { get; set; }
+    [DataMember] public string HostName { get; set; }
+    [DataMember] public string DefaultProject { get; set; }
+    [DataMember] public bool? UpdateStatus { get; set; }
+    [DataMember] public bool MatchAccountsByName { get; set; }
           
   }
   
@@ -37,6 +44,14 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.MatchAccountsByName = this.MatchAccountsByName;
+      result.UpdateStatus = this.UpdateStatus;
+      result.DefaultProject = this.DefaultProject;
+      result.HostName = this.HostName;
+      result.ActionTypeIDToPush = this.ActionTypeIDToPush;
+      result.PullCustomerProducts = this.PullCustomerProducts;
+      result.PullCasesAsTickets = this.PullCasesAsTickets;
+      result.PushTicketsAsCases = this.PushTicketsAsCases;
       result.SendWelcomeEmail = this.SendWelcomeEmail;
       result.AllowPortalAccess = this.AllowPortalAccess;
       result.LastTicketID = this.LastTicketID;
@@ -49,7 +64,6 @@ namespace TeamSupport.Data
       result.Active = this.Active;
       result.OrganizationID = this.OrganizationID;
       result.CRMLinkID = this.CRMLinkID;
-      result.SecurityToken2 = this.SecurityToken2;
       result.DefaultSlaLevelID = this.DefaultSlaLevelID;
        
       result.LastProcessed = DateTime.SpecifyKind(this.LastProcessedUtc, DateTimeKind.Utc);

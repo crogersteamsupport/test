@@ -8,6 +8,8 @@
 $(document).ready(function () {
     var pageType = top.Ts.Utils.getQueryValue("pagetype", window);
     var pageID = top.Ts.Utils.getQueryValue("pageid", window);
+    var singleMsgID = top.Ts.Utils.getQueryValue("wcinstanceid", window);
+    var _orgID = top.Ts.System.User.OrganizationID;
 
     if (pageType == null)
         pageType = -1;
@@ -15,11 +17,30 @@ $(document).ready(function () {
     if (pageID == null)
         pageID = -1;
 
+    if (singleMsgID == null || singleMsgID == -1)
+        singleMsgID = -1;
+    else {
+        $('#returnBtn').show();
+        $('.slim').hide();
+    }
+
     if (pageType != -1) {
         $('#leftcontent').removeClass();
         $('#leftcontent').addClass("span12");
         $('#sidebar').remove();
     }
+
+    var tipTimer = null;
+    var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
+    var newMessageID = null;
+    $('body').delegate('.ts-vcard', 'mouseout', function (e) {
+        if (tipTimer != null) clearTimeout(tipTimer);
+        tipTimer = setTimeout("$(document).trigger('hideCluetip');", 1000);
+    });
+
+    $('body').delegate('.cluetip', 'mouseover', function (e) {
+        if (tipTimer != null) clearTimeout(tipTimer);
+    });
 
     $(window).focus(function () {
         top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(false);
@@ -34,7 +55,8 @@ $(document).ready(function () {
         top.Ts.Services.WaterCooler.DeleteMessage(message.MessageID, function (result) {
             if (result == true)
                 parent.remove();
-            window.top.chatHubClient.deleteMessage(message.MessageID);
+            window.top.chatHubClient.server.deleteMessage(message.MessageID);
+            
         });
 
     });
@@ -77,7 +99,7 @@ $(document).ready(function () {
     }
 
     $('.user-search').autocomplete({
-        minLength: 4,
+        minLength: 3,
         source: getUsers,
         select: function (event, ui) {
             if (ui.item) {
@@ -114,7 +136,7 @@ $(document).ready(function () {
     });
 
     $('.company-search').autocomplete({
-        minLength: 4,
+        minLength: 3,
         source: getCustomers,
         select: function (event, ui) {
             if (ui.item) {
@@ -188,7 +210,8 @@ $(document).ready(function () {
     $('.insert-ticket').autocomplete({ minLength: 2, source: getTicketsByTerm, delay: 300,
         select: function (event, ui) {
             if (ui.item) {
-                $('#messagecontents').val($('#messagecontents').val() + " &ticket" + ui.item.id);
+              $('#messagecontents').val($('#messagecontents').val() + " &ticket" + ui.item.id);
+              top.Ts.System.logAction('Water Cooler - Ticket Inserted');
             }
             $('.insert-ticket').removeClass('ui-autocomplete-loading');
             return false;
@@ -226,6 +249,7 @@ $(document).ready(function () {
                     .appendTo(bg);
                 }
             }
+            $(this).val("");
             $(this)
             .data('item', ui.item)
             .removeClass('ui-autocomplete-loading');
@@ -233,7 +257,7 @@ $(document).ready(function () {
     });
 
     $('.product-search').autocomplete({
-        minLength: 4,
+        minLength: 3,
         source: getProductByTerm,
         select: function (event, ui) {
             if (ui.item) {
@@ -305,30 +329,33 @@ $(document).ready(function () {
     .click(function () { $(this).val('').removeClass('product-search-blur'); })
     .val('Search for a product...');
 
-        top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
-            var name;
-            var chatID;
-            for (var i = 0; i < users.length; i++) {
-                name = users[i].Name;
-                chatID = users[i].AppChatID;
-                var onlineuser = $('<li>')
+    top.Ts.Services.WaterCooler.GetOnlineChatUsers(top.Ts.System.User.OrganizationID, function (users) {
+        var name;
+        var chatID;
+        for (var i = 0; i < users.length; i++) {
+            name = users[i].Name;
+            chatID = users[i].UserID;
+            var onlineuser = $('<li>')
         .data('ChatID', chatID)
         .data('Name', name)
-        .addClass('onlineUser')
+        .addClass('onlineUser ts-vcard')
         .click(function () {
-            window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
+          window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
+          top.Ts.System.logAction('Water Cooler - Chat Opened');
         })
-        .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].Name + '</a>')
+        .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
+        .cluetip(clueTipOptions)
+        .html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + users[i].Avatar + '">' + users[i].Name + '</a>')
         .appendTo($('.sidebarusers'));
-            }
-        });
+        }
+    });
 
     top.Ts.Services.Users.GetUserPhoto(-99, function (att) {
         $('.mainavatarlrg').attr("src", att);
     });
 
     //Gets the top 10 threads on initial page load
-    top.Ts.Services.WaterCooler.GetThreads(pageType, pageID, function (threads) {
+    top.Ts.Services.WaterCooler.GetThreads(pageType, pageID, singleMsgID, function (threads) {
         var threadContainer = $('#maincontainer');
         if (threads.length > 0) {
             for (var i = 0; i < threads.length; i++) {
@@ -340,23 +367,28 @@ $(document).ready(function () {
             var placeholder = $('<div>')
             .addClass("placeholder");
 
-            switch (pageType) {
-                case -1:
-                    placeholder.html('The WaterCooler allows you to have conversations with colleagues about tickets, customers, and even products - Collaborate with your entire team to better support your customers!');
-                    break;
-                case "0":
-                    placeholder.html('Start a conversation about this ticket in the WaterCooler.  If you have questions or comments that are for a broader audience than the ticket actions allow, just post a comment here and you co-workers will see it in their WaterCooler.');
-                    break;
-                case "1":
-                    placeholder.html('Share information or ask questions about products through the WaterCooler!');
-                    break;
-                case "2":
-                    placeholder.html('Share information or ask questions about customers through the WaterCooler!');
-                    break;
-                case "4":
-                    placeholder.html('Have conversation just with the people in this specific group through the WaterCooler.  Only members of this group will be able to see the conversations.');
+            if (singleMsgID != -1) {
+                placeholder.html('Unable to view / load the specified WaterCooler message.');
             }
+            else {
 
+                switch (pageType) {
+                    case -1:
+                        placeholder.html('The Water Cooler allows you to have conversations with colleagues about tickets, customers, and even products - Collaborate with your entire team to better support your customers!');
+                        break;
+                    case "0":
+                        placeholder.html('Start a conversation about this ticket in the Water Cooler.  If you have questions or comments that are for a broader audience than the ticket actions allow, just post a comment here and you co-workers will see it in their WaterCooler.');
+                        break;
+                    case "1":
+                        placeholder.html('Share information or ask questions about products through the Water Cooler!');
+                        break;
+                    case "2":
+                        placeholder.html('Share information or ask questions about customers through the Water Cooler!');
+                        break;
+                    case "4":
+                        placeholder.html('Have conversation just with the people in this specific group through the Water Cooler.  Only members of this group will be able to see the conversations.');
+                }
+            }
             $('#maincontainer').append(placeholder);
         }
 
@@ -373,6 +405,7 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
         if ($('#messagecontents').val().length > 0) {
+            $(this).parent().addClass("saving");
             var commentinfo = new Object();
             commentinfo.Description = $('#messagecontents').val();
             commentinfo.Attachments = new Array();
@@ -404,23 +437,37 @@ $(document).ready(function () {
             commentinfo.User = new Array();
             $('#commentatt:first').find('.user-queue').find('.ticket-removable-item').each(function () {
                 commentinfo.User[commentinfo.User.length] = $(this).data('User');
-            });
+              });
+
+              if (commentinfo.Tickets.length > 0) top.Ts.System.logAction('Water Cooler - Ticket Inserted');
+              if (commentinfo.Groups.length > 0) top.Ts.System.logAction('Water Cooler - Group Inserted');
+              if (commentinfo.Products.length > 0) top.Ts.System.logAction('Water Cooler - Product Inserted');
+              if (commentinfo.Company.length > 0) top.Ts.System.logAction('Water Cooler - Company Inserted');
+              if (commentinfo.User.length > 0) top.Ts.System.logAction('Water Cooler - User Inserted');
+
+            var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
 
             top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (MessageID) {
-                if ($('.postcontainer').find('.upload-queue div').length > 0) {
-                    $('.postcontainer').find('.upload-queue div').each(function (i, o) {
+                newMessageID = MessageID;
+                if (attcontainer.length > 0) {
+                    attcontainer.each(function (i, o) {
                         var data = $(o).data('data');
                         data.url = '../../../Upload/WaterCooler/' + MessageID;
                         data.jqXHR = data.submit();
                         $(o).data('data', data);
                     });
                 }
-                window.top.chatHubClient.newThread(MessageID, top.Ts.System.User.OrganizationID);
-                $('.commentcontainer').hide();
-                $('.faketextcontainer').show();
-                $('#messagecontents').val('');
-                resetDisplay();
+                else {
+                    window.top.chatHubClient.server.newThread(MessageID, top.Ts.System.User.OrganizationID);
+                    $('.commentcontainer').hide();
+                    $('.faketextcontainer').show();
+                    $('#messagecontents').val('');
+                    resetDisplay();
+                }
+
+
             });
+            $(this).parent().removeClass("saving");
             $('.frame-content').animate({ scrollTop: 0 }, 600);
         }
     });
@@ -524,6 +571,7 @@ $(document).ready(function () {
 
     })
     .tooltip();
+    
     $('.file-upload').fileupload({
         namespace: 'new_ticket',
         dropZone: $('.file-upload'),
@@ -542,10 +590,10 @@ $(document).ready(function () {
           .addClass('filename')
           .appendTo(bg);
 
-                //                $('<div>')
-                //          .addClass('progress')
-                //          .hide()
-                //          .appendTo(bg);
+                $('<div>')
+            .addClass('progress')
+            .hide()
+            .appendTo(bg);
 
                 $('<span>')
           .addClass('ui-icon ui-icon-close')
@@ -569,7 +617,7 @@ $(document).ready(function () {
         },
         send: function (e, data) {
             if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
-                //data.context.find('.progress').progressbar('value', 50);
+                data.context.find('.progress').progressbar('value', 50);
             }
         },
         fail: function (e, data) {
@@ -577,31 +625,28 @@ $(document).ready(function () {
             alert('There was an error uploading "' + data.files[0].name + '".');
         },
         progress: function (e, data) {
-            //data.context.find('.progress').progressbar('value', parseInt(data.loaded / data.total * 100, 10));
+            data.context.find('.progress').progressbar('value', parseInt(data.loaded / data.total * 100, 10));
         },
         start: function (e, data) {
-            //$(this).parent().parent().find('.progress').progressbar().show();
-            //$(this).parent().parent().find('.upload-queue .ui-icon-close').hide();
-            //$(this).parent().parent().find('.upload-queue .ui-icon-cancel').show();
+            $(this).parent().parent().find('.progress').progressbar().show();
+            $(this).parent().parent().find('.upload-queue .ui-icon-close').hide();
+            $(this).parent().parent().find('.upload-queue .ui-icon-cancel').show();
         },
         stop: function (e, data) {
-            $(this).parent().parent().find('.progress').progressbar('value', 100);
+          $(this).parent().parent().find('.progress').progressbar('value', 100);
+          top.Ts.System.logAction('Water Cooler - Attachment Added');
+          window.top.chatHubClient.server.newThread(newMessageID, top.Ts.System.User.OrganizationID);
+          $('.commentcontainer').hide();
+          $('.faketextcontainer').show();
+          $('#messagecontents').val('');
+          resetDisplay();
         }
     });
-    $('.testbtn').click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
 
-        var firstpost = $('#maincontainer').find('.postcontainer:first');
-        for (var i = 0; i < 5; i++) {
-            firstpost.after(i).fadeIn(3000);
-        }
-
-        // insert the threads into the div
-
-        $('.loading-section').hide().next().show();
-
+    $('#returnBtn').click(function (e) {
+        top.Ts.MainPage.openWaterCoolerInstance(-1,-1,-1);
     });
+
     $('.ui-autocomplete-input').css('width', '200px');
     $('a').addClass('ui-state-default ts-link');
 
@@ -626,7 +671,8 @@ $(document).ready(function () {
     });
 
     $('.scrollup').click(function () {
-        $('.frame-content').animate({ scrollTop: 0 }, 600);
+      $('.frame-content').animate({ scrollTop: 0 }, 600);
+      top.Ts.System.logAction('Water Cooler - Scrolled to Top');
         return false;
     });
 
@@ -720,19 +766,27 @@ this.imagePreview = function () {
     });
 };
 
-function teststring(str) {
-    $("#messages").append('<li>' + str + '</li>');
-}
-
 var pageType = top.Ts.Utils.getQueryValue("pagetype", window);
 var pageID = top.Ts.Utils.getQueryValue("pageid", window);
+var singleMsgID = top.Ts.Utils.getQueryValue("wcinstanceid", window);
 var newMsg = 1;
+var _orgID = top.Ts.System.User.OrganizationID;
+
+var tipTimer = null;
+var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
 
 if (pageType == null)
     pageType = -1;
 
+if (singleMsgID == null)
+    singleMsgID = -1;
+else
+    $('.slim').hide();
+
 if (pageID == null)
     pageID = -1;
+
+
 
 function placeHolder() {
     var topics = $('#maincontainer').find('.topic_container');
@@ -746,34 +800,38 @@ function placeHolder() {
         var placeholder = $('<div>')
             .addClass("placeholder");
 
-        switch (pageType) {
-            case -1:
-                placeholder.html('The WaterCooler allows you to have conversations with colleagues about tickets, customers, and even products - Collaborate with your entire team to better support your customers!');
-                break;
-            case "0":
-                placeholder.html('Start a conversation about this ticket in the WaterCooler.  If you have questions or comments that are for a broader audience than the ticket actions allow, just post a comment here and you co-workers will see it in their WaterCooler.');
-                break;
-            case "1":
-                placeholder.html('Share information or ask questions about products through the WaterCooler!');
-                break;
-            case "2":
-                placeholder.html('Share information or ask questions about customers through the WaterCooler!');
-                break;
-            case "4":
-                placeholder.html('Have conversation just with the people in this specific group through the WaterCooler.  Only members of this group will be able to see the conversations.');
+        if (singleMsgID != -1){
+            placeholder.html('Unable to view / load the specified water cooler message.');
         }
-
+        else {
+            switch (pageType) {
+                case -1:
+                    placeholder.html('The Water Cooler allows you to have conversations with colleagues about tickets, customers, and even products - Collaborate with your entire team to better support your customers!');
+                    break;
+                case "0":
+                    placeholder.html('Start a conversation about this ticket in the Water Cooler.  If you have questions or comments that are for a broader audience than the ticket actions allow, just post a comment here and you co-workers will see it in their WaterCooler.');
+                    break;
+                case "1":
+                    placeholder.html('Share information or ask questions about products through the Water Cooler!');
+                    break;
+                case "2":
+                    placeholder.html('Share information or ask questions about customers through the Water Cooler!');
+                    break;
+                case "4":
+                    placeholder.html('Have conversation just with the people in this specific group through the Water Cooler.  Only members of this group will be able to see the conversations.');
+            }
+        }
         $('#maincontainer').append(placeholder);
     }
 
 };
 
-
 function addThread(message) {
         var firstpost = $('#maincontainer');
 
         top.Ts.Services.WaterCooler.IsValid(pageType, pageID, message.Message.MessageID, function (valid) {
-            if (valid) {
+          if (valid) {
+              top.Ts.System.logAction('Water Cooler - Post Added');
                 var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + message.Message.MessageID + ')');
                 if (parentThread.length == 0) {
                     var nmdiv = createThread(message);
@@ -781,12 +839,12 @@ function addThread(message) {
                     if (message.Message.UserID != top.Ts.System.User.UserID) {
                         top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
                         top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
-                    }
+                        parent.chime();
+                      }
 
                 }
                 placeHolder();
-            }
-
+          }
         });
 
     };
@@ -798,6 +856,7 @@ function addComment (message) {
         var firstpost = $('#maincontainer');
         top.Ts.Services.WaterCooler.IsValid(pageType, pageID, message.Message.MessageParent, function (valid) {
             if (valid) {
+                top.Ts.System.logAction('Water Cooler - Reply Added');
                 if (parentThread.length > 0) {
                     //If over 6 comments compact it
                     if (commentcount > 6) {
@@ -818,10 +877,11 @@ function addComment (message) {
 
                             var tpcommenttxt = $('<div>')
                             .addClass('topicComments slim')
-                            .html(commentcount + " comments")
+                            .html(commentcount + " comments <i class='icon-chevron-down'></i>")
                             .click(function (e) {
                                 e.preventDefault();
                                 $(this).parent().parent().find('.hiddenComments').slideToggle("fast");
+                                $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
                             })
                             .appendTo(trepCont);
 
@@ -861,9 +921,11 @@ function addComment (message) {
                     top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + newMsg++ + ")");
                 }
             }
-            else {
+            else 
+            {
                 parentThread.hide();
             }
+
             placeHolder();
         });
 
@@ -874,8 +936,19 @@ function deleteMessage (messageID, parentID) {
         if (parentID == -1) {
             var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + messageID + ')');
             parentThread.remove();
-        } else {
+          } else {
             var parentThread = $('#maincontainer').find('.topic_container:data(MessageID=' + parentID + ')');
+//            var commentcount = $(parentThread).find('.treplycontainer').length - 2;
+//            var topicComments = parentThread.find('.treplycontainer:first').find('.topicComments');
+
+//            if(commentcount < 7){
+//                topicComments.remove();
+//            }
+
+//            if (topicComments.length > 0) {
+//                topicComments.html(commentcount + " comments <i class='icon-chevron-down'></i>");
+//            }
+
             parentThread.find('.treplycontainer:data(MessageID=' + messageID + ')').remove();
         }
         placeHolder();
@@ -984,7 +1057,7 @@ function updateUsers () {
                 var chatID;
                 for (var i = 0; i < users.length; i++) {
                     name = users[i].Name;
-                    chatID = users[i].AppChatID;
+                    chatID = users[i].UserID; //users[i].AppChatID;
 
                     var user = $('.sidebarusers').find('.onlineUser:data(ChatID=' + chatID + ')');
 
@@ -995,11 +1068,13 @@ function updateUsers () {
                         var onlineuser = $('<li>')
                     .data('ChatID', chatID)
                     .data('Name', name)
-                    .addClass('onlineUser')
+                    .addClass('onlineUser ts-vcard')
                     .click(function () {
                         window.parent.openChat($(this).data('Name'), $(this).data('ChatID'));
                     })
-                    .html('<a class="ui-state-default ts-link" href="#"><i class="icon-user"></i>' + users[i].Name + '</a>')
+                    .attr('rel', '../../../Tips/User.aspx?UserID=' + chatID)
+                    .cluetip(clueTipOptions)
+                    .html('<a class="ui-state-default ts-link" href="#"><img class="chatavatar" src="' + users[i].Avatar + '">' + users[i].Name + '</a>')
                     .appendTo($('.sidebarusers'));
                     }
                 }
@@ -1056,13 +1131,15 @@ function createThread(thread) {
             .appendTo(dv);
 
         var namea = $('<a>')
-            .addClass('ts-linkb ts-link ui-state-default')
+            .addClass('ts-linkb ts-link ui-state-default ts-vcard')
             .attr('href', '#')
             .text(thread.Message.UserName)
             .click(function (e) {
                 e.preventDefault();
                 top.Ts.MainPage.openUser(thread.Message.UserID);
             })
+            .attr('rel', '../../../Tips/User.aspx?UserID=' + thread.Message.UserID)
+            .cluetip(clueTipOptions)
             .appendTo(sptpic);
 
         var sptm = $('<span>')
@@ -1112,8 +1189,9 @@ function createThread(thread) {
                 var parent = $(this).parent();
                 //parent.find('#likeCounter').remove();
                 $(this).hide();
+                top.Ts.System.logAction('Water Cooler - Message Liked');
                 top.Ts.Services.WaterCooler.AddCommentLike(thread.Message.MessageID, function (likes) {
-                    window.top.chatHubClient.addLike(likes, thread.Message.MessageID, thread.Message.MessageParent);
+                    window.top.chatHubClient.server.addLike(likes, thread.Message.MessageID, thread.Message.MessageParent, _orgID);
                 });
 
             })
@@ -1190,9 +1268,10 @@ function createThread(thread) {
             .addClass('topicrel close')
             .click(function (e) {
                 if (confirm('Are you sure you would like to remove this post?')) {
-                    top.Ts.Services.WaterCooler.DeleteMessage(thread.Message.MessageID, function () {
+                  top.Ts.Services.WaterCooler.DeleteMessage(thread.Message.MessageID, function () {
+                    top.Ts.System.logAction('Water Cooler - Post Deleted');
                     });
-                    window.top.chatHubClient.del(thread.Message.MessageID);
+                    window.top.chatHubClient.server.del(thread.Message.MessageID);
                 }
             }).hide()
             .text('x')
@@ -1247,10 +1326,11 @@ function createThread(thread) {
 
             var tpcommenttxt = $('<div>')
             .addClass('topicComments slim')
-            .html(thread.Replies.length + " comments")
+            .html(thread.Replies.length + " comments  <i class='icon-chevron-down'></i>")
             .click(function (e) {
                 e.preventDefault();
                 $(this).parent().parent().find('.hiddenComments').slideToggle("fast");
+                $(this).find('i').toggleClass('icon-chevron-up icon-chevron-down');
             })
             .appendTo(trc);
             var comcontainer = $('<div>')
@@ -1365,7 +1445,7 @@ function createReply(thread) {
                 //parent.find('#likeCounter').remove();
                 $(this).hide();
                 top.Ts.Services.WaterCooler.AddCommentLike(thread.MessageID, function (likes) {
-                    window.top.chatHubClient.addLike(likes, thread.MessageID, thread.MessageParent);
+                    window.top.chatHubClient.server.addLike(likes, thread.MessageID, thread.MessageParent, _orgID);
                 });
 
             })
@@ -1380,9 +1460,10 @@ function createReply(thread) {
             .addClass('topicrel close')
             .click(function (e) {
                 if (confirm('Are you sure you would like to remove this reply?')) {
-                    top.Ts.Services.WaterCooler.DeleteMessage(thread.MessageID, function () {
+                  top.Ts.Services.WaterCooler.DeleteMessage(thread.MessageID, function () {
+                    top.Ts.System.logAction('Water Cooler - Reply Deleted');
                     });
-                    window.top.chatHubClient.del(thread.MessageID);
+                    window.top.chatHubClient.server.del(thread.MessageID);
                 }
             }).hide()
             .text('x')
@@ -1433,6 +1514,7 @@ function createReply(thread) {
     }
 
 function createCommentContainer(messageid) {
+    var newMessageID;
         var pc = $('<div>')
         .addClass('postcontainer');
 
@@ -1597,6 +1679,7 @@ function createCommentContainer(messageid) {
                 commentinfo.Description = msgtxtbox.val();
                 commentinfo.Attachments = new Array();
                 commentinfo.ParentTicketID = messageid;
+                $(this).parent().addClass("saving");
 
                 commentinfo.Tickets = new Array();
                 $(this).parent().parent().find('.ticket-queue').find('.ticket-removable-item').each(function () {
@@ -1624,9 +1707,10 @@ function createCommentContainer(messageid) {
                 });
 
 
-                var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div');
+                var attcontainer = $(this).parent().parent().find('#commentatt').find('.upload-queue div.ticket-removable-item');
 
                 top.Ts.Services.WaterCooler.NewComment(top.JSON.stringify(commentinfo), function (MessageID) {
+                    newMessageID = MessageID;
                     if (attcontainer.length > 0) {
                         attcontainer.each(function (i, o) {
                             var data = $(o).data('data');
@@ -1635,20 +1719,24 @@ function createCommentContainer(messageid) {
                             $(o).data('data', data);
                         });
                     }
+                    else {
+                        window.top.chatHubClient.server.newThread(MessageID, top.Ts.System.User.OrganizationID);
 
-                    window.top.chatHubClient.newThread(MessageID, top.Ts.System.User.OrganizationID);
+                        cc.hide();
+                        ftc.show();
+                        ta.val('');
+                        cc.find('.upload-queue').empty();
+                        cc.find('.group-queue').empty();
+                        cc.find('.ticket-queue').empty();
+                        cc.find('.product-queue').empty();
+                        cc.find('.customer-queue').empty();
+                        cc.find('.user-queue').empty();
+                        cc.find(".arrow-up").css('left', '7px');
+                    }
 
-                    cc.hide();
-                    ftc.show();
-                    ta.val('');
-                    cc.find('.upload-queue').empty();
-                    cc.find('.group-queue').empty();
-                    cc.find('.ticket-queue').empty();
-                    cc.find('.product-queue').empty();
-                    cc.find('.customer-queue').empty();
-                    cc.find('.user-queue').empty();
-                    cc.find(".arrow-up").css('left', '7px');
+
                 });
+                $(this).parent().removeClass("saving");
                 $('.frame-content').animate({ scrollTop: 0 }, 600);
             }
         })
@@ -1709,6 +1797,11 @@ function createCommentContainer(messageid) {
                   .addClass('filename')
                   .appendTo(bg);
 
+                    $('<div>')
+                    .addClass('progress')
+                    .hide()
+                    .appendTo(bg);
+
                     $('<span>')
                   .addClass('ui-icon ui-icon-close')
                   .click(function (e) {
@@ -1731,7 +1824,7 @@ function createCommentContainer(messageid) {
             },
             send: function (e, data) {
                 if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
-                    //data.context.find('.progress').progressbar('value', 50);
+                    data.context.find('.progress').progressbar('value', 50);
                 }
             },
             fail: function (e, data) {
@@ -1739,15 +1832,27 @@ function createCommentContainer(messageid) {
                 alert('There was an error uploading "' + data.files[0].name + '".');
             },
             progress: function (e, data) {
-                //data.context.find('.progress').progressbar('value', parseInt(data.loaded / data.total * 100, 10));
+                data.context.find('.progress').progressbar('value', parseInt(data.loaded / data.total * 100, 10));
             },
             start: function (e, data) {
-                //$(this).parent().parent().find('.progress').progressbar().show();
-                //$(this).parent().parent().find('.upload-queue .ui-icon-close').hide();
-                //$(this).parent().parent().find('.upload-queue .ui-icon-cancel').show();
+                $(this).parent().parent().parent().find('.progress').progressbar().show();
+                $(this).parent().parent().parent().find('.upload-queue .ui-icon-close').hide();
+                $(this).parent().parent().parent().find('.upload-queue .ui-icon-cancel').show();
             },
             stop: function (e, data) {
                 $(this).parent().parent().find('.progress').progressbar('value', 100);
+                window.top.chatHubClient.server.newThread(newMessageID, top.Ts.System.User.OrganizationID);
+
+                cc.hide();
+                ftc.show();
+                ta.val('');
+                cc.find('.upload-queue').empty();
+                cc.find('.group-queue').empty();
+                cc.find('.ticket-queue').empty();
+                cc.find('.product-queue').empty();
+                cc.find('.customer-queue').empty();
+                cc.find('.user-queue').empty();
+                cc.find(".arrow-up").css('left', '7px');
             }
         })
         .appendTo(ulform)
@@ -1833,7 +1938,7 @@ function createCommentContainer(messageid) {
         .focusout(function () { $(this).val('Search for a user...').addClass('user-search-blur').removeClass('ui-autocomplete-loading'); })
         .click(function () { $(this).val('').removeClass('user-search-blur'); })
         .val('Search for a user...')
-        .autocomplete({ minLength: 4, source: getUsers, delay: 300,
+        .autocomplete({ minLength: 3, source: getUsers, delay: 300,
             select: function (event, ui) {
                 if (ui.item) {
                     var isDupe;
@@ -1878,7 +1983,7 @@ function createCommentContainer(messageid) {
         .focusout(function () { $(this).val('Search for a company...').addClass('company-search-blur').removeClass('ui-autocomplete-loading'); })
         .click(function () { $(this).val('').removeClass('company-search-blur'); })
         .val('Search for a company...')
-        .autocomplete({ minLength: 4, source: getCustomers, delay: 300,
+        .autocomplete({ minLength: 3, source: getCustomers, delay: 300,
             select: function (event, ui) {
                 if (ui.item) {
                     var isDupe;
@@ -1952,6 +2057,7 @@ function createCommentContainer(messageid) {
                     .appendTo(bg);
                     }
                 }
+                $(this).val("");
                 $('.group-search').removeClass('ui-autocomplete-loading');
                 return false;
             }
@@ -1968,7 +2074,7 @@ function createCommentContainer(messageid) {
         .focusout(function () { $(this).val('Search for a product...').addClass('product-search-blur').removeClass('ui-autocomplete-loading'); })
         .click(function () { $(this).val('').removeClass('product-search-blur'); })
         .val('Search for a product...')
-        .autocomplete({ minLength: 4, source: getProductByTerm, delay: 300,
+        .autocomplete({ minLength: 3, source: getProductByTerm, delay: 300,
             select: function (event, ui) {
                 if (ui.item) {
                     var isDupe;
@@ -2044,7 +2150,7 @@ function getProductByTerm(request, response) {
     }
 
 $('.user-search').autocomplete({
-        minLength: 4,
+        minLength: 3,
         source: getUsers,
         select: function (event, ui) {
             if (ui.item) {
@@ -2081,7 +2187,7 @@ $('.user-search').autocomplete({
     });
 
 $('.company-search').autocomplete({
-        minLength: 4,
+        minLength: 3,
         source: getCustomers,
         select: function (event, ui) {
             if (ui.item) {
@@ -2193,6 +2299,7 @@ $('.group-search').autocomplete({
                     .appendTo(bg);
                 }
             }
+            $(this).val("");
             $(this)
             .data('item', ui.item)
             .removeClass('ui-autocomplete-loading');
@@ -2200,7 +2307,7 @@ $('.group-search').autocomplete({
     });
 
 $('.product-search').autocomplete({
-        minLength: 4,
+        minLength: 3,
         source: getProductByTerm,
         select: function (event, ui) {
             if (ui.item) {

@@ -55,6 +55,7 @@ namespace TeamSupport.Data
     [DataMember] public bool AutoRegister { get; set; }
     [DataMember] public bool RequestAccess { get; set; }
     [DataMember] public bool DisablePublicMyTickets { get; set; }
+    [DataMember] public bool EnableSaExpiration { get; set; }
           
   }
   
@@ -63,6 +64,7 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.EnableSaExpiration = this.EnableSaExpiration;
       result.DisablePublicMyTickets = this.DisablePublicMyTickets;
       result.RequestAccess = this.RequestAccess;
       result.AutoRegister = this.AutoRegister;

@@ -1,17 +1,17 @@
 ﻿
 var chatHubClient = $.connection.socket;
+var ticketSocket = $.connection.ticketSocket;
 var notify = false;
 
-$(document).ready(function () {
-
+function loadSignalR() { 
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
             $(this).jPlayer("setMedia", {
-                mp3: "vcr/142/Audio/chime.mp3"
+                mp3: "vcr/1_7_0/Audio/chime.mp3"
             });
         },
         loop: false,
-        swfPath: "vcr/142/Js"
+        swfPath: "vcr/1_7_0/Js"
     });
 
     //Debug reasons
@@ -20,18 +20,74 @@ $(document).ready(function () {
     // Start the connection only if on main wc page
 
     $.connection.hub.start(function () {
-        chatHubClient.login(top.Ts.System.User.UserID);
+        chatHubClient.server.login(top.Ts.System.User.UserID);
     });
 
-    chatHubClient.chatMessage = function (message, chatID, chatname) {
+    var tryingToReconnect = false;
+
+    $.connection.hub.reconnecting(function () {
+        tryingToReconnect = true;
+    });
+
+    $.connection.hub.reconnected(function () {
+        tryingToReconnect = false;
+    });
+
+    $.connection.hub.disconnected(function () {
+        if (tryingToReconnect) {
+            location.reload(); // Reload the connection if it has disconnected
+        }
+    });
+
+    chatHubClient.client.chatMessage = function (message, chatID, chatname) {
 
         chatWith(chatname, chatID);
         chatAddMsg(chatID, message, chatname);
 
         if (notify) {
-            $("#jquery_jplayer_1").jPlayer("play", 0);
+            $("#jquery_jplayer_1").jPlayer("setMedia", {
+                mp3: "vcr/1_7_0/Audio/chime.mp3"
+            }).jPlayer("play", 0);
         }
     };
+
+    function getChildWindows()  {
+      var result = [];
+
+      function addWindow(element) {
+        for (var i = 0; i < element.length; i++) {
+          try {
+            if (element[i].contentWindow && element[i].contentWindow != null) result.push(element[i].contentWindow);
+          } catch (e) {}
+        }
+      }
+
+      addWindow($("#iframe-mniWC2"));
+      addWindow($("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame"));
+      addWindow($("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
+      addWindow($("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
+      addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));  
+      return result;
+    }
+
+    function getTicketWindows() {
+        var result = [];
+
+        function addWindow(element) {
+            for (var i = 0; i < element.length; i++) {
+                try {
+                    if (element[i].contentWindow && element[i].contentWindow != null) result.push(element[i].contentWindow);
+                } catch (e) { }
+            }
+        }
+
+        addWindow($("#iframe-mniWC2"));
+        addWindow($("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame"));
+        addWindow($("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
+        addWindow($("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
+        addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));
+        return result;
+    }
 
     chatHubClient.addMessage = function (data) {
         //    $("#mainWC").contents().find("#messages").append('<li>' + data + '</li>');
@@ -47,196 +103,134 @@ $(document).ready(function () {
         }
     };
 
-    chatHubClient.addThread = function (message) {
-        var mainWC = $("#iframe-mniWC2");
-        try {
-            mainWC[0].contentWindow.addThread(message);
-        }
-        catch (err) { }
+    chatHubClient.client.addThread = function (message) {
+      var windows = getChildWindows();
+      for (var i = 0; i < windows.length; i++) {
+        try { if (windows[i].addThread) windows[i].addThread(message); } catch (err) { }
+      }
+    };
 
-        var ticketWC = $(".ticketIframe").contents().find("#watercoolerIframe");
-        try {
-            for (var i = 0; i < ticketWC.length; i++) {
-                ticketWC[i].contentWindow.addThread(message);
+    chatHubClient.client.addComment = function (message) {
+      var windows = getChildWindows();
+      for (var i = 0; i < windows.length; i++) {
+          try { if (windows[i].addComment) windows[i].addComment(message); } catch (err) { }
+      }
+    };
+
+    chatHubClient.client.deleteMessage = function (messageID, parentID) {
+      var windows = getChildWindows();
+      for (var i = 0; i < windows.length; i++) {
+        try { if (windows[i].deleteMessage) windows[i].deleteMessage(messageID, parentID); } catch (err) { }
+      }
+    };
+
+    chatHubClient.client.updateLikes = function (likes, messageID, messageParentID) {
+      var windows = getChildWindows();
+      for (var i = 0; i < windows.length; i++) {
+        try { if (windows[i].updateLikes) windows[i].updateLikes(likes, messageID, messageParentID); } catch (err) { }
+      }
+    };
+
+    chatHubClient.client.updateattachments = function (message) {
+      var windows = getChildWindows();
+      for (var i = 0; i < windows.length; i++) {
+        try { if (windows[i].updateattachments) windows[i].updateattachments(message); } catch (err) { }
+      }
+    };
+
+    chatHubClient.client.disconnect = function (windowid) {
+      var windows = getChildWindows();
+      for (var i = 0; i < windows.length; i++) {
+        try { if (windows[i].disconnect) windows[i].disconnect(windowid); } catch (err) { }
+      }
+    };
+
+    chatHubClient.client.updateUsers = function () {
+      var mainWC = $("#iframe-mniWC2");
+      try {
+        if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUsers(); }
+      } catch (err) { }
+
+    };
+
+    ticketSocket.client.displayTicketUpdate = function (ticketNum, updateType) {
+        var mergeticket;
+
+        if (ticketNum.indexOf(',') != -1)
+        {
+            var mergeTickets = ticketNum.split(',');
+            var losingTicket = mergeTickets[0];
+            mergeticket = 1;
+            top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType);
+
+            if ($('.main-ticket-' + losingTicket).length > 0) {
+                if (!$('.main-ticket-' + losingTicket).is(":visible")) {
+                    top.Ts.MainPage.closeTicketTab(losingTicket);
+                    top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType);
+                }
+                else {
+                    top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType, "error");
+                }
+            }
+
+            ticketNum = mergeTickets[1];
+
+        }
+
+        if ($('.main-ticket-' + ticketNum).length > 0) {
+            if (!$('.main-ticket-' + ticketNum).is(":visible") && mergeticket != 1){
+                top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType);
+
+                if (updateType.indexOf('delete') != -1) {
+                    top.Ts.MainPage.closeTicketTab(ticketNum);
+                }
+            }
+            else {
+                if (updateType.indexOf('delete') != -1) {
+                    top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType, "error");
+                }
+            }
+            $('.main-ticket-' + ticketNum).show();
+            $('.main-ticket-' + ticketNum).addClass("tmp-visible");
+            $('.main-ticket-' + ticketNum).find('iframe')[0].contentWindow.loadTicket(ticketNum, 0);
+            $('.main-ticket-' + ticketNum).removeClass("tmp-visible");
+        }
+
+
+        if ($('.main-tab-content-item-mniDashboard').length > 0 && $('.main-tab-content-item-mniDashboard').is(":visible"))
+            $('.main-tab-content-item-mniDashboard').find('iframe')[0].contentWindow.refresh();
+    };
+
+    ticketSocket.client.getTicketViewing = function (ticketNum) {
+
+        if ($('.main-ticket-' + ticketNum).length > 0) {
+            if ($('.main-ticket-' + ticketNum).is(":visible")){
+                window.top.ticketSocket.server.ticketViewingAdd(ticketNum, top.Ts.System.User.UserID);
             }
         }
-        catch (err) { }
-
-        var groupWC = $("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame");
-        try {
-            groupWC[0].contentWindow.addThread(message);
-        } catch (err) { }
-
-        var customerWC = $("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            customerWC[0].contentWindow.addThread(message);
-        } catch (err) { }
-
-        var productWC = $("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            productWC[0].contentWindow.addThread(message);
-        } catch (err) { }
-
-
     };
 
-    chatHubClient.addComment = function (message) {
-        var mainWC = $("#iframe-mniWC2");
-        try {
-            mainWC[0].contentWindow.addComment(message);
-        }
-        catch (err) { }
 
-        var ticketWC = $(".ticketIframe").contents().find("#watercoolerIframe");
-        try {
-            for (var i = 0; i < ticketWC.length; i++) {
-                ticketWC[i].contentWindow.addComment(message);
+    ticketSocket.client.ticketViewingAdd = function (ticketNum, userID) {
+        if ($('.main-ticket-' + ticketNum).length > 0) {
+            if ($('.main-ticket-' + ticketNum).is(":visible")) {
+                $('.main-ticket-' + ticketNum).find('iframe')[0].contentWindow.addUserViewing(userID);
             }
         }
-        catch (err) { }
 
-        var groupWC = $("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame");
-        try {
-            groupWC[0].contentWindow.addComment(message);
-        } catch (err) { }
-
-        var customerWC = $("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            customerWC[0].contentWindow.addComment(message);
-        } catch (err) { }
-
-        var productWC = $("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            productWC[0].contentWindow.addComment(message);
-        } catch (err) { }
-    };
-
-    chatHubClient.deleteMessage = function (messageID, parentID) {
-        var mainWC = $("#iframe-mniWC2");
-        try {
-            mainWC[0].contentWindow.deleteMessage(messageID, parentID);
+        var ticketWin = $(".ticketIframe");
+        for (var i = 0; i < ticketWin.length; i++) {
+            ticketWin[i].contentWindow.removeUserViewing(ticketNum,userID);
         }
-        catch (err) { }
+    };
 
-        var ticketWC = $(".ticketIframe").contents().find("#watercoolerIframe");
-        try {
-            for (var i = 0; i < ticketWC.length; i++) {
-                ticketWC[i].contentWindow.deleteMessage(messageID, parentID);
-            }
+    ticketSocket.client.ticketViewingRemove = function (ticketNum, userID) {
+        var ticketWin = $(".ticketIframe");
+        for (var i = 0; i < ticketWin.length; i++) {
+            ticketWin[i].contentWindow.removeUserViewing(null, userID);
         }
-        catch (err) { }
-
-        var groupWC = $("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame");
-        try {
-            groupWC[0].contentWindow.deleteMessage(messageID, parentID);
-        } catch (err) { }
-
-        var customerWC = $("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            customerWC[0].contentWindow.deleteMessage(messageID, parentID);
-        } catch (err) { }
-
-        var productWC = $("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            productWC[0].contentWindow.deleteMessage(messageID, parentID);
-        } catch (err) { }
-
     };
 
-    chatHubClient.updateLikes = function (likes, messageID, messageParentID) {
-        var mainWC = $("#iframe-mniWC2");
-        try {
-            mainWC[0].contentWindow.updateLikes(likes, messageID, messageParentID);
-        }
-        catch (err) { }
-        var ticketWC = $(".ticketIframe").contents().find("#watercoolerIframe");
-        try {
-            for (var i = 0; i < ticketWC.length; i++) {
-                ticketWC[i].contentWindow.updateLikes(likes, messageID, messageParentID);
-            }
-        }
-        catch (err) { }
-
-        var groupWC = $("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame");
-        try {
-            groupWC[0].contentWindow.updateLikes(likes, messageID, messageParentID);
-        } catch (err) { }
-
-        var customerWC = $("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            customerWC[0].contentWindow.updateLikes(likes, messageID, messageParentID);
-        } catch (err) { }
-
-        var productWC = $("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            productWC[0].contentWindow.updateLikes(likes, messageID, messageParentID);
-        } catch (err) { }
-    };
-
-    chatHubClient.updateattachments = function (message) {
-        var mainWC = $("#iframe-mniWC2");
-        try {
-            mainWC[0].contentWindow.updateattachments(message);
-        } catch (err) { }
-        var ticketWC = $(".ticketIframe").contents().find("#watercoolerIframe");
-        try {
-            for (var i = 0; i < ticketWC.length; i++) {
-                ticketWC[i].contentWindow.updateattachments(message);
-            }
-        } catch (err) { }
-
-        var groupWC = $("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame");
-        try {
-            groupWC[0].contentWindow.updateLikes(likes, messageID, messageParentID);
-        } catch (err) { }
-
-        var customerWC = $("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            customerWC[0].contentWindow.updateLikes(likes, messageID, messageParentID);
-        } catch (err) { }
-
-        var productWC = $("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            productWC[0].contentWindow.updateLikes(likes, messageID, messageParentID);
-        } catch (err) { }
-    };
-
-    chatHubClient.disconnect = function (windowid) {
-        var mainWC = $("#iframe-mniWC2");
-        try {
-            mainWC[0].contentWindow.disconnect(windowid);
-        } catch (err) { }
-
-        var ticketWC = $(".ticketIframe").contents().find("#watercoolerIframe");
-        try {
-            for (var i = 0; i < ticketWC.length; i++) {
-                ticketWC[i].contentWindow.disconnect(windowid);
-            }
-        } catch (err) { }
-
-        var groupWC = $("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame");
-        try {
-            groupWC[0].contentWindow.disconnect(windowid);
-        } catch (err) { }
-
-        var customerWC = $("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            customerWC[0].contentWindow.disconnect(windowid);
-        } catch (err) { }
-
-        var productWC = $("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations");
-        try {
-            productWC[0].contentWindow.disconnect(windowid);
-        } catch (err) { }
-    };
-
-    chatHubClient.updateUsers = function () {
-        var mainWC = $("#iframe-mniWC2");
-        try {
-            mainWC[0].contentWindow.updateUsers();
-        } catch (err) { }
-
-    };
 
     originalTitle = document.title;
 
@@ -248,15 +242,15 @@ $(document).ready(function () {
         notify = false;
     });
 
-
-
-
-
-});
+}
 
 function openChat(name, chatid) {
     chatWith(name, chatid);
 }
 
-
+function chime(chimeType) {
+        $("#jquery_jplayer_1").jPlayer("setMedia", {
+            mp3: "vcr/1_7_0/Audio/drop.mp3"
+        }).jPlayer("play", 0);
+}
 

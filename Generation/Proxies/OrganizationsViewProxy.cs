@@ -39,6 +39,10 @@ namespace TeamSupport.Data
     [DataMember] public int? DefaultSupportUserID { get; set; }
     [DataMember] public string DefaultSupportUser { get; set; }
     [DataMember] public string DefaultSupportGroup { get; set; }
+    [DataMember] public string CompanyDomains { get; set; }
+    [DataMember] public int SupportHoursMonth { get; set; }
+    [DataMember] public int? SupportHoursUsed { get; set; }
+    [DataMember] public int? SupportHoursRemaining { get; set; }
           
   }
   
@@ -47,6 +51,10 @@ namespace TeamSupport.Data
     public OrganizationsViewItemProxy GetProxy()
     {
       OrganizationsViewItemProxy result = new OrganizationsViewItemProxy();
+      result.SupportHoursRemaining = this.SupportHoursRemaining;
+      result.SupportHoursUsed = this.SupportHoursUsed;
+      result.SupportHoursMonth = this.SupportHoursMonth;
+      result.CompanyDomains = this.CompanyDomains;
       result.DefaultSupportGroup = this.DefaultSupportGroup;
       result.DefaultSupportUser = this.DefaultSupportUser;
       result.DefaultSupportUserID = this.DefaultSupportUserID;

@@ -28,23 +28,21 @@ namespace TeamSupport.Api
 
       return wikiArticle.GetXml("Article", true);
     }
-    
-    public static string GetWikiArticles(RestCommand command)
+
+    public static string GetWikiArticles(RestCommand command, bool orderByDateCreated = false)
     {
 
       WikiArticlesView wikiArticles = new WikiArticlesView(command.LoginUser);
-      wikiArticles.LoadByOrganizationID(command.Organization.OrganizationID);
-
-
-      if (command.Format == RestFormat.XML)
+      if (orderByDateCreated)
       {
-        return wikiArticles.GetXml("Wiki", "Article", true, command.Filters);
+        wikiArticles.LoadByOrganizationID(command.Organization.OrganizationID, "CreatedDate DESC");      
       }
       else
       {
-        throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
+        wikiArticles.LoadByOrganizationID(command.Organization.OrganizationID);
       }
-      
+
+      return wikiArticles.GetXml("Wiki", "Article", true, command.Filters);
     }    
   }
   

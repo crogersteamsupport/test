@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Standard.master" AutoEventWireup="true" CodeFile="Attachment.aspx.cs" Inherits="Attachment" Title="TeamSupport.com | Download Attachment" %>
+﻿<%@ Page Language="C#" MasterPageFile="~/StandardForm.master" AutoEventWireup="true" CodeFile="Attachment.aspx.cs" Inherits="Attachment" Title="TeamSupport.com | Download Attachment" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
   <script type="text/javascript" language="javascript">

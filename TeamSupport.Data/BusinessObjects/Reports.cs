@@ -9,6 +9,7 @@ namespace TeamSupport.Data
 {
   public partial class Report
   {
+    // begin old stuff
     public string GetSql(bool isSchemaOnly)
     {
       return GetSql(isSchemaOnly, null);
@@ -32,6 +33,128 @@ namespace TeamSupport.Data
             false);
 
         string from = select + " " + Query.Substring(fromStart);
+        return from;
+      }
+      else
+      {
+        ReportSubcategory sub = (ReportSubcategory)ReportSubcategories.GetReportSubcategory(Collection.LoginUser, (int)ReportSubcategoryID);
+
+        ReportFields fields = new ReportFields(Collection.LoginUser);
+        fields.LoadByReportID(ReportID);
+
+        ReportTables tables = new ReportTables(Collection.LoginUser);
+        tables.LoadAll();
+
+        ReportTableFields tableFields = new ReportTableFields(Collection.LoginUser);
+        tableFields.LoadAll();
+
+        StringBuilder builder = new StringBuilder();
+        foreach (ReportField field in fields)
+        {
+
+          if (field.IsCustomField)
+          {
+            CustomField customField = (CustomField)CustomFields.GetCustomField(Collection.LoginUser, field.LinkedFieldID);
+            if (customField == null) continue;
+            string fieldName = DataUtils.GetReportPrimaryKeyFieldName(customField.RefType);
+            if (fieldName != "")
+            {
+              fieldName = DataUtils.GetCustomFieldColumn(Collection.LoginUser, customField, fieldName, true);
+              if (builder.Length < 1)
+              {
+                builder.Append("SELECT " + fieldName);
+              }
+              else
+              {
+                builder.Append(", " + fieldName);
+              }
+
+            }
+
+          }
+          else
+          {
+            ReportTableField tableField = tableFields.FindByReportTableFieldID(field.LinkedFieldID);
+            ReportTable table = tables.FindByReportTableID(tableField.ReportTableID);
+            string fieldName = table.TableName + "." + tableField.FieldName;
+            if (tableField.DataType.Trim().ToLower() == "text")
+              fieldName = "dbo.StripHTML(" + fieldName + ")";
+
+            if (builder.Length < 1)
+            {
+              builder.Append("SELECT " + fieldName + " AS [" + tableField.Alias + "]");
+            }
+            else
+            {
+              builder.Append(", " + fieldName + " AS [" + tableField.Alias + "]");
+            }
+
+          }
+        }
+
+        builder.Append(" " + sub.BaseQuery);
+
+        ReportTable mainTable = tables.FindByReportTableID(sub.ReportCategoryTableID);
+        builder.Append(" WHERE (" + mainTable.TableName + "." + mainTable.OrganizationIDFieldName + " = @OrganizationID)");
+        if (isSchemaOnly) builder.Append(" AND (0=1)");
+        if (!string.IsNullOrEmpty(QueryObject))
+        {
+          ReportConditions conditions = (ReportConditions)DataUtils.StringToObject(QueryObject);
+          conditions.LoginUser = Collection.LoginUser;
+          string where = conditions.GetSQL();
+          if (where != "") builder.Append(" AND " + where);
+        }
+
+        if (extraConditions != null)
+        {
+          string where = extraConditions.GetSQL();
+          if (where != "") builder.Append(" AND " + where);
+        }
+
+        return builder.ToString();
+      }
+    }
+
+    public string GetSqlWithOrderByClause(bool isSchemaOnly, ReportConditions extraConditions)
+    {
+      string orderByClause = null;
+      ReportData reportData = new ReportData(Collection.LoginUser);
+      reportData.LoadReportData(ReportID, Collection.LoginUser.UserID);
+      if (!reportData.IsEmpty)
+      {
+        orderByClause = reportData[0].OrderByClause;
+      }
+
+      if (!string.IsNullOrEmpty(Query) || ReportSubcategoryID == null)
+      {
+        if (CustomRefType == ReferenceType.None)
+        {
+          string result = Query;
+          if (!string.IsNullOrEmpty(orderByClause))
+          {
+            result = AddOrderByClause(result.Replace("_", " "), orderByClause);
+          }
+          return result;
+        }
+
+        int fromStart = Query.IndexOf("FROM");
+        string select = Query.Substring(0, fromStart) +
+          DataUtils.GetCustomFieldColumns(
+            Collection.LoginUser,
+            CustomRefType,
+            CustomAuxID,
+            Collection.LoginUser.OrganizationID,
+            CustomFieldKeyName,
+            1000,
+            false);
+
+        string from = select + " " + Query.Substring(fromStart);
+
+        if (!string.IsNullOrEmpty(orderByClause))
+        {
+          from = AddOrderByClause(from.Replace("_", " "), orderByClause);
+        }
+
         return from;
       }
       else
@@ -109,8 +232,26 @@ namespace TeamSupport.Data
           if (where != "") builder.Append(" AND " + where);
         }
 
-        return builder.ToString();
+        string completeQuery = builder.ToString();
+
+        if (!string.IsNullOrEmpty(orderByClause))
+        {
+          completeQuery = AddOrderByClause(completeQuery.Replace("_", " "), orderByClause);
+        }
+
+        return completeQuery;
       }
+    }
+
+    private string AddOrderByClause(string query, string orderByClause)
+    {
+      string result = query;
+      int indexOfOrderBy = query.ToLower().LastIndexOf("order by");
+      if (indexOfOrderBy > 0)
+      {
+        result = query.Substring(0, indexOfOrderBy);
+      }
+      return result + " ORDER BY " + orderByClause;
     }
 
     public static void CreateParameters(LoginUser loginUser, SqlCommand command, int userID)
@@ -154,11 +295,40 @@ namespace TeamSupport.Data
             }
         }
     }
+    // end old stuff
+
+
+    public int CloneReport(string newName)
+    {
+      Reports reports = new Reports(this.Collection.LoginUser);
+      Report report = reports.AddNewReport();
+
+      report.ReportType = this.ReportType;
+      report.LastSqlExecuted = this.LastSqlExecuted;
+      report.ExternalURL = this.ExternalURL;
+      report.QueryObject = this.QueryObject;
+      report.ReportSubcategoryID = this.ReportSubcategoryID;
+      report.CustomAuxID = this.CustomAuxID;
+      report.Row["CustomRefType"] = this.Row["CustomRefType"];
+      report.CustomFieldKeyName = this.CustomFieldKeyName;
+      report.Query = this.Query;
+
+      report.Description = this.Description;
+      report.Name = newName;
+      report.OrganizationID = this.Collection.LoginUser.OrganizationID;
+      report.DateCreated = DateTime.UtcNow;
+      report.DateModified = DateTime.UtcNow;
+      report.ModifierID = this.Collection.LoginUser.UserID;
+      report.CreatorID = this.Collection.LoginUser.UserID;
+      reports.Save();
+
+      return report.ReportID;
+    }
   }
 
   public partial class Reports
   {
-
+    // begin old stuff
     public void LoadAll(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -211,6 +381,87 @@ namespace TeamSupport.Data
                     Fill(command);
             }
         }
+    }
+    // end old stuff
+
+    public void LoadAll(int organizationID, int userID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+SELECT r.*, 
+ISNULL((SELECT rus.IsFavorite FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsFavorite,
+ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsHidden
+FROM Reports r
+WHERE (r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL) 
+AND r.ReportID NOT IN (SELECT ros.ReportID FROM ReportOrganizationSettings ros WHERE ros.OrganizationID = @OrganizationID AND ros.IsHidden=1) 
+ORDER BY IsFavorite DESC, r.Name
+";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@UserID", userID);
+        Fill(command);
+      }
+    }
+
+    public static void HideStockReport(LoginUser loginUser, int organizationID, int reportID)
+    {
+      SqlCommand command = new SqlCommand();
+
+      command.CommandText = @"
+UPDATE ReportOrganizationSettings SET IsHidden=1 WHERE OrganizationID = @OrganizationID AND ReportID = @ReportID
+IF @@ROWCOUNT=0
+    INSERT INTO ReportOrganizationSettings (OrganizationID, ReportID, IsHidden) VALUES (@OrganizationID, @ReportID, 1)
+";
+      command.Parameters.AddWithValue("OrganizationID", organizationID);
+      command.Parameters.AddWithValue("ReportID", reportID);
+      SqlExecutor.ExecuteNonQuery(loginUser, command); 
+    }
+
+    public static void SetIsFavorite(LoginUser loginUser, int userID, int reportID, bool value)
+    {
+      SqlCommand command = new SqlCommand();
+
+      command.CommandText = @"
+UPDATE ReportUserSettings SET IsFavorite=@value WHERE UserID = @UserID AND ReportID = @ReportID
+IF @@ROWCOUNT=0
+    INSERT INTO ReportUserSettings (UserID, ReportID, IsFavorite) VALUES (@UserID, @ReportID, @value)
+";
+      command.Parameters.AddWithValue("UserID", userID);
+      command.Parameters.AddWithValue("ReportID", reportID);
+      command.Parameters.AddWithValue("value", value);
+
+      SqlExecutor.ExecuteNonQuery(loginUser, command);
+    }
+
+    public static void SetIsHiddenFromUser(LoginUser loginUser, int userID, int reportID, bool value)
+    {
+      SqlCommand command = new SqlCommand();
+
+      command.CommandText = @"
+UPDATE ReportUserSettings SET IsHidden=@value WHERE UserID = @UserID AND ReportID = @ReportID
+IF @@ROWCOUNT=0
+    INSERT INTO ReportUserSettings (UserID, ReportID, IsHidden) VALUES (@UserID, @ReportID, @value)
+";
+      command.Parameters.AddWithValue("UserID", userID);
+      command.Parameters.AddWithValue("ReportID", reportID);
+      command.Parameters.AddWithValue("value", value);
+
+      SqlExecutor.ExecuteNonQuery(loginUser, command);
+    }
+
+
+    public Report FindByName(string name)
+    {
+      name = name.Trim().ToLower();
+      foreach (Report report in this)
+      {
+        if (report.Name.ToLower().Trim() == name)
+        {
+          return report;
+        }
+      }
+      return null;
     }
 
   }

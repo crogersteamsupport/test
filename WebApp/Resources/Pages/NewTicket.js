@@ -8,6 +8,42 @@ $(document).ready(function () {
   var _lastTicketTypeID = null;
   var _ticketID = null;
   var _doClose = false;
+  var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility ;
+  top.Ts.System.logAction('New Ticket - Started');
+
+  $('#knowledgeBaseCategoryDiv').hide();
+
+  if (!canEdit)
+  {
+      //$('.newticket-kb').attr("disabled", true);
+      $('.new-ticket-div').hide();
+  }
+  else
+  {
+      $('.newticket-kb').click(function (e) {
+              if ($('.newticket-kb').prop('checked')) {
+                  $('#knowledgeBaseCategoryDiv').show();
+              }
+              else {
+                  $('#knowledgeBaseCategoryDiv').hide();
+              }
+      });
+  }
+
+  var knowledgeBaseCategories = top.Ts.Cache.getKnowledgeBaseCategories();
+  var option = $('<option>').text('Unassigned').attr('value', -1).appendTo('.newticket-kbCategory').data('o', null).attr('selected', 'selected');
+  for (var i = 0; i < knowledgeBaseCategories.length; i++) {
+      var cat = knowledgeBaseCategories[i].Category;
+      option = $('<option>').text(cat.CategoryName).attr('value', cat.CategoryID).appendTo('.newticket-kbCategory').data('o', cat);
+      if ($(this).text() === cat.CategoryName) { option.attr('selected', 'selected'); }
+
+    for (var j = 0; j < knowledgeBaseCategories[i].Subcategories.length; j++) {
+      var sub = knowledgeBaseCategories[i].Subcategories[j];
+      option = $('<option>').text(cat.CategoryName + ' -> ' + sub.CategoryName).attr('value', sub.CategoryID).appendTo('.newticket-kbCategory').data('o', sub);
+    }
+  }
+
+  $('.newticket-kbCategory').combobox();
 
   $('.ticket-content-header h1').click(function (e) {
     e.preventDefault();
@@ -19,8 +55,8 @@ $(document).ready(function () {
   if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
 
   $('.ticket-action-form-date').datetimepicker().datetimepicker('setDate', new Date());
-  $('.ticket-action-form-hours').spinner({ min: 0 });
-  $('.ticket-action-form-minutes').spinner({ min: 0 });
+  $('.ticket-action-form-hours').spinner({ min: 0 }).val(0);
+  $('.ticket-action-form-minutes').spinner({ min: 0 }).val(0);
 
   var types = top.Ts.Cache.getTicketTypes();
   for (var i = 0; i < types.length; i++) {
@@ -103,9 +139,9 @@ $(document).ready(function () {
   function setTicketTypeTemplateText() {
     var ticketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
     top.Ts.Services.Tickets.GetTicketTypeTemplateText(ticketTypeID, function (result) {
-      if (result != null) {
-        $('.newticket-desc').html(result);
-
+      if (result != null && result != "" && result != "<br>") {
+        var currenttext = $('.newticket-desc').html();
+        $('.newticket-desc').html(currenttext + result);
       }
 
     });
@@ -398,9 +434,9 @@ $(document).ready(function () {
       var editorOptions = {
         theme: "advanced",
         skin: "o2k7",
-        plugins: "autoresize,paste,table,spellchecker,inlinepopups,table",
-        theme_advanced_buttons1: "insertTicket,insertKb,recordScreen,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
-        theme_advanced_buttons2: "forecolor,backcolor,fontselect,fontsizeselect,bold,italic,underline,strikethrough,blockquote,|,spellchecker",
+        plugins: "imagemanager,autoresize,paste,table,inlinepopups,table",
+        theme_advanced_buttons1: "insertPasteImage,insertKb,insertTicket,insertimage,insertDropBox,recordScreen,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
+        theme_advanced_buttons2: "justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,fontselect,fontsizeselect,bold,italic,underline,strikethrough,blockquote",
         //theme_advanced_buttons3: "tablecontrols",
         theme_advanced_buttons3: "",
         theme_advanced_buttons4: "",
@@ -410,6 +446,9 @@ $(document).ready(function () {
         theme_advanced_resizing: true,
         autoresize_bottom_margin: 10,
         autoresize_on_init: true,
+        force_br_newlines: true,
+        force_p_newlines: false,
+        forced_root_block: '',
         spellchecker_rpc_url: "../../../TinyMCEHandler.aspx?module=SpellChecker",
         gecko_spellcheck: true,
         extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
@@ -428,6 +467,7 @@ $(document).ready(function () {
             title: 'Insert Ticket',
             image: '../images/nav/16/tickets.png',
             onclick: function () {
+              top.Ts.System.logAction('New Ticket - Ticket Inserted');
               top.Ts.MainPage.selectTicket(null, function (ticketID) {
                 top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
                   ed.focus();
@@ -442,6 +482,52 @@ $(document).ready(function () {
               });
             }
           });
+          
+
+          ed.addButton('insertPasteImage', {
+              title: 'Insert Pasted Image',
+              image: '../images/nav/16/imagepaste.png',
+              onclick: function () {
+                  if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
+                      alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
+                  }
+                  else{
+                      top.Ts.MainPage.pasteImage(null, function (result) {
+                          ed.focus();
+                          if (result != ""){
+                              var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                          ed.selection.setContent(html);
+                          ed.execCommand('mceAutoResize');
+                          ed.focus();
+                          }
+                      });
+                  }
+              }
+          });
+
+          ed.addButton('insertDropBox', {
+            title: 'Insert DropBox',
+            image: '../images/icons/dropbox.png',
+            onclick: function () {
+              var options = {
+                linkType: "preview",
+                success: function (files) {
+                  top.Ts.System.logAction('New Ticket - DropBox Added');
+                  ed.focus();
+                  var html = '<a href=' + files[0].link + '>' + files[0].name + '</a>';
+                  ed.selection.setContent(html);
+                  ed.execCommand('mceAutoResize');
+                  ed.focus();
+                },
+                cancel: function () {
+                  alert('There was a problem inserting the dropbox file.');
+                }
+              };
+              Dropbox.choose(options);
+            }
+          });
+
+
           ed.addButton('insertKb', {
             title: 'Insert Knowledgebase',
             image: '../images/nav/16/knowledge.png',
@@ -457,7 +543,7 @@ $(document).ready(function () {
                   var ticket = result[0];
                   var actions = result[1];
 
-                  var html = '<div><h2>' + ticket.Name + '</h2>';
+                  var html = '<div>';
 
                   for (var i = 0; i < actions.length; i++) {
                     html = html + '<div>' + actions[i].Description + '</div></br>';
@@ -468,6 +554,7 @@ $(document).ready(function () {
                   ed.selection.setContent(html);
                   ed.execCommand('mceAutoResize');
                   ed.focus();
+                  top.Ts.System.logAction('New Ticket - KB Inserted');
 
                   //needs to resize or go to end
 
@@ -485,10 +572,12 @@ $(document).ready(function () {
               onclick: function () {
                 top.Ts.MainPage.recordScreen(null, function (result) {
                   var link = '<a href="' + result.url + '" target="_blank">Click here to view screen recording video</a>';
-                  var html = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/' + result.id + '" width="650" height="400" frameborder="0">' + link + '</iframe></div>'
+                  var html = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/' + result.id + '" width="650" height="400" frameborder="0">' + link + '</iframe>&nbsp;</div>'
                   ed.selection.setContent(html);
                   ed.execCommand('mceAutoResize');
                   ed.focus();
+                  top.Ts.System.logAction('New Ticket - ScreenR Inserted');
+
                 });
               }
             });
@@ -520,6 +609,7 @@ $(document).ready(function () {
 
   function appendCustomer(customer) {
     if (customer == null) return;
+    top.Ts.System.logAction('New Ticket - Customer Added');
 
     var itemClass = (customer.UserID ? 'ticket-customer-contact' : 'ticket-customer-company');
     var item = $('<div>')
@@ -595,31 +685,28 @@ $(document).ready(function () {
   var execGetCustomer = null;
   function getCustomers(request, response) {
     if (execGetCustomer) { execGetCustomer._executor.abort(); }
-    execGetCustomer = top.Ts.Services.Organizations.GetUserOrOrganization(request.term, function (result) { response(result); });
+    execGetCustomer = top.Ts.Services.Organizations.GetUserOrOrganizationForTicket(request.term, function (result) { response(result); });
   }
 
   function ellipseString(text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
   var execGetCompany = null;
-  function execGetCompany(request, response) {
+  function getCompany(request, response) {
     if (execGetCompany) { execGetCompany._executor.abort(); }
-    execGetCompany = top.Ts.Services.Organizations.SearchOrganization(request.term, function (result) { response(result); });
-  }
-  /*
-  $('.ticket-new-customer-company')
-  .autocomplete({
-  minLength: 2,
-  source: execGetCompany,
-  select: function (event, ui) {
-  $(this)
-  .data('item', ui.item)
-  .removeClass('ui-autocomplete-loading')
-  .next().show();
+    execGetCompany = top.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) { response(result); });
   }
 
-  });
-    
-  */
+  $('.ticket-new-customer-company')
+        .autocomplete({
+          minLength: 2,
+          source: getCompany,
+          select: function (event, ui) {
+            $(this)
+            .data('item', ui.item)
+            .removeClass('ui-autocomplete-loading')
+          }
+        });
+
 
   $('.ticket-customer-new').click(function (e) {
     e.preventDefault();
@@ -627,11 +714,61 @@ $(document).ready(function () {
     $('.ticket-new-customer').show();
   });
 
+  $('.ticket-new-customer-cancel').click(function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $('.ticket-new-customer-email').val('');
+    $('.ticket-new-customer-first').val('');
+    $('.ticket-new-customer-last').val('');
+    $('.ticket-new-customer-company').val('');
+    $('.ticket-new-customer').hide();
+  });
+
+  $('.ticket-new-customer-save').click(function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    top.Ts.System.logAction('New Ticket - New Customer Added');
+    var email = $('.ticket-new-customer-email').val();
+    var firstName = $('.ticket-new-customer-first').val();
+    var lastName = $('.ticket-new-customer-last').val();
+    var companyName = $('.ticket-new-customer-company').val();
+    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, false, function (result) {
+      if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
+        top.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
+          appendCustomer(result);
+          $('.ticket-new-customer-email').val('');
+          $('.ticket-new-customer-first').val('');
+          $('.ticket-new-customer-last').val('');
+          $('.ticket-new-customer-company').val('');
+          $('.ticket-new-customer').hide();
+        });
+      }
+      else if (result.indexOf("The company you have specified is invalid") !== -1) {
+        if (confirm('Unknown company, would you like to create it?')) {
+          top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, true, function (result) {
+            top.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
+              appendCustomer(result);
+              $('.ticket-new-customer-email').val('');
+              $('.ticket-new-customer-first').val('');
+              $('.ticket-new-customer-last').val('');
+              $('.ticket-new-customer-company').val('');
+              $('.ticket-new-customer').hide();
+            });
+          });
+        }
+      }
+      else {
+        alert(result);
+      }
+    });
+  });
+
   $('.ticket-customer-add')
     .click(function (e) {
       e.preventDefault();
       e.stopPropagation();
-      $('.ticket-rail-input').remove();
+      //$('.ticket-rail-input').remove();
+      $('.ticket-new-customer').hide();
       $(this).parent().find('.ui-icon').removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
 
       var container = $('<div>')
@@ -699,6 +836,8 @@ $(document).ready(function () {
 
   //Assets
   function appendAsset(asset) {
+    top.Ts.System.logAction('New Ticket - Asset Added');
+
     var item = $('<div>')
       .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-asset')
       .data('data', asset);
@@ -800,6 +939,8 @@ $(document).ready(function () {
   }
 
   function appendTag(tag) {
+    top.Ts.System.logAction('New Ticket - Tag Added');
+
     var item = getRemovableItem(tag, 'ticket-tag', 'a');
     /*var link = $('<a>')
     .attr('href', '#')
@@ -884,6 +1025,8 @@ $(document).ready(function () {
   }
 
   function appendRelated(related) {
+    top.Ts.System.logAction('New Ticket - Ticket Associated');
+
     var item = getRemovableItem(related, 'ticket-related', ' ', ' ');
 
     var icon = 'ts-icon-ticket-related';
@@ -983,6 +1126,9 @@ $(document).ready(function () {
 
 
   function appendQueue(queue) {
+    top.Ts.System.logAction('New Ticket - Queued');
+    top.Ts.System.logAction('Queued');
+
     var item = $('<div>')
       .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-queue')
       .data('data', queue);
@@ -1075,6 +1221,8 @@ $(document).ready(function () {
     });
 
   function appendSubscriber(subscriber) {
+    top.Ts.System.logAction('New Ticket - Subcriber Added');
+
     var item = $('<div>')
       .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-subscriber')
       .data('data', subscriber);
@@ -1162,6 +1310,8 @@ $(document).ready(function () {
 
 
   function appendReminder(reminder) {
+    top.Ts.System.logAction('New Ticket - Reminder Added');
+
     var item = $('<div>')
       .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ticket-reminder')
       .data('o', reminder);
@@ -1214,61 +1364,77 @@ $(document).ready(function () {
     });
 
   function isFormValid(callback) {
-    top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
-      var result = true;
+    top.Ts.Services.Organizations.IsProductRequired(function (isProductRequired) {
+      top.Ts.Services.Organizations.IsProductVersionRequired(function (isProductVersionRequired) {
+        top.Ts.Settings.Organization.read('RequireNewTicketCustomer', false, function (requireNewTicketCustomer) {
+          var result = true;
+          var product = $('.newticket-product');
+          var reportversion = $('.newticket-reported');
 
-      $('.newticket-name').parent().removeClass('ui-corner-all ui-state-error');
-      if ($.trim($('.newticket-name').val()) == '') {
-        $('.newticket-name').parent().addClass('ui-corner-all ui-state-error');
-        result = false;
-      }
-
-
-      $('.newticket-custom-field').removeClass('ui-state-error ui-corner-all');
-      $('.newticket-custom-field:visible').each(function () {
-        var field = $(this).data('o');
-        if (field.IsRequired) {
-          switch (field.FieldType) {
-            case top.Ts.CustomFieldType.Text:
-              if ($.trim($(this).find('input').val()) == '') {
-                $(this).addClass('ui-state-error ui-corner-all');
-                result = false;
-              }
-              break;
-            case top.Ts.CustomFieldType.DateTime:
-              if ($.trim($(this).find('input').val()) == '') {
-                $(this).addClass('ui-state-error ui-corner-all');
-                result = false;
-              }
-              break;
-            case top.Ts.CustomFieldType.Number:
-              if ($.trim($(this).find('input').val()) == '') {
-                $(this).addClass('ui-state-error ui-corner-all');
-                result = false;
-              }
-              break;
-            case top.Ts.CustomFieldType.PickList:
-              if (field.IsFirstIndexSelect == true && $(this).find('select option:selected').index() < 1) {
-                $(this).addClass('ui-state-error ui-corner-all');
-                result = false;
-              }
-              break;
-            default:
+          product.parent().removeClass('ui-state-error ui-corner-all');
+          if (isProductRequired && ($('.newticket-product').val() == -1)) {
+            product.parent().addClass('ui-state-error ui-corner-all');
+            result = false;
           }
-        }
+
+          reportversion.parent().removeClass('ui-state-error ui-corner-all');
+          if (isProductVersionRequired && ($('.newticket-reported').val() == -1)) {
+            reportversion.parent().addClass('ui-state-error ui-corner-all');
+            result = false;
+          }
+
+          $('.newticket-name').parent().removeClass('ui-corner-all ui-state-error');
+          if ($.trim($('.newticket-name').val()) == '') {
+            $('.newticket-name').parent().addClass('ui-corner-all ui-state-error');
+            result = false;
+          }
+
+          $('.newticket-custom-field').removeClass('ui-state-error ui-corner-all');
+          $('.newticket-custom-field:visible').each(function () {
+            var field = $(this).data('o');
+            if (field.IsRequired) {
+              switch (field.FieldType) {
+                case top.Ts.CustomFieldType.Text:
+                  if ($.trim($(this).find('input').val()) == '') {
+                    $(this).addClass('ui-state-error ui-corner-all');
+                    result = false;
+                  }
+                  break;
+                case top.Ts.CustomFieldType.DateTime:
+                  if ($.trim($(this).find('input').val()) == '') {
+                    $(this).addClass('ui-state-error ui-corner-all');
+                    result = false;
+                  }
+                  break;
+                case top.Ts.CustomFieldType.Number:
+                  if ($.trim($(this).find('input').val()) == '') {
+                    $(this).addClass('ui-state-error ui-corner-all');
+                    result = false;
+                  }
+                  break;
+                case top.Ts.CustomFieldType.PickList:
+                  if (field.IsFirstIndexSelect == true && $(this).find('select option:selected').index() < 1) {
+                    $(this).addClass('ui-state-error ui-corner-all');
+                    result = false;
+                  }
+                  break;
+                default:
+              }
+            }
+          });
+
+          $('.ticket-widget-customers').removeClass('ui-corner-all ui-state-error');
+          if (requireNewTicketCustomer == "True" && $('.newticket-kb').prop('checked') == false ) {
+            var customerCount = $('.ticket-customer-company').length + $('.ticket-customer-contact').length;
+            if (customerCount < 1) {
+              $('.ticket-widget-customers').addClass('ui-corner-all ui-state-error');
+              result = false;
+            }
+          }
+
+          callback(result);
+        });
       });
-
-      $('.ticket-widget-customers').removeClass('ui-corner-all ui-state-error');
-      if (requireNewTicketCustomer == "True") {
-        var customerCount = $('.ticket-customer-company').length + $('.ticket-customer-contact').length;
-        if (customerCount < 1) {
-          $('.ticket-widget-customers').addClass('ui-corner-all ui-state-error');
-          result = false;
-        }
-      }
-
-
-      callback(result);
     });
   }
 
@@ -1311,6 +1477,14 @@ $(document).ready(function () {
           }
         });
         break;
+        case 'mnikb':
+            if (canEdit) {
+                $('.newticket-kb').prop('checked', true);
+                $('#knowledgeBaseCategoryDiv').show();
+            }
+
+
+        break;
       default:
         if (menuID.indexOf('tickettype') > -1) {
           var ticketTypeID = menuID.substr(14, menuID.length - 14);
@@ -1319,7 +1493,7 @@ $(document).ready(function () {
           showCustomFields();
           copyCustomFieldValues();
           _lastTicketTypeID = ticketTypeID;
-          setTicketTypeTemplateText();
+          //setTicketTypeTemplateText();
         }
 
     }
@@ -1407,6 +1581,8 @@ $(document).ready(function () {
     e.preventDefault();
     e.stopPropagation();
     if (confirm('Are you sure you would like to cancel this ticket?')) { top.Ts.MainPage.closeNewTicketTab(); }
+    top.Ts.System.logAction('New Ticket - Canceled');
+
     //window.location = window.location;
   });
 
@@ -1415,6 +1591,8 @@ $(document).ready(function () {
     e.stopPropagation();
     _doClose = true;
     $('.newticket-save').click();
+    top.Ts.System.logAction('New Ticket - Save & Closed');
+
   });
 
 
@@ -1439,6 +1617,7 @@ $(document).ready(function () {
       info.ResolvedID = $('.newticket-resolved').val();
       info.IsVisibleOnPortal = $('.newticket-portal').prop('checked')
       info.IsKnowledgebase = $('.newticket-kb').prop('checked');
+      info.KnowledgeBaseCategoryID = $('.newticket-kbCategory').val();
       info.Description = $('.newticket-desc').html();
 
       info.TimeSpent = parseInt($('.ticket-action-form-hours').val()) * 60 + parseInt($('.ticket-action-form-minutes').val());
@@ -1447,7 +1626,7 @@ $(document).ready(function () {
 
       // Custom Values
       info.Fields = new Array();
-      $('.newticket-custom-field').each(function () {
+      $('.newticket-custom-field:visible').each(function () {
         var field = new Object();
         field.CustomFieldID = $(this).data('o').CustomFieldID;
         switch ($(this).data('o').FieldType) {
@@ -1534,6 +1713,8 @@ $(document).ready(function () {
           return;
         }
         _ticketID = result[0];
+        top.Ts.System.logAction('Ticket Created');
+
         if ($('.upload-queue li').length > 0) {
           $('.upload-queue li').each(function (i, o) {
             var data = $(o).data('data');
@@ -1555,7 +1736,8 @@ $(document).ready(function () {
   });
 
 
-  $('a').addClass('ui-state-default ts-link');
+  $('.ticket-rail a').addClass('ui-state-default ts-link');
+
 
 });
 

@@ -29,6 +29,8 @@ namespace TeamSupport.Data
     [DataMember] public int TicketID { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public string DisplayName { get; set; }
+    [DataMember] public string SalesForceID { get; set; }          
+    [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
           
   }
   
@@ -37,7 +39,7 @@ namespace TeamSupport.Data
     public ActionProxy GetProxy()
     {
       ActionProxy result = new ActionProxy();
-      result.Description = this.Description;
+      result.SalesForceID = this.SalesForceID;
       result.TicketID = this.TicketID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
@@ -45,6 +47,7 @@ namespace TeamSupport.Data
       result.IsKnowledgeBase = this.IsKnowledgeBase;
       result.IsVisibleOnPortal = this.IsVisibleOnPortal;
       result.TimeSpent = this.TimeSpent;
+      result.Description = this.Description;
       result.Name = this.Name;
       result.SystemActionTypeID = this.SystemActionTypeID;
       result.ActionTypeID = this.ActionTypeID;
@@ -54,6 +57,7 @@ namespace TeamSupport.Data
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
+      result.DateModifiedBySalesForceSync = this.DateModifiedBySalesForceSyncUtc == null ? this.DateModifiedBySalesForceSyncUtc : DateTime.SpecifyKind((DateTime)this.DateModifiedBySalesForceSyncUtc, DateTimeKind.Utc); 
       result.DateStarted = this.DateStartedUtc == null ? this.DateStartedUtc : DateTime.SpecifyKind((DateTime)this.DateStartedUtc, DateTimeKind.Utc); 
        
       return result;

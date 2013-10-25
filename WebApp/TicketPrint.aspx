@@ -4,9 +4,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
   <title>Ticket Print Preview</title>
-  <link href="css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <script src="js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
-  <script src="vcr/142/Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+  <link href="vcr/1_7_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <script src="vcr/1_7_0/Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="vcr/1_7_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <style type="text/css">
     .sectionDiv
     {

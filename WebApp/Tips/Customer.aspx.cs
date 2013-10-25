@@ -12,6 +12,7 @@ public partial class Tips_Customer : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+        string domain = Settings.SystemDB.ReadString("AppDomain", "https://app.teamsupport.com");
       if (Request["CustomerID"] == null) EndResponse("Invalid Customer");
 
       int organizationID = int.Parse(Request["CustomerID"]);
@@ -26,7 +27,16 @@ public partial class Tips_Customer : System.Web.UI.Page
       StringBuilder props = new StringBuilder();
       if (!string.IsNullOrEmpty(organization.Website))
       {
-        props.Append(string.Format("<dt>Website</dt><dd><a target=\"_blank\" href=\"{0}\">{0}</a></dd>", organization.Website));
+          string website;
+          
+          website = organization.Website;
+
+          if (organization.Website.IndexOf("http://") < 0 && organization.Website.IndexOf("https://") < 0)
+          {
+              website = "http://" + organization.Website;
+          }
+
+          props.Append(string.Format("<dt>Website</dt><dd><a target=\"_blank\" href=\"{0}\">{0}</a></dd>", website));
       }
 
       if (organization.SAExpirationDate != null)
@@ -40,10 +50,43 @@ public partial class Tips_Customer : System.Web.UI.Page
 
       foreach (PhoneNumbersViewItem number in numbers)
       {
-        props.Append(string.Format("<dt>{0}</dt><dd>{1} {2}</dd>", number.PhoneType, number.PhoneNumber, number.Extension));
+        props.Append(string.Format("<dt>{0}</dt><dd>{1} {2}</dd>", number.PhoneType, number.FormattedPhoneNumber, number.Extension));
       }
 
       tipProps.InnerHtml = props.ToString();
+
+      TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+      tickets.LoadLatest5Tickets(organizationID);
+      StringBuilder recent = new StringBuilder();
+
+      foreach (TicketsViewItem t in tickets)
+      {
+          recent.Append(string.Format("<div><a href='{0}?TicketNumber={1}' target='_blank' onclick='top.Ts.MainPage.openTicket({2}); return false;'><span class='ticket-tip-number'>{3}</span><span class='ticket-tip-status'>{4}</span><span class='ticket-tip-name'>{5}</span></a></div>", domain, t.TicketNumber, t.TicketNumber, t.TicketNumber, t.Status.Length > 17 ? t.Status.Substring(0, 15) + "..." : t.Status, t.Name.Length > 35 ? t.Name.Substring(0, 33) + "..." : t.Name)); 
+      }
+
+      if (recent.Length == 0)
+          recent.Append("There are no recent tickets for this organization");
+
+      tipRecent.InnerHtml = recent.ToString();
+
+      //Support Hours
+      StringBuilder supportHours = new StringBuilder();
+
+      if (organization.SupportHoursMonth > 0)
+      {
+          tipTimeSpent.Visible = true;
+          double timeSpent = organization.GetTimeSpentMonth(TSAuthentication.GetLoginUser(), organization.OrganizationID) / 60;
+
+          supportHours.AppendFormat("<div class='ui-widget-content ts-separator'></div><div id='tipRecent' runat='server'><dt>Monthly Support Hours</dt><dt>Hours Used</dt><dd>{0}</dd><dt>Hours Remaining</dt>", Math.Round(timeSpent,2));
+
+          if (timeSpent > organization.SupportHoursMonth)
+              supportHours.AppendFormat("<dd class='red'>-{0}</dd>", Math.Round(timeSpent - organization.SupportHoursMonth, 2));
+          else
+              supportHours.AppendFormat("<dd>{0}</dd>", Math.Round(organization.SupportHoursMonth - timeSpent,2));
+      }
+
+      tipTimeSpent.InnerHtml = supportHours.ToString();
+
     }
 
     private void EndResponse(string message)

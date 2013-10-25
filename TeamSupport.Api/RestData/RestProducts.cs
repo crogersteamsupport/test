@@ -21,10 +21,17 @@ namespace TeamSupport.Api
       return item.GetXml("Product", true);
     }
 
-    public static string GetProducts(RestCommand command)
+    public static string GetProducts(RestCommand command, bool orderByDateCreated = false)
     {
       Products items = new Products(command.LoginUser);
-      items.LoadByOrganizationID(command.Organization.OrganizationID);
+      if (orderByDateCreated)
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID);
+      }
       return items.GetXml("Products", "Product", true, command.Filters);
     }
 

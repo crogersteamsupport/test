@@ -62,11 +62,11 @@ namespace TeamSupport.Data
     /// </summary>
     /// <param name="organizationID"></param>
 
-    public void LoadByOrganizationID(int organizationID)
+    public void LoadByOrganizationID(int organizationID, string orderBy = "Name")
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM Products WHERE OrganizationID = @OrganizationID ORDER BY Name";
+        command.CommandText = "SELECT * FROM Products WHERE OrganizationID = @OrganizationID ORDER BY " + orderBy;
         command.CommandText = InjectCustomFields(command.CommandText, "ProductID", ReferenceType.Products);
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
@@ -293,7 +293,18 @@ namespace TeamSupport.Data
         }
     }
 
+    public void LoadByProductName(int parentID, string name)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Products WHERE Name = @Name AND OrganizationID = @ParentID";
+        command.CommandType = CommandType.Text;
 
+        command.Parameters.AddWithValue("@Name", name);
+        command.Parameters.AddWithValue("@ParentID", parentID);
+        Fill(command);
+      }
+    }
 
   }
 }

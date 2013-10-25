@@ -51,14 +51,26 @@ namespace TeamSupport.Data
      UserPhoto = 37,
      WaterCooler = 38,
      Wikis = 39,
-     Notes = 40
+     Notes = 40,
+     Tags = 41,
+     KnowledgeBaseCategories = 42,
+     Reports = 43
   };
 
   public enum SystemUser
   { 
     Unknown = -1,
     Importer = -2,
-    API = -3
+    API = -3,
+    CRM = -4
+  }
+
+  public enum TicketRightType
+  { 
+    All = 0,
+    Assigned = 1,
+    Groups = 2,
+    Customers = 3
   }
 
   public enum ChatRequestType
@@ -103,8 +115,9 @@ namespace TeamSupport.Data
     Description = 1,
     Resolution = 2,
     Email = 3,
-    PingUpdate = 4,
-    Chat = 5
+    UpdateRequest = 4,
+    Chat = 5,
+    Reminder = 6
   }
 
   public enum CreditCardType
@@ -142,14 +155,29 @@ namespace TeamSupport.Data
       FreshBooks,
       MailChimp,
       ZohoCRM,
-      ZohoReports
+      ZohoReports,
+      Jira,
+      Oracle
   }
 
-  public enum ReportType { 
+  public enum ReportType
+  {
+    Table = 0,
+    Chart = 1,
+    External = 2,
+    Custom = 3
+  }
+
+  public enum ReportTypeOld { 
       Standard = 0,
       Custom,
       Favorite,
       Graphical
+  }
+
+  public enum ReferenceProcess
+  {
+    PushGridPointSalesOrders = 1
   }
 
   public class Enums
@@ -169,8 +197,9 @@ namespace TeamSupport.Data
       {SystemActionType.Description,"Description"},
       {SystemActionType.Resolution,"Resolution"},
       {SystemActionType.Email,"Email"},
-      {SystemActionType.PingUpdate,"Ping Update"},
-      {SystemActionType.Chat,"Chat"}
+      {SystemActionType.UpdateRequest,"Update Request"},
+      {SystemActionType.Chat,"Chat"},
+      {SystemActionType.Reminder, "Reminder"}
     };
 
   }

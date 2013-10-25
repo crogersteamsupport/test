@@ -42,8 +42,8 @@
                 <span id="captionSpan" runat="server" style="font-weight: bold; font-size: 16px;">Test</span>
                 <span id="spanVersionFilter" runat="server">
                   
-                <asp:RadioButton ID="rbReported" runat="server" Text="Reported Versions" Checked="true" GroupName="VersionFilter" onclick="LoadContentPage();" />
-                <asp:RadioButton ID="rbResolved" Text="Resolved Versions" runat="server" GroupName="VersionFilter" onclick="LoadContentPage();"/>
+                <asp:RadioButton ID="rbReported" runat="server" Text="Reported Tickets" Checked="true" GroupName="VersionFilter" onclick="LoadContentPage();" />
+                <asp:RadioButton ID="rbResolved" Text="Resolved Tickets" runat="server" GroupName="VersionFilter" onclick="LoadContentPage();"/>
                 </span>
               </div>
             </telerik:RadPane>
@@ -89,8 +89,16 @@
       function TabSelected(sender, args) {
         var tab = args.get_tab();
         var index = tab.get_index();
+        var text = tab.get_text();
+
         top.privateServices.SetUserSetting('SelectedProductTabIndex', index);
+        if (index < 6) top.Ts.System.logAction('Products - Tab Selected (' + text + ')');
+        else if (text == 'Knowledge Base') top.Ts.System.logAction('Products - Tab Selected (KnowledgeBase)');
+        else top.Ts.System.logAction('Products - Tab Selected (Ticket Type)');
+
         LoadContentPage();
+
+
       }
 
       function SetVersionFilters() {
@@ -195,7 +203,7 @@
             url = 'ProductVersions.aspx?ProductID=' + productNode.get_value();
           }
           else {
-            url = '../vcr/142/Pages/ProductVersion.html?VersionID=' + versionNode.get_value();
+            url = '../vcr/1_7_0/Pages/ProductVersion.html?VersionID=' + versionNode.get_value();
           }
         }
         else if (index == 3) {
@@ -207,21 +215,19 @@
             url = url + 'RefType=14&RefID=' + versionNode.get_value();
           }
         }
-        else if (index > 3) {
-        if (url.indexOf("Watercooler.html") != -1) {
-            url = url + 'pagetype=1&pageid=' + productNode.get_value();
-        } else {
-            url = url + 'ProductID=' + productNode.get_value();
+        else if (index == 4) {
+          url = url + 'pagetype=1&pageid=' + productNode.get_value();
         }
-          
+        else if (index > 4) {
+          url = url + 'tf_ProductID=' + productNode.get_value();
+
           if (versionNode != null) {
             var radio = $get("<%=rbReported.ClientID %>");
             if (radio.checked)
-              url = url + '&ReportedVersionID=' + versionNode.get_value();
+              url = url + '&tf_ReportedVersionID=' + versionNode.get_value();
             else
-              url = url + '&ResolvedVersionID=' + versionNode.get_value();
+              url = url + '&tf_SolvedVersionID=' + versionNode.get_value();
           }
-        
         }
         else {
           url = url + 'ProductID=' + productNode.get_value();
@@ -266,27 +272,40 @@
         var value = button.get_value();
         if (value == 'NewProduct') {
           ShowDialog(top.GetProductDialog(true, RefreshTree));
+          top.Ts.System.logAction('Products - New Product Dialog Opened');
         }
         else if (value == 'EditProduct') {
         ShowDialog(top.GetProductDialog(false, GetProductNode(GetSelectedNode()).get_value(), RefreshTree));
+        top.Ts.System.logAction('Products - Edit Product Dialog Opened');
+      }
+      else if (value == 'DeleteProduct') {
+        if (confirm('Are you sure you would like to PERMANENTLEY delete this product, along with the inventory?')) {
+          if (confirm('If you press OK then the product and inventory will be permanently deleted and THERE IS NO WAY TO REVERSE THIS!  Please hit CANCEL if you are at all unsure that you want to do this.')) {
+          top.privateServices.DeleteProduct(GetProductNode(GetSelectedNode()).get_value(), RefreshTree);
+          top.Ts.System.logAction('Products - Product Deleted');
         }
-        else if (value == 'DeleteProduct') {
-        if (confirm('Are you sure you would like to PERMANENTLEY delete this product?'))
-           top.privateServices.DeleteProduct(GetProductNode(GetSelectedNode()).get_value(), RefreshTree); 
+      }
         }
         else if (value == 'NewVersion') {
         ShowDialog(top.GetVersionDialog(true, GetProductNode(GetSelectedNode()).get_value(), RefreshTree));
-        }
+        top.Ts.System.logAction('Products - New Version Dialog Opened');
+      }
         else if (value == 'EditVersion') {
-        ShowDialog(top.GetVersionDialog(false, GetVersionNode(GetSelectedNode()).get_value(), RefreshTree));
+          ShowDialog(top.GetVersionDialog(false, GetVersionNode(GetSelectedNode()).get_value(), RefreshTree));
+          top.Ts.System.logAction('Products - Edit Version Dialog Opened');
+
         }
         else if (value == 'DeleteVersion') {
-          if (confirm('Are you sure you would like to PERMANENTLEY delete this version?'))
-            top.privateServices.DeleteVersion(GetVersionNode(GetSelectedNode()).get_value(), RefreshTree);
+        if (confirm('Are you sure you would like to PERMANENTLEY delete this version?')) {
+          top.privateServices.DeleteVersion(GetVersionNode(GetSelectedNode()).get_value(), RefreshTree);
+          top.Ts.System.logAction('Products - Version Deleted');
+        }
         }
         else if (value == 'AssociateCustomer') {
           var productNode = GetProductNode(GetSelectedNode());
           var versionNode = GetVersionNode(GetSelectedNode());
+          top.Ts.System.logAction('Products - Associate Customer');
+
           if (versionNode == null) {
             ShowDialog(top.GetOrganizationProductDialog(null, null, productNode.get_value(), null, RefreshTree));
           }
@@ -296,6 +315,7 @@
 
         }
         else if (value == 'AssociateCustomers') {
+          top.Ts.System.logAction('Products - Associate Customers');
           var productNode = GetProductNode(GetSelectedNode());
           var versionNode = GetVersionNode(GetSelectedNode());
           if (versionNode == null) {
@@ -311,6 +331,9 @@
         }
       } 
       
+      function reload() {
+        window.location.reload(true);
+      }
     </script>
 
   </telerik:RadCodeBlock>  

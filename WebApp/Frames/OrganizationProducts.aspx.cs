@@ -55,7 +55,7 @@ public partial class Frames_OrganizationProducts : BaseFramePage
 
     foreach (CustomField field in fields)
     {
-      if (count >= 5) break;
+      if (count >= 25) break;
       if (gridProducts.Columns.FindByUniqueNameSafe("CustomField" + field.CustomFieldID.ToString()) == null)
       {
         GridBoundColumn column = new GridBoundColumn();
@@ -63,6 +63,7 @@ public partial class Frames_OrganizationProducts : BaseFramePage
         column.HeaderText = field.Name;
         column.DataField = field.Name;
         column.UniqueName = "CustomField" + field.CustomFieldID.ToString();
+        column.HeaderStyle.Width = new Unit(100, UnitType.Pixel);
       }
       else
       {
@@ -78,6 +79,11 @@ public partial class Frames_OrganizationProducts : BaseFramePage
   {
     OrganizationProducts organizationProducts = new OrganizationProducts(UserSession.LoginUser);
     organizationProducts.LoadForCustomerProductGrid(_organizationID);
+    foreach(DataRow row in organizationProducts.Table.Rows)
+    {
+      row["SupportExpiration"]  = row["SupportExpiration"] != DBNull.Value ? DataUtils.DateToLocal(UserSession.LoginUser, (DateTime?)row["SupportExpiration"]) : row["SupportExpiration"];
+      row["ReleaseDate"]        = row["ReleaseDate"] != DBNull.Value ? DataUtils.DateToLocal(UserSession.LoginUser, (DateTime?)row["ReleaseDate"]) : row["ReleaseDate"];
+    }
     gridProducts.DataSource = organizationProducts.Table;
   }
 

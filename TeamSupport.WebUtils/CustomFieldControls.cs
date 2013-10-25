@@ -190,6 +190,49 @@ namespace TeamSupport.WebUtils
     
     }
 
+    public string CheckRequiredCustomFields()
+    {
+        CustomFields fields = new CustomFields(UserSession.LoginUser);
+        fields.LoadByReferenceType(UserSession.LoginUser.OrganizationID, _refType, _auxID);
+
+        foreach (CustomField field in fields)
+        {
+            Control control = GetCustomControl(_table, FieldIDToControlID(field.CustomFieldID));
+            if (control != null)
+            {
+                CustomValue value = CustomValues.GetValue(UserSession.LoginUser, field.CustomFieldID, _refID);
+                if (value.IsRequired)
+                {
+                    if (control is RadInputControl)
+                    {
+                        value.Value = (control as RadInputControl).Text;
+                    }
+                    else if (control is CheckBox)
+                    {
+                        value.Value = (control as CheckBox).Checked.ToString();
+                    }
+                    else if (control is RadComboBox)
+                    {
+                        if (field.IsFirstIndexSelect && (control as RadComboBox).SelectedIndex == 0)
+                            value.Value = "";
+                        else
+                            value.Value = (control as RadComboBox).SelectedValue;
+                    }
+                    else if (control is RadDateTimePicker)
+                    {
+                        value.Value = DataUtils.DateToUtc(UserSession.LoginUser, (control as RadDateTimePicker).SelectedDate).ToString();
+                    }
+
+                    if (value.Value == "" || value.Value == null)
+                        return value.Name + " is a required value, please enter a value before saving";
+                }
+            }
+        }
+
+        return "";
+    }
+
+
     public void SaveCustomFields()
     {
       CustomFields fields = new CustomFields(UserSession.LoginUser);

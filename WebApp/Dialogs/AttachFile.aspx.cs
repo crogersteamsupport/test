@@ -35,7 +35,7 @@ public partial class Dialogs_AttachFile : BaseDialogPage
   {
     int used = Organizations.GetStorageUsed(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
     int allowed = Organizations.GetTotalStorageAllowed(UserSession.LoginUser, UserSession.LoginUser.OrganizationID);
-
+    /*
     if (used > allowed)
     {
       if (UserSession.CurrentUser.IsFinanceAdmin)
@@ -59,7 +59,7 @@ public partial class Dialogs_AttachFile : BaseDialogPage
 
       return false;
     }
-
+    */
 
     Attachments attachments = new Attachments(UserSession.LoginUser);
 

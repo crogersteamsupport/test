@@ -374,6 +374,7 @@ namespace TeamSupport.Data
     }
 
 
+
     public virtual EMailAlternateInboundItem AddNewEMailAlternateInboundItem()
     {
       if (Table.Columns.Count < 1) LoadColumns("EMailAlternateInbound");

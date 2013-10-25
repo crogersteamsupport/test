@@ -63,8 +63,11 @@ namespace TeamSupport.Handlers
         //context.Response.ContentType = "text/html";
         //context.Response.Write(fileName);
         context.Response.ContentType = DataUtils.MimeTypeFromFileName(fileName);
+        context.Response.Cache.SetCacheability(HttpCacheability.Public);
+        context.Response.Cache.SetExpires(DateTime.Now.AddHours(8));
+        context.Response.Cache.SetMaxAge(new TimeSpan(8, 0, 0));
+        context.Response.Cache.SetLastModified(File.GetLastWriteTimeUtc(fileName));
         context.Response.WriteFile(fileName);
-        // You can test if JS and minify if you want....
       }
       catch (Exception ex)
       {

@@ -21,6 +21,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("MessageParent", "MessageParent", false, false, false);
       _fieldMap.AddMap("IsDeleted", "IsDeleted", false, false, false);
       _fieldMap.AddMap("LastModified", "LastModified", false, false, false);
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
             
     }
   }

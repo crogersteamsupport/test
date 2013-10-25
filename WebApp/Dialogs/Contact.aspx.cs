@@ -106,6 +106,7 @@ public partial class Dialogs_Contact : BaseDialogPage
       textMiddleName.Text = users[0].MiddleName;
       textTitle.Text = users[0].Title;
       cbActive.Checked = users[0].IsActive;
+      cbBlockEmail.Checked = users[0].BlockInboundEmail;
       cbIsSystemAdmin.Checked = users[0].IsSystemAdmin;
       cbIsFinanceAdmin.Checked = users[0].IsFinanceAdmin;
       cbIsPortalUser.Checked = users[0].IsPortalUser;
@@ -178,6 +179,8 @@ public partial class Dialogs_Contact : BaseDialogPage
     user.LastName = textLastName.Text;
     user.Title = textTitle.Text;
     user.MiddleName = textMiddleName.Text;
+    user.BlockInboundEmail = cbBlockEmail.Checked;
+
 
     user.IsActive = cbActive.Checked;
 

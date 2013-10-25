@@ -20,6 +20,7 @@ namespace TeamSupport.Data
     [DataMember] public string Measure { get; set; }
     [DataMember] public string TestValue { get; set; }
     [DataMember] public bool MatchAll { get; set; }
+    [DataMember] public string OtherTrigger { get; set; }
           
   }
   
@@ -28,6 +29,7 @@ namespace TeamSupport.Data
     public TicketAutomationTriggerLogicItemProxy GetProxy()
     {
       TicketAutomationTriggerLogicItemProxy result = new TicketAutomationTriggerLogicItemProxy();
+      result.OtherTrigger = this.OtherTrigger;
       result.MatchAll = this.MatchAll;
       result.TestValue = this.TestValue;
       result.Measure = this.Measure;

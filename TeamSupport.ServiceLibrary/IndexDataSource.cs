@@ -17,6 +17,7 @@ namespace TeamSupport.ServiceLibrary
     protected   List<int> _updatedItems = null;
     protected   int       _rowIndex     = 0;
     protected   int?      _lastItemID   = null;
+    protected bool _isRebuilding = false;
 
     public    List<int> UpdatedItems
     {
@@ -25,9 +26,10 @@ namespace TeamSupport.ServiceLibrary
     
     protected IndexDataSource() { }
 
-    public IndexDataSource(LoginUser loginUser, int maxCount, int organizationID)
+    public IndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding)
     {
       _organizationID = organizationID;
+      _isRebuilding = isRebuilding;
       _loginUser      = new LoginUser(loginUser.ConnectionString, loginUser.UserID, loginUser.OrganizationID, null);
 
       _maxCount = maxCount;

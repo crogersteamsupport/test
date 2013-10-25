@@ -28,6 +28,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CreatorID", "CreatorID", true, true, true);
       _fieldMap.AddMap("ModifierID", "ModifierID", true, true, true);
       _fieldMap.AddMap("TicketID", "TicketID", false, false, true);
+      _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
+      _fieldMap.AddMap("DateModifiedBySalesForceSync", "DateModifiedBySalesForceSync", false, false, false);
             
     }
   }

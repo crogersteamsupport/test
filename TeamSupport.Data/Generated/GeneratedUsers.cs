@@ -94,7 +94,79 @@ namespace TeamSupport.Data
       set { Row["AppChatID"] = CheckValue("AppChatID", value); }
     }
     
+    public string MenuItems
+    {
+      get { return Row["MenuItems"] != DBNull.Value ? (string)Row["MenuItems"] : null; }
+      set { Row["MenuItems"] = CheckValue("MenuItems", value); }
+    }
+    
+    public string SalesForceID
+    {
+      get { return Row["SalesForceID"] != DBNull.Value ? (string)Row["SalesForceID"] : null; }
+      set { Row["SalesForceID"] = CheckValue("SalesForceID", value); }
+    }
+    
 
+    
+    public bool AllowAnyTicketCustomer
+    {
+      get { return (bool)Row["AllowAnyTicketCustomer"]; }
+      set { Row["AllowAnyTicketCustomer"] = CheckValue("AllowAnyTicketCustomer", value); }
+    }
+    
+    public bool NeedsIndexing
+    {
+      get { return (bool)Row["NeedsIndexing"]; }
+      set { Row["NeedsIndexing"] = CheckValue("NeedsIndexing", value); }
+    }
+    
+    public bool EnforceSingleSession
+    {
+      get { return (bool)Row["EnforceSingleSession"]; }
+      set { Row["EnforceSingleSession"] = CheckValue("EnforceSingleSession", value); }
+    }
+    
+    public bool ChangeKBVisibility
+    {
+      get { return (bool)Row["ChangeKBVisibility"]; }
+      set { Row["ChangeKBVisibility"] = CheckValue("ChangeKBVisibility", value); }
+    }
+    
+    public bool ChangeTicketVisibility
+    {
+      get { return (bool)Row["ChangeTicketVisibility"]; }
+      set { Row["ChangeTicketVisibility"] = CheckValue("ChangeTicketVisibility", value); }
+    }
+    
+    public bool BlockInboundEmail
+    {
+      get { return (bool)Row["BlockInboundEmail"]; }
+      set { Row["BlockInboundEmail"] = CheckValue("BlockInboundEmail", value); }
+    }
+    
+    public bool OnlyEmailAfterHours
+    {
+      get { return (bool)Row["OnlyEmailAfterHours"]; }
+      set { Row["OnlyEmailAfterHours"] = CheckValue("OnlyEmailAfterHours", value); }
+    }
+    
+    public string LinkedIn
+    {
+      get { return (string)Row["LinkedIn"]; }
+      set { Row["LinkedIn"] = CheckValue("LinkedIn", value); }
+    }
+    
+    public string Signature
+    {
+      get { return (string)Row["Signature"]; }
+      set { Row["Signature"] = CheckValue("Signature", value); }
+    }
+    
+    public TicketRightType TicketRights
+    {
+      get { return (TicketRightType)Row["TicketRights"]; }
+      set { Row["TicketRights"] = CheckValue("TicketRights", value); }
+    }
     
     public bool AppChatStatus
     {
@@ -444,7 +516,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,    [IsClassicView] = @IsClassicView,    [SubscribeToNewActions] = @SubscribeToNewActions,    [ApprovedTerms] = @ApprovedTerms,    [ShowWelcomePage] = @ShowWelcomePage,    [UserInformation] = @UserInformation,    [PortalAutoReg] = @PortalAutoReg,    [AppChatID] = @AppChatID,    [AppChatStatus] = @AppChatStatus  WHERE ([UserID] = @UserID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,    [IsClassicView] = @IsClassicView,    [SubscribeToNewActions] = @SubscribeToNewActions,    [ApprovedTerms] = @ApprovedTerms,    [ShowWelcomePage] = @ShowWelcomePage,    [UserInformation] = @UserInformation,    [PortalAutoReg] = @PortalAutoReg,    [AppChatID] = @AppChatID,    [AppChatStatus] = @AppChatStatus,    [MenuItems] = @MenuItems,    [TicketRights] = @TicketRights,    [Signature] = @Signature,    [LinkedIn] = @LinkedIn,    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,    [BlockInboundEmail] = @BlockInboundEmail,    [SalesForceID] = @SalesForceID,    [ChangeTicketVisibility] = @ChangeTicketVisibility,    [ChangeKBVisibility] = @ChangeKBVisibility,    [EnforceSingleSession] = @EnforceSingleSession,    [NeedsIndexing] = @NeedsIndexing,    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer  WHERE ([UserID] = @UserID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
@@ -755,13 +827,181 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("MenuItems", SqlDbType.VarChar, 1000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("TicketRights", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("Signature", SqlDbType.VarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("LinkedIn", SqlDbType.VarChar, 200);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("OnlyEmailAfterHours", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("BlockInboundEmail", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("SalesForceID", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ChangeTicketVisibility", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ChangeKBVisibility", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("EnforceSingleSession", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("AllowAnyTicketCustomer", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Users] (    [Email],    [FirstName],    [MiddleName],    [LastName],    [Title],    [CryptedPassword],    [IsActive],    [MarkDeleted],    [TimeZoneID],    [CultureName],    [LastLogin],    [LastActivity],    [LastPing],    [LastWaterCoolerID],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [IsChatUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ReceiveTicketNotifications],    [ReceiveAllGroupNotifications],    [SubscribeToNewTickets],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [LastVersion],    [SessionID],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrgsUserCanSeeOnPortal],    [DoNotAutoSubscribe],    [IsClassicView],    [SubscribeToNewActions],    [ApprovedTerms],    [ShowWelcomePage],    [UserInformation],    [PortalAutoReg],    [AppChatID],    [AppChatStatus]) VALUES ( @Email, @FirstName, @MiddleName, @LastName, @Title, @CryptedPassword, @IsActive, @MarkDeleted, @TimeZoneID, @CultureName, @LastLogin, @LastActivity, @LastPing, @LastWaterCoolerID, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @IsChatUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ReceiveTicketNotifications, @ReceiveAllGroupNotifications, @SubscribeToNewTickets, @ActivatedOn, @DeactivatedOn, @OrganizationID, @LastVersion, @SessionID, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrgsUserCanSeeOnPortal, @DoNotAutoSubscribe, @IsClassicView, @SubscribeToNewActions, @ApprovedTerms, @ShowWelcomePage, @UserInformation, @PortalAutoReg, @AppChatID, @AppChatStatus); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Users] (    [Email],    [FirstName],    [MiddleName],    [LastName],    [Title],    [CryptedPassword],    [IsActive],    [MarkDeleted],    [TimeZoneID],    [CultureName],    [LastLogin],    [LastActivity],    [LastPing],    [LastWaterCoolerID],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [IsChatUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ReceiveTicketNotifications],    [ReceiveAllGroupNotifications],    [SubscribeToNewTickets],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [LastVersion],    [SessionID],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrgsUserCanSeeOnPortal],    [DoNotAutoSubscribe],    [IsClassicView],    [SubscribeToNewActions],    [ApprovedTerms],    [ShowWelcomePage],    [UserInformation],    [PortalAutoReg],    [AppChatID],    [AppChatStatus],    [MenuItems],    [TicketRights],    [Signature],    [LinkedIn],    [OnlyEmailAfterHours],    [BlockInboundEmail],    [SalesForceID],    [ChangeTicketVisibility],    [ChangeKBVisibility],    [EnforceSingleSession],    [NeedsIndexing],    [AllowAnyTicketCustomer]) VALUES ( @Email, @FirstName, @MiddleName, @LastName, @Title, @CryptedPassword, @IsActive, @MarkDeleted, @TimeZoneID, @CultureName, @LastLogin, @LastActivity, @LastPing, @LastWaterCoolerID, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @IsChatUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ReceiveTicketNotifications, @ReceiveAllGroupNotifications, @SubscribeToNewTickets, @ActivatedOn, @DeactivatedOn, @OrganizationID, @LastVersion, @SessionID, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrgsUserCanSeeOnPortal, @DoNotAutoSubscribe, @IsClassicView, @SubscribeToNewActions, @ApprovedTerms, @ShowWelcomePage, @UserInformation, @PortalAutoReg, @AppChatID, @AppChatStatus, @MenuItems, @TicketRights, @Signature, @LinkedIn, @OnlyEmailAfterHours, @BlockInboundEmail, @SalesForceID, @ChangeTicketVisibility, @ChangeKBVisibility, @EnforceSingleSession, @NeedsIndexing, @AllowAnyTicketCustomer); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("AllowAnyTicketCustomer", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("EnforceSingleSession", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ChangeKBVisibility", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ChangeTicketVisibility", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("SalesForceID", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("BlockInboundEmail", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("OnlyEmailAfterHours", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("LinkedIn", SqlDbType.VarChar, 200);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("Signature", SqlDbType.VarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("TicketRights", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("MenuItems", SqlDbType.VarChar, 1000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("AppChatStatus", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -1190,7 +1430,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [UserID], [Email], [FirstName], [MiddleName], [LastName], [Title], [CryptedPassword], [IsActive], [MarkDeleted], [TimeZoneID], [CultureName], [LastLogin], [LastActivity], [LastPing], [LastWaterCoolerID], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [IsChatUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ReceiveTicketNotifications], [ReceiveAllGroupNotifications], [SubscribeToNewTickets], [ActivatedOn], [DeactivatedOn], [OrganizationID], [LastVersion], [SessionID], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrgsUserCanSeeOnPortal], [DoNotAutoSubscribe], [IsClassicView], [SubscribeToNewActions], [ApprovedTerms], [ShowWelcomePage], [UserInformation], [PortalAutoReg], [AppChatID], [AppChatStatus] FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [UserID], [Email], [FirstName], [MiddleName], [LastName], [Title], [CryptedPassword], [IsActive], [MarkDeleted], [TimeZoneID], [CultureName], [LastLogin], [LastActivity], [LastPing], [LastWaterCoolerID], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [IsChatUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ReceiveTicketNotifications], [ReceiveAllGroupNotifications], [SubscribeToNewTickets], [ActivatedOn], [DeactivatedOn], [OrganizationID], [LastVersion], [SessionID], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrgsUserCanSeeOnPortal], [DoNotAutoSubscribe], [IsClassicView], [SubscribeToNewActions], [ApprovedTerms], [ShowWelcomePage], [UserInformation], [PortalAutoReg], [AppChatID], [AppChatStatus], [MenuItems], [TicketRights], [Signature], [LinkedIn], [OnlyEmailAfterHours], [BlockInboundEmail], [SalesForceID], [ChangeTicketVisibility], [ChangeKBVisibility], [EnforceSingleSession], [NeedsIndexing], [AllowAnyTicketCustomer] FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("UserID", userID);
         Fill(command);

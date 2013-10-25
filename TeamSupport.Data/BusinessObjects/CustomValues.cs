@@ -250,7 +250,7 @@ ORDER BY cf.Position";
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, customField.RefType, newValue.RefID, string.Format(format, customField.Name, oldValue.Value, newValue.Value));
     }
 
-    public static CustomValue GetValue(LoginUser loginUser, int customFieldID, int refID)
+    public static CustomValue GetValue(LoginUser loginUser, int customFieldID, int refID, bool createValue)
     {
       CustomValues values = new CustomValues(loginUser);
       values.LoadByFieldID(customFieldID, refID);
@@ -261,13 +261,14 @@ ORDER BY cf.Position";
         values = new CustomValues(loginUser);
         CustomValue value = values.AddNewCustomValue();
         value.CustomFieldID = customFieldID;
-        value.Value = ""; 
+        value.Value = "";
         if (field.FieldType == CustomFieldType.PickList)
-        {      
+        {
           string[] items = field.ListValues.Split('|');
           if (items.Length > 0) value.Value = items[0];
         }
         value.RefID = refID;
+        if (createValue == false) return value;
         value.Collection.Save();
         values.LoadByFieldID(customFieldID, refID);
         return values[0];
@@ -276,6 +277,12 @@ ORDER BY cf.Position";
       {
         return values[0];
       }
+
+    }
+
+    public static CustomValue GetValue(LoginUser loginUser, int customFieldID, int refID)
+    {
+      return GetValue(loginUser, customFieldID, refID, true);
         
     }
 

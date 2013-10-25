@@ -17,6 +17,100 @@ Ts.Ui.Tabs = function (element) {
 Ts.Ui.Tabs.prototype = {
   constructor: Ts.Ui.Tabs,
   getElement: function () { return this._element; },
+  prepend: function (isSelected, tabType, id, caption, isClosable, isSortable, isHighlighted, icon, imageUrl, data, title) {
+    var tab = this.find(id, tabType);
+    if (tab) {
+      tab.select();
+      $(tab.getElement()).insertAfter($(this._list).find('li:first'));
+      return tab;
+    }
+
+
+    while (true) {
+      var tablist = this.getTabs();
+      if (tablist.length > 15) tablist[tablist.length-1].remove(); else break;
+    }
+
+    var self = this;
+    if (self._callEvent('beforeAdd') === false) { return null; }
+    var html = '<li class="ui-state-default ui-corner-top ts-tab ts-tab-' + tabType + '-' + id + '"><span class="ts-tabs-hide tab-icon ts-icon"></span><img class="ts-tabs-hide tab-image"/>    <a href="#"></a><span class="ts-tabs-hide tab-close ui-icon ui-icon-close"></span></li>';
+    var li = $('<li>')
+    .addClass('ui-state-default ui-corner-top ts-tab ts-tab-' + tabType + '-' + id)
+    .hover(
+      function () { $(this).addClass('ui-state-hover').find('.ui-icon-close').show(); },
+      function () { $('.ts-tab').removeClass('ui-state-hover'); $('.ts-tab .ui-icon-close').hide(); }
+    );
+    if (title && title != null) li.attr('title', title);
+    var contentSpan = $('<span>').addClass('ts-tab-content').appendTo(li);
+    $('<span>').addClass('ts-tabs-hide tab-icon ts-icon').appendTo(contentSpan);
+    $('<img>').addClass('ts-tabs-hide tab-image').appendTo(contentSpan);
+    $('<a>').attr('href', '#').appendTo(contentSpan);
+    $('<span>').addClass('tab-close ui-icon ui-icon-close').appendTo(contentSpan).hide();
+
+    li.insertAfter($(this._list).find('li:first'));
+
+    var element = $(this._list).find('.ts-tab-' + tabType + '-' + id);
+    tab = new Ts.Ui.Tabs.Tab(element);
+
+    tab.setCaption(caption);
+    tab.setIsClosable(isClosable);
+    tab.setIcon(icon);
+    tab.setImageUrl(imageUrl);
+    tab.setIsHighlighted(isHighlighted);
+    tab.setData(data);
+    if (isSortable) { $(element).addClass('ts-tab-sortable'); }
+    $(element).find('.tab-close').click(function (e) {
+      e.preventDefault();
+      if ($(element).find('.tab-close').hasClass('ts-tabs-noclose')) return;
+      e.stopPropagation();
+
+      if (tab.getIsHighlighted() && !confirm('Are you sure you would like to close this tab?')) { return false; }
+      if (self._callEvent('beforeRemove', tab) === false) { return; }
+      var selected = tab.getIsSelected();
+      $(element).remove();
+      var flag = false;
+      if (selected) {
+        var lastTab = self._history.pop();
+        while (lastTab) {
+          var item = $(self._element).find('.ts-tab-' + lastTab);
+          if (item.length > 0) {
+            (new Ts.Ui.Tabs.Tab(item)).select();
+            flag = true;
+            break;
+          }
+          lastTab = self._history.pop();
+        }
+        if (flag === false) {
+          var first = $(self._element).find('.ts-tab:first');
+          if (first.length > 0) { (new Ts.Ui.Tabs.Tab(first)).select(); }
+        }
+      }
+      self._callEvent('afterRemove');
+      return true;
+    });
+
+    $(element).click(function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      if (self._callEvent('beforeSelect', tab) === false) { return; }
+      $(element).parents('ul').find('.ui-state-error-hidden').removeClass('ui-state-error-hidden').addClass('ui-state-error');
+      $(element).parents('ul').find('.ui-state-active').removeClass('ui-state-active');
+      $(element).addClass('ui-state-active');
+      if (tab.getIsHighlighted()) {
+        $(element).addClass('ui-state-error-hidden').removeClass('ui-state-error');
+      }
+      self._history.push(tabType + '-' + id);
+      self._callEvent('afterSelect', tab);
+    });
+    self._callEvent('afterAdd');
+
+    if (isSelected) { tab.select(); }
+
+
+
+    return tab;
+
+  },
   add: function (isSelected, tabType, id, caption, isClosable, isSortable, isHighlighted, icon, imageUrl, data, title) {
     var tab = this.find(id, tabType);
     if (tab) { tab.select(); return tab; }
@@ -35,8 +129,6 @@ Ts.Ui.Tabs.prototype = {
     $('<img>').addClass('ts-tabs-hide tab-image').appendTo(contentSpan);
     $('<a>').attr('href', '#').appendTo(contentSpan);
     $('<span>').addClass('tab-close ui-icon ui-icon-close').appendTo(contentSpan).hide();
-
-
 
     $(this._list).append(li);
     var element = $(this._list).find('.ts-tab-' + tabType + '-' + id);
@@ -180,3 +272,7 @@ Ts.Ui.Tabs.Tab.Type.None = '';
 Ts.Ui.Tabs.Tab.Type.Main = 'main';
 Ts.Ui.Tabs.Tab.Type.Ticket = 'ticket';
 Ts.Ui.Tabs.Tab.Type.NewTicket = 'new_ticket';
+Ts.Ui.Tabs.Tab.Type.Company = 'company';
+Ts.Ui.Tabs.Tab.Type.NewCompany = 'new_company';
+Ts.Ui.Tabs.Tab.Type.Contact = 'contact';
+Ts.Ui.Tabs.Tab.Type.NewContact = 'new_contact';

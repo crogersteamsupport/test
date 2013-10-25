@@ -77,6 +77,16 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("IsPublicArticles", "IsPublicArticles", false, false, false);
       _fieldMap.AddMap("UseForums", "UseForums", false, false, false);
       _fieldMap.AddMap("SetNewActionsVisibleToCustomers", "SetNewActionsVisibleToCustomers", false, false, false);
+      _fieldMap.AddMap("SupportHoursMonth", "SupportHoursMonth", false, false, false);
+      _fieldMap.AddMap("ProductRequired", "ProductRequired", false, false, false);
+      _fieldMap.AddMap("ProductVersionRequired", "ProductVersionRequired", false, false, false);
+      _fieldMap.AddMap("AllowUnsecureAttachmentViewing", "AllowUnsecureAttachmentViewing", false, false, false);
+      _fieldMap.AddMap("ForceBCCEmailsPrivate", "ForceBCCEmailsPrivate", false, false, false);
+      _fieldMap.AddMap("UnknownCompanyID", "UnknownCompanyID", false, false, false);
+      _fieldMap.AddMap("IsRebuildingIndex", "IsRebuildingIndex", false, false, false);
+      _fieldMap.AddMap("LastIndexRebuilt", "LastIndexRebuilt", false, false, false);
+      _fieldMap.AddMap("IsIndexLocked", "IsIndexLocked", false, false, false);
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
             
     }
   }

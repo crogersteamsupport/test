@@ -44,6 +44,19 @@ namespace TeamSupport.Data
     public string Creator { get; set; }
     [DataMember]
     public string Modifier { get; set; }
+    [DataMember]
+    public string DateModified { get; set; }
+    [DataMember]
+    public int CustomerID { get; set; }
+    [DataMember]
+    public int ProductID { get; set; }
+    [DataMember]
+    public int? RefType { get; set; }
+    [DataMember]
+    public int? AttachmentID { get; set; }
+    [DataMember]
+    public int MessageParent { get; set; }
+
   }
 
 }

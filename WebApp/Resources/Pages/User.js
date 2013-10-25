@@ -26,786 +26,1609 @@ function ShowDialog(wnd) {
 }
 
 UserPage = function () {
-    var _user = null;
+  var _user = null;
 
-    $('button').button();
+  $('button').button();
 
-    $('a').addClass('ui-state-default ts-link');
+  $('a').addClass('ui-state-default ts-link');
 
-    $('.ts-section').hover(function (e) {
-        e.preventDefault();
-        $(this).find('.user-profile-edit').show();
-    }, function (e) {
-        e.preventDefault();
-        $('.user-profile-edit').hide();
-    });
+  $('.ts-section').hover(function (e) {
+    e.preventDefault();
+    $(this).find('.user-profile-edit').show();
+  }, function (e) {
+    e.preventDefault();
+    $('.user-profile-edit').hide();
+  });
 
-    $('.ts-section .collapsable')
+  var tipTimer = null;
+  var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
+
+  $('body').delegate('.ts-icon-info', 'mouseout', function (e) {
+    if (tipTimer != null) clearTimeout(tipTimer);
+    tipTimer = setTimeout("$(document).trigger('hideCluetip');", 3000);
+  });
+
+  $('body').delegate('.cluetip', 'mouseover', function (e) {
+    if (tipTimer != null) clearTimeout(tipTimer);
+  });
+
+  function userRightsToString(value) {
+    switch (value) {
+      case 0: return "All tickets"; break;
+      case 1: return "Only assigned tickets"; break;
+      case 2: return "Only assigned and user's groups"; break;
+      case 3: return "Only assigned and tickets associated with specific customers"; break;
+      default: return "";
+    }
+  }
+
+  $('.ts-section .collapsable')
     .prepend('<span class="ui-icon ui-icon-triangle-1-e">')
     .click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var icon = $(this).find('.ui-icon');
+      if (icon.hasClass('ui-icon-triangle-1-e')) {
+        icon.removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
+        $(this).next().hide();
+      }
+      else {
+        icon.removeClass('ui-icon-triangle-1-s').addClass('ui-icon-triangle-1-e');
+        $(this).next().show();
+      }
+    });
+
+  var userID = top.Ts.Utils.getQueryValue("userid", window);
+  var orgID;
+
+  top.Ts.Services.Users.GetUser(userID, function (user) {
+    _user = user;
+    orgID = user.OrganizationID;
+
+    $('.user-displayname').html(user.FirstName + ' ' + user.LastName);
+    $('#userEmail').html('<a class=fleft href="mailto:' + user.Email + '">' + user.Email + '</a>');
+    var email = $('#userEmail').parent()
+        .hover(function () {
+          $(this).find('.ts-icon-edit').show();
+        }, function () {
+          $(this).find('.ts-icon-edit').hide();
+        });
+
+    $('#userTitle').html(user.Title == '' || user.Title == null ? 'None' : user.Title);
+    $('#userTimeZone').html(user.timeZoneDisplay);
+    $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
+    $('#userKBVisibility').html((user.ChangeKbVisibility == true ? 'Yes' : 'No'));
+    $('#userTicketRights').html(userRightsToString(user.TicketRights)).data('o', user.TicketRights);
+    $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Yes' : 'No'));
+    if (user.TicketRights == 3) $('#userRightsAllTicketCustomers').closest('div').show();
+
+    $('#divCustomerContainer').toggle(user.TicketRights == 3 && isSysAdmin == true);
+    $('#userLastLogin').text(user.LastLogin.toDateString());
+    $('#userActive').text((user.IsActive == true ? 'Yes' : 'No'));
+    $('#userEmailNotify').text((user.ReceiveTicketNotifications == true ? 'Yes' : 'No'));
+    $('#userSubscribeTickets').text((user.SubscribeToNewTickets == true ? 'Yes' : 'No'));
+    $('#userSubscribeActions').text((user.SubscribeToNewActions == true ? 'Yes' : 'No'));
+    $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Yes' : 'No'));
+    $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Yes' : 'No'));
+    $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Yes' : 'No'));
+    $('#userDateFormat').text(user.CultureDisplay);
+    $('#userSysAdmin').text((user.IsSystemAdmin == true ? 'Yes' : 'No'));
+    $('#chatUser').text((user.IsChatUser == true ? 'Yes' : 'No'));
+    $('#activatedOn').text(user.ActivatedOn.toDateString());
+    $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
+
+    if (user.LinkedIn == '')
+      $('#userWebsite').html('None');
+    else {
+      $('#userWebsite').html(user.LinkedIn);
+      $('#userWebsite').attr("href", user.LinkedIn);
+      $('#userWebsite').attr("target", "_blank");
+    }
+
+    top.Ts.Services.Users.GetCustomValues(userID, function (customValues) {
+      appendCustomValues(customValues);
+    });
+
+    $('#userWebsite').parent().parent()
+    .hover(function () {
+      $(this).find('.ts-icon-edit').show();
+    }, function () {
+      $(this).find('.ts-icon-edit').hide();
+    });
+
+    if (user.MenuItems == null) {
+      $('#divMenuItems input').each(function () {
+        $(this).prop('checked', true);
+      });
+    }
+    else {
+      var menuItems = user.MenuItems.split(',');
+      for (var i = 0; i < menuItems.length; i++) {
+        $('#' + menuItems[i] + ' input').prop('checked', true);
+      }
+    }
+
+    if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express) {
+      $('#mniCustomers').hide();
+      $('#mniChat').hide();
+      $('#mniWiki').hide();
+      $('#mniWC2').hide();
+    }
+
+    if (top.Ts.System.Organization.ProductType == top.Ts.ProductType.Express || top.Ts.System.Organization.ProductType == top.Ts.ProductType.HelpDesk) {
+      $('#mniProducts').hide();
+    }
+
+    if (user.IsSystemAdmin == false) {
+      $('#mniAdmin').hide();
+    }
+
+    var pwText = top.Ts.System.User.UserID == userID && top.Ts.System.User.IsSystemAdmin && (userID > -1);
+    $('#userPW').text((pwText == true ? 'Change Password' : 'Reset and Email Password'));
+
+    top.Ts.Services.Users.GetUserPhoto(userID, function (att) {
+      $('#userPhoto').attr("src", att);
+    });
+
+    top.Ts.Services.Users.GetUserSignature(userID, function (signature) {
+      if (signature == '')
+        signature = 'None';
+      $('#userSignature').html(signature);
+    });
+
+    top.Ts.Services.Users.GetUserCustomers(_user.UserID, appendCustomers);
+  });
+
+  var canEdit = top.Ts.System.User.UserID == userID || top.Ts.System.User.IsSystemAdmin;
+  var isSysAdmin = top.Ts.System.User.IsSystemAdmin;
+
+  if (isSysAdmin == true) {
+    $('#divMenuItems').show();
+    $('#userTicketRights').closest('.user-name-value').show();
+
+    var types = top.Ts.Cache.getTicketTypes();
+    for (var i = 0; i < types.length; i++) {
+      var ttmi = $('<li>').attr('id', 'mniTicketType_' + types[i].TicketTypeID);
+      $('<label>')
+        .addClass('checkbox')
+        .text(types[i].Name)
+        .append($('<input>').attr('type', 'checkbox'))
+        .appendTo(ttmi);
+      ttmi.appendTo('#ulTicketTypes');
+    }
+
+  }
+
+  $('#divMenuItems input').click(function (e) {
+    var list = "";
+    $('#divMenuItems input:checked').each(function () {
+      var id = $(this).closest('li').attr('id');
+      list = (list != "") ? list + "," + id : id;
+    });
+
+    top.Ts.Services.Users.SetMenuItems(userID, list, function () {
+      top.Ts.System.logAction('User Info - Menu Items Changed');
+    });
+
+  });
+
+  if (canEdit) {
+
+    if (!isSysAdmin) {
+      $('#userActive').removeClass('ui-state-default ts-link');
+      $('#userActive').addClass('disabledlink');
+      $('#userSysAdmin').removeClass('ui-state-default ts-link');
+      $('#userSysAdmin').addClass('disabledlink');
+      $('#chatUser').removeClass('ui-state-default ts-link');
+      $('#chatUser').addClass('disabledlink');
+      $('#userTicketVisibility').removeClass('ui-state-default ts-link');
+      $('#userTicketVisibility').addClass('disabledlink');
+      $('#userKBVisibility').removeClass('ui-state-default ts-link');
+      $('#userKBVisibility').addClass('disabledlink');
+      $('#userRightsAllTicketCustomers').removeClass('ui-state-default ts-link').addClass('disabledlink');
+    }
+
+
+    $('.user-address-add').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      ShowDialog(top.GetAddressDialog(userID, 22));
+      top.Ts.System.logAction('User Info - Address Dialog Opened');
+    });
+
+    $('.user-phone-add').click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      ShowDialog(top.GetPhoneDialog(userID, 22));
+      top.Ts.System.logAction('User Info - Phone Dialog Opened');
+    });
+
+    if (!isSysAdmin) {
+      $('.user-group-add').remove();
+    }
+    else {
+      $('.user-group-add').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-        var icon = $(this).find('.ui-icon');
-        if (icon.hasClass('ui-icon-triangle-1-e')) {
-            icon.removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
-            $(this).next().hide();
-        }
-        else {
-            icon.removeClass('ui-icon-triangle-1-s').addClass('ui-icon-triangle-1-e');
-            $(this).next().show();
-        }
-    });
+        ShowDialog(top.GetSelectGroupDialog(userID, 22));
+        top.Ts.System.logAction('User Info - Group Dialog Opened');
+      });
+    }
 
-    var userID = top.Ts.Utils.getQueryValue("userid", window);
-    var orgID;
-
-    top.Ts.Services.Users.GetUser(userID, function (user) {
-        _user = user;
-        orgID = user.OrganizationID;
-
-        $('.user-displayname').html(user.FirstName + ' ' + user.LastName);
-        $('#userEmail').html('<a class=fleft href="mailto:' + user.Email + '">' + user.Email + '</a>');
-        var email = $('#userEmail').parent()
-        .hover(function () {
-            $(this).find('.ts-icon-edit').show();
-        }, function () {
-            $(this).find('.ts-icon-edit').hide();
-        });
-
-        $('#userTitle').html(user.Title == '' ? 'None' : user.Title);
-        $('#userTimeZone').html(user.timeZoneDisplay);
-        $('#userLastLogin').text(user.LastLogin.toDateString());
-        $('#userActive').text((user.IsActive == true ? 'Yes' : 'No'));
-        $('#userEmailNotify').text((user.ReceiveTicketNotifications == true ? 'Yes' : 'No'));
-        $('#userSubscribeTickets').text((user.SubscribeToNewTickets == true ? 'Yes' : 'No'));
-        $('#userSubscribeActions').text((user.SubscribeToNewActions == true ? 'Yes' : 'No'));
-        $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Yes' : 'No'));
-        $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Yes' : 'No'));
-        $('#userDateFormat').text(user.CultureDisplay);
-        $('#userSysAdmin').text((user.IsSystemAdmin == true ? 'Yes' : 'No'));
-        $('#chatUser').text((user.IsChatUser == true ? 'Yes' : 'No'));
-        $('#activatedOn').text(user.ActivatedOn.toDateString());
-        $('#userInfo').html((user.UserInformation == '' ? 'No Additional Information' : user.UserInformation.replace(/\n\r?/g, '<br />')));
-
-
-        var pwText = top.Ts.System.User.UserID == userID && top.Ts.System.User.IsSystemAdmin && (userID > -1);
-        $('#userPW').text((pwText == true ? 'Change Password' : 'Reset and Email Password'));
-
-        top.Ts.Services.Users.GetUserPhoto(userID, function (att) {
-            $('#userPhoto').attr("src", att);
-        });
-
-    });
-
-    var canEdit = top.Ts.System.User.UserID == userID || top.Ts.System.User.IsSystemAdmin;
-    var isSysAdmin = top.Ts.System.User.IsSystemAdmin;
-    if (canEdit) {
-
-        if (!isSysAdmin) {
-            $('#userActive').removeClass('ui-state-default ts-link');
-            $('#userActive').addClass('disabledlink');
-            $('#userSysAdmin').removeClass('ui-state-default ts-link');
-            $('#userSysAdmin').addClass('disabledlink');
-            $('#chatUser').removeClass('ui-state-default ts-link');
-            $('#chatUser').addClass('disabledlink');
-        }
-
-
-        $('.user-address-add').click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            ShowDialog(top.GetAddressDialog(userID, 22));
-        });
-
-        $('.user-phone-add').click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            ShowDialog(top.GetPhoneDialog(userID, 22));
-
-        });
-
-        if (!isSysAdmin) {
-            $('.user-group-add').remove();
-        }
-        else {
-            $('.user-group-add').click(function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                ShowDialog(top.GetSelectGroupDialog(userID, 22));
-            });
-        }
-
-        $('#userPW').click(function (e) {
-            e.preventDefault();
-            var pwText = top.Ts.System.User.UserID == userID && top.Ts.System.User.IsSystemAdmin && (userID > -1);
-            if (!pwText) {
-                top.Ts.Services.Users.ResetEmailPW(_user.UserID, function (result) {
-                    alert(result);
-                },
+    $('#userPW').click(function (e) {
+      e.preventDefault();
+      var pwText = top.Ts.System.User.UserID == userID && top.Ts.System.User.IsSystemAdmin && (userID > -1);
+      if (!pwText) {
+        top.Ts.Services.Users.ResetEmailPW(_user.UserID, function (result) {
+          alert(result);
+          top.Ts.System.logAction('User Info - User Email Reset');
+        },
                   function (error) {
-                      alert('There was an error.');
+                    alert('There was an error.');
                   });
 
-            }
-            else {
-                window.open("../../ChangePassword.aspx", "ChangePW");
-            }
-        });
+      }
+      else {
+        window.open("../../../ChangePassword.aspx", "ChangePW");
+      }
+    });
 
-        $('#userPhotoEdit')
+    $('#userPhotoEdit')
       .click(function (e) {
-          e.preventDefault();
-          ShowDialog(top.GetProfileImageDialog(orgID, userID));
-          //            $('.dialog-avatar').dialog({
-          //              autoOpen: true,
-          //              modal: true,
-          //              height: 400,
-          //              width: 400
-          //            });
+        e.preventDefault();
+        top.Ts.System.logAction('User Info - Photo Dialog Opened');
+        ShowDialog(top.GetProfileImageDialog(orgID, userID));
+        //            $('.dialog-avatar').dialog({
+        //              autoOpen: true,
+        //              modal: true,
+        //              height: 400,
+        //              width: 400
+        //            });
       });
 
-        $('#UserName')
+    $('#UserName')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
-        e.preventDefault();
-        var header = $(this).parent().hide();
-        var container = $('<div>')
+      e.preventDefault();
+      var header = $(this).parent().hide();
+      var container = $('<div>')
         .addClass('user-name-edit')
         .css('marginTop', '1em')
         .insertAfter(header);
 
-        $('<input type="text">')
+      $('<input type="text">')
         .addClass('ui-widget-content ui-corner-all')
         .val(_user.FirstName)
         .appendTo(container)
         .focus();
 
-        $('<input type="text">')
+      $('<input type="text">')
         .addClass('ui-widget-content ui-corner-all')
         .val(_user.MiddleName)
         .appendTo(container)
         .focus();
 
-        $('<input type="text">')
+      $('<input type="text">')
         .addClass('ui-widget-content ui-corner-all')
         .val(_user.LastName)
         .appendTo(container)
         .focus();
 
-        $('<span>')
+      $('<span>')
         .addClass('ts-icon ts-icon-save')
         .click(function (e) {
-            $(this).closest('div').remove();
-            header.show().find('img').show();
-            var fname = $(this).prev().prev().prev().val();
-            var mname = $(this).prev().prev().val();
-            var lname = $(this).prev().val();
+          $(this).closest('div').remove();
+          header.show().find('img').show();
+          var fname = $(this).prev().prev().prev().val();
+          var mname = $(this).prev().prev().val();
+          var lname = $(this).prev().val();
 
-            if (fname == '' || lname == '') {
-                header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                alert('The name you have specified is invalid.  Please enter your name.');
-                return;
-            }
+          if (fname == '' || lname == '') {
+            header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+            alert('The name you have specified is invalid.  Please enter your name.');
+            return;
+          }
 
-            top.Ts.Services.Users.SaveUserName(_user.UserID, fname, mname, lname, function (result) {
-                header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                $('#UserName').html(result);
-                _user.FirstName = fname;
-                _user.MidddleName = mname;
-                _user.LastName = lname;
-            },
+          top.Ts.Services.Users.SaveUserName(_user.UserID, fname, mname, lname, function (result) {
+            top.Ts.System.logAction('User Info - User Name Changed');
+            header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+            $('#UserName').html(result);
+            _user.FirstName = fname;
+            _user.MidddleName = mname;
+            _user.LastName = lname;
+          },
           function (error) {
-              header.show().find('img').hide();
-              alert('There was an error saving the username.');
+            header.show().find('img').hide();
+            alert('There was an error saving the username.');
           });
         })
         .appendTo(container)
 
-        $('<span>')
+      $('<span>')
         .addClass('ts-icon ts-icon-cancel')
         .click(function (e) {
-            $(this).closest('div').remove();
-            header.show();
+          $(this).closest('div').remove();
+          header.show();
         })
         .appendTo(container)
     });
 
-        $('#userInfo')
+    $('#userInfo')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
-        e.preventDefault();
-        var header = $(this).parent().hide();
-        $(this).find('.ts-icon-edit').hide();
-        var container = $('<div>')
+      e.preventDefault();
+      var header = $(this).parent().hide();
+      $(this).find('.ts-icon-edit').hide();
+      var container = $('<div>')
         .addClass('user-info-edit')
         .insertAfter(header);
 
-        $('<textarea cols=50 rows=5>')
+      $('<textarea cols=50 rows=5>')
         .addClass('ui-widget-content ui-corner-all')
         .val($(this).parent().find('a').html().replace(/<br>/g, '\n'))
         .appendTo(container)
         .focus();
 
-        $('<span>')
+      $('<span>')
         .addClass('ts-icon ts-icon-save')
         .click(function (e) {
-            $(this).closest('div').remove();
-            header.show().find('img').show();
-            top.Ts.Services.Users.SaveUserInfo(_user.UserID, $(this).prev().val(), function (result) {
-                header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                if (result != '') {
-                    $('#userInfo').html(result.replace(/\n\r?/g, '<br />'));
-                } else {
-                    $('#userInfo').html('No Additional Information');
-                }
-            },
+          $(this).closest('div').remove();
+          header.show().find('img').show();
+          top.Ts.Services.Users.SaveUserInfo(_user.UserID, $(this).prev().val(), function (result) {
+            top.Ts.System.logAction('User Info - User Info Changed');
+            header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+            if (result != '') {
+              $('#userInfo').html(result.replace(/\n\r?/g, '<br />'));
+            } else {
+              $('#userInfo').html('No Additional Information');
+            }
+          },
           function (error) {
-              header.show().find('img').hide();
-              alert('There was an error saving the users information.');
+            header.show().find('img').hide();
+            alert('There was an error saving the users information.');
           });
         })
         .appendTo(container)
 
-        $('<span>')
+      $('<span>')
         .addClass('ts-icon ts-icon-cancel')
         .click(function (e) {
-            $(this).closest('div').remove();
-            header.show();
+          $(this).closest('div').remove();
+          header.show();
         })
         .appendTo(container)
     });
 
-        $('#userTitle')
+    $('#userTitle')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
-        e.preventDefault();
-        var header = $(this).parent().hide();
-        var container = $('<div>')
+      e.preventDefault();
+      var header = $(this).parent().hide();
+      var container = $('<div>')
         .addClass('user-title-edit')
         .insertAfter(header);
 
-        $('<input type="text">')
+      $('<input type="text">')
         .addClass('ui-widget-content ui-corner-all')
         .val($(this).text())
         .appendTo(container)
         .focus();
 
-        $('<span>')
+      $('<span>')
         .addClass('ts-icon ts-icon-save')
         .click(function (e) {
-            $(this).closest('div').remove();
-            header.show().find('img').show();
-            top.Ts.Services.Users.SaveUserTitle(_user.UserID, $(this).prev().val(), function (result) {
-                header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                $('#userTitle').html(result);
-            },
+          $(this).closest('div').remove();
+          header.show().find('img').show();
+          top.Ts.Services.Users.SaveUserTitle(_user.UserID, $(this).prev().val(), function (result) {
+            top.Ts.System.logAction('User Info - User Title Changed');
+            header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+            $('#userTitle').html(result);
+          },
           function (error) {
-              header.show().find('img').hide();
-              alert('There was an error saving the users title.');
+            header.show().find('img').hide();
+            alert('There was an error saving the users title.');
           });
         })
         .appendTo(container)
 
-        $('<span>')
+      $('<span>')
         .addClass('ts-icon ts-icon-cancel')
         .click(function (e) {
-            $(this).closest('div').remove();
-            header.show();
+          $(this).closest('div').remove();
+          header.show();
         })
         .appendTo(container)
     });
 
-        $('#editEmail')
+    $('#editEmail')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
-        e.preventDefault();
-        var header = $(this).parent().hide();
-        $(this).find('.ts-icon-edit').hide();
-        var container = $('<div>')
+      e.preventDefault();
+      var header = $(this).parent().hide();
+      $(this).find('.ts-icon-edit').hide();
+      var container = $('<div>')
         .addClass('user-email-edit')
         .insertAfter(header);
 
-        $('<input type="text">')
+      $('<input type="text">')
         .addClass('ui-widget-content ui-corner-all')
         .val($('#userEmail').text())
         .appendTo(container)
         .focus();
 
-        $('<span>')
+      $('<span>')
         .addClass('ts-icon ts-icon-save')
         .click(function (e) {
-            $(this).closest('div').remove();
-            header.show().find('img').show();
-            top.Ts.Services.Users.SaveUserEmail(_user.UserID, $(this).prev().val(), function (result) {
-                header.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                if (result.substring(0, 6) == "_error")
-                    alert("The email you have specified is invalid.  Please choose another email.");
-                else
-                    $('#userEmail').html('<a href="mailto:' + result + '">' + result + '</a>');
-            },
+          $(this).closest('div').remove();
+          header.show().find('img').show();
+          top.Ts.Services.Users.SaveUserEmail(_user.UserID, $(this).prev().val(), function (result) {
+            header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+            if (result.substring(0, 6) == "_error") {
+              alert("The email you have specified is invalid.  Please choose another email.");
+            }
+            else {
+              $('#userEmail').html('<a href="mailto:' + result + '">' + result + '</a>');
+              top.Ts.System.logAction('User Info - User Email Changed');
+            }
+          },
           function (error) {
-              header.show().find('img').hide();
-              alert('There was an error saving the email.');
+            header.show().find('img').hide();
+            alert('There was an error saving the email.');
           });
         })
         .appendTo(container)
 
-        $('<span>')
+      $('<span>')
         .addClass('ts-icon ts-icon-cancel')
         .click(function (e) {
-            $(this).closest('div').remove();
-            header.show();
+          $(this).closest('div').remove();
+          header.show();
         })
         .appendTo(container)
     });
 
-        $('#userActive')
-      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-      .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
+    $('#editWebsite')
+    .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+    .click(function (e) {
+      e.preventDefault();
+      var header = $(this).parent().hide();
+      $(this).find('.ts-icon-edit').hide();
+      var container = $('<div>')
+          .addClass('user-linkedin-edit')
+          .insertAfter(header);
 
-          if (isSysAdmin) {
-              item.next().show();
-              top.Ts.Services.Users.SetIsActive(_user.UserID, (item.text() !== 'Yes'),
-          function (result) {
-              item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
-          },
-          function (error) {
-              alert('There was an error saving the user active status.');
-              item.next().hide();
-          });
-          }
-      });
+      $('<input type="text">')
+          .addClass('ui-widget-content ui-corner-all')
+          .val($('#userWebsite').text())
+          .appendTo(container)
+          .focus();
 
-        $('#userEmailNotify')
-      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-      .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          item.next().show();
-          top.Ts.Services.Users.SetEmailNotify(_user.UserID, (item.text() !== 'Yes'),
-          function (result) {
-              item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
-          },
-          function (error) {
-              alert('There was an error saving the user email notification status.');
-              item.next().hide();
-          });
-      });
-
-
-        $('#userSubscribeTickets')
-      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-      .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          item.next().show();
-          top.Ts.Services.Users.SetSubscribeTickets(_user.UserID, (item.text() !== 'Yes'),
-          function (result) {
-              item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
-          },
-          function (error) {
-              alert('There was an error saving the user ticket subscription status.');
-              item.next().hide();
-          });
-      });
-
-        $('#userSubscribeActions')
-      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-      .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          item.next().show();
-          top.Ts.Services.Users.SetSubscribeActions(_user.UserID, (item.text() !== 'Yes'),
-          function (result) {
-              item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
-          },
-          function (error) {
-              alert('There was an error saving the user ticket action subscription status.');
-              item.next().hide();
-          });
-      });
-
-        $('#userAutoSubscribe')
-      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-      .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          item.next().show();
-          top.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Yes'),
-          function (result) {
-              item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
-          },
-          function (error) {
-              alert('There was an error saving the user auto subscribe status.');
-              item.next().hide();
-          });
-      });
-
-        $('#userGroupNotify')
-      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-      .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          item.next().show();
-          top.Ts.Services.Users.SetGroupNotify(_user.UserID, (item.text() !== 'Yes'),
-          function (result) {
-              item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
-          },
-          function (error) {
-              alert('There was an error saving the user group notification subscription status.');
-              item.next().hide();
-          });
-      });
-
-        $('#userSysAdmin')
-      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-      .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          if (isSysAdmin) {
-              item.next().show();
-              top.Ts.Services.Users.SetSysAdmin(_user.UserID, (item.text() !== 'Yes'),
-          function (result) {
-              item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
-          },
-          function (error) {
-              alert('There was an error saving the user system admin status.');
-              item.next().hide();
-          });
-          }
-      });
-
-        $('#chatUser')
-      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-      .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          if (isSysAdmin) {
-              item.next().show();
-              top.Ts.Services.Users.SetChatUser(_user.UserID, (item.text() !== 'Yes'),
-          function (result) {
-              if (result == 'error') {
-                  item.text('No').next().hide().next().show().delay(800).fadeOut(400);
-                  alert("You have exceeded your chat licenses.  Please purchase more seats to add additional chat users.");
-              }
+      $('<span>')
+          .addClass('ts-icon ts-icon-save')
+          .click(function (e) {
+            $(this).closest('div').remove();
+            header.show().find('img').show();
+            top.Ts.Services.Users.SaveUserLinkedin(_user.UserID, $(this).prev().val(), function (result) {
+              top.Ts.System.logAction('User Info - User LinkedIn ID Changed');
+              header.show().find('img').hide().next().show().delay(800).fadeOut(400);
+              if (result.substring(0, 6) == "_error")
+                alert("The Website you have specified is invalid.");
               else
-                  item.text((result == "True" ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                if (result == '') {
+                  $('#userWebsite').html('None');
+                  $('#userWebsite').removeAttr("href", result);
+                  $('#userWebsite').removeAttr("target", "_blank");
+                }
+                else {
+                  $('#userWebsite').html(result);
+                  $('#userWebsite').attr("href", result);
+                  $('#userWebsite').attr("target", "_blank");
+                }
+
+            },
+              function (error) {
+                header.show().find('img').hide();
+                alert('There was an error saving the Website url.');
+              });
+          })
+          .appendTo(container)
+
+      $('<span>')
+          .addClass('ts-icon ts-icon-cancel')
+          .click(function (e) {
+            $(this).closest('div').remove();
+            header.show();
+          })
+          .appendTo(container)
+    });
+
+    $('#userActive')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetIsActive(_user.UserID, (item.text() !== 'Yes'),
+          function (result) {
+            top.Ts.System.logAction('User Info - User Active State Changed');
+            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
           },
           function (error) {
-              alert('There was an error saving the user chat status.');
-              item.next().hide();
+            alert('There was an error saving the user active status.');
+            item.next().hide();
           });
-          }
+        }
+      });
+
+    $('#userEmailNotify')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        item.next().show();
+        top.Ts.Services.Users.SetEmailNotify(_user.UserID, (item.text() !== 'Yes'),
+          function (result) {
+            top.Ts.System.logAction('User Info - User Email Notifications Changed');
+            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+          },
+          function (error) {
+            alert('There was an error saving the user email notification status.');
+            item.next().hide();
+          });
       });
 
 
-        $('#userTimeZone')
+    $('#userSubscribeTickets')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        item.next().show();
+        top.Ts.Services.Users.SetSubscribeTickets(_user.UserID, (item.text() !== 'Yes'),
+          function (result) {
+            top.Ts.System.logAction('User Info - User Ticket Subscription Setting Changed');
+            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+          },
+          function (error) {
+            alert('There was an error saving the user ticket subscription status.');
+            item.next().hide();
+          });
+      });
+
+    $('#userSubscribeActions')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        item.next().show();
+        top.Ts.Services.Users.SetSubscribeActions(_user.UserID, (item.text() !== 'Yes'),
+          function (result) {
+            top.Ts.System.logAction('User Info - User Action Subscription Changed');
+            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+          },
+          function (error) {
+            alert('There was an error saving the user ticket action subscription status.');
+            item.next().hide();
+          });
+      });
+
+    $('#userAutoSubscribe')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        item.next().show();
+        top.Ts.Services.Users.SetAutoSubscribe(_user.UserID, (item.text() !== 'Yes'),
+          function (result) {
+            top.Ts.System.logAction('User Info - User Auto Subscribe Changed');
+            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+          },
+          function (error) {
+            alert('There was an error saving the user auto subscribe status.');
+            item.next().hide();
+          });
+      });
+
+    $('#userGroupNotify')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        item.next().show();
+        top.Ts.Services.Users.SetGroupNotify(_user.UserID, (item.text() !== 'Yes'),
+          function (result) {
+            top.Ts.System.logAction('User Info - Group Notification Changed');
+            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+          },
+          function (error) {
+            alert('There was an error saving the user group notification subscription status.');
+            item.next().hide();
+          });
+      });
+
+    $('#userEmailAfterHours')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        item.next().show();
+        top.Ts.Services.Users.SetOnlyEmailAfterHours(_user.UserID, (item.text() !== 'Yes'),
+          function (result) {
+            top.Ts.System.logAction('User Info - Only Email After Hours Changed');
+            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+          },
+          function (error) {
+            alert('There was an error saving the Only Email After Hours status.');
+            item.next().hide();
+          });
+      });
+
+
+    $('#userSysAdmin')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetSysAdmin(_user.UserID, (item.text() !== 'Yes'),
+          function (result) {
+            top.Ts.System.logAction('User Info - User System Admin Status Changed');
+            item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+          },
+          function (error) {
+            alert('There was an error saving the user system admin status.');
+            item.next().hide();
+          });
+        }
+      });
+
+
+    $('#userTicketVisibility')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetChangeTicketVisibility(_user.UserID, (item.text() !== 'Yes'),
+              function (result) {
+                top.Ts.System.logAction('User Info - User Change Ticket Visibility Changed');
+                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+              },
+              function (error) {
+                alert('There was an error saving the user change ticket visibility.');
+                item.next().hide();
+              });
+        }
+      });
+
+    $('#userKBVisibility')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetChangeKbVisibility(_user.UserID, (item.text() !== 'Yes'),
+              function (result) {
+                top.Ts.System.logAction('User Info - User Change Knowledgebase Visibility Changed');
+                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+              },
+              function (error) {
+                alert('There was an error saving the user change knowledgebase visibility.');
+                item.next().hide();
+              });
+        }
+      });
+
+    $('#chatUser')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetChatUser(_user.UserID, (item.text() !== 'Yes'),
+          function (result) {
+            if (result == 'error') {
+              item.text('No').next().hide().next().show().delay(800).fadeOut(400);
+              alert("You have exceeded your chat licenses.  Please purchase more seats to add additional chat users.");
+            }
+            else {
+              top.Ts.System.logAction('User Info - User Chat User Status Changed');
+              item.text((result == "True" ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            }
+          },
+          function (error) {
+            alert('There was an error saving the user chat status.');
+            item.next().hide();
+          });
+        }
+      });
+
+
+    $('#userTicketRights')
         .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
         .click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            removeComboBoxes();
-            var value = $(this).text();
-            var parent = $(this).parent().hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
-            var select = $('<select>').appendTo(container);
+          e.preventDefault();
+          e.stopPropagation();
+          removeComboBoxes();
+          var value = $(this).data('o');
+          var parent = $(this).parent().hide();
+          var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+          var select = $('<select>').appendTo(container);
 
-            var tz = top.Ts.Cache.getTimeZones();
-            for (var i = 0; i < tz.length; i += 2) {
-                var option = $('<option>').text(tz[i]).data('type', tz[i + 1]).appendTo(select);
-                if ($.trim(value) == $.trim(tz[i])) {
-                    option.attr('selected', 'selected');
-                }
+          for (var i = 0; i < 4; i++) {
+            var option = $('<option>')
+              .text(userRightsToString(i))
+              .data('type', i)
+              .appendTo(select);
+
+            if (value == i) {
+              option.attr('selected', 'selected');
             }
+          }
 
-            select.combobox({
-                selected: function (e, ui) {
-                    parent.show().find('img').show();
-                    var type = $(ui.item).data('type');
-                    top.Ts.Services.Users.SetTimezone(_user.UserID, type, function (result) {
-                        if (result !== null) {
-                            $('#userTimeZone').html(result);
-                            parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                        }
-                        else {
-                            parent.show().find('img').hide();
-                        }
-                    },
+          select.combobox({
+            selected: function (e, ui) {
+              parent.show().find('img').show();
+              var type = $(ui.item).data('type');
+              top.Ts.Services.Users.SetTicketRights(_user.UserID, type, function () {
+                top.Ts.System.logAction('User Info - User Ticket Rights Changed');
+                $('#userTicketRights').html(userRightsToString(type)).data('o', type);
+                if (type == 3) $('#userRightsAllTicketCustomers').closest('div').show(); else $('#userRightsAllTicketCustomers').closest('div').hide();
+                $('#divCustomerContainer').toggle(type == 3 && isSysAdmin == true);
+                parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+              },
             function (error) {
-                parent.show().find('img').hide();
-                alert('There was an error setting user timezone.');
+              parent.show().find('img').hide();
+              alert('There was an error setting user rights.');
             });
-                    container.remove();
-                },
-                close: function (e, ui) {
-                    removeComboBoxes();
-                }
-            });
-            select.combobox('search', '');
+              container.remove();
+            },
+            close: function (e, ui) {
+              removeComboBoxes();
+            }
+          });
+          select.combobox('search', '');
         });
 
-        $('#userDateFormat')
+    $('#userRightsAllTicketCustomers')
         .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
         .click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            removeComboBoxes();
-            var value = $(this).text();
-            var parent = $(this).parent().hide();
-            var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
-            var select = $('<select>').appendTo(container);
-
-            var culture = top.Ts.Cache.getCultures();
-            for (var i = 0; i < culture.length; i++) {
-                var displayname = culture[i].split("_");
-                var option = $('<option>').text(displayname[0]).appendTo(select).data('type', displayname[1]);
-                if ($.trim(value) == $.trim(displayname[0])) {
-                    option.attr('selected', 'selected');
-                }
-            }
-
-            select.combobox({
-                selected: function (e, ui) {
-                    parent.show().find('img').show();
-                    var type = $(ui.item).data('type');
-                    top.Ts.Services.Users.SetCulture(_user.UserID, type, function (result) {
-                        if (result !== null) {
-                            $('#userDateFormat').html(result);
-                            parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
-                        }
-                        else {
-                            parent.show().find('img').hide();
-                        }
-                    },
-            function (error) {
-                parent.show().find('img').hide();
-                alert('There was an error setting user date format.');
-            });
-                    container.remove();
-                },
-                close: function (e, ui) {
-                    removeComboBoxes();
-                }
-            });
-            select.combobox('search', '');
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+            item.next().show();
+            top.Ts.Services.Users.SetAllowAnyTicketCustomer(_user.UserID, (item.text() !== 'Yes'),
+              function (result) {
+                top.Ts.System.logAction('User Info - User Changed AllowAnyTicketCustomer');
+                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+              },
+              function (error) {
+                alert('There was an error saving the user allow any ticket customer to be assigned.');
+                item.next().hide();
+              });
+          }
         });
 
-    }
-    else {
-        $('.ts-icon-edit').remove();
-        $('.ts-add').remove();
-        $('#userPhotoEdit').remove();
-        $('#UserName').removeClass('ui-state-default ts-link');
-        $('#UserName').addClass('disabledlink');
-        $('#userTitle').removeClass('ui-state-default ts-link');
-        $('#userTitle').addClass('disabledlink');
-        $('#userTimeZone').removeClass('ui-state-default ts-link');
-        $('#userTimeZone').addClass('disabledlink');
-        $('#userLastLogin').removeClass('ui-state-default ts-link');
-        $('#userLastLogin').addClass('disabledlink');
-        $('#userActive').removeClass('ui-state-default ts-link');
-        $('#userActive').addClass('disabledlink');
-        $('#userEmailNotify').removeClass('ui-state-default ts-link');
-        $('#userEmailNotify').addClass('disabledlink');
-        $('#userSubscribeTickets').removeClass('ui-state-default ts-link');
-        $('#userSubscribeTickets').addClass('disabledlink');
-        $('#userSubscribeActions').removeClass('ui-state-default ts-link');
-        $('#userSubscribeActions').addClass('disabledlink');
-        $('#userAutoSubscribe').removeClass('ui-state-default ts-link');
-        $('#userAutoSubscribe').addClass('disabledlink');
-        $('#userGroupNotify').removeClass('ui-state-default ts-link');
-        $('#userGroupNotify').addClass('disabledlink');
-        $('#userDateFormat').removeClass('ui-state-default ts-link');
-        $('#userDateFormat').addClass('disabledlink');
-        $('#userDateFormat').removeClass('ui-state-default ts-link');
-        $('#userDateFormat').addClass('disabledlink');
-        $('#userSysAdmin').removeClass('ui-state-default ts-link');
-        $('#userSysAdmin').addClass('disabledlink');
-        $('#chatUser').removeClass('ui-state-default ts-link');
-        $('#chatUser').addClass('disabledlink');
-        $('#userInfo').removeClass('ui-state-default ts-link');
-        $('#userInfo').addClass('disabledlink');
-    }
-
-    GetAddresses();
-    GetPhoneNumbers();
-    GetGroups();
 
 
-    function removeComboBoxes() {
-        $('.ticket-combobox').prev().show().next().remove();
-    }
+    $('#userTimeZone')
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          removeComboBoxes();
+          var value = $(this).text();
+          var parent = $(this).parent().hide();
+          var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+          var select = $('<select>').appendTo(container);
 
-    function GetAddresses() {
-        top.Ts.Services.Users.GetUserAddresses(userID, function (addresses) {
-            var addresslist = '';
-
-            if (addresses.length === 0) {
-                addresslist = '<div>There are no addresses to display.</div>';
+          var tz = top.Ts.Cache.getTimeZones();
+          for (var i = 0; i < tz.length; i += 2) {
+            var option = $('<option>').text(tz[i]).data('type', tz[i + 1]).appendTo(select);
+            if ($.trim(value) == $.trim(tz[i])) {
+              option.attr('selected', 'selected');
             }
+          }
 
-            for (var i = 0; i < addresses.length; i++) {
-                var header = $('<div>').addClass('user-address')
+          select.combobox({
+            selected: function (e, ui) {
+              parent.show().find('img').show();
+              var type = $(ui.item).data('type');
+              top.Ts.Services.Users.SetTimezone(_user.UserID, type, function (result) {
+                top.Ts.System.logAction('User Info - User Time Zone Changed');
+                if (result !== null) {
+                  $('#userTimeZone').html(result);
+                  parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                }
+                else {
+                  parent.show().find('img').hide();
+                }
+              },
+            function (error) {
+              parent.show().find('img').hide();
+              alert('There was an error setting user timezone.');
+            });
+              container.remove();
+            },
+            close: function (e, ui) {
+              removeComboBoxes();
+            }
+          });
+          select.combobox('search', '');
+        });
+
+    $('#userDateFormat')
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          removeComboBoxes();
+          var value = $(this).text();
+          var parent = $(this).parent().hide();
+          var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+          var select = $('<select>').appendTo(container);
+
+          var culture = top.Ts.Cache.getCultures();
+          for (var i = 0; i < culture.length; i++) {
+            var displayname = culture[i].split("_");
+            var option = $('<option>').text(displayname[0]).appendTo(select).data('type', displayname[1]);
+            if ($.trim(value) == $.trim(displayname[0])) {
+              option.attr('selected', 'selected');
+            }
+          }
+
+          select.combobox({
+            selected: function (e, ui) {
+              parent.show().find('img').show();
+              var type = $(ui.item).data('type');
+              top.Ts.Services.Users.SetCulture(_user.UserID, type, function (result) {
+                top.Ts.System.logAction('User Info - User Date Format Changed');
+                if (result !== null) {
+                  $('#userDateFormat').html(result);
+                  parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                }
+                else {
+                  parent.show().find('img').hide();
+                }
+              },
+            function (error) {
+              parent.show().find('img').hide();
+              alert('There was an error setting user date format.');
+            });
+              container.remove();
+            },
+            close: function (e, ui) {
+              removeComboBoxes();
+            }
+          });
+          select.combobox('search', '');
+        });
+
+    $('#divActionForm').delegate('.signature-cancel', 'click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      $('#divActionForm').hide();
+      $('#userSignature').show();
+      $('#userSignatureEdit').show();
+
+    });
+
+    $('#divActionForm').delegate('.signature-save', 'click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      top.Ts.Services.Users.SaveUserSignature(_user.UserID, $('.userSignatureText').tinymce().getContent(), function (result) {
+        if (result.substring(0, 6) == "_error")
+          alert("The signature you have specified is invalid.");
+        else {
+          $('#userSignature').html(result);
+          top.Ts.System.logAction('User Info - User Signature Changed');
+        }
+        $('#divActionForm').hide();
+        $('#userSignature').show();
+        $('#userSignatureEdit').show();
+      },
+        function (error) {
+          alert('There was an error saving the signature.');
+        });
+
+    });
+
+    $('#userSignatureEdit').click(function (e) {
+      var element = $('#divActionForm');
+
+      $(this).hide();
+      $('#userSignature').hide();
+
+      createTinyMCE($('<div>').appendTo('.userSignature-form'));
+
+    });
+
+  }
+  else {
+    $('.ts-icon-edit').remove();
+    $('.ts-add').remove();
+    $('#userPhotoEdit').remove();
+    $('#UserName').removeClass('ui-state-default ts-link');
+    $('#UserName').addClass('disabledlink');
+    $('#userTitle').removeClass('ui-state-default ts-link');
+    $('#userTitle').addClass('disabledlink');
+    $('#userTimeZone').removeClass('ui-state-default ts-link');
+    $('#userTimeZone').addClass('disabledlink');
+    $('#userTicketVisibility').removeClass('ui-state-default ts-link');
+    $('#userTicketVisibility').addClass('disabledlink');
+    $('#userKBVisibility').removeClass('ui-state-default ts-link');
+    $('#userKBVisibility').addClass('disabledlink');
+    $('#userRightsAllTicketCustomers').removeClass('ui-state-default ts-link').addClass('disabledlink');
+    $('#userLastLogin').removeClass('ui-state-default ts-link');
+    $('#userLastLogin').addClass('disabledlink');
+    $('#userActive').removeClass('ui-state-default ts-link');
+    $('#userActive').addClass('disabledlink');
+    $('#userEmailNotify').removeClass('ui-state-default ts-link');
+    $('#userEmailNotify').addClass('disabledlink');
+    $('#userSubscribeTickets').removeClass('ui-state-default ts-link');
+    $('#userSubscribeTickets').addClass('disabledlink');
+    $('#userSubscribeActions').removeClass('ui-state-default ts-link');
+    $('#userSubscribeActions').addClass('disabledlink');
+    $('#userAutoSubscribe').removeClass('ui-state-default ts-link');
+    $('#userAutoSubscribe').addClass('disabledlink');
+    $('#userGroupNotify').removeClass('ui-state-default ts-link');
+    $('#userGroupNotify').addClass('disabledlink');
+    $('#userEmailAfterHours').removeClass('ui-state-default ts-link');
+    $('#userEmailAfterHours').addClass('disabledlink');
+    $('#userDateFormat').removeClass('ui-state-default ts-link');
+    $('#userDateFormat').addClass('disabledlink');
+    $('#userDateFormat').removeClass('ui-state-default ts-link');
+    $('#userDateFormat').addClass('disabledlink');
+    $('#userSysAdmin').removeClass('ui-state-default ts-link');
+    $('#userSysAdmin').addClass('disabledlink');
+    $('#chatUser').removeClass('ui-state-default ts-link');
+    $('#chatUser').addClass('disabledlink');
+    $('#userInfo').removeClass('ui-state-default ts-link');
+    $('#userInfo').addClass('disabledlink');
+    $('#userSignatureEdit').remove();
+
+    $('#customProperties a').removeClass('ui-state-default ts-link');
+    $('#customProperties a').addClass('disabledlink');
+  }
+
+  GetAddresses();
+  GetPhoneNumbers();
+  GetGroups();
+
+
+  function removeComboBoxes() {
+    $('.ticket-combobox').prev().show().next().remove();
+  }
+
+  function GetAddresses() {
+    top.Ts.Services.Users.GetUserAddresses(userID, function (addresses) {
+      var addresslist = '';
+
+      if (addresses.length === 0) {
+        addresslist = '<div>There are no addresses to display.</div>';
+      }
+
+      for (var i = 0; i < addresses.length; i++) {
+        var header = $('<div>').addClass('user-address')
                             .hover(function () {
-                                $(this).find('.ts-icon').show();
+                              $(this).find('.ts-icon').show();
                             }, function () {
-                                $(this).find('.ts-icon').hide();
+                              $(this).find('.ts-icon').hide();
                             })
                                    .data('data', addresses[i].AddressID);
-                var desc = $('<span>')
+        var desc = $('<span>')
                             .addClass('link-strong')
                             .text(addresses[i].Description)
                             .appendTo(header);
-                if (canEdit) {
-                    $('<span>')
+        if (canEdit) {
+          $('<span>')
                 .addClass('fleft ts-icon ts-icon-edit')
                 .click(function (e) {
-                    var item = $(this).parent();
-                    var data = item.data('data');
-                    ShowDialog(top.GetAddressDialog(data));
+                  var item = $(this).parent();
+                  var data = item.data('data');
+                  ShowDialog(top.GetAddressDialog(data));
                 }).hide()
                 .appendTo(header);
 
 
-                    $('<span>')
+          $('<span>')
                 .addClass('fleft ts-icon ts-icon-delete')
                 .click(function (e) {
-                    if (confirm('Are you sure you would like to remove this address?')) {
-                        var item = $(this).parent();
-                        var data = item.data('data');
-                        top.privateServices.DeleteAddress(data);
-                        window.location = window.location;
-                    }
-                    else {
-                        $(this).prev().hide();
-                        $(this).hide();
-                    }
+                  if (confirm('Are you sure you would like to remove this address?')) {
+                    var item = $(this).parent();
+                    var data = item.data('data');
+                    top.privateServices.DeleteAddress(data);
+                    window.location = window.location;
+                  }
+                  else {
+                    $(this).prev().hide();
+                    $(this).hide();
+                  }
                 }).hide()
                 .appendTo(header);
-                }
+        }
 
-                var addr1 = $('<div>').addClass('user-address-st1')
+        var addr1 = $('<div>').addClass('user-address-st1')
                                 .text(addresses[i].Addr1)
                                 .appendTo(header);
 
-                var addr2 = $('<div>').addClass('user-address-st2')
+        var addr2 = $('<div>').addClass('user-address-st2')
                                 .text(addresses[i].Addr2)
                                 .appendTo(header);
-                var addr3 = $('<div>').addClass('user-address-st3')
+        var addr3 = $('<div>').addClass('user-address-st3')
                                 .text(addresses[i].Addr3)
                                 .appendTo(header);
-                var csz = $('<div>').addClass('user-address-csz')
+        var csz = $('<div>').addClass('user-address-csz')
                                 .text(addresses[i].City + ', ' + addresses[i].State + ' ' + addresses[i].Zip)
                                 .appendTo(header);
-                var country = $('<div>').addClass('ser-address-country')
+        var country = $('<div>').addClass('ser-address-country')
                                 .text(addresses[i].Country)
                                 .appendTo(header);
-                $('#userAddressList').append(header);
-            }
+        $('#userAddressList').append(header);
+      }
 
-            $('#userAddressList').prepend(addresslist);
-        });
+      $('#userAddressList').prepend(addresslist);
+    });
 
-    }
+  }
 
-    function GetPhoneNumbers() {
-        top.Ts.Services.Users.GetUserPhoneNumbers(userID, function (phones) {
-            var phonelist = '';
+  function GetPhoneNumbers() {
+    top.Ts.Services.Users.GetUserPhoneNumbers(userID, function (phones) {
+      var phonelist = '';
 
-            if (phones.length === 0) {
-                phonelist = '<div>There are no phone numbers to display.</div>';
-            }
-            for (var i = 0; i < phones.length; i++) {
-                var header = $('<div>').addClass('user-phone')
+      if (phones.length === 0) {
+        phonelist = '<div>There are no phone numbers to display.</div>';
+      }
+      for (var i = 0; i < phones.length; i++) {
+        var header = $('<div>').addClass('user-phone')
                         .hover(function () {
-                            $(this).find('.ts-icon').show();
+                          $(this).find('.ts-icon').show();
                         }, function () {
-                            $(this).find('.ts-icon').hide();
+                          $(this).find('.ts-icon').hide();
                         })
                         .data('data', phones[i].PhoneID);
 
-                var link = $('<span>')
+        var link = $('<span>')
                                 .addClass('fleft')
                                 .html('<strong>' + phones[i].PhoneTypeName + '</strong>: ' + phones[i].Number + '  ' + (phones[i].Extension == '' ? '' : '<strong>Ext:</strong> ' + phones[i].Extension))
                                 .appendTo(header);
-                if (canEdit) {
-                    $('<span>')
+        if (canEdit) {
+          $('<span>')
                 .addClass('fleft ts-icon ts-icon-edit')
                 .click(function (e) {
-                    var item = $(this).parent();
-                    var data = item.data('data');
-                    ShowDialog(top.GetPhoneDialog(data));
+                  var item = $(this).parent();
+                  var data = item.data('data');
+                  ShowDialog(top.GetPhoneDialog(data));
                 }).hide()
                 .appendTo(header);
 
-                    $('<span>')
+          $('<span>')
                 .addClass('fleft ts-icon ts-icon-delete')
                 .click(function (e) {
-                    if (confirm('Are you sure you would like to remove this phone number?')) {
-                        var item = $(this).parent();
-                        var data = item.data('data');
-                        top.privateServices.DeletePhone(data);
-                        window.location = window.location;
-                    }
-                    else {
-                        $(this).prev().hide();
-                        $(this).hide();
-                    }
+                  if (confirm('Are you sure you would like to remove this phone number?')) {
+                    var item = $(this).parent();
+                    var data = item.data('data');
+                    top.privateServices.DeletePhone(data);
+                    window.location = window.location;
+                  }
+                  else {
+                    $(this).prev().hide();
+                    $(this).hide();
+                  }
                 }).hide()
                 .appendTo(header);
-                }
-                $('#userPhoneList').append(header);
-            }
-            $('#userPhoneList').prepend(phonelist);
-        });
-    }
+        }
+        $('#userPhoneList').append(header);
+      }
+      $('#userPhoneList').prepend(phonelist);
+    });
+  }
 
-    function GetGroups() {
-        top.Ts.Services.Users.GetUserGroups(userID, function (groups) {
-            var groupslist = '';
-            if (groups.length === 0) {
-                groupslist = '<div>There are no groups to display.</div>';
-            }
+  function GetGroups() {
+    top.Ts.Services.Users.GetUserGroups(userID, function (groups) {
+      var groupslist = '';
+      if (groups.length === 0) {
+        groupslist = '<div>There are no groups to display.</div>';
+      }
 
-            for (var i = 0; i < groups.length; i++) {
-                var header = $('<div>').addClass('user-group')
+      for (var i = 0; i < groups.length; i++) {
+        var header = $('<div>').addClass('user-group')
                             .hover(function () {
-                                $(this).find('.ts-icon').show();
+                              $(this).find('.ts-icon').show();
                             }, function () {
-                                $(this).find('.ts-icon').hide();
+                              $(this).find('.ts-icon').hide();
                             })
                         .data('data', groups[i].GroupID);
-                var link = $('<span>')
+        var link = $('<span>')
                                 .addClass('group-name')
                                 .text(groups[i].Name)
                                 .appendTo(header);
-                if (isSysAdmin) {
-                    $('<span>')
+        if (isSysAdmin) {
+          $('<span>')
                 .addClass('fleft ts-icon ts-icon-delete')
                 .click(function (e) {
-                    if (confirm('Are you sure you would like to remove this group?')) {
-                        var item = $(this).parent();
-                        var data = item.data('data');
-                        top.privateServices.DeleteGroupUser(data, _user.UserID);
-                        window.location = window.location;
-                    }
-                    else
-                        $(this).hide();
+                  if (confirm('Are you sure you would like to remove this group?')) {
+                    var item = $(this).parent();
+                    var data = item.data('data');
+                    top.privateServices.DeleteGroupUser(data, _user.UserID);
+                    window.location = window.location;
+                  }
+                  else
+                    $(this).hide();
                 }).hide()
                 .appendTo(header);
-                }
+        }
 
-                $('#userGroups').append(header);
-            }
-            $('#userGroups').prepend(groupslist);
-        });
+        $('#userGroups').append(header);
+      }
+      $('#userGroups').prepend(groupslist);
+    });
+  }
+
+  function initEditor(element, init) {
+    var editorOptions = {
+      theme: "advanced",
+      skin: "o2k7",
+      plugins: "imagemanager,autoresize",
+      theme_advanced_buttons1: "insertimage,bold,italic,underline,strikethrough,bullist,numlist,fontselect,fontsizeselect,forecolor,backcolor,|,link,unlink,|,code",
+      theme_advanced_buttons2: "",
+      theme_advanced_buttons3: "",
+      theme_advanced_buttons4: "",
+      theme_advanced_toolbar_location: "top",
+      theme_advanced_toolbar_align: "left",
+      theme_advanced_statusbar_location: "none",
+      theme_advanced_resizing: true,
+      convert_urls: true,
+      remove_script_host: false,
+      relative_urls: false,
+      force_br_newlines: true,
+      force_p_newlines: false,
+      forced_root_block: '',
+      content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
+      body_class: "ui-widget",
+      template_external_list_url: "tinymce/jscripts/template_list.js",
+      external_link_list_url: "tinymce/jscripts/link_list.js",
+      external_image_list_url: "tinymce/jscripts/image_list.js",
+      media_external_list_url: "tinymce/jscripts/media_list.js",
+      setup: function (ed) { },
+      oninit: init
+    };
+    $(element).tinymce(editorOptions);
+  }
+
+  function createTinyMCE(element) {
+    element = $(element).html($('#divActionForm').html()).addClass('fleft');
+
+    initEditor(element.find('.userSignatureText'), function (ed) {
+      top.Ts.Services.Users.GetUserSignature(userID, function (signature) {
+        ed.setContent(signature);
+      });
+      element.find('.userSignatureText').tinymce().focus();
+    });
+
+    element.find('.signature-cancel').click(function () {
+      $('#userSignature').show();
+      $('#userSignatureEdit').show();
+      element.remove();
+    });
+
+    element.find('.signature-save').click(function () {
+      top.Ts.Services.Users.SaveUserSignature(_user.UserID, element.find('.userSignatureText').html(), function (result) {
+        if (result.substring(0, 6) == "_error")
+          alert("The signature you have specified is invalid.");
+        else {
+          if (result == "")
+            $('#userSignature').html("None");
+          else
+            $('#userSignature').html(result);
+          $('#userSignature').show();
+          $('#userSignatureEdit').show();
+          element.remove();
+        }
+      },
+          function (error) {
+            alert('There was an error saving the signature.');
+          });
+    });
+
+  }
+
+  var execGetCustomer = null;
+  function getCustomers(request, response) {
+    if (execGetCustomer) { execGetCustomer._executor.abort(); }
+    execGetCustomer = top.Ts.Services.Organizations.SearchOrganization(request.term, function (result) { response(result); });
+  }
+
+  $('#divAddCustomer input')
+    .autocomplete({
+      minLength: 2,
+      source: getCustomers,
+      select: function (event, ui) {
+        $(this)
+          .data('o', ui.item)
+          .removeClass('ui-autocomplete-loading');
+      }
+    })
+    .keypress(function (e) { if (e.which == 13) $('#divAddCustomer button').click(); });
+
+  $('#divAddCustomer button').click(function (e) {
+    e.preventDefault();
+    var input = $('#divAddCustomer input').val('');
+    var item = input.data('o');
+    if (!item) return;
+    top.Ts.Services.Users.AddUserCustomer(_user.UserID, item.id, appendCustomers, function () { alert('There was a problem adding the customer.'); });
+    input.removeData();
+    top.Ts.System.logAction('User - Customer Added');
+  });
+
+  $('#divCustomers').delegate('.removable-item .ui-icon-close', 'click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var item = $(this).parent();
+    var data = item.data('data');
+    top.Ts.Services.Users.RemoveUserCustomer(_user.UserID, data.OrganizationID, appendCustomers, function () { alert('There was a problem removing the customer from the user.'); });
+    top.Ts.System.logAction('User - Customer Removed');
+  });
+
+  function appendCustomers(customers) {
+    if (customers == null) return;
+    $('#divCustomers').empty();
+    for (var i = 0; i < customers.length; i++) {
+      appendCustomer(customers[i]);
     }
+  }
 
-    $('.loading-section').hide().next().show();
+  function appendCustomer(customer) {
+    var item = $('<div>')
+      .addClass('removable-item ui-corner-all ts-color-bg-accent ')
+      .data('data', customer);
 
+    $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
+    var title = $('<div>').addClass('removable-item-title').appendTo(item);
+    $('<a>')
+      .attr('href', '#')
+      .addClass('ui-state-default ts-link')
+      .click(function (e) {
+        e.preventDefault();
+        top.Ts.MainPage.openCustomer(customer.OrganizationID);
+      })
+      .text(top.Ts.Utils.ellipseString(customer.Name, 30))
+      .appendTo(title);
+
+    $('<span>')
+    .addClass('ts-icon ts-icon-info')
+    .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID)
+    .cluetip(clueTipOptions)
+    .appendTo(title);
+
+    $('#divCustomers').append(item);
+  }
+
+  $('.loading-section').hide().next().show();
+
+  function appendCustomValues(fields) {
+    if (fields === null || fields.length < 1) {
+      $('.ticket-widget-properties').hide();
+      return;
+    }
+    $('.ticket-widget-properties').show();
+    var container = $('#customProperties').empty().removeClass('ts-loading');
+    for (var i = 0; i < fields.length; i++) {
+      var item = null;
+
+      var field = fields[i];
+
+      var div = $('<div>').addClass('user-name-value').data('field', field);
+      $('<span>')
+            .addClass('property')
+            .text(field.Name + ': ')
+            .appendTo(div);
+
+      switch (field.FieldType) {
+        case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+        case top.Ts.CustomFieldType.DateTime: appendCustomEditDate(field, div); break;
+        case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+        case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+        case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
+        default:
+      }
+
+      container.append(div);
+    }
+  }
+
+  function appendCustomEditCombo(field, element) {
+    var result = $('<a>')
+        .attr('href', '#')
+        .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+        .addClass('value ui-state-default ts-link')
+        .appendTo(element)
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          if (canEdit) {
+            $('.ticket-cutstom-edit').prev().show().next().remove();
+            $(this).hide()
+            var parent = $(this).parent();
+            var container = $('<div>')
+                .addClass('user-cutstom-edit ticket-combobox user-custom-edit')
+                .css('marginTop', '1em')
+                .insertAfter(parent);
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
+            var select = $('<select>').appendTo(container);
+
+            var items = field.ListValues.split('|');
+            for (var i = 0; i < items.length; i++) {
+              var option = $('<option>').text(items[i]).appendTo(select);
+              if (fieldValue === items[i]) { option.attr('selected', 'selected'); }
+            }
+
+            select.combobox({
+              selected: function (e, ui) {
+                parent.show().find('img').show();
+                var value = $(this).val();
+                container.remove();
+
+                if (field.IsRequired && field.IsFirstIndexSelect == true && $(this).find('option:selected').index() < 1) {
+                  result.parent().addClass('ui-state-error-custom ui-corner-all');
+                }
+                else {
+                  result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                }
+                top.Ts.System.logAction('User - Custom Value Set');
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                  parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                  parent.closest('.user-name-value').data('field', result);
+                  parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
+                }, function () {
+                  alert("There was a problem saving your user property.");
+                });
+
+
+              },
+              close: function (e, ui) {
+                removeComboBoxes();
+              }
+            });
+            select.combobox('search', '');
+          }
+        });
+    var items = field.ListValues.split('|');
+    if (field.IsRequired && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
+      result.parent().addClass('ui-state-error-custom ui-corner-all');
+    }
+  }
+
+  function appendCustomEditNumber(field, element) {
+    var result = $('<a>')
+        .attr('href', '#')
+        .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+        .addClass('value ui-state-default ts-link')
+        .appendTo(element)
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          if (canEdit) {
+            $('.user-custom-edit').prev().show().next().remove();
+            $(this).hide();
+            var parent = $(this).parent();
+            var container = $('<div>')
+                .addClass('user-cutstom-edit')
+                .css('marginTop', '1em')
+                .insertAfter($(this));
+
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
+            var input = $('<input type="text">')
+                  .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+                  .val(fieldValue)
+                  .appendTo(container)
+                  .numeric()
+                  .focus();
+
+            $('<span>')
+                .addClass('ts-icon ts-icon-save')
+                .click(function (e) {
+                  parent.show().find('img').show();
+                  var value = input.val();
+                  container.remove();
+                  if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                    result.parent().addClass('ui-state-error-custom ui-corner-all');
+                  }
+                  else {
+                    result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                  }
+
+                  top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                    parent.closest('.user-name-value').data('field', result);
+                    parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
+                  }, function () {
+                    alert("There was a problem saving your user property.");
+                  });
+                })
+                .appendTo(container);
+
+            $('<span>')
+                .addClass('ts-icon ts-icon-cancel')
+                .click(function (e) {
+                  parent.show();
+                  parent.find('a').show();
+                  container.remove();
+                })
+                .appendTo(container);
+          }
+        });
+    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+      result.parent().addClass('ui-state-error-custom ui-corner-all');
+    }
+  }
+
+  function appendCustomEditBool(field, element) {
+    var result = $('<a>')
+        .attr('href', '#')
+        .text((field.Value === null || $.trim(field.Value) === '' ? 'False' : field.Value))
+        .addClass('value ui-state-default ts-link')
+        .appendTo(element)
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          if (canEdit) {
+            $('.ticket-cutstom-edit').prev().show().next().remove();
+
+            var parent = $(this).parent();
+            var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
+            parent.find('img').show();
+            top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+              parent.find('img').hide().next().show().delay(800).fadeOut(400);
+              parent.closest('.user-name-value').data('field', result);
+              parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
+            }, function () {
+              alert("There was a problem saving your user property.");
+            });
+          }
+        });
+  }
+
+  function appendCustomEdit(field, element) {
+    var result = $('<a>')
+        .attr('href', '#')
+        .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+        .addClass('value ui-state-default ts-link')
+        .appendTo(element)
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          if (canEdit) {
+            $('.ticket-cutstom-edit').prev().show().next().remove();
+            $(this).hide();
+            var parent = $(this).parent();
+
+            var container = $('<div>')
+                .addClass('user-cutstom-edit')
+                .css('marginTop', '1em')
+                .insertAfter($(this));
+
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
+            var input = $('<input type="text">')
+                  .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+                  .val(fieldValue)
+                  .appendTo(container)
+                  .focus();
+
+            $('<span>')
+                .addClass('ts-icon ts-icon-save')
+                .click(function (e) {
+                  parent.show().find('img').show();
+                  var value = input.val();
+                  container.remove();
+                  if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                    result.parent().addClass('ui-state-error-custom ui-corner-all');
+                  }
+                  else {
+                    result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                  }
+                  top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                    parent.closest('.user-name-value').data('field', result);
+                    parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value)).show();
+                  }, function () {
+                    alert("There was a problem saving your user property.");
+                  });
+                })
+                .appendTo(container);
+
+            $('<span>')
+                .addClass('ts-icon ts-icon-cancel')
+                .click(function (e) {
+                  parent.show();
+                  parent.find('a').show();
+                  container.remove();
+                })
+                .appendTo(container);
+          }
+        });
+    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+      result.parent().addClass('ui-state-error-custom ui-corner-all');
+    }
+  }
+
+  function appendCustomEditDate(field, element) {
+    var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+    var result = $('<a>')
+        .attr('href', '#')
+        .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+        .addClass('value ui-state-default ts-link')
+        .appendTo(element)
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          if (canEdit) {
+            $('.user-cutstom-edit').prev().show().next().remove();
+            $(this).hide();
+            var parent = $(this).parent();
+
+            var container = $('<div>')
+                .addClass('user-cutstom-edit')
+                .css('marginTop', '1em')
+                .insertAfter($(this));
+
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
+
+            var input = $('<input type="text">')
+                  .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+                  .appendTo(container)
+                  .datetimepicker()
+                  .datetimepicker('setDate', top.Ts.Utils.getMsDate(fieldValue))
+                  .focus();
+
+            $('<span>')
+                .addClass('ts-icon ts-icon-save')
+                .click(function (e) {
+                  parent.show().find('img').show();
+                  var value = top.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
+                  container.remove();
+                  if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                    result.parent().addClass('ui-state-error-custom ui-corner-all');
+                  }
+                  else {
+                    result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                  }
+                  top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                    parent.closest('.user-name-value').data('field', result);
+                    var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern()))).show();
+
+                  }, function () {
+                    alert("There was a problem saving your user property.");
+                  });
+                })
+                .appendTo(container);
+
+            $('<span>')
+                .addClass('ts-icon ts-icon-cancel')
+                .click(function (e) {
+                  parent.show();
+                  parent.find('a').show();
+                  container.remove();
+                })
+                .appendTo(container);
+          }
+        });
+    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+      result.parent().addClass('ui-state-error-custom ui-corner-all');
+    }
+  }
 };
+
+
 
 UserPage.prototype = {
   constructor: UserPage,

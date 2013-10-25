@@ -85,12 +85,12 @@
 
    getTimeSpentText: function(hours)
    {
-    var minutes = Math.floor(Number(hours) * 60);
+    var minutes = Math.ceil(Number(hours) * 60);
      if (minutes > 59)
      {
       var h = Math.floor(minutes / 60);
       var m = Math.floor(minutes % 60);
-      var ht = (h === 1 ? ' Hour' : ' Hours');
+      var ht = (h === 1 ? ' Hour ' : ' Hours ');
       var hm = (m === 1 ? ' Minute' : ' Minutes');
       if (m == 0) return h + ht;
       else return h + ht + m + hm;
@@ -141,8 +141,8 @@
         mouseOutClose: true,
         width: 400,
         hoverIntent: {
-          sensitivity: 1,
-          interval: 50,
+          sensitivity: 4,
+          interval: 150,
           timeout: 0
         },
         cluetipClass: 'ui-corner-all',
@@ -188,25 +188,28 @@
       return (bytes/Math.pow(1024, Math.floor(e))).toFixed(2)+" "+s[e];
     },
 
-  getTicketSourceIcon: function(source)
-  {
-    var result = 'Images/icons/TeamSupportLogo16.png';
-    if (!source || source == null) { return result; }
-    source = source.toLowerCase();
-      switch (source) {
-        case 'chatoffline': result = 'Images/icons/chat_d.png'; break;
-        case 'chat': result = 'Images/icons/chat.png'; break; 
-        case 'email': result = 'Images/icons/MailBox.png'; break; 
-        case 'facebook': result = 'Images/party3/facebook.png'; break; 
-        case 'forum': result = 'Images/icons/forum.png'; break; 
-        case 'mobile': result = 'Images/icons/mobile.png'; break; 
-        case 'web': result = 'Images/icons/globe.png'; break; 
-        default:
-          result = 'Images/icons/TeamSupportLogo16.png';
-      }
+    getTicketSourceIcon: function(source) {
+      var result = 'Images/icons/TeamSupportLogo16.png';
+      if (!source || source == null) { return result; }
+      source = source.toLowerCase();
+        switch (source) {
+          case 'chatoffline': result = 'Images/icons/chat_d.png'; break;
+          case 'chat': result = 'Images/icons/chat.png'; break; 
+          case 'email': result = 'Images/icons/MailBox.png'; break; 
+          case 'facebook': result = 'Images/party3/facebook.png'; break; 
+          case 'forum': result = 'Images/icons/forum.png'; break; 
+          case 'mobile': result = 'Images/icons/mobile.png'; break; 
+          case 'web': result = 'Images/icons/globe.png'; break; 
+          default:
+            result = 'Images/icons/TeamSupportLogo16.png';
+        }
 
-    return result;
-  }
+      return result;
+    },
+
+    ellipseString: function (text, max) { 
+      return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; 
+    }
 
 
 
@@ -262,3 +265,4 @@ jQuery.cookie = function (key, value, options) {
   var result, decode = options.raw ? function (s) { return s; } : decodeURIComponent;
   return (result = new RegExp('(?:^|; )' + encodeURIComponent(key) + '=([^;]*)').exec(document.cookie)) ? decode(result[1]) : null;
 };
+

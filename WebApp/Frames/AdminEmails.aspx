@@ -9,7 +9,7 @@
   <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
   <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
-  <script src="../vcr/142/Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+  <script src="../js_5/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
   <style type="text/css">
     .buttons { padding: 10px 0; }
     .placeholder-title { font-size: 1.1em; margin-top: 20px; font-weight:bold; }
@@ -42,14 +42,15 @@
     }
 
     function loadSettings() {
-      PageMethods.GetOrganization(function(result) {
-      $('#lnkSystem').text(result.SystemEmailID + '@teamsupport.com').attr('href','mailto:' + result.SystemEmailID + '@teamsupport.com');
+      PageMethods.GetOrganization(function (result) {
+        $('#lnkSystem').text(result.SystemEmailID + '@teamsupport.com').attr('href', 'mailto:' + result.SystemEmailID + '@teamsupport.com');
         $find('textReply').set_value(result.OrganizationReplyToAddress);
         $('#cbRequireNew')[0].checked = result.RequireNewKeyword;
         $('#cbRequireKnown')[0].checked = result.RequireKnownUserForNewEmail;
         $('#cbChangeStatus')[0].checked = result.ChangeStatusIfClosed;
         $('#cbAssociatePeople')[0].checked = result.AddAdditionalContacts;
         $('#cbMatchSubject')[0].checked = result.MatchEmailSubject;
+        $('#cbForceBccPrivate')[0].checked = result.ForceBCCEmailsPrivate;
         $('#divSettingsButtons').hide();
       });
     }
@@ -64,7 +65,7 @@
 
 
         var html = '<table class="dataTable" cellspacing="0" cellpadding="5" border="0"><thead><tr>' +
-          '<th class="headImage" /><th class="headImage" /><th>Email Address</th><th>Description</th><th>Group</th><th>Ticket Type</th><th>Product</th></tr></thead><tbody>';
+          '<th class="headImage" /><th class="headImage" /><th>Email Address</th><th>Description</th><th>Group</th><th>Ticket Type</th><th>Product</th><th>Sending Email Address</th></tr></thead><tbody>';
         for (var i = 0; i < result.length; i++) {
           var item = result[i];
           html = html + '<tr><td class="headImage"><img src="../images/icons/Edit.png" alt="Edit" onclick="showAltEmailDialog(\'' + item.Email + '\');" /></td>' +
@@ -73,7 +74,8 @@
           item.Description + '</td><td>' +
           item.Group + '</td><td>' +
           item.TicketType + '</td><td>' +
-          item.Product + '</td></tr>';
+          item.Product + '</td><td>' +
+          item.SendingEmailAddress + '</td></tr>';
         }
 
         html = html + '</tbody></table>';
@@ -83,8 +85,9 @@
     }
 
     function saveEmailSettings() {
-      PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked);
+      PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked, $('#cbForceBccPrivate')[0].checked);
       $('#divSettingsButtons').hide();
+      top.Ts.System.logAction('Admin Email - Email Settings Saved');
     }
 
     function loadEmailTemplate(emailTemplateID) {
@@ -151,6 +154,7 @@
         $('#cbUseTemplate')[0].checked
         );
       $('#divTemplateButtons').hide();
+      top.Ts.System.logAction('Admin Email - Email Template Saved');
     }
 
     function loadPlaceHolders(emailTemplateID) {
@@ -231,6 +235,8 @@
           <p>Automatically associate additional people who are on the To and CC lines of an email to the ticket.</p>
           <asp:CheckBox ID="cbMatchSubject" runat="server" CssClass="checkBox" Text="Match subject to existing tickets." />
           <p>Attempt to match e-mail subject to existing ticket</p>
+          <asp:CheckBox ID="cbForceBccPrivate" runat="server" CssClass="checkBox" Text="Force Emails on BCC line to be private." />
+          <p>If an email is sent to your TeamSupport dropbox address on the BCC line, this option will force the ticket and/or action to be private.</p>
         </fieldset>
         <div class="buttons ui-helper-hidden" id="divSettingsButtons">
           <button onclick="saveEmailSettings(); return false;">Save</button>
@@ -316,7 +322,7 @@
     </div>
   </div>
   
-  <telerik:RadWindow ID="wndAltEmail" runat="server" Width="360px" Height="350px"
+  <telerik:RadWindow ID="wndAltEmail" runat="server" Width="360px" Height="450px"
     Animation="None" KeepInScreenBounds="True" VisibleStatusbar="False" VisibleTitlebar="True"
     OnClientPageLoad="" Title="Alternate Email" Behaviors="Close,Move" IconUrl="../images/icons/TeamSupportLogo16.png"
     VisibleOnPageLoad="false" ShowContentDuringLoad="False" Modal="False" DestroyOnClose="True">
@@ -341,6 +347,11 @@
           <telerik:RadComboBox ID="cmbEAIProduct" runat="server" Width="300px">
           </telerik:RadComboBox>
           <p></p>
+          <label for="textEAISendingEmailAddress" class="text">Sending Email Address</label>
+          <telerik:RadTextBox ID="textEAISendingEmailAddress" runat="server" CssClass="text" name="textEAISendingEmailAddress"
+            Width="300px">
+          </telerik:RadTextBox>
+          <p></p>
         </fieldset>
         
         <div style="float: right;">
@@ -358,6 +369,8 @@
       if (!confirm('Are you sure you would like to delete ' + id + '@teamsupport.com?')) return;
       PageMethods.DeleteAltEmail(id, function() {
         loadAltEmails();
+        top.Ts.System.logAction('Admin Email - Alternate Email Deleted');
+
       });
     }
   
@@ -366,15 +379,18 @@
         PageMethods.GetAltEmail(id, function(result) {
           $get('<%= wndAltEmail.ContentContainer.FindControl("fieldEAIID").ClientID %>').value = result.Email;
           $find('<%= wndAltEmail.ContentContainer.FindControl("textEAIDescription").ClientID %>').set_value(result.Description);
+          $find('<%= wndAltEmail.ContentContainer.FindControl("textEAISendingEmailAddress").ClientID %>').set_value(result.SendingEmailAddress);
           setDialogCombo('<%= wndAltEmail.ContentContainer.FindControl("cmbEAIGroup").ClientID %>', result.GroupID);
           setDialogCombo('<%= wndAltEmail.ContentContainer.FindControl("cmbEAITicket").ClientID %>', result.TicketTypeID);
           setDialogCombo('<%= wndAltEmail.ContentContainer.FindControl("cmbEAIProduct").ClientID %>', result.ProductID);
           showDialog($find('wndAltEmail'), true, null, 'Edit Alternate Email - ' + id);
+          top.Ts.System.logAction('Admin Email - Edit Alternate Email Dialog Opened');
         });
       }
       else {
         $get('<%= wndAltEmail.ContentContainer.FindControl("fieldEAIID").ClientID %>').value = '';
         showDialog($find('wndAltEmail'), true, null, 'New Alternate Email');
+        top.Ts.System.logAction('Admin Email - New Alternate Email Dialog Opened');
       }
     }
 
@@ -392,7 +408,8 @@
         $find('<%= wndAltEmail.ContentContainer.FindControl("cmbEAIGroup").ClientID %>').get_value(),
         $find('<%= wndAltEmail.ContentContainer.FindControl("cmbEAITicket").ClientID %>').get_value(),
         $find('<%= wndAltEmail.ContentContainer.FindControl("cmbEAIProduct").ClientID %>').get_value(),
-        function(result) {
+        $find('<%= wndAltEmail.ContentContainer.FindControl("textEAISendingEmailAddress").ClientID %>').get_value(),
+        function (result) {
           loadAltEmails();
         });
     }

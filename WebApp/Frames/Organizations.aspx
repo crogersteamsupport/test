@@ -60,7 +60,7 @@
           <telerik:RadToolBarButton runat="server" Text="Edit" ImageUrl="~/images/icons/edit.png"
             Value="EditOrganization">
           </telerik:RadToolBarButton>
-          <telerik:RadToolBarButton runat="server" Text="Delete" ImageUrl="~/images/icons/trash.png"
+          <telerik:RadToolBarButton runat="server" Text="Delete Company" ImageUrl="~/images/icons/trash.png"
             Value="DeleteOrganization">
           </telerik:RadToolBarButton>
           <telerik:RadToolBarButton runat="server" Text="Subscribe" ImageUrl="~/images/icons/Subscription.png"
@@ -278,6 +278,7 @@
 
       function Subscribe() {
         top.privateServices.Subscribe(9, getData(getSelectedItemID()).OrganizationID);
+        top.Ts.System.logAction('Organizations - Subscribed to Customer');
         var toolBar = $find("<%=tbMain.ClientID %>");
         var item = toolBar.findItemByValue("Subscribe");
         setTimeout('IsSubscribed()', 2000);
@@ -309,7 +310,13 @@
 
 
       function TabSelected(sender, args) {
-        top.privateServices.SetUserSetting('SelectedOrganizationTabIndex', args.get_tab().get_index());
+
+        var tab = args.get_tab();
+        var index = tab.get_index();
+        top.privateServices.SetUserSetting('SelectedOrganizationTabIndex', index);
+        if (index < 9) top.Ts.System.logAction('Organizations - Tab Selected (' + tab.get_text() + ')');
+        else top.Ts.System.logAction('Organizations - Tab Selected (Ticket Type)');
+
         LoadContentPage();
       }
 
@@ -360,16 +367,22 @@
         var button = args.get_item();
         var value = button.get_value();
         if (value == 'NewOrganization') {
-
+          top.Ts.System.logAction('Organizations - New Organization Opened');
           ShowDialog(top.GetOrganizationDialog());
         }
         else if (value == 'EditOrganization') {
-        ShowDialog(top.GetOrganizationDialog(getData(getSelectedItemID()).OrganizationID));
+          top.Ts.System.logAction('Organizations - Edit Organization Opened');
+          ShowDialog(top.GetOrganizationDialog(getData(getSelectedItemID()).OrganizationID));
         }
         else if (value == 'DeleteOrganization') {
-        radconfirm('Are you sure you would like to PERMANENTLEY delete this organization?', function(arg) { if (arg) top.privateServices.DeleteOrganization(getData(getSelectedItemID()).OrganizationID, updateGrid(false)); }, 250, 125, null, 'Delete Organization');
+        radconfirm('Are you sure you would like to PERMANENTLEY delete this organization?', function (arg) {
+          if (arg) {
+            top.Ts.System.logAction('Organizations - Organization Deleted');
+            top.privateServices.DeleteOrganization(getData(getSelectedItemID()).OrganizationID, updateGrid(false)); 
+          }
+        }, 250, 125, null, 'Delete Organization');
         }
-        else if (value == "Subscribe") {
+      else if (value == "Subscribe") {
           Subscribe();
         }
         else if (value == 'Help') {
@@ -381,11 +394,16 @@
             RefID: getData(getSelectedItemID()).OrganizationID
             },
             true,
-            function () { });
+            function () {
+              top.Ts.System.logAction('Organizations - Reminder Added');
+            });
         }
 
       }      
       
+      function reload() {
+        window.location.reload(true);
+      }
     </script>
 
   </telerik:RadCodeBlock>

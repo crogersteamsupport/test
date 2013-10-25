@@ -50,6 +50,8 @@ namespace TeamSupport.Handlers
           if (s == "dc") flag = true;
         }
 
+        System.Web.HttpBrowserCapabilities browser = context.Request.Browser;
+        if (browser.Browser != "IE") context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
         int organizationID = -1;
         if (int.TryParse(segments[0], out organizationID))
         {
@@ -176,6 +178,7 @@ namespace TeamSupport.Handlers
       //http://127.0.0.1/tsdev/dc/attachments/7401
       //https://app.teamsupport.com/dc/attachments/{AttachmentID}
       Attachment attachment = Attachments.GetAttachment(LoginUser.Anonymous, attachmentID);
+      Organization organization = Organizations.GetOrganization(attachment.Collection.LoginUser, attachment.OrganizationID);
       User user = null;
       bool isAuthenticated = attachment.OrganizationID == TSAuthentication.OrganizationID;
 
@@ -211,15 +214,13 @@ namespace TeamSupport.Handlers
         }
         catch (Exception)
         {
-          context.Response.Write("Unauthorized");
-          context.Response.ContentType = "text/html";
-          return;
         }
       }
 
+      isAuthenticated = isAuthenticated || organization.AllowUnsecureAttachmentViewing;        
 
 
-      if (!isAuthenticated || user == null)
+      if (!isAuthenticated)
       {
         context.Response.Write("Unauthorized");
         context.Response.ContentType = "text/html";
@@ -300,6 +301,7 @@ namespace TeamSupport.Handlers
       {
         context.Response.Write("Error retrieving tickets. <br/><br/>" + ex.Message);
         context.Response.ContentType = "text/html";
+        ExceptionLogs.LogException(UserSession.LoginUser, ex, "Ticket Grid Export");
         return;
       }
     }
@@ -350,7 +352,8 @@ namespace TeamSupport.Handlers
       {
         context.Response.ContentType = "image/" + ext;
         context.Response.Cache.SetCacheability(HttpCacheability.Public);
-        context.Response.Cache.SetExpires(DateTime.Now);
+        context.Response.Cache.SetExpires(DateTime.Now.AddHours(8));
+        context.Response.Cache.SetMaxAge(new TimeSpan(8, 0, 0));
         System.Drawing.Imaging.ImageFormat format;
         switch (ext)
         {

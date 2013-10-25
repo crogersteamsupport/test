@@ -76,6 +76,12 @@ namespace TeamSupport.Data
       set { Row["UserAgent"] = CheckValue("UserAgent", value); }
     }
     
+    public string DeviceID
+    {
+      get { return Row["DeviceID"] != DBNull.Value ? (string)Row["DeviceID"] : null; }
+      set { Row["DeviceID"] = CheckValue("DeviceID", value); }
+    }
+    
 
     
     public bool Successful
@@ -204,7 +210,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[LoginAttempts] SET     [UserID] = @UserID,    [Successful] = @Successful,    [IPAddress] = @IPAddress,    [Browser] = @Browser,    [Version] = @Version,    [MajorVersion] = @MajorVersion,    [CookiesEnabled] = @CookiesEnabled,    [Platform] = @Platform,    [UserAgent] = @UserAgent  WHERE ([LoginAttemptID] = @LoginAttemptID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[LoginAttempts] SET     [UserID] = @UserID,    [Successful] = @Successful,    [IPAddress] = @IPAddress,    [Browser] = @Browser,    [Version] = @Version,    [MajorVersion] = @MajorVersion,    [CookiesEnabled] = @CookiesEnabled,    [Platform] = @Platform,    [UserAgent] = @UserAgent,    [DeviceID] = @DeviceID  WHERE ([LoginAttemptID] = @LoginAttemptID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("LoginAttemptID", SqlDbType.Int, 4);
@@ -277,13 +283,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("DeviceID", SqlDbType.VarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[LoginAttempts] (    [UserID],    [Successful],    [IPAddress],    [Browser],    [Version],    [MajorVersion],    [CookiesEnabled],    [Platform],    [UserAgent],    [DateCreated]) VALUES ( @UserID, @Successful, @IPAddress, @Browser, @Version, @MajorVersion, @CookiesEnabled, @Platform, @UserAgent, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[LoginAttempts] (    [UserID],    [Successful],    [IPAddress],    [Browser],    [Version],    [MajorVersion],    [CookiesEnabled],    [Platform],    [UserAgent],    [DateCreated],    [DeviceID]) VALUES ( @UserID, @Successful, @IPAddress, @Browser, @Version, @MajorVersion, @CookiesEnabled, @Platform, @UserAgent, @DateCreated, @DeviceID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("DeviceID", SqlDbType.VarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -467,7 +487,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [LoginAttemptID], [UserID], [Successful], [IPAddress], [Browser], [Version], [MajorVersion], [CookiesEnabled], [Platform], [UserAgent], [DateCreated] FROM [dbo].[LoginAttempts] WHERE ([LoginAttemptID] = @LoginAttemptID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [LoginAttemptID], [UserID], [Successful], [IPAddress], [Browser], [Version], [MajorVersion], [CookiesEnabled], [Platform], [UserAgent], [DateCreated], [DeviceID] FROM [dbo].[LoginAttempts] WHERE ([LoginAttemptID] = @LoginAttemptID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("LoginAttemptID", loginAttemptID);
         Fill(command);

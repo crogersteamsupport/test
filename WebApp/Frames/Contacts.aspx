@@ -13,7 +13,7 @@
         </telerik:RadToolBarButton>
         <telerik:RadToolBarButton runat="server" Text="Edit" ImageUrl="~/images/icons/edit.png" Value="EditUser">
         </telerik:RadToolBarButton>
-        <telerik:RadToolBarButton runat="server" Text="Delete" ImageUrl="~/images/icons/trash.png" Value="DeleteUser">
+        <telerik:RadToolBarButton runat="server" Text="Delete Contact" ImageUrl="~/images/icons/trash.png" Value="DeleteUser">
         </telerik:RadToolBarButton>
         <telerik:RadToolBarButton runat="server" Text="Add Reminder" ImageUrl="~/images/icons/clock.png" Value="Reminder" Visible="true">
         </telerik:RadToolBarButton>
@@ -139,14 +139,21 @@
         var button = args.get_item();
         var value = button.get_value();
         if (value == 'NewUser') {
-
           ShowDialog(top.GetContactDialog(GetOrganizationID()));
+          top.Ts.System.logAction('Organization Contacts - New Contact Dialog Opened');
         }
         else if (value == 'EditUser') {
           ShowDialog(top.GetContactDialog(GetOrganizationID(), GetSelectedUserID()));
+          top.Ts.System.logAction('Organization Contacts - Edit Contact Dialog Opened');
         }
         else if (value == 'DeleteUser') {
-          radconfirm('Are you sure you would like to PERMANENTLEY delete this contact?', function(arg) { if (arg) top.privateServices.DeleteUser(GetSelectedUserID(), RefreshGrid); }, 250, 125, null, 'Delete User');
+        radconfirm('Are you sure you would like to PERMANENTLEY delete this contact?', function (arg) {
+          if (arg) {
+            top.privateServices.DeleteUser(GetSelectedUserID(), RefreshGrid);
+            top.Ts.System.logAction('Organization Contacts - Contact Deleted');
+
+          }
+        }, 250, 125, null, 'Delete User');
 
         }
         else if (value == 'Reminder') {
@@ -155,7 +162,10 @@
             RefID: GetSelectedUserID()
           },
             true,
-            function () { });
+            function () {
+              top.Ts.System.logAction('Organization Contacts - Reminder Added');
+
+            });
         }
 
       }   

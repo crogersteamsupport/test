@@ -25,8 +25,9 @@ namespace TeamSupport.Data
           case SystemActionType.Description: title = "Description"; break;
           case SystemActionType.Resolution: title = "Resolution"; break;
           case SystemActionType.Email: title = "Email: " + Name; break;
-          case SystemActionType.PingUpdate: title = "Ping Updated"; break;
+          case SystemActionType.UpdateRequest: title = "Update Request"; break;
           case SystemActionType.Chat: title = "Chat"; break;
+          case SystemActionType.Reminder: title = "Reminder"; break;
           default:
             title = ActionType == "" ? "[No Action Type]" : ActionType;
             if (!string.IsNullOrEmpty(Name)) title += ": " + Name;

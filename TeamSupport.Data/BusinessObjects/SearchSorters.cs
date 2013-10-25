@@ -27,7 +27,10 @@ namespace TeamSupport.Data
     public string ConvertToOrderByClause(ref string tempItemsTableFieldsDefinition, 
                                          ref string tempItemsTableFields, 
                                          ref string selectTicketsFields,
-                                         ref string selectWikisFields)
+                                         ref string selectWikisFields,
+                                         ref string selectNotesFields,
+                                         ref string selectProductVersionsFields,
+                                         ref string selectWaterCoolerFields)
     {
       StringBuilder resultBuilder = new StringBuilder();
 
@@ -37,6 +40,9 @@ namespace TeamSupport.Data
         StringBuilder tempItemsTableFieldsBuilder           = new StringBuilder();
         StringBuilder selectTicketsFieldsBuilder            = new StringBuilder();
         StringBuilder selectWikisFieldsBuilder              = new StringBuilder();
+        StringBuilder selectNotesFieldsBuilder              = new StringBuilder();
+        StringBuilder selectProductVersionsFieldsBuilder    = new StringBuilder();
+        StringBuilder selectWaterCoolerFieldsBuilder        = new StringBuilder();
 
         WikiArticlesView wikiArticleViewFields = new WikiArticlesView(base.LoginUser);
         wikiArticleViewFields.LoadColumnNames();
@@ -77,6 +83,45 @@ namespace TeamSupport.Data
             {
               selectWikisFieldsBuilder.Append(", wav." + wikiEquivalentFieldName + " AS " + fieldName);
             }
+
+            string notesEquivalentFieldName = DataUtils.GetNotesEquivalentFieldName(fieldName);
+
+            NotesView notesView = new NotesView(base.LoginUser);
+            NotesViewItem notesViewItem = notesView.AddNewNotesViewItem();
+            if (!DataUtils.GetIsColumnInBaseCollection(notesViewItem.Collection, notesEquivalentFieldName))
+            {
+              selectNotesFieldsBuilder.Append(", NULL AS " + fieldName);
+            }
+            else
+            {
+              selectNotesFieldsBuilder.Append(", nv." + notesEquivalentFieldName + " AS " + fieldName);
+            }
+
+            string productVersionsEquivalentFieldName = DataUtils.GetProductVersionsEquivalentFieldName(fieldName);
+
+            ProductVersionsView productVersionsView = new ProductVersionsView(base.LoginUser);
+            ProductVersionsViewItem productVersionsViewItem = productVersionsView.AddNewProductVersionsViewItem();
+            if (!DataUtils.GetIsColumnInBaseCollection(productVersionsViewItem.Collection, productVersionsEquivalentFieldName))
+            {
+              selectProductVersionsFieldsBuilder.Append(", NULL AS " + fieldName);
+            }
+            else
+            {
+              selectProductVersionsFieldsBuilder.Append(", pvv." + productVersionsEquivalentFieldName + " AS " + fieldName);
+            }
+
+            string waterCoolerEquivalentFieldName = DataUtils.GetWaterCoolerEquivalentFieldName(fieldName);
+
+            WaterCoolerView waterCoolerView = new WaterCoolerView(base.LoginUser);
+            WaterCoolerViewItem waterCoolerViewItem = waterCoolerView.AddNewWaterCoolerViewItem();
+            if (!DataUtils.GetIsColumnInBaseCollection(waterCoolerViewItem.Collection, waterCoolerEquivalentFieldName))
+            {
+              selectWaterCoolerFieldsBuilder.Append(", NULL AS " + fieldName);
+            }
+            else
+            {
+              selectWaterCoolerFieldsBuilder.Append(", wcv." + waterCoolerEquivalentFieldName + " AS " + fieldName);
+            }
           }
         }
 
@@ -84,6 +129,9 @@ namespace TeamSupport.Data
         tempItemsTableFields           = tempItemsTableFieldsBuilder.ToString();
         selectTicketsFields            = selectTicketsFieldsBuilder.ToString();
         selectWikisFields              = selectWikisFieldsBuilder.ToString();
+        selectNotesFields              = selectNotesFieldsBuilder.ToString();
+        selectProductVersionsFields    = selectProductVersionsFieldsBuilder.ToString();
+        selectWaterCoolerFields        = selectWaterCoolerFieldsBuilder.ToString();
       }
       else
       {

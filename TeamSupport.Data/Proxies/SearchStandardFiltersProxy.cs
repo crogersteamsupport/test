@@ -20,6 +20,7 @@ namespace TeamSupport.Data
     [DataMember] public bool Wikis { get; set; }
     [DataMember] public bool Notes { get; set; }
     [DataMember] public bool ProductVersions { get; set; }
+    [DataMember] public bool WaterCooler { get; set; }
           
   }
   
@@ -28,6 +29,7 @@ namespace TeamSupport.Data
     public SearchStandardFilterProxy GetProxy()
     {
       SearchStandardFilterProxy result = new SearchStandardFilterProxy();
+      result.WaterCooler = this.WaterCooler;
       result.ProductVersions = this.ProductVersions;
       result.Notes = this.Notes;
       result.Wikis = this.Wikis;

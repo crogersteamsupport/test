@@ -24,6 +24,7 @@ $(document).ready(function () {
 
   var filter = new top.TeamSupport.Data.TicketLoadFilter();
   var url = 'TicketGrid.html?';
+  var loggingSection = '';
 
   if (ticketTypeID) {
     top.Ts.Services.Tickets.GetTicketType(ticketTypeID, function (ticketType) {
@@ -32,31 +33,41 @@ $(document).ready(function () {
       filter.IsClosed = false;
       tabs.add(true, 'tickettab', 'my', 'My ' + ticketType.Name, false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
       delete filter.UserID;
-      tabs.add(true, 'tickettab', 'open', 'Open ' + ticketType.Name, false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      tabs.add(true, 'tickettab', 'open', 'Open', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
       filter.IsClosed = true;
-      tabs.add(true, 'tickettab', 'closed', 'Closed ' + ticketType.Name, false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      tabs.add(true, 'tickettab', 'closed', 'Closed', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
       filter.IsClosed = false;
       filter.UserID = -1;
-      tabs.add(true, 'tickettab', 'unassigned', 'Unassigned ' + ticketType.Name, false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      tabs.add(true, 'tickettab', 'unassigned', 'Unassigned', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
       delete filter.IsClosed;
       delete filter.UserID;
-      tabs.add(true, 'tickettab', 'all', 'All ' + ticketType.Name, false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      tabs.add(true, 'tickettab', 'all', 'All', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      loggingSection = 'Ticket Types';
       afterLoad();
     });
   }
   else if (userID) {
     filter.UserID = userID;
     filter.IsClosed = false;
-    tabs.add(true, 'tickettab', 'open', 'Open Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    tabs.add(true, 'tickettab', 'open', 'Open', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
     filter.GroupID = -1;
-    tabs.add(true, 'tickettab', 'groups', 'Open Group Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    tabs.add(true, 'tickettab', 'groups', 'My Groups', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
     delete filter.GroupID;
+    filter.IsSubscribed = true;
+    delete filter.UserID;
+    tabs.add(true, 'tickettab', 'subscribed', 'Subscribed', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    delete filter.IsSubscribed;
+    filter.IsFlagged = true;
+    tabs.add(true, 'tickettab', 'flagged', 'Flagged', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    delete filter.IsFlagged;
+    filter.UserID = userID;
     filter.IsClosed = true;
-    tabs.add(true, 'tickettab', 'closed', 'Closed Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    tabs.add(true, 'tickettab', 'closed', 'Closed', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
     delete filter.IsClosed;
-    tabs.add(true, 'tickettab', 'all', 'All Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
-    tabs.add(true, 'tickettab', 'queue', 'Ticket Queue', false, false, false, '', '', '../../../Frames/TicketQueue.aspx?UserID=' + userID);
+    tabs.add(true, 'tickettab', 'all', 'All', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    tabs.add(true, 'tickettab', 'queue', 'Queue', false, false, false, '', '', '../../../Frames/TicketQueue.aspx?UserID=' + userID);
     tabs.add(true, 'tickettab', 'reminders', 'Reminders', false, false, false, '', '', 'Reminders.html?UserID=' + userID);
+    loggingSection = 'My Tickets';
     afterLoad();
   }
   else if (groupID) {
@@ -76,20 +87,23 @@ $(document).ready(function () {
   }
   else {
     filter.IsClosed = false;
-    tabs.add(true, 'tickettab', 'open', 'All Open', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    tabs.add(true, 'tickettab', 'open', 'Open', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
     filter.IsClosed = true;
-    tabs.add(true, 'tickettab', 'closed', 'All Closed', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    tabs.add(true, 'tickettab', 'closed', 'Closed', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
     filter.IsClosed = false;
     filter.UserID = -1;
-    tabs.add(true, 'tickettab', 'unassigned', 'All Unassigned ', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    tabs.add(true, 'tickettab', 'unassigned', 'Unassigned ', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
     delete filter.IsClosed;
     delete filter.UserID;
-    tabs.add(true, 'tickettab', 'all', 'All Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    tabs.add(true, 'tickettab', 'all', 'All', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+    loggingSection = 'All Tickets';
+
     afterLoad();
   }
 
   function afterLoad() {
     self.Tabs.bind('afterSelect', function (tab) {
+      top.Ts.System.logAction('Ticket Tabs (' + loggingSection + ') - Viewed ' + tab.getCaption());
       $('.tickets-panel-grid .tickets-tab-content').hide();
       var div = $('.tickets-panel-grid .tickets-tab-' + tab.getId());
       if (div.length < 1) {

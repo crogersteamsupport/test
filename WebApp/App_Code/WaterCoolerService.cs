@@ -13,7 +13,8 @@ using System.Text;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
-using SignalR.Hubs;
+//using SignalR.Hubs;
+using Microsoft.AspNet.SignalR.Hubs;
 
 namespace TSWebServices
 {
@@ -134,7 +135,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public WaterCoolerThread[] GetThreads(int pageType, int pageID)
+    public WaterCoolerThread[] GetThreads(int pageType, int pageID, int messageID)
     {
         List<WaterCoolerThread> result = new List<WaterCoolerThread>();
 
@@ -144,7 +145,11 @@ namespace TSWebServices
         // Company page
 
         WaterCoolerView wc = new WaterCoolerView(TSAuthentication.GetLoginUser());
-        wc.LoadTop10Threads(pageType, pageID);
+
+        if (messageID == -1)
+            wc.LoadTop10Threads(pageType, pageID);
+        else
+            wc.SearchLoadByMessageID(pageType, pageID, messageID);
 
 
         foreach (WaterCoolerViewItem item in wc)
@@ -517,6 +522,8 @@ namespace TSWebServices
             OnlineUser ou = new OnlineUser();
             ou.Name = online.FirstLastName;
             ou.AppChatID = online.AppChatID;
+            ou.UserID = online.UserID;
+            ou.Avatar = GetUserPhoto(online.UserID);
 
             onlineusers.Add(ou);
         }
@@ -524,6 +531,26 @@ namespace TSWebServices
         return onlineusers.ToArray();
     }
 
+    public string GetUserPhoto(int userID)
+    {
+        string path;
+        //return Attachments.GetAttachmentPath(TSAuthentication.GetLoginUser(), ReferenceType.UserPhoto, userID);
+
+        if (userID == -99)
+            userID = TSAuthentication.GetLoginUser().UserID;
+
+        User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        Attachments att = new Attachments(TSAuthentication.GetLoginUser());
+        att.LoadByReference(ReferenceType.UserPhoto, userID);
+
+        if (att.Count > 0)
+        {
+            path = String.Format("/dc/{0}/avatar/{1}", user.OrganizationID, att[0].AttachmentID);
+        }
+        else
+            path = "../images/blank_avatar.png";
+        return path;
+    }
 
   }
 
@@ -534,6 +561,10 @@ namespace TSWebServices
       public string Name { get; set; }
       [DataMember]
       public string AppChatID { get; set; }
+      [DataMember]
+      public int UserID { get; set; }
+      [DataMember]
+      public string Avatar { get; set; }
   }
 
 

@@ -49,7 +49,7 @@
       <div class="groupHeaderDiv">
         <span class="groupHeaderSpan"></span>
         <span class="groupCaptionSpan">Ticket Statuses</span><span class="groupButtonSpanWrapper"><span class="groupButtonsSpan">
-          <asp:LinkButton ID="lnkAddStatus" runat="server" CssClass="groupButtonLink">
+          <asp:LinkButton ID="lnkAddStatus" runat="server" CssClass="groupButtonLink" OnClientClick="top.Ts.System.logAction('Admin Workflow - Add Status Dialog Opened');">
               <span class="groupButtonSpan">
                 <img alt="" src="../images/icons/add.png" class="groupButtonImage" />
                 <span class="groupButtonTextSpan">Add Status</span> </span></asp:LinkButton>

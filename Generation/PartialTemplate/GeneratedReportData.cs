@@ -46,6 +46,12 @@ namespace TeamSupport.Data
       set { Row["QueryObject"] = CheckValue("QueryObject", value); }
     }
     
+    public string OrderByClause
+    {
+      get { return Row["OrderByClause"] != DBNull.Value ? (string)Row["OrderByClause"] : null; }
+      set { Row["OrderByClause"] = CheckValue("OrderByClause", value); }
+    }
+    
 
     
     public int ModifierID
@@ -197,7 +203,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportData] SET     [UserID] = @UserID,    [ReportID] = @ReportID,    [ReportData] = @ReportData,    [QueryObject] = @QueryObject,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified  WHERE ([ReportDataID] = @ReportDataID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportData] SET     [UserID] = @UserID,    [ReportID] = @ReportID,    [ReportData] = @ReportData,    [QueryObject] = @QueryObject,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [OrderByClause] = @OrderByClause  WHERE ([ReportDataID] = @ReportDataID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportDataID", SqlDbType.Int, 4);
@@ -228,7 +234,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("QueryObject", SqlDbType.VarChar, 8000);
+		tempParameter = updateCommand.Parameters.Add("QueryObject", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -249,13 +255,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("OrderByClause", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportData] (    [UserID],    [ReportID],    [ReportData],    [QueryObject],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified]) VALUES ( @UserID, @ReportID, @ReportData, @QueryObject, @CreatorID, @ModifierID, @DateCreated, @DateModified); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportData] (    [UserID],    [ReportID],    [ReportData],    [QueryObject],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified],    [OrderByClause]) VALUES ( @UserID, @ReportID, @ReportData, @QueryObject, @CreatorID, @ModifierID, @DateCreated, @DateModified, @OrderByClause); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("OrderByClause", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -285,7 +305,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("QueryObject", SqlDbType.VarChar, 8000);
+		tempParameter = insertCommand.Parameters.Add("QueryObject", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -425,7 +445,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportDataID], [UserID], [ReportID], [ReportData], [QueryObject], [CreatorID], [ModifierID], [DateCreated], [DateModified] FROM [dbo].[ReportData] WHERE ([ReportDataID] = @ReportDataID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportDataID], [UserID], [ReportID], [ReportData], [QueryObject], [CreatorID], [ModifierID], [DateCreated], [DateModified], [OrderByClause] FROM [dbo].[ReportData] WHERE ([ReportDataID] = @ReportDataID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportDataID", reportDataID);
         Fill(command);

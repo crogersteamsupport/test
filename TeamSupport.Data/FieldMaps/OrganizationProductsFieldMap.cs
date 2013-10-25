@@ -13,16 +13,17 @@ namespace TeamSupport.Data
     protected override void BuildFieldMap()
     {
       _fieldMap = new FieldMap();
-      _fieldMap.AddMap("OrganizationProductID", "OrganizationProductID", true, true, true);
-      _fieldMap.AddMap("OrganizationID", "OrganizationID", true, true, true);
-      _fieldMap.AddMap("ProductID", "ProductID", true, true, true);
+      _fieldMap.AddMap("OrganizationProductID", "OrganizationProductID", false, false, true);
+      _fieldMap.AddMap("OrganizationID", "OrganizationID", true, false, true);
+      _fieldMap.AddMap("ProductID", "ProductID", true, false, true);
       _fieldMap.AddMap("ProductVersionID", "ProductVersionID", true, true, true);
-      _fieldMap.AddMap("IsVisibleOnPortal", "IsVisibleOnPortal", true, true, true);
-      _fieldMap.AddMap("ImportID", "ImportID", true, true, true);
-      _fieldMap.AddMap("DateCreated", "DateCreated", true, true, true);
-      _fieldMap.AddMap("DateModified", "DateModified", true, true, true);
-      _fieldMap.AddMap("CreatorID", "CreatorID", true, true, true);
-      _fieldMap.AddMap("ModifierID", "ModifierID", true, true, true);
+      _fieldMap.AddMap("IsVisibleOnPortal", "IsVisibleOnPortal", false, false, false);
+      _fieldMap.AddMap("SupportExpiration", "SupportExpiration", true, true, true);
+      _fieldMap.AddMap("ImportID", "ImportID", false, false, false);
+      _fieldMap.AddMap("DateCreated", "DateCreated", true, false, true);
+      _fieldMap.AddMap("DateModified", "DateModified", true, false, true);
+      _fieldMap.AddMap("CreatorID", "CreatorID", true, false, true);
+      _fieldMap.AddMap("ModifierID", "ModifierID", false, false, true);
             
     }
   }

@@ -122,22 +122,20 @@
   <ItemGroup>
     <Compile Include="IndexDataSource.cs" />
     <Compile Include="NoteIndexDataSource.cs" />
+    <Compile Include="CustomerIndexDataSource.cs" />
     <Compile Include="ProductVersionIndexDataSource.cs" />
-    <Compile Include="ServiceManager.cs" />
     <Compile Include="ReportSender.cs" />
     <Compile Include="ReminderProcessor.cs" />
-    <Compile Include="IndexMaintenance.cs" />
-    <Compile Include="TransLocks.cs" />
     <Compile Include="EmailSender.cs" />
     <Compile Include="EmailProcessor.cs" />
-    <Compile Include="IISDBLogger.cs" />
     <Compile Include="Indexer.cs" />
-    <Compile Include="MurocUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceThread.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SlaProcessor.cs" />
     <Compile Include="TicketIndexDataSource.cs" />
+    <Compile Include="ContactIndexDataSource.cs" />
+    <Compile Include="WaterCoolerIndexDataSource.cs" />
     <Compile Include="WikiIndexDataSource.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -26,6 +26,9 @@
 
         top.privateServices.SetUserSetting('SelectedTabIndex' + window.location, tab.get_index());
         hideLoadingPanel("<%=ticketsFrame.ClientID %>");
+
+        top.Ts.System.logAction('All Tickets Tabs- Tab Selected (' + tab.get_text() + ')')
+
       }
       function onShow() { try { var frame = $get("<%=ticketsFrame.ClientID %>").contentWindow.onShow() } catch (err) { }; }
 

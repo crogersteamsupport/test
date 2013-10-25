@@ -21,7 +21,11 @@ namespace TeamSupport.Data
       message.Subject = Subject;
       message.Body = Body;
       message.IsBodyHtml = IsHtml;
-
+      if (IsHtml)
+      {
+        //string img = "<div><img src=\"http://integrate.teamsupport.com/MailRead.aspx?OrganizationID={0}&EmailID={1}\" alt=\"\" width=\"0\" height=\"0\" style=\"width: 0px; height: 0px, border: 0px;\"/></div>";
+        //message.Body = Body + string.Format(img, OrganizationID, EmailID);
+      }
       if (!string.IsNullOrEmpty(Attachments))
       {
         foreach (string fileName in Attachments.Split(';'))

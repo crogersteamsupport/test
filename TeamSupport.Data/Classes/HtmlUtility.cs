@@ -328,7 +328,11 @@ namespace TeamSupport.Data
             {
               node.Attributes.Remove("onFocus");
               node.Attributes.Remove("onBlur");
-              node.Attributes.Remove("onClick");
+              //added handler to keep onclick events for ticket links to open new tab instead of new window
+              if (!node.Attributes["onClick"].Value.Contains("top.Ts"))
+              {
+                  node.Attributes.Remove("onClick");
+              }
               node.Attributes.Remove("onMouseOver");
               node.Attributes.Remove("onMouseOut");
               node.Attributes.Remove("onDoubleClick");

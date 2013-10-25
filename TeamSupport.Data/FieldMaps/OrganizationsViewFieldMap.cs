@@ -37,7 +37,11 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DefaultWikiArticleID", "DefaultWikiArticleID", false, false, true);
       _fieldMap.AddMap("DefaultSupportGroupID", "DefaultSupportGroupID", false, false, true);
       _fieldMap.AddMap("DefaultSupportUserID", "DefaultSupportUserID", false, false, true);
-            
+      _fieldMap.AddMap("CompanyDomains", "Domains", false, false, true);
+      _fieldMap.AddMap("SupportHoursMonth", "SupportHoursMonth", false, false, true);
+      _fieldMap.AddMap("SupportHoursUsed", "SupportHoursUsed", false, false, true);
+      _fieldMap.AddMap("SupportHoursRemaining", "SupportHoursRemaining", false, false, true);
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
     }
   }
   

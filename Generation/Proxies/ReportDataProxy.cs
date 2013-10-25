@@ -22,6 +22,7 @@ namespace TeamSupport.Data
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
+    [DataMember] public string OrderByClause { get; set; }
           
   }
   
@@ -30,6 +31,7 @@ namespace TeamSupport.Data
     public ReportDataItemProxy GetProxy()
     {
       ReportDataItemProxy result = new ReportDataItemProxy();
+      result.OrderByClause = this.OrderByClause;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.QueryObject = this.QueryObject;

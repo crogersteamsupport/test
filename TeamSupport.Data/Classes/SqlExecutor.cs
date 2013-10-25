@@ -30,7 +30,6 @@ namespace TeamSupport.Data
           transaction.Commit();
           using (SqlDataAdapter adapter = new SqlDataAdapter(command))
           {
-            adapter.FillSchema(result, SchemaType.Source);
             adapter.Fill(result);
           }
         }
@@ -44,6 +43,11 @@ namespace TeamSupport.Data
         connection.Close();
       }
       return result;
+    }
+
+    public static object ExecuteScalar(LoginUser loginUser, string commandText)
+    {
+      return ExecuteScalar(loginUser, new SqlCommand(commandText));
     }
 
     public static object ExecuteScalar(LoginUser loginUser, SqlCommand command)
@@ -70,10 +74,26 @@ namespace TeamSupport.Data
         }
 
         connection.Close();
+        if (o == null || o == DBNull.Value) return null;
         return o;
       }
     }
 
+    public static int ExecuteInt(LoginUser loginUser, string commandText)
+    {
+      return ExecuteInt(loginUser, new SqlCommand(commandText));
+    }
+
+    public static int ExecuteInt(LoginUser loginUser, SqlCommand command)
+    {
+      int? result = (int?)ExecuteScalar(loginUser, command);
+      return result == null ? -1 : (int)result;
+    }
+
+    public static void ExecuteNonQuery(LoginUser loginUser, string commandText)
+    {
+      ExecuteNonQuery(loginUser, new SqlCommand(commandText));
+    }
     
     public static void ExecuteNonQuery(LoginUser loginUser, SqlCommand command)
     {

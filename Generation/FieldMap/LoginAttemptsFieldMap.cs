@@ -24,6 +24,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Platform", "Platform", false, false, false);
       _fieldMap.AddMap("UserAgent", "UserAgent", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
+      _fieldMap.AddMap("DeviceID", "DeviceID", false, false, false);
             
     }
   }

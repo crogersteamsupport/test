@@ -216,12 +216,13 @@
         $('#divTyping').text(result[3])
       });
     }
-    
-    
+
+
     function AcceptRequest(chatRequestID) {
+      top.Ts.System.logAction('Chat - Chat Request Accepted');
       PageMethods.AcceptRequest(chatRequestID, function(result) {
         if (result < 0) {
-          alert('Request was already excepted.');
+          alert('Request was already accepted.');
           return;
         }
         LoadChat(result);
@@ -253,6 +254,7 @@
 
     function SendMessage() {
       if (_activeChatID < 0) return;
+      top.Ts.System.logAction('Chat - Message Sent');
       var textbox = $find("<%=textSend.ClientID %>");
       var message = textbox.get_value().trim();
       if (message == '') return;
@@ -328,6 +330,7 @@
 
     function CloseChat() {
       if (confirm("Are you sure you would like to leave this chat?")) {
+        top.Ts.System.logAction('Chat - Chat Closed');
         PageMethods.CloseChat(_activeChatID, function(result) {
           _activeChatID = -1;
           $('#divChatMessages').html('Closed');
@@ -338,34 +341,42 @@
     }
 
     function TransferChat(chatID) {
-      top.ShowUserDialog('OtherChatUsers', true, function(arg) {
+      top.ShowUserDialog('OtherChatUsers', true, function (arg) {
+        top.Ts.System.logAction('Chat - Chat Transfered');
         if (arg) PageMethods.RequestTransfer(chatID, arg);
       }, 'Select a Chat User');    
     }
 
     function InviteChat(chatID) {
-      top.ShowUserDialog('OtherChatUsers', true, function(arg) {
+      top.ShowUserDialog('OtherChatUsers', true, function (arg) {
+        top.Ts.System.logAction('Chat - Invitation Sent');
         if (arg) PageMethods.RequestInvite(chatID, arg);
       }, 'Select a Chat User');
     }
 
     function CreateTicket(chatID) {
       top.Ts.MainPage.newTicket('?ChatID=' + chatID);
+      top.Ts.System.logAction('Chat - Ticket Created');
     }
 
     function AddTicket(chatID) {
       top.ShowTicketDialog(true, function(ticketID) {
         PageMethods.AddTicket(chatID, ticketID, function(ticketID) {
           top.Ts.MainPage.openTicketByID(ticketID);
+          top.Ts.System.logAction('Chat - Ticket Added');
         });
       });
     }
     function OpenTicket(chatID) {
-      PageMethods.GetTicketID(chatID, function (ticketID) { top.Ts.MainPage.openTicketByID(ticketID); });
+      PageMethods.GetTicketID(chatID, function (ticketID) {
+        top.Ts.MainPage.openTicketByID(ticketID);
+        top.Ts.System.logAction('Chat - Ticket Opened');    
+      });
     }
 
     function ToggleAvailable() {
-      PageMethods.ToggleAvailable(function(isAvailable) {
+      PageMethods.ToggleAvailable(function (isAvailable) {
+        top.Ts.System.logAction('Chat - Availablity Set');
         var button = $find("<%=tbChat.ClientID %>").findItemByValue('available');
         if (isAvailable) {
           button.set_text('I am available');

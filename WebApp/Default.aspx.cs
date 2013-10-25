@@ -32,8 +32,6 @@ public partial class _Default : BasePage
 
   protected override void OnLoad(EventArgs e)
   {
-    //Response.Redirect("SiteDown.aspx");
-    //Response.End();
     base.OnLoad(e);
     Session.Clear();
     Session.Abandon();
@@ -42,11 +40,6 @@ public partial class _Default : BasePage
     Response.Cache.SetNoStore();
     Response.Expires = 0;
 
-    User user = Users.GetUser(UserSession.LoginUser, UserSession.LoginUser.UserID);
-    if (user == null) return;
-    user.LastActivity = DateTime.UtcNow;
-    if (!TSAuthentication.IsBackdoor) user.SessionID = Guid.NewGuid();
-    user.Collection.Save();
     fieldSID.Value = TSAuthentication.SessionID;
 
     ChatUserSetting setting = ChatUserSettings.GetSetting(UserSession.LoginUser, UserSession.LoginUser.UserID);

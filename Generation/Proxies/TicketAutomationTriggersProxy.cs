@@ -24,6 +24,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public string LastSQLExecuted { get; set; }
           
   }
   
@@ -32,6 +33,7 @@ namespace TeamSupport.Data
     public TicketAutomationTriggerProxy GetProxy()
     {
       TicketAutomationTriggerProxy result = new TicketAutomationTriggerProxy();
+      result.LastSQLExecuted = this.LastSQLExecuted;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.CustomSQL = this.CustomSQL;

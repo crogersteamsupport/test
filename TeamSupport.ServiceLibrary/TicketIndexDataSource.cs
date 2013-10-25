@@ -11,7 +11,8 @@ namespace TeamSupport.ServiceLibrary
   {
     protected TicketIndexDataSource() { }
 
-    public TicketIndexDataSource(LoginUser loginUser, int maxCount, int organizationID) : base(loginUser, maxCount, organizationID)
+    public TicketIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding)
+      : base(loginUser, maxCount, organizationID, isRebuilding)
     {
       _logs = new Logs("Ticket Indexer DataSource");
     }
@@ -72,8 +73,8 @@ namespace TeamSupport.ServiceLibrary
         DocIsFile       = false;
         DocName         = ticket.TicketID.ToString();
         DocDisplayName  = string.Format("{0}: {1}", ticket.TicketNumber.ToString(), ticket.Name);
-        DocCreatedDate  = (DateTime) ticket.Row["DateCreated"];
-        DocModifiedDate = DateTime.UtcNow;
+        DocCreatedDate  = (DateTime)ticket.Row["DateCreated"];
+        DocModifiedDate = (DateTime)ticket.Row["DateModified"];
 
         return true;
       }
@@ -103,7 +104,7 @@ namespace TeamSupport.ServiceLibrary
         _logs.WriteEvent("Rewound tickets, OrgID: " + _organizationID.ToString());
         _itemIDList = new List<int>();
         TicketsView tickets = new TicketsView(_loginUser);
-        tickets.LoadForIndexing(_organizationID, _maxCount);
+        tickets.LoadForIndexing(_organizationID, _maxCount, _isRebuilding);
         foreach (TicketsViewItem ticket in tickets)
         {
           _itemIDList.Add(ticket.TicketID);

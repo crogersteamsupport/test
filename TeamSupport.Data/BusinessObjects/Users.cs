@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net.Mail;
 
 namespace TeamSupport.Data
 {
@@ -69,6 +70,38 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@UserID", UserID);
         Collection.ExecuteNonQuery(command, "Users");
       }
+    }
+
+    public void EmailCountToMuroc(bool isNew)
+    { 
+      UsersViewItem view = GetUserView();
+      MailMessage message = new MailMessage();
+      message.From = new MailAddress("support@teamsupport.com");
+      message.To.Add("eharrington@teamsupport.com");
+      message.To.Add("jhathaway@teamsupport.com");
+      message.Subject = isNew ? "TeamSupport User Added" : "TeamSupport User Removed";
+      message.Subject += " - " + view.Organization;
+      int count = Organizations.GetUserCount(Collection.LoginUser, OrganizationID);
+      message.IsBodyHtml = true;
+      string body = @"
+<div>{5}</div>
+<table>
+  <tr>
+    <td>Organization:</td>
+    <td>{0} ({1:D})</td>
+  </tr>
+  <tr>
+    <td>User:</td>
+    <td>{2} ({3:D})</td>
+  </tr>
+  <tr>
+    <td>Total Active Count:</td>
+    <td>{4:D}</td>
+  </tr>
+</table>";
+      message.Body = string.Format(body, view.Organization, OrganizationID, FirstLastName, UserID, count, message.Subject);
+      Emails.AddEmail(Collection.LoginUser, 1078, null, "User Count Changed", message);
+    
     }
 
   }
@@ -192,7 +225,6 @@ namespace TeamSupport.Data
         }
     }
 
-
     public void LoadChatOnlineUsers(int organizationID, int userID)
     {
         using (SqlCommand command = new SqlCommand())
@@ -202,6 +234,16 @@ namespace TeamSupport.Data
             command.Parameters.AddWithValue("@orgid", organizationID);
             command.Parameters.AddWithValue("@userid", userID);
             Fill(command);
+        }
+    }
+
+    public int GetChatConnections()
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT COUNT(*) FROM Users (AppChatstatus = 1) and (AppChatID != '')";
+            command.CommandType = CommandType.Text;
+            return (int)ExecuteScalar(command);
         }
     }
 
@@ -245,6 +287,23 @@ namespace TeamSupport.Data
       }
     }
     
+    public void LoadByEmailIncludingDeleted(string email, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"SELECT u.*
+                                FROM Users u 
+                                WHERE (u.OrganizationID = @OrganizationID)
+                                AND (u.Email = @Email)";
+
+
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@Email", email.Trim());
+        Fill(command);
+      }
+    }
+   
     public void LoadByEmail(int parentID, string email)
     {
       using (SqlCommand command = new SqlCommand())
@@ -478,6 +537,42 @@ namespace TeamSupport.Data
 
     }
 
+    public void AddUserCustomer(int userID, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "INSERT INTO UserRightsOrganizations (UserID, OrganizationID) VALUES (@UserID, @OrganizationID)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@UserID", userID);
+        ExecuteNonQuery(command);
+      }
+
+      User user = (User)Users.GetUser(LoginUser, userID);
+      Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
+      string description = string.Format("Added customer '{0}' to user '{1}'.", organization.Name, user.FirstLastName);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, organizationID, description);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+    }
+
+    public void RemoveUserCustomer(int userID, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "DELETE FROM UserRightsOrganizations WHERE UserID=@UserID AND OrganizationID=@OrganizationID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@UserID", userID);
+        ExecuteNonQuery(command);
+      }
+
+      User user = (User)Users.GetUser(LoginUser, userID);
+      Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
+      string description = string.Format("Removed customer '{0}' from user '{1}'.", organization.Name, user.FirstLastName);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Groups, organizationID, description);
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
+    }
+
     public void LoadByNotGroupID(int groupID, int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -560,6 +655,41 @@ AND u.IsPortalUser = 1";
       }
     }
 
+    public void LoadBySalesForceID(string salesForceID, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Users WHERE (SalesForceID = @salesForceID) AND (OrganizationID = @organizationID)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@salesForceID", salesForceID.Trim());
+        command.Parameters.AddWithValue("@organizationID", organizationID);
+        Fill(command);
+      }
+    }
+
+    public void LoadBySalesForceIDInParentOrganization(string salesForceID, int parentOrganizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = 
+        @"
+          SELECT 
+            u.* 
+          FROM 
+            Users u
+            JOIN Organizations o
+              ON u.OrganizationID = o.OrganizationID
+          WHERE
+            u.SalesForceID = @salesForceID
+            AND o.Parent = @parentOrganizationID
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@salesForceID", salesForceID.Trim());
+        command.Parameters.AddWithValue("@organizationID", parentOrganizationID);
+        Fill(command);
+      }
+    }
+
     public static string GetUserFullName(LoginUser loginUser, int userID)
     {
       User user = (User)Users.GetUser(loginUser, userID);
@@ -605,7 +735,6 @@ AND u.IsPortalUser = 1";
       }
       return null;
     }
-
 
     public User Find(string text)
     {

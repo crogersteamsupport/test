@@ -5,9 +5,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Oops</title>
-  <link href="vcr/142/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/142/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/142/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_0/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_0/Css/ts.ui.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <form id="form1" runat="server">

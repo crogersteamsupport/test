@@ -25,7 +25,7 @@
       </Items>
     </telerik:RadToolBar>
     </telerik:RadPane>
-    <telerik:RadPane ID="RadPane2" runat="server" Scrolling="None" Height="100%">
+    <telerik:RadPane ID="RadPane2" runat="server" Scrolling="None" Height="100%" Width="100%">
   <div class="stretchContentHolderDiv">
     
         <telerik:RadGrid ID="gridProducts" runat="server" Height="100%" Width="100%" AutoGenerateColumns="False"
@@ -33,7 +33,7 @@
         AllowPaging="True" OnPageSizeChanged="gridProducts_PageSizeChanged" 
           OnItemDataBound="gridProducts_ItemDataBound">
         <PagerStyle Mode="NextPrevAndNumeric" AlwaysVisible="true" />
-        <MasterTableView DataKeyNames="OrganizationProductID" ClientDataKeyNames="OrganizationProductID" TableLayout="Fixed">
+        <MasterTableView DataKeyNames="OrganizationProductID" ClientDataKeyNames="OrganizationProductID" TableLayout="Auto">
           <Columns>
             <telerik:GridButtonColumn ButtonType="ImageButton" ImageUrl="../images/icons/edit.png"
               UniqueName="ButtonEdit" CommandName="ShowEdit" >
@@ -48,23 +48,33 @@
               <HeaderStyle Width="32px" />
             </telerik:GridButtonColumn>
             <telerik:GridBoundColumn DataField="ProductName" HeaderText="Product Name" UniqueName="ProductName">
+              <HeaderStyle Width="100px" />
             </telerik:GridBoundColumn>
             <telerik:GridBoundColumn DataField="VersionNumber" HeaderText="Version" UniqueName="VersionNumber">
+              <HeaderStyle Width="100px" />
             </telerik:GridBoundColumn>
             <telerik:GridBoundColumn DataField="SupportExpiration" HeaderText="Support Expiration" UniqueName="SupportExpiration"
             DataFormatString="{0:d}"
             >
+              <HeaderStyle Width="100px" />
             </telerik:GridBoundColumn>
             <telerik:GridBoundColumn DataField="VersionStatus" HeaderText="Status" UniqueName="VersionStatus">
+              <HeaderStyle Width="100px" />
             </telerik:GridBoundColumn>
             <telerik:GridBoundColumn DataField="IsReleased" HeaderText="Released" UniqueName="IsReleased"
-              DataType="System.Boolean"></telerik:GridBoundColumn>
+              DataType="System.Boolean">              <HeaderStyle Width="100px" />
+</telerik:GridBoundColumn>
             <telerik:GridBoundColumn DataField="ReleaseDate" HeaderText="Release Date" UniqueName="ReleaseDate"
-              DataType="System.DateTime"></telerik:GridBoundColumn>
+              DataType="System.DateTime">
+                            <HeaderStyle Width="100px" />
+</telerik:GridBoundColumn>
             <telerik:GridBoundColumn DataField="OrganizationProductID" UniqueName="OrganizationProductID"
-              Visible="False"></telerik:GridBoundColumn>
+              Visible="False">
+                            <HeaderStyle Width="100px" />
+</telerik:GridBoundColumn>
           </Columns>
         </MasterTableView><ClientSettings>
+        <Resizing AllowColumnResize="true" ResizeGridOnColumnResize="true" />
           <Scrolling AllowScroll="True" UseStaticHeaders="True" />
         </ClientSettings>
       </telerik:RadGrid>
@@ -105,6 +115,8 @@
         var value = button.get_value();
         if (value == 'AssociateProduct') {
           ShowDialog(top.GetOrganizationProductDialog(null, GetOrganizationID()));
+          top.Ts.System.logAction('Organization Products - Product Associated');
+
         }
       }
 
@@ -116,9 +128,12 @@
       function DeleteRow(id) {
         if (!confirm('Are you sure you would like to remove this product association?')) return;
         top.privateServices.DeleteOrganizationProduct(id, RefreshGrid);
+        top.Ts.System.logAction('Organization Products - Product Removed');
+
       }
       function OpenProduct(id) {
         top.location = "../Default.aspx?OrganizationProductID=" + id;
+        top.Ts.System.logAction('Organization Products - Product Opened');
       }
       </script>
    </telerik:RadScriptBlock> 

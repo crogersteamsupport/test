@@ -18,7 +18,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("FileName", "FileName", true, true, true);
       _fieldMap.AddMap("FileType", "FileType", true, true, true);
       _fieldMap.AddMap("FileSize", "FileSize", true, true, true);
-      _fieldMap.AddMap("Path", "Path", true, true, true);
+      _fieldMap.AddMap("Path", "Path", false, false, false);
       _fieldMap.AddMap("Description", "Description", true, true, true);
       _fieldMap.AddMap("DateCreated", "DateCreated", true, true, true);
       _fieldMap.AddMap("DateModified", "DateModified", true, true, true);

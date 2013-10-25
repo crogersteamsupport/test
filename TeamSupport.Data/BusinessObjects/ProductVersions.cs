@@ -35,6 +35,22 @@ namespace TeamSupport.Data
       return null;
     }
 
+    public ProductVersion FindByVersionNumber(string versionNumber, int productID)
+    {
+      versionNumber = versionNumber.Trim().ToLower();
+      foreach (ProductVersion productVersion in this)
+      {
+        if (productVersion.ProductID == productID)
+        {
+          if (productVersion.VersionNumber.ToLower().Trim() == versionNumber)
+          {
+            return productVersion;
+          }
+        }
+      }
+      return null;
+    }
+
     partial void BeforeRowDelete(int productVersionID)
     {
       ProductVersion version = (ProductVersion) ProductVersions.GetProductVersion(LoginUser, productVersionID);

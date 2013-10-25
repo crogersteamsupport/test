@@ -28,6 +28,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ScreenWidth", "ScreenWidth", false, false, false);
       _fieldMap.AddMap("URL", "URL", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
+      _fieldMap.AddMap("IsSupport", "IsSupport", false, false, false);
+      _fieldMap.AddMap("DeviceID", "DeviceID", false, false, false);
             
     }
   }

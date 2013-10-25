@@ -47,6 +47,9 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public int? KnowledgeBaseCategoryID { get; set; }
+    [DataMember] public string SalesForceID { get; set; }
+    [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
           
   }
   
@@ -55,6 +58,8 @@ namespace TeamSupport.Data
     public TicketProxy GetProxy()
     {
       TicketProxy result = new TicketProxy();
+      result.SalesForceID = this.SalesForceID;
+      result.KnowledgeBaseCategoryID = this.KnowledgeBaseCategoryID;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.DocID = this.DocID;
@@ -82,6 +87,7 @@ namespace TeamSupport.Data
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
+      result.DateModifiedBySalesForceSync = this.DateModifiedBySalesForceSyncUtc == null ? this.DateModifiedBySalesForceSyncUtc : DateTime.SpecifyKind((DateTime)this.DateModifiedBySalesForceSyncUtc, DateTimeKind.Utc); 
       result.SlaWarningInitialResponse = this.SlaWarningInitialResponseUtc == null ? this.SlaWarningInitialResponseUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningInitialResponseUtc, DateTimeKind.Utc); 
       result.SlaWarningLastAction = this.SlaWarningLastActionUtc == null ? this.SlaWarningLastActionUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningLastActionUtc, DateTimeKind.Utc); 
       result.SlaWarningTimeClosed = this.SlaWarningTimeClosedUtc == null ? this.SlaWarningTimeClosedUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningTimeClosedUtc, DateTimeKind.Utc); 

@@ -25,6 +25,11 @@ namespace TeamSupport.Data
     }
         
     
+    public string UserName
+    {
+      get { return Row["UserName"] != DBNull.Value ? (string)Row["UserName"] : null; }
+    }
+    
     
     
 
@@ -54,6 +59,12 @@ namespace TeamSupport.Data
     }
     
 
+    
+    public bool NeedsIndexing
+    {
+      get { return (bool)Row["NeedsIndexing"]; }
+      set { Row["NeedsIndexing"] = CheckValue("NeedsIndexing", value); }
+    }
     
     public bool IsDeleted
     {
@@ -204,7 +215,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-        updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[NewWaterCoolerView] SET     [UserID] = @UserID,    [OrganizationID] = @OrganizationID,    [TimeStamp] = @TimeStamp,    [Message] = @Message,    [MessageParent] = @MessageParent,    [IsDeleted] = @IsDeleted,    [LastModified] = @LastModified,    [RefType] = @RefType,    [AttachmentID] = @AttachmentID  WHERE ([MessageID] = @MessageID);";
+        updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[NewWaterCoolerView] SET     [UserID] = @UserID,    [OrganizationID] = @OrganizationID,    [TimeStamp] = @TimeStamp,    [Message] = @Message,    [MessageParent] = @MessageParent,    [IsDeleted] = @IsDeleted,    [LastModified] = @LastModified,    [RefType] = @RefType,    [AttachmentID] = @AttachmentID,    [NeedsIndexing] = @NeedsIndexing,    [UserName] = @UserName  WHERE ([MessageID] = @MessageID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("MessageID", SqlDbType.Int, 4);
@@ -277,13 +288,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+
+		tempParameter = updateCommand.Parameters.Add("UserName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-        insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[NewWaterCoolerView] (    [MessageID],    [UserID],    [OrganizationID],    [TimeStamp],    [Message],    [MessageParent],    [IsDeleted],    [LastModified],    [RefType],    [AttachmentID]) VALUES ( @MessageID, @UserID, @OrganizationID, @TimeStamp, @Message, @MessageParent, @IsDeleted, @LastModified, @RefType, @AttachmentID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[NewWaterCoolerView] (    [MessageID],    [UserID],    [OrganizationID],    [TimeStamp],    [Message],    [MessageParent],    [IsDeleted],    [LastModified],    [RefType],    [AttachmentID],    [NeedsIndexing],    [UserName]) VALUES ( @MessageID, @UserID, @OrganizationID, @TimeStamp, @Message, @MessageParent, @IsDeleted, @LastModified, @RefType, @AttachmentID, @NeedsIndexing, @UserName); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("UserName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+
+		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("AttachmentID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -462,16 +501,16 @@ namespace TeamSupport.Data
       Table.Rows.Add(row);
       return new WaterCoolerViewItem(row, this);
     }
-    
+
     public virtual void LoadByMessageID(int messageID)
     {
-      using (SqlCommand command = new SqlCommand())
-      {
-          command.CommandText = "SET NOCOUNT OFF; SELECT [MessageID], [UserID], [OrganizationID], [TimeStamp], [Message], [MessageParent], [IsDeleted], [LastModified], [RefType], [AttachmentID] FROM [dbo].[NewWaterCoolerView] WHERE ([MessageID] = @MessageID);";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("MessageID", messageID);
-        Fill(command);
-      }
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SET NOCOUNT OFF; SELECT [MessageID], [UserID], [OrganizationID], [TimeStamp], [Message], [MessageParent], [IsDeleted], [LastModified], [RefType], [AttachmentID], [NeedsIndexing], [UserName] FROM [dbo].[NewWaterCoolerView] WHERE ([MessageID] = @MessageID);";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("MessageID", messageID);
+            Fill(command);
+        }
     }
     
     public static WaterCoolerViewItem GetWaterCoolerViewItem(LoginUser loginUser, int messageID)

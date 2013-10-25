@@ -53,32 +53,18 @@ public partial class Frames_TicketTabsOrganization : BaseFramePage
   {
     tsMain.Tabs.Clear();
 
-    StringBuilder builder = new StringBuilder();
-    builder.Append("Tickets.aspx?TicketTypeID=" + ticketType.TicketTypeID);
-    builder.Append("&CustomerID=" + _organizationID.ToString());
-    builder.Append("&UserID=" + UserSession.LoginUser.UserID);
-    builder.Append("&TicketStatusID="+TicketFilters.Values.Opened);
-    tsMain.Tabs.Add(CreateTab(ticketType, "My Tickets", builder.ToString()));
-    
-    builder = new StringBuilder();
-    builder.Append("Tickets.aspx?TicketTypeID=" + ticketType.TicketTypeID);
-    builder.Append("&CustomerID=" + _organizationID.ToString());
-    builder.Append("&TicketStatusID=" + TicketFilters.Values.Opened);
-    tsMain.Tabs.Add(CreateTab(ticketType, "Open Tickets", builder.ToString()));
+    string ticketUrl = string.Format("../vcr/1_7_0/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_UserID={1:0}&tf_IsClosed=false", _organizationID, ticketType.TicketTypeID, UserSession.LoginUser.UserID);
+    tsMain.Tabs.Add(CreateTab(ticketType, "My Tickets", ticketUrl));
 
-    builder = new StringBuilder();
-    builder.Append("Tickets.aspx?TicketTypeID=" + ticketType.TicketTypeID);
-    builder.Append("&CustomerID=" + _organizationID.ToString());
-    builder.Append("&TicketStatusID=" + TicketFilters.Values.Closed);
-    tsMain.Tabs.Add(CreateTab(ticketType, "Closed Tickets", builder.ToString()));
+    ticketUrl = string.Format("../vcr/1_7_0/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_IsClosed=false", _organizationID, ticketType.TicketTypeID);
+    tsMain.Tabs.Add(CreateTab(ticketType, "Open Tickets", ticketUrl));
+
+    ticketUrl = string.Format("../vcr/1_7_0/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_IsClosed=true", _organizationID, ticketType.TicketTypeID);
+    tsMain.Tabs.Add(CreateTab(ticketType, "Closed Tickets", ticketUrl));
 
 
-    builder = new StringBuilder();
-    builder.Append("Tickets.aspx?TicketTypeID=" + ticketType.TicketTypeID);
-    builder.Append("&CustomerID=" + _organizationID.ToString());
-    builder.Append("&UserID=" + TicketFilters.Values.Unassigned);
-    builder.Append("&GroupID=" + TicketFilters.Values.Unassigned);
-    tsMain.Tabs.Add(CreateTab(ticketType, "Unassigned Tickets", builder.ToString()));
+    ticketUrl = string.Format("../vcr/1_7_0/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_IsClosed=true&tf_UserID=-2", _organizationID, ticketType.TicketTypeID);
+    tsMain.Tabs.Add(CreateTab(ticketType, "Unassigned Tickets", ticketUrl));
   }
 
 }

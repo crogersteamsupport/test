@@ -29,6 +29,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public ReportType ReportType { get; set; }
           
   }
   
@@ -37,6 +38,7 @@ namespace TeamSupport.Data
     public ReportProxy GetProxy()
     {
       ReportProxy result = new ReportProxy();
+      result.ReportType = this.ReportType;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.LastSqlExecuted = this.LastSqlExecuted;

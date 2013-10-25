@@ -28,7 +28,7 @@ public partial class Chat_Chat : System.Web.UI.MasterPage
       if (File.Exists(fileName))
       {
         System.Drawing.Image image = System.Drawing.Image.FromFile(fileName);
-        string style = "background: #fff url('dc/{0}/chat/logo') no-repeat; height: {1}px; width: {2}px; border: solid 1px #B8B8B8;";
+        string style = "background: #fff url('/dc/{0}/chat/logo') no-repeat; height: {1}px; width: {2}px; border: solid 1px #B8B8B8;";
         StringBuilder builder = new StringBuilder();
         builder.Append("<style type=\"text/css\">.chat-logo { ");
         builder.Append(string.Format(style, _organization.OrganizationID.ToString(), image.Height.ToString(), image.Width.ToString()));

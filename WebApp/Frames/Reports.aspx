@@ -160,7 +160,7 @@
           var typeNode = GetTypeNode(node);
           var reportNode = GetReportNode(node);
 
-          top.privateServices.SetUserSetting('SelectedReportTypeID', typeNode.get_value());
+          top.privateServices.SetUserSetting('SelectedReportTypeOldID', typeNode.get_value());
 
           if (reportNode != null) {
 
@@ -224,7 +224,7 @@
           var tree = $find("<%= reportTree.ClientID %>");
           var url = tree.get_selectedNode().get_attributes().getAttribute('ExternalURL');
         if (!url || url == '' || url === undefined) {
-          return 'ReportResults.aspx'
+          return '../Report/ReportResults.aspx'
         }
         else {
           return url;
@@ -270,17 +270,22 @@
         var wnd = top.GetReportEditorDialog()
         wnd.add_close(DialogClosed);
         wnd.show();
+        top.Ts.System.logAction('Reports - New Report Dialog Opened');
       }
 
       function EditReport() {
         var wnd = top.GetReportEditorDialog(GetSelectedReportID())
         wnd.add_close(DialogClosed);
         wnd.show();
+        top.Ts.System.logAction('Reports - Edit Report Dialog Opened');
+
       }
 
       function DeleteReport() {
         if (confirm('Are you sure you would like to delete this report?')) {
           top.privateServices.DeleteReport(GetSelectedReportID());
+          top.Ts.System.logAction('Reports - Report Deleted');
+
       }
 
       var tree = $find("<%= reportTree.ClientID %>");
@@ -290,6 +295,7 @@
 
   function FavoriteReport() {
       top.privateServices.ToggleFavoriteReport(GetSelectedReportID());
+      top.Ts.System.logAction('Reports - Favorite Report Toggled');
 
       top.privateServices.IsFavoriteReport(GetSelectedReportID(), SetIsFavorite);
       refreshNode(2);
@@ -298,16 +304,22 @@
       function ExportPDF() {
         var frame = $get("<%=frmReport.ClientID %>");
         frame.contentWindow.ExportPDF();
+        top.Ts.System.logAction('Reports - Export to PDF');
+
       }
 
       function ExportExcel() {
         var frame = $get("<%=frmReport.ClientID %>");
         frame.contentWindow.ExportExcel();
+        top.Ts.System.logAction('Reports - Export to Excel');
+
       }
 
       function ExportCSV() {
-        var frame = $get("<%=frmReport.ClientID %>");        
+        var frame = $get("<%=frmReport.ClientID %>");
         frame.contentWindow.ExportCSV();
+        top.Ts.System.logAction('Reports - Export to CSV');
+
       }
 
       function DialogClosed(sender, args) {

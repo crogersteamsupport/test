@@ -29,6 +29,10 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("TicketID", "TicketID", false, false, false);
       _fieldMap.AddMap("ActionSource", "ActionSource", false, false, false);
+      _fieldMap.AddMap("DateModifiedBySalesForceSync", "DateModifiedBySalesForceSync", false, false, false);
+      _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
+      _fieldMap.AddMap("DateModifiedByJiraSync", "DateModifiedByJiraSync", false, false, false);
+      _fieldMap.AddMap("JiraID", "JiraID", false, false, false);
             
     }
   }

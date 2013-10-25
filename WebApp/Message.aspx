@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Standard.master" AutoEventWireup="true" CodeFile="Message.aspx.cs" Inherits="Message" Title="TeamSupport.com" %>
+﻿<%@ Page Language="C#" MasterPageFile="~/StandardForm.master" AutoEventWireup="true" CodeFile="Message.aspx.cs" Inherits="Message" Title="TeamSupport.com" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>

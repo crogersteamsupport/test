@@ -38,26 +38,48 @@ namespace TSWebServices
 
       SearchStandardFilter searchStandardFilter = GetSearchStandardFilter(loginUser);
 
-      bool hasTicketsOnlyFilters = false;
+      bool hasNonWikiFilters = false;
+      bool hasNonNotesFilters = false;
+      bool hasNonProductVersionsFilters = false;
+      bool hasNonWaterCoolerFilters =  false;
 
-      bool hasIndexesToSearch = GetHasIndexesToSearch(searchStandardFilter, loginUser, ref hasTicketsOnlyFilters);
+      bool hasIndexesToSearch = GetHasIndexesToSearch(
+                                  searchStandardFilter, 
+                                  loginUser, 
+                                  ref hasNonWikiFilters,
+                                  ref hasNonNotesFilters,
+                                  ref hasNonProductVersionsFilters,
+                                  ref hasNonWaterCoolerFilters);
 
       if (hasIndexesToSearch)
       {
         string tempItemsTableFieldsDefinition = string.Empty;
         string tempItemsTableFields           = string.Empty;
+
         string ticketsQuery                   = string.Empty;
         string wikisQuery                     = string.Empty;
+        string notesQuery                     = string.Empty;
+        string productVersionsQuery           = string.Empty;
+        string waterCoolerQuery               = string.Empty;
+
         string orderByClause                  = string.Empty;
+
         string fieldsList                     = string.Empty;
+
         string selectTicketsFields            = string.Empty;
         string selectWikisFields              = string.Empty;
+        string selectNotesFields              = string.Empty;
+        string selectProductVersionsFields    = string.Empty;
+        string selectWaterCoolerFields        = string.Empty;
 
         orderByClause = GetOrderByClause(loginUser,
                                          ref tempItemsTableFieldsDefinition,
                                          ref tempItemsTableFields,
                                          ref selectTicketsFields,
-                                         ref selectWikisFields);
+                                         ref selectWikisFields,
+                                         ref selectNotesFields,
+                                         ref selectProductVersionsFields,
+                                         ref selectWaterCoolerFields);
 
         SqlCommand command = new SqlCommand();
 
@@ -76,7 +98,7 @@ namespace TSWebServices
           }
         }
 
-        if (searchStandardFilter.Wikis && !hasTicketsOnlyFilters)
+        if (searchStandardFilter.Wikis && !hasNonWikiFilters)
         {
           List<SqlDataRecord> dtSearchWikisResultsList = WikiArticlesView.GetSearchResultsList(searchTerm, loginUser);
 
@@ -94,6 +116,69 @@ namespace TSWebServices
             dtSearchWikisResultsTable.TypeName = "dtSearch_results_tbltype";
             dtSearchWikisResultsTable.Value = dtSearchWikisResultsList;
             command.Parameters.Add(dtSearchWikisResultsTable);
+          }
+        }
+
+        if (searchStandardFilter.Notes && !hasNonNotesFilters)
+        {
+          List<SqlDataRecord> dtSearchNotesResultsList = NotesView.GetSearchResultsList(searchTerm, loginUser);
+
+          if (dtSearchNotesResultsList.Count > 0)
+          {
+            bool includesPreviousQuery = false;
+            if (ticketsQuery.Length > 0 || wikisQuery.Length > 0)
+            {
+              includesPreviousQuery = true;
+            }
+
+            notesQuery = GetNotesQuery(includesPreviousQuery, loginUser, selectNotesFields);
+
+            SqlParameter dtSearchNotesResultsTable = new SqlParameter("@dtSearchNotesResultsTable", SqlDbType.Structured);
+            dtSearchNotesResultsTable.TypeName = "dtSearch_results_tbltype";
+            dtSearchNotesResultsTable.Value = dtSearchNotesResultsList;
+            command.Parameters.Add(dtSearchNotesResultsTable);
+          }
+        }
+
+        if (searchStandardFilter.ProductVersions && !hasNonProductVersionsFilters)
+        {
+          List<SqlDataRecord> dtSearchProductVersionsResultsList = ProductVersionsView.GetSearchResultsList(searchTerm, loginUser);
+
+          if (dtSearchProductVersionsResultsList.Count > 0)
+          {
+            bool includesPreviousQuery = false;
+            if (ticketsQuery.Length > 0 || wikisQuery.Length > 0 || notesQuery.Length > 0)
+            {
+              includesPreviousQuery = true;
+            }
+
+            productVersionsQuery = GetProductVersionsQuery(includesPreviousQuery, loginUser, selectProductVersionsFields);
+
+            SqlParameter dtSearchProductVersionsResultsTable = new SqlParameter("@dtSearchProductVersionsResultsTable", SqlDbType.Structured);
+            dtSearchProductVersionsResultsTable.TypeName = "dtSearch_results_tbltype";
+            dtSearchProductVersionsResultsTable.Value = dtSearchProductVersionsResultsList;
+            command.Parameters.Add(dtSearchProductVersionsResultsTable);
+          }
+        }
+
+        if (searchStandardFilter.WaterCooler && !hasNonWaterCoolerFilters)
+        {
+          List<SqlDataRecord> dtSearchWaterCoolerResultsList = WaterCoolerView.GetSearchResultsList(searchTerm, loginUser);
+
+          if (dtSearchWaterCoolerResultsList.Count > 0)
+          {
+            bool includesPreviousQuery = false;
+            if (ticketsQuery.Length > 0 || wikisQuery.Length > 0 || notesQuery.Length > 0 || productVersionsQuery.Length > 0)
+            {
+              includesPreviousQuery = true;
+            }
+
+            waterCoolerQuery = GetWaterCoolerQuery(includesPreviousQuery, loginUser, selectWaterCoolerFields);
+
+            SqlParameter dtSearchWaterCoolerResultsTable = new SqlParameter("@dtSearchWaterCoolerResultsTable", SqlDbType.Structured);
+            dtSearchWaterCoolerResultsTable.TypeName = "dtSearch_results_tbltype";
+            dtSearchWaterCoolerResultsTable.Value = dtSearchWaterCoolerResultsList;
+            command.Parameters.Add(dtSearchWaterCoolerResultsTable);
           }
         }
 
@@ -122,11 +207,14 @@ namespace TSWebServices
         {2}
         {3}
         {4}
+        {5}
+        {6}
+        {7}
         
         SET @resultsCount = @@RowCount
 
         SELECT
-          {5}
+          {8}
         FROM 
           @TempItems ti 
           LEFT JOIN dbo.TicketsView tv 
@@ -135,13 +223,32 @@ namespace TSWebServices
           LEFT JOIN dbo.WikiArticlesView wv
             ON ti.source = 39
             AND ti.recordID = wv.ArticleID
+          LEFT JOIN dbo.NotesView nv
+            ON ti.source = 40
+            AND ti.recordID = nv.NoteID
+          LEFT JOIN dbo.ProductVersionsView pvv
+            ON ti.source = 14
+            AND ti.recordID = pvv.ProductVersionID
+          LEFT JOIN dbo.NewWaterCoolerView wcv
+            ON ti.source = 38
+            AND ti.recordID = wcv.MessageID
         WHERE 
           ti.ID BETWEEN @FromIndex AND @toIndex
         ORDER BY 
           ti.ID
         ";
 
-        command.CommandText = string.Format(query, tempItemsTableFieldsDefinition, tempItemsTableFields, ticketsQuery, wikisQuery, orderByClause, fieldsList);
+        command.CommandText = string.Format(
+          query, 
+          tempItemsTableFieldsDefinition, 
+          tempItemsTableFields, 
+          ticketsQuery, 
+          wikisQuery, 
+          notesQuery,
+          productVersionsQuery,
+          waterCoolerQuery,
+          orderByClause, 
+          fieldsList);
         command.CommandType = CommandType.Text;
 
         SqlParameter resultsCount = new SqlParameter("@resultsCount", SqlDbType.Int)
@@ -152,6 +259,8 @@ namespace TSWebServices
 
         command.Parameters.AddWithValue("@FromIndex", firstItemIndex + 1);
         command.Parameters.AddWithValue("@ToIndex",   firstItemIndex + pageSize);
+
+        command.Parameters.AddWithValue("@userID", loginUser.UserID);
 
         DataTable table = new DataTable();
         using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
@@ -208,6 +317,43 @@ namespace TSWebServices
               resultItem.TypeID = 3;
 
               break;
+            case ReferenceType.Notes:
+              resultItem.ID = (int)row["NoteID"];
+              resultItem.CustomerID = (int)row["RefID"];
+              resultItem.DisplayName = string.Format("{0}'s note: {1}",  row["OrganizationName"].ToString(), row["Title"].ToString());
+              resultItem.Creator = row["CreatorName"].ToString();
+              resultItem.DateModified = row["DateModified"].ToString();
+              resultItem.TypeID = 4;
+
+              break;
+            case ReferenceType.ProductVersions:
+              resultItem.ID = (int)row["ProductVersionID"];
+              resultItem.ProductID = (int)row["ProductID"];
+              resultItem.DisplayName = string.Format("{0}'s version {1}", row["ProductName"].ToString(), row["VersionNumber"].ToString());
+              resultItem.Status = row["VersionStatus"].ToString();
+              resultItem.DateModified = row["ProductVersionDateModified"].ToString();
+              resultItem.TypeID = 5;
+
+              break;
+            case ReferenceType.WaterCooler:
+              int messageParent = (int)row["MessageParent"];
+              resultItem.ID = messageParent == -1 ? (int)row["MessageID"] : messageParent;
+              resultItem.DisplayName = row["Message"].ToString();
+              if (resultItem.DisplayName.Length > 100)
+              {
+                resultItem.DisplayName = resultItem.DisplayName.Substring(0, 100) + "...";
+              }
+              resultItem.Creator = row["UserName"].ToString();
+              resultItem.DateModified = row["WaterCoolerLastModified"].ToString();
+              resultItem.TypeID = 6;
+              //resultItem.RefType = row["RefType"] is System.DBNull ? -1 : (int?)row["RefType"];
+              //resultItem.AttachmentID = row["AttachmentID"] is System.DBNull ? -1 : (int?)row["AttachmentID"];
+              resultItem.RefType = -1;
+              resultItem.AttachmentID = -1;
+
+
+              break;
+
           }
 
           resultItems.Add(resultItem);
@@ -243,24 +389,34 @@ namespace TSWebServices
       return result;
     }
 
-    private bool GetHasIndexesToSearch(SearchStandardFilter searchStandardFilter, LoginUser loginUser, ref bool hasTicketsOnlyFilters)
+    private bool GetHasIndexesToSearch(
+      SearchStandardFilter searchStandardFilter, 
+      LoginUser loginUser, 
+      ref bool hasNonWikiFilters,
+      ref bool hasNonNotesFilters,
+      ref bool hasNonProductVersionsFilters,
+      ref bool hasNonWaterCoolerFilters)
     {
-      bool result = true;
+      bool result = false;
 
-      if (!searchStandardFilter.Tickets && !searchStandardFilter.KnowledgeBase && !searchStandardFilter.Wikis)
+      GetHasNonTableFilters(
+        searchStandardFilter,
+        loginUser,
+        ref hasNonWikiFilters,
+        ref hasNonNotesFilters,
+        ref hasNonProductVersionsFilters,
+        ref hasNonWaterCoolerFilters);
+
+      if (
+        searchStandardFilter.Tickets 
+        || searchStandardFilter.KnowledgeBase
+        || (searchStandardFilter.Wikis && !hasNonWikiFilters)
+        || (searchStandardFilter.Notes && !hasNonNotesFilters)
+        || (searchStandardFilter.ProductVersions && !hasNonProductVersionsFilters)
+        || (searchStandardFilter.WaterCooler && !hasNonWaterCoolerFilters)
+      )
       {
-        result = false;
-      }
-      else
-      {
-        if (searchStandardFilter.Wikis)
-        {
-          hasTicketsOnlyFilters = GetHasTicketsOnlyFilters(loginUser);
-          if (!searchStandardFilter.Tickets && !searchStandardFilter.KnowledgeBase && hasTicketsOnlyFilters)
-          {
-            result = false;
-          }
-        }
+        result = true;
       }
 
       return result;
@@ -330,18 +486,135 @@ namespace TSWebServices
       return resultBuilder.ToString();
     }
 
+    private string GetNotesQuery(bool includePreviousQuery, LoginUser loginUser, string selectNotesFields)
+    {
+      StringBuilder resultBuilder = new StringBuilder();
+
+      if (includePreviousQuery)
+      {
+        resultBuilder.Append(" UNION ");
+      }
+
+      resultBuilder.Append(@"
+        SELECT
+          nv.NoteID
+          , 40
+          , dnrt.relevance
+          , nv.DateModified");
+      resultBuilder.Append(selectNotesFields);
+
+      resultBuilder.Append(@"
+        FROM
+          dbo.NotesView nv
+          JOIN @dtSearchNotesResultsTable dnrt
+            ON nv.NoteID = dnrt.RecordID
+        WHERE
+          1 = 1
+      ");
+
+      resultBuilder.Append(NotesView.GetSearchResultsWhereClause(loginUser));
+
+      return resultBuilder.ToString();
+    }
+
+    private string GetProductVersionsQuery(bool includePreviousQuery, LoginUser loginUser, string selectProductVersionsFields)
+    {
+      StringBuilder resultBuilder = new StringBuilder();
+
+      if (includePreviousQuery)
+      {
+        resultBuilder.Append(" UNION ");
+      }
+
+      resultBuilder.Append(@"
+        SELECT
+          pvv.ProductVersionID
+          , 14
+          , dpvrt.relevance
+          , pvv.DateModified");
+      resultBuilder.Append(selectProductVersionsFields);
+
+      resultBuilder.Append(@"
+        FROM
+          dbo.ProductVersionsView pvv
+          JOIN @dtSearchProductVersionsResultsTable dpvrt
+            ON pvv.ProductVersionID = dpvrt.RecordID
+        WHERE
+          1 = 1
+      ");
+
+      resultBuilder.Append(ProductVersionsView.GetSearchResultsWhereClause(loginUser));
+
+      return resultBuilder.ToString();
+    }
+
+    private string GetWaterCoolerQuery(bool includePreviousQuery, LoginUser loginUser, string selectWaterCoolerFields)
+    {
+      StringBuilder resultBuilder = new StringBuilder();
+
+      if (includePreviousQuery)
+      {
+        resultBuilder.Append(" UNION ");
+      }
+
+      resultBuilder.Append(@"
+        SELECT
+          wcv.MessageID
+          , 38
+          , dpvrt.relevance
+          , wcv.LastModified AS DateModified");
+      resultBuilder.Append(selectWaterCoolerFields);
+
+      resultBuilder.Append(@"
+        FROM
+          dbo.NewWaterCoolerView wcv
+          JOIN @dtSearchWaterCoolerResultsTable dpvrt
+            ON wcv.MessageID = dpvrt.RecordID
+          LEFT JOIN dbo.NewWaterCoolerView pwcv
+            ON wcv.MessageParent = pwcv.MessageID
+          LEFT JOIN (SELECT COUNT(*) AS Count, x.MessageID FROM WatercoolerAttachments x WHERE x.RefType IN (3,4) GROUP BY x.MessageID) userOrGroupAttachments
+            ON (wcv.MessageParent < 0 AND wcv.MessageID = userOrGroupAttachments.MessageID)
+            OR (wcv.MessageParent > 0 AND wcv.MessageParent = userOrGroupAttachments.MessageID)
+          LEFT JOIN (SELECT COUNT(*) AS Count, x.MessageID FROM WatercoolerAttachments x WHERE x.RefType = 3 AND x.AttachmentID = @userID GROUP BY x.MessageID) userAttachments
+            ON (wcv.MessageParent < 0 AND wcv.MessageID = userAttachments.MessageID)
+            OR (wcv.MessageParent > 0 AND wcv.MessageParent = userAttachments.MessageID)
+          LEFT JOIN (SELECT COUNT(*) AS Count, x.MessageID FROM WatercoolerAttachments x WHERE x.RefType = 4 AND x.AttachmentID IN (SELECT gu.GroupID FROM GroupUsers gu WHERE gu.UserID = @UserID) GROUP BY x.MessageID) groupAttachments
+            ON (wcv.MessageParent < 0 AND wcv.MessageID = groupAttachments.MessageID)
+            OR (wcv.MessageParent > 0 AND wcv.MessageParent = groupAttachments.MessageID)
+        WHERE
+          wcv.IsDeleted = 0
+          AND
+          (
+            (wcv.MessageParent < 0 AND wcv.UserID = @userID) OR (wcv.MessageParent > 0 AND pwcv.UserID = @userID)
+            OR userOrGroupAttachments.Count IS NULL
+            OR userAttachments.Count > 0    
+            OR groupAttachments.Count > 0    
+          )
+      ");
+
+      resultBuilder.Append(WaterCoolerView.GetSearchResultsWhereClause(loginUser));
+
+      return resultBuilder.ToString();
+    }
+
     private string GetOrderByClause(LoginUser loginUser, 
                                     ref string tempItemsTableFieldsDefinition, 
                                     ref string tempItemsTableFields,
                                     ref string selectTicketsFields,
-                                    ref string selectWikisFields)
+                                    ref string selectWikisFields,
+                                    ref string selectNotesFields,
+                                    ref string selectProductVersionsFields,
+                                    ref string selectWaterCoolerFields)
     {
       SearchSorters searchSorters = new SearchSorters(loginUser);
       searchSorters.LoadByUserID(loginUser.UserID);
       return searchSorters.ConvertToOrderByClause(ref tempItemsTableFieldsDefinition, 
                                                   ref tempItemsTableFields,
                                                   ref selectTicketsFields,
-                                                  ref selectWikisFields);
+                                                  ref selectWikisFields,
+                                                  ref selectNotesFields,
+                                                  ref selectProductVersionsFields,
+                                                  ref selectWaterCoolerFields);
     }
 
     private string GetFieldsList()
@@ -360,37 +633,141 @@ namespace TSWebServices
         , wv.ArticleName
         , wv.Creator
         , wv.Modifier
+        , nv.NoteID
+        , nv.RefID
+        , nv.OrganizationName
+        , nv.Title
+        , nv.CreatorName
+        , nv.DateModified
+        , pvv.ProductVersionID
+        , pvv.ProductID
+        , pvv.ProductName
+        , pvv.VersionNumber
+        , pvv.VersionStatus
+        , pvv.DateModified AS ProductVersionDateModified
+        , wcv.MessageID
+        , wcv.Message
+        , wcv.UserName
+        , wcv.LastModified AS WaterCoolerLastModified
+        , wcv.RefType
+        , wcv.AttachmentID
+        , wcv.MessageParent
       ";
     }
 
-    private bool GetHasTicketsOnlyFilters(LoginUser loginUser)
+    private void GetHasNonTableFilters(
+      SearchStandardFilter searchStandardFilter,
+      LoginUser loginUser,
+      ref bool  hasNonWikiFilters,
+      ref bool  hasNonNotesFilters,
+      ref bool  hasNonProductVersionsFilters,
+      ref bool  hasNonWaterCoolerFilters)
     {
-      bool result = false;
-
-      WikiArticlesView wikiArticleViewFields = new WikiArticlesView(loginUser);
-      wikiArticleViewFields.LoadColumnNames();
+      Organizations organizations = new Organizations(loginUser);
+      organizations.LoadByOrganizationID(loginUser.OrganizationID);
+      if (!organizations.IsEmpty && organizations[0].ProductType == ProductType.Express)
+      {
+        hasNonWikiFilters = true;
+      }
 
       ReportTableFields ticketsViewFields = new ReportTableFields(loginUser);
       ticketsViewFields.LoadByReportTableID(10);
 
       SearchCustomFilters filters = new SearchCustomFilters(loginUser);
       filters.LoadByUserID(loginUser.UserID);
+
+      WikiArticlesViewItem    wikiArticlesViewItem    = null;
+      NotesViewItem           notesViewItem           = null;
+      ProductVersionsViewItem productVersionsViewItem = null;
+      WaterCoolerViewItem     waterCoolerViewItem     = null;
+
+      bool isFirstIteration = true;
+
       foreach (SearchCustomFilter filter in filters)
       {
-        string fieldName = ticketsViewFields.FindByReportTableFieldID(filter.FieldID).FieldName;
-        string wikiEquivalentFieldName = DataUtils.GetWikiEquivalentFieldName(fieldName);
-        if (!DataUtils.GetIsColumnInBaseCollection(wikiArticleViewFields, wikiEquivalentFieldName))
+        ReportTableField field = ticketsViewFields.FindByReportTableFieldID(filter.FieldID);
+        if (field == null)
         {
-          result = true;
-          break;
+          hasNonWikiFilters             = true;
+          hasNonNotesFilters            = true;
+          hasNonProductVersionsFilters  = true;
+          hasNonWaterCoolerFilters      = true;
+        }
+        else
+        {
+          string fieldName = field.FieldName;
+
+        if (!hasNonWikiFilters && searchStandardFilter.Wikis)
+        {
+          if (isFirstIteration)
+          {
+            WikiArticlesView wikiArticlesView = new WikiArticlesView(loginUser);
+            wikiArticlesViewItem = wikiArticlesView.AddNewWikiArticlesViewItem();
+          }
+
+        string wikiEquivalentFieldName = DataUtils.GetWikiEquivalentFieldName(fieldName);
+          if (!DataUtils.GetIsColumnInBaseCollection(wikiArticlesViewItem.Collection, wikiEquivalentFieldName))
+          {
+            hasNonWikiFilters = true;
+          }
+        }
+
+        if (!hasNonNotesFilters && searchStandardFilter.Notes)
+        {
+          if (isFirstIteration)
+          {
+            NotesView notesView = new NotesView(loginUser);
+            notesViewItem = notesView.AddNewNotesViewItem();
+          }
+
+          string notesEquivalentFieldName = DataUtils.GetNotesEquivalentFieldName(fieldName);
+          if (!DataUtils.GetIsColumnInBaseCollection(notesViewItem.Collection, notesEquivalentFieldName))
+          {
+            hasNonNotesFilters = true;
+          }
+        }
+
+        if (!hasNonProductVersionsFilters && searchStandardFilter.ProductVersions)
+        {
+          if (isFirstIteration)
+          {
+            ProductVersionsView productVersionsView = new ProductVersionsView(loginUser);
+            productVersionsViewItem = productVersionsView.AddNewProductVersionsViewItem();
+          }
+
+          string productVersionEquivalentFieldName = DataUtils.GetProductVersionsEquivalentFieldName(fieldName);
+          if (!DataUtils.GetIsColumnInBaseCollection(productVersionsViewItem.Collection, productVersionEquivalentFieldName))
+          {
+            hasNonProductVersionsFilters = true;
+          }
+        }
+
+        if (!hasNonWaterCoolerFilters && searchStandardFilter.WaterCooler)
+        {
+          if (isFirstIteration)
+          {
+            WaterCoolerView waterCoolerView = new WaterCoolerView(loginUser);
+            waterCoolerViewItem = waterCoolerView.AddNewWaterCoolerViewItem();
+          }
+
+          string waterCoolerEquivalentFieldName = DataUtils.GetWaterCoolerEquivalentFieldName(fieldName);
+          if (!DataUtils.GetIsColumnInBaseCollection(waterCoolerViewItem.Collection, waterCoolerEquivalentFieldName))
+          {
+            hasNonWaterCoolerFilters = true;
+          }
+        }
         }
       }
-
-      return result;
     }
 
     [WebMethod]
-    public int AddStandardFilters(bool includeTickets, bool includeKnowledgeBase, bool includeWikis)
+    public int AddStandardFilters(
+      bool includeTickets, 
+      bool includeKnowledgeBase,
+      bool includeWikis,
+      bool includeNotes,
+      bool includeProductVersions,
+      bool includeWaterCooler)
     {
       SearchStandardFilters filters = new SearchStandardFilters(TSAuthentication.GetLoginUser());
       SearchStandardFilter filter = filters.AddNewSearchStandardFilter();
@@ -399,6 +776,9 @@ namespace TSWebServices
       filter.Tickets        = includeTickets;
       filter.KnowledgeBase  = includeKnowledgeBase;
       filter.Wikis          = includeWikis;
+      filter.Notes            = includeNotes;
+      filter.ProductVersions  = includeProductVersions;
+      filter.WaterCooler      = includeWaterCooler;
 
       filters.Save();
 
@@ -406,7 +786,14 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void UpdateStandardFilters(int standardFilterID, bool includeTickets, bool includeKnowledgeBase, bool includeWikis)
+    public void UpdateStandardFilters(
+      int standardFilterID, 
+      bool includeTickets, 
+      bool includeKnowledgeBase, 
+      bool includeWikis, 
+      bool includeNotes, 
+      bool includeProductVersions,
+      bool includeWaterCooler)
     {
       SearchStandardFilters filters = new SearchStandardFilters(TSAuthentication.GetLoginUser());
       filters.LoadByStandardFilterID((int)standardFilterID);
@@ -415,7 +802,9 @@ namespace TSWebServices
       filter.Tickets        = includeTickets;
       filter.KnowledgeBase  = includeKnowledgeBase;
       filter.Wikis          = includeWikis;
-
+      filter.Notes            = includeNotes;
+      filter.ProductVersions  = includeProductVersions;
+      filter.WaterCooler      = includeWaterCooler;
       filters.Save();
     }
 
@@ -512,6 +901,10 @@ namespace TSWebServices
         result.Tickets          = (bool)standardFilters.Table.Rows[0]["Tickets"];
         result.KnowledgeBase    = (bool)standardFilters.Table.Rows[0]["KnowledgeBase"];
         result.Wikis            = (bool)standardFilters.Table.Rows[0]["Wikis"];
+        result.Notes            = (bool)standardFilters.Table.Rows[0]["Notes"];
+        result.ProductVersions  = (bool)standardFilters.Table.Rows[0]["ProductVersions"];
+        result.WaterCooler      = (bool)standardFilters.Table.Rows[0]["WaterCooler"];
+
       }
 
       // GetFields
@@ -527,9 +920,20 @@ namespace TSWebServices
         fieldItems.Add(new AutoFieldItem(field));
       }
 
+      TicketTypes ticketTypes = new TicketTypes(fields.LoginUser);
+      ticketTypes.LoadAllPositions(TSAuthentication.OrganizationID);
+
       foreach (CustomField custom in customs)
       {
+        TicketType ticketType = ticketTypes.FindByTicketTypeID(custom.AuxID);
+        if (ticketType == null)
+        {
         fieldItems.Add(new AutoFieldItem(custom));
+      }
+        else
+        {
+          fieldItems.Add(new AutoFieldItem(custom, string.Format("{0} ({1})", custom.Name, ticketType.Name)));
+        }
       }
 
       result.Fields = fieldItems.ToArray();
@@ -560,6 +964,12 @@ namespace TSWebServices
     public bool? KnowledgeBase { get; set; }
     [DataMember]
     public bool? Wikis { get; set; }
+    [DataMember]
+    public bool? Notes { get; set; }
+    [DataMember]
+    public bool? ProductVersions { get; set; }
+    [DataMember]
+    public bool? WaterCooler { get; set; }
     [DataMember]
     public AutoFieldItem[] Fields { get; set; }
     [DataMember]

@@ -21,10 +21,17 @@ namespace TeamSupport.Api
       return item.GetXml("Group", true);
     }
 
-    public static string GetGroups(RestCommand command)
+    public static string GetGroups(RestCommand command, bool orderByDateCreated = false)
     {
       Groups items = new Groups(command.LoginUser);
-      items.LoadByOrganizationID(command.Organization.OrganizationID);
+      if (orderByDateCreated)
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID, "DateCreated DESC");      
+      }
+      else
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID);
+      }
       return items.GetXml("Groups", "Group", true, command.Filters);
     }
 

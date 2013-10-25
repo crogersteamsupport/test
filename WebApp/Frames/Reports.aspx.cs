@@ -53,16 +53,16 @@ public partial class Frames_Reports : BaseFramePage
     Report report = (Report)Reports.GetReport(UserSession.LoginUser, id);
     if (report != null)
     {
-      ReportType repType = (ReportType)Enum.Parse(typeof(ReportType), Settings.UserDB.ReadInt("SelectedReportTypeID").ToString());
+      ReportTypeOld repType = (ReportTypeOld)Enum.Parse(typeof(ReportTypeOld), Settings.UserDB.ReadInt("SelectedReportTypeOldID").ToString());
 
       if (ExpandNode(repType, id))
       {
 
-        string url = string.IsNullOrEmpty(report.ExternalURL) ? "ReportResults.aspx" : report.ExternalURL;
+        string url = string.IsNullOrEmpty(report.ExternalURL) ? "../Report/ReportResults.aspx" : report.ExternalURL;
         frmReport.Attributes["src"] = url + "?ReportID=" + id.ToString();
 
         tbUser.Items[1].Enabled = UserSession.CurrentUser.IsSystemAdmin && report.OrganizationID != null && report.OrganizationID == UserSession.LoginUser.OrganizationID;
-        tbUser.Items[2].Enabled = tbUser.Items[1].Enabled && repType != ReportType.Favorite;
+        tbUser.Items[2].Enabled = tbUser.Items[1].Enabled && repType != ReportTypeOld.Favorite;
         tbUser.Items[3].Enabled = true;
         tbUser.Items[5].Enabled = true;
         tbUser.Items[6].Enabled = true;
@@ -88,7 +88,7 @@ public partial class Frames_Reports : BaseFramePage
     return reportID;
   }
 
-  private bool ExpandNode(ReportType type, int valNodeToSelect)
+  private bool ExpandNode(ReportTypeOld type, int valNodeToSelect)
   {
     RadTreeNode typeNode = reportTree.FindNodeByValue(((int)type).ToString());
 
@@ -101,13 +101,13 @@ public partial class Frames_Reports : BaseFramePage
       Reports _reports = new Reports(UserSession.LoginUser);
       switch (type)
       {
-        case ReportType.Standard:
+        case ReportTypeOld.Standard:
           _reports.LoadStandard();
           break;
-        case ReportType.Graphical:
+        case ReportTypeOld.Graphical:
           _reports.LoadGraphical(UserSession.CurrentUser.OrganizationID);
           break;
-        case ReportType.Favorite:
+        case ReportTypeOld.Favorite:
           _reports.LoadFavorites();
           break;
         default:

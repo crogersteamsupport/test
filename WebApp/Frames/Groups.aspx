@@ -67,10 +67,10 @@
               <telerik:RadTabStrip ID="tsMain" runat="server" SelectedIndex="0" OnClientTabSelected="TabSelected" ShowBaseLine="True" Width="100%" PerTabScrolling="True" ScrollChildren="True">
                 <Tabs>
                   <telerik:RadTab runat="server" Value="GroupInformation.aspx?GroupID=" Selected="True" Text="Group Information"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="Tickets.aspx?TicketStatusID=-3&GroupID=" Text="Open Tickets"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="Tickets.aspx?TicketStatusID=-4&GroupID=" Text="Closed Tickets"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="Tickets.aspx?TicketStatusID=-3&UserID=-2&GroupID=" Text="Unassigned Tickets"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="Tickets.aspx?GroupID=" Text="All Tickets"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_GroupID=" Text="Open Tickets"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_IsClosed=true&tf_GroupID=" Text="Closed Tickets"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_UserID=-2&tf_GroupID=" Text="Unassigned Tickets"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_GroupID=" Text="All Tickets"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="History.aspx?RefType=6&RefID=" Text="Group History"></telerik:RadTab>
                 </Tabs>
               </telerik:RadTabStrip>
@@ -119,9 +119,10 @@
         LoadContentPage();
       }
       
-      function TabSelected(sender, args)
-      {
-        top.privateServices.SetUserSetting('SelectedGroupTabIndex', args.get_tab().get_index());
+      function TabSelected(sender, args) {
+        var tab = args.get_tab();
+        top.privateServices.SetUserSetting('SelectedGroupTabIndex', tab.get_index());
+        top.Ts.System.logAction('Groups - Tab Selected (' + tab.get_text() + ')');
         LoadContentPage();
       }
       
@@ -178,12 +179,20 @@
         var value = button.get_value();
         if (value == 'NewGroup') {
           ShowDialog(top.GetGroupDialog());
+          top.Ts.System.logAction('Groups - New Group Dialog Opened');
         }
         else if (value == 'EditGroup') {
           ShowDialog(top.GetGroupDialog(GetSelectedGroupID()));
+          top.Ts.System.logAction('Groups - Edit Group Dialog Opened');
         }
         else if (value == 'DeleteGroup') {
-        radconfirm('Are you sure you would like to PERMANENTLEY delete this group?', function(arg) { if (arg) top.privateServices.DeleteGroup(GetSelectedGroupID(), RefreshGrid); }, 250, 125, null, 'Delete Group'); 
+        radconfirm('Are you sure you would like to PERMANENTLEY delete this group?', function (arg) {
+          if (arg) {
+            top.privateServices.DeleteGroup(GetSelectedGroupID(), RefreshGrid);
+            top.Ts.System.logAction('Groups - Group Deleted');
+
+          }
+        }, 250, 125, null, 'Delete Group'); 
 
         
         }

@@ -43,9 +43,9 @@ public partial class Frames_ContactInformation : BaseFramePage
     pnlPhone.Attributes.Add("class", isAdmin ? "" : "divAdmin");
     pnlAddress.Attributes.Add("class", isAdmin ? "" : "divAdmin");
 
-    if (btnNewAddress.Visible) btnNewAddress.OnClientClick = "ShowDialog(top.GetAddressDialog("+userID.ToString()+", 22)); return false;";
-    if (btnNewPhone.Visible) btnNewPhone.OnClientClick = "ShowDialog(top.GetPhoneDialog(" + userID.ToString() + ", 22)); return false;";
-    if (btnEditProperties.Visible) btnEditProperties.OnClientClick = "parent.ShowDialog(top.GetContactDialog(" + user.OrganizationID.ToString() + "," + userID.ToString() + ")); return false;";
+    if (btnNewAddress.Visible) btnNewAddress.OnClientClick = "ShowDialog(top.GetAddressDialog(" + userID.ToString() + ", 22)); top.Ts.System.logAction('Contact Info - Add Address'); return false;";
+    if (btnNewPhone.Visible) btnNewPhone.OnClientClick = "ShowDialog(top.GetPhoneDialog(" + userID.ToString() + ", 22)); top.Ts.System.logAction('Contact Info - Add Phone'); return false;";
+    if (btnEditProperties.Visible) btnEditProperties.OnClientClick = "parent.ShowDialog(top.GetContactDialog(" + user.OrganizationID.ToString() + "," + userID.ToString() + ")); top.Ts.System.logAction('Contact Info - Edit Properties'); return false;";
     LoadDetails(userID);
   }
 
@@ -74,6 +74,7 @@ public partial class Frames_ContactInformation : BaseFramePage
       table.Rows.Add(new string[] { "Email:", "<a href=\"mailto:" + user.Email + "\">" + user.Email + "</a>" });
       table.Rows.Add(new string[] { "Title:", user.Title });
       table.Rows.Add(new string[] { "Active:", user.IsActive.ToString() });
+      table.Rows.Add(new string[] { "Prevent this email address from creating or updating tickets:", user.BlockInboundEmail.ToString() });
 
       CustomFields fields = new CustomFields(UserSession.LoginUser);
 
@@ -142,7 +143,7 @@ public partial class Frames_ContactInformation : BaseFramePage
 
     foreach (PhoneNumber phoneNumber in phoneNumbers)
     {
-      table.Rows.Add(new string[] { phoneNumber.PhoneID.ToString(), phoneNumber.PhoneTypeName, phoneNumber.Number, phoneNumber.Extension == "" ? "" : " Ext: " + phoneNumber.Extension });
+      table.Rows.Add(new string[] { phoneNumber.PhoneID.ToString(), phoneNumber.PhoneTypeName, phoneNumber.FormattedNumber, phoneNumber.Extension == "" ? "" : " Ext: " + phoneNumber.Extension });
     }
 
     rptPhone.DataSource = table;

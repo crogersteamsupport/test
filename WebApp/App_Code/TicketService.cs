@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Server;
+using System;
 using System.Web;
 using System.Web.Services;
 using System.Web.Services.Protocols;
@@ -17,6 +18,8 @@ using dtSearch.Engine;
 using HtmlAgilityPack;
 using System.IO;
 using TidyNet;
+using ImageResizer;
+using System.Net;
 
 namespace TSWebServices
 {
@@ -45,10 +48,482 @@ namespace TSWebServices
     [WebMethod]
     public TicketRange GetTicketRange(int from, int to, TicketLoadFilter filter)
     {
-      TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
-      if (filter == null) filter = new TicketLoadFilter();
-      tickets.LoadByRange(from, to, filter);
-      return new TicketRange(from, to, tickets.GetFilterCount(filter), tickets.GetTicketsViewItemProxies(), filter);
+      try
+      {
+        TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+        if (filter == null) filter = new TicketLoadFilter();
+        tickets.LoadByRange(from, to, filter);
+        return new TicketRange(from, to, tickets.GetFilterCount(filter), tickets.GetTicketsViewItemProxies(), filter);
+      }
+      catch (Exception e)
+      {
+        ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), e, "Ticket Grid");
+        throw;
+      }
+    }
+
+    [WebMethod]
+    public int GetMyOpenReadCount()
+    {
+      return Tickets.GetMyOpenUnreadTicketCount(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+    }
+
+    [WebMethod]
+    public KnowledgeBaseCategoryTicketsProxy GetKnowledgeBaseCategoryTickets(
+      int? categoryID,
+      string categoryName,
+      string parentCategoryName,
+      int firstItemIndex,
+      int pageSize)
+    {
+      string categoryIdClause = "AND utv.KnowledgeBaseCategoryID IS NULL ";
+      string orderByClause = "utv.DateModified DESC";
+      if (categoryID != null)
+      {
+        categoryIdClause = "AND utv.KnowledgeBaseCategoryID = " + categoryID + " ";
+      }
+      else if (categoryName != null && categoryName != string.Empty)
+      {
+        categoryIdClause = string.Empty;
+        if (categoryName == "New Articles")
+        {
+          orderByClause = "utv.DateCreated DESC";
+        }
+      }
+
+      string query = @"
+        DECLARE @TempItems 
+        TABLE
+        ( 
+          ID        int IDENTITY,
+          TicketID  int 
+        )
+
+        INSERT INTO @TempItems 
+        (
+          TicketID
+        ) 
+        SELECT 
+          utv.TicketID  
+        FROM 
+          UserTicketsView utv 
+        WHERE 
+          utv.OrganizationID              = @OrganizationID 
+          AND utv.IsKnowledgeBase         = 1
+          AND utv.ViewerID                = @ViewerID " + 
+          categoryIdClause + @"
+        ORDER BY 
+          " + orderByClause + @"
+
+        SET @resultsCount = @@RowCount
+
+        SELECT
+          t.TicketID
+          , t.Name
+        FROM 
+          @TempItems ti 
+          JOIN dbo.Tickets t 
+            ON ti.TicketID = t.TicketID
+        WHERE 
+          ti.ID BETWEEN @FromIndex AND @toIndex
+        ORDER BY 
+          ti.ID
+      ";
+
+      SqlCommand command = new SqlCommand();
+      command.CommandText = query;
+      command.CommandType = CommandType.Text;
+
+      SqlParameter resultsCount = new SqlParameter("@resultsCount", SqlDbType.Int)
+      {
+        Direction = ParameterDirection.Output
+      };
+      command.Parameters.Add(resultsCount);
+      command.Parameters.AddWithValue("@FromIndex", firstItemIndex + 1);
+      command.Parameters.AddWithValue("@ToIndex", firstItemIndex + pageSize);
+      command.Parameters.AddWithValue("@OrganizationID", TSAuthentication.OrganizationID);
+      command.Parameters.AddWithValue("@ViewerID", TSAuthentication.GetLoginUser().UserID);
+
+      KnowledgeBaseCategoryTicketsProxy result = new KnowledgeBaseCategoryTicketsProxy();
+      result.CategoryID = categoryID;
+      result.CategoryName = categoryName;
+      result.ParentCategoryName = parentCategoryName;
+
+      DataTable table = new DataTable();
+      using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
+      {
+        command.Connection = connection;
+        connection.Open();
+        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+        {
+          try
+          {
+            adapter.Fill(table);
+            if (resultsCount.Value != DBNull.Value)
+            {
+              result.Count = (int)resultsCount.Value;
+            }
+          }
+          catch (Exception e)
+          {
+
+          }
+        }
+      }
+
+      List<KnowledgeBaseCategoryTicketsItemProxy> resultItems = new List<KnowledgeBaseCategoryTicketsItemProxy>();
+
+      foreach (DataRow row in table.Rows)
+      {
+        KnowledgeBaseCategoryTicketsItemProxy resultItem = new KnowledgeBaseCategoryTicketsItemProxy();
+
+        resultItem.ID = (int)row["TicketID"];
+        string fullLengthName = row["Name"].ToString();
+        if (pageSize == 5 && categoryID != null && fullLengthName.Length > 45)
+        {
+          resultItem.Name = fullLengthName.Substring(0, 45) + "...";
+        }
+        else
+        {
+          resultItem.Name = fullLengthName;
+        }
+
+        resultItems.Add(resultItem);
+      }
+
+      result.Items = resultItems.ToArray();
+      return result;
+    }
+
+    [WebMethod]
+    public KnowledgeBaseCategoryTicketsProxy GetNewKnowledgeBaseArticles(
+      int firstItemIndex,
+      int pageSize)
+    {
+      string query = @"
+        DECLARE @TempItems 
+        TABLE
+        ( 
+          ID        int IDENTITY,
+          TicketID  int 
+        )
+
+        INSERT INTO @TempItems 
+        (
+          TicketID
+        ) 
+        SELECT
+          TOP 20 
+          utv.TicketID  
+        FROM 
+          UserTicketsView utv 
+        WHERE 
+          utv.OrganizationID              = @OrganizationID 
+          AND utv.IsKnowledgeBase         = 1
+          AND utv.ViewerID                = @ViewerID
+        ORDER BY 
+          utv.DateCreated DESC
+
+        SET @resultsCount = @@RowCount
+
+        SELECT
+          t.TicketID
+          , t.Name
+          , t.DateCreated
+        FROM 
+          @TempItems ti 
+          JOIN dbo.Tickets t 
+            ON ti.TicketID = t.TicketID
+        WHERE 
+          ti.ID BETWEEN @FromIndex AND @toIndex
+        ORDER BY 
+          ti.ID
+      ";
+
+      SqlCommand command = new SqlCommand();
+      command.CommandText = query;
+      command.CommandType = CommandType.Text;
+
+      SqlParameter resultsCount = new SqlParameter("@resultsCount", SqlDbType.Int)
+      {
+        Direction = ParameterDirection.Output
+      };
+      command.Parameters.Add(resultsCount);
+      command.Parameters.AddWithValue("@FromIndex", firstItemIndex + 1);
+      command.Parameters.AddWithValue("@ToIndex", firstItemIndex + pageSize);
+      command.Parameters.AddWithValue("@OrganizationID", TSAuthentication.OrganizationID);
+      command.Parameters.AddWithValue("@ViewerID", TSAuthentication.GetLoginUser().UserID);
+
+      KnowledgeBaseCategoryTicketsProxy result = new KnowledgeBaseCategoryTicketsProxy();
+
+      DataTable table = new DataTable();
+      using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
+      {
+        command.Connection = connection;
+        connection.Open();
+        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+        {
+          try
+          {
+            adapter.Fill(table);
+            if (resultsCount.Value != DBNull.Value)
+            {
+              result.Count = (int)resultsCount.Value;
+            }
+          }
+          catch (Exception e)
+          {
+
+          }
+        }
+      }
+
+      List<KnowledgeBaseCategoryTicketsItemProxy> resultItems = new List<KnowledgeBaseCategoryTicketsItemProxy>();
+
+      foreach (DataRow row in table.Rows)
+      {
+        KnowledgeBaseCategoryTicketsItemProxy resultItem = new KnowledgeBaseCategoryTicketsItemProxy();
+
+        resultItem.ID = (int)row["TicketID"];
+
+        string fullLengthName = row["Name"].ToString();
+        if (pageSize == 5 && fullLengthName.Length > 37)
+        {
+          resultItem.Name = fullLengthName.Substring(0, 37) + "...";
+        }
+        else
+        {
+          resultItem.Name = fullLengthName;
+        }
+
+        resultItem.DateCreated = row["DateCreated"].ToString();
+
+        resultItems.Add(resultItem);
+      }
+
+      result.Items = resultItems.ToArray();
+      return result;
+    }
+
+    [WebMethod]
+    public KnowledgeBaseCategoryTicketsProxy GetRecentlyModifiedKnowledgeBaseArticles(
+      int firstItemIndex,
+      int pageSize)
+    {
+      string query = @"
+        DECLARE @TempItems 
+        TABLE
+        ( 
+          ID        int IDENTITY,
+          TicketID  int 
+        )
+
+        INSERT INTO @TempItems 
+        (
+          TicketID
+        ) 
+        SELECT
+          TOP 20 
+          utv.TicketID  
+        FROM 
+          UserTicketsView utv 
+        WHERE 
+          utv.OrganizationID              = @OrganizationID 
+          AND utv.IsKnowledgeBase         = 1
+          AND utv.ViewerID                = @ViewerID
+        ORDER BY 
+          utv.DateModified DESC
+
+        SET @resultsCount = @@RowCount
+
+        SELECT
+          t.TicketID
+          , t.Name
+          , t.DateModified
+        FROM 
+          @TempItems ti 
+          JOIN dbo.Tickets t 
+            ON ti.TicketID = t.TicketID
+        WHERE 
+          ti.ID BETWEEN @FromIndex AND @toIndex
+        ORDER BY 
+          ti.ID
+      ";
+
+      SqlCommand command = new SqlCommand();
+      command.CommandText = query;
+      command.CommandType = CommandType.Text;
+
+      SqlParameter resultsCount = new SqlParameter("@resultsCount", SqlDbType.Int)
+      {
+        Direction = ParameterDirection.Output
+      };
+      command.Parameters.Add(resultsCount);
+      command.Parameters.AddWithValue("@FromIndex", firstItemIndex + 1);
+      command.Parameters.AddWithValue("@ToIndex", firstItemIndex + pageSize);
+      command.Parameters.AddWithValue("@OrganizationID", TSAuthentication.OrganizationID);
+      command.Parameters.AddWithValue("@ViewerID", TSAuthentication.GetLoginUser().UserID);
+
+      KnowledgeBaseCategoryTicketsProxy result = new KnowledgeBaseCategoryTicketsProxy();
+
+      DataTable table = new DataTable();
+      using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
+      {
+        command.Connection = connection;
+        connection.Open();
+        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+        {
+          try
+          {
+            adapter.Fill(table);
+            if (resultsCount.Value != DBNull.Value)
+            {
+              result.Count = (int)resultsCount.Value;
+            }
+          }
+          catch (Exception e)
+          {
+
+          }
+        }
+      }
+
+      List<KnowledgeBaseCategoryTicketsItemProxy> resultItems = new List<KnowledgeBaseCategoryTicketsItemProxy>();
+
+      foreach (DataRow row in table.Rows)
+      {
+        KnowledgeBaseCategoryTicketsItemProxy resultItem = new KnowledgeBaseCategoryTicketsItemProxy();
+
+        resultItem.ID = (int)row["TicketID"];
+
+        string fullLengthName = row["Name"].ToString();
+        if (pageSize == 5 && fullLengthName.Length > 37)
+        {
+          resultItem.Name = fullLengthName.Substring(0, 37) + "...";
+        }
+        else
+        {
+          resultItem.Name = fullLengthName;
+        }
+
+        resultItem.DateModified = row["DateModified"].ToString();
+
+        resultItems.Add(resultItem);
+      }
+
+      result.Items = resultItems.ToArray();
+      return result;
+    }
+
+    [WebMethod]
+    public KnowledgeBaseCategoryTicketsProxy GetKnowledgeBaseSearchResults(string searchTerm, int firstItemIndex, int pageSize)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      List<SqlDataRecord> dtSearchTicketsResultsList = TicketsView.GetSearchResultsList(searchTerm, loginUser);
+
+      KnowledgeBaseCategoryTicketsProxy result = new KnowledgeBaseCategoryTicketsProxy();
+      result.CategoryName = "Search results";
+      List<KnowledgeBaseCategoryTicketsItemProxy> resultItems = new List<KnowledgeBaseCategoryTicketsItemProxy>();
+      if (dtSearchTicketsResultsList.Count > 0)
+      {
+        SqlCommand command = new SqlCommand();
+        SqlParameter dtSearchTicketsResultsTable = new SqlParameter("@dtSearchTicketsResultsTable", SqlDbType.Structured);
+        dtSearchTicketsResultsTable.TypeName = "dtSearch_results_tbltype";
+        dtSearchTicketsResultsTable.Value = dtSearchTicketsResultsList;
+        command.Parameters.Add(dtSearchTicketsResultsTable);
+
+        string query = @"
+          DECLARE @TempItems 
+          TABLE
+          ( 
+            ID            int IDENTITY, 
+            TicketID      int 
+          )
+
+          INSERT INTO @TempItems 
+          (
+            TicketID
+          ) 
+          SELECT
+            utv.TicketID
+          FROM
+            dbo.UserTicketsView utv
+            JOIN @dtSearchTicketsResultsTable dtrt
+              ON utv.TicketID = dtrt.recordID
+          WHERE
+            utv.OrganizationID = @OrganizationID
+            AND utv.IsKnowledgeBase = 1
+            AND utv.ViewerID = @ViewerID
+          ORDER BY
+            utv.DateModified DESC
+        
+          SET @resultsCount = @@RowCount
+
+          SELECT
+            t.TicketID
+            , t.Name
+          FROM 
+            @TempItems ti 
+            LEFT JOIN dbo.Tickets t 
+              ON ti.TicketID = t.TicketID
+          WHERE 
+            ti.ID BETWEEN @FromIndex AND @toIndex
+          ORDER BY 
+            ti.ID
+          ";
+
+        command.CommandText = query;
+        command.CommandType = CommandType.Text;
+
+        SqlParameter resultsCount = new SqlParameter("@resultsCount", SqlDbType.Int)
+        {
+          Direction = ParameterDirection.Output
+        };
+        command.Parameters.Add(resultsCount);
+
+        command.Parameters.AddWithValue("@FromIndex", firstItemIndex + 1);
+        command.Parameters.AddWithValue("@ToIndex", firstItemIndex + pageSize);
+        command.Parameters.AddWithValue("@OrganizationID", TSAuthentication.OrganizationID);
+        command.Parameters.AddWithValue("@ViewerID", loginUser.UserID);
+
+        DataTable table = new DataTable();
+        using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+        {
+          command.Connection = connection;
+          connection.Open();
+          using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+          {
+            try
+            {
+              adapter.Fill(table);
+              if (resultsCount.Value != DBNull.Value)
+              {
+                result.Count = (int)resultsCount.Value;
+              }
+            }
+            catch (Exception e)
+            {
+
+            }
+          }
+        }
+
+        foreach (DataRow row in table.Rows)
+        {
+          KnowledgeBaseCategoryTicketsItemProxy resultItem = new KnowledgeBaseCategoryTicketsItemProxy();
+
+          resultItem.ID = (int)row["TicketID"];
+
+          string fullLengthName = row["Name"].ToString();
+          resultItem.Name = fullLengthName;
+
+          resultItems.Add(resultItem);
+        }
+      }
+
+      result.Items = resultItems.ToArray();
+
+      return result;
     }
 
     [WebMethod]
@@ -179,7 +654,7 @@ namespace TSWebServices
     public object[] GetKBTicketAndActions(int ticketID)
     {
       TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
-      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+      //if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
       ActionsView view = new ActionsView(TSAuthentication.GetLoginUser());
       view.LoadKBByTicketID(ticketID);
 
@@ -256,14 +731,149 @@ namespace TSWebServices
       return null;
     }
 
+    [WebMethod]
+    public string[] GetSearchPortalResultsTest(string searchTerm, int organizationID, int customerID)
+    {
+      if (TSAuthentication.OrganizationID != 1078) return null;
+      LoginUser loginUser = new LoginUser(TSAuthentication.GetLoginUser().ConnectionString, TSAuthentication.UserID, organizationID, null);
+      SearchResults results = GetSearchPortalResults(searchTerm, loginUser,  organizationID, customerID);
+
+      SearchReportJob report = results.NewSearchReportJob();
+      report.SelectAll();
+      report.Flags = ReportFlags.dtsReportStoreInResults | ReportFlags.dtsReportWholeFile | ReportFlags.dtsReportGetFromCache | ReportFlags.dtsReportIncludeAll;
+      report.OutputFormat = OutputFormats.itUnformattedHTML;
+      report.MaxContextBlocks = 3;
+      report.MaxWordsToRead = 50000;
+      report.OutputStringMaxSize = 50000;
+      //report.WordsOfContext = 10;
+      report.BeforeHit = "123456789";// "<strong style=\"color:red;\">";
+      report.AfterHit = "987654321"; //"</strong>";
+      report.OutputToString = true;
+      report.Execute();
+      report.ContextSeparator = "<br/><br/>";
+      List<string> result = new List<string>();
 
 
+      for (int i = 0; i < results.Count; i++)
+      {
+        results.GetNthDoc(i);
+
+        using (FileConverter fc = new FileConverter())
+        {
+
+          // This sets up FileConverter with the input file, index location, and hits
+          fc.SetInputItem(results, 0);
+
+          fc.OutputToString = true;
+          fc.OutputStringMaxSize = 2000000;
+          fc.OutputFormat = OutputFormats.itHTML;
+
+          //String 	scriptName = Request.ServerVariables.Get ("SCRIPT_NAME");
+          //String virtPath = MakeVirtual (res.get_DocDetailItem("_filename"));
+          //String HitNavSrc = GetVirtualFolder(scriptName) + "HitNav.js";
+          //String HitNavLink =  "\r\n<script language=JavaScript src=\"" + HitNavSrc + "\"></script>\r\n";
+          fc.Header = "<A NAME=hit0></A>"
+            + "<TABLE border=0>"
+            + "<TR><TD bgcolor=#003399 color=#ffffff>"
+            + "<font face=verdana color=#ffffff size=2></TD></TR>"
+            + "<TR><TD bgcolor=#eeeeee color=#000000>"
+            + "<font face=verdana color=#003399 size=2>"
+            + "<B>" + results.get_DocDetailItem("_shortName") + "   </B><BR>"
+            + "<font face=verdana color=#000000 size=1>"
+            + results.DocHitCount + " Hits."
+            + "  <B>Location: </B>  <B>Date: </B>"
+            + results.get_DocDetailItem("_date") + "<BR>"
+            + "</FONT>"
+            + "</TD></TR><TR><TD bgcolor=#003399 color=#ffffff>"
+            + "<font face=verdana color=#ffffff size=2></TD></TR></TABLE>";
+
+
+          // Set up additional settings for the file converter
+          fc.BeforeHit = "<span style=\"background-color: #FF0000\">";
+          fc.AfterHit = "</span>";
+
+          // If the index was built with cached text, get the document from the cache
+          fc.Flags = (fc.Flags | ConvertFlags.dtsConvertGetFromCache);
+
+          // Execute the file conversion
+          fc.Execute();
+
+          StringBuilder builder = new StringBuilder();
+          //builder.Append("<h1>" + results.CurrentItem.DisplayName + "</h1>");
+          //builder.Append("<p class=\"ui-helper-hiddenx\">" + results.CurrentItem.Synopsis + "</p>");
+
+          JobErrorInfo errors = fc.Errors;
+          if ((errors.Count > 0) || (fc.OutputString.Length < 2))
+          {
+            builder.AppendLine("<html><h1>Error converting document to HTML</h1>");
+            builder.AppendLine("<p>" + Server.HtmlEncode(fc.InputFile));
+            if (errors.Count > 0)
+            {
+              builder.AppendLine("<p>");
+              builder.AppendLine(Server.HtmlEncode(errors.Message(0)));
+            }
+            builder.AppendLine("<p>Note: To prevent conversion errors when highlighting hits " +
+              "use caching when building the index.  For more information, see " +
+              "<a href=\"http://www.dtsearch.com/index7.html\">http://www.dtsearch.com/index7.html</a> " +
+              "and the dtsIndexCacheOriginalFiles flag in the dtSearch Engine API documentation");
+
+          }
+          else
+          {
+            // Output the result of the file conversion
+            builder.AppendLine(fc.OutputString);
+          }
+          result.Add(builder.ToString());
+        }
+
+
+
+      }
+      return result.ToArray();
+
+    }
+
+    private static SearchResults GetSearchPortalResults(string searchTerm, LoginUser loginUser, int organizationID, int customerID)
+    {
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+
+      using (SearchJob job = new SearchJob())
+      {
+        searchTerm = searchTerm.Trim();
+        job.Request = searchTerm;
+        job.FieldWeights = "TicketNumber: 5000, Name: 1000";
+
+        Organization customer = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), customerID);
+        job.BooleanConditions = string.Format("(OrganizationID::{0}) AND (IsVisibleOnPortal::True) AND ((IsKnowledgeBase::True) OR (Customers::{1}))", organizationID.ToString(), customer.Name);
+        job.MaxFilesToRetrieve = 25;
+        job.AutoStopLimit = 100000;
+        job.TimeoutSeconds = 10;
+        job.SearchFlags =
+          SearchFlags.dtsSearchStemming |
+          SearchFlags.dtsSearchDelayDocInfo;
+
+        int num = 0;
+        if (!int.TryParse(searchTerm, out num))
+        {
+          job.Fuzziness = 1;
+          job.Request = job.Request + "*";
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchSelectMostRecent;
+          //job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchFuzzy | SearchFlags.dtsSearchSelectMostRecent;
+        }
+
+        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+        job.IndexesToSearch.Add(DataUtils.GetTicketIndexPath(loginUser));
+        job.Execute();
+        return job.Results;
+      }
+    }
     [WebMethod]
     public string[] SearchTicketsTest(string searchTerm, int organizationID)
     {
       if (TSAuthentication.OrganizationID != 1078) return null;
-      LoginUser loginUser = new LoginUser(TSAuthentication.GetLoginUser().ConnectionString, -1, organizationID, null);
-      SearchResults results = TicketsView.GetSearchTicketResults(searchTerm, loginUser, null);
+      LoginUser loginUser = new LoginUser(TSAuthentication.GetLoginUser().ConnectionString, TSAuthentication.UserID, organizationID, null);
+      SearchResults results = TicketsView.GetQuickSearchTicketResults(searchTerm, loginUser, null);
 
       SearchReportJob report = results.NewSearchReportJob();
       report.SelectAll();
@@ -435,16 +1045,31 @@ namespace TSWebServices
     public ActionInfo UpdateAction(ActionProxy proxy)
     {
       TeamSupport.Data.Action action = Actions.GetActionByID(TSAuthentication.GetLoginUser(), proxy.ActionID);
+      User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
 
       if (action == null)
       { 
         action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
         action.TicketID = proxy.TicketID;
         action.CreatorID = TSAuthentication.UserID;
+        if (!string.IsNullOrWhiteSpace(user.Signature))
+        {
+          if (!action.Description.Contains(user.Signature))
+            action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+        }
+        else
+        {
+          action.Description = proxy.Description;
+        }
+      }
+      else
+      {
+        action.Description = proxy.Description;
       }
       
       if (!CanEditAction(action)) return null;
-      action.Description = proxy.Description;
+
+
       action.ActionTypeID = proxy.ActionTypeID;
       action.DateStarted = proxy.DateStarted;
       action.TimeSpent = proxy.TimeSpent;
@@ -486,7 +1111,7 @@ namespace TSWebServices
       if (name.Trim() == "") name = "[Untitled Ticket]";
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (!CanEditTicket(ticket)) return name;
-      ticket.Name = HttpUtility.HtmlEncode(name);
+      ticket.Name = name;// HttpUtility.HtmlEncode(name);
       ticket.Collection.Save();
       return ticket.Name;
     }
@@ -494,6 +1119,7 @@ namespace TSWebServices
     [WebMethod]
     public object[] SetTicketType(int ticketID, int ticketTypeID)
     {
+      TransferCustomValues(ticketID, ticketTypeID);
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (ticketTypeID == ticket.TicketTypeID) return null;
       if (!CanEditTicket(ticket)) return null;
@@ -553,7 +1179,20 @@ namespace TSWebServices
       }
       return null;
     }
-    
+
+    [WebMethod]
+    public KnowledgeBaseCategoryProxy SetTicketKnowledgeBaseCategory(int ticketID, int? categoryID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+      ticket.KnowledgeBaseCategoryID = categoryID;
+      ticket.Collection.Save();
+      if (categoryID != null)
+      {
+        return KnowledgeBaseCategories.GetKnowledgeBaseCategory(ticket.Collection.LoginUser, (int)categoryID).GetProxy();
+      }
+      return null;
+    }
 
     [WebMethod]
     public UserInfo SetTicketUser(int ticketID, int? userID)
@@ -561,8 +1200,8 @@ namespace TSWebServices
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (!CanEditTicket(ticket)) return null;
 
-      UsersViewItem user = userID != null ? UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)userID) : null; 
-      if (userID == ticket.UserID) return null;
+      UsersViewItem user = userID != null ? UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)userID) : null;
+      //if (userID == ticket.UserID) return new UserInfo(user);
       if (user != null && user.OrganizationID != TSAuthentication.OrganizationID) return null;
       ticket.UserID = userID;
       ticket.Collection.Save();
@@ -703,7 +1342,8 @@ namespace TSWebServices
     public bool SetActionKb(int actionID, bool isKb)
     {
       TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
-      if (CanEditAction(action))
+      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      if (CanEditAction(action) || user.ChangeKBVisibility)
       {
         action.IsKnowledgeBase = isKb;
         action.Collection.Save();
@@ -715,12 +1355,52 @@ namespace TSWebServices
     public bool SetActionPortal(int actionID, bool isVisibleOnPortal)
     {
       TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
-      if (CanEditAction(action))
+      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      if (CanEditAction(action) || user.ChangeTicketVisibility)
       {
         action.IsVisibleOnPortal = isVisibleOnPortal;
         action.Collection.Save();
       }
       return action.IsVisibleOnPortal;
+    }
+
+    [WebMethod]
+    public bool SetJiraIssueKey(int ticketID, string jiraIssueKey)
+    {
+      bool result = false;
+
+      TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
+      ticketLinkToJira.LoadByTicketID(ticketID);
+      if (ticketLinkToJira.Count == 0)
+      {
+        TicketLinkToJiraItem ticketLinkToJiraItem = ticketLinkToJira.AddNewTicketLinkToJiraItem();
+        ticketLinkToJiraItem.TicketID = ticketID;
+        ticketLinkToJiraItem.JiraKey = jiraIssueKey;
+        ticketLinkToJiraItem.SyncWithJira = true;
+        ticketLinkToJiraItem.Collection.Save();
+        result = true;
+      }
+
+      return result;
+    }
+
+    [WebMethod]
+    public bool SetSyncWithJira(int ticketID, bool syncWithJira)
+    {
+      bool result = false;
+
+      TicketLinkToJira ticketLinkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
+      ticketLinkToJira.LoadByTicketID(ticketID);
+      if (ticketLinkToJira.Count == 0)
+      {
+        TicketLinkToJiraItem ticketLinkToJiraItem = ticketLinkToJira.AddNewTicketLinkToJiraItem();
+        ticketLinkToJiraItem.TicketID = ticketID;
+        ticketLinkToJiraItem.SyncWithJira = true;
+        ticketLinkToJiraItem.Collection.Save();
+        result = true;
+      }
+
+      return result;
     }
 
     
@@ -758,14 +1438,28 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void RequestUpdate(int ticketID)
+    public ActionInfo RequestUpdate(int ticketID)
     {
       TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
-      if (ticket == null) return;
+      if (ticket == null) return null;
       EmailPosts.SendTicketUpdateRequest(TSAuthentication.GetLoginUser(), ticketID);
+      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      TeamSupport.Data.Action action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
+      action.ActionTypeID = null;
+      action.Name = "Update Requested";
+      action.ActionSource = "UpdateRequest";
+      action.SystemActionTypeID = SystemActionType.UpdateRequest;
+      action.Description = String.Format("<p>{0} requested an update for this ticket.</p>", user.FirstName);
+      action.IsVisibleOnPortal = false;
+      action.IsKnowledgeBase = false;
+      action.TicketID = ticket.TicketID;
+      action.Collection.Save();
 
-      string description = String.Format("{0} requested an update from {1} for {2}", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, ticket.UserName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), ticketID));
+
+      string description = String.Format("{0} requested an update from {1} for {2}", user.FirstLastName, ticket.UserName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), ticketID));
       ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+
+      return GetActionInfo(action.ActionID);
     }
 
     [WebMethod]
@@ -898,6 +1592,17 @@ namespace TSWebServices
       if (ticket == null) return null;
       return ticket.GetTicketView().GetProxy();
     }
+
+    [WebMethod]
+    public void AdminProcessEmails(int ticketID)
+    {
+      if (TSAuthentication.OrganizationID != 1078) return;
+      SqlCommand command = new SqlCommand();
+      command.CommandText = "UPDATE EmailPosts SET HoldTime = 0 WHERE Param1=@Param1";
+      command.Parameters.AddWithValue("@Param1", ticketID);
+      SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), command);
+    }
+
 
     [WebMethod]
     public TicketsViewItemProxy AdminGetTicketByID(int ticketID)
@@ -1114,11 +1819,20 @@ namespace TSWebServices
       TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
       if (ticket == null) return null;
       if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+
+      User user = Users.GetUser(ticket.Collection.LoginUser, TSAuthentication.UserID);
+      if (!ticket.UserHasRights(user)) return null;
+
       MarkTicketAsRead(ticket.TicketID);
 
       TicketInfo info = new TicketInfo();
       info.Ticket = ticket.GetProxy();
 
+      if (info.Ticket.Name.ToLower() == "<no subject>")
+          info.Ticket.Name = "";
+
+      if (info.Ticket.CategoryName != null)
+        info.Ticket.CategoryDisplayString = ForumCategories.GetCategoryDisplayString(TSAuthentication.GetLoginUser(), (int)info.Ticket.ForumCategory);
       info.Customers = GetTicketCustomers(ticket.TicketID);
       info.Related = GetRelatedTickets(ticket.TicketID);
       info.Tags = GetTicketTags(ticket.TicketID);
@@ -1131,7 +1845,7 @@ namespace TSWebServices
       info.Reminders = reminders.GetReminderProxies();
 
       Assets assets = new Assets(ticket.Collection.LoginUser);
-      //assets.LoadByTicketID(ticket.TicketID);
+      assets.LoadByTicketID(ticket.TicketID);
       info.Assets = assets.GetAssetProxies();
 
       Actions actions = new Actions(ticket.Collection.LoginUser);
@@ -1147,6 +1861,7 @@ namespace TSWebServices
       }
 
       info.Actions = actionInfos.ToArray();
+      info.LinkToJira = GetLinkToJira(ticket.TicketID);
 
       return info;
     }
@@ -1225,7 +1940,10 @@ namespace TSWebServices
         link.RefID = ticketID;
         link.TagID = tag.TagID;
         links.Save();
+
+        ticket.Collection.AddTags(tag, ticketID);
       }
+
       return GetTicketTags(ticketID);
     }
 
@@ -1236,6 +1954,7 @@ namespace TSWebServices
       if (!CanEditTicket(ticket)) return null;
       TagLink link = TagLinks.GetTagLink(TSAuthentication.GetLoginUser(), ReferenceType.Tickets, ticketID, tagID);
       Tag tag = Tags.GetTag(TSAuthentication.GetLoginUser(), tagID);
+      ticket.Collection.RemoveTags(tag, ticketID);
       int count = tag.GetLinkCount();
       link.Delete();
       link.Collection.Save();
@@ -1287,6 +2006,12 @@ namespace TSWebServices
           if (ticket1.ParentID == ticket2.TicketID) return null;
           throw new Exception("Ticket " + ticket2.TicketNumber + " is already a child of another ticket.");
         }
+
+        if (ticket1.ParentID == ticket2.TicketID)
+        {
+            throw new Exception("My Error");
+        }
+
         TicketRelationship item = TicketRelationships.GetTicketRelationship(ticket1.Collection.LoginUser, ticketID1, ticketID2);
         if (item != null)
         {
@@ -1300,7 +2025,7 @@ namespace TSWebServices
       else // child
       {
         if (ticket1.ParentID != null && ticket1.ParentID == ticket2.TicketID) return null;
-
+        if (ticket2.ParentID == ticket1.TicketID) return null;
         TicketRelationship item = TicketRelationships.GetTicketRelationship(ticket1.Collection.LoginUser, ticketID1, ticketID2);
         if (item != null)
         {
@@ -1468,6 +2193,8 @@ namespace TSWebServices
 
       ContactsView contacts = new ContactsView(TSAuthentication.GetLoginUser());
       contacts.LoadByTicketID(ticketID);
+
+
       foreach (ContactsViewItem contact in contacts)
       {
         TicketCustomer customer = new TicketCustomer();
@@ -1568,6 +2295,7 @@ namespace TSWebServices
       ticket.SolvedVersionID = info.ResolvedID < 0 ? null : (int?) info.ResolvedID;
       ticket.ProductID = info.ProductID < 0 ? null : (int?) info.ProductID;
       ticket.IsKnowledgeBase = info.IsKnowledgebase;
+      ticket.KnowledgeBaseCategoryID = info.KnowledgeBaseCategoryID < 0 ? null : (int?)info.KnowledgeBaseCategoryID;
       ticket.IsVisibleOnPortal = info.IsVisibleOnPortal;
       ticket.ParentID = info.ParentTicketID;
       ticket.Collection.Save();
@@ -1580,6 +2308,13 @@ namespace TSWebServices
       action.SystemActionTypeID = SystemActionType.Description;
       action.ActionSource = ticket.TicketSource;
       action.Description = info.Description;
+
+      User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+      if (user.Signature != "")
+      {
+          action.Description = action.Description + "<br/><br/>" + user.Signature;
+      }
+
       action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
       action.IsKnowledgeBase = ticket.IsKnowledgeBase;
       action.TicketID = ticket.TicketID;
@@ -1696,7 +2431,7 @@ namespace TSWebServices
       }
       reminders.Save();
 
-      User user = Users.GetUser(ticket.Collection.LoginUser, TSAuthentication.UserID);
+      //User user = Users.GetUser(ticket.Collection.LoginUser, TSAuthentication.UserID);
       if (user.SubscribeToNewTickets) Subscriptions.AddSubscription(ticket.Collection.LoginUser, TSAuthentication.UserID, ReferenceType.Tickets, ticket.TicketID);
 
 
@@ -1716,7 +2451,202 @@ namespace TSWebServices
         return wcv.GetTicketWaterCoolerCount(ticketID);
     }
 
+    private void TransferCustomValues(int ticketID, int ticketTypeID)
+    {
+        Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+        CustomValueProxy[] oldValues = GetCustomValues(ticketID);
+        DateTime dateValue;
+        CustomValues values = new CustomValues(ticket.Collection.LoginUser);
+        values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticketTypeID, ticketID);
+        CustomValueProxy[] newValues = values.GetCustomValueProxies();
+
+        foreach (CustomValueProxy newCustVal in newValues)
+        {
+            foreach (CustomValueProxy oldCustVal in oldValues)
+            {
+                if(newCustVal.Name == oldCustVal.Name && newCustVal.FieldType == oldCustVal.FieldType)
+                {
+                    CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), newCustVal.CustomFieldID, ticketID);
+                    if (oldCustVal.Value == null)
+                    {
+                        customValue.Value = "";
+                        customValue.Collection.Save();
+                    }
+
+                    if (customValue.FieldType == CustomFieldType.DateTime)
+                    {
+                        if (oldCustVal.Value != null)
+                        {
+                            if (DateTime.TryParse(oldCustVal.Value.ToString(), out dateValue))
+                                customValue.Value = dateValue.ToString();
+                        }
+                    }
+                    else
+                    {
+                        customValue.Value = oldCustVal.Value.ToString();
+                    }
+
+                    customValue.Collection.Save();
+                }
+            }
+
+        }
+    }
+
+    [WebMethod]
+    public string SavePasteImage(string image, string source)
+    {
+      try
+      {
+
+        String temppath = HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
+        string path = AttachmentPath.GetPath(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, AttachmentPath.Folder.Images);
+        string filename = DateTime.UtcNow.Ticks.ToString();
+
+        if (source.StartsWith("data:image/png;base64,"))
+        {
+            string[] tokens = source.Split(',');
+            byte[] imgbytes = Convert.FromBase64String(tokens[1]);
+            File.WriteAllBytes(temppath + "temp_" + filename + ".png", imgbytes);
+        }
+        else if (image != "")
+        {
+            using (WebClient Client = new WebClient())
+            {
+                image = image.Replace(".ashx", "");
+                Client.DownloadFile(image, temppath + "temp_" + filename + ".png");
+            }
+        }
+
+        if (image != "")
+        {
+            ImageBuilder.Current.Build(temppath + "temp_" + filename + ".png", path + '\\' + filename + ".png", new ResizeSettings(image));
+            File.Delete(temppath + "temp_" + filename + ".png");
+
+            return TSAuthentication.OrganizationID + "/images/" + filename + ".png";
+        }
+      }
+      catch (Exception ex)
+      {
+        ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Save Paste Image", image);
+        
+        
+      }
+
+
+        return "";
+    }
+
+
+    [WebMethod]
+    public void MergeTickets(int winningTicketID, int losingTicketID)
+    {
+        Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), winningTicketID);
+
+        MergeContacts(losingTicketID, winningTicketID, ticket);
+        MergeTags(losingTicketID, winningTicketID, ticket);
+        MergeSubscribers(losingTicketID, winningTicketID, ticket);
+        MergeQueres(losingTicketID, winningTicketID, ticket);
+
+        ticket.Collection.MergeUpdateReminders(losingTicketID, winningTicketID);
+        ticket.Collection.MergeUpdateAssets(losingTicketID, winningTicketID);
+        ticket.Collection.MergeUpdateActions(losingTicketID, winningTicketID);
+        ticket.Collection.MergeAttachments(losingTicketID, winningTicketID);
+        ticket.Collection.MergeUpdateRelationships(losingTicketID, winningTicketID);
+        ticket.Collection.DeleteFromDB(losingTicketID);
+        return;
+    }
+
+    public void MergeContacts(int losingTicketID, int winningTicketID, Ticket ticket)
+    {
+        List<TicketCustomer> customers = new List<TicketCustomer>();
+
+        ContactsView contacts = new ContactsView(TSAuthentication.GetLoginUser());
+        contacts.LoadByTicketID(losingTicketID);
+
+        foreach (ContactsViewItem contact in contacts)
+        {
+            ticket.Collection.AddContact(contact.UserID, winningTicketID);
+            ticket.Collection.RemoveContact(contact.UserID, losingTicketID);
+        }
+
+        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+        organizations.LoadByNotContactTicketID(losingTicketID);
+        foreach (Organization organization in organizations)
+        {
+            ticket.Collection.AddOrganization(organization.OrganizationID, winningTicketID);
+            ticket.Collection.RemoveOrganization(organization.OrganizationID, losingTicketID);
+        }
+
+        Ticket oldticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
+        string description = "Merged '" + oldticket.TicketNumber + "' Customers";
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, winningTicketID, description);
+        return;
+    }
+
+    public void MergeTags(int losingTicketID, int winningTicketID, Ticket ticket)
+    {
+        Tags tags = new Tags(TSAuthentication.GetLoginUser());
+        tags.LoadByReference(ReferenceType.Tickets, losingTicketID);
+
+        foreach (Tag tag in tags)
+        {
+            RemoveTag(losingTicketID, tag.TagID);
+            AddTag(winningTicketID, tag.Value);
+        }
+    }
+
+    public void MergeSubscribers(int losingTicketID, int winningTicketID, Ticket ticket)
+    {
+        UsersView users = new UsersView(TSAuthentication.GetLoginUser());
+        users.LoadBySubscription(losingTicketID, ReferenceType.Tickets);
+        List<UserInfo> result = new List<UserInfo>();
+        foreach (UsersViewItem user in users)
+        {
+            ticket.Collection.AddSubscription(user.UserID, winningTicketID);
+            ticket.Collection.RemoveSubscription(user.UserID, losingTicketID);
+        }
+        Ticket losingticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
+        string description = "Merged '" + losingticket.TicketNumber + "' Subscribers";
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, winningTicketID, description);
+
+    }
+
+    public void MergeQueres(int losingTicketID, int winningTicketID, Ticket ticket)
+    {
+        UsersView users = new UsersView(ticket.Collection.LoginUser);
+        users.LoadByTicketQueue(losingTicketID);
+        List<UserInfo> result = new List<UserInfo>();
+
+        foreach (UsersViewItem user in users)
+        {
+            TicketQueue.Dequeue(TSAuthentication.GetLoginUser(), losingTicketID, user.UserID);
+            TicketQueue.Enqueue(TSAuthentication.GetLoginUser(), winningTicketID, user.UserID);
+        }
+        Ticket losingticket = (Ticket)Tickets.GetTicket(TSAuthentication.GetLoginUser(), losingTicketID);
+        string description = "Merged '" + ticket.TicketNumber + "' Queuers";
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, winningTicketID, description);
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, winningTicketID, description);
+    }      
+
+    private TicketLinkToJiraItemProxy GetLinkToJira(int ticketID)
+    {
+      TicketLinkToJiraItemProxy result = null;
+      TicketLinkToJira linkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
+      linkToJira.LoadByTicketID(ticketID);
+      if (linkToJira.Count > 0)
+      {
+        result = linkToJira[0].GetProxy();
+      }
+      return result;
+    }
+
+    
   }
+
+
 
   [DataContract]
   public class TicketRange
@@ -1783,6 +2713,7 @@ namespace TSWebServices
     [DataMember] public UserInfo[] Queuers { get; set; }
     [DataMember] public ReminderProxy[] Reminders { get; set; }
     [DataMember] public AssetProxy[] Assets { get; set; }
+    [DataMember] public TicketLinkToJiraItemProxy LinkToJira { get; set; }
   }
 
   [DataContract(Namespace = "http://teamsupport.com/")]
@@ -1800,6 +2731,7 @@ namespace TSWebServices
     [DataMember] public int ResolvedID { get; set; }
     [DataMember] public bool IsVisibleOnPortal { get; set; }
     [DataMember] public bool IsKnowledgebase { get; set; }
+    [DataMember] public int? KnowledgeBaseCategoryID { get; set; }
     [DataMember] public string Description { get; set; }
     [DataMember] public DateTime? DateStarted { get; set; }
     [DataMember] public int? TimeSpent { get; set; }

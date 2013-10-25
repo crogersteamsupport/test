@@ -16,6 +16,46 @@ using System.Text;
 using System.Runtime.Serialization;
 using dtSearch.Engine;
 
+
+
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*************    THIS FILE IS OLD   *****************/
+/*************** DO NOT USE  FOR NEW CODE ************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+/*****************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 namespace TeamSupport.Services
 {
   [ScriptService]
@@ -340,14 +380,14 @@ namespace TeamSupport.Services
     public IEnumerable GetReportNodes(RadTreeNodeData node, IDictionary context) {
         Reports _reports = new Reports(UserSession.LoginUser);
 
-        switch ((ReportType)Enum.Parse(typeof(ReportType), node.Value)) { 
-            case ReportType.Standard:
+        switch ((ReportTypeOld)Enum.Parse(typeof(ReportTypeOld), node.Value)) { 
+            case ReportTypeOld.Standard:
                 _reports.LoadStandard();
                 break;
-            case ReportType.Graphical:
+            case ReportTypeOld.Graphical:
                 _reports.LoadGraphical(UserSession.CurrentUser.OrganizationID);
                 break;
-            case ReportType.Favorite:
+            case ReportTypeOld.Favorite:
                 _reports.LoadFavorites();
                 break;
             default:
@@ -665,6 +705,16 @@ namespace TeamSupport.Services
     {
       if (!UserSession.CurrentUser.IsSystemAdmin) return;
       Users.MarkUserDeleted(UserSession.LoginUser, userID);
+      User user = Users.GetUser(UserSession.LoginUser, userID);
+      if (user.IsActive) user.EmailCountToMuroc(false);
+
+      Organization org = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), user.OrganizationID);
+      if (org.DefaultSupportUserID == user.UserID)
+      {
+          org.DefaultSupportUserID = null;
+          org.Collection.Save();
+      }
+
     }
 
     [WebMethod(true)]

@@ -48,6 +48,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool NeedsIndexing
+    {
+      get { return (bool)Row["NeedsIndexing"]; }
+      set { Row["NeedsIndexing"] = CheckValue("NeedsIndexing", value); }
+    }
+    
     public bool IsDeleted
     {
       get { return (bool)Row["IsDeleted"]; }
@@ -191,7 +197,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WatercoolerMsg] SET     [UserID] = @UserID,    [OrganizationID] = @OrganizationID,    [TimeStamp] = @TimeStamp,    [Message] = @Message,    [MessageParent] = @MessageParent,    [IsDeleted] = @IsDeleted,    [LastModified] = @LastModified  WHERE ([MessageID] = @MessageID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WatercoolerMsg] SET     [UserID] = @UserID,    [OrganizationID] = @OrganizationID,    [TimeStamp] = @TimeStamp,    [Message] = @Message,    [MessageParent] = @MessageParent,    [IsDeleted] = @IsDeleted,    [LastModified] = @LastModified,    [NeedsIndexing] = @NeedsIndexing  WHERE ([MessageID] = @MessageID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("MessageID", SqlDbType.Int, 4);
@@ -250,13 +256,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WatercoolerMsg] (    [UserID],    [OrganizationID],    [TimeStamp],    [Message],    [MessageParent],    [IsDeleted],    [LastModified]) VALUES ( @UserID, @OrganizationID, @TimeStamp, @Message, @MessageParent, @IsDeleted, @LastModified); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WatercoolerMsg] (    [UserID],    [OrganizationID],    [TimeStamp],    [Message],    [MessageParent],    [IsDeleted],    [LastModified],    [NeedsIndexing]) VALUES ( @UserID, @OrganizationID, @TimeStamp, @Message, @MessageParent, @IsDeleted, @LastModified, @NeedsIndexing); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("LastModified", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -419,7 +439,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [MessageID], [UserID], [OrganizationID], [TimeStamp], [Message], [MessageParent], [IsDeleted], [LastModified] FROM [dbo].[WatercoolerMsg] WHERE ([MessageID] = @MessageID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [MessageID], [UserID], [OrganizationID], [TimeStamp], [Message], [MessageParent], [IsDeleted], [LastModified], [NeedsIndexing] FROM [dbo].[WatercoolerMsg] WHERE ([MessageID] = @MessageID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("MessageID", messageID);
         Fill(command);

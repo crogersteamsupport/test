@@ -86,6 +86,12 @@ namespace TeamSupport.Data
       set { Row["TimeSpent"] = CheckValue("TimeSpent", value); }
     }
     
+    public string ActionSource
+    {
+      get { return Row["ActionSource"] != DBNull.Value ? (string)Row["ActionSource"] : null; }
+      set { Row["ActionSource"] = CheckValue("ActionSource", value); }
+    }
+    
     public string ProductName
     {
       get { return Row["ProductName"] != DBNull.Value ? (string)Row["ProductName"] : null; }
@@ -415,7 +421,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ActionsView] SET     [ActionTypeID] = @ActionTypeID,    [SystemActionTypeID] = @SystemActionTypeID,    [Name] = @Name,    [Description] = @Description,    [TimeSpent] = @TimeSpent,    [DateStarted] = @DateStarted,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [TicketID] = @TicketID,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName,    [ActionType] = @ActionType,    [ProductName] = @ProductName,    [ReportedVersion] = @ReportedVersion,    [SolvedVersion] = @SolvedVersion,    [GroupName] = @GroupName,    [TicketType] = @TicketType,    [UserName] = @UserName,    [Status] = @Status,    [StatusPosition] = @StatusPosition,    [SeverityPosition] = @SeverityPosition,    [IsClosed] = @IsClosed,    [Severity] = @Severity,    [TicketNumber] = @TicketNumber,    [ReportedVersionID] = @ReportedVersionID,    [SolvedVersionID] = @SolvedVersionID,    [ProductID] = @ProductID,    [GroupID] = @GroupID,    [UserID] = @UserID,    [TicketStatusID] = @TicketStatusID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [OrganizationID] = @OrganizationID,    [TicketName] = @TicketName,    [DateClosed] = @DateClosed,    [CloserID] = @CloserID,    [DaysClosed] = @DaysClosed,    [DaysOpened] = @DaysOpened,    [CloserName] = @CloserName,    [HoursSpent] = @HoursSpent  WHERE ([ActionID] = @ActionID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ActionsView] SET     [ActionTypeID] = @ActionTypeID,    [SystemActionTypeID] = @SystemActionTypeID,    [Name] = @Name,    [Description] = @Description,    [TimeSpent] = @TimeSpent,    [DateStarted] = @DateStarted,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsKnowledgeBase] = @IsKnowledgeBase,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [TicketID] = @TicketID,    [ActionSource] = @ActionSource,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName,    [ActionType] = @ActionType,    [ProductName] = @ProductName,    [ReportedVersion] = @ReportedVersion,    [SolvedVersion] = @SolvedVersion,    [GroupName] = @GroupName,    [TicketType] = @TicketType,    [UserName] = @UserName,    [Status] = @Status,    [StatusPosition] = @StatusPosition,    [SeverityPosition] = @SeverityPosition,    [IsClosed] = @IsClosed,    [Severity] = @Severity,    [TicketNumber] = @TicketNumber,    [ReportedVersionID] = @ReportedVersionID,    [SolvedVersionID] = @SolvedVersionID,    [ProductID] = @ProductID,    [GroupID] = @GroupID,    [UserID] = @UserID,    [TicketStatusID] = @TicketStatusID,    [TicketTypeID] = @TicketTypeID,    [TicketSeverityID] = @TicketSeverityID,    [OrganizationID] = @OrganizationID,    [TicketName] = @TicketName,    [DateClosed] = @DateClosed,    [CloserID] = @CloserID,    [DaysClosed] = @DaysClosed,    [DaysOpened] = @DaysOpened,    [CloserName] = @CloserName,    [HoursSpent] = @HoursSpent  WHERE ([ActionID] = @ActionID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ActionID", SqlDbType.Int, 4);
@@ -500,6 +506,13 @@ namespace TeamSupport.Data
 		{
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ActionSource", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = updateCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
@@ -724,7 +737,7 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ActionsView] (    [ActionID],    [ActionTypeID],    [SystemActionTypeID],    [Name],    [Description],    [TimeSpent],    [DateStarted],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [TicketID],    [CreatorName],    [ModifierName],    [ActionType],    [ProductName],    [ReportedVersion],    [SolvedVersion],    [GroupName],    [TicketType],    [UserName],    [Status],    [StatusPosition],    [SeverityPosition],    [IsClosed],    [Severity],    [TicketNumber],    [ReportedVersionID],    [SolvedVersionID],    [ProductID],    [GroupID],    [UserID],    [TicketStatusID],    [TicketTypeID],    [TicketSeverityID],    [OrganizationID],    [TicketName],    [DateClosed],    [CloserID],    [DaysClosed],    [DaysOpened],    [CloserName],    [HoursSpent]) VALUES ( @ActionID, @ActionTypeID, @SystemActionTypeID, @Name, @Description, @TimeSpent, @DateStarted, @IsVisibleOnPortal, @IsKnowledgeBase, @DateCreated, @DateModified, @CreatorID, @ModifierID, @TicketID, @CreatorName, @ModifierName, @ActionType, @ProductName, @ReportedVersion, @SolvedVersion, @GroupName, @TicketType, @UserName, @Status, @StatusPosition, @SeverityPosition, @IsClosed, @Severity, @TicketNumber, @ReportedVersionID, @SolvedVersionID, @ProductID, @GroupID, @UserID, @TicketStatusID, @TicketTypeID, @TicketSeverityID, @OrganizationID, @TicketName, @DateClosed, @CloserID, @DaysClosed, @DaysOpened, @CloserName, @HoursSpent); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ActionsView] (    [ActionID],    [ActionTypeID],    [SystemActionTypeID],    [Name],    [Description],    [TimeSpent],    [DateStarted],    [IsVisibleOnPortal],    [IsKnowledgeBase],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [TicketID],    [ActionSource],    [CreatorName],    [ModifierName],    [ActionType],    [ProductName],    [ReportedVersion],    [SolvedVersion],    [GroupName],    [TicketType],    [UserName],    [Status],    [StatusPosition],    [SeverityPosition],    [IsClosed],    [Severity],    [TicketNumber],    [ReportedVersionID],    [SolvedVersionID],    [ProductID],    [GroupID],    [UserID],    [TicketStatusID],    [TicketTypeID],    [TicketSeverityID],    [OrganizationID],    [TicketName],    [DateClosed],    [CloserID],    [DaysClosed],    [DaysOpened],    [CloserName],    [HoursSpent]) VALUES ( @ActionID, @ActionTypeID, @SystemActionTypeID, @Name, @Description, @TimeSpent, @DateStarted, @IsVisibleOnPortal, @IsKnowledgeBase, @DateCreated, @DateModified, @CreatorID, @ModifierID, @TicketID, @ActionSource, @CreatorName, @ModifierName, @ActionType, @ProductName, @ReportedVersion, @SolvedVersion, @GroupName, @TicketType, @UserName, @Status, @StatusPosition, @SeverityPosition, @IsClosed, @Severity, @TicketNumber, @ReportedVersionID, @SolvedVersionID, @ProductID, @GroupID, @UserID, @TicketStatusID, @TicketTypeID, @TicketSeverityID, @OrganizationID, @TicketName, @DateClosed, @CloserID, @DaysClosed, @DaysOpened, @CloserName, @HoursSpent); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("HoursSpent", SqlDbType.Decimal, 17);
@@ -944,6 +957,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = insertCommand.Parameters.Add("ActionSource", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 		tempParameter = insertCommand.Parameters.Add("TicketID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -1154,7 +1174,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ActionID], [ActionTypeID], [SystemActionTypeID], [Name], [Description], [TimeSpent], [DateStarted], [IsVisibleOnPortal], [IsKnowledgeBase], [DateCreated], [DateModified], [CreatorID], [ModifierID], [TicketID], [CreatorName], [ModifierName], [ActionType], [ProductName], [ReportedVersion], [SolvedVersion], [GroupName], [TicketType], [UserName], [Status], [StatusPosition], [SeverityPosition], [IsClosed], [Severity], [TicketNumber], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [TicketName], [DateClosed], [CloserID], [DaysClosed], [DaysOpened], [CloserName], [HoursSpent] FROM [dbo].[ActionsView] WHERE ([ActionID] = @ActionID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ActionID], [ActionTypeID], [SystemActionTypeID], [Name], [Description], [TimeSpent], [DateStarted], [IsVisibleOnPortal], [IsKnowledgeBase], [DateCreated], [DateModified], [CreatorID], [ModifierID], [TicketID], [ActionSource], [CreatorName], [ModifierName], [ActionType], [ProductName], [ReportedVersion], [SolvedVersion], [GroupName], [TicketType], [UserName], [Status], [StatusPosition], [SeverityPosition], [IsClosed], [Severity], [TicketNumber], [ReportedVersionID], [SolvedVersionID], [ProductID], [GroupID], [UserID], [TicketStatusID], [TicketTypeID], [TicketSeverityID], [OrganizationID], [TicketName], [DateClosed], [CloserID], [DaysClosed], [DaysOpened], [CloserName], [HoursSpent] FROM [dbo].[ActionsView] WHERE ([ActionID] = @ActionID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ActionID", actionID);
         Fill(command);

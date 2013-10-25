@@ -17,15 +17,14 @@ public partial class TicketFrame : System.Web.UI.Page
         if (Request["TicketNumber"] != null)
         {
           int ticketNumber = int.Parse(Request["TicketNumber"]);
-          url = "Frames/Ticket.aspx?TicketNumber=" + ticketNumber.ToString();
+          url = "~/?TicketNumber=" + ticketNumber.ToString();
         }
         else
         {
           int ticketID = int.Parse(Request["TicketID"]);
-          url = "Frames/Ticket.aspx?TicketID=" + ticketID.ToString();
+          url = "~/?TicketID=" + ticketID.ToString();
         }
-        frmContent.Attributes["src"] = url;
-        //Response.Redirect(url);
+        Response.Redirect(url);
       }
 	  }
 	  catch (Exception)

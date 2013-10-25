@@ -16,6 +16,7 @@ using System.Runtime.Serialization;
 using dtSearch.Engine;
 using System.Net;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace TSWebServices
 {
@@ -42,6 +43,16 @@ namespace TSWebServices
       return organizations[0].OrganizationID;
     }
 
+
+    [WebMethod]
+    public int GetIDByExactName(string name)
+    {
+        name = name.Replace('+', ' ').Replace('_', ' ');
+        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+        organizations.LoadByOrganizationNameActive(name, TSAuthentication.OrganizationID);
+        if (organizations.IsEmpty) return -1;
+        return organizations[0].OrganizationID;
+    }
 
     //[0] = orgid
     //[1] = userid
@@ -104,10 +115,26 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public bool IsProductRequired()
+    {   
+        Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+
+        return organization.ProductRequired;
+    }
+
+    [WebMethod]
+    public bool IsProductVersionRequired()
+    {
+        Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+
+        return organization.ProductVersionRequired;
+    }
+
+    [WebMethod]
     public PortalOptionProxy GetPortalOption(int organizationID)
     {
       Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);
-      if (organization.OrganizationID != TSAuthentication.OrganizationID || !TSAuthentication.IsSystemAdmin) return null;
+      //if (organization.OrganizationID != TSAuthentication.OrganizationID || !TSAuthentication.IsSystemAdmin) return null;
       PortalOption result = PortalOptions.GetPortalOption(organization.Collection.LoginUser, organizationID);
 
       if (result == null)
@@ -126,8 +153,6 @@ namespace TSWebServices
     {
       Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
       if (organization.OrganizationID != TSAuthentication.OrganizationID || !TSAuthentication.IsSystemAdmin) return null;
-      
-
 
       PortalOption option = PortalOptions.GetPortalOption(organization.Collection.LoginUser, proxy.OrganizationID);
       
@@ -141,7 +166,25 @@ namespace TSWebServices
           return "That portal name is already taken.  Please choose a different portal name.";
         }
       }
-      
+
+      FacebookOptions fb = new FacebookOptions(TSAuthentication.GetLoginUser());
+      fb.LoadByOrganizationID(proxy.OrganizationID);
+      if (fb.IsEmpty)
+      {
+          FacebookOption fbo = (new FacebookOptions(TSAuthentication.GetLoginUser()).AddNewFacebookOption());
+          fbo.OrganizationID = proxy.OrganizationID;
+          fbo.DisplayArticles = proxy.DisplayFbArticles;
+          fbo.DisplayKB = proxy.DisplayFbKB;
+          fbo.Collection.Save();
+      }
+      else
+      {
+          fb[0].DisplayArticles = proxy.DisplayFbArticles;
+          fb[0].DisplayKB = proxy.DisplayFbKB;
+          fb[0].Collection.Save();
+      }
+
+      option.EnableSaExpiration = proxy.EnableSaExpiration;
       option.PublicLandingPageBody = proxy.PublicLandingPageBody;
       option.PublicLandingPageHeader = proxy.PublicLandingPageHeader;
       option.EnableScreenr = proxy.EnableScreenr;
@@ -262,7 +305,27 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public CRMLinkTableItemProxy SaveCrmLink(int crmLinkID, bool isActive, string crmType, string password, string token, string tag, string userName, bool email, bool portal, int? defaultSlaLevelID)
+    public CRMLinkTableItemProxy SaveCrmLink(
+      int     crmLinkID, 
+      bool    isActive, 
+      string  crmType, 
+      string  password, 
+      string  token, 
+      string  tag, 
+      string  userName, 
+      bool    email, 
+      bool    portal, 
+      int?    defaultSlaLevelID,
+      bool    pullCasesAsTickets,
+      bool    pushTicketsAsCases,
+      bool    pushTicketsAsAccountComments,
+      bool    pullCustomerProducts,
+      int?    actionTypeIDToPush,
+      string  hostName,
+      string  defaultProject,
+      bool?   updateStatus,
+      bool    matchAccountsByName
+    )
     {
       if (!TSAuthentication.IsSystemAdmin) return null;
       CRMLinkTableItem item;
@@ -295,6 +358,15 @@ namespace TSWebServices
       item.TypeFieldMatch = tag;
       item.Username = userName;
       item.DefaultSlaLevelID = defaultSlaLevelID;
+      item.PullCasesAsTickets = pullCasesAsTickets;
+      item.PushTicketsAsCases = pushTicketsAsCases;
+      item.SendBackTicketData = pushTicketsAsAccountComments;
+      item.PullCustomerProducts = pullCustomerProducts;
+      item.ActionTypeIDToPush = actionTypeIDToPush;
+      item.HostName = hostName;
+      item.DefaultProject = defaultProject;
+      item.UpdateStatus = updateStatus;
+      item.MatchAccountsByName = matchAccountsByName;
 
       item.Collection.Save();
       return item.GetProxy();
@@ -336,6 +408,9 @@ namespace TSWebServices
         case ReferenceType.Contacts:
           field.CRMObjectName = "Contact";
           break;
+        case ReferenceType.Tickets:
+          field.CRMObjectName = "Ticket";
+          break;
         default:
           break;
       }
@@ -376,10 +451,62 @@ namespace TSWebServices
     [WebMethod]
     public AutocompleteItem[] AdminGetOrganizations(string name)
     {
+      return AdminGetCustomers(1, name);
+    }
+
+    [WebMethod]
+    public void AdminQueryOrganizations(int parentID, string query)
+    {
+      List<TypeAheadItem> result = new List<TypeAheadItem>();
+      if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+
+      int orgID = -1;
+      bool flag = true;
+      if (int.TryParse(query, out orgID))
+      {
+        Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
+        if (organization != null)
+        {
+          result.Add(new TypeAheadItem(organization.Name + " (" + organization.OrganizationID.ToString() + ")", organization.OrganizationID.ToString()));
+          flag = false;
+        }
+      
+      }
+
+      if (flag) 
+      {
+        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+        organizations.LoadByOrganizationName(query, parentID);
+
+        if (organizations.Count > 0)
+        {
+          foreach (Organization organization in organizations)
+          {
+            result.Add(new TypeAheadItem(organization.Name + " (" + organization.OrganizationID.ToString() + ")", organization.OrganizationID.ToString()));
+          }
+        }
+        else
+        {
+          organizations.LoadByLikeOrganizationName(parentID, query, false, 20);
+          foreach (Organization organization in organizations)
+          {
+            result.Add(new TypeAheadItem(organization.Name + " (" + organization.OrganizationID.ToString() + ")", organization.OrganizationID.ToString()));
+          }
+        }
+      }
+
+      HttpContext.Current.Response.ContentType = "application/json";
+      HttpContext.Current.Response.Write(JsonConvert.SerializeObject(result));
+      HttpContext.Current.Response.End();
+    }
+
+    [WebMethod]
+    public AutocompleteItem[] AdminGetCustomers(int parentID, string name)
+    {
       List<AutocompleteItem> result = new List<AutocompleteItem>();
       if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return result.ToArray();
       Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
-      organizations.LoadByLikeOrganizationName(1, name, false, 20);
+      organizations.LoadByLikeOrganizationName(parentID, name, false, 20);
       foreach (Organization organization in organizations)
       {
         result.Add(new AutocompleteItem(organization.Name + " (" + organization.OrganizationID.ToString() + ")", organization.OrganizationID.ToString()));
@@ -389,7 +516,79 @@ namespace TSWebServices
     }
 
 
-    
+    [WebMethod]
+    public int AdminGetUserCount(int orgID)
+    {
+      Organization org = GetAdminOrgTarget(orgID);
+      return Organizations.GetUserCount(TSAuthentication.GetLoginUser(), org.OrganizationID);
+    }
+
+    [WebMethod]
+    public int AdminGetStorageUsed(int orgID)
+    {
+      Organization org = GetAdminOrgTarget(orgID);
+      return Organizations.GetStorageUsed(TSAuthentication.GetLoginUser(), org.OrganizationID);
+    }
+
+    [WebMethod]
+    public void AdminRenameCompany(int orgID, string name)
+    {
+      Organization org = GetAdminOrgTarget(orgID);
+      org.Name = name;
+      org.Collection.Save();
+    }
+
+    [WebMethod]
+    public void AdminUpdateSeats(int orgID, int count)
+    {
+      Organization org = GetAdminOrgTarget(orgID);
+      org.UserSeats = count;
+      org.Collection.Save();
+    }
+
+    [WebMethod]
+    public void AdminUpdateProductType(int orgID, int productType)
+    {
+      Organization org = GetAdminOrgTarget(orgID);
+      org.ProductType = (ProductType)productType;
+      org.IsInventoryEnabled = org.ProductType == ProductType.Enterprise;
+      org.Collection.Save();
+    }
+
+    [WebMethod]
+    public void AdminSetInventory(int orgID, bool value)
+    {
+      Organization org = GetAdminOrgTarget(orgID);
+      org.IsInventoryEnabled = value;
+      org.Collection.Save();
+    }
+
+    [WebMethod]
+    public void AdminSetApiCount(int orgID, int count)
+    {
+      Organization org = GetAdminOrgTarget(orgID);
+      org.APIRequestLimit = count;
+      org.Collection.Save();
+    }
+
+    [WebMethod]
+    public void AdminEnable(int orgID, bool value)
+    {
+      Organization org = GetAdminOrgTarget(orgID);
+      org.IsActive = value;
+      org.IsAdvancedPortal = value;
+      org.IsBasicPortal = value;
+      org.IsApiActive = value;
+      org.IsApiEnabled = value;
+      org.IsInventoryEnabled = value;
+      org.Collection.Save();
+    }
+
+    public Organization GetAdminOrgTarget(int orgID)
+    {
+      if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
+      return Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
+    }
 
     [WebMethod]
     public string CleanUpOrphanTicketStatuses()
@@ -543,13 +742,25 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public AutocompleteItem[] GetUserOrOrganizationForTicket(string searchTerm)
+    {
+      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      return GetUserOrOrganizationFiltered(searchTerm, !user.AllowAnyTicketCustomer);
+    }
+
+    [WebMethod]
     public AutocompleteItem[] GetUserOrOrganization(string searchTerm)
     {
+      return GetUserOrOrganizationFiltered(searchTerm, true);
+    }
+
+    public AutocompleteItem[] GetUserOrOrganizationFiltered(string searchTerm, bool filterByUserRights)
+    {
       Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
-      organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true);
+      organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true, 50, filterByUserRights);
 
       UsersView users = new UsersView(organizations.LoginUser);
-      users.LoadByLikeName(TSAuthentication.OrganizationID, searchTerm);
+      users.LoadByLikeName(TSAuthentication.OrganizationID, searchTerm, 50, true, true);
 
       List<AutocompleteItem> list = new List<AutocompleteItem>();
       foreach (Organization organization in organizations)
@@ -574,7 +785,7 @@ namespace TSWebServices
       List<AutocompleteItem> list = new List<AutocompleteItem>();
       foreach (Organization organization in organizations)
       {
-        list.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString(), organization));
+        list.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString()));
       }
 
       return list.ToArray();

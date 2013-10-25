@@ -4,22 +4,18 @@
   <meta http-equiv="Pragma" content="no-cache">
   <link href="../Css/frame.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="../Css/jquery.ui.panel.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
   <link href="../Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
   <link href="../Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="vcr/142/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]-->
-  <!--[if IE 8]><link href="vcr/142/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <!--[if IE 7]><link href="vcr/1_7_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <!--[if IE 8]><link href="vcr/1_7_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="Admin_Portal.css" rel="stylesheet" type="text/css" />
-  <script src="../Js/jquery-1.6.2.min.js" type="text/javascript"></script>
-  <script src="../Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
-  <script src="../Js/jquery.ui.panel.js" type="text/javascript"></script>
   <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
-  <script src="../Js/jquery.color.js" type="text/javascript"></script>
   <script src="../Js/jquery.ui.timepicker.js" type="text/javascript"></script>
-  <script src="../Js/Ts/ts.style.js" type="text/javascript"></script>
   <script src="../Js/Ts/ts.utils.js" type="text/javascript"></script>
   <script src="Admin_Portal.js" type="text/javascript"></script>
   <style type="text/css">
@@ -36,24 +32,24 @@
     .portal-save-panel { text-align: center; margin: 0 auto; }
     .portal-save-panel button { margin-left: 1em; }
     
-    .com-cat-container { margin: 1em 0; border-top: 0; border-bottom: 0; border-left: 0; border-right: 0; }
-    #tabs-community h1.ui-widget-content { opacity: .75; margin-right: 1em; border-top: 0; border-right: 0; border-left: 0; }
-    #tabs-community .com-cats { margin-bottom: 1em; }
-    #tabs-community .com-cat-container a.com-new-sub { margin-left: 2.5em; line-height: 2em; }
-    #tabs-community .com-cat-container a.com-new-cat { margin-left: 1.5em; line-height: 2em; }
-    .com-cat { cursor: pointer; border: 1px solid transparent; font-size: 1em; padding: .25em 0 .25em .5em; margin: 0 1em; }
-    #tabs-community .com-cat-main { font-weight: bold; }
-    #tabs-community .com-cat-sub { margin-left: 2em; }
-    #tabs-community .ts-setting-field.two-column .ts-setting-field-content { margin-left: 170px; }
-    #tabs-community .ts-setting-field.two-column .ts-setting-field-description { width: 150px; }
-    #tabs-community .ts-setting-field { border-style: dotted; }
-    #tabs-community .com-cat-save-panel { margin: 2em auto; text-align: center; display: none; }
-    #tabs-community .com-cat-properties { float: left; }
-    #tabs-community .com-cat-properties textarea { width: 400px; height: 75px; }
-    #tabs-community .com-delete-cat { line-height: 2em; }
+    .com-cat-container, .kb-cat-container { margin: 1em 0; border-top: 0; border-bottom: 0; border-left: 0; border-right: 0; }
+    .categories h1.ui-widget-content { opacity: .75; margin-right: 1em; border-top: 0; border-right: 0; border-left: 0; }
+    .categories .com-cats, .kb-cats { margin-bottom: 1em; }
+    .categories .com-cat-container a.com-new-sub, .kb-cat-container a.kb-new-sub { margin-left: 2.5em; line-height: 2em; }
+    .categories .com-cat-container a.com-new-cat, .kb-cat-container a.kb-new-cat { margin-left: 1.5em; line-height: 2em; }
+    .com-cat , .kb-cat { cursor: pointer; border: 1px solid transparent; font-size: 1em; padding: .25em 0 .25em .5em; margin: 0 1em; }
+    .categories .com-cat-main, .kb-cat-main { font-weight: bold; }
+    .categories .com-cat-sub, .kb-cat-sub { margin-left: 2em; }
+    .categories .ts-setting-field.two-column .ts-setting-field-content { margin-left: 170px; }
+    .categories .ts-setting-field.two-column .ts-setting-field-description { width: 150px; }
+    .categories .ts-setting-field { border-style: dotted; }
+    .categories .com-cat-save-panel, .kb-cat-save-panel { margin: 2em auto; text-align: center; display: none; }
+    .categories .com-cat-properties, .kb-cat-properties { float: left; }
+    .categories .com-cat-properties textarea, .kb-cat-properties textarea { width: 400px; height: 75px; }
+    .categories .com-delete-cat, .kb-delete-cat { line-height: 2em; }
     .cat-footer { text-align: center; margin 1em auto; padding-top: 2em; clear:both;}
-    .ui-state-highlight.com-cat-sub { min-height: 2em; }
-    .ui-state-highlight.com-cats { min-height: 5em; }
+    .ui-state-highlight.com-cat-sub, .ui-state-highlight.kb-cat-sub { min-height: 2em; }
+    .ui-state-highlight.com-cats, .ui-state-highlight.kb-cats { min-height: 5em; }
   </style>
   <title></title>
 </head>
@@ -73,6 +69,7 @@
                 <li id="tab-advanced"><a href="#tabs-advanced">Advanced Portal</a></li>
                 <li><a href="#tabs-basic">Public Portal</a></li>
                 <li id="tab-community"><a href="#tabs-community">Community</a></li>
+                <li><a href="#tabs-knowledgebase">Knowledge Base</a></li>
               </ul>
               <div id="tabs-general" class="tabs-modifiable">
                 <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
@@ -181,6 +178,17 @@
                 </div>
                 <div class="ts-setting-field two-column ui-widget-content">
                   <div class="ts-setting-field-description">
+                    Display Powered By</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_poweredby" /><label class="checkbox"
+                      for="portal_poweredby">Enabled</label>
+                    <div class="ts-clearfix">
+                      &nbsp</div>
+                    <p>When enabled, this will display the "Powered By" on the login page as well as our logo in the footer within the portal.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
                     Portal Header HTML / CSS</div>
                   <div class="ts-setting-field-content">
                     <p>Allows you to insert your own custom html/css and is also where you would insert
@@ -258,6 +266,15 @@
                 </div>
                 <div class="ts-setting-field two-column ui-widget-content">
                   <div class="ts-setting-field-description">
+                    Display Products</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_display_products" /><label class="checkbox"
+                      for="portal_display_products">Enabled</label>
+                  </div>
+                </div>
+
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
                     External Portal Link</div>
                   <div class="ts-setting-field-content">
                     <input type="text" id="portal_external_link" class="ui-widget-content ui-corner-all text" />
@@ -312,6 +329,16 @@
                     <p></p>
                   </div>
                 </div>
+               <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Honor Support Expiration
+                    </div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_adv_honorexpiration" /><label class="checkbox"
+                      for="portal_adv_honorexpiration">Enabled</label>
+                    <p>If checked, you must associate products with your customers AND there must be a date defined for "Support Expiration" which is found under the Customer section, Product tab.  Otherwise your customers will be unable to login to your portal.</p>
+                  </div>
+                </div>
                 <div class="ts-setting-field two-column ui-widget-content">
                   <div class="ts-setting-field-description">
                     Request Ticket Type</div>
@@ -339,6 +366,15 @@
                     <input type="checkbox" class="checkbox" id="portal_adv_enable_toc" /><label class="checkbox"
                       for="portal_adv_kb">Enabled</label>
                     <p></p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Honor Service Agreement Expiration Date</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_adv_enabled_sa_expiration" /><label class="checkbox"
+                      for="portal_adv_kb">Enabled</label>
+                    <p>If checked, you must enter a Service Agreement Expiration Date for each customer, which is found under the customer section, details tab.  If no date is defined OR the date you define has expired, your customers will be unable to login to your portal.</p>
                   </div>
                 </div>
                 <div class="ts-setting-field two-column ui-widget-content last">
@@ -479,9 +515,27 @@
                     <p>Note:  This setting does not impact the Articles button on the landing page.  If you turn this off, the Articles button will still be present on the landing page.  If you do not want the Articles to appear at all on your landing page, you need to edit the Portal Landing Page Header HTML located above.</p>
                   </div>
                 </div>
+                <div class="ts-setting-field two-column ui-widget-content last">
+                  <div class="ts-setting-field-description">
+                    Display Facebook Articles</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_display_fb_article" /><label class="checkbox"
+                      for="portal_allow_wiki">Enabled</label>
+                    <p>This will allow users to see public articles on your Facebook portal integration</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content last">
+                  <div class="ts-setting-field-description">
+                    Display Facebook Knowledgebase</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="portal_display_fb_kb" /><label class="checkbox"
+                      for="portal_allow_wiki">Enabled</label>
+                        <p>This will allow users to see the knowledgebase articles on your Facebook portal integration</p>
+                  </div>
+                </div>
                 <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
               </div>
-              <div id="tabs-community">
+              <div id="tabs-community" class="categories">
                 <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
                 <div class="ts-setting-field two-column ui-widget-content tabs-modifiable">
                   <div class="ts-setting-field-description">
@@ -527,7 +581,7 @@
                 </div>
                 <div class="ts-content-right">
                   <h1 class="ui-widget-content">Properties</h1>
-                  <div class="no-cat"><h2>Please select a category on the left.</h2></div>
+                  <div class="com-no-cat"><h2>Please select a category on the left.</h2></div>
                   <div class="com-cat-properties ui-helper-hidden">
                     <div>
                       <a href="#" class="ui-state-default ts-link com-delete-cat">Delete this category</a></div>
@@ -596,6 +650,92 @@
                 <div class="ts-clearfix">
                 </div>
               </div>
+
+              <div id="tabs-knowledgebase" class="categories">
+                <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
+                <div class="ts-rail-left">
+                  <h1 class="ui-widget-content">Categories</h1>
+                  <div class="kb-cat-container ui-widget-content">
+                    <div class="kb-cat-list">
+                      <div class="kb-cats">
+                        <div class="kb-cat kb-cat-main">
+                          General Discussion</div>
+                        <div class="kb-cat kb-cat-sub ui-state-active ui-corner-all">
+                          Sub 1</div>
+                        <div class="kb-cat kb-cat-sub">
+                          Sub 2</div>
+                        <div>
+                          <a href="#" class="ui-state-default ts-link kb-new-sub">Add a new subcategory</a></div>
+                      </div>
+                      <div class="kb-cats">
+                        <div class="kb-cat kb-cat-main ui-state-active ui-corner-all">
+                          General Discussion</div>
+                        <div class="kb-cat kb-cat-sub ui-corner-all">
+                          Sub 1</div>
+                        <div class="kb-cat kb-cat-sub">
+                          Sub 2</div>
+                        <div>
+                          <a href="#" class="ui-state-default ts-link kb-new-sub">Add a new subcategory</a></div>
+                      </div>
+                    </div>
+                    <div>
+                      <a href="#" class="ui-state-default ts-link kb-new-cat">Add a new parent category</a></div>
+                  </div>
+                  <p style="opacity: .5;">* Drag and drop categories to reorder them as they appear
+                    in the community.</p>
+                </div>
+                <div class="ts-content-right">
+                  <h1 class="ui-widget-content">Properties</h1>
+                  <div class="kb-no-cat"><h2>Please select a category on the left.</h2></div>
+                  <div class="kb-cat-properties ui-helper-hidden">
+                    <div>
+                      <a href="#" class="ui-state-default ts-link kb-delete-cat">Delete this category</a></div>
+                    <div class="ts-setting-field two-column ui-widget-content">
+                      <div class="ts-setting-field-description">
+                        Name</div>
+                      <div class="ts-setting-field-content">
+                        <input type="text" id="kb_cat_name" class="ui-widget-content ui-corner-all text" />
+                        <p>The name of the category to appear in the community.</p>
+                      </div>
+                    </div>
+                    <div class="ts-setting-field two-column ui-widget-content">
+                      <div class="ts-setting-field-description">
+                        Description</div>
+                      <div class="ts-setting-field-content">
+                        <textarea id="kb_cat_description" class="ui-corner-all ui-widget-content"></textarea>
+                        <p></p>
+                      </div>
+                    </div>
+                    <div class="ts-setting-field two-column ui-widget-content">
+                      <div class="ts-setting-field-description">
+                        Visible on portal
+                      </div>
+                      <div class="ts-setting-field-content">
+                        <input type="checkbox" class="checkbox" id="kb_cat_visible" checked/><label class="checkbox"
+                          for="kb_cat_visible">Enabled</label>
+                        <p></p>
+                      </div>
+                    </div>
+                    <div class="kb-sub-only">
+                    </div>
+                    <div class="ts-setting-field two-column ui-widget-content ui-helper-hidden">
+                      <div class="ts-setting-field-description">
+                        Filters</div>
+                      <div class="ts-setting-field-content">
+                        <input type="text" id="Text2" class="ui-widget-content ui-corner-all text" />
+                        <p>Type a user or organizaton to add to this list. Users and organizations will be
+                          blocked from this category.</p>
+                      </div>
+                    </div>
+                    <div class="kb-cat-save-panel">
+                      <button class="kb-save-cat">Save Category</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="ts-clearfix">
+                </div>
+              </div>
+
             </div>
           </div>
         </div>

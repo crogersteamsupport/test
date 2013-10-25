@@ -83,10 +83,18 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.4.5.7\lib\net35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
@@ -110,7 +118,9 @@
     <Compile Include="Integration.vb" />
     <Compile Include="Integrations\BatchBook.vb" />
     <Compile Include="Integrations\Highrise.vb" />
+    <Compile Include="Integrations\Jira.vb" />
     <Compile Include="Integrations\MailChimp.vb" />
+    <Compile Include="Integrations\Oracle.vb" />
     <Compile Include="Integrations\SalesForce.vb" />
     <Compile Include="Integrations\Zoho.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -128,6 +138,16 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Service References\OracleActivityAppointment\Reference.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\OracleSalesParty\Reference.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="Web References\sForce\Reference.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -144,6 +164,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -152,6 +173,289 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\ActivityAppointmentService.wsdl" />
+    <None Include="Service References\OracleActivityAppointment\ActivityAppointmentService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\ActivityAssignee.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\ActivityCategory.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\ActivityContact.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\Appointment.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\AppointmentDeleteException.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\BC4JService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\CommonAttachments.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\datagraph.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\Note.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\NoteDFF.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\oracle-webservices-async-fault-11_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\OracleActivityAppointment.ActivityAssignee.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\OracleActivityAppointment.ActivityCategory.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\OracleActivityAppointment.ActivityContact.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\OracleActivityAppointment.AppointmentDeleteException.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\OracleActivityAppointment.CommonAttachments.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\OracleActivityAppointment.Note.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\OracleActivityAppointment.TransientAppointment.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\sdoJava.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\sdoModel.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\sdoXML.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\ServiceException.wsdl" />
+    <None Include="Service References\OracleActivityAppointment\ServiceException.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\TransientAppointment.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\TransientAssignee.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\TransientCategory.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\TransientContact.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleActivityAppointment\TransientNote.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\AdditionalOrganizationName.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\AdditionalPartyId.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\AdditionalPersonName.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\BC4JService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Certification.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Citizenship.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\CodeAssignment.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\ContactPointInformation.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\ContactPreference.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\CreditRating.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\datagraph.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Edi.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Education.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Eft.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Email.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\EmailDomain.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\EmploymentHistory.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\FinancialNumber.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\FinancialProfile.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\FinancialReport.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\InstantMessaging.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\MySalesAccount.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\oracle-webservices-async-fault-11_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\OracleSalesParty.MySalesAccount.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleSalesParty\OracleSalesParty.OrganizationPartyResult.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleSalesParty\OracleSalesParty.PersonResult.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleSalesParty\OracleSalesParty.SalesAccount.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleSalesParty\OracleSalesParty.SalesAccountResource.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleSalesParty\OracleSalesParty.SalesAccountResourceAccess.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleSalesParty\OracleSalesParty.SalesParty.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OracleSalesParty\OrganizationContact.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\OrganizationContactInformation.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\OrganizationContactRole.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\OrganizationInformation.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\OrganizationParty.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\OrganizationProfile.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\OriginalSystemReference.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\PartyPreference.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\PartySite.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\PartySiteInformation.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\PartySiteUse.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\PartyUsageAssignment.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Person.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\PersonInformation.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\PersonInterest.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\PersonLanguage.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\PersonPartySite.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\PersonProfile.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Phone.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Relationship.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\RelationshipInformation.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\SalesAccount.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\SalesAccountResource.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\SalesAccountResourceAccess.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\SalesAccountTerritory.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\SalesParty.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\SalesPartyService.wsdl" />
+    <None Include="Service References\OracleSalesParty\SalesPartyService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\sdoJava.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\sdoModel.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\sdoXML.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\ServiceException.wsdl" />
+    <None Include="Service References\OracleSalesParty\ServiceException.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\SourceSystemRefInformation.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Telex.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\Web.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\OracleSalesParty\WorkClass.xsd">
+      <SubType>Designer</SubType>
     </None>
     <None Include="Web References\sForce\DeleteResult.datasource" />
     <None Include="Web References\sForce\DeleteResult1.datasource">
@@ -287,6 +591,34 @@
       <Project>{6AD9D48C-DDBA-4045-BFAA-362A1FCB0AA0}</Project>
       <Name>TeamSupport.ServiceLibrary</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\OracleActivityAppointment\" />
+    <WCFMetadataStorage Include="Service References\OracleSalesParty\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OracleSalesParty\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OracleSalesParty\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OracleSalesParty\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OracleActivityAppointment\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OracleActivityAppointment\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OracleActivityAppointment\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

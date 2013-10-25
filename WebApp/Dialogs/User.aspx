@@ -43,25 +43,25 @@
           <td class="inputColTD">
             <telerik:RadTextBox ID="textEmail" runat="server" Width="200px"></telerik:RadTextBox>
           </td>
+          <td id="tdRights" runat="server" class="labelColTD">
+            Ticket Rights:
+          </td>
+          <td class="inputColTD">
+            <telerik:RadComboBox ID="cmbRights" runat="server" Width="200px"></telerik:RadComboBox>
+          </td>
+        </tr>
+        <tr id="trAdmin" runat="server">
           <td id="tdActive" runat="server" class="labelColTD">
             Active:
           </td>
           <td class="inputColTD">
             <asp:CheckBox ID="cbActive" runat="server" Text="" CssClass="" />
           </td>
-        </tr>
-        <tr id="trAdmin" runat="server">
           <td class="labelColTD">
             System Admin:
           </td>
           <td class="inputColTD">
             <asp:CheckBox ID="cbIsSystemAdmin" runat="server" Text="" CssClass="" />
-          </td>
-          <td class="labelColTD" id="tdChatLabel" runat="server">
-            Chat User:
-          </td>
-          <td class="inputColTD">
-            <asp:CheckBox ID="cbChat" runat="server" Text=""/>
           </td>
         </tr>
         <tr>
@@ -99,6 +99,13 @@
           <td class="inputColTD">
             <asp:CheckBox ID="cbNoAutoSubscribe" runat="server" Text=""/>
           </td>
+          <td class="labelColTD" id="tdChatLabel" runat="server">
+            Chat User:
+          </td>
+          <td class="inputColTD">
+            <asp:CheckBox ID="cbChat" runat="server" Text=""/>
+          </td>
+
         </tr>
         <tr>
           <td class="labelColTD">

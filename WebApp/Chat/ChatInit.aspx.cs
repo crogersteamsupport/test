@@ -39,7 +39,7 @@ public partial class Chat_ChatInit : System.Web.UI.Page
     if (!IsPostBack)
     {
       if (!ChatRequests.IsOperatorAvailable(LoginUser.Anonymous, _organization.OrganizationID))
-        Response.Redirect("ChatOffline.aspx?uid=" + Request["uid"]);
+        Response.Redirect("ChatOffline.aspx?" + Request.QueryString);
     }
   }
 
@@ -57,6 +57,11 @@ public partial class Chat_ChatInit : System.Web.UI.Page
         textFirstName.Text = Request.Cookies["TSChat"]["FirstName"];
         textLastName.Text = Request.Cookies["TSChat"]["LastName"];
       }
+
+      if (Request.Params["email"] != null) textEmail.Text = Request.Params["email"];
+      if (Request.Params["fname"] != null) textFirstName.Text = Request.Params["fname"];
+      if (Request.Params["lname"] != null) textLastName.Text = Request.Params["lname"];
+      if (Request.Params["msg"] != null) textMessage.Text = Request.Params["msg"];
     }
   }
   protected void btnSubmit_Click(object sender, EventArgs e)

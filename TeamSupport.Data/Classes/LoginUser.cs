@@ -184,7 +184,7 @@ namespace TeamSupport.Data
               _organizationCulture = new CultureInfo(organization.CultureName);
             }
 
-            if (_cultureInfo.IsNeutralCulture)
+            if (CultureInfo.IsNeutralCulture)
             {
               _cultureInfo = new CultureInfo("en-US");
             }

@@ -139,6 +139,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessObjects\ActionLinkToJira.cs" />
     <Compile Include="BusinessObjects\ActionLogs.cs" />
     <Compile Include="BusinessObjects\ActionLogsView.cs" />
     <Compile Include="BusinessObjects\Actions.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="BusinessObjects\CreditCards.cs" />
     <Compile Include="BusinessObjects\CRMLinkFields.cs" />
     <Compile Include="BusinessObjects\CRMLinkResults.cs" />
+    <Compile Include="BusinessObjects\CRMLinkSynchedOrganizations.cs" />
     <Compile Include="BusinessObjects\CRMLinkTable.cs" />
     <Compile Include="BusinessObjects\CustomFieldCategories.cs" />
     <Compile Include="BusinessObjects\CustomFields.cs" />
@@ -182,7 +184,11 @@
     <Compile Include="BusinessObjects\ForumCategories.cs" />
     <Compile Include="BusinessObjects\ForumPermissions.cs" />
     <Compile Include="BusinessObjects\ForumTickets.cs" />
+    <Compile Include="BusinessObjects\KnowledgeBaseCategories.cs" />
+    <Compile Include="BusinessObjects\MiscellaneousLog.cs" />
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
+    <Compile Include="BusinessObjects\OrganizationProductsView.cs" />
+    <Compile Include="BusinessObjects\RecentlyViewedItems.cs" />
     <Compile Include="BusinessObjects\Reminders.cs" />
     <Compile Include="BusinessObjects\ReportEmails.cs" />
     <Compile Include="BusinessObjects\ReportViews.cs" />
@@ -198,6 +204,7 @@
     <Compile Include="BusinessObjects\TicketAutomationPossibleActions.cs" />
     <Compile Include="BusinessObjects\TicketAutomationTriggerLogic.cs" />
     <Compile Include="BusinessObjects\TicketAutomationTriggers.cs" />
+    <Compile Include="BusinessObjects\TicketLinkToJira.cs" />
     <Compile Include="BusinessObjects\TicketRelationships.cs" />
     <Compile Include="BusinessObjects\TicketsView.cs" />
     <Compile Include="BusinessObjects\TicketTemplates.cs" />
@@ -220,6 +227,7 @@
     <Compile Include="Classes\LookupField.cs" />
     <Compile Include="Classes\NamedGZipStream.cs" />
     <Compile Include="Classes\SqlExecutor.cs" />
+    <Compile Include="FieldMaps\ActionLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\ArticleStatsFieldMap.cs" />
     <Compile Include="FieldMaps\AssetHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\AssetsFieldMap.cs" />
@@ -227,6 +235,7 @@
     <Compile Include="FieldMaps\ChatClientsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ChatUserSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkFieldsFieldMap.cs" />
+    <Compile Include="FieldMaps\CRMLinkSynchedOrganizationsFieldMap.cs" />
     <Compile Include="FieldMaps\CustomFieldCategoriesFieldMap.cs" />
     <Compile Include="FieldMaps\DeletedIndexItemsFieldMap.cs" />
     <Compile Include="FieldMaps\EMailAlternateInboundFieldMap.cs" />
@@ -239,9 +248,13 @@
     <Compile Include="FieldMaps\ForumLogsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumPermissionsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumTicketsFieldMap.cs" />
+    <Compile Include="FieldMaps\KnowledgeBaseCategoriesFieldMap.cs" />
+    <Compile Include="FieldMaps\MiscellaneousLogFieldMap.cs" />
     <Compile Include="FieldMaps\OrganizationEmailsFieldMap.cs" />
+    <Compile Include="FieldMaps\OrganizationProductsViewFieldMap.cs" />
     <Compile Include="FieldMaps\PhoneOptionsFieldMap.cs" />
     <Compile Include="FieldMaps\PhoneQueueFieldMap.cs" />
+    <Compile Include="FieldMaps\RecentlyViewedItemsFieldMap.cs" />
     <Compile Include="FieldMaps\RemindersFieldMap.cs" />
     <Compile Include="FieldMaps\ReportEmailsFieldMap.cs" />
     <Compile Include="FieldMaps\ReportViewsFieldMap.cs" />
@@ -257,6 +270,7 @@
     <Compile Include="FieldMaps\TicketAutomationPossibleActionsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationTriggerLogicFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationTriggersFieldMap.cs" />
+    <Compile Include="FieldMaps\TicketLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\TicketRelationshipsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketTemplatesFieldMap.cs" />
     <Compile Include="FieldMaps\TranslateFieldMap.cs" />
@@ -266,6 +280,7 @@
     <Compile Include="FieldMaps\WatercoolerMsgFieldMap.cs" />
     <Compile Include="FieldMaps\WaterCoolerViewFieldMap.cs" />
     <Compile Include="FieldMaps\WikiArticlesViewFieldMap.cs" />
+    <Compile Include="Generated\GeneratedActionLinkToJira.cs" />
     <Compile Include="Generated\GeneratedArticleStats.cs" />
     <Compile Include="Generated\GeneratedAssetHistory.cs" />
     <Compile Include="Generated\GeneratedAssets.cs" />
@@ -426,6 +441,7 @@
     <Compile Include="Generated\GeneratedCreditCards.cs" />
     <Compile Include="Generated\GeneratedCRMLinkFields.cs" />
     <Compile Include="Generated\GeneratedCRMLinkResults.cs" />
+    <Compile Include="Generated\GeneratedCRMLinkSynchedOrganizations.cs" />
     <Compile Include="Generated\GeneratedCRMLinkTable.cs" />
     <Compile Include="Generated\GeneratedCustomFieldCategories.cs" />
     <Compile Include="Generated\GeneratedCustomFields.cs" />
@@ -449,12 +465,15 @@
     <Compile Include="Generated\GeneratedGroups.cs" />
     <Compile Include="Generated\GeneratedInvoices.cs" />
     <Compile Include="Generated\GeneratedKBStats.cs" />
+    <Compile Include="Generated\GeneratedKnowledgeBaseCategories.cs" />
     <Compile Include="Generated\GeneratedLoginAttempts.cs" />
     <Compile Include="Generated\GeneratedLoginHistory.cs" />
+    <Compile Include="Generated\GeneratedMiscellaneousLog.cs" />
     <Compile Include="Generated\GeneratedNotes.cs" />
     <Compile Include="Generated\GeneratedNotesView.cs" />
     <Compile Include="Generated\GeneratedOrganizationEmails.cs" />
     <Compile Include="Generated\GeneratedOrganizationProducts.cs" />
+    <Compile Include="Generated\GeneratedOrganizationProductsView.cs" />
     <Compile Include="Generated\GeneratedOrganizations.cs" />
     <Compile Include="Generated\GeneratedOrganizationSettings.cs" />
     <Compile Include="Generated\GeneratedOrganizationsView.cs" />
@@ -469,6 +488,7 @@
     <Compile Include="Generated\GeneratedProductVersions.cs" />
     <Compile Include="Generated\GeneratedProductVersionStatuses.cs" />
     <Compile Include="Generated\GeneratedProductVersionsView.cs" />
+    <Compile Include="Generated\GeneratedRecentlyViewedItems.cs" />
     <Compile Include="Generated\GeneratedReminders.cs" />
     <Compile Include="Generated\GeneratedReportData.cs" />
     <Compile Include="Generated\GeneratedReportEmails.cs" />
@@ -498,6 +518,7 @@
     <Compile Include="Generated\GeneratedTicketAutomationTriggerLogic.cs" />
     <Compile Include="Generated\GeneratedTicketAutomationTriggers.cs" />
     <Compile Include="Generated\GeneratedTicketGridView.cs" />
+    <Compile Include="Generated\GeneratedTicketLinkToJira.cs" />
     <Compile Include="Generated\GeneratedTicketNextStatuses.cs" />
     <Compile Include="Generated\GeneratedTicketQueue.cs" />
     <Compile Include="Generated\GeneratedTicketRatings.cs" />
@@ -530,6 +551,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Proxies\ActionLinkToJiraProxy.cs" />
     <Compile Include="Proxies\ActionLogsProxy.cs" />
     <Compile Include="Proxies\ActionLogsViewProxy.cs" />
     <Compile Include="Proxies\ActionsProxy.cs" />
@@ -555,6 +577,7 @@
     <Compile Include="Proxies\CreditCardsProxy.cs" />
     <Compile Include="Proxies\CRMLinkFieldsProxy.cs" />
     <Compile Include="Proxies\CRMLinkResultsProxy.cs" />
+    <Compile Include="Proxies\CRMLinkSynchedOrganizationsProxy.cs" />
     <Compile Include="Proxies\CRMLinkTableProxy.cs" />
     <Compile Include="Proxies\CustomFieldCategoriesProxy.cs" />
     <Compile Include="Proxies\CustomFieldsProxy.cs" />
@@ -578,12 +601,16 @@
     <Compile Include="Proxies\GroupsProxy.cs" />
     <Compile Include="Proxies\InvoicesProxy.cs" />
     <Compile Include="Proxies\KBStatsProxy.cs" />
+    <Compile Include="Proxies\KnowledgeBaseCategoriesProxy.cs" />
+    <Compile Include="Proxies\KnowledgeBaseCategoryTicketsProxy.cs" />
     <Compile Include="Proxies\LoginAttemptsProxy.cs" />
     <Compile Include="Proxies\LoginHistoryProxy.cs" />
+    <Compile Include="Proxies\MiscellaneousLogProxy.cs" />
     <Compile Include="Proxies\NotesProxy.cs" />
     <Compile Include="Proxies\NotesViewProxy.cs" />
     <Compile Include="Proxies\OrganizationEmailsProxy.cs" />
     <Compile Include="Proxies\OrganizationProductsProxy.cs" />
+    <Compile Include="Proxies\OrganizationProductsViewProxy.cs" />
     <Compile Include="Proxies\OrganizationSettingsProxy.cs" />
     <Compile Include="Proxies\OrganizationsProxy.cs" />
     <Compile Include="Proxies\OrganizationsViewProxy.cs" />
@@ -598,6 +625,7 @@
     <Compile Include="Proxies\ProductVersionsProxy.cs" />
     <Compile Include="Proxies\ProductVersionStatusesProxy.cs" />
     <Compile Include="Proxies\ProductVersionsViewProxy.cs" />
+    <Compile Include="Proxies\RecentlyViewedItemsProxy.cs" />
     <Compile Include="Proxies\RemindersProxy.cs" />
     <Compile Include="Proxies\ReportDataProxy.cs" />
     <Compile Include="Proxies\ReportEmailsProxy.cs" />
@@ -628,6 +656,7 @@
     <Compile Include="Proxies\TicketAutomationTriggerLogicProxy.cs" />
     <Compile Include="Proxies\TicketAutomationTriggersProxy.cs" />
     <Compile Include="Proxies\TicketGridViewProxy.cs" />
+    <Compile Include="Proxies\TicketLinkToJiraProxy.cs" />
     <Compile Include="Proxies\TicketNextStatusesProxy.cs" />
     <Compile Include="Proxies\TicketQueueProxy.cs" />
     <Compile Include="Proxies\TicketRatingsProxy.cs" />

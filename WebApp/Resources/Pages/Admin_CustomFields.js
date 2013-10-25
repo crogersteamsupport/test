@@ -156,7 +156,7 @@ AdminCustomFields = function () {
 
       });
     });
-
+    top.Ts.System.logAction('Admin Custom Fields - Field Order Saved');
     top.Ts.Services.CustomFields.SaveOrder(JSON.stringify(orders));
 
   }
@@ -168,9 +168,11 @@ AdminCustomFields = function () {
     var wnd = top.GetCustomFieldDialog(customFieldID, refType, auxID, catID);
     wnd.add_close(fieldDialogClosed);
     wnd.show();
+    top.Ts.System.logAction('Admin Custom Fields - Field Dialog Opened');
     function fieldDialogClosed(sender, args) {
       sender.remove_close(fieldDialogClosed);
       loadData();
+
     }
   }
 
@@ -206,6 +208,8 @@ AdminCustomFields = function () {
           .click(function (e) {
             if (confirm('Are you sure you would like to delete this category?  Your existing custom fields will not removed.')) {
               top.Ts.Services.CustomFields.DeleteCategory($(this).closest('.admin-cf-cat').data('Category').CustomFieldCategoryID, function () {
+                top.Ts.System.logAction('Admin Custom Fields - Category Deleted');
+
                 loadData();
               });
             }
@@ -301,6 +305,8 @@ AdminCustomFields = function () {
           var parent = $(this).closest('.admin-cf-field');
           if (!confirm('WARNING: Are you sure you would like to delete this custom field.  You will lose ALL data associated with this custom field.')) return;
           top.Ts.Services.CustomFields.DeleteCustomField($(this).closest('.admin-cf-field').data('CustomField').CustomFieldID, function (result) {
+            top.Ts.System.logAction('Admin Custom Fields - Field Deleted');
+
             parent.remove();
           });
         }).hide()
@@ -335,10 +341,14 @@ AdminCustomFields = function () {
       if (cat === null) {
         top.Ts.Services.CustomFields.NewCategory($('.admin-cf-type').val(), ($('.admin-cf-type').val() == 17 ? $('.admin-cf-tickettype').val() : null), $(this).prev().val(), function (result) {
           element.closest('.admin-cf-cat').data('Category', result);
+          top.Ts.System.logAction('Admin Custom Fields - Category Created');
+
         });
       }
       else {
         top.Ts.Services.CustomFields.SaveCategory(cat.CustomFieldCategoryID, $(this).prev().val());
+        top.Ts.System.logAction('Admin Custom Fields - Category Edited');
+
       }
 
       header.show().find('.caption').text($(this).prev().val());

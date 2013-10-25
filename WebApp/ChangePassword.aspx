@@ -21,7 +21,7 @@
             $('#divAlert').html(result).show('fast');
           }
           else {
-            window.location = 'Message.aspx?ReturnUrl=Default.aspx&Message=password_changed'
+            window.location = 'Message.aspx?ReturnUrl=Login.aspx&Message=password_changed'
           }
         });
       });

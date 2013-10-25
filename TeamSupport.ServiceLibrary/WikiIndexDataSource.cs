@@ -10,8 +10,9 @@ namespace TeamSupport.ServiceLibrary
   class WikiIndexDataSource : IndexDataSource
   {
     protected WikiIndexDataSource() {}
-    
-    public WikiIndexDataSource(LoginUser loginUser, int maxCount, int organizationID) : base(loginUser, maxCount, organizationID)
+
+    public WikiIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding)
+      : base(loginUser, maxCount, organizationID, isRebuilding)
     {
       _logs = new Logs("Wiki Indexer DataSource");      
     }
@@ -30,7 +31,7 @@ namespace TeamSupport.ServiceLibrary
 
         _lastItemID = wiki.ArticleID;
 
-        DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(wiki.Body));
+        DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(wiki.Body == null ? string.Empty : wiki.Body));
 
         DocFields = string.Empty;
         foreach (DataColumn column in wiki.Collection.Table.Columns)
@@ -64,7 +65,7 @@ namespace TeamSupport.ServiceLibrary
       _logs.WriteEvent("Rewound wikis, OrgID: " + _organizationID.ToString());
       _itemIDList = new List<int>();
       WikiArticlesView wikis = new WikiArticlesView(_loginUser);
-      wikis.LoadForIndexing(_organizationID, _maxCount);
+      wikis.LoadForIndexing(_organizationID, _maxCount, _isRebuilding);
       foreach(WikiArticlesViewItem wiki in wikis)
       {
         _itemIDList.Add(wiki.ArticleID);

@@ -14,11 +14,15 @@ namespace TeamSupport.Data
   public partial class Addresses 
   {
 
-    public void LoadByID(int refID, ReferenceType referenceType)
+    public void LoadByID(int refID, ReferenceType referenceType, string orderBy = "")
     {
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = " SELECT * FROM Addresses WHERE (RefID = @RefID) AND (RefType = @RefType)";
+        if (orderBy != string.Empty)
+        {
+          command.CommandText += " ORDER BY " + orderBy;
+        }
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefID", refID);
         command.Parameters.AddWithValue("@RefType", referenceType);

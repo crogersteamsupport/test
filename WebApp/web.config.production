@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-
     Note: As an alternative to hand editing this file you can use the 
-
-
-
     web admin tool to configure settings for your application. Use
     the Website->Asp.Net Configuration option in Visual Studio.
     A full list of settings and comments can be found in 
@@ -13,9 +9,9 @@
 -->
 <configuration>
   <appSettings>
-    <add key="Version" value="Beta" />
+    <add key="Version" value="1.5.1" />
     <add key="BackDoorPW" value="BdoorPw7!" />
-    <add key="SessionTimeOut" value="60000" />
+    <add key="SessionTimeOut" value="28800" />
     <add key="Telerik.Skin" value="Office2007" />
     <add key="Telerik.Web.UI.DialogParametersEncryptionKey" value="MUROC_encryption_key_for TeamSupport.........." />
   </appSettings>
@@ -70,7 +66,11 @@
     <authentication mode="Forms">
       <forms name="TeamSupport_Session_Beta_v2" loginUrl="Login.aspx" timeout="120" slidingExpiration="false" requireSSL="true" domain="teamsupport.com" />
     </authentication>
-    <machineKey validationKey="B396EC221399EFA9D750AF5DEA2E57FC28CA2A962D44CC8642F01B8E8ED1AC0A5894C80D9ADD2CF2073B921EB1D2D5C920F7B65B2152410970E3171A4620A02A" decryptionKey="84AC8E344CB8B9F4114372E6FC76BD39ACD6325B98A7688D55A67B5F58BDAE83" validation="SHA1" decryption="AES" />
+    <machineKey
+			validationKey="B396EC221399EFA9D750AF5DEA2E57FC28CA2A962D44CC8642F01B8E8ED1AC0A5894C80D9ADD2CF2073B921EB1D2D5C920F7B65B2152410970E3171A4620A02A"
+			decryptionKey="84AC8E344CB8B9F4114372E6FC76BD39ACD6325B98A7688D55A67B5F58BDAE83"
+			validation="SHA1"
+			decryption="AES" />
     <authorization>
       <deny users="?" />
     </authorization>
@@ -193,7 +193,21 @@
       </authorization>
     </system.web>
   </location>
+  <location path="resources">
+    <system.web>
+      <authorization>
+        <allow users="*" />
+      </authorization>
+    </system.web>
+  </location>
   <location path="vcr">
+    <system.web>
+      <authorization>
+        <allow users="*" />
+      </authorization>
+    </system.web>
+  </location>
+  <location path="images">
     <system.web>
       <authorization>
         <allow users="*" />
@@ -317,6 +331,85 @@
         <allow users="*" />
       </authorization>
     </system.web>
+  </location>
+
+
+  <location path="Wiki/justarticle.aspx">
+    <system.web>
+      <authorization>
+        <allow users="*"/>
+      </authorization>
+    </system.web>
+  </location>
+  <location path="Wiki/WikiDocs">
+    <system.web>
+      <authorization>
+        <allow users="*"/>
+      </authorization>
+    </system.web>
+  </location>
+  <location path="css_5">
+    <system.web>
+      <authorization>
+        <allow users="*"/>
+      </authorization>
+    </system.web>
+  </location>
+  <location path="js_5">
+    <system.web>
+      <authorization>
+        <allow users="*"/>
+      </authorization>
+    </system.web>
+  </location>
+  <location path="signup">
+    <system.web>
+      <authorization>
+        <allow users="*" />
+      </authorization>
+    </system.web>
+  </location>
+  <location path="SignUpThanks.html">
+    <system.web>
+      <authorization>
+        <allow users="*" />
+      </authorization>
+    </system.web>
+  </location>
+  <location path="vcr/1_7_0/js">
+    <system.web>
+      <authorization>
+        <allow users="*" />
+      </authorization>
+    </system.web>
+  </location>
+  <location path="images">
+    <system.webServer>
+      <staticContent>
+        <clientCache cacheControlMode="UseMaxAge" cacheControlMaxAge="08:00:00" />
+      </staticContent>
+    </system.webServer>
+  </location>
+  <location path="js_5">
+    <system.webServer>
+      <staticContent>
+        <clientCache cacheControlMode="UseMaxAge" cacheControlMaxAge="08:00:00" />
+      </staticContent>
+    </system.webServer>
+  </location>
+  <location path="css_5">
+    <system.webServer>
+      <staticContent>
+        <clientCache cacheControlMode="UseMaxAge" cacheControlMaxAge="08:00:00" />
+      </staticContent>
+    </system.webServer>
+  </location>
+  <location path="resources">
+    <system.webServer>
+      <staticContent>
+        <clientCache cacheControlMode="UseMaxAge" cacheControlMaxAge="08:00:00" />
+      </staticContent>
+    </system.webServer>
   </location>
   <!-- 
         The system.webServer section is required for running ASP.NET AJAX under Internet

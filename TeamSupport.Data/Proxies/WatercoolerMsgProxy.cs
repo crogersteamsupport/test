@@ -22,6 +22,7 @@ namespace TeamSupport.Data
     [DataMember] public bool IsDeleted { get; set; }
     [DataMember] public DateTime LastModified { get; set; }
     [DataMember] public string UserName { get; set; }              
+    [DataMember] public bool NeedsIndexing { get; set; }
   }
   
   public partial class WatercoolerMsgItem : BaseItem
@@ -29,6 +30,7 @@ namespace TeamSupport.Data
     public WatercoolerMsgItemProxy GetProxy()
     {
       WatercoolerMsgItemProxy result = new WatercoolerMsgItemProxy();
+      result.NeedsIndexing = this.NeedsIndexing;
       result.IsDeleted = this.IsDeleted;
       result.MessageParent = this.MessageParent;
       result.Message = MakeLink(this.Message);

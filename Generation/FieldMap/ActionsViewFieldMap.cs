@@ -27,6 +27,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("TicketID", "TicketID", false, false, false);
+      _fieldMap.AddMap("ActionSource", "ActionSource", false, false, false);
       _fieldMap.AddMap("CreatorName", "CreatorName", false, false, false);
       _fieldMap.AddMap("ModifierName", "ModifierName", false, false, false);
       _fieldMap.AddMap("ActionType", "ActionType", false, false, false);

@@ -15,9 +15,12 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Globalization;
 using System.Security.Cryptography;
+using System.Net;
+
 
 namespace TSWebServices
 {
+
   [ScriptService]
   [WebService(Namespace = "http://teamsupport.com/")]
   [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
@@ -29,6 +32,13 @@ namespace TSWebServices
 
       //Uncomment the following line if using designed components 
       //InitializeComponent(); 
+    }
+
+    [WebMethod]
+    public string UtilTest()
+    {
+      Organization org = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+      return org.IsInBusinessHours(DateTime.UtcNow).ToString();
     }
 
     [WebMethod]
@@ -65,7 +75,7 @@ namespace TSWebServices
       result.DateTimePattern.ShortTime = culture.DateTimeFormat.ShortTimePattern;
       return result;
     }
-  
+
     [WebMethod]
     public ChatUserSettingProxy GetCurrentUserChatSettings()
     {
@@ -99,90 +109,143 @@ namespace TSWebServices
       User user = TSAuthentication.GetUser(loginUser);
       string data = @"{{""ContentUrl"":""{0}"",""PaneInfoUrl"":""{1}""}}";
 
+
       if (org.ParentID != null)
       {
         if (user.ShowWelcomePage == true && user.IsSystemAdmin == true)
         {
-          items.Add(new TsMenuItem("welcome", "mniWelcome", "Welcome", "vcr/142/images/icons/Arrow_Right.png", string.Format(data, "vcr/142/Pages/Welcome.html", "vcr/142/PaneInfo/Welcome.html")));
+          items.Add(new TsMenuItem("welcome", "mniWelcome", "Getting Started", "vcr/1_7_0/images/icons/Arrow_Right.png", string.Format(data, "vcr/1_7_0/Pages/Welcome.html", "vcr/1_7_0/PaneInfo/Welcome.html")));
         }
-        
 
-        items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "vcr/142/images/nav/16/Dashboard.png", string.Format(data, "Frames/Dashboard.aspx", "vcr/142/PaneInfo/Dashboard.html")));
-
-        items.Add(new TsMenuItem("mytickets", "mniMyTickets", "My Tickets", "vcr/142/images/nav/16/mytickets.png", string.Format(data, "vcr/142/Pages/TicketTabs.html?UserID=" + TSAuthentication.UserID, "vcr/142/PaneInfo/MyTickets.html")));
-        items.Add(new TsMenuItem("tickettags", "mniTicketTags", "Ticket Tags", "vcr/142/images/nav/16/tag.png", string.Format(data, "Frames/TicketTags.aspx", "vcr/142/PaneInfo/TicketTags.html")));
-
-        TsMenuItem ticketItem = new TsMenuItem("tickets", "mniTickets", "All Tickets", "vcr/142/images/nav/16/tickets.png", string.Format(data, "vcr/142/Pages/TicketTabs.html", "vcr/142/PaneInfo/Tickets.html"));
-        items.Add(ticketItem);
-
-        TicketTypes ticketTypes = new TicketTypes(loginUser);
-        ticketTypes.LoadByOrganizationID(TSAuthentication.OrganizationID, org.ProductType);
-        foreach (TicketType ticketType in ticketTypes)
+        if (IsMenuItemActive(user, "mniDashboard"))
         {
-          ticketItem.AddItem(new TsMenuItem("tickettype", "mniTicketType_" + ticketType.TicketTypeID.ToString(), ticketType.Name, ticketType.IconUrl, string.Format(data, "vcr/142/Pages/TicketTabs.html?TicketTypeID=" + ticketType.TicketTypeID.ToString(), "vcr/142/PaneInfo/Tickets.html")));
+          items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "vcr/1_7_0/images/nav/16/Dashboard.png", string.Format(data, "Frames/Dashboard.aspx", "vcr/1_7_0/PaneInfo/Dashboard.html")));
         }
 
-        items.Add(new TsMenuItem("kb", "mniKB", "Knowledge Base", "vcr/142/images/nav/16/knowledge.png", string.Format(data, "Frames/KnowledgeBase.aspx", "vcr/142/PaneInfo/Knowledge.html")));
-
-        if (org.UseForums == true)
+        if (IsMenuItemActive(user, "mniMyTickets"))
         {
-          items.Add(new TsMenuItem("forum", "mniForum", "Community", "vcr/142/images/nav/16/forum.png", string.Format(data, "vcr/142/Pages/TicketGrid.html?tf_ForumCategoryID=-1", "vcr/142/PaneInfo/Community.html")));
+          items.Add(new TsMenuItem("mytickets", "mniMyTickets", "My Tickets", "vcr/1_7_0/images/nav/16/mytickets.png", string.Format(data, "vcr/1_7_0/Pages/TicketTabs.html?UserID=" + TSAuthentication.UserID, "vcr/1_7_0/PaneInfo/MyTickets.html")));
         }
 
-        if (org.ProductType != ProductType.Express)
+        if (IsMenuItemActive(user, "mniTickets"))
+        {
+          TsMenuItem ticketItem = new TsMenuItem("tickets", "mniTickets", "All Tickets", "vcr/1_7_0/images/nav/16/tickets.png", string.Format(data, "vcr/1_7_0/Pages/TicketTabs.html", "vcr/1_7_0/PaneInfo/Tickets.html"));
+          items.Add(ticketItem);
+
+          TicketTypes ticketTypes = new TicketTypes(loginUser);
+          ticketTypes.LoadByOrganizationID(TSAuthentication.OrganizationID, org.ProductType);
+          foreach (TicketType ticketType in ticketTypes)
+          {
+            string mniID = "mniTicketType_" + ticketType.TicketTypeID.ToString();
+            if (IsMenuItemActive(user, mniID))
+            {
+              ticketItem.AddItem(new TsMenuItem("tickettype", mniID, ticketType.Name, ticketType.IconUrl, string.Format(data, "vcr/1_7_0/Pages/TicketTabs.html?TicketTypeID=" + ticketType.TicketTypeID.ToString(), "vcr/1_7_0/PaneInfo/Tickets.html")));
+            }
+          }
+        }
+
+        if (IsMenuItemActive(user, "mniTicketTags"))
+        {
+          items.Add(new TsMenuItem("tickettags", "mniTicketTags", "Ticket Tags", "vcr/1_7_0/images/nav/16/tag.png", string.Format(data, "Frames/TicketTags.aspx", "vcr/1_7_0/PaneInfo/TicketTags.html")));
+        }
+
+        if (IsMenuItemActive(user, "mniKB"))
+        {
+          items.Add(new TsMenuItem("kb", "mniKB", "Knowledge Base", "vcr/1_7_0/images/nav/16/knowledge.png", string.Format(data, "vcr/1_7_0/Pages/KnowledgeBase.html", "vcr/1_7_0/PaneInfo/Knowledge.html")));
+        }
+
+        if (IsMenuItemActive(user, "mniForum") && org.UseForums == true)
+        {
+          items.Add(new TsMenuItem("forum", "mniForum", "Community", "vcr/1_7_0/images/nav/16/forum.png", string.Format(data, "vcr/1_7_0/Pages/TicketGrid.html?tf_ForumCategoryID=-1", "vcr/1_7_0/PaneInfo/Community.html")));
+        }
+
+        if (org.ProductType != ProductType.Express && IsMenuItemActive(user, "mniWiki"))
         {
           int? articleID = org.DefaultWikiArticleID;
           string wikiLink = articleID == null ? "Wiki/ViewPage.aspx" : "Wiki/ViewPage.aspx?ArticleID=" + articleID;
-          items.Add(new TsMenuItem("wiki", "mniWiki", "Wiki", "vcr/142/images/nav/16/wiki.png", string.Format(data, wikiLink, "vcr/142/PaneInfo/Wiki.html")));
+          items.Add(new TsMenuItem("wiki", "mniWiki", "Wiki", "vcr/1_7_0/images/nav/16/wiki.png", string.Format(data, wikiLink, "vcr/1_7_0/PaneInfo/Wiki.html")));
         }
 
-        //items.Add(new TsMenuItem("search", "mniSearch", "Search", "vcr/142/images/nav/16/search.png", string.Format(data, "Frames/Search.aspx", "vcr/141/PaneInfo/Search.html")));
-        items.Add(new TsMenuItem("search", "mniSearch", "Search", "vcr/142/images/nav/16/search.png", string.Format(data, "vcr/142/Pages/Search.html", "vcr/142/PaneInfo/Search.html")));
-
-        if (user.IsChatUser && org.ChatSeats > 0)
+        if (IsMenuItemActive(user, "mniSearch"))
         {
-          items.Add(new TsMenuItem("chat", "mniChat", "Chat", "vcr/142/images/nav/16/chat.png", string.Format(data, "Frames/Chat.aspx", "vcr/142/PaneInfo/Chat.html")));
+          items.Add(new TsMenuItem("search", "mniSearch", "Search", "vcr/1_7_0/images/nav/16/search.png", string.Format(data, "vcr/1_7_0/Pages/Search.html", "vcr/1_7_0/PaneInfo/Search.html")));
         }
 
-        if (org.ProductType != ProductType.Express)
+        if (user.IsChatUser && org.ChatSeats > 0 && IsMenuItemActive(user, "mniChat"))
         {
-          string wcLink = TSAuthentication.IsNewWCTemp ? "vcr/142/Pages/WaterCooler.html" : "WaterCooler/WaterCooler.aspx";
-          items.Add(new TsMenuItem("wc2", "mniWC2", "Water Cooler", "vcr/142/images/nav/16/watercooler.png", string.Format(data, wcLink, "vcr/142/PaneInfo/WaterCooler.html")));
+          items.Add(new TsMenuItem("chat", "mniChat", "Customer Chat", "vcr/1_7_0/images/nav/16/chat.png", string.Format(data, "Frames/Chat.aspx", "vcr/1_7_0/PaneInfo/Chat.html")));
         }
 
-        items.Add(new TsMenuItem("users", "mniUsers", "Users", "vcr/142/images/nav/16/users.png", string.Format(data, "Frames/Users.aspx", "vcr/142/PaneInfo/Users.html")));
-        items.Add(new TsMenuItem("groups", "mniGroups", "Groups", "vcr/142/images/nav/16/groups.png", string.Format(data, "Frames/Groups.aspx", "vcr/142/PaneInfo/Groups.html")));
-        if (org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.HelpDesk)
-          items.Add(new TsMenuItem("customers", "mniCustomers", "Customers", "vcr/142/images/nav/16/customers.png", string.Format(data, "Frames/Organizations.aspx", "vcr/142/PaneInfo/Customers.html")));
-        if (org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.BugTracking)
-          items.Add(new TsMenuItem("products", "mniProducts", "Products", "vcr/142/images/nav/16/products.png", string.Format(data, "Frames/Products.aspx", "vcr/142/PaneInfo/Products.html")));
-        if (org.IsInventoryEnabled)
-          items.Add(new TsMenuItem("inventory", "mniInventory", "Inventory", "vcr/142/images/nav/16/inventory.png", string.Format(data, "Inventory/Inventory.aspx", "vcr/142/PaneInfo/Inventory.html")));
-
-        if (user.IsSystemAdmin || !org.AdminOnlyReports)
-          items.Add(new TsMenuItem("reports", "mniReports", "Reports", "vcr/142/images/nav/16/reports.png", string.Format(data, "Frames/Reports.aspx", "vcr/142/PaneInfo/Reports.html")));
-        if (user.IsSystemAdmin)
-          items.Add(new TsMenuItem("admin", "mniAdmin", "Admin", "vcr/142/images/nav/16/admin.png", string.Format(data, "Frames/Admin.aspx", "vcr/142/PaneInfo/Admin.html")));
-        if (TSAuthentication.OrganizationID == 1078 || TSAuthentication.UserID == 84)
+        if (org.ProductType != ProductType.Express && IsMenuItemActive(user, "mniWC2"))
         {
-          TsMenuItem utils = new TsMenuItem("utils", "mniUtils", "Utilities", "vcr/142/images/nav/16/iis.png", string.Format(data, "vcr/142/Pages/Utils.html", "vcr/142/PaneInfo/Admin.html"));
+          items.Add(new TsMenuItem("wc2", "mniWC2", "Water Cooler", "vcr/1_7_0/images/nav/16/watercooler.png", string.Format(data, "vcr/1_7_0/Pages/WaterCooler.html", "vcr/1_7_0/PaneInfo/WaterCooler.html")));
+        }
+
+        if (IsMenuItemActive(user, "mniUsers"))
+        {
+          items.Add(new TsMenuItem("users", "mniUsers", "Users", "vcr/1_7_0/images/nav/16/users.png", string.Format(data, "Frames/Users.aspx", "vcr/1_7_0/PaneInfo/Users.html")));
+        }
+
+        if (IsMenuItemActive(user, "mniGroups"))
+        {
+          items.Add(new TsMenuItem("groups", "mniGroups", "Groups", "vcr/1_7_0/images/nav/16/groups.png", string.Format(data, "Frames/Groups.aspx", "vcr/1_7_0/PaneInfo/Groups.html")));
+        }
+
+        if ((org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.HelpDesk) && IsMenuItemActive(user, "mniCustomers"))
+          items.Add(new TsMenuItem("customers", "mniCustomers", "Customers", "vcr/1_7_0/images/nav/16/customers.png", string.Format(data, "Frames/Organizations.aspx", "vcr/1_7_0/PaneInfo/Customers.html")));
+
+        if ((org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.HelpDesk) && IsMenuItemActive(user, "mniCustomers"))
+        {
+            if (TSAuthentication.OrganizationID == 1078)
+                items.Add(new TsMenuItem("customers2", "mniCustomers2", "New Customers", "vcr/1_7_0/images/nav/16/customers.png", string.Format(data, "vcr/1_7_0/Pages/Customers.html", "vcr/1_7_0/PaneInfo/Customers.html")));
+        }
+
+        if ((org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.BugTracking) && IsMenuItemActive(user, "mniProducts"))
+          items.Add(new TsMenuItem("products", "mniProducts", "Products", "vcr/1_7_0/images/nav/16/products.png", string.Format(data, "Frames/Products.aspx", "vcr/1_7_0/PaneInfo/Products.html")));
+
+        if (org.IsInventoryEnabled && IsMenuItemActive(user, "mniInventory"))
+          items.Add(new TsMenuItem("inventory", "mniInventory", "Inventory", "vcr/1_7_0/images/nav/16/inventory.png", string.Format(data, "Inventory/Inventory.aspx", "vcr/1_7_0/PaneInfo/Inventory.html")));
+
+        if ((user.IsSystemAdmin || !org.AdminOnlyReports) && IsMenuItemActive(user, "mniReports"))
+        {
+          items.Add(new TsMenuItem("reports", "mniReports", "Reports", "vcr/1_7_0/images/nav/16/reports.png", string.Format(data, "Frames/Reports.aspx", "vcr/1_7_0/PaneInfo/Reports.html")));
+          if (TSAuthentication.OrganizationID == 1078)
+          {
+            items.Add(new TsMenuItem("reports2", "mniReports2", "New Reports", "vcr/1_7_0/images/nav/16/reports.png", string.Format(data, "vcr/1_7_0/pages/reports.html", "vcr/1_7_0/PaneInfo/Reports.html")));
+          }
+        }
+        if (user.IsSystemAdmin && IsMenuItemActive(user, "mniAdmin"))
+          items.Add(new TsMenuItem("admin", "mniAdmin", "Admin", "vcr/1_7_0/images/nav/16/admin.png", string.Format(data, "Frames/Admin.aspx", "vcr/1_7_0/PaneInfo/Admin.html")));
+
+        if (TSAuthentication.OrganizationID == 1078 && TSAuthentication.IsSystemAdmin)
+        {
+          TsMenuItem utils = new TsMenuItem("utils", "mniUtils", "Utilities", "vcr/1_7_0/images/nav/16/iis.png", string.Format(data, "vcr/1_7_0/Pages/Utils.html", "vcr/1_7_0/PaneInfo/Admin.html"));
           items.Add(utils);
-          utils.AddItem(new TsMenuItem("utils", "utils-tickets", "Tickets", "vcr/142/images/nav/16/Tickets.png", string.Format(data, "vcr/142/Pages/Utils_Tickets.html", "vcr/142/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-organizations", "Organizations", "vcr/142/images/nav/16/Customers.png", string.Format(data, "vcr/142/Pages/Utils_Organizations.html", "vcr/142/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-exceptions", "Exceptions", "vcr/142/images/nav/16/close_2.png", string.Format(data, "vcr/142/Pages/Utils_Exceptions.html", "vcr/142/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-services", "Services", "vcr/142/images/nav/16/close_2.png", string.Format(data, "vcr/142/Pages/Utils_Services.html", "vcr/142/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-sanitizer", "Sanitizer", "vcr/142/images/nav/16/close_2.png", string.Format(data, "vcr/142/Pages/Utils_Sanitizer.html", "vcr/142/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-ticketsearch", "Ticket Search", "vcr/142/images/nav/16/close_2.png", string.Format(data, "vcr/142/Pages/Utils_TicketSearch.html", "vcr/142/PaneInfo/Admin.html")));
-          utils.AddItem(new TsMenuItem("utils", "utils-emailsearch", "Email Search", "vcr/142/images/nav/16/close_2.png", string.Format(data, "vcr/142/Pages/Utils_EmailsSearch.html", "vcr/142/PaneInfo/Admin.html")));
-          
+          utils.AddItem(new TsMenuItem("utils", "utils-accounts", "Accounts", "vcr/1_7_0/images/nav/16/Customers.png", string.Format(data, "vcr/1_7_0/Pages/Utils_Accounts.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-tickets", "Tickets", "vcr/1_7_0/images/nav/16/Tickets.png", string.Format(data, "vcr/1_7_0/Pages/Utils_Tickets.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-organizations", "Organizations", "vcr/1_7_0/images/nav/16/Customers.png", string.Format(data, "vcr/1_7_0/Pages/Utils_Organizations.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+          //utils.AddItem(new TsMenuItem("utils", "utils-users", "Users", "vcr/1_7_0/images/nav/16/User.png", string.Format(data, "vcr/1_7_0/Pages/Utils_Users.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-exceptions", "Exceptions", "vcr/1_7_0/images/nav/16/close_2.png", string.Format(data, "vcr/1_7_0/Pages/Utils_Exceptions.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-services", "Services", "vcr/1_7_0/images/nav/16/close_2.png", string.Format(data, "vcr/1_7_0/Pages/Utils_Services.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-sanitizer", "Sanitizer", "vcr/1_7_0/images/nav/16/close_2.png", string.Format(data, "vcr/1_7_0/Pages/Utils_Sanitizer.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-ticketsearch", "Ticket Search", "vcr/1_7_0/images/nav/16/close_2.png", string.Format(data, "vcr/1_7_0/Pages/Utils_TicketSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-portalsearch", "Portal Search", "vcr/1_7_0/images/nav/16/close_2.png", string.Format(data, "vcr/1_7_0/Pages/Utils_PortalSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-emailsearch", "Email Search", "vcr/1_7_0/images/nav/16/close_2.png", string.Format(data, "vcr/1_7_0/Pages/Utils_EmailsSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+
         }
       }
       else
       {
-        items.Add(new TsMenuItem("tsusers", "mniUsers", "System Users", "vcr/142/images/nav/16/users.png", string.Format(data, "Frames/Users.aspx", "vcr/142/PaneInfo/Users.html")));
-        items.Add(new TsMenuItem("tscustomers", "mniCustomers", "System Customers", "vcr/142/images/nav/16/customers.png", string.Format(data, "Frames/Organizations.aspx", "vcr/142/PaneInfo/Organizations.html")));
+        items.Add(new TsMenuItem("tsusers", "mniUsers", "System Users", "vcr/1_7_0/images/nav/16/users.png", string.Format(data, "Frames/Users.aspx", "vcr/1_7_0/PaneInfo/Users.html")));
+        items.Add(new TsMenuItem("tscustomers", "mniCustomers", "System Customers", "vcr/1_7_0/images/nav/16/customers.png", string.Format(data, "Frames/Organizations.aspx", "vcr/1_7_0/PaneInfo/Organizations.html")));
       }
       return items.ToArray();
+    }
+
+    private static bool IsMenuItemActive(User user, string item)
+    {
+      if (user.MenuItems == null) return true;
+      return user.MenuItems.IndexOf(item) > -1;
     }
 
     [WebMethod]
@@ -225,74 +288,31 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public TsMainPageUpdate GetMainPageUpdate(int lastChatMessageID, int lastChatRequestID, int lastWCMessageID, string sessionID)
+    public int GetChatInterval()
     {
-      if (sessionID == null) sessionID = "<NULL>";
-      
-      int userID = TSAuthentication.UserID;
-      TsMainPageUpdate update = new TsMainPageUpdate();
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Organization org = TSAuthentication.GetOrganization(loginUser);
+      return ChatRequests.GetRequestCountInLastDays(loginUser, loginUser.OrganizationID, 180) > 0 || org.DateCreated.AddDays(-30) > DateTime.UtcNow ? 3500 : 30000;
+    }
+
+    [WebMethod]
+    public TsChatUpdate GetChatUpdate(int lastChatMessageID, int lastChatRequestID)
+    {
+      TsChatUpdate update = new TsChatUpdate();
       try
       {
-        update.IsDebug = TSAuthentication.OrganizationID == 1078 || TSAuthentication.IsBackdoor;
-        User user = Users.GetUser(LoginUser.Anonymous, userID);
-        LoginUser loginUser = new LoginUser(userID, user.OrganizationID, null);
-
-
+        User user = Users.GetUser(LoginUser.Anonymous, TSAuthentication.UserID);
         user.UpdatePing();
 
-        if (TSAuthentication.Ticket.Expired && !TSAuthentication.IsBackdoor)
-        {
-          user.SessionID = null;
-          user.Collection.Save();
-        }
+        LoginUser loginUser = new LoginUser(user.UserID, user.OrganizationID, null);
 
-        bool isSessionValid = (sessionID == TSAuthentication.SessionID) || TSAuthentication.IsBackdoor;
-        if (!isSessionValid && !TSAuthentication.Ticket.Expired)
-        {
-          ExceptionLogs.AddLog(loginUser, "Session Expired in GetMainPageUpdate (SessionID = " + sessionID + ")");
-          FormsAuthentication.SignOut();
-          update.IsExpired = true;
-          return update;
-        }
-
-        List<GrowlMessage> wcGrowl = new List<GrowlMessage>();
         List<GrowlMessage> chatMessageGrowl = new List<GrowlMessage>();
         List<GrowlMessage> chatRequestGrowl = new List<GrowlMessage>();
 
-        update.RefreshID = int.Parse(SystemSettings.ReadString(loginUser, "RefreshID", "-1"));
-        update.IsExpired = !isSessionValid || TSAuthentication.Ticket.Expired;
-        update.ExpireTime = TSAuthentication.Ticket.Expiration.ToShortTimeString();
-        update.Version = System.Web.Configuration.WebConfigurationManager.AppSettings["Version"];
-        update.IsIdle = user.DateToUtc(user.LastActivity).AddMinutes(20) < DateTime.UtcNow;
         update.LastChatRequestID = lastChatRequestID;
         update.LastChatMessageID = lastChatMessageID;
-        update.LastWCMessageID = lastWCMessageID;
-        update.WCMessageCount = 0;
         update.ChatMessageCount = 0;
         update.ChatRequestCount = 0;
-        update.OpenUnreadTicketCount = Tickets.GetMyOpenUnreadTicketCount(loginUser, userID);
-
-
-        int wcID = WaterCooler.GetLastMessageID(loginUser);
-        update.LastWCMessageID = wcID;
-        WaterCooler waterCooler = new WaterCooler(loginUser);
-
-        if (lastWCMessageID < 0)
-        {
-          lastWCMessageID = user.LastWaterCoolerID;
-        }
-        else
-        {
-          waterCooler.LoadUnreadMessages(user, lastWCMessageID);
-          foreach (WaterCoolerItem wcItem in waterCooler)
-          {
-            wcGrowl.Add(new GrowlMessage(wcItem.Message, "Water Cooler", "ui-state-active"));
-          }
-        }
-
-
-        update.WCMessageCount = WaterCooler.LoadUnreadMessageCount(loginUser, user, user.LastWaterCoolerID);
-
 
         if (user.IsChatUser && ChatUserSettings.GetSetting(loginUser, user.UserID).IsAvailable)
         {
@@ -309,30 +329,73 @@ namespace TSWebServices
             update.LastChatMessageID = chatMessage.ChatMessageID;
           }
 
-          if (ChatUserSettings.GetSetting(loginUser, user.UserID).IsAvailable)
-          {
-            ChatRequests requests = new ChatRequests(loginUser);
-            requests.LoadNewWaitingRequests(loginUser.UserID, loginUser.OrganizationID, lastChatRequestID);
+          ChatRequests requests = new ChatRequests(loginUser);
+          requests.LoadNewWaitingRequests(loginUser.UserID, loginUser.OrganizationID, lastChatRequestID);
 
-            foreach (ChatRequest chatRequest in requests)
-            {
-              chatRequestGrowl.Add(new GrowlMessage(string.Format("{0} {1} is requesting a chat!", chatRequest.Row["FirstName"].ToString(), chatRequest.Row["LastName"].ToString()), "Chat Request", "ui-state-error"));
-              update.LastChatRequestID = chatRequest.ChatRequestID;
-            }
+          foreach (ChatRequest chatRequest in requests)
+          {
+            chatRequestGrowl.Add(new GrowlMessage(string.Format("{0} {1} is requesting a chat!", chatRequest.Row["FirstName"].ToString(), chatRequest.Row["LastName"].ToString()), "Chat Request", "ui-state-error"));
+            update.LastChatRequestID = chatRequest.ChatRequestID;
           }
         }
 
-        update.NewWCMessages = wcGrowl.ToArray();
         update.NewChatMessages = chatMessageGrowl.ToArray();
         update.NewChatRequests = chatRequestGrowl.ToArray();
       }
       catch (Exception ex)
       {
-        /*FormsAuthentication.SignOut();
-        update.RefreshID = -1;
-        update.IsExpired = true;*/
+        ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Main Chat Upate");
+      }
+      return update;
+    }
+
+    [WebMethod]
+    public TsMainPageUpdate GetUserStatusUpdate(string sessionID)
+    {
+      TsMainPageUpdate update = new TsMainPageUpdate();
+      try
+      {
+        update.IsDebug = TSAuthentication.OrganizationID == 1078 || TSAuthentication.IsBackdoor;
+        update.IsExpired = false;
+
+        using (SqlConnection connection = new SqlConnection(LoginUser.Anonymous.ConnectionString))
+        {
+          connection.Open();
+          SqlCommand command = new SqlCommand();
+          command.Connection = connection;
+          command.CommandText = "SELECT EnforceSingleSession, SessionID, IsActive, MarkDeleted FROM Users WHERE UserID = @UserID";
+          command.Parameters.AddWithValue("UserID", TSAuthentication.UserID);
+          SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow);
+          if (reader.Read())
+          {
+            if (!(bool)reader[2] || (bool)reader[3])
+            {
+              update.IsExpired = true;
+            }
+            else if ((bool)reader[0] && reader[1] != DBNull.Value)
+            {
+              if (sessionID != null && sessionID.ToLower() != reader[1].ToString().ToLower() && !TSAuthentication.IsBackdoor)
+              {
+                update.IsExpired = true;
+              }
+            }
+
+          }
+          else
+          {
+          }
+        }
+
+        //update.RefreshID = int.Parse(SystemSettings.ReadString(loginUser, "RefreshID", "-1"));
+        update.ExpireTime = TSAuthentication.Ticket.Expiration.ToShortTimeString();
+        update.Version = System.Web.Configuration.WebConfigurationManager.AppSettings["Version"];
+        //update.IsIdle = user.DateToUtc(user.LastActivity).AddMinutes(20) < DateTime.UtcNow;
+        update.MyUnreadTicketCount = Tickets.GetMyOpenUnreadTicketCount(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
+      }
+      catch (Exception ex)
+      {
         ex.Data["SessionID"] = sessionID;
-        ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Main Page Upate");
+        ExceptionLogs.LogException(LoginUser.Anonymous, ex, "GetUserStatusUpdate");
       }
       return update;
 
@@ -401,9 +464,16 @@ namespace TSWebServices
     {
       Reminder reminder;
       if (reminderID == null)
-      { 
+      {
         reminder = (new Reminders(TSAuthentication.GetLoginUser())).AddNewReminder();
         reminder.OrganizationID = TSAuthentication.OrganizationID;
+        User reminderUser = (User)Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+
+        string logdescription = String.Format("Added Reminder for {0} , for {1}", reminderUser.FirstLastName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), refID));
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Tickets, refID, logdescription);
+        ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Users, userID, logdescription);
+
+
       }
       else
       {
@@ -487,7 +557,7 @@ namespace TSWebServices
     [WebMethod]
     public void ClearExceptionLogs()
     {
-      ExceptionLogs.DeleteAll();
+      SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), "TRUNCATE TABLE ExceptionLogs");
     }
 
     [WebMethod]
@@ -545,7 +615,13 @@ namespace TSWebServices
       SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), new SqlCommand(value == true ? "UPDATE Services SET HealthMaxMinutes = 20" : "UPDATE Services SET HealthMaxMinutes = 999999"));
     }
 
-
+    [WebMethod]
+    public int GetLatestWatercoolerCount()
+    {
+      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
+      return wcv.GetLatestWatercoolerCount(user.LastPingUtc.ToString());
+    }
   }
 
   [Serializable]
@@ -600,6 +676,24 @@ namespace TSWebServices
     public string State { get; set; }
   }
 
+
+  [DataContract]
+  public class TsChatUpdate
+  {
+    [DataMember]
+    public int ChatMessageCount { get; set; }
+    [DataMember]
+    public int ChatRequestCount { get; set; }
+    [DataMember]
+    public GrowlMessage[] NewChatMessages { get; set; }
+    [DataMember]
+    public GrowlMessage[] NewChatRequests { get; set; }
+    [DataMember]
+    public int LastChatMessageID { get; set; }
+    [DataMember]
+    public int LastChatRequestID { get; set; }
+  }
+
   [DataContract]
   public class TsMainPageUpdate
   {
@@ -616,27 +710,23 @@ namespace TSWebServices
     [DataMember]
     public bool IsDebug { get; set; }
     [DataMember]
-    public int WCMessageCount { get; set; }
-    [DataMember]
-    public int ChatMessageCount { get; set; }
-    [DataMember]
-    public int ChatRequestCount { get; set; }
-    [DataMember]
-    public GrowlMessage[] NewChatMessages { get; set; }
-    [DataMember]
-    public GrowlMessage[] NewChatRequests { get; set; }
-    [DataMember]
-    public GrowlMessage[] NewWCMessages { get; set; }
-    [DataMember]
-    public int LastWCMessageID { get; set; }
-    [DataMember]
-    public int LastChatMessageID { get; set; }
-    [DataMember]
-    public int LastChatRequestID { get; set; }
-    [DataMember]
-    public int OpenUnreadTicketCount { get; set; }
+    public int MyUnreadTicketCount { get; set; }
   }
 
+  
+  [DataContract]
+  public class TypeAheadItem
+  {
+    public TypeAheadItem() { }
+    public TypeAheadItem(string value, string id)
+    {
+      this.id = id;
+      this.value = value;
+    }
+
+    [DataMember] public string id { get; set; }
+    [DataMember] public string value { get; set; }
+  }
 
   [DataContract]
   public class AutocompleteItem
@@ -691,11 +781,11 @@ namespace TSWebServices
   [DataContract]
   public class DateTimePattern
   {
-    [DataMember] 
+    [DataMember]
     public string ShortDate { get; set; }
-    [DataMember] 
+    [DataMember]
     public string LongDate { get; set; }
-    [DataMember] 
+    [DataMember]
     public string ShortTime { get; set; }
     [DataMember]
     public string LongTime { get; set; }

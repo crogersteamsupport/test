@@ -160,6 +160,10 @@ public partial class Dialogs_CustomField : BaseDialogPage
     }
     field.Collection.Save();
 
+    ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Update, ReferenceType.CustomFields, field.CustomFieldID, string.Format(
+      "{0} updated custom field \"{1}\" ({2})",
+      Users.GetUserFullName(UserSession.LoginUser, UserSession.LoginUser.UserID), field.Name, field.CustomFieldID));
+
     return true;
   }
 

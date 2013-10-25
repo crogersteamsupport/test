@@ -21,10 +21,17 @@ namespace TeamSupport.Api
       return item.GetXml("User", true);
     }
 
-    public static string GetUsers(RestCommand command)
+    public static string GetUsers(RestCommand command, bool orderByDateCreated = false)
     {
       UsersView items = new UsersView(command.LoginUser);
-      items.LoadByOrganizationID(command.Organization.OrganizationID, false);
+      if (orderByDateCreated)
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID, false, "DateCreated DESC");      
+      }
+      else
+      {
+        items.LoadByOrganizationID(command.Organization.OrganizationID, false);
+      }
       return items.GetXml("Users", "User", true, command.Filters);
     }
 
@@ -42,6 +49,7 @@ namespace TeamSupport.Api
       user.ActivatedOn = DateTime.UtcNow;
       user.LastLogin = DateTime.UtcNow.AddHours(-1);
       user.LastActivity = DateTime.UtcNow.AddHours(-1);
+      user.EnforceSingleSession = true;
       user.Collection.Save();
       user.UpdateCustomFieldsFromXml(command.Data);
       return UsersView.GetUsersViewItem(command.LoginUser, user.UserID).GetXml("User", true);

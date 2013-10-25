@@ -1,7 +1,10 @@
-﻿/*Layout*/
+﻿body {
+  background-color: #D6E7F7;
+}
+/*Layout*/
 .ui-layout-pane {
-  border:           10px solid !important;
-  border-color:     White !important;
+  border:           0px solid !important;
+  border-color:     #D6E7F7 !important;
   border-radius:    20px !important;
 
   background-color: #D6E7F7 !important;
@@ -216,6 +219,7 @@ h2 {
 
 .condition .ui-combobox, .condition input.text { 
   margin-right: .3em;
+  margin-bottom: .3em;
 }
 
 .condition-value-container {
@@ -227,12 +231,12 @@ h2 {
 }
 
 .condition-sorter-icons {
-  margin-top: 52px;
+  margin-top: 5px;
 }
 
 .search-options-add {
   position: absolute;
-  right: 17px;
+  right: 35px;
 }
 
 #search-options-hr-filter {

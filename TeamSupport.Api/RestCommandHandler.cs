@@ -65,14 +65,14 @@ namespace TeamSupport.Api
         }
         catch (Exception ex)
         {
-          ExceptionLogs.LogException(_loginUser, ex, "API");
+          ExceptionLogs.LogException(_loginUser, ex, "API", string.Format("OrgID: {0}{1}Verb: {2}{1}Url: {3}{1}Body: {4}", log.OrganizationID, Environment.NewLine, log.Verb, log.Url, log.RequestBody));
           if (!(ex is RestException))
           {
             throw new RestException(HttpStatusCode.InternalServerError, "Internal Server Error: " + ex.Message + ex.StackTrace, ex);
           }
           else
           {
-            throw;
+            throw ex;
           }
         }
 

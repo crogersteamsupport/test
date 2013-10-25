@@ -12,7 +12,7 @@
       <Items>
         <telerik:RadToolBarButton runat="server" Text="New" ImageUrl="~/images/icons/new.png" Value="NewUser">
         </telerik:RadToolBarButton>
-        <telerik:RadToolBarButton runat="server" Text="Edit" ImageUrl="~/images/icons/edit.png" Value="EditUser">
+        <telerik:RadToolBarButton runat="server" Text="Edit" ImageUrl="~/images/icons/edit.png" Value="EditUser" Visible="false">
         </telerik:RadToolBarButton>
         <telerik:RadToolBarButton runat="server" Text="Delete" ImageUrl="~/images/icons/trash.png" Value="DeleteUser">
         </telerik:RadToolBarButton>
@@ -81,13 +81,12 @@
             
               <telerik:RadTabStrip ID="tsMain" runat="server" SelectedIndex="0" OnClientTabSelected="TabSelected">
                 <Tabs>
-                  <telerik:RadTab runat="server" Value="../Resources/Pages/User.html?UserID=" Selected="True" Text="User Information"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="Tickets.aspx?TicketStatusID=-3&UserID=" Text="Open Tickets"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="Tickets.aspx?TicketStatusID=-4&UserID=" Text="Closed Tickets"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="Tickets.aspx?UserID=" Text="All Tickets"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/User.html?UserID=" Selected="True" Text="User Information"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_UserID=" Text="Open"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_IsClosed=true&tf_UserID=" Text="Closed"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_UserID=" Text="All Tickets"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="TicketQueue.aspx?UserID=" Text="Ticket Queue"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="History.aspx?RefType=22&RefID=" Text="User History"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="../Resources/Pages/User.html?UserID=" Text="NEW" Visible="false"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="History.aspx?RefType=22&RefID=" Text="History" Visible="false"></telerik:RadTab>
                 </Tabs>
               </telerik:RadTabStrip>
               </div>
@@ -131,9 +130,10 @@
         return field.value;
       }
       
-      function TabSelected(sender, args)
-      {
-        top.privateServices.SetUserSetting('SelectedUserTabIndex', args.get_tab().get_index());
+      function TabSelected(sender, args) {
+        var tab = args.get_tab();
+        top.Ts.System.logAction('Users - Tab Selected ('+ tab.get_text() +')');
+        top.privateServices.SetUserSetting('SelectedUserTabIndex', tab.get_index());
         LoadContentPage();
       }
       
@@ -193,12 +193,19 @@
           }
 
           ShowDialog(top.GetUserDialog(GetOrganizationID()));
+          top.Ts.System.logAction('Users - New User Dialog Opened');
         }
         else if (value == 'EditUser') {
           ShowDialog(top.GetUserDialog(GetOrganizationID(), GetSelectedUserID()));
         }
         else if (value == 'DeleteUser') {
-          radconfirm('Are you sure you would like to PERMANENTLEY delete this user?', function(arg) { if (arg) top.privateServices.DeleteUser(GetSelectedUserID(), RefreshGrid); }, 250, 125, null, 'Delete User');
+        radconfirm('Are you sure you would like to PERMANENTLEY delete this user?',
+          function (arg) {
+            if (arg) {
+              top.privateServices.DeleteUser(GetSelectedUserID(), RefreshGrid);
+              top.Ts.System.logAction('Users - User Deleted');
+            }
+          }, 250, 125, null, 'Delete User');
 
         }
         else if (value == 'Help') {

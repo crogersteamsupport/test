@@ -43,6 +43,7 @@
       this.lbSummary = new System.Windows.Forms.ListBox();
       this.tpMessages = new System.Windows.Forms.TabPage();
       this.lbMessages = new System.Windows.Forms.ListBox();
+      this.btnUnkownDups = new System.Windows.Forms.Button();
       this.panel1.SuspendLayout();
       this.tabControl.SuspendLayout();
       this.tpSummary.SuspendLayout();
@@ -90,6 +91,7 @@
       // 
       // panel1
       // 
+      this.panel1.Controls.Add(this.btnUnkownDups);
       this.panel1.Controls.Add(this.btnClone);
       this.panel1.Controls.Add(this.cbCustomFieldsOnly);
       this.panel1.Controls.Add(this.cbNewOrg);
@@ -207,6 +209,16 @@
       this.lbMessages.Size = new System.Drawing.Size(729, 475);
       this.lbMessages.TabIndex = 1;
       // 
+      // btnUnkownDups
+      // 
+      this.btnUnkownDups.Location = new System.Drawing.Point(128, 47);
+      this.btnUnkownDups.Name = "btnUnkownDups";
+      this.btnUnkownDups.Size = new System.Drawing.Size(163, 23);
+      this.btnUnkownDups.TabIndex = 9;
+      this.btnUnkownDups.Text = "Fix Unknown Dupes";
+      this.btnUnkownDups.UseVisualStyleBackColor = true;
+      this.btnUnkownDups.Click += new System.EventHandler(this.btnUnkownDups_Click);
+      // 
       // ImportControl
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -241,5 +253,6 @@
     private System.Windows.Forms.CheckBox cbNewOrg;
     private System.Windows.Forms.CheckBox cbCustomFieldsOnly;
     private System.Windows.Forms.Button btnClone;
+    private System.Windows.Forms.Button btnUnkownDups;
   }
 }

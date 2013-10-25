@@ -139,6 +139,23 @@ namespace TeamSupport.Data
       return resultBuilder.ToString();
     }
 
+    public string ConvertToWaterCoolerEquivalentWhereClause()
+    {
+      StringBuilder resultBuilder = new StringBuilder();
+
+      ReportTableFields ticketsViewFields = new ReportTableFields(base.LoginUser);
+      ticketsViewFields.LoadByReportTableID(10);
+
+      foreach (SearchCustomFilter filter in this)
+      {
+        string fieldName = ticketsViewFields.FindByReportTableFieldID(filter.FieldID).FieldName;
+        string waterCoolerEquivalentFieldName = DataUtils.GetWaterCoolerEquivalentFieldName(fieldName);
+        resultBuilder.Append(" AND wcv.[" + waterCoolerEquivalentFieldName + "] " + filter.Measure + " '" + filter.TestValue + "'");
+      }
+
+      return resultBuilder.ToString();
+    }
+
   }
   
 }

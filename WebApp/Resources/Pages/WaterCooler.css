@@ -212,3 +212,39 @@ input, select
     outline-style:none !important;
 }
 
+#sidebar
+{
+    right: 40px;
+}
+
+.upload-queue .progress {
+    float: left;
+    height: 7px;
+    margin: 4px 0.25em 0 1em;
+    width: 100px;
+}
+
+.upload-queue .filename {
+    float: left;
+    line-height: 16px;
+}
+
+.upload-queue .ui-icon {
+    cursor: pointer;
+    float: left;
+    margin-left: 0.25em;
+    padding: 0;
+}
+
+.nav > li > a:hover{
+    background-color: white;
+}
+
+.saving{
+    background: url("../Images/loading/dots64.gif") no-repeat scroll 50% 50% transparent;
+    height: 20px;
+}
+
+.saving span, .saving button, .saving div{
+    display:none;
+}

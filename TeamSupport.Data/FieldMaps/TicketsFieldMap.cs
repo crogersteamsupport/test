@@ -39,6 +39,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("PortalEmail", "PortalEmail", false, false, false);
       _fieldMap.AddMap("CreatorID", "CreatorID", true, true, true);
       _fieldMap.AddMap("ModifierID", "ModifierID", true, true, true);
+      _fieldMap.AddMap("KnowledgeBaseCategoryID", "KnowledgeBaseCategoryID", true, true, true);
+      _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
+      _fieldMap.AddMap("DateModifiedBySalesForceSync", "DateModifiedBySalesForceSync", false, false, false);
             
     }
   }

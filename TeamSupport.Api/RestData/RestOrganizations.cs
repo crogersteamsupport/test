@@ -21,10 +21,17 @@ namespace TeamSupport.Api
       return organization.GetXml("Customer", true);
     }
 
-    public static string GetOrganizations(RestCommand command)
+    public static string GetOrganizations(RestCommand command, bool orderByDateCreated = false)
     {
       OrganizationsView organizations = new OrganizationsView(command.LoginUser);
-      organizations.LoadByParentID(command.Organization.OrganizationID, true);
+      if (orderByDateCreated)
+      {
+        organizations.LoadByParentID(command.Organization.OrganizationID, true, "DateCreated DESC");
+      }
+      else
+      {
+        organizations.LoadByParentID(command.Organization.OrganizationID, true);
+      }
       return organizations.GetXml("Customers", "Customer", true, command.Filters);
     }
 
@@ -61,12 +68,19 @@ namespace TeamSupport.Api
       return result;
     }
 
-    public static string GetTicketOrganizations(RestCommand command, int ticketID)
+    public static string GetTicketOrganizations(RestCommand command, int ticketID, bool orderByDateCreated = false)
     {
       Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
       if (ticket == null || ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       OrganizationsView organizations = new OrganizationsView(command.LoginUser);
-      organizations.LoadByTicketID(ticketID);
+      if (orderByDateCreated)
+      {
+        organizations.LoadByTicketID(ticketID, "ot.DateCreated DESC");
+      }
+      else
+      {
+        organizations.LoadByTicketID(ticketID);
+      }
       return organizations.GetXml("Customers", "Customer", true, command.Filters);
     }
 
@@ -94,21 +108,35 @@ namespace TeamSupport.Api
       return OrganizationsView.GetOrganizationsViewItem(command.LoginUser, organizationID).GetXml("Customer", true);
     }
 
-    public static string GetProductOrganizations(RestCommand command, int productID)
+    public static string GetProductOrganizations(RestCommand command, int productID, bool orderByDateCreated = false)
     {
       Product item = Products.GetProduct(command.LoginUser, productID);
       if (item == null || item.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       OrganizationsView organizations = new OrganizationsView(command.LoginUser);
-      organizations.LoadByProductID(productID);
+      if (orderByDateCreated)
+      {
+        organizations.LoadByProductID(productID, "op.DateCreated DESC");
+      }
+      else
+      {
+        organizations.LoadByProductID(productID);
+      }
       return organizations.GetXml("Customers", "Customer", true, command.Filters);
     }
 
-    public static string GetVersionOrganizations(RestCommand command, int versionID)
+    public static string GetVersionOrganizations(RestCommand command, int versionID, bool orderByDateCreated = false)
     {
       ProductVersionsViewItem item = ProductVersionsView.GetProductVersionsViewItem(command.LoginUser, versionID);
       if (item == null || item.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       OrganizationsView organizations = new OrganizationsView(command.LoginUser);
-      organizations.LoadByVersionID(versionID);
+      if (orderByDateCreated) 
+      {
+        organizations.LoadByVersionID(versionID, "op.DateCreated DESC");        
+      }
+      else
+      {
+        organizations.LoadByVersionID(versionID);
+      }
       return organizations.GetXml("Customers", "Customer", true, command.Filters);
     }
 

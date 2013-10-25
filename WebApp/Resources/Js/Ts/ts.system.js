@@ -2,6 +2,8 @@
 Ts.Pages = {};
 Ts.Ui = {};
 Ts.Services = {};
+var _lastActivity = null;
+var _startDate = new Date();
 
 (function () {
 
@@ -28,8 +30,27 @@ Ts.Services = {};
     {
       if (!params) params = {};
       params._sessionID = Ts.System.getSessionID();
-
-      return oldInvoke(servicePath, methodName, useGet, params, onSuccess, onFailure, userContext, timeout);
+      var oldOnFailure = onFailure;
+      return oldInvoke(servicePath, methodName, useGet, params, onSuccess, function(e){
+        if (e._statusCode == 401) { 
+          if (Ts.debug == true) {
+            var now = new Date();
+            var diffs = (now - _lastActivity) / 1000; // milliseconds 
+            var diffh = Math.round(diffs / 3600); // hours
+            var diffm = Math.round((diffs % 3600) / 60); // minutes
+            var msg = encodeURIComponent("Session Start: " + _startDate.toTimeString() + "\nLast Activity: " + _lastActivity.toTimeString() + "\nNow: " + now.toTimeString() + "\n"+diffh + " hours, " + diffm + " minutes");
+            window.location = 'SessionExpired.aspx?msg='+msg; 
+            return; 
+          }
+          else {
+            window.location = 'SessionExpired.aspx'; 
+            return; 
+          }
+        }
+      
+        if (oldOnFailure) oldOnFailure(e);
+      }, 
+      userContext, timeout);
     }
     
 
@@ -83,10 +104,17 @@ Ts.Services = {};
     Ts.Services.Assets.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Assets.set_defaultFailedCallback(defaultFailedCallback);
 
-
     Ts.Services.Search = new TSWebServices.SearchService();
     Ts.Services.Search.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Search.set_defaultFailedCallback(defaultFailedCallback);
+
+    Ts.Services.Reports = new TSWebServices.ReportService();
+    Ts.Services.Reports.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.Reports.set_defaultFailedCallback(defaultFailedCallback);
+
+    Ts.Services.Customers = new TSWebServices.CustomerService();
+    Ts.Services.Customers.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.Customers.set_defaultFailedCallback(defaultFailedCallback);
 
     callback();
   }
@@ -97,19 +125,55 @@ Ts.Services = {};
     this.Culture = null;
     this.ChatUserSettings = null;
     this.AppDomain = null;
-    //this.TicketTypes = null;
 
     var self = this;
 
     this._init = function (callback) {
       initServices(function(){
-        self.refreshUser(callback);
-        /*Ts.Services.Tickets.GetTicketTypes(function (result) {
-          self.TicketTypes = result;
-          self.refreshUser(callback);
-        });*/
+        self.refreshUser(function(){
+          callback();
+          setupLogTracking();
+        });
       });
     }
+
+
+    function setupLogTracking()
+    {
+      //https://teamsupport.apptegic.com/scripts/apptegic-tw.js
+      var dataset = '';
+      if (window.location.hostname.indexOf('beta.teamsupport') > -1) { dataset = 'MainAppBeta' }
+      else if (window.location.hostname.indexOf('app.teamsupport') > -1) { dataset = 'MainApp' }
+      else if (window.location.hostname.indexOf('tsdev') > -1)   { dataset='MainApp_Dev' }
+      if (dataset == '') {
+        _aaq = null;
+        return; 
+      }
+
+      _aaq.push(['setApptegicAccount', 'teamsupport']);
+      _aaq.push(['setDataset', dataset]);
+      _aaq.push(['setTwoWayEnabled', true]);
+      var user = Ts.System.User;
+      var org = Ts.System.Organization;
+      
+      //_aaq.push(['setUser', user.FirstName + ' ' + user.LastName + ' (' + user.UserID + ')']);
+      _aaq.push(['setUser', user.Email]);
+      _aaq.push(['setCompany', org.Name]);
+      
+      var diffDays = Math.round(Math.abs((org.DateCreated.getTime() - (new Date()).getTime())/(24*60*60*1000)));
+      _aaq.push(['setAccountType', diffDays > 14 ? 'Paying' : 'Trial']);
+      // _aaq.push(['setCustomField', SET_FIELD, SET_VALUE, SET_CONTEXT]);
+       _aaq.push(['setCustomField', 'userName', user.FirstName + ' ' + user.LastName, 'visit']);
+       _aaq.push(['setCustomField', 'userEmail', user.Email, 'visit']);
+       _aaq.push(['setCustomField', 'extUserId', user.UserID, 'visit']);
+       _aaq.push(['setCustomField', 'company', org.Name, 'visit']);
+       _aaq.push(['setCustomField', 'extCompanyID', org.OrganizationID, 'visit']);
+
+       _aaq.push(['setCustomField', 'IsAdmin', user.IsSystemAdmin, 'visit']);
+
+      _aaq.push(['trackAction', 'Login']);
+    }
+
   }
 
   TsSystem.prototype =
@@ -137,7 +201,7 @@ Ts.Services = {};
     },
 
     openSupport: function () {
-      window.open("http://www.teamsupport.com/customer_portal_login.php?OrganizationID=1078&UserName=" + this.User.Email + "&Password=57EE1F58-5C8B-4B47-B629-BE7C702A2022", "TSPortal");
+      window.open("http://www.teamsupport.com/support/customer-portal-login?OrganizationID=1078&UserName=" + encodeURIComponent(this.User.Email) + "&Password=57EE1F58-5C8B-4B47-B629-BE7C702A2022", "TSPortal");
     },
 
     signOut: function (callback) {
@@ -145,7 +209,14 @@ Ts.Services = {};
     },
 
 
-    getSessionID: function () { return $('#fieldSID').val(); }
+    getSessionID: function () { 
+      return $('#fieldSID').val(); 
+    },
+    logAction: function (action, customData) {
+      if (_aaq == null) return;
+      _aaq.push(['trackAction', action, customData]);
+    }
+
   };
 
   Ts.System = new TsSystem();
@@ -311,6 +382,7 @@ Ts.Services = {};
   Ts.ReferenceTypes.Assets = 34;
   Ts.ReferenceTypes.EmailPost = 35;
   Ts.ReferenceTypes.ForumCategories = 35;
+  Ts.ReferenceTypes.KnowledgeBaseCategories = 42;
 
   Ts.SystemActionTypes = {}
   Ts.SystemActionTypes.Custom = 0;

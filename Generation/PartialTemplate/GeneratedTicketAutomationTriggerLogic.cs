@@ -34,6 +34,12 @@ namespace TeamSupport.Data
     
 
     
+    public string OtherTrigger
+    {
+      get { return Row["OtherTrigger"] != DBNull.Value ? (string)Row["OtherTrigger"] : null; }
+      set { Row["OtherTrigger"] = CheckValue("OtherTrigger", value); }
+    }
+    
 
     
     public bool MatchAll
@@ -175,7 +181,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketAutomationTriggerLogic] SET     [TriggerID] = @TriggerID,    [TableID] = @TableID,    [FieldID] = @FieldID,    [Measure] = @Measure,    [TestValue] = @TestValue,    [MatchAll] = @MatchAll  WHERE ([TriggerLogicID] = @TriggerLogicID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[TicketAutomationTriggerLogic] SET     [TriggerID] = @TriggerID,    [TableID] = @TableID,    [FieldID] = @FieldID,    [Measure] = @Measure,    [TestValue] = @TestValue,    [MatchAll] = @MatchAll,    [OtherTrigger] = @OtherTrigger  WHERE ([TriggerLogicID] = @TriggerLogicID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("TriggerLogicID", SqlDbType.Int, 4);
@@ -227,13 +233,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("OtherTrigger", SqlDbType.VarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketAutomationTriggerLogic] (    [TriggerID],    [TableID],    [FieldID],    [Measure],    [TestValue],    [MatchAll]) VALUES ( @TriggerID, @TableID, @FieldID, @Measure, @TestValue, @MatchAll); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[TicketAutomationTriggerLogic] (    [TriggerID],    [TableID],    [FieldID],    [Measure],    [TestValue],    [MatchAll],    [OtherTrigger]) VALUES ( @TriggerID, @TableID, @FieldID, @Measure, @TestValue, @MatchAll, @OtherTrigger); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("OtherTrigger", SqlDbType.VarChar, 100);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("MatchAll", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -389,7 +409,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [TriggerLogicID], [TriggerID], [TableID], [FieldID], [Measure], [TestValue], [MatchAll] FROM [dbo].[TicketAutomationTriggerLogic] WHERE ([TriggerLogicID] = @TriggerLogicID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [TriggerLogicID], [TriggerID], [TableID], [FieldID], [Measure], [TestValue], [MatchAll], [OtherTrigger] FROM [dbo].[TicketAutomationTriggerLogic] WHERE ([TriggerLogicID] = @TriggerLogicID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TriggerLogicID", triggerLogicID);
         Fill(command);

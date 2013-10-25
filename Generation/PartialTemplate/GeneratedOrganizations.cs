@@ -196,7 +196,61 @@ namespace TeamSupport.Data
       set { Row["ChangeStatusIfClosed"] = CheckValue("ChangeStatusIfClosed", value); }
     }
     
+    public int? UnknownCompanyID
+    {
+      get { return Row["UnknownCompanyID"] != DBNull.Value ? (int?)Row["UnknownCompanyID"] : null; }
+      set { Row["UnknownCompanyID"] = CheckValue("UnknownCompanyID", value); }
+    }
+    
 
+    
+    public bool NeedsIndexing
+    {
+      get { return (bool)Row["NeedsIndexing"]; }
+      set { Row["NeedsIndexing"] = CheckValue("NeedsIndexing", value); }
+    }
+    
+    public bool IsIndexLocked
+    {
+      get { return (bool)Row["IsIndexLocked"]; }
+      set { Row["IsIndexLocked"] = CheckValue("IsIndexLocked", value); }
+    }
+    
+    public bool IsRebuildingIndex
+    {
+      get { return (bool)Row["IsRebuildingIndex"]; }
+      set { Row["IsRebuildingIndex"] = CheckValue("IsRebuildingIndex", value); }
+    }
+    
+    public bool ForceBCCEmailsPrivate
+    {
+      get { return (bool)Row["ForceBCCEmailsPrivate"]; }
+      set { Row["ForceBCCEmailsPrivate"] = CheckValue("ForceBCCEmailsPrivate", value); }
+    }
+    
+    public bool AllowUnsecureAttachmentViewing
+    {
+      get { return (bool)Row["AllowUnsecureAttachmentViewing"]; }
+      set { Row["AllowUnsecureAttachmentViewing"] = CheckValue("AllowUnsecureAttachmentViewing", value); }
+    }
+    
+    public bool ProductVersionRequired
+    {
+      get { return (bool)Row["ProductVersionRequired"]; }
+      set { Row["ProductVersionRequired"] = CheckValue("ProductVersionRequired", value); }
+    }
+    
+    public bool ProductRequired
+    {
+      get { return (bool)Row["ProductRequired"]; }
+      set { Row["ProductRequired"] = CheckValue("ProductRequired", value); }
+    }
+    
+    public int SupportHoursMonth
+    {
+      get { return (int)Row["SupportHoursMonth"]; }
+      set { Row["SupportHoursMonth"] = CheckValue("SupportHoursMonth", value); }
+    }
     
     public bool SetNewActionsVisibleToCustomers
     {
@@ -404,6 +458,17 @@ namespace TeamSupport.Data
     
 
     
+    public DateTime LastIndexRebuilt
+    {
+      get { return DateToLocal((DateTime)Row["LastIndexRebuilt"]); }
+      set { Row["LastIndexRebuilt"] = CheckValue("LastIndexRebuilt", value); }
+    }
+
+    public DateTime LastIndexRebuiltUtc
+    {
+      get { return (DateTime)Row["LastIndexRebuilt"]; }
+    }
+    
     public DateTime BusinessDayEnd
     {
       get { return DateToLocal((DateTime)Row["BusinessDayEnd"]); }
@@ -542,7 +607,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Organizations] SET     [Name] = @Name,    [Description] = @Description,    [Website] = @Website,    [WhereHeard] = @WhereHeard,    [PromoCode] = @PromoCode,    [IsCustomerFree] = @IsCustomerFree,    [UserSeats] = @UserSeats,    [PortalSeats] = @PortalSeats,    [ChatSeats] = @ChatSeats,    [ExtraStorageUnits] = @ExtraStorageUnits,    [ImportID] = @ImportID,    [IsActive] = @IsActive,    [IsApiActive] = @IsApiActive,    [IsApiEnabled] = @IsApiEnabled,    [IsInventoryEnabled] = @IsInventoryEnabled,    [TimeZoneID] = @TimeZoneID,    [InActiveReason] = @InActiveReason,    [HasPortalAccess] = @HasPortalAccess,    [IsAdvancedPortal] = @IsAdvancedPortal,    [IsBasicPortal] = @IsBasicPortal,    [PrimaryUserID] = @PrimaryUserID,    [DefaultPortalGroupID] = @DefaultPortalGroupID,    [DefaultSupportGroupID] = @DefaultSupportGroupID,    [DefaultSupportUserID] = @DefaultSupportUserID,    [ProductType] = @ProductType,    [ParentID] = @ParentID,    [WebServiceID] = @WebServiceID,    [SystemEmailID] = @SystemEmailID,    [ChatID] = @ChatID,    [PortalGuid] = @PortalGuid,    [CRMLinkID] = @CRMLinkID,    [SAExpirationDate] = @SAExpirationDate,    [APIRequestLimit] = @APIRequestLimit,    [DateModified] = @DateModified,    [RequireNewKeyword] = @RequireNewKeyword,    [RequireKnownUserForNewEmail] = @RequireKnownUserForNewEmail,    [EmailDelimiter] = @EmailDelimiter,    [OrganizationReplyToAddress] = @OrganizationReplyToAddress,    [CompanyDomains] = @CompanyDomains,    [AdminOnlyCustomers] = @AdminOnlyCustomers,    [AdminOnlyReports] = @AdminOnlyReports,    [ShowWiki] = @ShowWiki,    [DefaultWikiArticleID] = @DefaultWikiArticleID,    [SlaLevelID] = @SlaLevelID,    [InternalSlaLevelID] = @InternalSlaLevelID,    [BusinessDays] = @BusinessDays,    [BusinessDayStart] = @BusinessDayStart,    [BusinessDayEnd] = @BusinessDayEnd,    [UseEuropeDate] = @UseEuropeDate,    [CultureName] = @CultureName,    [TimedActionsRequired] = @TimedActionsRequired,    [MatchEmailSubject] = @MatchEmailSubject,    [ModifierID] = @ModifierID,    [PrimaryInterest] = @PrimaryInterest,    [PotentialSeats] = @PotentialSeats,    [EvalProcess] = @EvalProcess,    [AddAdditionalContacts] = @AddAdditionalContacts,    [ChangeStatusIfClosed] = @ChangeStatusIfClosed,    [IsPublicArticles] = @IsPublicArticles,    [UseForums] = @UseForums,    [SetNewActionsVisibleToCustomers] = @SetNewActionsVisibleToCustomers  WHERE ([OrganizationID] = @OrganizationID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Organizations] SET     [Name] = @Name,    [Description] = @Description,    [Website] = @Website,    [WhereHeard] = @WhereHeard,    [PromoCode] = @PromoCode,    [IsCustomerFree] = @IsCustomerFree,    [UserSeats] = @UserSeats,    [PortalSeats] = @PortalSeats,    [ChatSeats] = @ChatSeats,    [ExtraStorageUnits] = @ExtraStorageUnits,    [ImportID] = @ImportID,    [IsActive] = @IsActive,    [IsApiActive] = @IsApiActive,    [IsApiEnabled] = @IsApiEnabled,    [IsInventoryEnabled] = @IsInventoryEnabled,    [TimeZoneID] = @TimeZoneID,    [InActiveReason] = @InActiveReason,    [HasPortalAccess] = @HasPortalAccess,    [IsAdvancedPortal] = @IsAdvancedPortal,    [IsBasicPortal] = @IsBasicPortal,    [PrimaryUserID] = @PrimaryUserID,    [DefaultPortalGroupID] = @DefaultPortalGroupID,    [DefaultSupportGroupID] = @DefaultSupportGroupID,    [DefaultSupportUserID] = @DefaultSupportUserID,    [ProductType] = @ProductType,    [ParentID] = @ParentID,    [WebServiceID] = @WebServiceID,    [SystemEmailID] = @SystemEmailID,    [ChatID] = @ChatID,    [PortalGuid] = @PortalGuid,    [CRMLinkID] = @CRMLinkID,    [SAExpirationDate] = @SAExpirationDate,    [APIRequestLimit] = @APIRequestLimit,    [DateModified] = @DateModified,    [RequireNewKeyword] = @RequireNewKeyword,    [RequireKnownUserForNewEmail] = @RequireKnownUserForNewEmail,    [EmailDelimiter] = @EmailDelimiter,    [OrganizationReplyToAddress] = @OrganizationReplyToAddress,    [CompanyDomains] = @CompanyDomains,    [AdminOnlyCustomers] = @AdminOnlyCustomers,    [AdminOnlyReports] = @AdminOnlyReports,    [ShowWiki] = @ShowWiki,    [DefaultWikiArticleID] = @DefaultWikiArticleID,    [SlaLevelID] = @SlaLevelID,    [InternalSlaLevelID] = @InternalSlaLevelID,    [BusinessDays] = @BusinessDays,    [BusinessDayStart] = @BusinessDayStart,    [BusinessDayEnd] = @BusinessDayEnd,    [UseEuropeDate] = @UseEuropeDate,    [CultureName] = @CultureName,    [TimedActionsRequired] = @TimedActionsRequired,    [MatchEmailSubject] = @MatchEmailSubject,    [ModifierID] = @ModifierID,    [PrimaryInterest] = @PrimaryInterest,    [PotentialSeats] = @PotentialSeats,    [EvalProcess] = @EvalProcess,    [AddAdditionalContacts] = @AddAdditionalContacts,    [ChangeStatusIfClosed] = @ChangeStatusIfClosed,    [IsPublicArticles] = @IsPublicArticles,    [UseForums] = @UseForums,    [SetNewActionsVisibleToCustomers] = @SetNewActionsVisibleToCustomers,    [SupportHoursMonth] = @SupportHoursMonth,    [ProductRequired] = @ProductRequired,    [ProductVersionRequired] = @ProductVersionRequired,    [AllowUnsecureAttachmentViewing] = @AllowUnsecureAttachmentViewing,    [ForceBCCEmailsPrivate] = @ForceBCCEmailsPrivate,    [UnknownCompanyID] = @UnknownCompanyID,    [IsRebuildingIndex] = @IsRebuildingIndex,    [LastIndexRebuilt] = @LastIndexRebuilt,    [IsIndexLocked] = @IsIndexLocked,    [NeedsIndexing] = @NeedsIndexing  WHERE ([OrganizationID] = @OrganizationID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -979,13 +1044,153 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("SupportHoursMonth", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ProductRequired", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ProductVersionRequired", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("AllowUnsecureAttachmentViewing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ForceBCCEmailsPrivate", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("UnknownCompanyID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IsRebuildingIndex", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("LastIndexRebuilt", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("IsIndexLocked", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Organizations] (    [Name],    [Description],    [Website],    [WhereHeard],    [PromoCode],    [IsCustomerFree],    [UserSeats],    [PortalSeats],    [ChatSeats],    [ExtraStorageUnits],    [ImportID],    [IsActive],    [IsApiActive],    [IsApiEnabled],    [IsInventoryEnabled],    [TimeZoneID],    [InActiveReason],    [HasPortalAccess],    [IsAdvancedPortal],    [IsBasicPortal],    [PrimaryUserID],    [DefaultPortalGroupID],    [DefaultSupportGroupID],    [DefaultSupportUserID],    [ProductType],    [ParentID],    [WebServiceID],    [SystemEmailID],    [ChatID],    [PortalGuid],    [CRMLinkID],    [SAExpirationDate],    [APIRequestLimit],    [DateCreated],    [DateModified],    [RequireNewKeyword],    [RequireKnownUserForNewEmail],    [EmailDelimiter],    [OrganizationReplyToAddress],    [CompanyDomains],    [AdminOnlyCustomers],    [AdminOnlyReports],    [ShowWiki],    [DefaultWikiArticleID],    [SlaLevelID],    [InternalSlaLevelID],    [BusinessDays],    [BusinessDayStart],    [BusinessDayEnd],    [UseEuropeDate],    [CultureName],    [TimedActionsRequired],    [MatchEmailSubject],    [CreatorID],    [ModifierID],    [PrimaryInterest],    [PotentialSeats],    [EvalProcess],    [AddAdditionalContacts],    [ChangeStatusIfClosed],    [IsPublicArticles],    [UseForums],    [SetNewActionsVisibleToCustomers]) VALUES ( @Name, @Description, @Website, @WhereHeard, @PromoCode, @IsCustomerFree, @UserSeats, @PortalSeats, @ChatSeats, @ExtraStorageUnits, @ImportID, @IsActive, @IsApiActive, @IsApiEnabled, @IsInventoryEnabled, @TimeZoneID, @InActiveReason, @HasPortalAccess, @IsAdvancedPortal, @IsBasicPortal, @PrimaryUserID, @DefaultPortalGroupID, @DefaultSupportGroupID, @DefaultSupportUserID, @ProductType, @ParentID, @WebServiceID, @SystemEmailID, @ChatID, @PortalGuid, @CRMLinkID, @SAExpirationDate, @APIRequestLimit, @DateCreated, @DateModified, @RequireNewKeyword, @RequireKnownUserForNewEmail, @EmailDelimiter, @OrganizationReplyToAddress, @CompanyDomains, @AdminOnlyCustomers, @AdminOnlyReports, @ShowWiki, @DefaultWikiArticleID, @SlaLevelID, @InternalSlaLevelID, @BusinessDays, @BusinessDayStart, @BusinessDayEnd, @UseEuropeDate, @CultureName, @TimedActionsRequired, @MatchEmailSubject, @CreatorID, @ModifierID, @PrimaryInterest, @PotentialSeats, @EvalProcess, @AddAdditionalContacts, @ChangeStatusIfClosed, @IsPublicArticles, @UseForums, @SetNewActionsVisibleToCustomers); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Organizations] (    [Name],    [Description],    [Website],    [WhereHeard],    [PromoCode],    [IsCustomerFree],    [UserSeats],    [PortalSeats],    [ChatSeats],    [ExtraStorageUnits],    [ImportID],    [IsActive],    [IsApiActive],    [IsApiEnabled],    [IsInventoryEnabled],    [TimeZoneID],    [InActiveReason],    [HasPortalAccess],    [IsAdvancedPortal],    [IsBasicPortal],    [PrimaryUserID],    [DefaultPortalGroupID],    [DefaultSupportGroupID],    [DefaultSupportUserID],    [ProductType],    [ParentID],    [WebServiceID],    [SystemEmailID],    [ChatID],    [PortalGuid],    [CRMLinkID],    [SAExpirationDate],    [APIRequestLimit],    [DateCreated],    [DateModified],    [RequireNewKeyword],    [RequireKnownUserForNewEmail],    [EmailDelimiter],    [OrganizationReplyToAddress],    [CompanyDomains],    [AdminOnlyCustomers],    [AdminOnlyReports],    [ShowWiki],    [DefaultWikiArticleID],    [SlaLevelID],    [InternalSlaLevelID],    [BusinessDays],    [BusinessDayStart],    [BusinessDayEnd],    [UseEuropeDate],    [CultureName],    [TimedActionsRequired],    [MatchEmailSubject],    [CreatorID],    [ModifierID],    [PrimaryInterest],    [PotentialSeats],    [EvalProcess],    [AddAdditionalContacts],    [ChangeStatusIfClosed],    [IsPublicArticles],    [UseForums],    [SetNewActionsVisibleToCustomers],    [SupportHoursMonth],    [ProductRequired],    [ProductVersionRequired],    [AllowUnsecureAttachmentViewing],    [ForceBCCEmailsPrivate],    [UnknownCompanyID],    [IsRebuildingIndex],    [LastIndexRebuilt],    [IsIndexLocked],    [NeedsIndexing]) VALUES ( @Name, @Description, @Website, @WhereHeard, @PromoCode, @IsCustomerFree, @UserSeats, @PortalSeats, @ChatSeats, @ExtraStorageUnits, @ImportID, @IsActive, @IsApiActive, @IsApiEnabled, @IsInventoryEnabled, @TimeZoneID, @InActiveReason, @HasPortalAccess, @IsAdvancedPortal, @IsBasicPortal, @PrimaryUserID, @DefaultPortalGroupID, @DefaultSupportGroupID, @DefaultSupportUserID, @ProductType, @ParentID, @WebServiceID, @SystemEmailID, @ChatID, @PortalGuid, @CRMLinkID, @SAExpirationDate, @APIRequestLimit, @DateCreated, @DateModified, @RequireNewKeyword, @RequireKnownUserForNewEmail, @EmailDelimiter, @OrganizationReplyToAddress, @CompanyDomains, @AdminOnlyCustomers, @AdminOnlyReports, @ShowWiki, @DefaultWikiArticleID, @SlaLevelID, @InternalSlaLevelID, @BusinessDays, @BusinessDayStart, @BusinessDayEnd, @UseEuropeDate, @CultureName, @TimedActionsRequired, @MatchEmailSubject, @CreatorID, @ModifierID, @PrimaryInterest, @PotentialSeats, @EvalProcess, @AddAdditionalContacts, @ChangeStatusIfClosed, @IsPublicArticles, @UseForums, @SetNewActionsVisibleToCustomers, @SupportHoursMonth, @ProductRequired, @ProductVersionRequired, @AllowUnsecureAttachmentViewing, @ForceBCCEmailsPrivate, @UnknownCompanyID, @IsRebuildingIndex, @LastIndexRebuilt, @IsIndexLocked, @NeedsIndexing); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsIndexLocked", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("LastIndexRebuilt", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("IsRebuildingIndex", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("UnknownCompanyID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ForceBCCEmailsPrivate", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("AllowUnsecureAttachmentViewing", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ProductVersionRequired", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ProductRequired", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("SupportHoursMonth", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("SetNewActionsVisibleToCustomers", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -1540,7 +1745,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [Name], [Description], [Website], [WhereHeard], [PromoCode], [IsCustomerFree], [UserSeats], [PortalSeats], [ChatSeats], [ExtraStorageUnits], [ImportID], [IsActive], [IsApiActive], [IsApiEnabled], [IsInventoryEnabled], [TimeZoneID], [InActiveReason], [HasPortalAccess], [IsAdvancedPortal], [IsBasicPortal], [PrimaryUserID], [DefaultPortalGroupID], [DefaultSupportGroupID], [DefaultSupportUserID], [ProductType], [ParentID], [WebServiceID], [SystemEmailID], [ChatID], [PortalGuid], [CRMLinkID], [SAExpirationDate], [APIRequestLimit], [DateCreated], [DateModified], [RequireNewKeyword], [RequireKnownUserForNewEmail], [EmailDelimiter], [OrganizationReplyToAddress], [CompanyDomains], [AdminOnlyCustomers], [AdminOnlyReports], [ShowWiki], [DefaultWikiArticleID], [SlaLevelID], [InternalSlaLevelID], [BusinessDays], [BusinessDayStart], [BusinessDayEnd], [UseEuropeDate], [CultureName], [TimedActionsRequired], [MatchEmailSubject], [CreatorID], [ModifierID], [PrimaryInterest], [PotentialSeats], [EvalProcess], [AddAdditionalContacts], [ChangeStatusIfClosed], [IsPublicArticles], [UseForums], [SetNewActionsVisibleToCustomers] FROM [dbo].[Organizations] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [Name], [Description], [Website], [WhereHeard], [PromoCode], [IsCustomerFree], [UserSeats], [PortalSeats], [ChatSeats], [ExtraStorageUnits], [ImportID], [IsActive], [IsApiActive], [IsApiEnabled], [IsInventoryEnabled], [TimeZoneID], [InActiveReason], [HasPortalAccess], [IsAdvancedPortal], [IsBasicPortal], [PrimaryUserID], [DefaultPortalGroupID], [DefaultSupportGroupID], [DefaultSupportUserID], [ProductType], [ParentID], [WebServiceID], [SystemEmailID], [ChatID], [PortalGuid], [CRMLinkID], [SAExpirationDate], [APIRequestLimit], [DateCreated], [DateModified], [RequireNewKeyword], [RequireKnownUserForNewEmail], [EmailDelimiter], [OrganizationReplyToAddress], [CompanyDomains], [AdminOnlyCustomers], [AdminOnlyReports], [ShowWiki], [DefaultWikiArticleID], [SlaLevelID], [InternalSlaLevelID], [BusinessDays], [BusinessDayStart], [BusinessDayEnd], [UseEuropeDate], [CultureName], [TimedActionsRequired], [MatchEmailSubject], [CreatorID], [ModifierID], [PrimaryInterest], [PotentialSeats], [EvalProcess], [AddAdditionalContacts], [ChangeStatusIfClosed], [IsPublicArticles], [UseForums], [SetNewActionsVisibleToCustomers], [SupportHoursMonth], [ProductRequired], [ProductVersionRequired], [AllowUnsecureAttachmentViewing], [ForceBCCEmailsPrivate], [UnknownCompanyID], [IsRebuildingIndex], [LastIndexRebuilt], [IsIndexLocked], [NeedsIndexing] FROM [dbo].[Organizations] WHERE ([OrganizationID] = @OrganizationID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);

@@ -46,8 +46,9 @@ namespace TeamSupport.Data
           case SystemActionType.Description: title = "Description"; break;
           case SystemActionType.Resolution: title = "Resolution"; break;
           case SystemActionType.Email: title = "Email: " + Name; break;
-          case SystemActionType.PingUpdate: title = "Ping Updated"; break;
+          case SystemActionType.UpdateRequest: title = "Update Request"; break;
           case SystemActionType.Chat: title = "Chat"; break;
+          case SystemActionType.Reminder: title = "Reminder"; break;
           default:
             title = ActionTypeName == "" ? "[No Action Type]" : ActionTypeName;
             if (!string.IsNullOrEmpty(Name)) title += ": " + Name;
@@ -62,6 +63,20 @@ namespace TeamSupport.Data
 
   public partial class Actions
   {
+
+    private string _actionLogInstantMessage = null;
+
+    public string ActionLogInstantMessage
+    {
+      get
+      {
+        return _actionLogInstantMessage;
+      }
+      set
+      {
+        _actionLogInstantMessage = value;
+      }
+    }
 
     partial void BeforeRowDelete(int actionID)
     {
@@ -78,8 +93,12 @@ namespace TeamSupport.Data
 
     partial void AfterRowInsert(Action action)
     {
-      string description = "Added action '" + action.Name + "' to " + Tickets.GetTicketLink(LoginUser, action.TicketID);
-      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, description);
+      string description = "Added action ";
+      if (_actionLogInstantMessage != null)
+      {
+        description = _actionLogInstantMessage;
+      }
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, description + action.Name + " to " + Tickets.GetTicketLink(LoginUser, action.TicketID));
       AddChildActions(action);
     }
 
@@ -194,7 +213,7 @@ namespace TeamSupport.Data
       }
       return null;
     }   
-
+   
     public void LoadByOrganizationID(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -203,6 +222,38 @@ namespace TeamSupport.Data
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);
+      }
+    }
+
+    public void LoadModifiedByCRMLinkItem(CRMLinkTableItem item)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+        @"
+          SELECT 
+            a.* 
+          FROM 
+            Actions a 
+            JOIN Tickets t 
+              ON a.TicketID = t.TicketID
+          WHERE 
+            a.SystemActionTypeID <> 1 
+            AND a.DateModified > @DateModified
+            AND 
+            (
+              a.DateModifiedBySalesForceSync IS NULL
+              OR a.DateModified > DATEADD(s, 2, a.DateModifiedBySalesForceSync)
+            )
+            AND t.OrganizationID = @OrgID 
+          ORDER BY 
+            a.DateCreated DESC
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
+        command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
+
+        Fill(command, "Actions");
       }
     }
 
@@ -233,6 +284,59 @@ namespace TeamSupport.Data
         return null;
       else
         return actions[0];
+    }
+
+    public void LoadBySalesForceID(string salesForceID, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Actions a JOIN Tickets t ON a.TicketID = t.TicketID WHERE a.SalesForceID = @SalesForceID AND t.OrganizationID = @OrganizationID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@SalesForceID", salesForceID);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
+    //Changes to this method needs to be applied to ActionLinkToJira.LoadToPushToJira also.
+    public void LoadToPushToJira(CRMLinkTableItem item, int ticketID)
+    {
+      string actionTypeFilter = "1 = 1";
+
+      if (item.ActionTypeIDToPush != null)
+      {
+        actionTypeFilter = "a.ActionTypeID = @actionTypeID";
+      }
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+        @"
+          SELECT 
+            a.* 
+          FROM 
+            Actions a
+            LEFT JOIN ActionLinkToJira j
+              ON a.ActionID = j.ActionID
+          WHERE 
+            a.SystemActionTypeID <> 1 
+            AND a.TicketID = @ticketID
+            AND " + actionTypeFilter + @"
+            AND 
+            (
+              j.DateModifiedByJiraSync IS NULL
+              OR a.DateModified > DATEADD(s, 2, j.DateModifiedByJiraSync)
+            )
+          ORDER BY 
+            a.DateCreated ASC
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ticketID", ticketID);
+        command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
+        command.Parameters.AddWithValue("@actionTypeID", item.ActionTypeIDToPush == null ? -1 : item.ActionTypeIDToPush);
+
+        Fill(command, "Actions");
+      }
     }
   }
 }

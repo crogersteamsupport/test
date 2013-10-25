@@ -6,6 +6,7 @@ using dtSearch.Engine;
 using TeamSupport.Data;
 using System.IO;
 using System.Data.SqlClient;
+using System.Configuration;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -14,22 +15,69 @@ namespace TeamSupport.ServiceLibrary
   {
     public override void Run()
     {
-      Logs.WriteEvent("Started Indexing");
       try
       {
+        bool isRebuilder = ConfigurationManager.AppSettings["RebuilderMode"] != null && ConfigurationManager.AppSettings["RebuilderMode"] == "1";
 
         Organizations orgs = new Organizations(LoginUser);
-        orgs.LoadByNeedsIndexing();
+        if (!isRebuilder) orgs.LoadByNeedsIndexing(); else orgs.LoadByNeedsIndexRebuilt();
         int cnt = 0;
         foreach (Organization org in orgs)
         {
-          cnt++;
-          Logs.WriteEvent(string.Format("Started Indexing for org: {0}, [{1}/{2}]",org.OrganizationID.ToString(), cnt.ToString(), orgs.Count.ToString()));
-          ProcessIndex(org, ReferenceType.Tickets);
-          ProcessIndex(org, ReferenceType.Wikis);
-          ProcessIndex(org, ReferenceType.Notes);
-          ProcessIndex(org, ReferenceType.ProductVersions);
           UpdateHealth();
+          Logs.WriteLine();
+          Logs.WriteLine();
+          Logs.WriteEvent(string.Format("Started Indexing for org: {0}, [{1}/{2}]", org.OrganizationID.ToString(), cnt.ToString(), orgs.Count.ToString()));
+
+          try
+          {
+            if (!isRebuilder)
+            {
+              if (IsLocked(org.OrganizationID))
+              {
+                Logs.WriteEvent("Skipped because the index was locked.");
+                continue;
+              }
+              else
+              {
+                LockIndex(org.OrganizationID, true);
+              }
+            }
+            else
+            {
+              org.IsRebuildingIndex = true;
+              org.Collection.Save();
+              Logs.WriteEvent("IsRebuildingIndex set to TRUE");
+            }
+
+            cnt++;
+            ProcessIndex(org, ReferenceType.Tickets, isRebuilder);
+            ProcessIndex(org, ReferenceType.Wikis, isRebuilder);
+            ProcessIndex(org, ReferenceType.Notes, isRebuilder);
+            ProcessIndex(org, ReferenceType.ProductVersions, isRebuilder);
+            ProcessIndex(org, ReferenceType.WaterCooler, isRebuilder);
+            ProcessIndex(org, ReferenceType.Organizations, isRebuilder);
+            ProcessIndex(org, ReferenceType.Contacts, isRebuilder);
+            if (isRebuilder)
+            {
+              org.LastIndexRebuilt = DateTime.UtcNow;
+              Logs.WriteEvent("LastIndexRebuilt Updated");
+              org.Collection.Save();
+            }
+          }
+          finally
+          {
+            if (isRebuilder)
+            {
+              org.IsRebuildingIndex = false;
+              org.Collection.Save();
+              Logs.WriteEvent("IsRebuildingIndex set to FALSE");
+            }
+            else
+            {
+              LockIndex(org.OrganizationID, false);
+            }
+          }
         }
 
         
@@ -39,13 +87,10 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteException(ex);
         ExceptionLogs.LogException(LoginUser, ex, "Indexer"); 
       }
-      Logs.WriteEvent("Finished Indexing");
-
-
     }
 
 
-    private void ProcessIndex(Organization organization, ReferenceType referenceType)
+    private void ProcessIndex(Organization organization, ReferenceType referenceType, bool isRebuilder)
     {
       string indexPath                            = string.Empty;
       string deletedIndexItemsFileName            = string.Empty;
@@ -54,6 +99,8 @@ namespace TeamSupport.ServiceLibrary
       string primaryKeyName                       = string.Empty;
 
       IndexDataSource indexDataSource = null;
+      int maxRecords = Settings.ReadInt("Max Records", 1000);
+      
 
       switch(referenceType)
       {
@@ -63,7 +110,7 @@ namespace TeamSupport.ServiceLibrary
            storedFields                         = "TicketID OrganizationID TicketNumber Name IsKnowledgeBase Status Severity DateModified DateCreated DateClosed SlaViolationDate SlaWarningDate";
            tableName                            = "Tickets";
            primaryKeyName                       = "TicketID";
-           indexDataSource                      = new TicketIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
+           indexDataSource                      = new TicketIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
            break;
         case ReferenceType.Wikis:
            indexPath                            = "\\Wikis";
@@ -71,36 +118,64 @@ namespace TeamSupport.ServiceLibrary
            storedFields                         = "OrganizationID Creator Modifier";
            tableName                            = "WikiArticles";
            primaryKeyName                       = "ArticleID";
-           indexDataSource                      = new WikiIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
+           indexDataSource = new WikiIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
            break;
         case ReferenceType.Notes:
            indexPath                            = "\\Notes";
            deletedIndexItemsFileName            = "DeletedNotes.txt";
            tableName                            = "Notes";
            primaryKeyName                       = "NoteID";
-           indexDataSource                      = new NoteIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
+           indexDataSource = new NoteIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
            break;
         case ReferenceType.ProductVersions:
            indexPath                            = "\\ProductVersions";
            deletedIndexItemsFileName            = "DeletedProductVersions.txt";
            tableName                            = "ProductVersions";
            primaryKeyName                       = "ProductVersionID";
-           indexDataSource                      = new ProductVersionIndexDataSource(LoginUser, Settings.ReadInt("Max Records", 1000), organization.OrganizationID);
+           indexDataSource = new ProductVersionIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+           break;
+        case ReferenceType.WaterCooler:
+           indexPath                            = "\\WaterCooler";
+           deletedIndexItemsFileName            = "DeletedWaterCoolerMessages.txt";
+           tableName                            = "WatercoolerMsg";
+           primaryKeyName                       = "MessageID";
+           indexDataSource = new WaterCoolerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+           break;
+        case ReferenceType.Organizations:
+           indexPath                            = "\\Customers";
+           deletedIndexItemsFileName            = "DeletedCustomers.txt";
+           tableName                            = "Organizations";
+           primaryKeyName                       = "OrganizationID";
+           indexDataSource = new CustomerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+           break;
+        case ReferenceType.Contacts:
+           indexPath                            = "\\Contacts";
+           deletedIndexItemsFileName            = "DeletedContacts.txt";
+           tableName                            = "Users";
+           primaryKeyName                       = "UserID";
+           indexDataSource = new ContactIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
            break;
         default:
           throw new System.ArgumentException("ReferenceType " + referenceType.ToString() + " is not supported by indexer."); 
       }
 
-
+      string mainIndexPath = Path.Combine(Settings.ReadString("Tickets Index Path", "c:\\Indexes"), organization.OrganizationID.ToString() + indexPath);
+      if (isRebuilder) indexPath = "\\Rebuild" + indexPath;
       string path = Path.Combine(Settings.ReadString("Tickets Index Path", "c:\\Indexes"), organization.OrganizationID.ToString() + indexPath);
       Logs.WriteEvent("Path: " + path);
+
       bool isNew = !System.IO.Directory.Exists(path);
 
-      if (isNew) { Directory.CreateDirectory(path); }
+      if (isNew) { 
+        Directory.CreateDirectory(path);
+        Logs.WriteEvent("Createing path: " + path);
+      }
+
+      if (isRebuilder) DeleteIndex(path);
 
       try
       {
-        RemoveOldIndexItems(LoginUser, path, organization, referenceType, deletedIndexItemsFileName);
+        if (!isRebuilder && !organization.IsRebuildingIndex) RemoveOldIndexItems(LoginUser, path, organization, referenceType, deletedIndexItemsFileName);
       }
       catch (Exception ex)
       {
@@ -110,16 +185,19 @@ namespace TeamSupport.ServiceLibrary
 
       Options options = new Options();
       options.TextFlags = TextFlags.dtsoTfRecognizeDates;
-
+      Logs.WriteEvent("Processing " + tableName);
       using (IndexJob job = new IndexJob())
       {
         job.DataSourceToIndex = indexDataSource;
 
         job.IndexPath = path;
-        job.ActionCreate = isNew;
+        job.ActionCreate = isNew || isRebuilder;
         job.ActionAdd = true;
         job.CreateRelativePaths = false;
         job.StoredFields = Server.Tokenize(storedFields);
+        //string tempPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "TempIndexFiles" + indexPath);
+        //if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
+        //job.TempFileDir = tempPath;
 
         job.IndexingFlags =
             IndexingFlags.dtsAlwaysAdd |
@@ -145,8 +223,115 @@ namespace TeamSupport.ServiceLibrary
           throw;
         }
 
-        UpdateItems(indexDataSource, tableName, primaryKeyName);
+        if (!isRebuilder && !organization.IsRebuildingIndex)
+        {
+          UpdateItems(indexDataSource, tableName, primaryKeyName);
+        }
+        else
+        {
+          MoveRebuiltIndex(organization.OrganizationID, mainIndexPath, path);
+        }
+
+        
       }
+    }
+
+    private void DeleteIndex(string path)
+    {
+      Logs.WriteEvent("Deleting Index Files: " + path);
+
+      while (true)
+      {
+        int count = 0;
+        try
+        {
+          count++;
+          DirectoryInfo dir = new DirectoryInfo(path);
+          if (!dir.Exists) return;
+
+          foreach (FileInfo file in dir.GetFiles())
+          {
+            file.Delete();
+          }
+
+          break;
+        }
+        catch (Exception ex)
+        {
+          Logs.WriteException(ex);
+          if (count > 3)
+          {
+            Logs.WriteEvent("Too many exceptions deleting old index. exiting...");
+            throw;
+          }
+        }
+        
+      }
+
+    }
+
+    private void MoveRebuiltIndex(int organizationID, string indexPath, string rebuiltPath)
+    {
+      int count = 0;
+      while (IsLocked(organizationID))
+      {
+        Logs.WriteEvent("Index Locked, trying again...");
+        count++;
+        System.Threading.Thread.Sleep(5000);
+        if (count > 10)
+        {
+          Exception ex = new Exception("Could not obain index lock to move rebuilt index");
+          ExceptionLogs.LogException(LoginUser, ex, "Index Rebuilder");
+          Logs.WriteException(ex);
+          throw ex;
+        }
+      }
+      LockIndex(organizationID, true);
+      try
+      {
+        try
+        {
+          DeleteIndex(indexPath);
+
+            if (Directory.Exists(indexPath))
+            {
+              Logs.WriteEvent("Deleting: " + indexPath);
+              Directory.Delete(indexPath, true);
+            }
+
+            Logs.WriteEvent(string.Format("Moving files from {0} to {1}", rebuiltPath, indexPath));
+            Directory.Move(rebuiltPath, indexPath);
+        }
+        finally
+        {
+          LockIndex(organizationID, false);
+        }
+      }
+      catch (Exception ex)
+      {
+        Logs.WriteException(ex);
+        throw;
+      }
+    }
+
+
+    private void LockIndex(int organizationID, bool value)
+    {
+      Logs.WriteEvent(string.Format("Setting Index Lock, OrganizationID: {0:D}  Value: {1}", organizationID, value.ToString()));
+      SqlCommand command = new SqlCommand();
+      command.CommandText = "UPDATE Organizations SET IsIndexLocked = @value WHERE OrganizationID = @OrganizationID";
+      command.Parameters.AddWithValue("value", value);
+      command.Parameters.AddWithValue("OrganizationID", organizationID);
+      SqlExecutor.ExecuteNonQuery(LoginUser, command);
+    }
+
+    private bool IsLocked(int organizationID)
+    {
+      SqlCommand command = new SqlCommand();
+      command.CommandText = "SELECT IsIndexLocked FROM Organizations WHERE OrganizationID = @OrganizationID";
+      command.Parameters.AddWithValue("OrganizationID", organizationID);
+      object o = SqlExecutor.ExecuteScalar(LoginUser, command);
+      return o != null && (bool)o;
     }
 
     private void UpdateItems(IndexDataSource dataSource, string tableName, string primaryKeyName)

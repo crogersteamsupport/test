@@ -87,6 +87,16 @@
                     </telerik:RadComboBox>
         </td>
       </tr>
+      <tr>
+        <td class="labelColTD">
+          Prevent email from creating tickets:
+        </td>
+        <td class="inputColTD">
+          <asp:CheckBox ID="cbBlockEmail" runat="server" Text="" CssClass="" />
+        </td>
+      </tr>
+
+
       <tr id="trAdmin" runat="server">
         <td class="labelColTD">
           System Admin:

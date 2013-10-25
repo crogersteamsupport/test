@@ -51,6 +51,21 @@ namespace TeamSupport.Data
 
     }
 
+    public Asset FindByImportID(string importID)
+    {
+      importID = importID.ToLower().Trim();
+      foreach (Asset asset in this)
+      {
+        if ((asset.ImportID != null && asset.ImportID.Trim().ToLower() == importID) || 
+            (asset.SerialNumber != null && asset.SerialNumber.ToLower().Trim() == importID) || 
+            (asset.Name != null && asset.Name.ToLower().Trim() == importID)
+           )
+        {
+          return asset;
+        }
+      }
+      return null;
+    }
 
   }
   

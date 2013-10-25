@@ -130,6 +130,8 @@ $(document).ready(function () {
     always: function (e, data) {
       data.context.remove();
       loadAttachments();
+      top.Ts.System.logAction('Product Version - Attacment Added');
+
     }
   });
 

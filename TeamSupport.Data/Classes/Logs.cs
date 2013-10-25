@@ -77,18 +77,41 @@ namespace TeamSupport.Data
         //TextWriter _writer = TextWriter.Synchronized(!File.Exists(_logPath) ? File.CreateText(_logPath) : File.AppendText(_logPath));
         
         string path = Path.Combine(_logPath, string.Format("{0} {1:yyyy-MM-dd}.txt", _name, DateTime.Now));
-        
-        using (StreamWriter writer = !File.Exists(path) ? File.CreateText(path) : File.AppendText(path)) 
-        { 
-          writer.WriteLine(message); 
+
+        bool doesFileExist = File.Exists(path);
+        using (StreamWriter writer = !doesFileExist ? File.CreateText(path) : File.AppendText(path))
+        {
+          writer.WriteLine(message);
         }
 
+        // Clean up old log files after creating a new on.
+        if (!doesFileExist)
+        {
+          string[] files = Directory.GetFiles(_logPath, "*.txt");
+
+          foreach (string file in files)
+          {
+            if (File.GetLastWriteTime(file) < DateTime.Now.AddDays(-7)) File.Delete(file);
+          }
         
-
+        }
       }
-
     }
 
+    public void WriteEventFormat(string formatString, bool showDateTime, params object[] args)
+    {
+      WriteEvent(string.Format(formatString, args), showDateTime);
+    }
+
+    public void WriteEventFormat(string formatString, params object[] args)
+    {
+      WriteEventFormat(formatString, true, args);
+    }
+
+    public void WriteParam(string paramName, string value)
+    {
+      WriteEventFormat("{0}: {1}", paramName, value);
+    }
     public void WriteEvent(string message)
     {
       WriteEvent(message, true);

@@ -23,12 +23,19 @@ namespace TeamSupport.Api
     }
 
 
-    public static string GetAddresses(RestCommand command, ReferenceType refType, int refID)
+    public static string GetAddresses(RestCommand command, ReferenceType refType, int refID, bool orderByDateCreated = false)
     {
       if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);
 
       Addresses items = new Addresses(command.LoginUser);
-      items.LoadByID(refID, refType);
+      if (orderByDateCreated)
+      {
+        items.LoadByID(refID, refType, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByID(refID, refType);
+      }
       return items.GetXml("Addresses", "Address", true, command.Filters);
     }
 

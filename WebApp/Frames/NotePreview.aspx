@@ -6,8 +6,8 @@
   </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
-  <div style="height:100%; width:100%; padding: 10px 10px; background-color:#fff; overflow:auto;">
-  <div id="divContent" runat="server"  style="height:100%; width:97%;">
+  <div style="background-color:#fff; height:100%; overflow:auto; ">
+  <div id="divContent" runat="server" style="padding: 10px 10px;">
   
   </div>
   </div>

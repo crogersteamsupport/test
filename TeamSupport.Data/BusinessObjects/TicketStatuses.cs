@@ -53,11 +53,11 @@ namespace TeamSupport.Data
     }
 
 
-    public void LoadByOrganizationID(int organizationID)
+    public void LoadByOrganizationID(int organizationID, string orderBy = "Position")
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM TicketStatuses WHERE OrganizationID = @OrganizationID  ORDER BY Position";
+        command.CommandText = "SELECT * FROM TicketStatuses WHERE OrganizationID = @OrganizationID  ORDER BY " + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);

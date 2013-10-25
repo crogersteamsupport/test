@@ -68,9 +68,9 @@
       </div>
     </telerik:RadPane>
     <telerik:RadSplitBar ID="RadSplitBar1" runat="server" />
-    <telerik:RadPane ID="RadPane3" runat="server" Scrolling="Y" BackColor="#ffffff">
+    <telerik:RadPane ID="RadPane3" runat="server" Scrolling="None" BackColor="#ffffff">
       <iframe id="frmNotePreview" runat="server" scrolling="no" src="" frameborder="0"
-        width="100%" height="100%"></iframe>
+        width="100%" height="100%" style="overflow:hidden;height:100%;width:100%"></iframe>
     </telerik:RadPane>
   </telerik:RadSplitter>
       <asp:HiddenField ID="fieldRefID" runat="server" />
@@ -89,8 +89,8 @@
         var id = args.getDataKeyValue('NoteID');
         frame.setAttribute('src', 'NotePreview.aspx?NoteID=' + id);
         top.privateServices.SetUserSetting('SelectedCustomerNoteID', id);
-      }  
-    
+      }
+
       function DialogClosed(sender, args) {
         RefreshGrid();
         sender.remove_close(DialogClosed);
@@ -104,6 +104,7 @@
       function ShowDialog(wnd) {
         wnd.add_close(DialogClosed);
         wnd.show();
+        top.Ts.System.logAction('Organization Notes - Note Dialog Opened');
       }
 
       function GetRefID() {
@@ -131,6 +132,7 @@
       function DeleteRow(id) {
         if (!confirm('Are you sure you would like to delete this note?')) return;
         top.privateServices.DeleteNote(id, RefreshGrid);
+        top.Ts.System.logAction('Organization Notes - Note Deleted');
       }
 
     </script>

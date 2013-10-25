@@ -13,7 +13,7 @@ span.admin-cf-field-name { font-weight:bold; margin:0; }
 .admin-cf-cat-header .caption, span.admin-cf-field-name, span.admin-cf-field-type {cursor: url(../cursors/grab.cur), move !important;}
 .admin-cf-field .ts-icon { margin-left: .5em; }
 .admin-cf-reorders { float:right; vertical-align:middle; margin: 1.25em 1em 0 0;}
-.admin-cf-combos { float:left; vertical-align:middle;}
+.admin-cf-combos { float:left; vertical-align:middle; }
 
 
 

@@ -20,6 +20,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Wikis", "Wikis", false, false, false);
       _fieldMap.AddMap("Notes", "Notes", false, false, false);
       _fieldMap.AddMap("ProductVersions", "ProductVersions", false, false, false);
+      _fieldMap.AddMap("WaterCooler", "WaterCooler", false, false, false);
             
     }
   }

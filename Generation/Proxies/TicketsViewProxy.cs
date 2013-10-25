@@ -76,6 +76,17 @@ namespace TeamSupport.Data
     [DataMember] public string CategoryName { get; set; }
     [DataMember] public string CreatorEmail { get; set; }
     [DataMember] public string ModifierEmail { get; set; }
+    [DataMember] public int? KnowledgeBaseCategoryID { get; set; }
+    [DataMember] public string KnowledgeBaseCategoryName { get; set; }
+    [DataMember] public DateTime? DueDate { get; set; }
+    [DataMember] public string SalesForceID { get; set; }
+    [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
+    [DataMember] public DateTime? DateModifiedByJiraSync { get; set; }
+    [DataMember] public int? JiraID { get; set; }
+    [DataMember] public bool? SyncWithJira { get; set; }
+    [DataMember] public string JiraKey { get; set; }
+    [DataMember] public string JiraLinkURL { get; set; }
+    [DataMember] public string JiraStatus { get; set; }
           
   }
   
@@ -84,6 +95,14 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
+      result.JiraStatus = this.JiraStatus;
+      result.JiraLinkURL = this.JiraLinkURL;
+      result.JiraKey = this.JiraKey;
+      result.SyncWithJira = this.SyncWithJira;
+      result.JiraID = this.JiraID;
+      result.SalesForceID = this.SalesForceID;
+      result.KnowledgeBaseCategoryName = this.KnowledgeBaseCategoryName;
+      result.KnowledgeBaseCategoryID = this.KnowledgeBaseCategoryID;
       result.ModifierEmail = this.ModifierEmail;
       result.CreatorEmail = this.CreatorEmail;
       result.CategoryName = this.CategoryName;
@@ -140,6 +159,9 @@ namespace TeamSupport.Data
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
        
+      result.DateModifiedByJiraSync = this.DateModifiedByJiraSyncUtc == null ? this.DateModifiedByJiraSyncUtc : DateTime.SpecifyKind((DateTime)this.DateModifiedByJiraSyncUtc, DateTimeKind.Utc); 
+      result.DateModifiedBySalesForceSync = this.DateModifiedBySalesForceSyncUtc == null ? this.DateModifiedBySalesForceSyncUtc : DateTime.SpecifyKind((DateTime)this.DateModifiedBySalesForceSyncUtc, DateTimeKind.Utc); 
+      result.DueDate = this.DueDateUtc == null ? this.DueDateUtc : DateTime.SpecifyKind((DateTime)this.DueDateUtc, DateTimeKind.Utc); 
       result.SlaWarningDate = this.SlaWarningDateUtc == null ? this.SlaWarningDateUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningDateUtc, DateTimeKind.Utc); 
       result.SlaViolationDate = this.SlaViolationDateUtc == null ? this.SlaViolationDateUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationDateUtc, DateTimeKind.Utc); 
       result.SlaWarningInitialResponse = this.SlaWarningInitialResponseUtc == null ? this.SlaWarningInitialResponseUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningInitialResponseUtc, DateTimeKind.Utc); 

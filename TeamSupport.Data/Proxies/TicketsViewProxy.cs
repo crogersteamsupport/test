@@ -68,6 +68,12 @@ namespace TeamSupport.Data
     [DataMember] public string TicketSource { get; set; }
     [DataMember] public int? ForumCategory { get; set; }
     [DataMember] public string CategoryName { get; set; }
+    [DataMember] public int? KnowledgeBaseCategoryID { get; set; }
+    [DataMember] public string KnowledgeBaseCategoryName { get; set; }
+    [DataMember] public string CategoryDisplayString { get; set; }
+    [DataMember] public string SalesForceID { get; set; }          
+    [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
+          
   }
   
   public partial class TicketsViewItem : BaseItem
@@ -75,6 +81,9 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
+      result.SalesForceID = this.SalesForceID;
+      result.KnowledgeBaseCategoryName = this.KnowledgeBaseCategoryName;
+      result.KnowledgeBaseCategoryID = this.KnowledgeBaseCategoryID;
       result.CategoryName = this.CategoryName;
       result.ForumCategory = this.ForumCategory;
       result.TicketSource = this.TicketSource;
@@ -125,7 +134,7 @@ namespace TeamSupport.Data
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
 
       //result.SlaWarningInitialResponse = this.SlaWarningInitialResponseUtc == null ? this.SlaWarningInitialResponseUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningInitialResponseUtc, DateTimeKind.Utc); 
-
+      result.DateModifiedBySalesForceSync = this.DateModifiedBySalesForceSyncUtc == null ? this.DateModifiedBySalesForceSyncUtc : DateTime.SpecifyKind((DateTime)this.DateModifiedBySalesForceSyncUtc, DateTimeKind.Utc); 
 
       result.SlaWarningDate = this.SlaWarningDateUtc == null ? this.SlaWarningDateUtc : DateTime.SpecifyKind((DateTime)this.SlaWarningDateUtc, DateTimeKind.Utc);
       result.SlaViolationDate = this.SlaViolationDateUtc == null ? this.SlaViolationDateUtc : DateTime.SpecifyKind((DateTime)this.SlaViolationDateUtc, DateTimeKind.Utc);

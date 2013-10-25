@@ -196,6 +196,16 @@ ORDER BY cr.DateCreated ASC";
       // SetLastRequestID(userID, organizationID);
     }
 
+    public static int GetRequestCountInLastDays(LoginUser loginUser, int organizationID, int days)
+    { 
+      SqlCommand command = new SqlCommand();
+      command.CommandText = "SELECT COUNT(*) FROM ChatRequests cr WHERE cr.OrganizationID = @OrganizationID AND DATEDIFF(day, DateCreated, GETUTCDATE()) < @Days";
+      command.CommandType = CommandType.Text;
+      command.Parameters.AddWithValue("@OrganizationID", organizationID);
+      command.Parameters.AddWithValue("@Days", days);
+      return SqlExecutor.ExecuteInt(loginUser, command);
+    }
+
     public void SetLastRequestID(int userID, int organizationID)
     { 
       using (SqlCommand command = new SqlCommand())

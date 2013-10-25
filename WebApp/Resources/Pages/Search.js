@@ -19,10 +19,13 @@ $(document).ready(function () {
 
   $('#search-results-loading').hide();
 
-  $('#search-button').click(function () { _firstItemIndex = 0; GetSearchResults(); });
+  $('#search-button').click(function () {
+    _firstItemIndex = 0; GetSearchResults(); 
+    top.Ts.System.logAction('Search - Searched');
+  });
 
   $('#search-results-pane').bind('scroll', function () {
-    if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+    if ($(this).scrollTop() > 0 && $(this).scrollTop() + $(this).innerHeight() >= ($(this)[0].scrollHeight * 0.9)) {
       GetSearchResultsNextPage();
     }
   });
@@ -55,16 +58,40 @@ function LoadAdvancedOptions() {
 }
 
 function LoadStandardFilters() {
+  if (top.Ts.System.Organization.ProductType > 0) {
+    $('#search-standard-filters').append($('<input id="include-notes" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()"/> Customer Notes<br />'));
+
+    if (top.Ts.System.Organization.ProductType > 1) {
+      $('#search-standard-filters').append($('<input id="include-product-versions" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()" /> Product Versions<br />'));
+    }
+
+    $('#search-standard-filters').append($('<input id="include-water-cooler" class="checkbox" type="checkbox" onclick="HandleStandardFilterClickEvent()"/> Water Cooler<br />'));
+  }
+  else {
+    $('#include-wikis-span').hide();
+  }
+
   if (_standardFilterID != null) {
-    $('#include-tickets').attr('checked', _advancedSearchOptions.Tickets);
-    $('#include-knowledge-base').attr('checked', _advancedSearchOptions.KnowledgeBase);
-    $('#include-wikis').attr('checked', _advancedSearchOptions.Wikis);
-    if ($('#include-tickets').attr('checked') && $('#include-knowledge-base').attr('checked') && $('#include-wikis').attr('checked')) {
-      $('#include-all').attr('checked', true);
+    $('#include-tickets').prop('checked', _advancedSearchOptions.Tickets);
+    $('#include-knowledge-base').prop('checked', _advancedSearchOptions.KnowledgeBase);
+    $('#include-wikis').prop('checked', _advancedSearchOptions.Wikis);
+    $('#include-notes').prop('checked', _advancedSearchOptions.Notes);
+    $('#include-product-versions').prop('checked', _advancedSearchOptions.ProductVersions);
+    $('#include-water-cooler').prop('checked', _advancedSearchOptions.WaterCooler);
+
+    if (
+      $('#include-tickets').prop('checked')
+      && $('#include-knowledge-base').prop('checked')
+      && $('#include-wikis').prop('checked')
+      && ($('#include-notes').length == 0 || $('#include-notes').prop('checked'))
+      && ($('#include-product-versions').length == 0 || $('#include-product-versions').prop('checked'))
+      && ($('#include-water-cooler').length == 0 || $('#include-water-cooler').prop('checked'))
+    ) {
+      $('#include-all').prop('checked', true);
     }
   }
   else {
-    $('.checkbox').attr('checked', true);
+    $('.checkbox').prop('checked', true);
   }
 }
 
@@ -124,7 +151,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
     displayFieldSet.addClass('filter-' + customFilterID);
   }
 
-  var fields = $('<select>').addClass('condition-field').appendTo(div).width('200px');
+  var fields = $('<select>').addClass('condition-field').appendTo(div).width('180px');
   loadComboFields(fields, true).combobox({
     selected: function (e, ui) {
       createConditionValue(div, fields.find('option:selected').data('field'));
@@ -164,7 +191,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
       top.Ts.Services.Search.DeleteCustomFilter(clickedCustomFilterID, function () { });
       div.remove();
       displayFieldSet.remove();
-      $('#search-button').trigger('click');
+      setTimeout(function(){$('#search-button').trigger('click');}, 5);
     });
   deleteIcon.css('float', 'right');
   deleteIcon.appendTo(displayFieldSet);
@@ -189,6 +216,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
   var saveIcon = $('<span>')
     .addClass('ts-icon ts-icon-save')
     .click(function (e) {
+      top.Ts.System.logAction('Search - Filter Added');
       var fieldID = $(this).parent().parent().find('.condition-field').val();
       var measure = $(this).parent().parent().find('.condition-measure').val();
       var value = $(this).parent().parent().find('.condition-value').val();
@@ -220,7 +248,7 @@ function AddCustomFilter(customFilterID, reportTableFieldID, measure, testValue)
         displayFieldSet.show();
       }
 
-      $('#search-button').trigger('click');
+      setTimeout(function(){$('#search-button').trigger('click');}, 5);
     });
   saveIcon.css('float', 'left');
   saveIcon.css('margin-left', '5px');
@@ -277,7 +305,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
     displayFieldSet.addClass('sorter-' + sorterID);
   }
 
-  var fields = $('<select>').addClass('condition-field').appendTo(div).width('200px');
+  var fields = $('<select>').addClass('condition-field').appendTo(div).width('180px');
   loadComboFields(fields, false).combobox({
     selected: function (e, ui) {
     }
@@ -309,7 +337,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
       top.Ts.Services.Search.DeleteSorter(clickedSorterID, function () { });
       div.remove();
       displayFieldSet.remove();
-      $('#search-button').trigger('click');
+      setTimeout(function(){$('#search-button').trigger('click');}, 5);
     });
   deleteIcon.css('float', 'right');
   deleteIcon.appendTo(displayFieldSet);
@@ -331,6 +359,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
   var saveIcon = $('<span>')
         .addClass('ts-icon ts-icon-save')
         .click(function (e) {
+          top.Ts.System.logAction('Search - Sort Condition Added');
           var fieldID = $(this).parent().parent().find('.condition-field').val();
           var descending = $(this).parent().parent().find('.condition-direction').val();
           var isCustom = $(this).parent().parent().find('.condition-field option:selected').data('field').IsCustom;
@@ -367,7 +396,7 @@ function AddCustomSorter(sorterID, fieldID, descending) {
             displayFieldSet.show();
           }
 
-          $('#search-button').trigger('click');
+          setTimeout(function(){$('#search-button').trigger('click');}, 5);
         });
   saveIcon.css('float', 'left');
   saveIcon.css('margin-right', '5px');
@@ -517,14 +546,14 @@ function isModified(value, div) {
 
 $(document).keypress(function (e) {
   if (e.which == 13) {
-    _firstItemIndex = 0;
-    GetSearchResults();
+    setTimeout(function () { $('#search-button').trigger('click'); }, 5);
     $(document).blur();
   }
 });
 
 function GetSearchResults() {
   if (_firstItemIndex == 0) {
+    $('.resultsSummary').hide();
     $('#search-results').hide();
     $('#search-results-loading').show();
   }
@@ -551,48 +580,67 @@ function showSearchResults(results) {
     var onClickHandler = "";
     var subText = "";
     switch (results.Items[i].TypeID) {
-      case 1://Tickets
-        iconPath = "/vcr/142/images/nav/16/tickets.png";
+      case 1: //Tickets
+        iconPath = "/vcr/1_7_0/images/nav/16/tickets.png";
         onClickHandler = "top.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
         subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
-                  '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
+                '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
         break;
-      case 2://KnowledgeBase
-        iconPath = "/vcr/142/images/nav/16/knowledge.png";
+      case 2: //KnowledgeBase
+        iconPath = "/vcr/1_7_0/images/nav/16/knowledge.png";
         onClickHandler = "top.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
         subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
-                  '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
+                '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
         break;
-      case 3://Wikis
-        iconPath = "/vcr/142/images/nav/16/wiki.png";
+      case 3: //Wikis
+        iconPath = "/vcr/1_7_0/images/nav/16/wiki.png";
         onClickHandler = "top.Ts.MainPage.openWiki(" + results.Items[i].ID + ", true)";
         subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
-                  '<h2>Modified by: ' + results.Items[i].Modifier + '</h2>';
+                '<h2>Modified by: ' + results.Items[i].Modifier + '</h2>';
+        break;
+      case 4: //Notes
+        iconPath = "/vcr/1_7_0/images/nav/16/customers.png";
+        onClickHandler = "top.Ts.MainPage.openCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ", true)";
+        subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
+                '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
+        break;
+      case 5: //ProductVersions
+        iconPath = "/vcr/1_7_0/images/nav/16/products.png";
+        onClickHandler = "top.Ts.MainPage.openProductVersion(" + results.Items[i].ProductID + ", " + results.Items[i].ID + ", true)";
+        subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
+                '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
+        break;
+      case 6: //WaterCooler
+        iconPath = "/vcr/1_7_0/images/nav/16/watercooler.png";
+        onClickHandler = "top.Ts.MainPage.openWaterCoolerInstance(" + results.Items[i].ID + ", " + results.Items[i].RefType + ", " + results.Items[i].AttachmentID + ")";
+        subText = '<h2>Posted by: ' + results.Items[i].Creator + ' </h2>' +
+                '<h2>Posted on: ' + results.Items[i].DateModified + '</h2>';
         break;
     }
 
     var text = results.Items[i].DisplayName;
 
     html = html +
-      '<div class="resultItem">' +
-        '<div class="resultItem-left">' +
-          '<div class="resultItem-icon">' +
-            '<img alt="Result item icon" src="' + iconPath + '" />' +
-            '<h2>' + results.Items[i].ScorePercent + '%</h2>' +
-          '</div>' +
-          '<div class="resultItem-text">' +
-            '<h1>' +
-              '<a href="#" onclick="' + onClickHandler + '" class="ts-link">' + text + '</a>' +
-            '</h1>' +
-            subText +
-          '</div>' +
+    '<div class="resultItem">' +
+      '<div class="resultItem-left">' +
+        '<div class="resultItem-icon">' +
+          '<img alt="Result item icon" src="' + iconPath + '" />' +
+          '<h2>' + results.Items[i].ScorePercent + '%</h2>' +
         '</div>' +
-        '<div class="ticket-right" />' +
-        '<div class="ui-helper-clearfix" />' +
-      '</div>';
+        '<div class="resultItem-text">' +
+          '<h1>' +
+            '<a href="#" onclick="' + onClickHandler + '" class="ts-link">' + text + '</a>' +
+          '</h1>' +
+          subText +
+        '</div>' +
+      '</div>' +
+      '<div class="ticket-right" />' +
+      '<div class="ui-helper-clearfix" />' +
+    '</div>';
   }
 
   if (_firstItemIndex == 0) {
+    $('.resultsSummary').show();
     $('#search-results').html(html).show();
     $('#search-results-loading').hide();
   }
@@ -623,35 +671,75 @@ function HandleAddSorterClickEvent() {
 }
 
 function HandleIncludeAllClickEvent() {
-  if ($('#include-all').attr('checked')) {
-    $('.checkbox').attr('checked', true);
+  if ($('#include-all').prop('checked')) {
+    $('.checkbox').prop('checked', true);
   }
   else {
-    $('.checkbox').attr('checked', false);
+    $('.checkbox').prop('checked', false);
   }
 }
 
 function HandleStandardFilterClickEvent() {
-  if ($('#include-tickets').attr('checked') && $('#include-knowledge-base').attr('checked') && $('#include-wikis').attr('checked')) {
-    $('#include-all').attr('checked', true)
+  top.Ts.System.logAction('Search - Display Item Changed');
+  if (
+    $('#include-tickets').prop('checked')
+    && $('#include-knowledge-base').prop('checked')
+    && $('#include-wikis').prop('checked')
+    && ($('#include-notes').length == 0 || $('#include-notes').prop('checked'))
+    && ($('#include-product-versions').length == 0 || $('#include-product-versions').prop('checked'))
+    && ($('#include-water-cooler').length == 0 || $('#include-water-cooler').prop('checked'))
+  ) {
+    $('#include-all').prop('checked', true)
   }
   else {
-    $('#include-all').attr('checked', false)
+    $('#include-all').prop('checked', false)
   }
 
-  var includeTickets        = $('#include-tickets').attr('checked');
-  var includeKnowledgeBase  = $('#include-knowledge-base').attr('checked');
-  var includeWikis          = $('#include-wikis').attr('checked');
+  var includeTickets = $('#include-tickets').prop('checked');
+  var includeKnowledgeBase = $('#include-knowledge-base').prop('checked');
+  var includeWikis = $('#include-wikis').prop('checked');
+  
+  var includeNotes = false;
+  var includeProductVersions = false;
+  var includeWaterCooler = false;
+
+  if ($('#include-notes').length > 0) {
+    includeNotes = $('#include-notes').prop('checked');
+  }
+
+  if ($('#include-product-versions').length > 0) {
+    includeProductVersions = $('#include-product-versions').prop('checked');
+  }
+
+  if ($('#include-water-cooler').length > 0) {
+    includeWaterCooler = $('#include-water-cooler').prop('checked');
+  }
 
   if (_standardFilterID != null) {
-    top.Ts.Services.Search.UpdateStandardFilters(_standardFilterID, includeTickets, includeKnowledgeBase, includeWikis);
+    top.Ts.Services.Search.UpdateStandardFilters(
+      _standardFilterID,
+      includeTickets,
+      includeKnowledgeBase,
+      includeWikis,
+      includeNotes,
+      includeProductVersions,
+      includeWaterCooler
+    );
   }
   else {
-    top.Ts.Services.Search.AddStandardFilters(includeTickets, includeKnowledgeBase, includeWikis, function (result) {
-      _standardFilterID = result;
-    });
+    top.Ts.Services.Search.AddStandardFilters(
+      includeTickets,
+      includeKnowledgeBase,
+      includeWikis,
+      includeNotes,
+      includeProductVersions,
+      includeWaterCooler,
+      function (result) {
+        _standardFilterID = result;
+  	  }
+    );
   }
 
-  $('#search-button').trigger('click');
+  setTimeout(function(){$('#search-button').trigger('click');}, 5);
 
 }

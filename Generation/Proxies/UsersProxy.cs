@@ -59,6 +59,18 @@ namespace TeamSupport.Data
     [DataMember] public bool PortalAutoReg { get; set; }
     [DataMember] public string AppChatID { get; set; }
     [DataMember] public bool AppChatStatus { get; set; }
+    [DataMember] public string MenuItems { get; set; }
+    [DataMember] public TicketRightType TicketRights { get; set; }
+    [DataMember] public string Signature { get; set; }
+    [DataMember] public string LinkedIn { get; set; }
+    [DataMember] public bool OnlyEmailAfterHours { get; set; }
+    [DataMember] public bool BlockInboundEmail { get; set; }
+    [DataMember] public string SalesForceID { get; set; }
+    [DataMember] public bool ChangeTicketVisibility { get; set; }
+    [DataMember] public bool ChangeKBVisibility { get; set; }
+    [DataMember] public bool EnforceSingleSession { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public bool AllowAnyTicketCustomer { get; set; }
           
   }
   
@@ -67,6 +79,18 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.AllowAnyTicketCustomer = this.AllowAnyTicketCustomer;
+      result.NeedsIndexing = this.NeedsIndexing;
+      result.EnforceSingleSession = this.EnforceSingleSession;
+      result.ChangeKBVisibility = this.ChangeKBVisibility;
+      result.ChangeTicketVisibility = this.ChangeTicketVisibility;
+      result.SalesForceID = this.SalesForceID;
+      result.BlockInboundEmail = this.BlockInboundEmail;
+      result.OnlyEmailAfterHours = this.OnlyEmailAfterHours;
+      result.LinkedIn = this.LinkedIn;
+      result.Signature = this.Signature;
+      result.TicketRights = this.TicketRights;
+      result.MenuItems = this.MenuItems;
       result.AppChatStatus = this.AppChatStatus;
       result.AppChatID = this.AppChatID;
       result.PortalAutoReg = this.PortalAutoReg;

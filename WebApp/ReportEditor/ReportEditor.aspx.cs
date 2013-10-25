@@ -70,7 +70,8 @@ public partial class ReportEditor_ReportEditor : System.Web.UI.Page
     else
     {
       report = (Report)Reports.GetReport(UserSession.LoginUser, _reportID);
-      ReportData.DeleteReportData(UserSession.LoginUser, _reportID);
+      /// Ticket 9540. Not sure why did the call below was made. It seems to be redundant with the call made after the SaveFields method is invoked.
+      //ReportData.DeleteReportData(UserSession.LoginUser, _reportID);
     }
 
     report.Name = textName.Text;
@@ -80,10 +81,17 @@ public partial class ReportEditor_ReportEditor : System.Web.UI.Page
     report.Collection.Save();
 
     SaveFields(report.ReportID);
-    ReportData.DeleteReportData(UserSession.LoginUser, report.ReportID);
+    /// Ticket 9540. It seems that by design the ReportData was deleted after it was updated.
+    /// This seemed to be a good idea, but after the user comments on this ticket and thinking twice about it, it seems better to persist it.
+    //ReportData.DeleteReportData(UserSession.LoginUser, report.ReportID);
 
     Settings.UserDB.WriteInt("SelectedReportID", report.ReportID);
     Settings.Session.WriteInt("NewReportID", report.ReportID);
+
+    ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Update, ReferenceType.Reports, report.ReportID, string.Format(
+      "{0} updated report \"{1}\" ({2})",
+      Users.GetUserFullName(UserSession.LoginUser, UserSession.LoginUser.UserID), report.Name, report.ReportID));
+
     CloseWindow(report.ReportID);
   }
 

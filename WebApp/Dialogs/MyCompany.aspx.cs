@@ -126,6 +126,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     textDescription.Text = organization.Description;
     cbDisableStatusNotifications.Checked = Settings.OrganizationDB.ReadBool("DisableStatusNotification", false);
     cbNewActionsVisible.Checked = organization.SetNewActionsVisibleToCustomers;
+    cbUnsecureAttachments.Checked = organization.AllowUnsecureAttachmentViewing;
 
    // cbCommunity.Checked = organization.UseForums;
     cbRequireCustomer.Checked = Settings.OrganizationDB.ReadBool("RequireNewTicketCustomer", false);
@@ -134,6 +135,17 @@ public partial class Dialogs_Organization : BaseDialogPage
     cbAdminReports.Checked = organization.AdminOnlyReports;
     cmbUsers.SelectedValue = organization.PrimaryUserID.ToString();
     cmbWikiArticle.SelectedValue = organization.DefaultWikiArticleID == null ? "" : organization.DefaultWikiArticleID.ToString();
+
+    if ((organization.ProductType == ProductType.Enterprise || organization.ProductType == ProductType.BugTracking))
+    {
+        cbRequireProduct.Checked = organization.ProductRequired;
+        cbRequireProductVersion.Checked = organization.ProductVersionRequired;
+    }
+    else
+    {
+        cbRequireProduct.Visible = false;
+        cbRequireProductVersion.Visible = false;
+    }
 
     if (string.IsNullOrEmpty(organization.TimeZoneID))
       cmbTimeZones.SelectedValue = "Central Standard Time";
@@ -185,6 +197,7 @@ public partial class Dialogs_Organization : BaseDialogPage
       organization.InternalSlaLevelID = int.Parse(cmbSla.SelectedValue);
     Settings.OrganizationDB.WriteBool("DisableStatusNotification", cbDisableStatusNotifications.Checked);
     organization.SetNewActionsVisibleToCustomers = cbNewActionsVisible.Checked;
+    organization.AllowUnsecureAttachmentViewing = cbUnsecureAttachments.Checked;
     //organization.UseForums = cbCommunity.Checked;
     Settings.OrganizationDB.WriteBool("RequireNewTicketCustomer", cbRequireCustomer.Checked);
     organization.AdminOnlyCustomers = cbAdminCustomers.Checked;
@@ -206,6 +219,8 @@ public partial class Dialogs_Organization : BaseDialogPage
     if (cbBDFriday.Checked) organization.AddBusinessDay(DayOfWeek.Friday);
     if (cbBDSaturday.Checked) organization.AddBusinessDay(DayOfWeek.Saturday);
 
+    organization.ProductRequired = cbRequireProduct.Checked;
+    organization.ProductVersionRequired = cbRequireProductVersion.Checked;
 
     try
     {

@@ -21,45 +21,19 @@ Namespace TeamSupport
             Public MustOverride Overrides Function PerformSync() As Boolean
 
             ''' <summary>
-            ''' To sync with Zoho, we need to generate a ticket by logging in each time, and then passing along that ticket with each request.
-            ''' </summary>
-            ''' <returns>Whether or not the ticket was generated successfully</returns>
-            ''' <remarks>Ticket value is saved to the APITicket field</remarks>
-            Protected Function GenerateTicket() As Boolean
-                Log.Write("Generating new ticket...")
-                Dim ZohoUri As New Uri(String.Format("https://accounts.zoho.com/login?servicename={2}&FROM_AGENT=true&LOGIN_ID={0}&PASSWORD={1}", _
-                                                     HttpUtility.UrlEncode(CRMLinkRow.Username), HttpUtility.UrlEncode(CRMLinkRow.Password), Type.ToString()))
-
-                Dim TicketResult As String = GetHTTPData(Nothing, ZohoUri)
-
-                If TicketResult Is Nothing Then
-                    Return False
-                ElseIf TicketResult.ToLower().Contains("result=false") Then
-                    ErrorCode = IntegrationError.InvalidLogin
-                    Return False
-                Else
-                    'parse out the result to get the ticket
-                    TicketResult = TicketResult.ToLower()
-                    APITicket = TicketResult.Substring(TicketResult.IndexOf("ticket=") + Len("ticket="), 32)
-                End If
-
-                Return True
-            End Function
-
-            ''' <summary>
             ''' Logs out after a sync is performed.
             ''' </summary>
             ''' <remarks></remarks>
             Protected Sub Logout()
-                Log.Write("Logging out revision 400.")
+                Log.Write("Logging out revision 1077.")
                 Dim ZohoUri As Uri = Nothing
-                If CRMLinkRow.SecurityToken2 IsNot Nothing AndAlso CRMLinkRow.SecurityToken2 <> String.Empty Then
-                  ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&authtoken=" & CRMLinkRow.SecurityToken2 & "&scope=crmapi")
-                Else
-                  ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&ticket=" & APITicket)
-                End If
+                ZohoUri = New Uri("https://accounts.zoho.com/logout?FROM_AGENT=true&authtoken=" & CRMLinkRow.SecurityToken1 & "&scope=crmapi")
         
-                GetHTTPData(Nothing, ZohoUri)
+                Try
+                  GetHTTPData(Nothing, ZohoUri)
+                Catch ex As Exception
+                  Log.Write("The following exception occurred attempting to logout using URI: " & ZohoUri.ToString() & ". Ex: " & ex.Message)
+                End Try
             End Sub
         End Class
 
@@ -77,48 +51,42 @@ Namespace TeamSupport
                 Dim Success As Boolean = False
 
                 'check to make sure we have all the data we need
-        If (CRMLinkRow.SecurityToken1 Is Nothing OrElse CRMLinkRow.SecurityToken1 = "") AndAlso (CRMLinkRow.SecurityToken2 Is Nothing OrElse CRMLinkRow.SecurityToken2 = String.Empty) Then
-          _exception = New IntegrationException("API key not specified.")
-        ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
-          _exception = New IntegrationException("Username or password not specified.")
-        End If
+                If CRMLinkRow.SecurityToken1 Is Nothing OrElse CRMLinkRow.SecurityToken1 = "" Then
+                  _exception = New IntegrationException("Authentication Token not specified.")
+                ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
+                  _exception = New IntegrationException("Username or password not specified.")
+                End If
 
                 If Exception IsNot Nothing Then
                     Return False
                 End If
 
-                If (CRMLinkRow.SecurityToken2 IsNot Nothing AndAlso CRMLinkRow.SecurityToken2 <> String.Empty) OrElse GenerateTicket() Then
+                Try
+                    'sync accounts
+                    Success = NewSyncAccounts(AddressOf GetZohoCompanyXML, _
+                                              AddressOf ParseZohoCompanyXML, _
+                                              AddressOf GetZohoPeopleXML, _
+                                              AddressOf ParseZohoPeopleXML, _
+                                              AddressOf GetZohoProductsXML, _
+                                              AddressOf ParseZohoProductsXML,
+                                              AddressOf GetZohoCustomFields)
 
-                    Try
-                        'sync accounts
-                        Success = NewSyncAccounts(AddressOf GetZohoCompanyXML, _
-                                                  AddressOf ParseZohoCompanyXML, _
-                                                  AddressOf GetZohoPeopleXML, _
-                                                  AddressOf ParseZohoPeopleXML)
-
-                        If Success Then 'send ticket data
-                            Success = SendTicketData(AddressOf CreateNote)
-                        End If
-                    Catch ex As Exception
-                        Log.Write("exception: " & ex.Message & ": " & ex.StackTrace)
-                        Success = False
-                    Finally
-                        Logout()
-                    End Try
-                Else
-                    Log.Write("Error generating API Ticket.")
-                End If
+                    If Success Then 'send ticket data
+                        Success = SendTicketData(AddressOf CreateNote)
+                    End If
+                Catch ex As Exception
+                    Log.Write("exception: " & ex.Message & ": " & ex.StackTrace)
+                    Success = False
+                Finally
+                    Logout()
+                End Try
 
                 Return Success
             End Function
 
             Private Function GetZohoCRMXML(ByVal PathAndQuery As String) As XmlDocument
                 Dim ZohoUri As Uri = Nothing
-        If CRMLinkRow.SecurityToken2 IsNot Nothing AndAlso CRMLinkRow.SecurityToken2 <> String.Empty Then
-          ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/" & PathAndQuery & "&authtoken=" & CRMLinkRow.SecurityToken2 & "&scope=crmapi")
-        Else
-          ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/" & PathAndQuery & "&apikey=" & CRMLinkRow.SecurityToken1 & "&ticket=" & APITicket)
-        End If
+                ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/" & PathAndQuery & "&authtoken=" & CRMLinkRow.SecurityToken1 & "&scope=crmapi")
 
                 Return GetXML(ZohoUri)
             End Function
@@ -224,44 +192,317 @@ Namespace TeamSupport
                     EmployeeSyncData = New List(Of EmployeeData)()
                 End If
 
-                For Each person As XElement In allpeople.Descendants("row")
-                    If Processor.IsStopped Then
-                        Return Nothing
+                Dim needToGetMore As Boolean = True
+                Dim returnedRecords As Integer = 0
+                Dim totalRecords As Integer = 1
+
+                While needToGetMore
+                    For Each person As XElement In allpeople.Descendants("row")
+                        If Processor.IsStopped Then
+                            Return Nothing
+                        End If
+
+                        Dim thisPerson As New EmployeeData()
+
+                        With thisPerson
+                            'see above re: xml formatting/processing (it's done this way because this is how zoho formats it)
+                            For Each dataitem As XElement In person.Descendants("FL")
+                                Select Case dataitem.Attribute("val").Value
+                                    Case "First Name"
+                                        .FirstName = dataitem.Value
+                                    Case "Last Name"
+                                        .LastName = dataitem.Value
+                                    Case "Title"
+                                        .Title = dataitem.Value
+                                    Case "Email"
+                                        .Email = dataitem.Value
+                                    Case "Phone"
+                                        .Phone = dataitem.Value
+                                    Case "Mobile"
+                                        .Cell = dataitem.Value
+                                    Case "Fax"
+                                        .Fax = dataitem.Value
+                                    Case "Phone Ext"
+                                        .Extension = dataitem.Value
+                                    Case "ACCOUNTID"
+                                        .ZohoID = dataitem.Value
+                                End Select
+                            Next
+
+                        End With
+
+                        If Not String.IsNullOrEmpty(thisPerson.ZohoID) Then
+                          EmployeeSyncData.Add(thisPerson)
+                        End If
+                        returnedRecords += 1
+                        totalRecords += 1
+                    Next
+
+                    If returnedRecords = MaxBatchSize Then
+                        Log.Write("getting next set of records..." & totalRecords.ToString())
+
+                        Try
+                            PeopleToSync = GetZohoPeopleXML(totalRecords, totalRecords + MaxBatchSize - 1)
+                            allpeople = XElement.Load(New XmlNodeReader(PeopleToSync))
+                        Catch ex As Exception
+                            Log.Write("Error getting next records..." & ex.Message)
+                        End Try
+
+                        If allpeople.Descendants("row").Count > 0 Then
+                            returnedRecords = 0
+                        Else
+                            needToGetMore = False
+                        End If
+                    Else
+                        needToGetMore = False
                     End If
-
-                    Dim thisPerson As New EmployeeData()
-
-                    With thisPerson
-                        'see above re: xml formatting/processing (it's done this way because this is how zoho formats it)
-                        For Each dataitem As XElement In person.Descendants("FL")
-                            Select Case dataitem.Attribute("val").Value
-                                Case "First Name"
-                                    .FirstName = dataitem.Value
-                                Case "Last Name"
-                                    .LastName = dataitem.Value
-                                Case "Title"
-                                    .Title = dataitem.Value
-                                Case "Email"
-                                    .Email = dataitem.Value
-                                Case "Phone"
-                                    .Phone = dataitem.Value
-                                Case "Mobile"
-                                    .Cell = dataitem.Value
-                                Case "Fax"
-                                    .Fax = dataitem.Value
-                            End Select
-                        Next
-
-                    End With
-
-                    EmployeeSyncData.Add(thisPerson)
-                Next
+                End While
 
                 Return EmployeeSyncData
             End Function
 
+            Private Function ParseZohoProductsXML(ByVal ProductsToSync As XmlDocument, ByVal AccountID As String) As List(Of ProductData)
+                Dim ProductSyncData As List(Of ProductData) = Nothing
+
+                Dim allproducts As XElement = XElement.Load(New XmlNodeReader(ProductsToSync))
+
+                If allproducts.Descendants("row").Count > 0 Then
+                    ProductSyncData = New List(Of ProductData)()
+                End If
+
+                Dim needToGetMore As Boolean = True
+                Dim returnedRecords As Integer = 0
+                Dim totalRecords As Integer = 1
+
+                While needToGetMore
+                  For Each product As XElement In allproducts.Descendants("row")
+                      If Processor.IsStopped Then
+                          Return Nothing
+                      End If
+
+                      Dim thisProduct As New ProductData()
+
+                      With thisProduct
+                          'see above re: xml formatting/processing (it's done this way because this is how zoho formats it)
+                          For Each dataitem As XElement In product.Descendants("FL")
+                              Select Case dataitem.Attribute("val").Value
+                                  Case "Product Name"
+                                      .Name = dataitem.Value
+                                  Case "Created Time"
+                                      .CreatedTime = dataitem.Value
+                              End Select
+                          Next
+
+                      End With
+
+                      ProductSyncData.Add(thisProduct)
+                      returnedRecords += 1
+                      totalRecords += 1
+                  Next
+
+                  If returnedRecords = MaxBatchSize Then
+                      Log.Write("getting next set of records..." & totalRecords.ToString())
+
+                      Try
+                          ProductsToSync = GetZohoProductsXML(AccountID, totalRecords, totalRecords + MaxBatchSize - 1)
+                          allproducts = XElement.Load(New XmlNodeReader(ProductsToSync))
+                      Catch ex As Exception
+                          Log.Write("Error getting next records..." & ex.Message)
+                      End Try
+
+                      If allproducts.Descendants("row").Count > 0 Then
+                          returnedRecords = 0
+                      Else
+                          needToGetMore = False
+                      End If
+                  Else
+                      needToGetMore = False
+                  End If
+
+                End While
+
+                Return ProductSyncData
+            End Function
+
+            Private Sub GetZohoCustomFields(ByVal objType As String, ByVal accountIDToUpdate As String)
+              Dim customMappings As New CRMLinkFields(User)
+              customMappings.LoadByObjectType(objType, CRMLinkRow.CRMLinkID)
+
+              If (customMappings.Count > 0) Then
+                Dim tagsToMatch As String() = Array.ConvertAll(CRMLinkRow.TypeFieldMatch.ToLower().Split(","), Function(p As String) p.Trim())
+                Dim accountZohoType As String = String.Empty
+                Dim accountZohoID As String = String.Empty
+
+                For Each recordToUpdate As XElement In GetCustomMappingValues(objType, customMappings, accountIDToUpdate)
+                  accountZohoType = GetAccountZohoType(recordToUpdate, accountZohoID)
+                  Dim companyToUpdate As New Organizations(User)
+                  Select Case objType
+                    Case "Account"
+                  companyToUpdate.LoadByCRMLinkID(accountZohoID, CRMLinkRow.OrganizationID)
+                  If companyToUpdate.Count > 0 Then
+                        If tagsToMatch.Contains("none") OrElse tagsToMatch.Contains(accountZohoType) Then
+                          For Each field As XElement In recordToUpdate.Descendants("FL")
+                            Dim fieldMapping As CRMLinkField = customMappings.FindByCRMFieldName(field.Attribute("val").Value)
+                            If fieldMapping IsNot Nothing Then
+                              If fieldMapping.CustomFieldID IsNot Nothing Then
+                                UpdateCustomValue(fieldMapping.CustomFieldID, companyToUpdate(0).OrganizationID, field.Value)
+                              ElseIf fieldMapping.TSFieldName IsNot Nothing Then
+                                  companyToUpdate(0).Row(fieldMapping.TSFieldName) = field.Value
+                              End If
+                            End If
+                          Next
+                          companyToUpdate(0).BaseCollection.Save()
+                        End If
+                      End If
+                      Case "Contact"
+                      companyToUpdate.LoadByCRMLinkID(accountZohoID, CRMLinkRow.OrganizationID)
+                      If companyToUpdate.Count > 0 Then
+                        Dim userToUpdate As New Users(User)
+                        userToUpdate.LoadByEmail(GetContactZohoEmail(recordToUpdate), companyToUpdate(0).OrganizationID)
+                        If userToUpdate.Count > 0 Then
+                          For Each field As XElement In recordToUpdate.Descendants("FL")
+                            Dim fieldMapping As CRMLinkField = customMappings.FindByCRMFieldName(field.Attribute("val").Value)
+                            If fieldMapping IsNot Nothing Then
+                              If fieldMapping.CustomFieldID IsNot Nothing Then
+                                UpdateCustomValue(fieldMapping.CustomFieldID, userToUpdate(0).UserID, field.Value)
+                              ElseIf fieldMapping.TSFieldName IsNot Nothing Then
+                                userToUpdate(0).Row(fieldMapping.TSFieldName) = field.Value
+                              End If
+                            End If
+                          Next
+                          userToUpdate(0).BaseCollection.Save()
+                        End If
+                      End If
+                    End Select
+                Next
+              End If
+            End Sub
+
+              Private Function GetCustomMappingValues(
+                ByVal objType As String, 
+                ByVal customMappings As CRMLinkFields, 
+                ByVal accountIDToUpdate As String) As List(Of XElement)
+
+                Dim result As List(Of XElement) = New List(Of XElement)
+                Dim needToGetMore As Boolean = True
+                Dim returnedRecords As Integer = 0
+                Dim totalRecords As Integer = 1
+                Dim query As String = String.Empty
+
+                While needToGetMore
+                  For Each record As XElement In XElement.Load(New XmlNodeReader(GetCustomMappingValuesBatch(
+                    objType, 
+                    totalRecords, 
+                    totalRecords + MaxBatchSize - 1, 
+                    customMappings, 
+                    accountIDToUpdate, 
+                    query))).Descendants("row")
+
+                    result.Add(record)
+                    returnedRecords += 1
+                    totalRecords += 1
+
+                  Next
+
+                  If returnedRecords = MaxBatchSize Then
+                    Log.Write("getting next set of records..." & totalRecords.ToString())
+                    returnedRecords = 0
+                  Else
+                    needToGetMore = False
+                  End If
+                End While
+
+                Return result
+              End Function
+
+                Private Function GetCustomMappingValuesBatch(
+                  ByVal objType As String, 
+                  ByVal fromIndex As Integer, 
+                  ByVal toIndex As Integer, 
+                  ByVal customMappings As CRMLinkFields,
+                  ByVal accountIDToUpdate As String,
+                  Optional ByRef query As String = "") As XmlDocument
+
+                  If (query = String.Empty) Then
+                    query = GetCustomMappingValuesQuery(objType, customMappings, accountIDToUpdate)
+                  End If
+
+                  Dim batchQuery As String = query & "&fromIndex=" & fromIndex.ToString() & "&toIndex=" & toIndex.ToString()
+                  Log.Write("querying " & batchQuery)
+
+                  Return GetZohoCRMXML(batchQuery)
+                End Function
+
+                  Private Function GetCustomMappingValuesQuery(
+                    ByVal objType As String, 
+                    ByVal customMappings As CRMLinkFields,
+                    ByVal accountIDToUpdate As String) As String
+
+                    Dim result As StringBuilder = New StringBuilder()
+                    Select Case objType
+                      Case "Account"
+                        result.Append("Accounts/getRecords?newFormat=1&selectColumns=Accounts(")
+                        result.Append(GetListOfFields(customMappings))
+                        result.Append(")")
+                        If CRMLinkRow.LastLink IsNot Nothing Then
+                            '''Zoho's lastModifiedTime is in the user's local time. 
+                            '''To include any possible timezone we use the smallest one (UTC-12:00) International Date Line West. (720)
+                            '''Then we go back 30 more minutes as it was coded before.
+                            result.Append("&lastModifiedTime=" & CRMLinkRow.LastLinkUtc.Value.AddMinutes(-750).ToString("s").Replace("T", " "))
+                        End If
+                      Case "Contact"
+                        result.Append("Contacts/getRecords?newFormat=1")
+                        'By implementing selectColumns the account id cannot be added in the contacts table. therefore we'll need to bring all the columns
+                        'result.Append("&selectColumns=Contacts(")
+                        'result.Append(GetListOfFields(customMappings))
+                        'result.Append(")")
+                        If CRMLinkRow.LastLink IsNot Nothing Then
+                            result.Append("&lastModifiedTime=" & CRMLinkRow.LastLinkUtc.Value.AddMinutes(-750).ToString("s").Replace("T", " "))
+                        End If
+                    End Select
+
+                    Return result.ToString()
+                  End Function
+
+                    Private Function GetListOfFields(ByVal customMappings As CRMLinkFields) As String
+                      Dim listOfFields As List(Of String) = New List(Of String)()
+                      For Each customMapping As CRMLinkField In customMappings
+                        If Not listOfFields.Contains(customMapping.CRMFieldName) Then
+                          listOfFields.Add(customMapping.CRMFieldName)
+                        End If
+                      Next
+
+                      listOfFields.Add("Account Type")
+                      listOfFields.Add("Email")
+
+                      Return String.Join(",", listOfFields.ToArray())
+                    End Function
+
+              Private Function GetAccountZohoType(ByVal recordToUpdate As XElement, ByRef accountZohoID As String) As String
+                Dim result As String = String.Empty
+                For Each record As XElement In recordToUpdate.Descendants("FL")
+                  Select Case record.Attribute("val").Value
+                    Case "ACCOUNTID"
+                      accountZohoID = record.Value
+                    Case "Account Type"
+                      result = record.Value
+                  End Select
+                Next
+                Return result.ToLower()
+              End Function
+
+              Private Function GetContactZohoEmail(ByVal recordToUpdate As XElement) As String
+                Dim result As String = String.Empty
+                For Each record As XElement In recordToUpdate.Descendants("FL")
+                  If record.Attribute("val").Value = "Email" Then
+                    result = record.Value
+                  End If
+                Next
+                Return result
+              End Function
+
             Private Function GetZohoCompanyXML() As XmlDocument
-                Return GetZohoCompanyXML(1, 200)
+                Return GetZohoCompanyXML(1, MaxBatchSize)
             End Function
 
             ''' <summary>
@@ -275,15 +516,35 @@ Namespace TeamSupport
                 Dim ZohoPath As String = "Accounts/getRecords?newFormat=1&fromIndex=" & from.ToString() & "&toIndex=" & _to.ToString()
 
                 If CRMLinkRow.LastLink IsNot Nothing Then
-                    ZohoPath &= "&lastModifiedTime=" & CRMLinkRow.LastLink.Value.AddMinutes(-30).ToString("s").Replace("T", " ")
+                    '''Zoho's lastModifiedTime is in the user's local time. 
+                    '''To include any possible timezone we use the smallest one (UTC-12:00) International Date Line West. (720)
+                    '''Then we go back 30 more minutes as it was coded before.
+                    ZohoPath &= "&lastModifiedTime=" & CRMLinkRow.LastLinkUtc.Value.AddMinutes(-750).ToString("s").Replace("T", " ")
                 End If
 
                 Log.Write("querying " & ZohoPath)
+                Log.Write("LoginUser TimeZone: " & CRMLinkRow.BaseCollection.LoginUser.TimeZoneInfo.ToString())
                 Return GetZohoCRMXML(ZohoPath)
             End Function
 
-            Private Function GetZohoPeopleXML(ByVal AccountID As String) As XmlDocument
-                Return GetZohoCRMXML("Contacts/getSearchRecordsByPDC?newFormat=1&searchColumn=accountid&searchValue=" & AccountID)
+            Private Function GetZohoPeopleXML() As XmlDocument
+                Return GetZohoPeopleXML(1, MaxBatchSize)
+            End Function
+
+            Private Function GetZohoPeopleXML(ByVal fromIndex As Short, ByVal toIndex As Short) As XmlDocument
+                Dim zohoPath As String = "Contacts/getRecords?newFormat=1&fromIndex=" & fromIndex.ToString() & "&toIndex=" & toIndex.ToString()
+                If CRMLinkRow.LastLink IsNot Nothing Then
+                    ZohoPath &= "&lastModifiedTime=" & CRMLinkRow.LastLinkUtc.Value.AddMinutes(-750).ToString("s").Replace("T", " ")
+                End If
+                Return GetZohoCRMXML(zohoPath)
+            End Function
+
+            Private Function GetZohoProductsXML(ByVal AccountID As String) As XmlDocument
+                Return GetZohoProductsXML(AccountID, 1, MaxBatchSize)
+            End Function
+
+            Private Function GetZohoProductsXML(ByVal AccountID As String, ByVal fromIndex As Short, ByVal toIndex As Short) As XmlDocument
+                Return GetZohoCRMXML("Products/getRelatedRecords?newFormat=1&parentModule=Accounts&id=" & AccountID & "&fromIndex=" & fromIndex.ToString() & "&toIndex=" & toIndex.ToString())
             End Function
 
             Private Function CreateNote(ByVal accountid As String, ByVal thisTicket As Ticket) As Boolean
@@ -292,11 +553,7 @@ Namespace TeamSupport
                                                                              thisTicket.Name, thisTicket.TicketID.ToString(), HtmlUtility.StripHTML(description.Description), Environment.NewLine)
 
                 Dim ZohoUri As Uri = Nothing
-        If CRMLinkRow.SecurityToken2 IsNot Nothing AndAlso CRMLinkRow.SecurityToken2 <> String.Empty Then
-          ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/Notes/insertRecords?newFormat=1&authtoken=" & CRMLinkRow.SecurityToken2 & "&scope=crmapi")
-        Else
-          ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/Notes/insertRecords?newFormat=1&apikey=" & CRMLinkRow.SecurityToken1 & "&ticket=" & APITicket)
-        End If
+                ZohoUri = New Uri("https://crm.zoho.com/crm/private/xml/Notes/insertRecords?newFormat=1&authtoken=" & CRMLinkRow.SecurityToken1 & "&scope=crmapi")
 
                 Dim postData As String = String.Format("<Notes><row no=""1"">" & _
                                         "<FL val=""entityId"">{0}</FL>" & _
@@ -337,31 +594,27 @@ Namespace TeamSupport
                 Dim Success As Boolean = False
 
                 'check to make sure we have all the data we need
-        If CRMLinkRow.SecurityToken1 Is Nothing OrElse CRMLinkRow.SecurityToken1 = "" Then
-          _exception = New IntegrationException("API key not specified.")
-        ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
-          _exception = New IntegrationException("Username or password not specified.")
-        End If
+                If CRMLinkRow.SecurityToken1 Is Nothing OrElse CRMLinkRow.SecurityToken1 = "" Then
+                  _exception = New IntegrationException("Authentication Token not specified.")
+                ElseIf CRMLinkRow.Password Is Nothing OrElse CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password = "" OrElse CRMLinkRow.Username = "" Then
+                  _exception = New IntegrationException("Username or password not specified.")
+                End If
 
                 If Exception IsNot Nothing Then
                     Return False
                 End If
 
-                If GenerateTicket() Then
-                    Log.Write("Login successful. Sending report data...")
+                Log.Write("Sending report data...")
 
-                    Try
-                        Success = SendReportData()
+                Try
+                    Success = SendReportData()
 
-                    Catch ex As Exception
-                        Log.Write("exception: " & ex.Message & ": " & ex.StackTrace)
-                        Success = False
-                    Finally
-                        Logout()
-                    End Try
-                Else
-                    Log.Write("Error generating API Ticket.")
-                End If
+                Catch ex As Exception
+                    Log.Write("exception: " & ex.Message & ": " & ex.StackTrace)
+                    Success = False
+                Finally
+                    Logout()
+                End Try
 
                 Return Success
             End Function
@@ -494,6 +747,9 @@ Namespace TeamSupport
                     csvHeader.Append(If(thisCol.Ordinal < thisTable.Columns.Count - 1, ",", Environment.NewLine))
                 Next
 
+                Dim organization As Organizations = New Organizations(User)
+                organization.LoadByOrganizationID(CRMLinkRow.OrganizationID)
+
                 For Each thisRow As DataRow In thisTable.Rows
                     If Processor.IsStopped Then
                         Return Nothing
@@ -507,7 +763,7 @@ Namespace TeamSupport
                         If thisTable.Columns(i).DataType Is GetType(String) Then
                             csvContent.Append("""" & thisRow(i).ToString().Replace("""", "'") & """")
                         ElseIf thisTable.Columns(i).DataType Is GetType(DateTime) AndAlso Not IsDBNull(thisRow(i)) Then 'translate dates to org's local timezone
-                            csvContent.Append("""" & CRMLinkRow.DateToLocal(CType(thisRow(i).ToString(), DateTime)).ToString("M/d/yyyy H:mm:ss") & """")
+                            csvContent.Append("""" & TimeZoneInfo.ConvertTimeFromUtc(CType(thisRow(i).ToString(), DateTime), TimeZoneInfo.FindSystemTimeZoneById(organization(0).TimeZoneID)).ToString("M/d/yyyy H:mm:ss") & """")
                         Else
                             csvContent.Append(thisRow(i).ToString())
                         End If
@@ -533,8 +789,11 @@ Namespace TeamSupport
 
             Private Function ImportZohoCSV(ByVal tableName As String, ByVal keyName As String, ByVal byteData As Byte()) As Boolean
                 Dim success As Boolean = True
-        Dim zohoUri As New Uri(String.Format("https://reportsapi.zoho.com/api/{0}/{3}/{4}?ZOHO_ACTION=IMPORT&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={1}&ticket={2}&ZOHO_API_VERSION=1.0", _
-                                             CRMLinkRow.Username, CRMLinkRow.SecurityToken1, APITicket, databaseName, tableName))
+
+                Dim zohoUri As Uri = Nothing
+                
+                zohoUri = New Uri(String.Format("https://reportsapi.zoho.com/api/{0}/{2}/{3}?ZOHO_ACTION=IMPORT&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&authtoken={1}&ZOHO_API_VERSION=1.0", _
+                                  CRMLinkRow.Username, CRMLinkRow.SecurityToken1, databaseName, tableName))                
 
                 Dim postParameters As New Dictionary(Of String, Object)()
 
@@ -574,7 +833,8 @@ Namespace TeamSupport
             End Function
 
             Private Function DeleteZohoTableRow(ByVal tableName As String, ByVal keyName As String, ByVal rowKey As String) As Boolean
-        Dim DeletePath As String = String.Format("{0}/{1}/{2}?ZOHO_ACTION=DELETE&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&ZOHO_API_KEY={3}&ZOHO_API_VERSION=1.0", CRMLinkRow.Username, databaseName, tableName, CRMLinkRow.SecurityToken1)
+                Dim DeletePath As String = String.Format("{0}/{1}/{2}?ZOHO_ACTION=DELETE&ZOHO_OUTPUT_FORMAT=XML&ZOHO_ERROR_FORMAT=XML&authtoken={3}&ZOHO_API_VERSION=1.0", CRMLinkRow.Username, databaseName, tableName, CRMLinkRow.SecurityToken1)                
+
                 Dim DeleteParameters As String = "&ZOHO_CRITERIA=(""" & keyName & """ = " & rowKey & ")"
 
                 Log.Write(DeleteParameters)
@@ -582,8 +842,7 @@ Namespace TeamSupport
             End Function
 
             Private Function PostZohoReports(ByVal PathAndQuery As String, ByVal PostParameters As String) As HttpStatusCode
-        Dim ZohoUri As New Uri("https://reportsapi.zoho.com/api/" & PathAndQuery & "&apikey=" & CRMLinkRow.SecurityToken1 & "&ticket=" & APITicket)
-
+                Dim ZohoUri As Uri = New Uri("https://reportsapi.zoho.com/api/" & PathAndQuery)                
                 Return PostQueryString(Nothing, ZohoUri, PostParameters)
             End Function
 

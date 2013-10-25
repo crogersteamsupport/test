@@ -68,6 +68,12 @@ WelcomePage = function () {
     top.Ts.MainPage.hideWelcome();
   });
 
+  $('.welcome-payonline').click(function (e) {
+    e.preventDefault();
+    window.open('https://ticket.teamsupport.com/basicportal.aspx?OrgName=TeamSupportBilling', 'TSPayment');
+  });
+
+
   var sysEmail = top.Ts.System.Organization.SystemEmailID + '@teamsupport.com';
 
   $('.welcome-sysemail')
@@ -117,8 +123,11 @@ WelcomePage = function () {
 
   $('.welcome-help-chat').click(function (e) {
     e.preventDefault();
+    top.Ts.System.logAction('Helcome - Page Hidden');
     window.open('https://app.teamsupport.com/Chat/ChatInit.aspx?uid=22bd89b8-5162-4509-8b0d-f209a0aa6ee9', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500');
   });
+
+  
 
 };
 

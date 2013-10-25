@@ -54,11 +54,40 @@ namespace TSWebServices
             user.Collection.Save();
         }
 
-        //tells us whether the logged in user can edit the specified user's account
+        [WebMethod]
+        public void SetMenuItems(int userID, string values)
+        {
+          if (!TSAuthentication.IsSystemAdmin) return;
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user.OrganizationID != TSAuthentication.OrganizationID) return;
+          user.MenuItems = values;
+          user.Collection.Save();
+        }
+
+      //tells us whether the logged in user can edit the specified user's account
         [WebMethod]
         public bool AllowUserEdit(int userID)
         {
             return userID == TSAuthentication.GetLoginUser().UserID;
+        }
+
+        [WebMethod]
+        public void HideWelcomePage()
+        {
+          User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+          user.ShowWelcomePage = false;
+          user.Collection.Save();
+
+        }
+
+        [WebMethod]
+        public void SetTicketRights(int userID, int value)
+        {
+          if (!TSAuthentication.IsSystemAdmin) return;
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user.OrganizationID != TSAuthentication.OrganizationID) return;
+          user.TicketRights = (TicketRightType)value;
+          user.Collection.Save();
         }
 
         [WebMethod]
@@ -89,6 +118,14 @@ namespace TSWebServices
             else
                 path = "../images/blank_avatar.png";
             return path;
+        }
+
+        [WebMethod]
+        public string GetUserSignature(int userID)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+
+            return user.Signature;
         }
 
         [WebMethod]
@@ -262,11 +299,21 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string SaveUserSignature(int userID, string signature)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
+            user.Signature = signature;
+            user.Collection.Save();
+            return signature;
+        }
+
+        [WebMethod]
         public string SaveUserTitle(int userID, string title)
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
-            user.Title = title;
+            user.Title = title.Trim();
             user.Collection.Save();
             return title;
         }
@@ -287,14 +334,35 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string SaveUserLinkedin(int userID, string linkedin)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return null;
+
+            user.LinkedIn = linkedin;
+            user.Collection.Save();
+
+            if (!linkedin.StartsWith("http://"))
+                linkedin = "http://" + linkedin;
+            return linkedin;
+        }
+
+        [WebMethod]
         public bool SetIsActive(int userID, bool value)
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
             if (!TSAuthentication.IsSystemAdmin) return !value;
 
+            if (value == false)
+            {
+                Organizations orgs = new Organizations(TSAuthentication.GetLoginUser());
+                orgs.ResetDefaultSupportUser(TSAuthentication.GetLoginUser(), user.UserID);
+            }
+
             user.IsActive = value;
             user.Collection.Save();
+            user.EmailCountToMuroc(value);
             return user.IsActive;
         }
 
@@ -354,6 +422,28 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool SetBlockEmail(int userID, bool value)
+        {
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+          user.BlockInboundEmail = value;
+          user.Collection.Save();
+          return user.BlockInboundEmail;
+        }
+        [WebMethod]
+        public bool SetOnlyEmailAfterHours(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+            user.OnlyEmailAfterHours = value;
+            user.Collection.Save();
+            return user.OnlyEmailAfterHours;
+        }
+      
+
+        [WebMethod]
         public bool SetSysAdmin(int userID, bool value)
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
@@ -364,6 +454,43 @@ namespace TSWebServices
             user.Collection.Save();
             return user.IsSystemAdmin;
         }
+
+        [WebMethod]
+        public bool SetChangeTicketVisibility(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.ChangeTicketVisibility = value;
+            user.Collection.Save();
+            return user.ChangeTicketVisibility;
+        }
+
+        [WebMethod]
+        public bool SetChangeKbVisibility(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.ChangeKBVisibility = value;
+            user.Collection.Save();
+            return user.ChangeKBVisibility;
+        }
+
+        [WebMethod]
+        public bool SetAllowAnyTicketCustomer(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.AllowAnyTicketCustomer = value;
+            user.Collection.Save();
+            return user.AllowAnyTicketCustomer;
+        }
+        
 
         [WebMethod]
         public string SetChatUser(int userID, bool value)
@@ -477,9 +604,252 @@ namespace TSWebServices
             return ("There was an error resetting the password.");
         }
 
+        [WebMethod]
+        public string CreateNewContact(string emailAddress, string firstName, string lastName, string companyName, bool createNewCompany)
+        {
+            User user;
+            Users users = new Users(TSAuthentication.GetLoginUser());
 
+            OrganizationService orgService = new OrganizationService();
+            
+            Organization organization;
+            Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
 
-        [DataContract]
+            int newOrgID = GetIDByExactName(companyName);
+            string errorMsg, resultStr="";
+            string email = emailAddress;
+
+            if (createNewCompany == false)
+            {
+                // Check Process and Flow
+                if (firstName.Length < 1 && lastName.Length < 1 && (email.Length < 1 || email.IndexOf('@') < 0 || email.IndexOf('.') < 0) && newOrgID == -1)
+                {
+                    errorMsg = "The company you have specified is invalid.";
+                    return errorMsg;
+                }
+
+                if ((firstName.Length < 1 || lastName.Length < 1))
+                {
+                    errorMsg = "The name you have specified is invalid.  Please enter a valid name.";
+                    return errorMsg;
+                }
+
+                if ((email.Length < 1 || email.IndexOf('@') < 0 || email.IndexOf('.') < 0))
+                {
+                    errorMsg = "The email you have specified is invalid.  Please choose another email.";
+                    return errorMsg;
+                }
+
+                if (email != "" && !users.IsEmailValid(email, -1, newOrgID))
+                {
+                    errorMsg = "The email you have specified is already in use.  Please choose another email.";
+                    return errorMsg;
+                }
+
+                if (companyName.Length > 0 && newOrgID == -1 && createNewCompany == false)
+                {
+                    errorMsg = "The company you have specified is invalid.";
+                    return errorMsg;
+                }
+
+                if (firstName.Length < 1 && lastName.Length < 1 && email.Length < 1 && newOrgID != -1)
+                {
+                    errorMsg = "The company you have specified is already in use.  Please choose another company name.";
+                    return errorMsg;
+                }
+            }
+            // Create Org or Use Unknown
+            if (companyName.Length < 1)
+            {
+                newOrgID = orgService.GetIDByName("_Unknown Company");
+            }
+            else if (createNewCompany == true)
+            {
+
+                organization = organizations.AddNewOrganization();
+                organization.ParentID = TSAuthentication.GetLoginUser().OrganizationID;
+                organization.PrimaryUserID = null;
+
+                organization.ExtraStorageUnits = 0;
+                organization.PortalSeats = 0;
+                organization.UserSeats = 0;
+                organization.IsCustomerFree = false;
+                organization.ProductType = ProductType.Express;
+                organization.HasPortalAccess = false;
+                organization.IsActive = true;
+                organization.IsBasicPortal = true;
+
+                int? id = -1;
+                organization.PrimaryUserID = id < 0 ? null : id;
+                id = -1;
+                organization.DefaultSupportUserID = id < 0 ? null : id;
+                id = -1;
+                organization.DefaultPortalGroupID = id < 0 ? null : id;
+                id = -1;
+                organization.DefaultSupportGroupID = id < 0 ? null : id;
+
+                organization.TimeZoneID = "Dateline Standard Time";
+                try
+                {
+                    TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(organization.TimeZoneID);
+                }
+                catch (Exception)
+                {
+                }
+                organization.Name = companyName.Trim();
+                organization.Website = "";
+                organization.CompanyDomains = "";
+                organization.Description = "";
+                organization.SAExpirationDate = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), null);
+                organization.SlaLevelID = null;
+
+                organization.Collection.Save();
+
+                newOrgID = organization.OrganizationID;
+
+                resultStr = "o" + organization.OrganizationID.ToString();
+            }
+
+            // Create User
+            if (firstName.Length > 0 && lastName.Length > 0 && email.Length > 1 && email.IndexOf('@') > 0 && email.IndexOf('.') > 0)
+            {
+                user = users.AddNewUser();
+                user.OrganizationID = newOrgID;
+                user.LastLogin = DateTime.UtcNow;
+                user.LastActivity = DateTime.UtcNow.AddHours(-1);
+                user.IsPasswordExpired = true;
+                user.ReceiveTicketNotifications = true;
+                user.Email = emailAddress.Trim();
+                user.FirstName = firstName.Trim();
+                user.LastName = lastName.Trim();
+                user.Title = "";
+                user.MiddleName = "";
+                user.IsActive = true;
+                user.ActivatedOn = DateTime.UtcNow;
+                user.IsPortalUser = false;
+                user.EnforceSingleSession = true;
+
+                user.Collection.Save();
+
+                string password = DataUtils.GenerateRandomPassword();
+                user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
+                user.IsPasswordExpired = true;
+                user.Collection.Save();
+
+                resultStr = "u" + user.UserID.ToString();
+            }
+
+            return resultStr;
+        }
+        
+        [WebMethod]
+        public OrganizationProxy[] GetUserCustomers(int userID)
+        {
+          Organizations orgs = new Organizations(TSAuthentication.GetLoginUser());
+          orgs.LoadByUserRights(userID);
+          return orgs.GetOrganizationProxies();
+        }
+
+        [WebMethod]
+        public OrganizationProxy[] RemoveUserCustomer(int userID, int organizationID)
+        {
+
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+          {
+            user.Collection.RemoveUserCustomer(userID, organizationID);
+            Organizations orgs = new Organizations(TSAuthentication.GetLoginUser());
+            orgs.LoadByUserRights(userID);
+            return orgs.GetOrganizationProxies();
+          }
+          return null;
+
+        }
+
+        [WebMethod]
+        public OrganizationProxy[] AddUserCustomer(int userID, int organizationID)
+        {
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user.OrganizationID == TSAuthentication.OrganizationID && TSAuthentication.IsSystemAdmin)
+          {
+            user.Collection.AddUserCustomer(userID, organizationID);
+            Organizations orgs = new Organizations(TSAuthentication.GetLoginUser());
+            orgs.LoadByUserRights(userID);
+            return orgs.GetOrganizationProxies();
+          }
+          return null;
+        }
+
+        [WebMethod]
+        public CustomValueProxy[] GetCustomValues(int userID)
+        {
+            User users = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (users.OrganizationID != TSAuthentication.OrganizationID) return null;
+            CustomValues values = new CustomValues(users.Collection.LoginUser);
+            values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Users, users.UserID);
+
+            return values.GetCustomValueProxies();
+        }
+
+        [WebMethod]
+        public AutocompleteItem[] AdminQueryUsers(int orgID, string query)
+        {
+          List<AutocompleteItem> result = new List<AutocompleteItem>();
+          if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return result.ToArray();
+          Users users = new Users(TSAuthentication.GetLoginUser());
+          users.LoadByName(query, orgID, false, false, false);
+          foreach (User user in users)
+          {
+            result.Add(new AutocompleteItem(string.Format("{0} - {1} ({2:D})", user.FirstLastName, user.Email, user.UserID) , user.UserID.ToString()));
+          }
+
+          return result.ToArray();
+        }
+
+        [WebMethod]
+        public UserProxy[] AdminGetUsers(int orgID)
+        {
+          if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
+          Users users = new Users(TSAuthentication.GetLoginUser());
+          users.LoadByOrganizationID(orgID, false);
+          return users.GetUserProxies();
+        }
+
+      [WebMethod]
+        public UserProxy AdminGetUser(int userID)
+        {
+          if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return null;
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          return user.GetProxy();
+        }
+
+        [WebMethod]
+        public void SetSingleSessionEnforcement(int userID, bool value)
+        {
+          if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          user.EnforceSingleSession = value;
+          user.Collection.Save();
+        }
+
+        [WebMethod]
+        public void AdminSetActive(int userID, bool value)
+        {
+          if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          user.IsActive = value;
+          user.Collection.Save();
+        }
+
+        public int GetIDByExactName(string name)
+        {
+            Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+            organizations.LoadByOrganizationNameActive(name, TSAuthentication.OrganizationID);
+            if (organizations.IsEmpty) return -1;
+            return organizations[0].OrganizationID;
+        }
+
+      [DataContract]
         public class BasicUser
         {
             [DataMember]

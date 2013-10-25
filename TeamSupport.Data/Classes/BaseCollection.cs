@@ -422,9 +422,9 @@ namespace TeamSupport.Data
 
     public abstract void Save(SqlConnection connection);
 
-
     protected abstract void BuildFieldMap();
 
+   
     #endregion
 
     #region Protected Members
@@ -459,6 +459,11 @@ namespace TeamSupport.Data
           }
         }
       }
+    }
+
+    public virtual void ExecuteNonQuery(SqlCommand command)
+    {
+      ExecuteNonQuery(command, "");
     }
 
     public virtual void ExecuteNonQuery(SqlCommand command, string tableName)
@@ -716,7 +721,7 @@ namespace TeamSupport.Data
 (
   CASE 
     WHEN ISNUMERIC((SELECT NULLIF(RTRIM(CustomValue), '') FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))) = 1  
-    THEN (SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS decimal) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
+    THEN (SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS float) FROM CustomValues WHERE (CustomFieldID = {0}) AND (RefID = {1}))
     ELSE NULL
   END
 ) AS [{2}]

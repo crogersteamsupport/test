@@ -1,15 +1,15 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Dashboard.aspx.cs" Inherits="Frames_Dashboard" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Dashboard.aspx.cs" Inherits="Frames_Dashboard" EnableViewState="false" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
   <title></title>
-  <link href="../vcr/142/Css/frame.css" rel="stylesheet" type="text/css" />
-  <link href="../vcr/142/Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="../vcr/142/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="../vcr/142/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <link href="../vcr/1_7_0/Css/frame.css" rel="stylesheet" type="text/css" />
+  <link href="../vcr/1_7_0/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="../vcr/1_7_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="../vcr/1_7_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
-  <script src="../vcr/142/Js/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
+  <script src="../js_5/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>
   <style type="text/css">
     body { background: #fff; }
     .header { float: right; padding: 7px 20px 0 0; }
@@ -113,6 +113,7 @@
           $('.portlet-header .portlet-close').click(function () {
             if (confirm('Are you sure you would like to remove this report from the dashboard?')) {
               PageMethods.DeletePortlet($(this).parent().parent()[0].id, function () { loadPortlets(); });
+              top.Ts.System.logAction('Dashboard - Report Deleted');
             }
           });
           $('.portlet-column').sortable({ connectWith: '.portlet-column', cancel: '.portlet-body', items: '.portlet', placeholder: 'portlet-placeholder', forcePlaceholderSize: true, stop: onPortletPositionChanged, opacity: 0.6, tolerance: 'pointer' });
@@ -168,7 +169,7 @@
   <div class="portlet-container-wrapper ui-widget-content ui-widget">
     <div class="header">
       <a class="ts-link" href="#" onclick="showReportDialog(); return false;">Add Report</a> |
-      <a class="ts-link" href="#" onclick="refresh(); return false;">Refresh</a></div>
+      <a class="ts-link" href="#" onclick="refresh(); top.Ts.System.logAction('Dashboard - Refreshed'); return false;">Refresh</a></div>
     <div style="clear: both; height: 1px;">
       &nbsp</div>
     <div class="portlet-container">
@@ -219,7 +220,8 @@
               var reportID = $find('<%= wndSelectReportDialog.ContentContainer.FindControl("cmbReport").ClientID %>').get_value();
               var isLeft = $get('<%= wndSelectReportDialog.ContentContainer.FindControl("rbLeft").ClientID %>').checked;
               if (reportID != null && reportID != '') {
-                PageMethods.AddPortlet(reportID, isLeft ? 0 : 1, function() { loadPortlets(); });
+                PageMethods.AddPortlet(reportID, isLeft ? 0 : 1, function () { loadPortlets(); });
+                top.Ts.System.logAction('Dashboard - Report Added');
               }
             
             }

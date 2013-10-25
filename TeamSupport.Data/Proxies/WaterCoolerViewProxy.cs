@@ -24,6 +24,8 @@ namespace TeamSupport.Data
     [DataMember] public bool IsDeleted { get; set; }
     [DataMember] public DateTime LastModified { get; set; }
     [DataMember] public string UserName { get; set; }     
+    [DataMember] public bool NeedsIndexing { get; set; }
+          
   }
   
   public partial class WaterCoolerViewItem : BaseItem
@@ -31,6 +33,7 @@ namespace TeamSupport.Data
     public WaterCoolerViewItemProxy GetProxy()
     {
       WaterCoolerViewItemProxy result = new WaterCoolerViewItemProxy();
+      result.NeedsIndexing = this.NeedsIndexing;
       result.IsDeleted = this.IsDeleted;
       result.MessageParent = this.MessageParent;
       result.Message = MakeLink(this.Message);
@@ -53,13 +56,18 @@ namespace TeamSupport.Data
         //(?<http>(http:[/][/]|www.)([a-z]|[A-Z]|[0-9]|[/.]|[~])*)
 
         string testb = HtmlToText.ConvertHtml(txt);
-
+        string fixedurl;
         Regex regx = new Regex(@"((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)", RegexOptions.IgnoreCase);
         MatchCollection mactches = regx.Matches(txt);
 
         foreach (Match match in mactches)
         {
-            txt = txt.Replace(match.Value, "<a target='_blank' class='ts-link ui-state-default' href='" + (match.Value.StartsWith("http://") ? match.Value : "http://" + match.Value) + "'>" + match.Value + "</a>");
+            if(match.Value.StartsWith("http://") || match.Value.StartsWith("https://"))
+                fixedurl = match.Value;
+            else
+                fixedurl = "http://" + match.Value;
+
+            testb = testb.Replace(match.Value, "<a target='_blank' class='ts-link ui-state-default' href='" + fixedurl + "'>" + match.Value + "</a>");
         }
 
         return GenerateTicketLink(testb);

@@ -1,47 +1,55 @@
-
 (function ($) {
   $.widget("ui.combobox", {
-
     _create: function () {
-      var self = this,
+      var input,
+					that = this,
 					select = this.element.hide(),
 					selected = select.children(":selected"),
 					value = selected.val() ? selected.text() : "",
+					wrapper = this.wrapper = $("<span>")
+						.addClass("ui-combobox")
+						.insertAfter(select);
 
-          div = this.div = $("<div>")
-          .css("left", "-10000")
-          .appendTo("body")
-          .addClass('ui-combobox ui-widget'),
+      function removeIfInvalid(element) {
+        var value = $(element).val(),
+						matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(value) + "$", "i"),
+						valid = false;
+        select.children("option").each(function () {
+          if ($(this).text().match(matcher)) {
+            this.selected = valid = true;
+            return false;
+          }
+        });
+        if (!valid) {
+          // remove invalid value, as it didn't match anything
+          $(element)
+							.val("")
+							.attr("title", value + " didn't match any item")
+							.tooltip("open");
+          select.val("");
+          setTimeout(function () {
+            input.tooltip("close").attr("title", "");
+          }, 2500);
+          input.data("autocomplete").term = "";
+          return false;
+        }
+      }
 
-          table = this.table = $("<table>")
-          .attr("cellpadding", "0")
-          .attr("cellspacing", "0")
-          .attr("border", "0")
-          .appendTo(div)
-          .addClass("ui-combobox-table"),
-          row = this.row = $("<tr>")
-          .appendTo(table),
-          cellInput = this.cellInput = $("<td>")
-          .appendTo(row),
-          cellButton = this.cellButton = $("<td>")
-          .appendTo(row),
-
-          input = this.input = $("<input>")
-					.appendTo(cellInput)
+      input = this.input = $("<input>")
+					.appendTo(wrapper)
 					.val(value)
-          .width(select.width() < 50 ? "100px" : select.width())
-          .click(function () { input.autocomplete("search", ""); })
-					.removeClass("ui-corner-all")
+          .width(select.width() < 50 ? "100px" : select.width()+20)
+          //.width(select.width() < 50 ? "100px" : select.width())
+					.attr("title", "")
+					.addClass("ui-combobox-input")
 					.autocomplete({
 					  delay: 0,
 					  minLength: 0,
-            position: { my: "right top", at: "right bottom", collision: "fit flip" },
-
 					  source: function (request, response) {
 					    var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
 					    response(select.children("option").map(function () {
 					      var text = $(this).text();
-					      if (this.value != null && (!request.term || matcher.test(text))) {
+					      if (this.value && (!request.term || matcher.test(text)))
 					        return {
 					          label: text.replace(
 											new RegExp(
@@ -52,54 +60,35 @@
 					          value: text,
 					          option: this
 					        };
-					      }
 					    }));
 					  },
-
 					  select: function (event, ui) {
 					    ui.item.option.selected = true;
-					    self._trigger("selected", event, {
+					    that._trigger("selected", event, {
 					      item: ui.item.option
 					    });
 					  },
-
 					  close: function (event, ui) {
-					    self._trigger("close", event, ui);
+					    that._trigger("close", event, ui);
 					  },
-
 					  change: function (event, ui) {
-					    if (!ui.item) {
-					      var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex($(this).val()) + "$", "i"),
-									valid = false;
-					      select.children("option").each(function () {
-					        if ($(this).text().match(matcher)) {
-					          this.selected = valid = true;
-					          return false;
-					        }
-					      });
-					      if (!valid) {
-					        // remove invalid value, as it didn't match anything
-					        $(this).val("");
-					        select.val("");
-					        input.data("autocomplete").term = "";
-					        return false;
-					      }
-					    }
+					    if (!ui.item) return removeIfInvalid(this);
 					  }
 					})
 					.addClass("ui-widget ui-widget-content ui-corner-left");
 
       input.data("autocomplete")._renderItem = function (ul, item) {
-        return $("<li></li>")
+        return $("<li>")
 						.data("item.autocomplete", item)
 						.append("<a>" + item.label + "</a>")
 						.appendTo(ul);
       };
 
-      this.button = $("<button>&nbsp;</button>")
+      $("<a>")
 					.attr("tabIndex", -1)
-					.attr("title", "Show All Items")
-					.appendTo(cellButton)
+					//.attr("title", "Show All Items")
+					.tooltip()
+					.appendTo(wrapper)
 					.button({
 					  icons: {
 					    primary: "ui-icon-triangle-1-s"
@@ -107,49 +96,51 @@
 					  text: false
 					})
 					.removeClass("ui-corner-all")
-					.addClass("ui-corner-right ui-button-icon")
-          .height(this.input.outerHeight())
-          .width(this.input.outerHeight())
-					.click(function (e) {
-					  e.preventDefault();
+					.addClass("ui-corner-right ui-combobox-toggle")
+					.click(function () {
 					  // close if already visible
 					  if (input.autocomplete("widget").is(":visible")) {
 					    input.autocomplete("close");
-					    return false;
+					    removeIfInvalid(input);
+					    return;
 					  }
+
+					  // work around a bug (likely same cause as #5265)
+					  $(this).blur();
 
 					  // pass empty string as value to search for, displaying all results
 					  input.autocomplete("search", "");
 					  input.focus();
 					});
 
-      div.css("left", "").detach().insertAfter(select);
-
-
+      input
+						.tooltip({
+						  position: {
+						    of: this.button
+						  },
+						  tooltipClass: "ui-state-highlight"
+						});
     },
 
-    update: function () {
-      var selected = this.element.children(":selected"),
-					value = selected.val() ? selected.text() : "";
-      this.input.val(value);
-    },
-    setValue: function (value) {
-      this.element.children(":selected").removeAttr("selected");
-      this.element.children('option[value="' + value + '"]').attr("selected", "selected");
-      this.update();
-    },
+		update: function () {
+			var selected = this.element.children(":selected"),
+			value = selected.val() ? selected.text() : "";
+			this.input.val(value);
+		},
+		setValue: function (value) {
+		  this.element.children(":selected").prop("selected", false);
+			this.element.children('option[value="' + value + '"]').prop("selected", true);
+			this.update();
+		},
 
-    search: function (value) {
-      this.input.autocomplete('search', value).focus();
-    },
+		search: function (value) {
+			this.input.autocomplete('search', value).focus();
+		},
 
     destroy: function () {
-      this.input.remove();
-      this.button.remove();
+      this.wrapper.remove();
       this.element.show();
-      this.table.remove();
       $.Widget.prototype.destroy.call(this);
     }
   });
-
-} (jQuery));
+})(jQuery);

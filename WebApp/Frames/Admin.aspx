@@ -13,16 +13,15 @@
          <Tabs>
            <telerik:RadTab runat="server" Text="My Company" Value="AdminCompany.aspx"></telerik:RadTab>
            
-           <telerik:RadTab runat="server" Text="My Portal" Value="../vcr/142/Pages/Admin_Portal.html" Visible="true"></telerik:RadTab>
-           <telerik:RadTab runat="server" Selected="True" Text="Custom Fields" Value="../vcr/142/Pages/Admin_CustomFields.html"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="My Portal" Value="../vcr/1_7_0/Pages/Admin_Portal.html" Visible="true"></telerik:RadTab>
+           <telerik:RadTab runat="server" Selected="True" Text="Custom Fields" Value="../vcr/1_7_0/Pages/Admin_CustomFields.html"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Custom Properties" Value="AdminCustomProperties.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="SLA" Value="AdminSla.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Workflow" Value="AdminWorkflow.aspx"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Email" Value="AdminEmails.aspx"></telerik:RadTab>
-           <telerik:RadTab runat="server" Text="Integration" Value="../vcr/142/Pages/Admin_Integration.html" Visible="true"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="Integration" Value="../vcr/1_7_0/Pages/Admin_Integration.html" Visible="true"></telerik:RadTab>
            <telerik:RadTab runat="server" Text="Ticket Templates" Value="AdminTicketTemplates.aspx"></telerik:RadTab>
-           <telerik:RadTab runat="server" Text="Ticket Automation" Value="../vcr/142/Pages/Admin_Automation.html" Visible="true"></telerik:RadTab>
-           <telerik:RadTab runat="server" Text="Chat" Value="AdminChat.aspx" Visible="false"></telerik:RadTab>
+           <telerik:RadTab runat="server" Text="Ticket Automation" Value="../vcr/1_7_0/Pages/Admin_Automation.html" Visible="true"></telerik:RadTab>
          </Tabs>
         </telerik:RadTabStrip>
        </div>
@@ -67,7 +66,9 @@
       }    
 
       function TabSelected(sender, args) {
-        changeTab(args.get_tab());
+        var tab=args.get_tab();
+        changeTab(tab);
+        top.Ts.System.logAction('Admin - Tab Selected (' + tab.get_text() + ')');
       }
 
       function selectTab(text) {

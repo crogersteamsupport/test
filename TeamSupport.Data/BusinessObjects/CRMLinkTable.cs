@@ -23,7 +23,7 @@ namespace TeamSupport.Data
           int commaIndex = rawValue.IndexOf(", ");
           if (commaIndex >= 0)
           {
-            result = rawValue.Substring(0, commaIndex);
+            result = rawValue.Substring(commaIndex + 2);
           }
           else
           {
@@ -36,27 +36,6 @@ namespace TeamSupport.Data
 
       set { Row["SecurityToken"] = CheckValue("SecurityToken", value); }
     }
-
-    public string SecurityToken2
-    {
-      get
-      {
-        string result = null;
-
-        if (Row["SecurityToken"] != DBNull.Value)
-        {
-          string rawValue = (string)Row["SecurityToken"];
-          int commaIndex = rawValue.IndexOf(", ");
-          if (commaIndex >= 0)
-          {
-            result = rawValue.Substring(commaIndex + 2);
-          }
-        }
-
-        return result;
-      }
-    }
-
 
     #endregion
 

@@ -148,6 +148,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     {
       textName.Text = organizations[0].Name;
       textWebSite.Text = organizations[0].Website;
+      textSupportHoursMonth.Text = organizations[0].SupportHoursMonth.ToString();
       textDomains.Text = organizations[0].CompanyDomains;
       textDescription.Text = organizations[0].Description;
       cbPortal.Checked = organizations[0].HasPortalAccess;
@@ -187,7 +188,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 
     Organization organization;
 
-    Organizations organizations = new Organizations(UserSession.LoginUser); ;
+    Organizations organizations = new Organizations(UserSession.LoginUser);
 
     if (_organizatinID < 0)
     {
@@ -239,6 +240,11 @@ public partial class Dialogs_Organization : BaseDialogPage
       organization.SlaLevelID = null;
     else
       organization.SlaLevelID = int.Parse(cmbSlas.SelectedValue);
+
+    int shm = 0;
+    int.TryParse(textSupportHoursMonth.Text, out shm);
+
+    organization.SupportHoursMonth = shm;
 
     if (_isAdmin)
     {

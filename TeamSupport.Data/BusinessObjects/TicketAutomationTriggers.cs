@@ -17,7 +17,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM TicketAutomationTriggers WHERE OrganizationID = @OrganizationID ORDER BY Position";
+        command.CommandText = "SELECT * FROM TicketAutomationTriggers WHERE OrganizationID = @OrganizationID ORDER BY Name";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);

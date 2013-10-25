@@ -63,27 +63,32 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByOrganizationID(int organizationID)
+    public void LoadByOrganizationID(int organizationID, string orderBy = "Name")
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM Groups g WHERE (g.OrganizationID = @OrganizationID) ORDER BY g.Name";
+        command.CommandText = "SELECT * FROM Groups g WHERE (g.OrganizationID = @OrganizationID) ORDER BY g." + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);
       }
     }
 
-    public void LoadByOrganizationIDForGrid(int organizationID)
+    public void LoadByOrganizationIDForGrid(int organizationID, int userID)
     {
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = @"SELECT g.*, (SELECT COUNT(*) FROM TicketGridView tgv WHERE (tgv.GroupID = g.GroupID) AND (tgv.IsClosed = 0)) AS TicketCount
                                 FROM Groups g
                                 WHERE (g.OrganizationID = @OrganizationID) 
+                                AND (
+                                  g.GroupID IN (SELECT GroupID FROM GroupUsers gu WHERE gu.UserID=@UserID) OR 
+                                  (EXISTS (SELECT * FROM Users WHERE UserID=@UserID AND (IsSystemAdmin = 1 OR TicketRights < 1)))
+                                )
                                 ORDER BY Name";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@UserID", userID);
         Fill(command);
       }
     }

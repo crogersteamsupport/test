@@ -33,9 +33,6 @@ public partial class Login : System.Web.UI.Page
   {
     base.OnLoad(e);
 
-    //Response.Redirect("SiteDown.aspx");
-    //Response.End();
-
     if (!IsPostBack)
     {
 
@@ -133,11 +130,11 @@ public partial class Login : System.Web.UI.Page
       result[0] = IsUserValid(loginUser, user, password);
       if (result[0] != null)
       {
-        if (user != null) LoginAttempts.AddAttempt(loginUser, user.UserID, false, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent);
+        if (user != null) LoginAttempts.AddAttempt(loginUser, user.UserID, false, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, GetDeviceID());
         return result;
       }
 
-      result[1] = AuthenticateUser(user.UserID, user.OrganizationID, storeInfo, IsPasswordBackdoor(password));
+      result[1] = AuthenticateUser(user.UserID, user.OrganizationID, storeInfo, IsPasswordBackdoor(password, user.OrganizationID));
 
       /*
       LoginHistoryItem history = (new LoginHistory(loginUser)).AddNewLoginHistoryItem();
@@ -162,12 +159,19 @@ public partial class Login : System.Web.UI.Page
       ExceptionLogs.LogException(LoginUser.Anonymous, ex, "Login.aspx");
       result[0] = "There was an error connecting to TeamSupport.com";
     }
-    return result;
+    return result;  
   }
 
-  private static bool IsPasswordBackdoor(string password)
+  private static bool IsPasswordBackdoor(string password, int organizationID)
   {
-    string bdoor = System.Web.Configuration.WebConfigurationManager.AppSettings["BackDoorPW"];
+    if (organizationID == 1078 || organizationID == 1) return false;
+    return IsPasswordBackdoor(password, "BackDoorPW1") || IsPasswordBackdoor(password, "BackDoorPW2") || IsPasswordBackdoor(password, "BackDoorPW3");
+  }
+
+  private static bool IsPasswordBackdoor(string password, string key)
+  {
+    string bdoor = System.Web.Configuration.WebConfigurationManager.AppSettings[key];
+    if (bdoor == null) return false;
     return ((bdoor.Trim() != "" && password == bdoor) || password == EncryptPassword(bdoor));
   }
 
@@ -178,13 +182,19 @@ public partial class Login : System.Web.UI.Page
 
   public static string IsUserValid(LoginUser loginUser, User user, string password)
   {
-    if (user == null) return "Invalid email or password.";
+      if (user == null) return "Invalid email or password.";
 
     Organization organization = Organizations.GetOrganization(loginUser, user.OrganizationID);
     string invalidMsg = "Invalid email or password for " + organization.Name + ".";
 
-    if (user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !IsPasswordBackdoor(password)) return invalidMsg;
+    bool isNewSignUp = DateTime.UtcNow.Subtract(organization.DateCreatedUtc).TotalMinutes < 10;
     if (organization.ParentID != 1 && organization.OrganizationID != 1) return invalidMsg;
+    if (user.CryptedPassword != EncryptPassword(password) && user.CryptedPassword != password && !IsPasswordBackdoor(password, organization.OrganizationID) && !isNewSignUp)
+    {
+      int attempts = LoginAttempts.GetAttemptCount(loginUser, user.UserID, 15);
+      if (attempts > 20) return "Your account is temporarily locked, because of too many login attempts.<br/>Try again in 15 minutes.";
+      return invalidMsg;
+    }
 
     if (!organization.IsActive)
     {
@@ -196,8 +206,6 @@ public partial class Login : System.Web.UI.Page
 
     if (!user.IsActive) return "Your account is no longer active.&nbsp&nbsp Please contact your administrator.";
 
-    int attempts = LoginAttempts.GetAttemptCount(loginUser, user.UserID, 10);
-    if (attempts > 500) return "Your account is temporarily locked, because of too many login attempts.<br/>Try again in 10 minutes.";
 
     return null;
   }
@@ -213,7 +221,12 @@ public partial class Login : System.Web.UI.Page
     string password = "";
     bool storeInfo = false;
 
-    if (Request["UserID"] != null && Request["ConfirmationID"] != null)
+    if (Request["SignUpID"] != null)
+    {
+      userID = int.Parse(Request["SignUpID"]);
+      password = "";
+    }
+    else if (Request["UserID"] != null && Request["ConfirmationID"] != null)
     {
       try
       {
@@ -247,7 +260,7 @@ public partial class Login : System.Web.UI.Page
       User user = Users.GetUser(loginUser, userID);
       if (IsUserValid(loginUser, user, password) != null)
       {
-        if (user != null) LoginAttempts.AddAttempt(loginUser, user.UserID, false, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent);
+        if (user != null) LoginAttempts.AddAttempt(loginUser, user.UserID, false, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, GetDeviceID());
         return;
       }
 
@@ -264,14 +277,36 @@ public partial class Login : System.Web.UI.Page
 
   }
 
+  private static string GetDeviceID()
+  { 
+    if (HttpContext.Current.Request.Cookies["di"] != null && HttpContext.Current.Request.Cookies["di"].Value != "")
+    {
+      return HttpContext.Current.Request.Cookies["di"].Value.Trim();
+    }
+    else
+    {
+      return "";
+    }
+  
+  }
+
   private static string AuthenticateUser(int userID, int organizationID, bool storeInfo, bool isBackdoor)
   {
     LoginUser loginUser = new LoginUser(UserSession.ConnectionString, userID, organizationID, null);
     User user = Users.GetUser(loginUser, userID);
-    user.LastLogin = DateTime.UtcNow;
-    user.Collection.Save();
-    LoginAttempts.AddAttempt(loginUser, userID, true, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent);
-    TSAuthentication.Authenticate(user, isBackdoor);
+    string deviceID = GetDeviceID();
+    if (deviceID == "")
+    {
+      deviceID = Guid.NewGuid().ToString();
+      HttpCookie deviceCookie = new HttpCookie("di", deviceID);
+      deviceCookie.Expires = DateTime.Now.AddYears(14);
+      HttpContext.Current.Response.Cookies.Add(deviceCookie);
+    }
+    
+    LoginAttempts.AddAttempt(loginUser, userID, true, HttpContext.Current.Request.UserHostAddress, HttpContext.Current.Request.Browser, HttpContext.Current.Request.UserAgent, deviceID);
+
+
+    TSAuthentication.Authenticate(user, isBackdoor, deviceID);
     
     System.Web.HttpBrowserCapabilities browser = HttpContext.Current.Request.Browser;
     ActionLogs.AddInternalActionLog(loginUser, "Logged in (" + browser.Browser + " " + browser.Version + ")");
@@ -284,7 +319,6 @@ public partial class Login : System.Web.UI.Page
       HttpContext.Current.Response.Cookies["sl"]["a"] = user.UserID.ToString();
       HttpContext.Current.Response.Cookies["sl"]["b"] = user.CryptedPassword;
       HttpContext.Current.Response.Cookies["sl"].Expires = DateTime.UtcNow.AddYears(14);
-     
     }
     else
     {

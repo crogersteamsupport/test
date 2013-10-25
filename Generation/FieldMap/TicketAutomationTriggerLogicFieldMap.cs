@@ -20,6 +20,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Measure", "Measure", false, false, false);
       _fieldMap.AddMap("TestValue", "TestValue", false, false, false);
       _fieldMap.AddMap("MatchAll", "MatchAll", false, false, false);
+      _fieldMap.AddMap("OtherTrigger", "OtherTrigger", false, false, false);
             
     }
   }

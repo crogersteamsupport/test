@@ -144,7 +144,7 @@ public partial class TicketPrint : System.Web.UI.Page
       if (flag) builder.Append("<tr>");
 
       CustomValue value;
-      value = CustomValues.GetValue(UserSession.LoginUser, field.CustomFieldID, ticket.TicketID);
+      value = CustomValues.GetValue(UserSession.LoginUser, field.CustomFieldID, ticket.TicketID, false);
       builder.Append(GetColumn(field.Name + "", value.Value));
       if (!flag) builder.Append("</tr>");
 

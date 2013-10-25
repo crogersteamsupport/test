@@ -17,8 +17,7 @@ namespace TeamSupport.Service
 {
   class Program : ServiceBase
   {
-    Logs _logs;
-    ServiceManager _serviceManager;
+    ServiceThread _thread;
  
     static void Main(string[] args)
     {
@@ -30,75 +29,63 @@ namespace TeamSupport.Service
       this.ServiceName = ConfigurationManager.AppSettings["ServiceName"];
     }
 
-    private void TestConnection()
+    private ServiceThread GetServiceThread()
     {
-      LoginUser loginUser = ServiceThread.GetLoginUser("ServiceManager");
-      string connectionString = loginUser.ConnectionString;
-      using (SqlConnection connection = new SqlConnection(connectionString))
+      ServiceThread result = null;
+      switch (ServiceName)
       {
-        try
-        {
-          connection.Open();
-          connection.Close();
-        }
-        catch (Exception ex)
-        {
-          throw new Exception(connectionString + " " + ex.Message, ex);
-        }
+        case "TSEmailProcessor": result = new EmailProcessor(); break;
+        case "TSEmailSender": result = new EmailSender(); break;
+        case "TSSlaProcessor": result = new SlaProcessor(); break;
+        case "TSIndexer": result = new Indexer(); break;
+        case "TSIndexRebuilder": result = new Indexer(); break;
+        case "TSCrmPool": result = new CrmPool(); break;
+        case "TSReminderProcessor": result = new ReminderProcessor(); break;
+        default: result = null; break;
       }
-    }
 
+      return result;
+    }
 
     protected override void OnStart(string[] args)
     {
-      _logs = new Logs("Service Base");
-      _logs.WriteEvent("OnStart");
-      TestConnection();
-      System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.Idle;
-      _serviceManager = new ServiceManager();
-      _serviceManager.Start();
+      //System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.Idle;
+      _thread = GetServiceThread();
+      _thread.Start();
     }
 
     protected override void OnStop()
     {
-      _logs.WriteEvent("OnStop");
-      _serviceManager.Stop();
+      _thread.Stop();
     }
 
     protected override void OnShutdown()
     {
-      _logs.WriteEvent("OnShutdown");
-      _serviceManager.Stop();
+      _thread.Stop();
     }
 
     protected override void OnContinue()
     {
-      _logs.WriteEvent("OnContinue");
       base.OnContinue();
     }
 
     protected override void OnPause()
     {
-      _logs.WriteEvent("OnPause");
       base.OnPause();
     }
 
     protected override void OnCustomCommand(int command)
     {
-      _logs.WriteEvent("OnCustomCommand: " + command.ToString());
       base.OnCustomCommand(command);
     }
 
     protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
     {
-      _logs.WriteEvent("OnPowerEvent: " + powerStatus.ToString());
-
       return base.OnPowerEvent(powerStatus);
     }
 
     protected override void OnSessionChange(SessionChangeDescription changeDescription)
     {
-      _logs.WriteEvent("OnSessionChange: " + changeDescription);
       base.OnSessionChange(changeDescription);
     }
   }

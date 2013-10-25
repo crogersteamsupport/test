@@ -85,5 +85,61 @@ namespace TeamSupport.DataManager.UserControls
     {
       AccountClone.Clone(new LoginUser(LoginSession.LoginUser.ConnectionString, -1, -1, null), OrganizationID, textOrganizationName.Text);
     }
+
+    private void btnUnkownDups_Click(object sender, EventArgs e)
+    {
+      LoginUser loginUser = new LoginUser(LoginSession.LoginUser.ConnectionString, -1, OrganizationID, null);
+      Organizations organizations = new Organizations(loginUser);
+      organizations.LoadByUnknownCompany(OrganizationID);
+      if (organizations.IsEmpty) {
+        MessageBox.Show("_Unknown Company was not fount");
+        return; 
+      }
+      int unkID = organizations[0].OrganizationID;
+
+      Users unkUsers = new Users(loginUser);
+      unkUsers.LoadByOrganizationID(unkID, false);
+
+      Users users = new Users(loginUser);
+      users.LoadContacts(OrganizationID, false);
+      int cnt = 0;
+      foreach (User unkUser in unkUsers)
+      {
+        foreach (User user in users)
+        {
+          if (user.OrganizationID != unkID && user.Email.Trim().ToLower() == unkUser.Email.Trim().ToLower())
+          {
+            cnt++;
+            Tickets tickets = new Tickets(loginUser);
+            tickets.LoadByContact(unkUser.UserID);
+
+            foreach (Ticket ticket in tickets)
+            {
+              try {
+                tickets.AddContact(user.UserID, ticket.TicketID);
+
+              } catch (Exception) { }
+              try
+              {
+                tickets.RemoveContact(unkUser.UserID, ticket.TicketID);
+              }
+              catch (Exception) { }
+              try
+              {
+                tickets.RemoveOrganization(unkID, ticket.TicketID);
+              }
+              catch (Exception) { }
+            }
+            unkUser.MarkDeleted = true;
+            
+          }
+        }
+      }
+      unkUsers.Save();
+
+      MessageBox.Show(cnt.ToString());
+    }
+
+
   }
 }

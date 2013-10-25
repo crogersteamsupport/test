@@ -87,6 +87,25 @@
             <asp:CheckBox ID="cbNewActionsVisible" runat="server" Text="Visible to customers is initially enabled for new actions"/>
           </td>
         </tr>
+
+
+       <!-- <tr>
+          <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbRequireProduct" runat="server" Text="Require Product for ticket"/>
+          </td>
+          <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbRequireProductVersion" runat="server" Text="Require Product Version for ticket"/>
+          </td>
+        </tr>
+        -->
+        <tr>
+          <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbUnsecureAttachments" runat="server" Text="Allow unauthenticated users to view attachments"/>
+          </td>
+          <td class="labelColTD" colspan="2">
+          </td>
+        </tr>
+
         <tr>
           <td>Business Day Start:</td>
           <td>

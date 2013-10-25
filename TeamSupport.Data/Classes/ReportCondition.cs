@@ -253,7 +253,7 @@ namespace TeamSupport.Data
                   }
 
                   DateTime date = (DateTime)condition.Value1;
-                  value = value + "'" + DataUtils.DateToUtc(_loginUser, date).ToString("d", CultureInfo.GetCultureInfo("en-US")) + "'";
+                  value = value + "'" + DataUtils.DateToUtc(_loginUser, date).ToString("g", CultureInfo.GetCultureInfo("en-US")) + "'";
                 }
                 else
                 {
@@ -429,13 +429,13 @@ namespace TeamSupport.Data
                   }
 
                   DateTime date = (DateTime)condition.Value1;
-                  value = value + "'" + DataUtils.DateToUtc(_loginUser, date).ToString("d", _loginUser.CultureInfo) + "'";
+                  value = value + "'" + DataUtils.DateToUtc(_loginUser, date).ToString("g", _loginUser.CultureInfo) + "'";
                 }
                 else
                 {
                   DateTime date1 = (DateTime)condition.Value1;
                   DateTime date2 = (DateTime)condition.Value2;
-                  value = " BETWEEN '" + DataUtils.DateToUtc(_loginUser, date1).ToString("d", _loginUser.CultureInfo) + "' AND '" + DataUtils.DateToUtc(_loginUser, date2).ToString("d", _loginUser.CultureInfo) + "'";
+                  value = " BETWEEN '" + DataUtils.DateToUtc(_loginUser, date1).ToString("g", _loginUser.CultureInfo) + "' AND '" + DataUtils.DateToUtc(_loginUser, date2).ToString("g", _loginUser.CultureInfo) + "'";
                   if (condition.ConditionOperator == ConditionOperator.IsNotInBetween)
                     value = " NOT" + value;
                 }

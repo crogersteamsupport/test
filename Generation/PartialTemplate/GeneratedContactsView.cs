@@ -59,6 +59,12 @@ namespace TeamSupport.Data
       set { Row["OrganizationParentID"] = CheckValue("OrganizationParentID", value); }
     }
     
+    public string SalesForceID
+    {
+      get { return Row["SalesForceID"] != DBNull.Value ? (string)Row["SalesForceID"] : null; }
+      set { Row["SalesForceID"] = CheckValue("SalesForceID", value); }
+    }
+    
 
     
     public string CryptedPassword
@@ -343,7 +349,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ContactsView] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [Organization] = @Organization,    [LastVersion] = @LastVersion,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrganizationParentID] = @OrganizationParentID,    [CryptedPassword] = @CryptedPassword  WHERE ([UserID] = @UserID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ContactsView] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [Organization] = @Organization,    [LastVersion] = @LastVersion,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrganizationParentID] = @OrganizationParentID,    [CryptedPassword] = @CryptedPassword,    [SalesForceID] = @SalesForceID  WHERE ([UserID] = @UserID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("Email", SqlDbType.VarChar, 1024);
@@ -535,13 +541,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("SalesForceID", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ContactsView] (    [Email],    [FirstName],    [UserID],    [MiddleName],    [LastName],    [Title],    [IsActive],    [MarkDeleted],    [LastLogin],    [LastActivity],    [LastPing],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [Organization],    [LastVersion],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrganizationParentID],    [CryptedPassword]) VALUES ( @Email, @FirstName, @UserID, @MiddleName, @LastName, @Title, @IsActive, @MarkDeleted, @LastLogin, @LastActivity, @LastPing, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ActivatedOn, @DeactivatedOn, @OrganizationID, @Organization, @LastVersion, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrganizationParentID, @CryptedPassword); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ContactsView] (    [Email],    [FirstName],    [UserID],    [MiddleName],    [LastName],    [Title],    [IsActive],    [MarkDeleted],    [LastLogin],    [LastActivity],    [LastPing],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [Organization],    [LastVersion],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrganizationParentID],    [CryptedPassword],    [SalesForceID]) VALUES ( @Email, @FirstName, @UserID, @MiddleName, @LastName, @Title, @IsActive, @MarkDeleted, @LastLogin, @LastActivity, @LastPing, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ActivatedOn, @DeactivatedOn, @OrganizationID, @Organization, @LastVersion, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrganizationParentID, @CryptedPassword, @SalesForceID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("SalesForceID", SqlDbType.VarChar, 8000);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("CryptedPassword", SqlDbType.VarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -858,7 +878,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [Email], [FirstName], [UserID], [MiddleName], [LastName], [Title], [IsActive], [MarkDeleted], [LastLogin], [LastActivity], [LastPing], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ActivatedOn], [DeactivatedOn], [OrganizationID], [Organization], [LastVersion], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrganizationParentID], [CryptedPassword] FROM [dbo].[ContactsView] WHERE ([UserID] = @UserID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [Email], [FirstName], [UserID], [MiddleName], [LastName], [Title], [IsActive], [MarkDeleted], [LastLogin], [LastActivity], [LastPing], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ActivatedOn], [DeactivatedOn], [OrganizationID], [Organization], [LastVersion], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrganizationParentID], [CryptedPassword], [SalesForceID] FROM [dbo].[ContactsView] WHERE ([UserID] = @UserID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("UserID", userID);
         Fill(command);

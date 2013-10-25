@@ -56,9 +56,23 @@ namespace TeamSupport.Data
     [DataMember] public bool IsClassicView { get; set; }
     [DataMember] public string timeZoneDisplay { get; set; }
     [DataMember] public string CultureDisplay { get; set; }
+    [DataMember] public bool ShowWelcomePage { get; set; }
     [DataMember] public string UserInformation { get; set; }
     [DataMember] public bool AppChatStatus { get; set; }
     [DataMember] public string AppChatID { get; set; }   
+    [DataMember] public string MenuItems { get; set; }
+    [DataMember] public string LinkedIn { get; set; }
+    [DataMember] public TicketRightType TicketRights { get; set; }
+    [DataMember] public bool OnlyEmailAfterHours { get; set; }
+    [DataMember] public bool BlockInboundEmail { get; set; }
+    [DataMember] public string SalesForceID { get; set; }
+    [DataMember] public bool ChangeTicketVisibility { get; set; }
+    [DataMember] public bool ChangeKbVisibility { get; set; }
+    [DataMember] public string Avatar { get; set; }
+    [DataMember] public bool EnforceSingleSession { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public bool AllowAnyTicketCustomer { get; set; }
+          
   }
   
   public partial class User : BaseItem
@@ -67,7 +81,19 @@ namespace TeamSupport.Data
     {
 
       UserProxy result = new UserProxy();
- 
+      result.AllowAnyTicketCustomer = this.AllowAnyTicketCustomer;
+      result.NeedsIndexing = this.NeedsIndexing;
+      result.EnforceSingleSession = this.EnforceSingleSession;
+      result.SalesForceID = this.SalesForceID;
+      if (!this.LinkedIn.StartsWith("http"))
+          result.LinkedIn = "http://" + this.LinkedIn;
+      else
+          result.LinkedIn = this.LinkedIn;
+      result.TicketRights = this.TicketRights;
+      result.MenuItems = this.MenuItems;
+      result.OnlyEmailAfterHours = this.OnlyEmailAfterHours;
+      result.BlockInboundEmail = this.BlockInboundEmail;
+      result.ShowWelcomePage = this.ShowWelcomePage;
       result.IsClassicView = this.IsClassicView;
       result.DoNotAutoSubscribe = this.DoNotAutoSubscribe;
       result.OrgsUserCanSeeOnPortal = this.OrgsUserCanSeeOnPortal;
@@ -123,6 +149,20 @@ namespace TeamSupport.Data
       result.UserInformation = this.UserInformation;
       result.AppChatID = this.AppChatID;
       result.AppChatStatus = this.AppChatStatus;
+      result.ChangeTicketVisibility = this.ChangeTicketVisibility;
+      result.ChangeKbVisibility = this.ChangeKBVisibility;
+
+      Attachments att = new Attachments(BaseCollection.LoginUser);
+      att.LoadByReference(ReferenceType.UserPhoto, this.UserID);
+
+      if (att.Count > 0)
+      {
+          result.Avatar = String.Format("/dc/{0}/avatar/{1}", this.OrganizationID, att[0].AttachmentID);
+      }
+      else
+          result.Avatar = "../images/blank_avatar.png";
+
+         
 
       return result;
     }	

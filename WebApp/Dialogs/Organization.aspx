@@ -55,6 +55,12 @@
     <td class="labelColTD">Service Level Agreement</td>
     <td class="inputColTD"><telerik:RadComboBox ID="cmbSlas" runat="server" Width="200px"></telerik:RadComboBox></td>
   </tr>
+  <tr>
+    <td class="labelColTD">Support hours per month:</td>
+    <td class="inputColTD"><telerik:RadTextBox ID="textSupportHoursMonth" runat="server" Width="200px"></telerik:RadTextBox></td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
 
 <div style="padding-left: 5px;">

@@ -133,13 +133,14 @@ namespace TeamSupport.Handlers
 
     private string RemoveSpecialCharacters(string text)
     {
-      StringBuilder builder = new StringBuilder();
-      foreach (char c in text)
-	    {
-        if (!char.IsLetterOrDigit(c) && c != '.') builder.Append("_");
-        else builder.Append(c);
-	    }
-      return builder.ToString();
+      return Path.GetInvalidFileNameChars().Aggregate(text, (current, c) => current.Replace(c.ToString(), "_"));
+      //StringBuilder builder = new StringBuilder();
+      //foreach (char c in text)
+      //  {
+      //  if (!char.IsLetterOrDigit(c) && c != '.' && c != '@') builder.Append("_");
+      //  else builder.Append(c);
+      //  }
+      //return builder.ToString();
     
     }
 

@@ -1,10 +1,22 @@
-.ui-combobox { float:left; }
-.ui-combobox-table * { margin:0; padding: 0;  } 
-.ui-combobox-table { border: none; border-spacing: 0; display:inline-block; *display:inline; position:relative; zoom: 1; } 
-.ui-combobox-table tr { }
-.ui-combobox-table td { vertical-align: middle; }
-.ui-combobox-table .ui-button { border-left: none; }
-.ui-autocomplete { overflow-y: auto; overflow-x: hidden;  max-height: 150px;}
-.ui-combobox-table .ui-autocomplete-input { height:1.2em; }
-.ui-combobox-table .ui-button { padding:0; margin:0; }
+.ui-combobox {
+		position: relative;
+		display: inline-block;
+    padding-right: 2em;
+	}
+  .ui-autocomplete { overflow-y: auto; overflow-x: hidden;  max-height: 150px;}
+	.ui-combobox-toggle {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		margin-left: -1px;
+		padding: 0;
+		/* adjust styles for IE 6/7 */
+		*height: 1.7em;
+		*top: 0.1em;
+	}
+	.ui-combobox-input {
+		margin: 0;
+    padding: 0 .2em;
+	}
 
+  .ui-combobox .ui-button-icon-only { width:1.75em; } 

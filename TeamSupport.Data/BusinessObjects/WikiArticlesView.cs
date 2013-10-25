@@ -15,11 +15,11 @@ namespace TeamSupport.Data
   
   public partial class WikiArticlesView
   {
-    public void LoadByOrganizationID(int organizationID)
+    public void LoadByOrganizationID(int organizationID, string orderBy = "ArticleName")
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM WikiArticlesView WHERE OrganizationID = @OrganizationID AND Private <> 1 ORDER BY ArticleName";
+        command.CommandText = "SELECT * FROM WikiArticlesView WHERE OrganizationID = @OrganizationID AND Private <> 1 ORDER BY " + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);
@@ -98,7 +98,7 @@ namespace TeamSupport.Data
 
     }
 
-    public void LoadForIndexing(int organizationID, int max)
+    public void LoadForIndexing(int organizationID, int max, bool isRebuilding)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -108,6 +108,15 @@ namespace TeamSupport.Data
         WHERE w.NeedsIndexing = 1
         AND w.OrganizationID= @OrganizationID
         ORDER BY ModifiedDate DESC";
+
+        if (isRebuilding)
+        {
+          text = @"
+          SELECT ArticleID
+          FROM WikiArticlesView w WITH(NOLOCK)
+          WHERE w.OrganizationID= @OrganizationID
+          ORDER BY ModifiedDate DESC";
+        }
 
         command.CommandText = string.Format(text, max.ToString());
         command.CommandType = CommandType.Text;
@@ -183,8 +192,8 @@ namespace TeamSupport.Data
         //job.BooleanConditions = conditions.ToString();
 
 
-        job.MaxFilesToRetrieve = 1000;
-        job.AutoStopLimit = 1000000;
+        //job.MaxFilesToRetrieve = 1000;
+        //job.AutoStopLimit = 1000000;
         job.TimeoutSeconds = 30;
         job.SearchFlags =
           //SearchFlags.dtsSearchSelectMostRecent |
@@ -193,10 +202,10 @@ namespace TeamSupport.Data
         int num = 0;
         if (!int.TryParse(searchTerm, out num))
         {
-          job.Fuzziness = 1;
+          //job.Fuzziness = 1;
           job.SearchFlags = job.SearchFlags |
-            SearchFlags.dtsSearchFuzzy |
-            SearchFlags.dtsSearchStemming |
+            //SearchFlags.dtsSearchFuzzy |
+            //SearchFlags.dtsSearchStemming |
             SearchFlags.dtsSearchPositionalScoring |
             SearchFlags.dtsSearchAutoTermWeight;
         }
