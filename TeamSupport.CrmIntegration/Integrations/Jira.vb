@@ -176,7 +176,7 @@ Namespace TeamSupport
           Dim updateTicketFlag As Boolean = False
           Dim issue As JObject = Nothing
           'Create new issue
-          If ticketLinkToJira.JiraKey Is Nothing Then
+          If ticketLinkToJira.JiraKey Is Nothing OrElse ticketLinkToJira.JiraKey.IndexOf("Error") > -1 Then
             Try
               Log.Write("No JiraKey. Creating issue...")
               URI = _baseURI + "/issue"
@@ -186,12 +186,25 @@ Namespace TeamSupport
               issue = GetAPIJObject(URI, "GET", String.Empty)
               updateTicketFlag = True
             Catch ex As Exception
-              If ex.Message = "no project" Then
-                Log.Write("Project is required to create an issue in Jira for this ticket.")
-                Continue For
-              Else
-                Throw ex
-              End If
+              
+              Dim errorMessage As String = String.Empty
+              Select Case ex.Message
+                Case "no project"
+                  errorMessage = "Error: Specify Project (Product)."
+                Case "type mismatch"
+                  errorMessage = "Error: Specify valid Type."
+                Case "project mismatch"
+                  errorMessage = "Error: Specify valid Project (Product)."
+                Case Else
+                  Throw ex                
+              End Select
+
+              Log.Write(errorMessage)
+              ticketLinkToJira.JiraKey = errorMessage
+              ticketLinkToJira.DateModifiedByJiraSync = DateTime.UtcNow()
+              ticketLinkToJira.Collection.Save()
+              Continue For
+
             End Try
           'Issue already exists. 
           'We are not updating issues, but if this is a second ticket relating to issue we add a remote link and update ticket fields for Jira
@@ -297,7 +310,7 @@ Namespace TeamSupport
                 End If
               Next
               If issueTypeIndex Is Nothing Then
-                Throw New Exception("Ticket type was not found in project types.")
+                Throw New Exception("type mismatch")
               Else
                 result = CType(fields("projects")(0)("issuetypes")(issueTypeIndex)("fields"), JObject)
               End If
@@ -306,7 +319,11 @@ Namespace TeamSupport
               Log.Write(ex.Message)
               Log.Write("URI: " + URI)
               Log.Write("Type: " + issueTypeName)
-              Throw ex
+              If ex.Message <> "type mismatch" Then
+                Throw New Exception("project mismatch")
+              Else
+                Throw ex
+              End If
             End Try
 
             Return result
