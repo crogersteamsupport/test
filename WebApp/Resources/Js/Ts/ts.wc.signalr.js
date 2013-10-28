@@ -190,10 +190,12 @@ function loadSignalR() {
                     top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType, "error");
                 }
             }
-            $('.main-ticket-' + ticketNum).show();
-            $('.main-ticket-' + ticketNum).addClass("tmp-visible");
+            //$('.main-ticket-' + ticketNum).show();
+            //$('.main-ticket-' + ticketNum).addClass("tmp-visible");
             $('.main-ticket-' + ticketNum).find('iframe')[0].contentWindow.loadTicket(ticketNum, 0);
-            $('.main-ticket-' + ticketNum).removeClass("tmp-visible");
+            //$('.main-ticket-' + ticketNum).hide();
+            //$('.main-ticket-' + ticketNum).removeClass("tmp-visible");
+            
         }
 
 

@@ -63,7 +63,7 @@ public partial class Tips_User : System.Web.UI.Page
 
       foreach (PhoneNumbersViewItem number in numbers)
       {
-        props.Append(string.Format("<dt>{0}</dt><dd>{1} {2}</dd>", number.PhoneType, number.PhoneNumber, number.Extension));
+        props.Append(string.Format("<dt>{0}</dt><dd>{1} {2}</dd>", number.PhoneType, number.FormattedPhoneNumber, number.Extension));
       }
 
       tipProps.InnerHtml = props.ToString();

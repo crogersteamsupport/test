@@ -424,8 +424,9 @@ namespace TeamSupport.Api
     private string FixJsonFormatError(string input, string uriTemplate)
     {
       int squareBracketIndex = 0;
-      string stringToRemove = GetStringToRemove(uriTemplate, ref squareBracketIndex);
-      if (stringToRemove != string.Empty)
+      string objectIDLabel = string.Empty;
+      string stringToRemove = GetStringToRemove(uriTemplate, ref squareBracketIndex, ref objectIDLabel);
+      if (stringToRemove != string.Empty && input.Length > squareBracketIndex)
       {
         if (input.Substring(squareBracketIndex, 1) != "[")
         {
@@ -438,11 +439,12 @@ namespace TeamSupport.Api
           input = input.Remove(input.Length - 3);
         }
         input = input + "]}";
+        input = input.Replace(objectIDLabel, "ID");
       }
       return input;
     }
 
-    private string GetStringToRemove(string uriTemplate, ref int squareBracketIndex)
+    private string GetStringToRemove(string uriTemplate, ref int squareBracketIndex, ref string objectIDLabel)
     {
       string result = string.Empty;
       switch (uriTemplate)
@@ -451,11 +453,13 @@ namespace TeamSupport.Api
         case "/tickets/{id}/actions/":
           result = "{\"Action\":";
           squareBracketIndex = "{\"Actions\":{\"Action\":".Length;
+          objectIDLabel = "ActionID";
           break;
         case "/zapier/properties/actiontypes/":
         case "/properties/actiontypes/":
           result = "{\"ActionType\":";
           squareBracketIndex = "{\"ActionTypes\":{\"ActionType\":".Length;
+          objectIDLabel = "ActionTypeID";
           break;
         case "/zapier/customers/{id}/addresses/":
         case "/zapier/customers/{id}/contacts/{id}/addresses/":
@@ -465,11 +469,13 @@ namespace TeamSupport.Api
         case "/contacts/{id}/addresses/":
           result = "{\"Address\":";
           squareBracketIndex = "{\"Addresses\":{\"Address\":".Length;
+          objectIDLabel = "AddressID";
           break;
         case "/zapier/tickets/{id}/actions/{id}/attachments/":
         case "/tickets/{id}/actions/{id}/attachments/":
           result = "{\"Attachment\":";
           squareBracketIndex = "{\"Attachments\":{\"Attachment\":".Length;
+          objectIDLabel = "AttachmentID";
           break;
         case "/zapier/tickets/{id}/contacts/":
         case "/zapier/customers/{id}/contacts/":
@@ -479,6 +485,7 @@ namespace TeamSupport.Api
         case "/contacts/":
           result = "{\"Contact\":";
           squareBracketIndex = "{\"Contacts\":{\"Contact\":".Length;
+          objectIDLabel = "ContactID";
           break;
         case "/zapier/tickets/{id}/customers/":
         case "/zapier/products/{id}/versions/{id}/customers/":
@@ -488,11 +495,13 @@ namespace TeamSupport.Api
         case "/customers/":
           result = "{\"Customer\":";
           squareBracketIndex = "{\"Customers\":{\"Customer\":".Length;
+          objectIDLabel = "OrganizationID";
           break;
         case "/zapier/groups/":
         case "/groups/":
           result = "{\"Group\":";
           squareBracketIndex = "{\"Groups\":{\"Group\":".Length;
+          objectIDLabel = "GroupID";
           break;
         case "/zapier/tickets/{id}/history/":
         case "/zapier/customers/{id}/history/":
@@ -506,11 +515,13 @@ namespace TeamSupport.Api
         case "/users/{id}/history/":
           result = "{\"ActionItem\":";
           squareBracketIndex = "{\"History\":{\"ActionItem\":".Length;
+          objectIDLabel = "ActionLogID";
           break;
         case "/zapier/customers/{id}/notes/":
         case "/customers/{id}/notes/":
           result = "{\"Note\":";
           squareBracketIndex = "{\"Notes\":{\"Note\":".Length;
+          objectIDLabel = "NoteID";
           break;
         case "/zapier/customers/{id}/products/":
         case "/zapier/customers/{id}/products/{id}/":
@@ -518,6 +529,7 @@ namespace TeamSupport.Api
         case "/customers/{id}/products/{id}/":
           result = "{\"OrganizationProduct\":";
           squareBracketIndex = "{\"OrganizationProducts\":{\"OrganizationProduct\":".Length;
+          objectIDLabel = "OrganizationProductID";
           break;
         case "/zapier/customers/{id}/phonenumbers/":
         case "/zapier/customers/{id}/contacts/{id}/phonenumbers/":
@@ -527,21 +539,25 @@ namespace TeamSupport.Api
         case "/contacts/{id}/phonenumbers/":
           result = "{\"PhoneNumber\":";
           squareBracketIndex = "{\"PhoneNumbers\":{\"PhoneNumber\":".Length;
+          objectIDLabel = "PhoneID";
           break;
         case "/zapier/properties/phonetypes/":
         case "/properties/phonetypes/":
           result = "{\"PhoneType\":";
           squareBracketIndex = "{\"PhoneTypes\":{\"PhoneType\":".Length;
+          objectIDLabel = "PhoneTypeID";
           break;
         case "/zapier/products/":
         case "/products/":
           result = "{\"Product\":";
           squareBracketIndex = "{\"Products\":{\"Product\":".Length;
+          objectIDLabel = "ProductID";
           break;
         case "/zapier/properties/productversionstatuses/":
         case "/properties/productversionstatuses/":
           result = "{\"ProductVersionStatus\":";
           squareBracketIndex = "{\"ProductVersionStatuses\":{\"ProductVersionStatus\":".Length;
+          objectIDLabel = "ProductVersionStatusID";
           break;
         case "/zapier/tickets/":
         case "/zapier/customers/{id}/tickets/":
@@ -551,26 +567,31 @@ namespace TeamSupport.Api
         case "/contacts/{id}/tickets/":
           result = "{\"Ticket\":";
           squareBracketIndex = "{\"Tickets\":{\"Ticket\":".Length;
+          objectIDLabel = "TicketID";
           break;
         case "/zapier/properties/ticketseverities/":
         case "/properties/ticketseverities/":
           result = "{\"TicketSeverity\":";
           squareBracketIndex = "{\"TicketSeverities\":{\"TicketSeverity\":".Length;
+          objectIDLabel = "TicketSeverityID";
           break;
         case "/zapier/properties/ticketstatuses/":
         case "/properties/ticketstatuses/":
           result = "{\"TicketStatus\":";
           squareBracketIndex = "{\"TicketStatuses\":{\"TicketStatus\":".Length;
+          objectIDLabel = "TicketStatusID";
           break;
         case "/zapier/properties/tickettypes/":
         case "/properties/tickettypes/":
           result = "{\"TicketType\":";
           squareBracketIndex = "{\"TicketTypes\":{\"TicketType\":".Length;
+          objectIDLabel = "TicketTypeID";
           break;
         case "/zapier/users/":
         case "/users/":
           result = "{\"User\":";
           squareBracketIndex = "{\"Users\":{\"User\":".Length;
+          objectIDLabel = "UserID";
           break;
         case "/zapier/customers/{id}/products/{id}/versions/":
         case "/zapier/products/{id}/versions/":
@@ -578,11 +599,13 @@ namespace TeamSupport.Api
         case "/products/{id}/versions/":
           result = "{\"Version\":";
           squareBracketIndex = "{\"Versions\":{\"Version\":".Length;
+          objectIDLabel = "ProductVersionID";
           break;
         case "/zapier/wiki/":
         case "/wiki/":
           result = "{\"Article\":";
           squareBracketIndex = "{\"Wiki\":{\"Article\":".Length;
+          objectIDLabel = "ArticleID";
           break;
       }
       return result; 
