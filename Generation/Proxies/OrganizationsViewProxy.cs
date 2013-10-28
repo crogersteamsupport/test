@@ -43,6 +43,7 @@ namespace TeamSupport.Data
     [DataMember] public int SupportHoursMonth { get; set; }
     [DataMember] public int? SupportHoursUsed { get; set; }
     [DataMember] public int? SupportHoursRemaining { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
           
   }
   
@@ -51,6 +52,7 @@ namespace TeamSupport.Data
     public OrganizationsViewItemProxy GetProxy()
     {
       OrganizationsViewItemProxy result = new OrganizationsViewItemProxy();
+      result.NeedsIndexing = this.NeedsIndexing;
       result.SupportHoursRemaining = this.SupportHoursRemaining;
       result.SupportHoursUsed = this.SupportHoursUsed;
       result.SupportHoursMonth = this.SupportHoursMonth;

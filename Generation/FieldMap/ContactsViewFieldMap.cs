@@ -43,6 +43,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("OrganizationParentID", "OrganizationParentID", false, false, false);
       _fieldMap.AddMap("CryptedPassword", "CryptedPassword", false, false, false);
       _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
             
     }
   }

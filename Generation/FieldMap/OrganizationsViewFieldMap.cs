@@ -43,6 +43,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SupportHoursMonth", "SupportHoursMonth", false, false, false);
       _fieldMap.AddMap("SupportHoursUsed", "SupportHoursUsed", false, false, false);
       _fieldMap.AddMap("SupportHoursRemaining", "SupportHoursRemaining", false, false, false);
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
             
     }
   }
