@@ -29,3 +29,4 @@ div.admin-auto-trigger { padding-bottom: 150px; height: 100%;}
 .admin-auto-save { text-align:center; padding: 0 auto;}
 .admin-auto-save .ui-button { padding: .25em .25em; margin-top: 1.5em;  }
 #lastModifiedLabel {margin-top: 10px; font-style: oblique; color: Gray;}
+.inactive {color: #B8B8B8 !important;}

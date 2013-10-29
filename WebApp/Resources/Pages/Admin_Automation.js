@@ -336,6 +336,7 @@ AdminAuto = function () {
     var item = $('<li>')
             .addClass('trigger-' + trigger.TriggerID)
             .text(trigger.Name)
+            .addClass((trigger.Active) ? '' : 'inactive')
             .disableSelection()
             .hover(function () { $(this).addClass('ui-state-hover'); }, function () { $(this).parent().find('.ui-state-hover').removeClass('ui-state-hover'); })
             .click(function () {
@@ -383,7 +384,8 @@ AdminAuto = function () {
 
       hideNoTrigger();
       $('.ts-loading').hide();
-
+      $('.trigger-' + _triggerID).addClass((result.Trigger.Active) ? '' : 'inactive');
+      $('.trigger-' + _triggerID).removeClass((result.Trigger.Active) ? 'inactive' : '');
     });
   }
 
