@@ -64,6 +64,21 @@ namespace TeamSupport.Data
       }
     }
 
+    public static string GetKnowledgeBaseCategoryDisplayString(LoginUser loginUser, int categoryID)
+    {
+      KnowledgeBaseCategories knowledgeBaseCategories = new KnowledgeBaseCategories(loginUser);
+      KnowledgeBaseCategories knowledgeBaseParentCategory = new KnowledgeBaseCategories(loginUser);
+
+      knowledgeBaseCategories.LoadByCategoryID(categoryID);
+      if (knowledgeBaseCategories.IsEmpty)
+        return null;
+      else
+      {
+        knowledgeBaseParentCategory.LoadByCategoryID(knowledgeBaseCategories[0].ParentID);
+        return knowledgeBaseParentCategory[0].CategoryName + " -> " + knowledgeBaseCategories[0].CategoryName;
+      }
+
+    }
   }
   
 }

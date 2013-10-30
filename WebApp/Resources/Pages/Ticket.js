@@ -917,7 +917,7 @@ $(document).ready(function () {
 
               for (var j = 0; j < categories[i].Subcategories.length; j++) {
                   var sub = categories[i].Subcategories[j];
-                  var optionSub = $('<option>').text(cat.CategoryName + ' -> ' + sub.CategoryName).appendTo(select).data('o', sub);
+                  var optionSub = $('<option>').text(cat.CategoryName + ' -> ' + sub.CategoryName).appendTo(select).data('o', sub).data('c', cat.CategoryName + ' -> ' + sub.CategoryName);
                   if ($(this).text() === sub.CategoryName) { option.attr('selected', 'selected'); }
               }
           }
@@ -926,9 +926,10 @@ $(document).ready(function () {
               selected: function (e, ui) {
                   parent.show().find('img').show();
                   var category = $(ui.item).data('o');
+                  var categoryString = $(ui.item).data('c');
                   top.Ts.System.logAction('Ticket - KnowledgeBase Community Changed');
                   top.Ts.Services.Tickets.SetTicketKnowledgeBaseCategory(_ticketID, category == null ? null : category.CategoryID, function (result) {
-                      $('#knowledgeBaseCategoryAnchor').text(result == null ? 'Unassigned' : result.CategoryName);
+                      $('#knowledgeBaseCategoryAnchor').text(result == null ? 'Unassigned' : categoryString);
                       parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
                       window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changekbcat", userFullName);
                   },
@@ -2806,7 +2807,7 @@ var loadTicket = function (ticketNumber, refresh) {
 
     $('#isTicketKB').text((info.Ticket.IsKnowledgeBase == true ? 'Yes' : 'No'));
 
-    $('#knowledgeBaseCategoryAnchor').text((info.Ticket.KnowledgeBaseCategoryName == null ? 'Unassigned' : info.Ticket.KnowledgeBaseCategoryName));
+    $('#knowledgeBaseCategoryAnchor').text((info.Ticket.KnowledgeBaseCategoryName == null ? 'Unassigned' : info.Ticket.KnowledgeBaseCategoryDisplayString));
     if (info.Ticket.IsKnowledgeBase === false) {
       $('#knowledgeBaseCategoryDiv').hide();
     }

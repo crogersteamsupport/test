@@ -1833,6 +1833,8 @@ namespace TSWebServices
 
       if (info.Ticket.CategoryName != null)
         info.Ticket.CategoryDisplayString = ForumCategories.GetCategoryDisplayString(TSAuthentication.GetLoginUser(), (int)info.Ticket.ForumCategory);
+      if (info.Ticket.KnowledgeBaseCategoryName != null)
+        info.Ticket.KnowledgeBaseCategoryDisplayString = KnowledgeBaseCategories.GetKnowledgeBaseCategoryDisplayString(TSAuthentication.GetLoginUser(), (int)info.Ticket.KnowledgeBaseCategoryID);
       info.Customers = GetTicketCustomers(ticket.TicketID);
       info.Related = GetRelatedTickets(ticket.TicketID);
       info.Tags = GetTicketTags(ticket.TicketID);

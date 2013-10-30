@@ -70,6 +70,7 @@ namespace TeamSupport.Data
     [DataMember] public string CategoryName { get; set; }
     [DataMember] public int? KnowledgeBaseCategoryID { get; set; }
     [DataMember] public string KnowledgeBaseCategoryName { get; set; }
+    [DataMember] public string KnowledgeBaseCategoryDisplayString { get; set; }
     [DataMember] public string CategoryDisplayString { get; set; }
     [DataMember] public string SalesForceID { get; set; }          
     [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
