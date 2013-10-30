@@ -1536,23 +1536,24 @@ Namespace TeamSupport
                         End If
                         Log.Write(message.ToString())
                       End If
-                    Case "closeddate"
-                      'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
-                      If ticket.DateClosedUtc IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                        result.Add(GetNewXmlElement(field.name, CType(ticket.DateClosedUtc, DateTime).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")))
-                      Else
-                        Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                        If ticket.DateClosed Is Nothing Then
-                          message.Append("it was null")
-                        End If
-                        If ticket.DateClosed Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append(" and ")
-                        End If
-                        If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append("the field is not updatable.")
-                        End If
-                        Log.Write(message.ToString())
-                      End If
+                    'See ticket 13807. Createdate was not passed as is not createable or updateable. Because SalesForce denies creating a case with a closedate greater than createdate i'm taking it out.
+                    'Case "closeddate"
+                    '  'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                    '  If ticket.DateClosedUtc IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                    '    result.Add(GetNewXmlElement(field.name, CType(ticket.DateClosedUtc, DateTime).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")))
+                    '  Else
+                    '    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                    '    If ticket.DateClosed Is Nothing Then
+                    '      message.Append("it was null")
+                    '    End If
+                    '    If ticket.DateClosed Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                    '      message.Append(" and ")
+                    '    End If
+                    '    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                    '      message.Append("the field is not updatable.")
+                    '    End If
+                    '    Log.Write(message.ToString())
+                    '  End If
                     Case "ownerid"
                       'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
                       If ticket.UserID IsNot Nothing Then
