@@ -61,7 +61,7 @@ Namespace TeamSupport
                 Dim ParentOrgID As String = CRMLinkRow.OrganizationID
                 Dim TagsToMatch As String = CRMLinkRow.TypeFieldMatch
 
-                Log.Write("Attempting to log in")
+                Log.Write("(Trunk Rev. 1151) Attempting to log in")
 
                 Dim LoginReturn As String = login(Trim(CompanyName), Trim(Password), Trim(SecurityToken))
 
@@ -1786,7 +1786,7 @@ Namespace TeamSupport
                     hasParentID = True
                   Case "commentbody"
                     If action.Description IsNot Nothing AndAlso ((isNewCaseComment AndAlso field.createable) OrElse field.updateable)  Then
-                      result.Add(GetNewXmlElement(field.name, HtmlUtility.StripHTML(action.Description)))
+                      result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(action.Description))))
                     Else
                       Dim message As StringBuilder = New StringBuilder("TicketID " + action.ActionID.ToString() + "'s field '" + field.name + "' was not included because ")
                       If action.Description Is Nothing Then
@@ -1850,6 +1850,14 @@ Namespace TeamSupport
               Next 
 
               Return result.ToArray()
+            End Function
+
+            Private Function TruncateCaseCommentBody(ByVal input As String) As String
+              If input IsNot Nothing AndAlso input.Length > 4000 Then
+                Return input.Substring(0, 3850) + "... (This comment has been truncated because it exceeds SalesForce max length of 4000 characters. The full comment is available in TeamSupport.)"
+              Else
+                Return input
+              End If
             End Function
 
             Private Sub PullCasesAsTickets(ByVal casesToPullAsTickets As List(Of QueryResult), ByVal ticketsToPushAsCases As TicketsView)
