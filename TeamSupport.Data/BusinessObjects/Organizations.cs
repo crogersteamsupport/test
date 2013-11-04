@@ -1970,12 +1970,17 @@ ORDER BY o.Name";
       command.CommandText = "UPDATE Users SET IsPortalUser = @Value WHERE OrganizationID IN (SELECT OrganizationID FROM Organizations WHERE ParentID=@OrganizationID)";
       command.Parameters.AddWithValue("OrganizationID", organizationID);
       command.Parameters.AddWithValue("Value", value ? 1 : 0);
-
+      SqlExecutor.ExecuteNonQuery(loginUser, command);
+      
+      command = new SqlCommand();
+      command.CommandText = "UPDATE Organizations SET HasPortalAccess = @Value WHERE ParentID = @OrganizationID";
+      command.Parameters.AddWithValue("OrganizationID", organizationID);
+      command.Parameters.AddWithValue("Value", value ? 1 : 0);
       SqlExecutor.ExecuteNonQuery(loginUser, command);
 
-      Organization organization = Organizations.GetOrganization(loginUser, organizationID);
-      organization.HasPortalAccess = value;
-      organization.Collection.Save();
+      //Organization organization = Organizations.GetOrganization(loginUser, organizationID);
+      //organization.HasPortalAccess = value;
+      //organization.Collection.Save();
     }
 
     public Organization FindByImportID(string importID)
