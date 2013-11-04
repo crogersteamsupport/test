@@ -1964,6 +1964,20 @@ ORDER BY o.Name";
       }
     }
 
+    public static void SetAllPortalUsers(LoginUser loginUser, int organizationID, bool value)
+    {
+      SqlCommand command = new SqlCommand();
+      command.CommandText = "UPDATE Users SET IsPortalUser = @Value WHERE OrganizationID IN (SELECT OrganizationID FROM Organizations WHERE ParentID=@OrganizationID)";
+      command.Parameters.AddWithValue("OrganizationID", organizationID);
+      command.Parameters.AddWithValue("Value", value ? 1 : 0);
+
+      SqlExecutor.ExecuteNonQuery(loginUser, command);
+
+      Organization organization = Organizations.GetOrganization(loginUser, organizationID);
+      organization.HasPortalAccess = value;
+      organization.Collection.Save();
+    }
+
     public Organization FindByImportID(string importID)
     {
       importID = importID.ToLower().Trim();

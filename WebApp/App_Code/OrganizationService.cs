@@ -277,6 +277,7 @@ namespace TSWebServices
       users.Save();
     }
 
+
     [WebMethod]
     public void ResetCrmLastLink(int crmLinkID)
     {
@@ -453,6 +454,14 @@ namespace TSWebServices
     {
       return AdminGetCustomers(1, name);
     }
+
+    [WebMethod]
+    public void AdminSetAllPortalUsers(int organizationID, bool value)
+    {
+      if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+      Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, value);
+    }
+
 
     [WebMethod]
     public void AdminQueryOrganizations(int parentID, string query)
