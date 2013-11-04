@@ -58,6 +58,7 @@ $(document).ready(function () {
     tabs.add(true, 'tickettab', 'subscribed', 'Subscribed', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
     delete filter.IsSubscribed;
     filter.IsFlagged = true;
+    delete filter.IsClosed;
     tabs.add(true, 'tickettab', 'flagged', 'Flagged', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
     delete filter.IsFlagged;
     filter.UserID = userID;
