@@ -176,6 +176,7 @@
 
       $('.action-portal').click(function (e) {
         e.preventDefault();
+        if (!confirm("Are you sure you would like to turn all the contacts into portal users?")) return;
         var org = $('.org-info').data('o');
         top.Ts.Services.Organizations.AdminSetAllPortalUsers(org.OrganizationID, true, function () {
           alert("All portal users are now enabled.");
