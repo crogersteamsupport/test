@@ -1,7 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="SignUp.aspx.cs" Inherits="SignUp"
-  EnableViewState="false" Title="TeamSupport - Sign Up" %>
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -23,28 +20,18 @@
     .callout blockquote { border-color: #bce8f1; }
     .container { margin-top: 10px; }
     .form-groupx label { display: none; }
-    .errors { display: none; }
+    .errors { display:none;}
   </style>
 
   <script type="text/javascript">
     var _resultID = -1;
     function getID() { return 34; } // _resultID; }
     function getURLParameter(name) { return decodeURIComponent((RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1]); }
-    
+
     $(document).ready(function () {
       var _userID = -1;
-      var submitting = false;
-      var isCompact = getURLParameter('compact');
-      var noLabels = getURLParameter('nolabels');
-      //signup.aspx?compact=1&nolabels=1
-      if (isCompact && isCompact == 1) {
-        $('.main-column').removeClass('col-xs-8').addClass('col-xs-12');
-        $('.right-column').remove();
-      }
 
-      if (noLabels && noLabels == 1) {
-        $('.form-group label').hide();
-      }
+      var submitting = false;
 
       $('#submit').click(function (e) {
         e.preventDefault();
@@ -72,36 +59,42 @@
         if (flag == false) {
           $('.errors').hide();
 
-          PageMethods.IsCompanyValid($('#company').val(), function (result) {
-            if (result == false) {
-              $('#company').closest('.form-group').addClass('has-error');
-              $('<li>').text('The company name already exists.  Please choose another name.').appendTo('.errors ul');
-              $('.errors').show();
-            }
-            else {
-              //public static bool SignMeUp(string firstName, string lastName, string email, string company, string phone, int version, string password, string promo, string interest, string seats, string process)
-              submitting = true;
-              $('#submit').hide();
+          /* PageMethods.IsCompanyValid($('#textCompany').val(), function (result) {
+          if (result == false) {
+          $('#textCompany').parent().next().find('.error.invalid').show();
+          }
+          else {
+          //public static bool SignMeUp(string firstName, string lastName, string email, string company, string phone, int version, string password, string promo, string interest, string seats, string process)
+          submitting = true;
+          $('#btnSubmit').hide();
 
-              PageMethods.SignMeUp(
-                $('#name').val(),
-                $('#email').val(),
-                $('#company').val(),
-                $('#phone').val(),
-                $('#product').val(),
-                $('#password').val(),
-                $('#promo').val(),
-                function (result) {
-                  if (result > 0) {
-                    window.top.location = 'http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=' + result;
-                  }
-                  else {
-                    submitting = false;
-                    $('#submit').show();
-                  }
-                });
-            }
+          PageMethods.SignMeUp(
+          $('#textFirstName').val(),
+          $('#textLastName').val(),
+          $('#textEmail').val(),
+          $('#textCompany').val(),
+          $('#textPhone').val(),
+          $('#selVersion').val(),
+          $('#textPassord').val(),
+          $('#textPromo').val(),
+          $('#selInterest').val(),
+          $('#selSeats').val(),
+          $('#selEval').val(),
+          function (result) {
+          if (result > 0) {
+          // window.location = 'SignUpThanks.html?userid=' + result;
+          window.top.location = 'http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=' + result;
+          }
+          else {
+          submitting = false;
+          $('#btnSubmit').show();
+
+          }
+
           });
+          }
+          });
+          */
         }
         else {
           $('.errors').show();
@@ -110,13 +103,8 @@
       });
     });
   </script>
-
 </head>
 <body>
-  <form id="form1" runat="server">
-  <asp:ScriptManager ID="ScriptManager" runat="server" EnablePageMethods="true">
-  </asp:ScriptManager>
-  </form>
   <div class="container">
     <div class="row">
       <div class="col-xs-8 main-column">
@@ -149,9 +137,9 @@
           <label for="product" class="col-sm-2 control-label">Product</label>
           <div class="col-sm-10">
             <select id="product" class="form-control">
-              <option value="2" selected="selected">Enterprise</option>
-              <option value="1">Support Desk</option>
-              <option value="0">Express</option>
+              <option>Enterprise</option>
+              <option>Support Desk</option>
+              <option>Express</option>
             </select>
           </div>
         </div>
@@ -168,7 +156,10 @@
           </div>
         </div>
         <div class="errors alert alert-danger">
-          <ul></ul>
+          <ul>
+            
+          </ul>
+        
         </div>
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
@@ -32,16 +32,21 @@ public partial class SignUp : System.Web.UI.Page
   }
 
   [WebMethod]
-  public static int SignMeUp(string firstName, string lastName, string email, string company, string phone, int version, string password, string promo, string interest, string seats, string process)
+  public static int SignMeUp(string name, string email, string company, string phone, int version, string password, string promo)
   {
 
     if (!IsCompanyValid(company))
     {
       return -1;
     }
+    
+    
 
+    string[] names = name.Split(' ');
+    string fname = names[0];
+    string lname = string.Join(" ", names.Skip(1).ToArray());
 
-    User user = Organizations.SetupNewAccount(firstName, lastName, email, company, phone, (ProductType)version, password, promo, interest, seats, process);
+    User user = Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, password, promo, "", "", "");
     return user.UserID;
   }
 
