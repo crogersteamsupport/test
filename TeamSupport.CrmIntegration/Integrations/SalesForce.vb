@@ -878,7 +878,12 @@ Namespace TeamSupport
                                     accountID = record.Id
 
                                 ElseIf objType = "Contact" Then
+                                  Try
                                     accountID = Array.Find(record.Any, Function(x As Xml.XmlElement) x.LocalName = "Account")("sf:Id").InnerText
+                                  Catch ex As Exception
+                                    Log.Write(ex.Message)
+                                    Continue For
+                                  End Try
 
                                 Else
                                     Return
