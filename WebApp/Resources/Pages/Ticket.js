@@ -2025,165 +2025,166 @@ var appendReminder = function (reminder) {
 
 //tinymce editor
 var initEditor = function (element, init) {
-    top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
-        var editorOptions = {
-            theme: "advanced",
-            skin: "o2k7",
-            plugins: "imagemanager,autoresize,paste,table,inlinepopups,table",
-            theme_advanced_buttons1: "insertPasteImage,insertKb,insertTicket,insertimage,insertDropBox,recordScreen,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
-            theme_advanced_buttons2: "justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,fontselect,fontsizeselect,bold,italic,underline,strikethrough,blockquote",
-            //theme_advanced_buttons3: "tablecontrols",
-            theme_advanced_buttons3: "",
-            theme_advanced_buttons4: "",
-            theme_advanced_toolbar_location: "top",
-            theme_advanced_toolbar_align: "left",
-            theme_advanced_statusbar_location: "none",
-            theme_advanced_resizing: true,
-            autoresize_bottom_margin: 10,
-            autoresize_on_init: true,
-            force_br_newlines: true,
-            force_p_newlines: false,
-            forced_root_block: '',
-            spellchecker_rpc_url: "../../../TinyMCEHandler.aspx?module=SpellChecker",
-            gecko_spellcheck: true,
-            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
-            convert_urls: true,
-            remove_script_host: false,
-            relative_urls: false,
-            content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
-            body_class: "ui-widget ui-widget-content",
+  top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+    var editorOptions = {
+      theme: "advanced",
+      skin: "o2k7",
+      plugins: "imagemanager,autoresize,paste,table,inlinepopups,table",
+      theme_advanced_buttons1: "insertPasteImage,insertKb,insertTicket,insertimage,insertDropBox,recordScreen,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
+      theme_advanced_buttons2: "justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,fontselect,fontsizeselect,bold,italic,underline,strikethrough,blockquote",
+      //theme_advanced_buttons3: "tablecontrols",
+      theme_advanced_buttons3: "",
+      theme_advanced_buttons4: "",
+      theme_advanced_toolbar_location: "top",
+      theme_advanced_toolbar_align: "left",
+      theme_advanced_statusbar_location: "none",
+      theme_advanced_resizing: true,
+      autoresize_bottom_margin: 10,
+      autoresize_on_init: true,
+      force_br_newlines: true,
+      force_p_newlines: false,
+      forced_root_block: '',
+      spellchecker_rpc_url: "../../../TinyMCEHandler.aspx?module=SpellChecker",
+      gecko_spellcheck: true,
+      extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
+      convert_urls: true,
+      remove_script_host: false,
+      relative_urls: false,
+      content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
+      body_class: "ui-widget ui-widget-content",
 
-            template_external_list_url: "tinymce/jscripts/template_list.js",
-            external_link_list_url: "tinymce/jscripts/link_list.js",
-            external_image_list_url: "tinymce/jscripts/image_list.js",
-            media_external_list_url: "tinymce/jscripts/media_list.js",
-            setup: function (ed) {
-                ed.onPaste.add(function (ed, e) {
-                    setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
-                });
+      template_external_list_url: "tinymce/jscripts/template_list.js",
+      external_link_list_url: "tinymce/jscripts/link_list.js",
+      external_image_list_url: "tinymce/jscripts/image_list.js",
+      media_external_list_url: "tinymce/jscripts/media_list.js",
+      setup: function (ed) {
+        ed.onPaste.add(function (ed, e) {
+          setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+        });
 
-                ed.addButton('insertTicket', {
-                    title: 'Insert Ticket',
-                    image: '../images/nav/16/tickets.png',
-                    onclick: function () {
-                        top.Ts.System.logAction('Ticket - Ticket Inserted');
+        ed.addButton('insertTicket', {
+          title: 'Insert Ticket',
+          image: '../images/nav/16/tickets.png',
+          onclick: function () {
+            top.Ts.System.logAction('Ticket - Ticket Inserted');
 
-                        top.Ts.MainPage.selectTicket(null, function (ticketID) {
-                            top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
-                                ed.focus();
+            top.Ts.MainPage.selectTicket(null, function (ticketID) {
+              top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
+                ed.focus();
 
-                                var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
-                                ed.selection.setContent(html);
-                                ed.execCommand('mceAutoResize');
-                                ed.focus();
-                            }, function () {
-                                alert('There was a problem inserting the ticket link.');
-                            });
-                        });
-                    }
-                });
+                var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
+                ed.selection.setContent(html);
+                ed.execCommand('mceAutoResize');
+                ed.focus();
+              }, function () {
+                alert('There was a problem inserting the ticket link.');
+              });
+            });
+          }
+        });
 
-                ed.addButton('insertPasteImage', {
-                    title: 'Insert Pasted Image',
-                    image: '../images/nav/16/imagepaste.png',
-                    onclick: function () {
-                        if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
-                            alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
-                        }
-                        else {
-                            top.Ts.MainPage.pasteImage(null, function (result) {
-                                ed.focus();
-                                if (result != "") {
-                                    var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
-                                    ed.selection.setContent(html);
-                                    setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
-                                    ed.execCommand('mceAutoResize');
-                                    ed.focus();
-                                }
-                            });
-                        }
-                    }
-                });
-
-                ed.addButton('insertDropBox', {
-                    title: 'Insert DropBox',
-                    image: '../images/icons/dropbox.png',
-                    onclick: function () {
-                        var options = {
-                            linkType: "preview",
-                            success: function (files) {
-                                ed.focus();
-                                var html = '<a href=' + files[0].link + '>' + files[0].name + '</a>';
-                                ed.selection.setContent(html);
-                                ed.execCommand('mceAutoResize');
-                                ed.focus();
-                                top.Ts.System.logAction('Ticket - Dropbox Added');
-                            },
-                            cancel: function () {
-                                alert('There was a problem inserting the dropbox file.');
-                            }
-                        };
-                        Dropbox.choose(options);
-                    }
-                });
-
-                ed.addButton('insertKb', {
-                    title: 'Insert Knowledgebase',
-                    image: '../images/nav/16/knowledge.png',
-                    onclick: function () {
-                        filter = new top.TeamSupport.Data.TicketLoadFilter();
-                        filter.IsKnowledgeBase = true;
-                        top.Ts.MainPage.selectTicket(filter, function (ticketID) {
-                            top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
-                                if (result === null) {
-                                    alert('There was an error inserting your knowledgebase ticket.');
-                                    return;
-                                }
-                                var ticket = result[0];
-                                var actions = result[1];
-
-                                var html = '<div>';
-
-                                for (var i = 0; i < actions.length; i++) {
-                                    html = html + '<div>' + actions[i].Description + '</div></br>';
-                                }
-                                html = html + '</div>';
-
-                                ed.focus();
-                                ed.selection.setContent(html);
-                                ed.execCommand('mceAutoResize');
-                                ed.focus();
-                                top.Ts.System.logAction('Ticket - KB Inserted');
-                                //needs to resize or go to end
-
-                            }, function () {
-                                alert('There was an error inserting your knowledgebase ticket.');
-                            });
-                        });
-                    }
-                });
-
-                if (enableScreenR.toLowerCase() != 'false') {
-                    ed.addButton('recordScreen', {
-                        title: 'Record Screen',
-                        image: '../images/icons/Symbol_Record.png',
-                        onclick: function () {
-                            top.Ts.MainPage.recordScreen(null, function (result) {
-                                var link = '<a href="' + result.url + '" target="_blank">Click here to view screen recording video</a>';
-                                var html = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/' + result.id + '" width="650" height="400" frameborder="0">' + link + '</iframe>&nbsp;</div>'
-                                ed.selection.setContent(html);
-                                ed.execCommand('mceAutoResize');
-                                ed.focus();
-                                top.Ts.System.logAction('Ticket - Screen Recorded');
-                            });
-                        }
-                    });
-                }
+        ed.addButton('insertPasteImage', {
+          title: 'Insert Pasted Image',
+          image: '../images/nav/16/imagepaste.png',
+          onclick: function () {
+            if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
+              alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
             }
+            else {
+              top.Ts.MainPage.pasteImage(null, function (result) {
+                ed.focus();
+                if (result != "") {
+                  var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                  ed.selection.setContent(html);
+                  setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+                  ed.execCommand('mceAutoResize');
+                  ed.focus();
+                }
+              });
+            }
+          }
+        });
+
+        ed.addButton('insertDropBox', {
+          title: 'Insert DropBox',
+          image: '../images/icons/dropbox.png',
+          onclick: function () {
+            var options = {
+              linkType: "preview",
+              success: function (files) {
+                ed.focus();
+                var html = '<a href=' + files[0].link + '>' + files[0].name + '</a>';
+                ed.selection.setContent(html);
+                ed.execCommand('mceAutoResize');
+                ed.focus();
+                top.Ts.System.logAction('Ticket - Dropbox Added');
+              },
+              cancel: function () {
+                alert('There was a problem inserting the dropbox file.');
+              }
+            };
+            Dropbox.choose(options);
+          }
+        });
+
+        ed.addButton('insertKb', {
+          title: 'Insert Knowledgebase',
+          image: '../images/nav/16/knowledge.png',
+          onclick: function () {
+            filter = new top.TeamSupport.Data.TicketLoadFilter();
+            filter.IsKnowledgeBase = true;
+            top.Ts.MainPage.selectTicket(filter, function (ticketID) {
+              top.Ts.Services.Tickets.GetKBTicketAndActions(ticketID, function (result) {
+                if (result === null) {
+                  alert('There was an error inserting your knowledgebase ticket.');
+                  return;
+                }
+                var ticket = result[0];
+                var actions = result[1];
+
+                var html = '<div>';
+
+                for (var i = 0; i < actions.length; i++) {
+                  html = html + '<div>' + actions[i].Description + '</div></br>';
+                }
+                html = html + '</div>';
+
+                ed.focus();
+                ed.selection.setContent(html);
+                ed.execCommand('mceAutoResize');
+                ed.focus();
+                top.Ts.System.logAction('Ticket - KB Inserted');
+                //needs to resize or go to end
+
+              }, function () {
+                alert('There was an error inserting your knowledgebase ticket.');
+              });
+            });
+          }
+        });
+
+        if (enableScreenR.toLowerCase() != 'false') {
+          ed.addButton('recordScreen', {
+            title: 'Record Screen',
+            image: '../images/icons/Symbol_Record.png',
+            onclick: function () {
+              //var x = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/e75084e0156749969d4c82ed05e35a9c" frameborder="0" width="650" height="400"><a href="http://google.com" target="_blank">Click here to view screen recording video</a></iframe>&nbsp;</div>';
+              top.Ts.MainPage.recordScreen(null, function (result) {
+              var link = '<a href="' + result.url + '" target="_blank">Click here to view screen recording video</a>';
+              var html = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/' + result.id + '" width="650" height="400" frameborder="0">' + link + '</iframe>&nbsp;</div>'
+              ed.selection.setContent(html);
+              ed.execCommand('mceAutoResize');
+              ed.focus();
+              top.Ts.System.logAction('Ticket - Screen Recorded');
+              });
+            }
+          });
+        }
+      }
         , oninit: init
-        };
-        $(element).tinymce(editorOptions);
-    });
+    };
+    $(element).tinymce(editorOptions);
+  });
 }
 
 //actions

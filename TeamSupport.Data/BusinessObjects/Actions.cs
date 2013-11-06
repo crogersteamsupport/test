@@ -87,8 +87,14 @@ namespace TeamSupport.Data
 
     partial void BeforeRowEdit(Action action)
     {
+      action.Description = HtmlUtility.FixScreenRFrame(action.Description);
       string description = "Modified action '" + action.Name + "' on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
+    }
+
+    partial void BeforeRowInsert(Action action)
+    {
+      action.Description = HtmlUtility.FixScreenRFrame(action.Description);
     }
 
     partial void AfterRowInsert(Action action)
