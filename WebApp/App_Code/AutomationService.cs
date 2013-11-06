@@ -220,7 +220,7 @@ namespace TSWebServices
     [WebMethod(true)]
     public TriggerData GetTrigger(int triggerID)
     {
-      TicketAutomationTrigger trigger = TicketAutomationTriggers.GetTicketAutomationTrigger(UserSession.LoginUser, triggerID);
+      TicketAutomationTriggersViewItem trigger = TicketAutomationTriggersView.GetTicketAutomationTriggersViewItem(UserSession.LoginUser, triggerID);
       if (trigger.OrganizationID != UserSession.LoginUser.OrganizationID) return null;
 
       TicketAutomationActions actions = new TicketAutomationActions(UserSession.LoginUser);
@@ -324,7 +324,7 @@ namespace TSWebServices
   public class TriggerData
   {
     [DataMember]
-    public TicketAutomationTriggerProxy Trigger { get; set; }
+    public TicketAutomationTriggersViewItemProxy Trigger { get; set; }
     [DataMember]
     public TicketAutomationActionProxy[] Actions { get; set; }
     [DataMember]

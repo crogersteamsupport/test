@@ -204,6 +204,7 @@
     <Compile Include="BusinessObjects\TicketAutomationPossibleActions.cs" />
     <Compile Include="BusinessObjects\TicketAutomationTriggerLogic.cs" />
     <Compile Include="BusinessObjects\TicketAutomationTriggers.cs" />
+    <Compile Include="BusinessObjects\TicketAutomationTriggersView.cs" />
     <Compile Include="BusinessObjects\TicketLinkToJira.cs" />
     <Compile Include="BusinessObjects\TicketRelationships.cs" />
     <Compile Include="BusinessObjects\TicketsView.cs" />
@@ -270,6 +271,7 @@
     <Compile Include="FieldMaps\TicketAutomationPossibleActionsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationTriggerLogicFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationTriggersFieldMap.cs" />
+    <Compile Include="FieldMaps\TicketAutomationTriggersViewFieldMap.cs" />
     <Compile Include="FieldMaps\TicketLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\TicketRelationshipsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketTemplatesFieldMap.cs" />
@@ -517,6 +519,7 @@
     <Compile Include="Generated\GeneratedTicketAutomationPossibleActions.cs" />
     <Compile Include="Generated\GeneratedTicketAutomationTriggerLogic.cs" />
     <Compile Include="Generated\GeneratedTicketAutomationTriggers.cs" />
+    <Compile Include="Generated\GeneratedTicketAutomationTriggersView.cs" />
     <Compile Include="Generated\GeneratedTicketGridView.cs" />
     <Compile Include="Generated\GeneratedTicketLinkToJira.cs" />
     <Compile Include="Generated\GeneratedTicketNextStatuses.cs" />
@@ -655,6 +658,7 @@
     <Compile Include="Proxies\TicketAutomationPossibleActionsProxy.cs" />
     <Compile Include="Proxies\TicketAutomationTriggerLogicProxy.cs" />
     <Compile Include="Proxies\TicketAutomationTriggersProxy.cs" />
+    <Compile Include="Proxies\TicketAutomationTriggersViewProxy.cs" />
     <Compile Include="Proxies\TicketGridViewProxy.cs" />
     <Compile Include="Proxies\TicketLinkToJiraProxy.cs" />
     <Compile Include="Proxies\TicketNextStatusesProxy.cs" />
