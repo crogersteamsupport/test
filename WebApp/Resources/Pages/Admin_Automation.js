@@ -336,7 +336,6 @@ AdminAuto = function () {
     var item = $('<li>')
             .addClass('trigger-' + trigger.TriggerID)
             .text(trigger.Name)
-            .addClass((trigger.Active) ? '' : 'inactive')
             .disableSelection()
             .hover(function () { $(this).addClass('ui-state-hover'); }, function () { $(this).parent().find('.ui-state-hover').removeClass('ui-state-hover'); })
             .click(function () {
@@ -351,8 +350,6 @@ AdminAuto = function () {
 
   function clearTrigger() {
     $('#textName').val('');
-    $('#executionsCountLabel').text('');
-    $('#lastModifiedLabel').text('');
     $('#cmbEnable').val(0);
     $('.conditions-any').html('');
     $('.conditions-all').html('');
@@ -369,8 +366,6 @@ AdminAuto = function () {
 
     top.Ts.Services.Automation.GetTrigger(_triggerID, function (result) {
       $('#textName').val(result.Trigger.Name);
-      $('#executionsCountLabel').text('Executions count: ' + result.Trigger.ExecutionsCount);
-      $('#lastModifiedLabel').text('Last modified on ' + result.Trigger.DateModified);
       $('#cmbEnabled').combobox("setValue", result.Trigger.Active === true ? "1" : "0");
 
       for (var i = 0; i < result.LogicItems.length; i++) {
@@ -386,8 +381,7 @@ AdminAuto = function () {
 
       hideNoTrigger();
       $('.ts-loading').hide();
-      $('.trigger-' + _triggerID).addClass((result.Trigger.Active) ? '' : 'inactive');
-      $('.trigger-' + _triggerID).removeClass((result.Trigger.Active) ? 'inactive' : '');
+
     });
   }
 
