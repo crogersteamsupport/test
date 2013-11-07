@@ -13,7 +13,35 @@ $(document).ready(function () {
   reportEditPage = new ReportEditPage();
   reportEditPage.refresh();
   $('.report-info').show();
-
+  $('.report-fields-hint-order').hide();
+  var availableTags = [
+      "ActionScript",
+      "AppleScript",
+      "Asp",
+      "BASIC",
+      "C",
+      "C++",
+      "Clojure",
+      "COBOL",
+      "ColdFusion",
+      "Erlang",
+      "Fortran",
+      "Groovy",
+      "Haskell",
+      "Java",
+      "JavaScript",
+      "Lisp",
+      "Perl",
+      "PHP",
+      "Python",
+      "Ruby",
+      "Scala",
+      "Scheme"
+    ];
+    $( "#auto" ).autocomplete({
+      source: availableTags
+    });
+  
   var _cats = null;
   var _fields = null;
   var _report = new Object();
@@ -182,6 +210,8 @@ $(document).ready(function () {
           .appendTo(list);
 
     list.sortable({ axis: 'y' }).disableSelection();
+    $('.report-fields-hint-add').hide();
+    $('.report-fields-hint-order').show();
   }
 
   function removeSelectedField(el) {
