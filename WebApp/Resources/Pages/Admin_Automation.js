@@ -369,7 +369,7 @@ AdminAuto = function () {
 
     top.Ts.Services.Automation.GetTrigger(_triggerID, function (result) {
       $('#textName').val(result.Trigger.Name);
-      $('#executionsCountLabel').html('This automation has modified ' + result.Trigger.ExecutionsCount + ' X tickets.');
+      $('#executionsCountLabel').html('This automation has modified ' + result.Trigger.ExecutionsCount + ' tickets.');
       $('#lastModifiedLabel').html('Last modified on ' + result.Trigger.DateModified);
       $('#cmbEnabled').combobox("setValue", result.Trigger.Active === true ? "1" : "0");
 
