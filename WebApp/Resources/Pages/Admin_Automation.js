@@ -351,7 +351,7 @@ AdminAuto = function () {
 
   function clearTrigger() {
     $('#textName').val('');
-    $('#executionsCountLabel').text('');
+    $('#executionsCountLabel').val('using val instead of text');
     $('#cmbEnable').val(0);
     $('.conditions-any').html('');
     $('.conditions-all').html('');
