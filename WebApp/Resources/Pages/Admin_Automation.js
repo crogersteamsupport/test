@@ -352,7 +352,6 @@ AdminAuto = function () {
   function clearTrigger() {
     $('#textName').val('');
     $('#executionsCountLabel').text('');
-    $('#lastModifiedLabel').text('');
     $('#cmbEnable').val(0);
     $('.conditions-any').html('');
     $('.conditions-all').html('');
@@ -369,8 +368,6 @@ AdminAuto = function () {
 
     top.Ts.Services.Automation.GetTrigger(_triggerID, function (result) {
       $('#textName').val(result.Trigger.Name);
-      $('#executionsCountLabel').text('Executions count: ' + result.Trigger.DateModified);
-      $('#lastModifiedLabel').text('Last modified on ' + result.Trigger.DateModified);
       $('#cmbEnabled').combobox("setValue", result.Trigger.Active === true ? "1" : "0");
 
       for (var i = 0; i < result.LogicItems.length; i++) {
