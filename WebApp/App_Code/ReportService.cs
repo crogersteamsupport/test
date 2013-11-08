@@ -127,35 +127,35 @@ namespace TSWebServices
       {
         LoginUser loginUser = TSAuthentication.GetLoginUser();
         List<ReportFieldItem> result = new List<ReportFieldItem>();
-
         TicketTypes ticketTypes = new TicketTypes(loginUser);
         ticketTypes.LoadAllPositions(loginUser.OrganizationID);
 
         ReportSubcategory subCat = reportSubCatID < 0 ? null : ReportSubcategories.GetReportSubcategory(loginUser, reportSubCatID);
 
+        ReportTable primaryTable = ReportTables.GetReportTable(loginUser, reportTableID);
+
         ReportTableFields reportTableFields = new ReportTableFields(loginUser);
         reportTableFields.LoadByReportTableID(reportTableID);
         foreach (ReportTableField reportTableField in reportTableFields)
 	      {
-          result.Add(new ReportFieldItem(true, reportTableField));
+          result.Add(new ReportFieldItem(primaryTable.Alias, true, reportTableField));
 	      }
 
-        ReportTable table = (ReportTable)ReportTables.GetReportTable(loginUser, reportTableID);
-        if (table.CustomFieldRefType != ReferenceType.None)
+        if (primaryTable.CustomFieldRefType != ReferenceType.None)
         {
           CustomFields customFields = new CustomFields(loginUser);
-          customFields.LoadByReferenceType(loginUser.OrganizationID, table.CustomFieldRefType);
+          customFields.LoadByReferenceType(loginUser.OrganizationID, primaryTable.CustomFieldRefType);
 
           foreach (CustomField customField in customFields)
           {
             if (customField.RefType == ReferenceType.Tickets || customField.RefType == ReferenceType.Actions)
             {
               TicketType ticketType = ticketTypes.FindByTicketTypeID(customField.AuxID);
-              if (ticketType != null) result.Add(new ReportFieldItem(true, customField, ticketType.Name));
+              if (ticketType != null) result.Add(new ReportFieldItem(primaryTable.Alias, true, customField, ticketType.Name));
             }
             else
             {
-              result.Add(new ReportFieldItem(true, customField, ""));
+              result.Add(new ReportFieldItem(primaryTable.Alias, true, customField, ""));
             }
 
           }
@@ -163,29 +163,30 @@ namespace TSWebServices
 
         if (subCat != null)
         {
+          ReportTable subTable = ReportTables.GetReportTable(loginUser, (int)subCat.ReportTableID);
           reportTableFields = new ReportTableFields(loginUser);
           reportTableFields.LoadByReportTableID((int)subCat.ReportTableID);
           foreach (ReportTableField reportTableField in reportTableFields)
           {
-            result.Add(new ReportFieldItem(false, reportTableField));
+            result.Add(new ReportFieldItem(subTable.Alias, false, reportTableField));
           }
 
-          table = (ReportTable)ReportTables.GetReportTable(loginUser, (int)subCat.ReportTableID);
-          if (table.CustomFieldRefType != ReferenceType.None)
+          
+          if (subTable.CustomFieldRefType != ReferenceType.None)
           {
             CustomFields customFields = new CustomFields(loginUser);
-            customFields.LoadByReferenceType(loginUser.OrganizationID, table.CustomFieldRefType);
+            customFields.LoadByReferenceType(loginUser.OrganizationID, subTable.CustomFieldRefType);
 
             foreach (CustomField customField in customFields)
             {
               if (customField.RefType == ReferenceType.Tickets || customField.RefType == ReferenceType.Actions)
               {
                 TicketType ticketType = ticketTypes.FindByTicketTypeID(customField.AuxID);
-                if (ticketType != null) result.Add(new ReportFieldItem(false, customField, ticketType.Name));
+                if (ticketType != null) result.Add(new ReportFieldItem(subTable.Alias, false, customField, ticketType.Name));
               }
               else
               {
-                result.Add(new ReportFieldItem(false, customField, ""));
+                result.Add(new ReportFieldItem(subTable.Alias, false, customField, ""));
               }
             }
           }
@@ -197,7 +198,7 @@ namespace TSWebServices
       public class ReportFieldItem
       {
         public ReportFieldItem() { }
-        public ReportFieldItem(bool isPrimary, ReportTableField field)
+        public ReportFieldItem(string table, bool isPrimary, ReportTableField field)
         {
           this.IsPrimary = IsPrimary;
           this.ID = field.ReportTableFieldID;
@@ -205,6 +206,7 @@ namespace TSWebServices
           this.Name = field.Alias;
           this.LookupTableID = field.LookupTableID;
           this.IsCustom = false;
+          this.Table = table;
 
           switch (field.DataType)
           {
@@ -216,7 +218,7 @@ namespace TSWebServices
 
         }
 
-        public ReportFieldItem(bool isPrimary, CustomField field, string AuxName)
+        public ReportFieldItem(string table, bool isPrimary, CustomField field, string AuxName)
         {
           this.IsPrimary = IsPrimary;
           this.ID = field.CustomFieldID;
@@ -224,6 +226,7 @@ namespace TSWebServices
           this.ListValues = string.IsNullOrWhiteSpace(field.ListValues) ? null : field.ListValues.Split('|');
           this.IsCustom = true;
           this.AuxName = AuxName;
+          this.Table = table;
           switch (field.FieldType)
           {
             case CustomFieldType.DateTime: this.DataType = "datetime"; break;
@@ -236,6 +239,7 @@ namespace TSWebServices
         
         [DataMember] public int ID { get; set; }
         [DataMember] public string Name { get; set; }
+        [DataMember] public string Table { get; set; }
         [DataMember] public string AuxName { get; set; }
         [DataMember] public string DataType { get; set; }
         [DataMember] public int? LookupTableID { get; set; }

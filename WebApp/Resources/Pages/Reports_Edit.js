@@ -13,38 +13,13 @@ $(document).ready(function () {
   reportEditPage = new ReportEditPage();
   reportEditPage.refresh();
   $('.report-info').show();
-  $('.report-fields-hint-order').hide();
-  var availableTags = [
-      "ActionScript",
-      "AppleScript",
-      "Asp",
-      "BASIC",
-      "C",
-      "C++",
-      "Clojure",
-      "COBOL",
-      "ColdFusion",
-      "Erlang",
-      "Fortran",
-      "Groovy",
-      "Haskell",
-      "Java",
-      "JavaScript",
-      "Lisp",
-      "Perl",
-      "PHP",
-      "Python",
-      "Ruby",
-      "Scala",
-      "Scheme"
-    ];
-    $( "#auto" ).autocomplete({
-      source: availableTags
-    });
-  
+
+
   var _cats = null;
   var _fields = null;
   var _report = new Object();
+  var _catID = -1;
+  var _subID = -1;
 
   $('.action-cancel').click(function (e) {
     e.preventDefault();
@@ -98,6 +73,8 @@ $(document).ready(function () {
       _report.Subcategory = $('#selectSubCat').val();
 
       $('.report-fields').show();
+      $('.action-next').addClass('disabled').prop('disabled', true);
+
       loadFields();
     }
     else if (visibleSection.hasClass('report-fields')) {
@@ -121,6 +98,7 @@ $(document).ready(function () {
     e.preventDefault();
     $('.action-save').hide();
     $('.action-next').show();
+    $('.action-next').removeClass('disabled').prop('disabled', false);
 
     var visibleSection = $('.report-section:visible');
     visibleSection.hide();
@@ -169,18 +147,42 @@ $(document).ready(function () {
   function loadFields() {
     var catID = $('#selectCat').val();
     var subID = $('#selectSubCat').val();
+
+    if ($('.report-fields-selected li').length < 1) {
+      $('.action-next').addClass('disabled').prop('disabled', true);
+      $('.report-fields-hint-order').hide();
+      $('.report-fields-hint-add').show();
+    }
+    else {
+      $('.action-next').removeClass('disabled').prop('disabled', false);
+      $('.report-fields-hint-order').show();
+      $('.report-fields-hint-add').hide();
+    }
+
+    if (_catID == catID && _subID == subID) return;
+    $('.report-fields-selected ul').empty();
+    $('.filter').empty();
+    _catID = catID;
+    _subID = subID;
+
     var list = $('.report-fields-available ul').empty();
     top.Ts.Services.Reports.GetFields(catID, subID, function (fields) {
       _fields = fields;
       $('.filter-template-cond .filter-field').empty();
+      var tableName = "";
+      var optGroup = null;
       for (var i = 0; i < fields.length; i++) {
         $('<li>')
           .addClass('report-field-id-' + fields[i].ID)
           .data('field', fields[i])
-          .append($('<div>', { class: 'checkbox' }).append($('<label>', { text: ' ' + fields[i].Name }).prepend('<input type="checkbox" />')))
+          .append($('<div>', { class: 'checkbox' }).append($('<label>', { html: ' <span class="text-muted">' + fields[i].Table + '.</span>' + fields[i].Name }).prepend('<input type="checkbox" />')))
           .appendTo(list);
+        if (tableName != fields[i].Table) {
+          tableName = fields[i].Table;
+          optGroup = $('<optgroup>').attr('label', tableName).appendTo('.filter-template-cond .filter-field');
+        }
 
-        $('<option>').text(fields[i].Name).data('field', fields[i]).appendTo('.filter-template-cond .filter-field');
+        $('<option>').text(fields[i].Name).data('field', fields[i]).appendTo(optGroup);
       }
     });
   }
@@ -205,17 +207,28 @@ $(document).ready(function () {
     $('<li>')
           .addClass('report-field-id-' + field.ID)
           .data('field', field)
-          .text(field.Name)
+          .html('<span class="text-muted">' + field.Table + '.</span>' + field.Name)
           .prepend($('<i class="icon-ellipsis-vertical">'))
           .appendTo(list);
 
     list.sortable({ axis: 'y' }).disableSelection();
     $('.report-fields-hint-add').hide();
     $('.report-fields-hint-order').show();
+    $('.action-next').removeClass('disabled').prop('disabled', false);
+
   }
 
   function removeSelectedField(el) {
-    $('.report-fields-selected .report-field-id-' + el.data('field').ID).fadeOut(function () { $(this).remove(); });
+    $('.report-fields-selected .report-field-id-' + el.data('field').ID).fadeOut(function () {
+      $(this).remove();
+      if ($('.report-fields-selected li').length < 1) {
+        $('.action-next').addClass('disabled').prop('disabled', true);
+        $('.report-fields-hint-order').hide();
+        $('.report-fields-hint-add').show();
+      }
+    });
+
+
   }
 
 
@@ -276,6 +289,12 @@ $(document).ready(function () {
       case 'number': $('.filter-template-comps .filter-comp-number').clone().insertAfter($(this)); break;
       default: $('.filter-template-comps .filter-comp-text').clone().insertAfter($(this)); break;
     }
+  });
+
+  $('.filter').on('change', '.filter-comp', function (e) {
+    e.preventDefault();
+    alert($(this).find(':selected').data('argtype-1'));
+
   });
 
   function initFilters() {
