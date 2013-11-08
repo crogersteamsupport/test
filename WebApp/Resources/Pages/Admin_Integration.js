@@ -488,7 +488,7 @@ AdminInt = function () {
 
     var matchAccountsByName = parent.find('.int-crm-match-accounts-by-name').prop('checked');
     if (typeof matchAccountsByName == 'undefined') {
-      matchAccountsByName = 1;
+      matchAccountsByName = true;
     }
 
     top.Ts.Services.Organizations.SaveCrmLink(
