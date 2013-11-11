@@ -24,6 +24,14 @@
     .container { margin-top: 10px; }
     .form-groupx label { display: none; }
     .errors { display: none; }
+    .col-xs-offset-4 { margin-left: 33.333333%;}
+    .form-group label { white-space: nowrap;}
+    .btn, .btn:hover, .btn:focus, .btn:active {
+    background-color: #B6311B;
+    border-color: #B6311B;
+    color: #FFFFFF;
+    }
+    body { color: #333333;}
   </style>
 
   <script type="text/javascript">
@@ -54,7 +62,7 @@
 
         $('input.required').each(function (index, el) {
           if ($.trim($(el).val()) == '') {
-            $(el).closest('.form-group').addClass('has-error');
+            $(el).closest('.form-group').addClass('has-warning');
             flag = true;
           }
         });
@@ -64,7 +72,7 @@
         var pw = $.trim($('#password').val());
 
         if (pw.length < 6) {
-          $('#password').closest('.form-group').addClass('has-error');
+          $('#password').closest('.form-group').addClass('has-warning');
           $('<li>').text('Your password must be at least 6 characters.').appendTo('.errors ul');
           flag = true;
         }
@@ -74,7 +82,7 @@
 
           PageMethods.IsCompanyValid($('#company').val(), function (result) {
             if (result == false) {
-              $('#company').closest('.form-group').addClass('has-error');
+              $('#company').closest('.form-group').addClass('has-warning');
               $('<li>').text('The company name already exists.  Please choose another name.').appendTo('.errors ul');
               $('.errors').show();
             }
@@ -167,12 +175,12 @@
             <input type="text" class="form-control" id="promo" placeholder="Enter your promo code">
           </div>
         </div>
-        <div class="errors alert alert-danger">
+        <div class="errors alert alert-warning">
           <ul></ul>
         </div>
         <div class="form-group">
           <div class="col-xs-offset-4 col-xs-8">
-            <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+            <button id="submit" type="submit" class="btn">Submit</button>
           </div>
         </div>
         <br />
