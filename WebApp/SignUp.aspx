@@ -30,7 +30,7 @@
     var _resultID = -1;
     function getID() { return 34; } // _resultID; }
     function getURLParameter(name) { return decodeURIComponent((RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1]); }
-    
+
     $(document).ready(function () {
       var _userID = -1;
       var submitting = false;
@@ -122,32 +122,32 @@
       <div class="col-xs-8 main-column">
         <form role="form" class="form-horizontal">
         <div class="form-group">
-          <label for="name" class="col-sm-2 control-label">Full Name</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control required" id="name" placeholder="Full Name">
+          <label for="name" class="col-xs-4 control-label">Name</label>
+          <div class="col-xs-8">
+            <input type="text" class="form-control required" id="name" placeholder="Enter your full Name">
           </div>
         </div>
         <div class="form-group">
-          <label for="email" class="col-sm-2 control-label">Email</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control required" id="email" placeholder="Email Address">
+          <label for="email" class="col-xs-4 control-label">Email</label>
+          <div class="col-xs-8">
+            <input type="text" class="form-control required" id="email" placeholder="Enter your email address">
           </div>
         </div>
         <div class="form-group">
-          <label for="company" class="col-sm-2 control-label">Company</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control required" id="company" placeholder="Company">
+          <label for="company" class="col-xs-4 control-label">Company</label>
+          <div class="col-xs-8">
+            <input type="text" class="form-control required" id="company" placeholder="Enter your company name">
           </div>
         </div>
         <div class="form-group">
-          <label for="phone" class="col-sm-2 control-label">Phone</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control required" id="phone" placeholder="Phone Number">
+          <label for="phone" class="col-xs-4 control-label">Phone</label>
+          <div class="col-xs-8">
+            <input type="text" class="form-control required" id="phone" placeholder="Enter your phone number">
           </div>
         </div>
         <div class="form-group">
-          <label for="product" class="col-sm-2 control-label">Product</label>
-          <div class="col-sm-10">
+          <label for="product" class="col-xs-4 control-label">Product</label>
+          <div class="col-xs-8">
             <select id="product" class="form-control">
               <option value="2" selected="selected">Enterprise</option>
               <option value="1">Support Desk</option>
@@ -156,28 +156,28 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="password" class="col-sm-2 control-label">Password</label>
-          <div class="col-sm-10">
-            <input type="password" class="form-control required" id="password" placeholder="Password">
+          <label for="password" class="col-xs-4 control-label">Password</label>
+          <div class="col-xs-8">
+            <input type="password" class="form-control required" id="password" placeholder="Enter your password">
           </div>
         </div>
         <div class="form-group">
-          <label for="promo" class="col-sm-2 control-label">Promo Code</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="promo" placeholder="Promo Code">
+          <label for="promo" class="col-xs-4 control-label">Promo Code</label>
+          <div class="col-xs-8">
+            <input type="text" class="form-control" id="promo" placeholder="Enter your promo code">
           </div>
         </div>
         <div class="errors alert alert-danger">
           <ul></ul>
         </div>
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
+          <div class="col-xs-offset-4 col-xs-8">
             <button id="submit" type="submit" class="btn btn-primary">Submit</button>
           </div>
         </div>
         <br />
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
+          <div class="col-xs-offset-4 col-xs-8">
             <p>By clicking Sign Up, you agree to the <a href="http://www.teamsupport.com/help-desk-subscription-use-service-terms/"
               target="TSTermsOfService">Terms of Service</a> & <a href="http://www.teamsupport.com/privacy/"
                 target="TSPrivacyPolicy">Privacy Policy</a></p>

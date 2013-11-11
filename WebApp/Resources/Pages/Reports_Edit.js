@@ -293,7 +293,9 @@ $(document).ready(function () {
 
   $('.filter').on('change', '.filter-comp', function (e) {
     e.preventDefault();
-    alert($(this).find(':selected').data('argtype-1'));
+    $(this).closest('li').find('.filter-field').find(':selected').data('field');
+    //alert($(this).find(':selected').data('argtype-1'));
+    $('<input type="text">').insertAfter($(this));
 
   });
 
