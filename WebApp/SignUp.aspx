@@ -180,7 +180,7 @@
         </div>
         <div class="form-group">
           <div class="col-xs-offset-4 col-xs-8">
-            <button id="submit" type="submit" class="btn">Submit</button>
+            <button id="submit" type="submit" class="btn">Sign Up</button>
           </div>
         </div>
         <br />
