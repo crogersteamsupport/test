@@ -1897,6 +1897,7 @@ Namespace TeamSupport
                     ticket.TicketSeverityID = severities(0).TicketSeverityID
 
                     ticket.SalesForceID = caseToBring.Id 
+                    ticket.TicketSource = "SalesForce"
                     Dim creator As LoginUser = GetCreator(caseToBring)
                     If creator IsNot Nothing Then
                       tickets.LoginUser = creator
