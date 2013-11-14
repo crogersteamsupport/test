@@ -2175,7 +2175,7 @@ Namespace TeamSupport
                   Throw ex
                 End Try
 
-                'Pulled out to prevent case described in ticket 10511
+                'Pulled out to prevent case described in ticket 10781
                 'Try
                 '  AssignUserToTicket(salesForceOwner, ticket, "UserID", ticketValuesChanged)
                 'Catch ex As Exception
@@ -2184,7 +2184,7 @@ Namespace TeamSupport
                 '  Throw ex
                 'End Try
 
-                'Pulled out to prevent case described in ticket 10511
+                'Pulled out to prevent case described in ticket 10781
                 'Try
                 '  AssignUserToTicket(salesForceCreator, ticket, "CreatorID", ticketValuesChanged)
                 'Catch ex As Exception
