@@ -583,6 +583,12 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         ticketType.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
         if (id == null)
         {
+
+          System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand();
+          command.CommandText = "UPDATE Users SET MenuItems = MenuItems + ',mniTicketType_" + ticketType.TicketTypeID.ToString() + " WHERE UserID IN (SELECT UserID WHERE OrganizationID = @OrganizationID)";
+          command.Parameters.AddWithValue("OrganizationID", UserSession.LoginUser.OrganizationID);
+          SqlExecutor.ExecuteNonQuery(UserSession.LoginUser, command);
+
           TicketStatuses ticketStatuses = new TicketStatuses(UserSession.LoginUser);
           ticketStatus = ticketStatuses.AddNewTicketStatus();
           ticketStatus.Name = "New";
@@ -603,6 +609,7 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
           ticketStatus.IsClosedEmail = false;
           ticketStatus.Collection.Save();
           ticketStatus.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
+
 
 /*          TicketNextStatuses ticketNextStatuses = new TicketNextStatuses(UserSession.LoginUser);
           ticketNextStatuses.AddNextStatus(ticketStatuses[0], ticketStatuses[1], 0);
