@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Data;
@@ -91,6 +92,188 @@ AND ot.TicketID = @TicketID
     {
       return UserHasRights(user, this.GroupID, this.UserID, this.TicketID, this.IsKnowledgeBase);
     }
+
+    public void FullReadFromXml(string data, bool isInsert, ref string description)
+    {
+      LoginUser user = Collection.LoginUser;
+      FieldMap fieldMap = Collection.FieldMap;
+
+      StringReader reader = new StringReader(data);
+      DataSet dataSet = new DataSet();
+      dataSet.ReadXml(reader);
+
+      try
+      {
+        object name = (string)DataUtils.GetValueFromObject(user, fieldMap, dataSet, "Name", string.Empty, null, false, null);
+        if (name != null) this.Name = Convert.ToString(name);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object descriptionObject = (string)DataUtils.GetValueFromObject(user, fieldMap, dataSet, "Description", string.Empty, null, false, null, true);
+        if (descriptionObject != null) description = Convert.ToString(descriptionObject);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object isKnowledgeBase  = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "IsKnowledgeBase", string.Empty, null, false, null);
+        if (isKnowledgeBase != null) this.IsKnowledgeBase = Convert.ToBoolean(isKnowledgeBase);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object isVisibleOnPortal = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "IsVisibleOnPortal", string.Empty, null, false, null);
+        if (isVisibleOnPortal != null) this.IsVisibleOnPortal = Convert.ToBoolean(isVisibleOnPortal);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object ticketTypeID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "TicketTypeID", "TicketTypeName", TicketType.GetIDByName, false, null);
+        if (ticketTypeID != null) this.TicketTypeID = Convert.ToInt32(ticketTypeID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object ticketStatusID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "TicketStatusID", "Status", TicketStatus.GetIDByName, true, this.TicketTypeID);
+        if (ticketStatusID != null) this.TicketStatusID = Convert.ToInt32(ticketStatusID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object ticketSeverityID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "TicketSeverityID", "Severity", TicketSeverity.GetIDByName, false, null);
+        if (ticketSeverityID != null) this.TicketSeverityID = Convert.ToInt32(ticketSeverityID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object userID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "UserID", "UserName", User.GetIDByName, false, null);
+        if (userID != null) this.UserID = Convert.ToInt32(userID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object groupID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "GroupID", "GroupName", Group.GetIDByName, false, null);
+        if (groupID != null) this.GroupID = Convert.ToInt32(groupID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object productID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "ProductID", "ProductName", Product.GetIDByName, false, null);
+        if (productID != null) this.ProductID = Convert.ToInt32(productID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object reportedVersionID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "ReportedVersionID", "ReportedVersion", ProductVersion.GetIDByName, true, this.ProductID);
+        if (reportedVersionID != null) this.ReportedVersionID = Convert.ToInt32(reportedVersionID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object solvedVersionID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "SolvedVersionID", "SolvedVersion", ProductVersion.GetIDByName, true, this.ProductID);
+        if (solvedVersionID != null) this.SolvedVersionID = Convert.ToInt32(solvedVersionID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object knowledgeBaseCategoryID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "KnowledgeBaseCategoryID", "KnowledgeBaseCategoryName", KnowledgeBaseCategory.GetIDByName, true, this.ProductID);
+        if (knowledgeBaseCategoryID != null) this.KnowledgeBaseCategoryID = Convert.ToInt32(knowledgeBaseCategoryID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object parentID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "ParentID", string.Empty, null, false, null);
+        if (parentID != null) this.ParentID = Convert.ToInt32(parentID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object dateCreated = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "DateCreated", string.Empty, null, false, null);
+        if (dateCreated != null) this.DateCreated = Convert.ToDateTime(dateCreated);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object dateClosed = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "DateClosed", string.Empty, null, false, null);
+        if (dateClosed != null) this.DateClosed = Convert.ToDateTime(dateClosed);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object closerID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "CloserID", "CloserName", User.GetIDByName, false, null);
+        if (closerID != null) this.CloserID = Convert.ToInt32(closerID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object importID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "ImportID", string.Empty, null, false, null);
+        if (importID != null) this.ImportID = Convert.ToString(importID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object creatorID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "CreatorID", "CreatorName", User.GetIDByName, false, null);
+        if (creatorID != null) this.CreatorID = Convert.ToInt32(creatorID);
+      }
+      catch
+      {
+      }
+    }
+
   }
 
   public partial class Tickets 

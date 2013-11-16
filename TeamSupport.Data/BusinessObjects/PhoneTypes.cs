@@ -9,6 +9,13 @@ namespace TeamSupport.Data
 {
   public partial class PhoneType
   {
+    public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
+    {
+      PhoneTypes phoneTypes = new PhoneTypes(loginUser);
+      phoneTypes.LoadByName(loginUser.OrganizationID, name);
+      if (phoneTypes.IsEmpty) return null;
+      else return phoneTypes[0].PhoneTypeID;
+    }
   }
 
   public partial class PhoneTypes   
@@ -21,6 +28,18 @@ namespace TeamSupport.Data
         command.CommandText = "SELECT * FROM PhoneTypes WHERE OrganizationID = @OrganizationID  ORDER BY " + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
+    public void LoadByName(int organizationID, string name)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM PhoneTypes WHERE OrganizationID = @OrganizationID  AND Name = @Name";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@Name", name);
         Fill(command);
       }
     }

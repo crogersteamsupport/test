@@ -287,6 +287,7 @@ namespace TeamSupport.Api
           case "/customers/{id}/notes/": data = RestNotes.AddNote(_command, ReferenceType.Organizations, GetId(1)); break;
           case "/customers/{id}/contacts/": data = RestContacts.CreateContact(_command, GetId(1)); break;
           case "/customers/{id}/products/{id}/": data = RestOrganizationProducts.CreateOrganizationProduct(_command, GetId(1), GetId(3)); break;
+          case "/contacts/": data = RestContacts.CreateContact(_command, null); break;
           case "/contacts/{id}/addresses/": data = RestAddresses.AddAddress(_command, ReferenceType.Users, GetId(1)); break;
           case "/contacts/{id}/phonenumbers/": data = RestPhoneNumbers.AddPhoneNumber(_command, ReferenceType.Users, GetId(1)); break;
           case "/products/": data = RestProducts.CreateProduct(_command); break;

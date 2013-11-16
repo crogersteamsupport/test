@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Data;
@@ -104,6 +105,125 @@ namespace TeamSupport.Data
     
     }
 
+    public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
+    {
+      Users users = new Users(loginUser);
+      users.LoadByName(name, loginUser.OrganizationID, true, false, false);
+      if (users.IsEmpty) return null;
+      else return users[0].UserID;
+    }
+
+    public void FullReadFromXml(string data, bool isInsert, ref PhoneNumber phoneNumber, ref Address address)
+    {
+      //None of its fields are foreign keys. So we call the ReadFromXml method and then we add the phone and address fields.
+      this.ReadFromXml(data, isInsert);
+
+      LoginUser user = Collection.LoginUser;
+      FieldMap fieldMap = Collection.FieldMap;
+
+      StringReader reader = new StringReader(data);
+      DataSet dataSet = new DataSet();
+      dataSet.ReadXml(reader);
+
+      try
+      {
+        object phoneTypeID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "PhoneTypeID", "PhoneType", PhoneType.GetIDByName, false, null, true);
+        if (phoneTypeID != null) phoneNumber.PhoneTypeID = Convert.ToInt32(phoneTypeID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object phoneNumberObject = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "PhoneNumber", string.Empty, null, false, null, true);
+        if (phoneNumberObject != null) phoneNumber.Number = Convert.ToString(phoneNumberObject);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object phoneExtension = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "phoneExtension", string.Empty, null, false, null, true);
+        if (phoneExtension != null) phoneNumber.Extension = Convert.ToString(phoneExtension);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressDescription = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressDescription", string.Empty, null, false, null, true);
+        if (addressDescription != null) address.Description = Convert.ToString(addressDescription);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressLine1 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine1", string.Empty, null, false, null, true);
+        if (addressLine1 != null) address.Addr1 = Convert.ToString(addressLine1);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressLine2 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine2", string.Empty, null, false, null, true);
+        if (addressLine2 != null) address.Addr2 = Convert.ToString(addressLine2);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressLine3 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine3", string.Empty, null, false, null, true);
+        if (addressLine3 != null) address.Addr3 = Convert.ToString(addressLine3);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressCity = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressCity", string.Empty, null, false, null, true);
+        if (addressCity != null) address.City = Convert.ToString(addressCity);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressState = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressState", string.Empty, null, false, null, true);
+        if (addressState != null) address.State = Convert.ToString(addressState);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressZip = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressZip", string.Empty, null, false, null, true);
+        if (addressZip != null) address.Zip = Convert.ToString(addressZip);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressCountry = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressCountry", string.Empty, null, false, null, true);
+        if (addressCountry != null) address.Country = Convert.ToString(addressCountry);
+      }
+      catch
+      {
+      }
+    }
   }
   
   public partial class Users

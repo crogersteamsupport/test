@@ -9,6 +9,13 @@ namespace TeamSupport.Data
 {
   public partial class TicketSeverity 
   {
+    public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
+    {
+      TicketSeverities severity = new TicketSeverities(loginUser);
+      severity.LoadByName(loginUser.OrganizationID, name);
+      if (severity.IsEmpty) return null;
+      else return severity[0].TicketSeverityID;
+    }
   }
 
   public partial class TicketSeverities 
@@ -72,6 +79,18 @@ ORDER BY Position";
         command.CommandText = "SELECT TOP 1 * FROM TicketSeverities WHERE OrganizationID = @OrganizationID ORDER BY Position";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
+    public void LoadByName(int organizationID, string name)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM TicketSeverities WHERE OrganizationID = @OrganizationID AND Name = @Name";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("OrganizationID", organizationID);
+        command.Parameters.AddWithValue("Name", name);
         Fill(command);
       }
     }

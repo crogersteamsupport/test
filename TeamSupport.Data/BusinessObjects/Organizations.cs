@@ -102,6 +102,164 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         return Convert.ToDouble(organizations.ExecuteScalar(command, "TicketsView"));
       }
     }
+
+    public void FullReadFromXml(string data, bool isInsert, ref PhoneNumber phoneNumber, ref Address address)
+    {
+      //Of the 16 writeable fields only 6 are IDs. So we'll do a normal read and then add code for the 6 ID fields.
+      this.ReadFromXml(data, isInsert);
+
+      LoginUser user = Collection.LoginUser;
+      FieldMap fieldMap = Collection.FieldMap;
+
+      StringReader reader = new StringReader(data);
+      DataSet dataSet = new DataSet();
+      dataSet.ReadXml(reader);
+
+      //There are no contacts in a new account. Special implementation will be required if this field to be set in create organization.
+      //try
+      //{
+      //  object primaryUserID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "PrimaryUserID", "PrimaryContact", User.GetIDByName, false, null);
+      //  if (primaryUserID != null) this.PrimaryUserID = Convert.ToInt32(primaryUserID);
+      //}
+      //catch
+      //{
+      //}
+
+      try
+      {
+        object defaultPortalGroupID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "DefaultPortalGroupID", "DefaultPortalGroup", Group.GetIDByName, false, null);
+        if (defaultPortalGroupID != null) this.DefaultPortalGroupID = Convert.ToInt32(defaultPortalGroupID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object defaultSupportGroupID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "DefaultSupportGroupID", "DefaultSupportGroup", Group.GetIDByName, false, null);
+        if (defaultSupportGroupID != null) this.DefaultSupportGroupID = Convert.ToInt32(defaultSupportGroupID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object defaultSupportUserID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "DefaultSupportUserID", "DefaultSupportUser", User.GetIDByName, false, null);
+        if (defaultSupportUserID != null) this.DefaultSupportUserID = Convert.ToInt32(defaultSupportUserID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object sLALevelID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "SlaLevelID", "SlaName", SlaLevel.GetIDByName, false, null);
+        if (sLALevelID != null) this.SlaLevelID = Convert.ToInt32(sLALevelID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object phoneTypeID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "PhoneTypeID", "PhoneType", PhoneType.GetIDByName, false, null, true);
+        if (phoneTypeID != null) phoneNumber.PhoneTypeID = Convert.ToInt32(phoneTypeID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object phoneNumberObject = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "PhoneNumber", string.Empty, null, false, null, true);
+        if (phoneNumberObject != null) phoneNumber.Number = Convert.ToString(phoneNumberObject);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object phoneExtension = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "PhoneExtension", string.Empty, null, false, null, true);
+        if (phoneExtension != null) phoneNumber.Extension = Convert.ToString(phoneExtension);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressDescription = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressDescription", string.Empty, null, false, null, true);
+        if (addressDescription != null) address.Description = Convert.ToString(addressDescription);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressLine1 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine1", string.Empty, null, false, null, true);
+        if (addressLine1 != null) address.Addr1 = Convert.ToString(addressLine1);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressLine2 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine2", string.Empty, null, false, null, true);
+        if (addressLine2 != null) address.Addr2 = Convert.ToString(addressLine2);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressLine3 = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressLine3", string.Empty, null, false, null, true);
+        if (addressLine3 != null) address.Addr3 = Convert.ToString(addressLine3);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressCity = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressCity", string.Empty, null, false, null, true);
+        if (addressCity != null) address.City = Convert.ToString(addressCity);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressState = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressState", string.Empty, null, false, null, true);
+        if (addressState != null) address.State = Convert.ToString(addressState);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressZip = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressZip", string.Empty, null, false, null, true);
+        if (addressZip != null) address.Zip = Convert.ToString(addressZip);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object addressCountry = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "AddressCountry", string.Empty, null, false, null, true);
+        if (addressCountry != null) address.Country = Convert.ToString(addressCountry);
+      }
+      catch
+      {
+      }
+    }
   }
 
   public partial class Organizations
@@ -2020,6 +2178,18 @@ ORDER BY o.Name";
       return null;
     }
 
-
+    public static int GetUnknownCompanyID(LoginUser loginUser)
+    {
+      Organizations organizations = new Organizations(loginUser);
+      organizations.LoadByUnknownCompany(loginUser.OrganizationID);
+      if (organizations.IsEmpty)
+      {
+        organizations = new Organizations(loginUser);
+        Organization newUnknownCompany = organizations.AddNewOrganization();
+        newUnknownCompany.Name = "_Unknown Company";
+        organizations.Save();
+      }
+      return organizations[0].OrganizationID;
+    }
   }
 }

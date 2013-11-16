@@ -42,9 +42,15 @@ namespace TeamSupport.Api
       {
         throw new RestException(HttpStatusCode.Forbidden, "You are already at your maximum user seat count for your license.");
       }
+      Addresses addresses = new Addresses(command.LoginUser);
+      Address address = addresses.AddNewAddress();
+
+      PhoneNumbers phoneNumbers = new PhoneNumbers(command.LoginUser);
+      PhoneNumber phoneNumber = phoneNumbers.AddNewPhoneNumber();
+
       Users users = new Users(command.LoginUser);
       User user = users.AddNewUser();
-      user.ReadFromXml(command.Data, true);
+      user.FullReadFromXml(command.Data, true, ref phoneNumber, ref address);
       user.OrganizationID = command.LoginUser.OrganizationID;
       user.ActivatedOn = DateTime.UtcNow;
       user.LastLogin = DateTime.UtcNow.AddHours(-1);
@@ -52,6 +58,29 @@ namespace TeamSupport.Api
       user.EnforceSingleSession = true;
       user.Collection.Save();
       user.UpdateCustomFieldsFromXml(command.Data);
+
+      if (!String.IsNullOrEmpty(phoneNumber.Number) || !String.IsNullOrEmpty(phoneNumber.Extension))
+      {
+        phoneNumber.RefType = ReferenceType.Users;
+        phoneNumber.RefID = user.UserID;
+        phoneNumbers.Save();
+      }
+
+      if (!String.IsNullOrEmpty(address.Description)
+      || !String.IsNullOrEmpty(address.Addr1)
+      || !String.IsNullOrEmpty(address.Addr2)
+      || !String.IsNullOrEmpty(address.Addr3)
+      || !String.IsNullOrEmpty(address.City)
+      || !String.IsNullOrEmpty(address.Country)
+      || !String.IsNullOrEmpty(address.Description)
+      || !String.IsNullOrEmpty(address.State)
+      || !String.IsNullOrEmpty(address.Zip))
+      {
+        address.RefType = ReferenceType.Users;
+        address.RefID = user.UserID;
+        addresses.Save();
+      }
+
       return UsersView.GetUsersViewItem(command.LoginUser, user.UserID).GetXml("User", true);
     }
 

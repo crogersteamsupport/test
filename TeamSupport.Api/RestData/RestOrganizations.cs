@@ -37,12 +37,41 @@ namespace TeamSupport.Api
 
     public static string CreateOrganization(RestCommand command)
     {
+      Addresses addresses = new Addresses(command.LoginUser);
+      Address address = addresses.AddNewAddress();
+      
+      PhoneNumbers phoneNumbers = new PhoneNumbers(command.LoginUser);
+      PhoneNumber phoneNumber = phoneNumbers.AddNewPhoneNumber();
+
       Organizations organizations = new Organizations(command.LoginUser);
       Organization organization = organizations.AddNewOrganization();
       organization.ParentID = command.Organization.OrganizationID;
-      organization.ReadFromXml(command.Data, true);
+      organization.FullReadFromXml(command.Data, true, ref phoneNumber, ref address);
       organization.Collection.Save();
       organization.UpdateCustomFieldsFromXml(command.Data);
+
+      if (!String.IsNullOrEmpty(phoneNumber.Number) || !String.IsNullOrEmpty(phoneNumber.Extension))
+      {
+        phoneNumber.RefType = ReferenceType.Organizations;
+        phoneNumber.RefID = organization.OrganizationID;
+        phoneNumbers.Save();
+      }
+
+      if (!String.IsNullOrEmpty(address.Description)
+      || !String.IsNullOrEmpty(address.Addr1)
+      || !String.IsNullOrEmpty(address.Addr2)
+      || !String.IsNullOrEmpty(address.Addr3)
+      || !String.IsNullOrEmpty(address.City)
+      || !String.IsNullOrEmpty(address.Country)
+      || !String.IsNullOrEmpty(address.Description)
+      || !String.IsNullOrEmpty(address.State)
+      || !String.IsNullOrEmpty(address.Zip))
+      {
+        address.RefType = ReferenceType.Organizations;
+        address.RefID = organization.OrganizationID;
+        addresses.Save();
+      }
+
       return OrganizationsView.GetOrganizationsViewItem(command.LoginUser, organization.OrganizationID).GetXml("Customer", true);
     }
 

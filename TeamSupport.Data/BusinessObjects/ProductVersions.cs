@@ -9,6 +9,20 @@ namespace TeamSupport.Data
 {
   public partial class ProductVersion 
   {
+    public static int? GetIDByName(LoginUser loginUser, string versionNumber, int? productID)
+    {
+      int? result = null;
+      if (productID != null)
+      {
+        ProductVersions productVersions = new ProductVersions(loginUser);
+        productVersions.LoadByProductIDAndVersionNumber((int)productID, versionNumber);
+        if (!productVersions.IsEmpty)
+        {
+          result = productVersions[0].ProductVersionID;
+        } 
+      }
+      return result;
+    }
   }
 
   public partial class ProductVersions 
@@ -146,6 +160,18 @@ namespace TeamSupport.Data
         command.CommandText = "SELECT * FROM ProductVersions WHERE ProductID = @ProductID ORDER BY VersionNumber DESC";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ProductID", productID);
+        Fill(command);
+      }
+    }
+
+    public void LoadByProductIDAndVersionNumber(int productID, string versionNumber)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM ProductVersions WHERE ProductID = @ProductID AND VersionNumber = @VersionNumber";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductID", productID);
+        command.Parameters.AddWithValue("@VersionNumber", versionNumber);
         Fill(command);
       }
     }

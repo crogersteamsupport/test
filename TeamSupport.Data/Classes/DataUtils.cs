@@ -1794,5 +1794,47 @@ namespace TeamSupport.Data
 
       return result.ToString();
     }
+
+    public static object GetValueFromObject(
+      LoginUser loginUser,
+      FieldMap fieldMap, 
+      DataSet input, 
+      string objectIDColumnName, 
+      string objectNameColumnName, 
+      Func<LoginUser, string, int?, int?> GetIDWithName, 
+      bool isChild, 
+      int? parentID,
+      bool overrideFieldMap = false)
+    {
+      object result = null;
+      if (!isChild || parentID != null)
+      {
+        // If the field exists in the fieldMap and is able to do insert.
+        FieldMapItem fieldMapItem = fieldMap.Items.Find(x => x.PrivateName == objectIDColumnName);
+        if ((fieldMapItem != null && fieldMapItem.Insert) || overrideFieldMap)
+        {
+          // If the fieldID is provided use it.
+          DataRow row = input.Tables[0].Rows[0];
+          if (input.Tables[0].Columns[objectIDColumnName] != null)
+          {
+            DataColumn column = input.Tables[0].Columns[objectIDColumnName];
+            if (row[column] != DBNull.Value && row[column].ToString().Trim() != string.Empty)
+            {
+              result = row[column].ToString().Trim();
+            }
+          }
+          // If no fieldID provided but fieldName is provided then use the name to get the id.
+          else if (objectNameColumnName != null && input.Tables[0].Columns[objectNameColumnName] != null)
+          {
+            DataColumn column = input.Tables[0].Columns[objectNameColumnName];
+            if (row[column] != DBNull.Value && row[column].ToString().Trim() != string.Empty)
+            {
+              result = GetIDWithName(loginUser, row[column].ToString().Trim(), parentID);
+            }
+          }
+        }
+      }
+      return result;
+    }
   }
 }

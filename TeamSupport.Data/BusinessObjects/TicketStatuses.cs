@@ -14,6 +14,20 @@ namespace TeamSupport.Data
       
     }
 
+    public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
+    {
+      int? result = null;
+      if (parentID != null)
+      {
+        TicketStatuses statuses = new TicketStatuses(loginUser);
+        statuses.LoadByTicketTypeIDAndName((int)parentID, name);
+        if (!statuses.IsEmpty)
+        {
+          result = statuses[0].TicketStatusID;
+        } 
+      }
+      return result;
+    }
   }
 
   public partial class TicketStatuses 
@@ -89,6 +103,18 @@ namespace TeamSupport.Data
         command.CommandText = "SELECT * FROM TicketStatuses WHERE TicketTypeID = @TicketTypeID  ORDER BY Position";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("TicketTypeID", ticketTypeID);
+        Fill(command);
+      }
+    }
+
+    public void LoadByTicketTypeIDAndName(int ticketTypeID, string name)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM TicketStatuses WHERE TicketTypeID = @TicketTypeID AND Name = @Name";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("TicketTypeID", ticketTypeID);
+        command.Parameters.AddWithValue("Name", name);
         Fill(command);
       }
     }

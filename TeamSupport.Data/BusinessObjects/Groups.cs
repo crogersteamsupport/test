@@ -9,6 +9,13 @@ namespace TeamSupport.Data
 {
   public partial class Group
   {
+    public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
+    {
+      Groups groups = new Groups(loginUser);
+      groups.LoadByGroupName(loginUser.OrganizationID, name, 1);
+      if (groups.IsEmpty) return null;
+      else return groups[0].GroupID;
+    }
   }
 
   public partial class Groups

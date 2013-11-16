@@ -9,6 +9,13 @@ namespace TeamSupport.Data
 {
   public partial class Product 
   {
+    public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
+    {
+      Products products = new Products(loginUser);
+      products.LoadByProductName(loginUser.OrganizationID, name);
+      if (products.IsEmpty) return null;
+      else return products[0].ProductID;
+    }
   }
 
   public partial class Products

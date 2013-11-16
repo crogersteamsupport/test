@@ -125,7 +125,9 @@ namespace TeamSupport.Api
       Tickets tickets = new Tickets(command.LoginUser);
       Ticket ticket = tickets.AddNewTicket();
       ticket.OrganizationID = command.Organization.OrganizationID;
-      ticket.ReadFromXml(command.Data, true);
+      string description = string.Empty;
+      ticket.FullReadFromXml(command.Data, true, ref description);
+      ticket.TicketSource = "API";
       ticket.Collection.Save();
       ticket.UpdateCustomFieldsFromXml(command.Data);
 
@@ -134,7 +136,7 @@ namespace TeamSupport.Api
       action.ActionTypeID = null;
       action.Name = "Description";
       action.SystemActionTypeID = SystemActionType.Description;
-      action.Description = "";
+      action.Description = description;
       action.IsVisibleOnPortal = ticket.IsVisibleOnPortal;
       action.IsKnowledgeBase = ticket.IsKnowledgeBase;
       action.TicketID = ticket.TicketID;

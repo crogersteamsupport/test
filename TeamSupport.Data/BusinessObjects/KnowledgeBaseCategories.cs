@@ -9,6 +9,13 @@ namespace TeamSupport.Data
 {
   public partial class KnowledgeBaseCategory
   {
+    public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
+    {
+      KnowledgeBaseCategories categories = new KnowledgeBaseCategories(loginUser);
+      categories.LoadByName(loginUser.OrganizationID, name);
+      if (categories.IsEmpty) return null;
+      else return categories[0].CategoryID;
+    }
   }
   
   public partial class KnowledgeBaseCategories
@@ -60,6 +67,18 @@ namespace TeamSupport.Data
         command.CommandText = "SELECT * FROM KnowledgeBaseCategories WHERE ParentID = @ParentID ORDER BY Position";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ParentID", categoryID);
+        Fill(command);
+      }
+    }
+
+    public void LoadByName(int organizationID, string name)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM KnowledgeBaseCategories WHERE OrganizationID = @OrganizationID AND CategoryName = @CategoryName";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@CategoryName", name);
         Fill(command);
       }
     }

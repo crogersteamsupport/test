@@ -9,6 +9,13 @@ namespace TeamSupport.Data
 {
   public partial class TicketType 
   {
+    public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
+    {
+      TicketTypes type = new TicketTypes(loginUser);
+      type.LoadByName(loginUser.OrganizationID, name);
+      if (type.IsEmpty) return null;
+      else return type[0].TicketTypeID;
+    }
   }
 
   public partial class TicketTypes 
@@ -85,6 +92,17 @@ namespace TeamSupport.Data
       if (items.IsEmpty) return null; else return items[0];
     }
 
+    public void LoadByName(int organizationID, string name)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM TicketTypes WHERE OrganizationID = @OrganizationID AND Name = @Name";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("OrganizationID", organizationID);
+        command.Parameters.AddWithValue("Name", name);
+        Fill(command);
+      }
+    }
 
     
   }
