@@ -2187,6 +2187,8 @@ ORDER BY o.Name";
         organizations = new Organizations(loginUser);
         Organization newUnknownCompany = organizations.AddNewOrganization();
         newUnknownCompany.Name = "_Unknown Company";
+        newUnknownCompany.IsActive = true;
+        newUnknownCompany.ParentID = loginUser.OrganizationID;
         organizations.Save();
       }
       return organizations[0].OrganizationID;
