@@ -388,7 +388,7 @@ namespace TSWebServices
 
         //update.RefreshID = int.Parse(SystemSettings.ReadString(loginUser, "RefreshID", "-1"));
         update.ExpireTime = TSAuthentication.Ticket.Expiration.ToShortTimeString();
-        update.Version = System.Web.Configuration.WebConfigurationManager.AppSettings["Version"] + "." + GetRevision();
+        update.Version = GetVersion() + "." + GetRevision();
         //update.IsIdle = user.DateToUtc(user.LastActivity).AddMinutes(20) < DateTime.UtcNow;
         update.MyUnreadTicketCount = Tickets.GetMyOpenUnreadTicketCount(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
       }
@@ -415,8 +415,22 @@ namespace TSWebServices
       {
         return "0";
       }
-    
-    
+    }
+
+    private string GetVersion()
+    {
+      try
+      {
+        using (System.IO.StreamReader sr = new System.IO.StreamReader(Server.MapPath("~/version.txt")))
+        {
+          String line = sr.ReadToEnd();
+          return line;
+        }
+      }
+      catch (Exception e)
+      {
+        return "0";
+      }
     }
 
     [WebMethod(false)]
