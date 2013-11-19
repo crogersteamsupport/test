@@ -912,7 +912,7 @@ $(document).ready(function () {
           var categories = top.Ts.Cache.getKnowledgeBaseCategories();
           for (var i = 0; i < categories.length; i++) {
               var cat = categories[i].Category;
-              option = $('<option>').text(cat.CategoryName).appendTo(select).data('o', cat);
+              option = $('<option>').text(cat.CategoryName).appendTo(select).data('o', cat).data('c', cat.CategoryName);
               if ($(this).text() === cat.CategoryName) { option.attr('selected', 'selected'); }
 
               for (var j = 0; j < categories[i].Subcategories.length; j++) {

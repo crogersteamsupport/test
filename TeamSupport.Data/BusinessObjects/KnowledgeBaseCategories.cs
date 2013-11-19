@@ -91,12 +91,15 @@ namespace TeamSupport.Data
       knowledgeBaseCategories.LoadByCategoryID(categoryID);
       if (knowledgeBaseCategories.IsEmpty)
         return null;
-      else
+      else if (knowledgeBaseCategories[0].ParentID > 0)
       {
         knowledgeBaseParentCategory.LoadByCategoryID(knowledgeBaseCategories[0].ParentID);
         return knowledgeBaseParentCategory[0].CategoryName + " -> " + knowledgeBaseCategories[0].CategoryName;
       }
-
+      else
+      {
+        return knowledgeBaseCategories[0].CategoryName;
+      }
     }
   }
   
