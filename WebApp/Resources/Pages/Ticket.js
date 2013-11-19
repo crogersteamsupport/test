@@ -2911,10 +2911,10 @@ var loadTicket = function (ticketNumber, refresh) {
         else if (!info.LinkToJira.JiraLinkURL) {
           $('#issueKeyValue').text(info.LinkToJira.JiraKey);
           if (info.LinkToJira.JiraKey.indexOf('Error') > -1) {
-            $('#issueKeyValue').addClass('ui-state-error-custom ui-corner-all');
+            $('#issueKeyValue').addClass('nonrequired-field-error ui-corner-all');
           }
           else {
-            $('#issueKeyValue').removeClass('ui-state-error-custom ui-corner-all');
+            $('#issueKeyValue').removeClass('nonrequired-field-error ui-corner-all');
           }
         }
         else {
