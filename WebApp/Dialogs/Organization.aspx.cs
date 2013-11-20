@@ -229,7 +229,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     {
     }
 
-    organization.Name = textName.Text;
+    if (organization.Name != "_Unknown Company") organization.Name = textName.Text;
     organization.Website = textWebSite.Text;
     organization.CompanyDomains = textDomains.Text;
 
