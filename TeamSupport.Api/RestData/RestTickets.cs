@@ -126,10 +126,16 @@ namespace TeamSupport.Api
       Ticket ticket = tickets.AddNewTicket();
       ticket.OrganizationID = command.Organization.OrganizationID;
       string description = string.Empty;
-      ticket.FullReadFromXml(command.Data, true, ref description);
+      int? contactID = null;
+      ticket.FullReadFromXml(command.Data, true, ref description, ref contactID);
       ticket.TicketSource = "API";
       ticket.Collection.Save();
       ticket.UpdateCustomFieldsFromXml(command.Data);
+
+      if (contactID != null)
+      {
+        ticket.Collection.AddContact((int)contactID, ticket.TicketID);
+      }
 
       Actions actions = new Actions(command.LoginUser);
       TeamSupport.Data.Action action = actions.AddNewAction();

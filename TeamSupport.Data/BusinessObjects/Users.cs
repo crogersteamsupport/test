@@ -113,6 +113,14 @@ namespace TeamSupport.Data
       else return users[0].UserID;
     }
 
+    public static int? GetIDByEmail(LoginUser loginUser, string email, int? parentID)
+    {
+      Users users = new Users(loginUser);
+      users.LoadByEmail(loginUser.OrganizationID, email);
+      if (users.IsEmpty) return null;
+      else return users[0].UserID;
+    }
+
     public void FullReadFromXml(string data, bool isInsert, ref PhoneNumber phoneNumber, ref Address address)
     {
       //None of its fields are foreign keys. So we call the ReadFromXml method and then we add the phone and address fields.

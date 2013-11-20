@@ -93,7 +93,7 @@ AND ot.TicketID = @TicketID
       return UserHasRights(user, this.GroupID, this.UserID, this.TicketID, this.IsKnowledgeBase);
     }
 
-    public void FullReadFromXml(string data, bool isInsert, ref string description)
+    public void FullReadFromXml(string data, bool isInsert, ref string description, ref int? contactID)
     {
       LoginUser user = Collection.LoginUser;
       FieldMap fieldMap = Collection.FieldMap;
@@ -268,6 +268,33 @@ AND ot.TicketID = @TicketID
       {
         object creatorID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "CreatorID", "CreatorName", User.GetIDByName, false, null);
         if (creatorID != null) this.CreatorID = Convert.ToInt32(creatorID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object contactIDObject = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "ContactID", "ContactEmail", User.GetIDByEmail, false, null, true);
+        if (contactIDObject != null)
+        {
+          contactID = (int)contactIDObject;
+        }
+        else
+        {
+          DataRow row = dataSet.Tables[0].Rows[0];
+          DataColumn column = dataSet.Tables[0].Columns["ContactEmail"];
+          if (row[column] != DBNull.Value && row[column].ToString().Trim() != string.Empty)
+          {
+            Users newUserCollection = new Users(user);
+            User newUser = newUserCollection.AddNewUser();
+            newUser.Email = row[column].ToString().Trim();
+            newUser.LastName = newUser.Email;
+            newUser.OrganizationID = Organizations.GetUnknownCompanyID(user);
+            newUserCollection.Save();
+            contactID = newUser.UserID;
+          }
+        }
       }
       catch
       {
