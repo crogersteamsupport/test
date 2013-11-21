@@ -165,7 +165,8 @@ namespace TeamSupport.Data
     Table = 0,
     Chart = 1,
     External = 2,
-    Custom = 3
+    Custom = 3,
+    Summary = 4
   }
 
   public enum ReportTypeOld { 

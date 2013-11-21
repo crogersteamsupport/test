@@ -14,6 +14,7 @@ using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using System.Runtime.Serialization;
 using System.Globalization;
+using Newtonsoft.Json;
 
 namespace TSWebServices
 {
@@ -194,15 +195,49 @@ namespace TSWebServices
         return result.ToArray();
       }
 
+      [WebMethod]
+      public void SaveReport(int? reportID, string name, string description, string reportType, string data)
+      {
+        TabularReport tabularReport = JsonConvert.DeserializeObject<TabularReport>(data);
+        
+        Report report = null;
+        if (reportID == null)
+        {
+          report = (new Reports(TSAuthentication.GetLoginUser())).AddNewReport();
+        }
+        else
+        {
+          report = Reports.GetReport(TSAuthentication.GetLoginUser(), (int)reportID);
+        }
+
+        report.Name = name;
+        report.Description = description;
+        report.ReportDef = data;
+        report.OrganizationID = TSAuthentication.OrganizationID;
+
+        switch (reportType)
+        {
+          case "tabular": report.ReportDefType = ReportType.Table; break;
+          case "summary": report.ReportDefType = ReportType.Summary; break;
+          case "external": report.ReportDefType = ReportType.External; break;
+          case "chart": report.ReportDefType = ReportType.Chart; break;
+          default:
+            break;
+        }
+
+        report.Collection.Save();
+
+        
+      }
+
       [DataContract]
       public class ReportFieldItem
       {
         public ReportFieldItem() { }
         public ReportFieldItem(string table, bool isPrimary, ReportTableField field)
         {
-          this.IsPrimary = IsPrimary;
+          this.IsPrimary = isPrimary;
           this.ID = field.ReportTableFieldID;
-          //this.DataType = field.DataType;
           this.Name = field.Alias;
           this.LookupTableID = field.LookupTableID;
           this.IsCustom = false;
@@ -220,7 +255,7 @@ namespace TSWebServices
 
         public ReportFieldItem(string table, bool isPrimary, CustomField field, string AuxName)
         {
-          this.IsPrimary = IsPrimary;
+          this.IsPrimary = isPrimary;
           this.ID = field.CustomFieldID;
           this.Name = field.Name;
           this.ListValues = string.IsNullOrWhiteSpace(field.ListValues) ? null : field.ListValues.Split('|');
@@ -234,18 +269,27 @@ namespace TSWebServices
             case CustomFieldType.Number: this.DataType = "number"; break;
             default: this.DataType = "text"; break;
           }
-        
+
         }
-        
-        [DataMember] public int ID { get; set; }
-        [DataMember] public string Name { get; set; }
-        [DataMember] public string Table { get; set; }
-        [DataMember] public string AuxName { get; set; }
-        [DataMember] public string DataType { get; set; }
-        [DataMember] public int? LookupTableID { get; set; }
-        [DataMember] public string[] ListValues { get; set; }
-        [DataMember] public bool IsCustom { get; set; }
-        [DataMember] public bool IsPrimary { get; set; }
+
+        [DataMember]
+        public int ID { get; set; }
+        [DataMember]
+        public string Name { get; set; }
+        [DataMember]
+        public string Table { get; set; }
+        [DataMember]
+        public string AuxName { get; set; }
+        [DataMember]
+        public string DataType { get; set; }
+        [DataMember]
+        public int? LookupTableID { get; set; }
+        [DataMember]
+        public string[] ListValues { get; set; }
+        [DataMember]
+        public bool IsCustom { get; set; }
+        [DataMember]
+        public bool IsPrimary { get; set; }
 
       }
 
@@ -275,7 +319,7 @@ namespace TSWebServices
           this.Description = report.Description;
           this.IsFavorite = (report.Row.Table.Columns.IndexOf("IsFavorite") < 0 || report.Row["IsFavorite"] == DBNull.Value ? false : (bool)report.Row["IsFavorite"]);
           this.IsHidden = (report.Row.Table.Columns.IndexOf("IsHidden") < 0 || report.Row["IsHidden"] == DBNull.Value ? false : (bool)report.Row["IsHidden"]);
-          this.ReportType = report.ReportType;
+          this.ReportType = report.ReportDefType;
           this.CreatorID = report.CreatorID;
         }
 

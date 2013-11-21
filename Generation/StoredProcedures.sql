@@ -1323,6 +1323,173 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReport
+
+(
+  @ReportID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReportID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [Query],
+    [CustomFieldKeyName],
+    [CustomRefType],
+    [CustomAuxID],
+    [ReportSubcategoryID],
+    [QueryObject],
+    [ExternalURL],
+    [LastSqlExecuted],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [ReportType],
+    [ReportDef],
+    [ReportDefType]
+  FROM [dbo].[Reports]
+  WHERE ([ReportID] = @ReportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReport
+
+(
+  @OrganizationID int,
+  @Name varchar(100),
+  @Description varchar(8000),
+  @Query varchar(8000),
+  @CustomFieldKeyName varchar(50),
+  @CustomRefType int,
+  @CustomAuxID int,
+  @ReportSubcategoryID int,
+  @QueryObject varchar(MAX),
+  @ExternalURL varchar(3000),
+  @LastSqlExecuted varchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @ReportType int,
+  @ReportDef varchar(MAX),
+  @ReportDefType int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Reports]
+  (
+    [OrganizationID],
+    [Name],
+    [Description],
+    [Query],
+    [CustomFieldKeyName],
+    [CustomRefType],
+    [CustomAuxID],
+    [ReportSubcategoryID],
+    [QueryObject],
+    [ExternalURL],
+    [LastSqlExecuted],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [ReportType],
+    [ReportDef],
+    [ReportDefType])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @Description,
+    @Query,
+    @CustomFieldKeyName,
+    @CustomRefType,
+    @CustomAuxID,
+    @ReportSubcategoryID,
+    @QueryObject,
+    @ExternalURL,
+    @LastSqlExecuted,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @ReportType,
+    @ReportDef,
+    @ReportDefType)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReport
+
+(
+  @ReportID int,
+  @OrganizationID int,
+  @Name varchar(100),
+  @Description varchar(8000),
+  @Query varchar(8000),
+  @CustomFieldKeyName varchar(50),
+  @CustomRefType int,
+  @CustomAuxID int,
+  @ReportSubcategoryID int,
+  @QueryObject varchar(MAX),
+  @ExternalURL varchar(3000),
+  @LastSqlExecuted varchar(MAX),
+  @DateModified datetime,
+  @ModifierID int,
+  @ReportType int,
+  @ReportDef varchar(MAX),
+  @ReportDefType int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Reports]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [Description] = @Description,
+    [Query] = @Query,
+    [CustomFieldKeyName] = @CustomFieldKeyName,
+    [CustomRefType] = @CustomRefType,
+    [CustomAuxID] = @CustomAuxID,
+    [ReportSubcategoryID] = @ReportSubcategoryID,
+    [QueryObject] = @QueryObject,
+    [ExternalURL] = @ExternalURL,
+    [LastSqlExecuted] = @LastSqlExecuted,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [ReportType] = @ReportType,
+    [ReportDef] = @ReportDef,
+    [ReportDefType] = @ReportDefType
+  WHERE ([ReportID] = @ReportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReport
+
+(
+  @ReportID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Reports]
+  WHERE ([ReportID] = @ReportID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectOrganizationProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectOrganizationProduct
 GO
 
@@ -3740,7 +3907,8 @@ AS
     [CompanyDomains],
     [SupportHoursMonth],
     [SupportHoursUsed],
-    [SupportHoursRemaining]
+    [SupportHoursRemaining],
+    [NeedsIndexing]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -6374,7 +6542,8 @@ AS
     [ModifierID],
     [OrganizationParentID],
     [CryptedPassword],
-    [SalesForceID]
+    [SalesForceID],
+    [NeedsIndexing]
   FROM [dbo].[ContactsView]
   WHERE ([UserID] = @UserID)
 GO
@@ -7936,7 +8105,8 @@ AS
     [UpdateStatus],
     [ActionTypeIDToPush],
     [HostName],
-    [DefaultProject]
+    [DefaultProject],
+    [MatchAccountsByName]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -7968,6 +8138,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @ActionTypeIDToPush int,
   @HostName varchar(8000),
   @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
   @Identity int OUT
 )
 AS
@@ -7994,7 +8165,8 @@ AS
     [UpdateStatus],
     [ActionTypeIDToPush],
     [HostName],
-    [DefaultProject])
+    [DefaultProject],
+    [MatchAccountsByName])
   VALUES (
     @OrganizationID,
     @Active,
@@ -8016,7 +8188,8 @@ AS
     @UpdateStatus,
     @ActionTypeIDToPush,
     @HostName,
-    @DefaultProject)
+    @DefaultProject,
+    @MatchAccountsByName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -8048,7 +8221,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @UpdateStatus bit,
   @ActionTypeIDToPush int,
   @HostName varchar(8000),
-  @DefaultProject varchar(8000)
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit
 )
 AS
   SET NOCOUNT OFF;
@@ -8074,7 +8248,8 @@ AS
     [UpdateStatus] = @UpdateStatus,
     [ActionTypeIDToPush] = @ActionTypeIDToPush,
     [HostName] = @HostName,
-    [DefaultProject] = @DefaultProject
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -10561,161 +10736,6 @@ AS
     [OrganizationID]
   FROM [dbo].[ProductVersionsView]
   WHERE ([ProductVersionID] = @ProductVersionID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReport
-
-(
-  @ReportID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [Query],
-    [CustomFieldKeyName],
-    [CustomRefType],
-    [CustomAuxID],
-    [ReportSubcategoryID],
-    [QueryObject],
-    [ExternalURL],
-    [LastSqlExecuted],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [ReportType]
-  FROM [dbo].[Reports]
-  WHERE ([ReportID] = @ReportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReport
-
-(
-  @OrganizationID int,
-  @Name varchar(100),
-  @Description varchar(8000),
-  @Query varchar(8000),
-  @CustomFieldKeyName varchar(50),
-  @CustomRefType int,
-  @CustomAuxID int,
-  @ReportSubcategoryID int,
-  @QueryObject varchar(MAX),
-  @ExternalURL varchar(3000),
-  @LastSqlExecuted varchar(MAX),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @ReportType int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reports]
-  (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [Query],
-    [CustomFieldKeyName],
-    [CustomRefType],
-    [CustomAuxID],
-    [ReportSubcategoryID],
-    [QueryObject],
-    [ExternalURL],
-    [LastSqlExecuted],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [ReportType])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @Query,
-    @CustomFieldKeyName,
-    @CustomRefType,
-    @CustomAuxID,
-    @ReportSubcategoryID,
-    @QueryObject,
-    @ExternalURL,
-    @LastSqlExecuted,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @ReportType)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReport
-
-(
-  @ReportID int,
-  @OrganizationID int,
-  @Name varchar(100),
-  @Description varchar(8000),
-  @Query varchar(8000),
-  @CustomFieldKeyName varchar(50),
-  @CustomRefType int,
-  @CustomAuxID int,
-  @ReportSubcategoryID int,
-  @QueryObject varchar(MAX),
-  @ExternalURL varchar(3000),
-  @LastSqlExecuted varchar(MAX),
-  @DateModified datetime,
-  @ModifierID int,
-  @ReportType int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Reports]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [Query] = @Query,
-    [CustomFieldKeyName] = @CustomFieldKeyName,
-    [CustomRefType] = @CustomRefType,
-    [CustomAuxID] = @CustomAuxID,
-    [ReportSubcategoryID] = @ReportSubcategoryID,
-    [QueryObject] = @QueryObject,
-    [ExternalURL] = @ExternalURL,
-    [LastSqlExecuted] = @LastSqlExecuted,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [ReportType] = @ReportType
-  WHERE ([ReportID] = @ReportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReport
-
-(
-  @ReportID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reports]
-  WHERE ([ReportID] = @ReportID)
 GO
 
 
@@ -14387,6 +14407,173 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReport
+
+(
+  @ReportID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReportID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [Query],
+    [CustomFieldKeyName],
+    [CustomRefType],
+    [CustomAuxID],
+    [ReportSubcategoryID],
+    [QueryObject],
+    [ExternalURL],
+    [LastSqlExecuted],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [ReportType],
+    [ReportDef],
+    [ReportDefType]
+  FROM [dbo].[Reports]
+  WHERE ([ReportID] = @ReportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReport
+
+(
+  @OrganizationID int,
+  @Name varchar(100),
+  @Description varchar(8000),
+  @Query varchar(8000),
+  @CustomFieldKeyName varchar(50),
+  @CustomRefType int,
+  @CustomAuxID int,
+  @ReportSubcategoryID int,
+  @QueryObject varchar(MAX),
+  @ExternalURL varchar(3000),
+  @LastSqlExecuted varchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @ReportType int,
+  @ReportDef varchar(MAX),
+  @ReportDefType int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Reports]
+  (
+    [OrganizationID],
+    [Name],
+    [Description],
+    [Query],
+    [CustomFieldKeyName],
+    [CustomRefType],
+    [CustomAuxID],
+    [ReportSubcategoryID],
+    [QueryObject],
+    [ExternalURL],
+    [LastSqlExecuted],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [ReportType],
+    [ReportDef],
+    [ReportDefType])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @Description,
+    @Query,
+    @CustomFieldKeyName,
+    @CustomRefType,
+    @CustomAuxID,
+    @ReportSubcategoryID,
+    @QueryObject,
+    @ExternalURL,
+    @LastSqlExecuted,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @ReportType,
+    @ReportDef,
+    @ReportDefType)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReport
+
+(
+  @ReportID int,
+  @OrganizationID int,
+  @Name varchar(100),
+  @Description varchar(8000),
+  @Query varchar(8000),
+  @CustomFieldKeyName varchar(50),
+  @CustomRefType int,
+  @CustomAuxID int,
+  @ReportSubcategoryID int,
+  @QueryObject varchar(MAX),
+  @ExternalURL varchar(3000),
+  @LastSqlExecuted varchar(MAX),
+  @DateModified datetime,
+  @ModifierID int,
+  @ReportType int,
+  @ReportDef varchar(MAX),
+  @ReportDefType int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Reports]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [Description] = @Description,
+    [Query] = @Query,
+    [CustomFieldKeyName] = @CustomFieldKeyName,
+    [CustomRefType] = @CustomRefType,
+    [CustomAuxID] = @CustomAuxID,
+    [ReportSubcategoryID] = @ReportSubcategoryID,
+    [QueryObject] = @QueryObject,
+    [ExternalURL] = @ExternalURL,
+    [LastSqlExecuted] = @LastSqlExecuted,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [ReportType] = @ReportType,
+    [ReportDef] = @ReportDef,
+    [ReportDefType] = @ReportDefType
+  WHERE ([ReportID] = @ReportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReport
+
+(
+  @ReportID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Reports]
+  WHERE ([ReportID] = @ReportID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectOrganizationProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectOrganizationProduct
 GO
 
@@ -16804,7 +16991,8 @@ AS
     [CompanyDomains],
     [SupportHoursMonth],
     [SupportHoursUsed],
-    [SupportHoursRemaining]
+    [SupportHoursRemaining],
+    [NeedsIndexing]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -19438,7 +19626,8 @@ AS
     [ModifierID],
     [OrganizationParentID],
     [CryptedPassword],
-    [SalesForceID]
+    [SalesForceID],
+    [NeedsIndexing]
   FROM [dbo].[ContactsView]
   WHERE ([UserID] = @UserID)
 GO
@@ -21000,7 +21189,8 @@ AS
     [UpdateStatus],
     [ActionTypeIDToPush],
     [HostName],
-    [DefaultProject]
+    [DefaultProject],
+    [MatchAccountsByName]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -21032,6 +21222,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @ActionTypeIDToPush int,
   @HostName varchar(8000),
   @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
   @Identity int OUT
 )
 AS
@@ -21058,7 +21249,8 @@ AS
     [UpdateStatus],
     [ActionTypeIDToPush],
     [HostName],
-    [DefaultProject])
+    [DefaultProject],
+    [MatchAccountsByName])
   VALUES (
     @OrganizationID,
     @Active,
@@ -21080,7 +21272,8 @@ AS
     @UpdateStatus,
     @ActionTypeIDToPush,
     @HostName,
-    @DefaultProject)
+    @DefaultProject,
+    @MatchAccountsByName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -21112,7 +21305,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @UpdateStatus bit,
   @ActionTypeIDToPush int,
   @HostName varchar(8000),
-  @DefaultProject varchar(8000)
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit
 )
 AS
   SET NOCOUNT OFF;
@@ -21138,7 +21332,8 @@ AS
     [UpdateStatus] = @UpdateStatus,
     [ActionTypeIDToPush] = @ActionTypeIDToPush,
     [HostName] = @HostName,
-    [DefaultProject] = @DefaultProject
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -23625,161 +23820,6 @@ AS
     [OrganizationID]
   FROM [dbo].[ProductVersionsView]
   WHERE ([ProductVersionID] = @ProductVersionID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReport
-
-(
-  @ReportID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [Query],
-    [CustomFieldKeyName],
-    [CustomRefType],
-    [CustomAuxID],
-    [ReportSubcategoryID],
-    [QueryObject],
-    [ExternalURL],
-    [LastSqlExecuted],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [ReportType]
-  FROM [dbo].[Reports]
-  WHERE ([ReportID] = @ReportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReport
-
-(
-  @OrganizationID int,
-  @Name varchar(100),
-  @Description varchar(8000),
-  @Query varchar(8000),
-  @CustomFieldKeyName varchar(50),
-  @CustomRefType int,
-  @CustomAuxID int,
-  @ReportSubcategoryID int,
-  @QueryObject varchar(MAX),
-  @ExternalURL varchar(3000),
-  @LastSqlExecuted varchar(MAX),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @ReportType int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reports]
-  (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [Query],
-    [CustomFieldKeyName],
-    [CustomRefType],
-    [CustomAuxID],
-    [ReportSubcategoryID],
-    [QueryObject],
-    [ExternalURL],
-    [LastSqlExecuted],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [ReportType])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @Query,
-    @CustomFieldKeyName,
-    @CustomRefType,
-    @CustomAuxID,
-    @ReportSubcategoryID,
-    @QueryObject,
-    @ExternalURL,
-    @LastSqlExecuted,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @ReportType)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReport
-
-(
-  @ReportID int,
-  @OrganizationID int,
-  @Name varchar(100),
-  @Description varchar(8000),
-  @Query varchar(8000),
-  @CustomFieldKeyName varchar(50),
-  @CustomRefType int,
-  @CustomAuxID int,
-  @ReportSubcategoryID int,
-  @QueryObject varchar(MAX),
-  @ExternalURL varchar(3000),
-  @LastSqlExecuted varchar(MAX),
-  @DateModified datetime,
-  @ModifierID int,
-  @ReportType int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Reports]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [Query] = @Query,
-    [CustomFieldKeyName] = @CustomFieldKeyName,
-    [CustomRefType] = @CustomRefType,
-    [CustomAuxID] = @CustomAuxID,
-    [ReportSubcategoryID] = @ReportSubcategoryID,
-    [QueryObject] = @QueryObject,
-    [ExternalURL] = @ExternalURL,
-    [LastSqlExecuted] = @LastSqlExecuted,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [ReportType] = @ReportType
-  WHERE ([ReportID] = @ReportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReport
-
-(
-  @ReportID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reports]
-  WHERE ([ReportID] = @ReportID)
 GO
 
 
@@ -27451,6 +27491,173 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReport
+
+(
+  @ReportID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReportID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [Query],
+    [CustomFieldKeyName],
+    [CustomRefType],
+    [CustomAuxID],
+    [ReportSubcategoryID],
+    [QueryObject],
+    [ExternalURL],
+    [LastSqlExecuted],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [ReportType],
+    [ReportDef],
+    [ReportDefType]
+  FROM [dbo].[Reports]
+  WHERE ([ReportID] = @ReportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReport
+
+(
+  @OrganizationID int,
+  @Name varchar(100),
+  @Description varchar(8000),
+  @Query varchar(8000),
+  @CustomFieldKeyName varchar(50),
+  @CustomRefType int,
+  @CustomAuxID int,
+  @ReportSubcategoryID int,
+  @QueryObject varchar(MAX),
+  @ExternalURL varchar(3000),
+  @LastSqlExecuted varchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @ReportType int,
+  @ReportDef varchar(MAX),
+  @ReportDefType int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Reports]
+  (
+    [OrganizationID],
+    [Name],
+    [Description],
+    [Query],
+    [CustomFieldKeyName],
+    [CustomRefType],
+    [CustomAuxID],
+    [ReportSubcategoryID],
+    [QueryObject],
+    [ExternalURL],
+    [LastSqlExecuted],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [ReportType],
+    [ReportDef],
+    [ReportDefType])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @Description,
+    @Query,
+    @CustomFieldKeyName,
+    @CustomRefType,
+    @CustomAuxID,
+    @ReportSubcategoryID,
+    @QueryObject,
+    @ExternalURL,
+    @LastSqlExecuted,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @ReportType,
+    @ReportDef,
+    @ReportDefType)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReport
+
+(
+  @ReportID int,
+  @OrganizationID int,
+  @Name varchar(100),
+  @Description varchar(8000),
+  @Query varchar(8000),
+  @CustomFieldKeyName varchar(50),
+  @CustomRefType int,
+  @CustomAuxID int,
+  @ReportSubcategoryID int,
+  @QueryObject varchar(MAX),
+  @ExternalURL varchar(3000),
+  @LastSqlExecuted varchar(MAX),
+  @DateModified datetime,
+  @ModifierID int,
+  @ReportType int,
+  @ReportDef varchar(MAX),
+  @ReportDefType int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Reports]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [Description] = @Description,
+    [Query] = @Query,
+    [CustomFieldKeyName] = @CustomFieldKeyName,
+    [CustomRefType] = @CustomRefType,
+    [CustomAuxID] = @CustomAuxID,
+    [ReportSubcategoryID] = @ReportSubcategoryID,
+    [QueryObject] = @QueryObject,
+    [ExternalURL] = @ExternalURL,
+    [LastSqlExecuted] = @LastSqlExecuted,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [ReportType] = @ReportType,
+    [ReportDef] = @ReportDef,
+    [ReportDefType] = @ReportDefType
+  WHERE ([ReportID] = @ReportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReport
+
+(
+  @ReportID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Reports]
+  WHERE ([ReportID] = @ReportID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectOrganizationProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectOrganizationProduct
 GO
 
@@ -29868,7 +30075,8 @@ AS
     [CompanyDomains],
     [SupportHoursMonth],
     [SupportHoursUsed],
-    [SupportHoursRemaining]
+    [SupportHoursRemaining],
+    [NeedsIndexing]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -32502,7 +32710,8 @@ AS
     [ModifierID],
     [OrganizationParentID],
     [CryptedPassword],
-    [SalesForceID]
+    [SalesForceID],
+    [NeedsIndexing]
   FROM [dbo].[ContactsView]
   WHERE ([UserID] = @UserID)
 GO
@@ -34064,7 +34273,8 @@ AS
     [UpdateStatus],
     [ActionTypeIDToPush],
     [HostName],
-    [DefaultProject]
+    [DefaultProject],
+    [MatchAccountsByName]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -34096,6 +34306,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @ActionTypeIDToPush int,
   @HostName varchar(8000),
   @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
   @Identity int OUT
 )
 AS
@@ -34122,7 +34333,8 @@ AS
     [UpdateStatus],
     [ActionTypeIDToPush],
     [HostName],
-    [DefaultProject])
+    [DefaultProject],
+    [MatchAccountsByName])
   VALUES (
     @OrganizationID,
     @Active,
@@ -34144,7 +34356,8 @@ AS
     @UpdateStatus,
     @ActionTypeIDToPush,
     @HostName,
-    @DefaultProject)
+    @DefaultProject,
+    @MatchAccountsByName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -34176,7 +34389,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @UpdateStatus bit,
   @ActionTypeIDToPush int,
   @HostName varchar(8000),
-  @DefaultProject varchar(8000)
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit
 )
 AS
   SET NOCOUNT OFF;
@@ -34202,7 +34416,8 @@ AS
     [UpdateStatus] = @UpdateStatus,
     [ActionTypeIDToPush] = @ActionTypeIDToPush,
     [HostName] = @HostName,
-    [DefaultProject] = @DefaultProject
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -36689,161 +36904,6 @@ AS
     [OrganizationID]
   FROM [dbo].[ProductVersionsView]
   WHERE ([ProductVersionID] = @ProductVersionID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReport
-
-(
-  @ReportID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [Query],
-    [CustomFieldKeyName],
-    [CustomRefType],
-    [CustomAuxID],
-    [ReportSubcategoryID],
-    [QueryObject],
-    [ExternalURL],
-    [LastSqlExecuted],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [ReportType]
-  FROM [dbo].[Reports]
-  WHERE ([ReportID] = @ReportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReport
-
-(
-  @OrganizationID int,
-  @Name varchar(100),
-  @Description varchar(8000),
-  @Query varchar(8000),
-  @CustomFieldKeyName varchar(50),
-  @CustomRefType int,
-  @CustomAuxID int,
-  @ReportSubcategoryID int,
-  @QueryObject varchar(MAX),
-  @ExternalURL varchar(3000),
-  @LastSqlExecuted varchar(MAX),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @ReportType int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reports]
-  (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [Query],
-    [CustomFieldKeyName],
-    [CustomRefType],
-    [CustomAuxID],
-    [ReportSubcategoryID],
-    [QueryObject],
-    [ExternalURL],
-    [LastSqlExecuted],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [ReportType])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @Query,
-    @CustomFieldKeyName,
-    @CustomRefType,
-    @CustomAuxID,
-    @ReportSubcategoryID,
-    @QueryObject,
-    @ExternalURL,
-    @LastSqlExecuted,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @ReportType)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReport
-
-(
-  @ReportID int,
-  @OrganizationID int,
-  @Name varchar(100),
-  @Description varchar(8000),
-  @Query varchar(8000),
-  @CustomFieldKeyName varchar(50),
-  @CustomRefType int,
-  @CustomAuxID int,
-  @ReportSubcategoryID int,
-  @QueryObject varchar(MAX),
-  @ExternalURL varchar(3000),
-  @LastSqlExecuted varchar(MAX),
-  @DateModified datetime,
-  @ModifierID int,
-  @ReportType int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Reports]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [Query] = @Query,
-    [CustomFieldKeyName] = @CustomFieldKeyName,
-    [CustomRefType] = @CustomRefType,
-    [CustomAuxID] = @CustomAuxID,
-    [ReportSubcategoryID] = @ReportSubcategoryID,
-    [QueryObject] = @QueryObject,
-    [ExternalURL] = @ExternalURL,
-    [LastSqlExecuted] = @LastSqlExecuted,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [ReportType] = @ReportType
-  WHERE ([ReportID] = @ReportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReport
-
-(
-  @ReportID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reports]
-  WHERE ([ReportID] = @ReportID)
 GO
 
 
@@ -40515,6 +40575,173 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReport
+
+(
+  @ReportID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReportID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [Query],
+    [CustomFieldKeyName],
+    [CustomRefType],
+    [CustomAuxID],
+    [ReportSubcategoryID],
+    [QueryObject],
+    [ExternalURL],
+    [LastSqlExecuted],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [ReportType],
+    [ReportDef],
+    [ReportDefType]
+  FROM [dbo].[Reports]
+  WHERE ([ReportID] = @ReportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReport
+
+(
+  @OrganizationID int,
+  @Name varchar(100),
+  @Description varchar(8000),
+  @Query varchar(8000),
+  @CustomFieldKeyName varchar(50),
+  @CustomRefType int,
+  @CustomAuxID int,
+  @ReportSubcategoryID int,
+  @QueryObject varchar(MAX),
+  @ExternalURL varchar(3000),
+  @LastSqlExecuted varchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @ReportType int,
+  @ReportDef varchar(MAX),
+  @ReportDefType int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Reports]
+  (
+    [OrganizationID],
+    [Name],
+    [Description],
+    [Query],
+    [CustomFieldKeyName],
+    [CustomRefType],
+    [CustomAuxID],
+    [ReportSubcategoryID],
+    [QueryObject],
+    [ExternalURL],
+    [LastSqlExecuted],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [ReportType],
+    [ReportDef],
+    [ReportDefType])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @Description,
+    @Query,
+    @CustomFieldKeyName,
+    @CustomRefType,
+    @CustomAuxID,
+    @ReportSubcategoryID,
+    @QueryObject,
+    @ExternalURL,
+    @LastSqlExecuted,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @ReportType,
+    @ReportDef,
+    @ReportDefType)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReport
+
+(
+  @ReportID int,
+  @OrganizationID int,
+  @Name varchar(100),
+  @Description varchar(8000),
+  @Query varchar(8000),
+  @CustomFieldKeyName varchar(50),
+  @CustomRefType int,
+  @CustomAuxID int,
+  @ReportSubcategoryID int,
+  @QueryObject varchar(MAX),
+  @ExternalURL varchar(3000),
+  @LastSqlExecuted varchar(MAX),
+  @DateModified datetime,
+  @ModifierID int,
+  @ReportType int,
+  @ReportDef varchar(MAX),
+  @ReportDefType int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Reports]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [Description] = @Description,
+    [Query] = @Query,
+    [CustomFieldKeyName] = @CustomFieldKeyName,
+    [CustomRefType] = @CustomRefType,
+    [CustomAuxID] = @CustomAuxID,
+    [ReportSubcategoryID] = @ReportSubcategoryID,
+    [QueryObject] = @QueryObject,
+    [ExternalURL] = @ExternalURL,
+    [LastSqlExecuted] = @LastSqlExecuted,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [ReportType] = @ReportType,
+    [ReportDef] = @ReportDef,
+    [ReportDefType] = @ReportDefType
+  WHERE ([ReportID] = @ReportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReport
+
+(
+  @ReportID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Reports]
+  WHERE ([ReportID] = @ReportID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectOrganizationProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectOrganizationProduct
 GO
 
@@ -42932,7 +43159,8 @@ AS
     [CompanyDomains],
     [SupportHoursMonth],
     [SupportHoursUsed],
-    [SupportHoursRemaining]
+    [SupportHoursRemaining],
+    [NeedsIndexing]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -45566,7 +45794,8 @@ AS
     [ModifierID],
     [OrganizationParentID],
     [CryptedPassword],
-    [SalesForceID]
+    [SalesForceID],
+    [NeedsIndexing]
   FROM [dbo].[ContactsView]
   WHERE ([UserID] = @UserID)
 GO
@@ -47128,7 +47357,8 @@ AS
     [UpdateStatus],
     [ActionTypeIDToPush],
     [HostName],
-    [DefaultProject]
+    [DefaultProject],
+    [MatchAccountsByName]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -47160,6 +47390,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @ActionTypeIDToPush int,
   @HostName varchar(8000),
   @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
   @Identity int OUT
 )
 AS
@@ -47186,7 +47417,8 @@ AS
     [UpdateStatus],
     [ActionTypeIDToPush],
     [HostName],
-    [DefaultProject])
+    [DefaultProject],
+    [MatchAccountsByName])
   VALUES (
     @OrganizationID,
     @Active,
@@ -47208,7 +47440,8 @@ AS
     @UpdateStatus,
     @ActionTypeIDToPush,
     @HostName,
-    @DefaultProject)
+    @DefaultProject,
+    @MatchAccountsByName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -47240,7 +47473,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @UpdateStatus bit,
   @ActionTypeIDToPush int,
   @HostName varchar(8000),
-  @DefaultProject varchar(8000)
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit
 )
 AS
   SET NOCOUNT OFF;
@@ -47266,7 +47500,8 @@ AS
     [UpdateStatus] = @UpdateStatus,
     [ActionTypeIDToPush] = @ActionTypeIDToPush,
     [HostName] = @HostName,
-    [DefaultProject] = @DefaultProject
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -49753,161 +49988,6 @@ AS
     [OrganizationID]
   FROM [dbo].[ProductVersionsView]
   WHERE ([ProductVersionID] = @ProductVersionID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReport
-
-(
-  @ReportID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [Query],
-    [CustomFieldKeyName],
-    [CustomRefType],
-    [CustomAuxID],
-    [ReportSubcategoryID],
-    [QueryObject],
-    [ExternalURL],
-    [LastSqlExecuted],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [ReportType]
-  FROM [dbo].[Reports]
-  WHERE ([ReportID] = @ReportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReport
-
-(
-  @OrganizationID int,
-  @Name varchar(100),
-  @Description varchar(8000),
-  @Query varchar(8000),
-  @CustomFieldKeyName varchar(50),
-  @CustomRefType int,
-  @CustomAuxID int,
-  @ReportSubcategoryID int,
-  @QueryObject varchar(MAX),
-  @ExternalURL varchar(3000),
-  @LastSqlExecuted varchar(MAX),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @ReportType int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reports]
-  (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [Query],
-    [CustomFieldKeyName],
-    [CustomRefType],
-    [CustomAuxID],
-    [ReportSubcategoryID],
-    [QueryObject],
-    [ExternalURL],
-    [LastSqlExecuted],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [ReportType])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @Query,
-    @CustomFieldKeyName,
-    @CustomRefType,
-    @CustomAuxID,
-    @ReportSubcategoryID,
-    @QueryObject,
-    @ExternalURL,
-    @LastSqlExecuted,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @ReportType)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReport
-
-(
-  @ReportID int,
-  @OrganizationID int,
-  @Name varchar(100),
-  @Description varchar(8000),
-  @Query varchar(8000),
-  @CustomFieldKeyName varchar(50),
-  @CustomRefType int,
-  @CustomAuxID int,
-  @ReportSubcategoryID int,
-  @QueryObject varchar(MAX),
-  @ExternalURL varchar(3000),
-  @LastSqlExecuted varchar(MAX),
-  @DateModified datetime,
-  @ModifierID int,
-  @ReportType int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Reports]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [Query] = @Query,
-    [CustomFieldKeyName] = @CustomFieldKeyName,
-    [CustomRefType] = @CustomRefType,
-    [CustomAuxID] = @CustomAuxID,
-    [ReportSubcategoryID] = @ReportSubcategoryID,
-    [QueryObject] = @QueryObject,
-    [ExternalURL] = @ExternalURL,
-    [LastSqlExecuted] = @LastSqlExecuted,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [ReportType] = @ReportType
-  WHERE ([ReportID] = @ReportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReport
-
-(
-  @ReportID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reports]
-  WHERE ([ReportID] = @ReportID)
 GO
 
 
@@ -53579,6 +53659,173 @@ AS
 GO
 
 
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReport
+
+(
+  @ReportID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [ReportID],
+    [OrganizationID],
+    [Name],
+    [Description],
+    [Query],
+    [CustomFieldKeyName],
+    [CustomRefType],
+    [CustomAuxID],
+    [ReportSubcategoryID],
+    [QueryObject],
+    [ExternalURL],
+    [LastSqlExecuted],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [ReportType],
+    [ReportDef],
+    [ReportDefType]
+  FROM [dbo].[Reports]
+  WHERE ([ReportID] = @ReportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReport
+
+(
+  @OrganizationID int,
+  @Name varchar(100),
+  @Description varchar(8000),
+  @Query varchar(8000),
+  @CustomFieldKeyName varchar(50),
+  @CustomRefType int,
+  @CustomAuxID int,
+  @ReportSubcategoryID int,
+  @QueryObject varchar(MAX),
+  @ExternalURL varchar(3000),
+  @LastSqlExecuted varchar(MAX),
+  @DateCreated datetime,
+  @DateModified datetime,
+  @CreatorID int,
+  @ModifierID int,
+  @ReportType int,
+  @ReportDef varchar(MAX),
+  @ReportDefType int,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[Reports]
+  (
+    [OrganizationID],
+    [Name],
+    [Description],
+    [Query],
+    [CustomFieldKeyName],
+    [CustomRefType],
+    [CustomAuxID],
+    [ReportSubcategoryID],
+    [QueryObject],
+    [ExternalURL],
+    [LastSqlExecuted],
+    [DateCreated],
+    [DateModified],
+    [CreatorID],
+    [ModifierID],
+    [ReportType],
+    [ReportDef],
+    [ReportDefType])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @Description,
+    @Query,
+    @CustomFieldKeyName,
+    @CustomRefType,
+    @CustomAuxID,
+    @ReportSubcategoryID,
+    @QueryObject,
+    @ExternalURL,
+    @LastSqlExecuted,
+    @DateCreated,
+    @DateModified,
+    @CreatorID,
+    @ModifierID,
+    @ReportType,
+    @ReportDef,
+    @ReportDefType)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReport
+
+(
+  @ReportID int,
+  @OrganizationID int,
+  @Name varchar(100),
+  @Description varchar(8000),
+  @Query varchar(8000),
+  @CustomFieldKeyName varchar(50),
+  @CustomRefType int,
+  @CustomAuxID int,
+  @ReportSubcategoryID int,
+  @QueryObject varchar(MAX),
+  @ExternalURL varchar(3000),
+  @LastSqlExecuted varchar(MAX),
+  @DateModified datetime,
+  @ModifierID int,
+  @ReportType int,
+  @ReportDef varchar(MAX),
+  @ReportDefType int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[Reports]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [Description] = @Description,
+    [Query] = @Query,
+    [CustomFieldKeyName] = @CustomFieldKeyName,
+    [CustomRefType] = @CustomRefType,
+    [CustomAuxID] = @CustomAuxID,
+    [ReportSubcategoryID] = @ReportSubcategoryID,
+    [QueryObject] = @QueryObject,
+    [ExternalURL] = @ExternalURL,
+    [LastSqlExecuted] = @LastSqlExecuted,
+    [DateModified] = @DateModified,
+    [ModifierID] = @ModifierID,
+    [ReportType] = @ReportType,
+    [ReportDef] = @ReportDef,
+    [ReportDefType] = @ReportDefType
+  WHERE ([ReportID] = @ReportID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReport
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReport
+
+(
+  @ReportID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[Reports]
+  WHERE ([ReportID] = @ReportID)
+GO
+
+
 IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectOrganizationProduct' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectOrganizationProduct
 GO
 
@@ -55996,7 +56243,8 @@ AS
     [CompanyDomains],
     [SupportHoursMonth],
     [SupportHoursUsed],
-    [SupportHoursRemaining]
+    [SupportHoursRemaining],
+    [NeedsIndexing]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -58630,7 +58878,8 @@ AS
     [ModifierID],
     [OrganizationParentID],
     [CryptedPassword],
-    [SalesForceID]
+    [SalesForceID],
+    [NeedsIndexing]
   FROM [dbo].[ContactsView]
   WHERE ([UserID] = @UserID)
 GO
@@ -60192,7 +60441,8 @@ AS
     [UpdateStatus],
     [ActionTypeIDToPush],
     [HostName],
-    [DefaultProject]
+    [DefaultProject],
+    [MatchAccountsByName]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -60224,6 +60474,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @ActionTypeIDToPush int,
   @HostName varchar(8000),
   @DefaultProject varchar(8000),
+  @MatchAccountsByName bit,
   @Identity int OUT
 )
 AS
@@ -60250,7 +60501,8 @@ AS
     [UpdateStatus],
     [ActionTypeIDToPush],
     [HostName],
-    [DefaultProject])
+    [DefaultProject],
+    [MatchAccountsByName])
   VALUES (
     @OrganizationID,
     @Active,
@@ -60272,7 +60524,8 @@ AS
     @UpdateStatus,
     @ActionTypeIDToPush,
     @HostName,
-    @DefaultProject)
+    @DefaultProject,
+    @MatchAccountsByName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -60304,7 +60557,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @UpdateStatus bit,
   @ActionTypeIDToPush int,
   @HostName varchar(8000),
-  @DefaultProject varchar(8000)
+  @DefaultProject varchar(8000),
+  @MatchAccountsByName bit
 )
 AS
   SET NOCOUNT OFF;
@@ -60330,7 +60584,8 @@ AS
     [UpdateStatus] = @UpdateStatus,
     [ActionTypeIDToPush] = @ActionTypeIDToPush,
     [HostName] = @HostName,
-    [DefaultProject] = @DefaultProject
+    [DefaultProject] = @DefaultProject,
+    [MatchAccountsByName] = @MatchAccountsByName
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -62817,161 +63072,6 @@ AS
     [OrganizationID]
   FROM [dbo].[ProductVersionsView]
   WHERE ([ProductVersionID] = @ProductVersionID)
-GO
-
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedSelectReport
-
-(
-  @ReportID int
-)
-AS
-  SET NOCOUNT OFF;
-  SELECT
-    [ReportID],
-    [OrganizationID],
-    [Name],
-    [Description],
-    [Query],
-    [CustomFieldKeyName],
-    [CustomRefType],
-    [CustomAuxID],
-    [ReportSubcategoryID],
-    [QueryObject],
-    [ExternalURL],
-    [LastSqlExecuted],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [ReportType]
-  FROM [dbo].[Reports]
-  WHERE ([ReportID] = @ReportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedInsertReport
-
-(
-  @OrganizationID int,
-  @Name varchar(100),
-  @Description varchar(8000),
-  @Query varchar(8000),
-  @CustomFieldKeyName varchar(50),
-  @CustomRefType int,
-  @CustomAuxID int,
-  @ReportSubcategoryID int,
-  @QueryObject varchar(MAX),
-  @ExternalURL varchar(3000),
-  @LastSqlExecuted varchar(MAX),
-  @DateCreated datetime,
-  @DateModified datetime,
-  @CreatorID int,
-  @ModifierID int,
-  @ReportType int,
-  @Identity int OUT
-)
-AS
-  SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Reports]
-  (
-    [OrganizationID],
-    [Name],
-    [Description],
-    [Query],
-    [CustomFieldKeyName],
-    [CustomRefType],
-    [CustomAuxID],
-    [ReportSubcategoryID],
-    [QueryObject],
-    [ExternalURL],
-    [LastSqlExecuted],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [ReportType])
-  VALUES (
-    @OrganizationID,
-    @Name,
-    @Description,
-    @Query,
-    @CustomFieldKeyName,
-    @CustomRefType,
-    @CustomAuxID,
-    @ReportSubcategoryID,
-    @QueryObject,
-    @ExternalURL,
-    @LastSqlExecuted,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @ReportType)
-
-SET @Identity = SCOPE_IDENTITY()
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedUpdateReport
-
-(
-  @ReportID int,
-  @OrganizationID int,
-  @Name varchar(100),
-  @Description varchar(8000),
-  @Query varchar(8000),
-  @CustomFieldKeyName varchar(50),
-  @CustomRefType int,
-  @CustomAuxID int,
-  @ReportSubcategoryID int,
-  @QueryObject varchar(MAX),
-  @ExternalURL varchar(3000),
-  @LastSqlExecuted varchar(MAX),
-  @DateModified datetime,
-  @ModifierID int,
-  @ReportType int
-)
-AS
-  SET NOCOUNT OFF;
-  UPDATE [dbo].[Reports]
-  SET
-    [OrganizationID] = @OrganizationID,
-    [Name] = @Name,
-    [Description] = @Description,
-    [Query] = @Query,
-    [CustomFieldKeyName] = @CustomFieldKeyName,
-    [CustomRefType] = @CustomRefType,
-    [CustomAuxID] = @CustomAuxID,
-    [ReportSubcategoryID] = @ReportSubcategoryID,
-    [QueryObject] = @QueryObject,
-    [ExternalURL] = @ExternalURL,
-    [LastSqlExecuted] = @LastSqlExecuted,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [ReportType] = @ReportType
-  WHERE ([ReportID] = @ReportID)
-GO
-
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReport' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReport
-GO
-
-CREATE PROCEDURE dbo.uspGeneratedDeleteReport
-
-(
-  @ReportID int
-)
-AS
-  SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Reports]
-  WHERE ([ReportID] = @ReportID)
 GO
 
 

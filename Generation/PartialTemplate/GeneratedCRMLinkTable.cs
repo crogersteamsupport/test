@@ -108,7 +108,6 @@ namespace TeamSupport.Data
     
 
     
-    
     public bool MatchAccountsByName
     {
       get { return (bool)Row["MatchAccountsByName"]; }
@@ -282,7 +281,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed,    [LastTicketID] = @LastTicketID,    [AllowPortalAccess] = @AllowPortalAccess,    [SendWelcomeEmail] = @SendWelcomeEmail,    [DefaultSlaLevelID] = @DefaultSlaLevelID,    [PushTicketsAsCases] = @PushTicketsAsCases,    [PullCasesAsTickets] = @PullCasesAsTickets,    [PullCustomerProducts] = @PullCustomerProducts,    [ActionTypeIDToPush] = @ActionTypeIDToPush,    [HostName] = @HostName,    [DefaultProject] = @DefaultProject,    [UpdateStatus] = @UpdateStatus,    [MatchAccountsByName] = @MatchAccountsByName  WHERE ([CRMLinkID] = @CRMLinkID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed,    [LastTicketID] = @LastTicketID,    [AllowPortalAccess] = @AllowPortalAccess,    [SendWelcomeEmail] = @SendWelcomeEmail,    [DefaultSlaLevelID] = @DefaultSlaLevelID,    [PullCasesAsTickets] = @PullCasesAsTickets,    [PushTicketsAsCases] = @PushTicketsAsCases,    [PullCustomerProducts] = @PullCustomerProducts,    [UpdateStatus] = @UpdateStatus,    [ActionTypeIDToPush] = @ActionTypeIDToPush,    [HostName] = @HostName,    [DefaultProject] = @DefaultProject,    [MatchAccountsByName] = @MatchAccountsByName  WHERE ([CRMLinkID] = @CRMLinkID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CRMLinkID", SqlDbType.Int, 4);
@@ -451,7 +450,7 @@ namespace TeamSupport.Data
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkTable] (    [OrganizationID],    [Active],    [CRMType],    [Username],    [Password],    [SecurityToken],    [TypeFieldMatch],    [LastLink],    [SendBackTicketData],    [LastProcessed],    [LastTicketID],    [AllowPortalAccess],    [SendWelcomeEmail],    [DefaultSlaLevelID],    [PushTicketsAsCases],    [PullCasesAsTickets],    [PullCustomerProducts],    [ActionTypeIDToPush],    [HostName],    [DefaultProject],    [UpdateStatus],    [MatchAccountsByName]) VALUES ( @OrganizationID, @Active, @CRMType, @Username, @Password, @SecurityToken, @TypeFieldMatch, @LastLink, @SendBackTicketData, @LastProcessed, @LastTicketID, @AllowPortalAccess, @SendWelcomeEmail, @DefaultSlaLevelID, @PushTicketsAsCases, @PullCasesAsTickets, @PullCustomerProducts, @ActionTypeIDToPush, @HostName, @DefaultProject, @UpdateStatus, @MatchAccountsByName); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CRMLinkTable] (    [OrganizationID],    [Active],    [CRMType],    [Username],    [Password],    [SecurityToken],    [TypeFieldMatch],    [LastLink],    [SendBackTicketData],    [LastProcessed],    [LastTicketID],    [AllowPortalAccess],    [SendWelcomeEmail],    [DefaultSlaLevelID],    [PullCasesAsTickets],    [PushTicketsAsCases],    [PullCustomerProducts],    [UpdateStatus],    [ActionTypeIDToPush],    [HostName],    [DefaultProject],    [MatchAccountsByName]) VALUES ( @OrganizationID, @Active, @CRMType, @Username, @Password, @SecurityToken, @TypeFieldMatch, @LastLink, @SendBackTicketData, @LastProcessed, @LastTicketID, @AllowPortalAccess, @SendWelcomeEmail, @DefaultSlaLevelID, @PullCasesAsTickets, @PushTicketsAsCases, @PullCustomerProducts, @UpdateStatus, @ActionTypeIDToPush, @HostName, @DefaultProject, @MatchAccountsByName); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("MatchAccountsByName", SqlDbType.Bit, 1);
@@ -720,7 +719,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkID], [OrganizationID], [Active], [CRMType], [Username], [Password], [SecurityToken], [TypeFieldMatch], [LastLink], [SendBackTicketData], [LastProcessed], [LastTicketID], [AllowPortalAccess], [SendWelcomeEmail], [DefaultSlaLevelID], [PushTicketsAsCases], [PullCasesAsTickets], [PullCustomerProducts], [ActionTypeIDToPush], [HostName], [DefaultProject], [UpdateStatus], [MatchAccountsByName] FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CRMLinkID], [OrganizationID], [Active], [CRMType], [Username], [Password], [SecurityToken], [TypeFieldMatch], [LastLink], [SendBackTicketData], [LastProcessed], [LastTicketID], [AllowPortalAccess], [SendWelcomeEmail], [DefaultSlaLevelID], [PullCasesAsTickets], [PushTicketsAsCases], [PullCustomerProducts], [UpdateStatus], [ActionTypeIDToPush], [HostName], [DefaultProject], [MatchAccountsByName] FROM [dbo].[CRMLinkTable] WHERE ([CRMLinkID] = @CRMLinkID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CRMLinkID", cRMLinkID);
         Fill(command);

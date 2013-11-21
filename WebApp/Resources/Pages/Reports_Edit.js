@@ -12,6 +12,7 @@ var reportEditPage = null;
 $(document).ready(function () {
   reportEditPage = new ReportEditPage();
   reportEditPage.refresh();
+  top.Ts.Services.Reports.GetCategories(loadCats);
   $('.report-info').show();
 
 
@@ -30,13 +31,11 @@ $(document).ready(function () {
     e.preventDefault();
     var visibleSection = $('.report-section:visible');
     if (visibleSection.hasClass('report-info')) {
-      if ($('#input-name').val() == '') {
-        $('.input-name').popover('show').parent('.form-group').addClass('has-error');
+      if ($('.report-name').val() == '') {
+        $('.report-name').popover('show').parent('.form-group').addClass('has-error');
         return;
       }
-      _report.Name = $('.input-name').val();
-      _report.Description = $('.report-description').val();
-      $('.input-name').popover('hide').parent('.form-group').removeClass('has-error');
+      $('.report-name').popover('hide').parent('.form-group').removeClass('has-error');
       $('.action-back').removeClass('disabled').prop('disabled', false);
       $('.report-type').show();
     }
@@ -80,7 +79,11 @@ $(document).ready(function () {
     else if (visibleSection.hasClass('report-fields')) {
       _report.Fields = new Array();
       $('.report-fields-selected li').each(function (index) {
-        _report.Fields.push($(this).data('field'));
+        var field = $(this).data('field');
+        var fieldItem = new Object();
+        fieldItem.FieldID = field.ID;
+        fieldItem.IsCustom = field.IsCustom;
+        _report.Fields.push(fieldItem);
       });
 
       initFilters();
@@ -148,18 +151,17 @@ $(document).ready(function () {
     var catID = $('#selectCat').val();
     var subID = $('#selectSubCat').val();
 
-    if ($('.report-fields-selected li').length < 1) {
-      $('.action-next').addClass('disabled').prop('disabled', true);
-      $('.report-fields-hint-order').hide();
-      $('.report-fields-hint-add').show();
-    }
-    else {
+    if ($('.report-fields-selected li').length > 0) {
       $('.action-next').removeClass('disabled').prop('disabled', false);
       $('.report-fields-hint-order').show();
       $('.report-fields-hint-add').hide();
     }
 
     if (_catID == catID && _subID == subID) return;
+    $('.action-next').addClass('disabled').prop('disabled', true);
+    $('.report-fields-hint-order').hide();
+    $('.report-fields-hint-add').show();
+
     $('.report-fields-selected ul').empty();
     $('.filter').empty();
     _catID = catID;
@@ -172,6 +174,7 @@ $(document).ready(function () {
       var tableName = "";
       var optGroup = null;
       for (var i = 0; i < fields.length; i++) {
+        delete fields[i]['__type'];
         $('<li>')
           .addClass('report-field-id-' + fields[i].ID)
           .data('field', fields[i])
@@ -227,15 +230,53 @@ $(document).ready(function () {
         $('.report-fields-hint-add').show();
       }
     });
-
-
   }
-
 
   $('.action-save').click(function (e) {
     e.preventDefault();
-    location = "reports.html";
+    $('.filter-output').empty();
+    getFilterObject($('.filter'), _report);
+    var data = JSON.stringify(_report);
+    top.Ts.Services.Reports.SaveReport(null, $('.report-name').val(), $('.report-description').val(), $(".report-section.report-type input[type='radio']:checked").val(), data, function (result) {
+    });
+    $('.filter-output').text(JSON.stringify(_report, undefined, 3));
+
+    //location = "reports.html";
   });
+
+  function getFilterObject(el, obj) {
+    el = $(el);
+    obj.Filters = new Array();
+
+    el.find('>.filter-group').each(function () {
+      var group = new Object();
+      var table = $(this);
+      group.Conjunction = table.find('.filter-conj:first').text().toUpperCase();
+      group.Conditions = new Array();
+
+      table.find('.filter-conds:first').find('.filter-cond').each(function () {
+        var condition = new Object();
+        var field = $(this).find(':selected').data('field');
+        condition.FieldID = field.ID;
+        condition.IsCustom = field.IsCustom;
+        var comp = $(this).find('.filter-comp');
+        condition.Comparator = comp.val().toUpperCase();
+        var next = comp.next();
+        if (!next.hasClass('filter-remove-cond')) {
+          condition.Value1 = next.val();
+        }
+        else {
+          condition.Value1 = null;
+        }
+        group.Conditions.push(condition);
+      });
+
+      obj.Filters.push(group);
+      getFilterObject(table.find('.filter-subs:first'), group);
+    });
+
+    return obj;
+  }
 
   $('.icon-bar-chart').click(function (e) {
     e.preventDefault();
@@ -256,14 +297,15 @@ $(document).ready(function () {
 
   function addCondition(list) {
     var clone = $('.filter-template-cond li.filter-cond').clone(true);
-    clone.appendTo(list).hide().fadeIn();
+    clone.appendTo(list).hide();
+    clone.find('.filter-field').trigger('change');
+    clone.fadeIn();
   }
 
   $('.filter').on('click', '.filter-add-group', function (e) {
     e.preventDefault();
     var subs = $(this).closest('.filter-content').find('.filter-subs:first');
     var list = $('.filter-template-body table').clone().appendTo(subs).hide().fadeIn().find('.filter-conds:first');
-    addCondition(list);
     addCondition(list);
   });
 
@@ -280,29 +322,86 @@ $(document).ready(function () {
   $('.filter').on('change', '.filter-field', function (e) {
     e.preventDefault();
     $(this).closest('li').find('.filter-comp').remove();
-    $(this).closest('li').find('.filter-value').show();
+    $(this).closest('li').find('.filter-value').remove();
     var field = $(this).find(':selected').data('field');
-
+    var comp = null;
     switch (field.DataType) {
-      case 'datetime': $('.filter-template-comps .filter-comp-datetime').clone().insertAfter($(this)); break;
-      case 'bool': $('.filter-template-comps .filter-comp-bool').clone().insertAfter($(this)); break;
-      case 'number': $('.filter-template-comps .filter-comp-number').clone().insertAfter($(this)); break;
-      default: $('.filter-template-comps .filter-comp-text').clone().insertAfter($(this)); break;
+      case 'datetime': comp = $('.filter-template-comps .filter-comp-datetime').clone().insertAfter($(this)); break;
+      case 'bool': comp = $('.filter-template-comps .filter-comp-bool').clone().insertAfter($(this)); break;
+      case 'number': comp = $('.filter-template-comps .filter-comp-number').clone().insertAfter($(this)); break;
+      default: comp = $('.filter-template-comps .filter-comp-text').clone().insertAfter($(this)); break;
     }
+    comp.trigger('change');
   });
 
   $('.filter').on('change', '.filter-comp', function (e) {
     e.preventDefault();
-    $(this).closest('li').find('.filter-field').find(':selected').data('field');
-    //alert($(this).find(':selected').data('argtype-1'));
-    $('<input type="text">').insertAfter($(this));
-
+    var field = $(this).closest('li').find('.filter-field').find(':selected').data('field');
+    $(this).closest('li').find('.filter-value').remove();
+    var arg1type = $(this).find(':selected').data('argtype-1');
+    if (arg1type) {
+      switch (arg1type) {
+        case 'int':
+          $('<input type="text">').addClass('form-control filter-value').insertAfter($(this)).numeric({ 'decimal': false });
+          break;
+        case 'float':
+          $('<input type="text">').addClass('form-control filter-value').insertAfter($(this)).numeric();
+          break;
+        case 'month':
+          var months = $('<select>').addClass('form-control filter-value').insertAfter($(this));
+          $('<option>').attr('value', 1).text('January').appendTo(months);
+          $('<option>').attr('value', 2).text('February').appendTo(months);
+          $('<option>').attr('value', 3).text('March').appendTo(months);
+          $('<option>').attr('value', 4).text('April').appendTo(months);
+          $('<option>').attr('value', 5).text('May').appendTo(months);
+          $('<option>').attr('value', 6).text('June').appendTo(months);
+          $('<option>').attr('value', 7).text('July').appendTo(months);
+          $('<option>').attr('value', 8).text('August').appendTo(months);
+          $('<option>').attr('value', 9).text('September').appendTo(months);
+          $('<option>').attr('value', 10).text('October').appendTo(months);
+          $('<option>').attr('value', 11).text('November').appendTo(months);
+          $('<option>').attr('value', 12).text('December').appendTo(months);
+          break;
+        case 'day':
+          var days = $('<select>').addClass('form-control filter-value').insertAfter($(this));
+          $('<option>').attr('value', 1).text('Sunday').appendTo(days);
+          $('<option>').attr('value', 2).text('Monday').appendTo(days);
+          $('<option>').attr('value', 3).text('Tuesday').appendTo(days);
+          $('<option>').attr('value', 4).text('Wednesday').appendTo(days);
+          $('<option>').attr('value', 5).text('Thursday').appendTo(days);
+          $('<option>').attr('value', 6).text('Friday').appendTo(days);
+          $('<option>').attr('value', 7).text('Saturday').appendTo(days);
+          break;
+        case 'date':
+          $('<input type="text">').addClass('form-control filter-value').insertAfter($(this)).datetimepicker(
+            {
+              icons: { time: "fa fa-clock-o", date: "fa fa-calendar", up: "fa fa-arrow-up", down: "fa fa-arrow-down" },
+              pickTime: false
+            }
+          );
+          break;
+        default:
+          var input = $('<input type="text">').addClass('form-control filter-value').insertAfter($(this));
+          if (field.LookupTableID) {
+            input.autocomplete({ minLength: 2, source: getFieldValues, select: function (event, ui) { } });
+            input.data('fieldid', field.ID);
+          }
+      }
+    }
   });
+
+  var execGetFieldValues = null;
+  function getFieldValues(request, response) {
+    if (execGetFieldValues) { execGetFieldValues._executor.abort(); }
+    execGetFieldValues = top.Ts.Services.System.GetLookupDisplayNames($(this.element).data('fieldid'), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
+  }
+
 
   function initFilters() {
     addCondition($('.filter-template-body table').clone().appendTo('.filter').find('.filter-conds:first'));
   }
 });
+
 
 function onShow() {
   reportEditPage.refresh();

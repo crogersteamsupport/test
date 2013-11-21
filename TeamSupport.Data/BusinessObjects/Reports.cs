@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Runtime.Serialization;
+
 
 namespace TeamSupport.Data
 {
@@ -320,6 +322,8 @@ namespace TeamSupport.Data
       report.DateModified = DateTime.UtcNow;
       report.ModifierID = this.Collection.LoginUser.UserID;
       report.CreatorID = this.Collection.LoginUser.UserID;
+      report.ReportDefType = this.ReportDefType;
+      report.ReportDef = this.ReportDef;
       reports.Save();
 
       return report.ReportID;
@@ -450,7 +454,6 @@ IF @@ROWCOUNT=0
       SqlExecutor.ExecuteNonQuery(loginUser, command);
     }
 
-
     public Report FindByName(string name)
     {
       name = name.Trim().ToLower();
@@ -463,6 +466,45 @@ IF @@ROWCOUNT=0
       }
       return null;
     }
-
   }
+
+
+  public class TabularReport
+  {
+    public TabularReport() { }
+    public int Category { get; set; }
+    public int Subcategory { get; set; }
+    public ReportSelectedField[] Fields { get; set; }
+    public ReportFilter[] Filters { get; set; }
+  }
+
+  public class ReportSelectedField 
+  {
+    public ReportSelectedField() { }
+    public int FieldID { get; set; }
+    public bool IsCustom { get; set; }
+  }
+
+  public class ReportFilter
+  {
+    public ReportFilter() { }
+    public string Conjunction { get; set; }
+    public ReportFilterCondition[] Conditions { get; set; }
+    public ReportFilter[] Filters { get; set; }
+  }
+
+  public class ReportFilterCondition
+  {
+    public ReportFilterCondition() { }
+    public string FieldID { get; set; }
+    public bool IsCustom { get; set; }
+    public string Comparator { get; set; }
+    public string Value1 { get; set; }
+  }
+
+ 
+
+
+
+
 }

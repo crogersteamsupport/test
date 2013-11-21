@@ -30,6 +30,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("ReportType", "ReportType", false, false, false);
+      _fieldMap.AddMap("ReportDef", "ReportDef", false, false, false);
+      _fieldMap.AddMap("ReportDefType", "ReportDefType", false, false, false);
             
     }
   }

@@ -30,6 +30,8 @@ namespace TeamSupport.Data
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public ReportType ReportType { get; set; }
+    [DataMember] public string ReportDef { get; set; }
+    [DataMember] public ReportType ReportDefType { get; set; }
           
   }
   
@@ -38,6 +40,8 @@ namespace TeamSupport.Data
     public ReportProxy GetProxy()
     {
       ReportProxy result = new ReportProxy();
+      result.ReportDefType = this.ReportDefType;
+      result.ReportDef = this.ReportDef;
       result.ReportType = this.ReportType;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;

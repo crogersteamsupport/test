@@ -524,8 +524,8 @@ namespace TeamSupport.Data
 		tempParameter = updateCommand.Parameters.Add("SupportHoursRemaining", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
-		  tempParameter.Precision = 38;
-		  tempParameter.Scale = 38;
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
 		}
 		
 		tempParameter = updateCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
