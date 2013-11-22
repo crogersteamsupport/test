@@ -105,11 +105,24 @@ namespace TeamSupport.Api
       Users users = new Users(command.LoginUser);
       User user = users.AddNewUser();
       user.FullReadFromXml(command.Data, true, ref phoneNumber, ref address);
-      if (organizationID == null)
+      if (organizationID == null && user.OrganizationID == 0)
       {
-        user.OrganizationID = Organizations.GetUnknownCompanyID(command.LoginUser);
+        if (!String.IsNullOrEmpty(user.Email) && user.Email.Contains("@"))
+        {
+          Organizations matchDomainCompany = new Organizations(command.LoginUser);
+          matchDomainCompany.LoadFirstDomainMatch(command.LoginUser.OrganizationID, user.Email.Substring(user.Email.LastIndexOf("@") + 1));
+          if (!matchDomainCompany.IsEmpty)
+          {
+            user.OrganizationID = matchDomainCompany[0].OrganizationID;
+          }
+        }
+
+        if (user.OrganizationID == 0)
+        {
+          user.OrganizationID = Organizations.GetUnknownCompanyID(command.LoginUser);
+        }
       }
-      else
+      else if (organizationID != null)
       {
         user.OrganizationID = (int)organizationID;
       }

@@ -116,7 +116,14 @@ namespace TeamSupport.Data
     public static int? GetIDByEmail(LoginUser loginUser, string email, int? parentID)
     {
       Users users = new Users(loginUser);
-      users.LoadByEmail(loginUser.OrganizationID, email);
+      if (parentID != null)
+      {
+        users.LoadByEmail(email, (int)parentID);
+      }
+      else
+      {
+        users.LoadByEmail(loginUser.OrganizationID, email);
+      }
       if (users.IsEmpty) return null;
       else return users[0].UserID;
     }

@@ -167,7 +167,7 @@ AND ot.TicketID = @TicketID
 
       try
       {
-        object userID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "UserID", "UserName", User.GetIDByName, false, null);
+        object userID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "UserID", "UserEmail", User.GetIDByEmail, false, user.OrganizationID);
         if (userID != null) this.UserID = Convert.ToInt32(userID);
       }
       catch
@@ -248,7 +248,7 @@ AND ot.TicketID = @TicketID
 
       try
       {
-        object closerID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "CloserID", "CloserName", User.GetIDByName, false, null);
+        object closerID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "CloserID", "CloserEmail", User.GetIDByEmail, false, user.OrganizationID);
         if (closerID != null) this.CloserID = Convert.ToInt32(closerID);
       }
       catch
@@ -266,7 +266,7 @@ AND ot.TicketID = @TicketID
 
       try
       {
-        object creatorID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "CreatorID", "CreatorName", User.GetIDByName, false, null);
+        object creatorID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "CreatorID", "CreatorEmail", User.GetIDByEmail, false, user.OrganizationID);
         if (creatorID != null) this.CreatorID = Convert.ToInt32(creatorID);
       }
       catch
@@ -278,7 +278,7 @@ AND ot.TicketID = @TicketID
         object contactIDObject = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "ContactID", "ContactEmail", User.GetIDByEmail, false, null, true);
         if (contactIDObject != null)
         {
-          contactID = (int)contactIDObject;
+          contactID = Convert.ToInt32(contactIDObject);
         }
         else
         {
@@ -290,7 +290,27 @@ AND ot.TicketID = @TicketID
             User newUser = newUserCollection.AddNewUser();
             newUser.Email = row[column].ToString().Trim();
             newUser.LastName = newUser.Email;
-            newUser.OrganizationID = Organizations.GetUnknownCompanyID(user);
+            newUser.IsActive = true;
+            newUser.ActivatedOn = DateTime.UtcNow;
+            newUser.LastLogin = DateTime.UtcNow;
+            newUser.LastActivity = DateTime.UtcNow.AddHours(-1);
+            newUser.IsPasswordExpired = true;
+
+            if (newUser.Email.Contains("@"))
+            {
+              Organizations matchDomainCompany = new Organizations(user);
+              matchDomainCompany.LoadFirstDomainMatch(user.OrganizationID, newUser.Email.Substring(newUser.Email.LastIndexOf("@") + 1));
+              if (!matchDomainCompany.IsEmpty)
+              {
+                newUser.OrganizationID = matchDomainCompany[0].OrganizationID;
+              }
+            }
+
+            if (newUser.OrganizationID == 0)
+            {
+              newUser.OrganizationID = Organizations.GetUnknownCompanyID(user);
+            }
+
             newUserCollection.Save();
             contactID = newUser.UserID;
           }

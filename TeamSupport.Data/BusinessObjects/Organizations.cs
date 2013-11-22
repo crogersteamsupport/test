@@ -2193,5 +2193,18 @@ ORDER BY o.Name";
       }
       return organizations[0].OrganizationID;
     }
+
+    public void LoadFirstDomainMatch(int parentID, string domain)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT TOP 1 * FROM Organizations o WHERE o.ParentID = @ParentID AND o.CompanyDomains LIKE @Domain ORDER BY LEN(o.CompanyDomains)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ParentID", parentID);
+        command.Parameters.AddWithValue("@Domain", "%" + domain + "%");
+        Fill(command, "Organizations");
+      }
+
+    }
   }
 }
