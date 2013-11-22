@@ -168,11 +168,16 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByOrganizationIDOrderByNumberDESC(int organizationID)
+    public void LoadByOrganizationIDOrderByNumberDESC(int organizationID, int? limitNumber = null)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM TicketsView WHERE (OrganizationID = @OrganizationID) ORDER BY TicketNumber DESC";
+        string limit = string.Empty;
+        if (limitNumber != null)
+        {
+          limit = "TOP " + limitNumber.ToString();
+        }
+        command.CommandText = "SELECT " + limit + " * FROM TicketsView WHERE (OrganizationID = @OrganizationID) ORDER BY TicketNumber DESC";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);

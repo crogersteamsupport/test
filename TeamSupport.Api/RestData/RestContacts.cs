@@ -22,12 +22,12 @@ namespace TeamSupport.Api
       return item.GetXml("Contact", true);
     }
 
-    public static string GetItems(RestCommand command, bool orderByDateCreated = false)
+    public static string GetItems(RestCommand command, bool orderByDateCreated = false, int? limitNumber = null)
     {
       ContactsView items = new ContactsView(command.LoginUser);
       if (orderByDateCreated)
       {
-        items.LoadByParentOrganizationID(command.Organization.OrganizationID, "DateCreated DESC");
+        items.LoadByParentOrganizationID(command.Organization.OrganizationID, "DateCreated DESC", limitNumber);
       }
       else
       {

@@ -15,11 +15,16 @@ namespace TeamSupport.Data
   
   public partial class WikiArticlesView
   {
-    public void LoadByOrganizationID(int organizationID, string orderBy = "ArticleName")
+    public void LoadByOrganizationID(int organizationID, string orderBy = "ArticleName", int? limitNumber = null)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM WikiArticlesView WHERE OrganizationID = @OrganizationID AND Private <> 1 ORDER BY " + orderBy;
+        string limit = string.Empty;
+        if (limitNumber != null)
+        {
+          limit = "TOP " + limitNumber.ToString();
+        }
+        command.CommandText = "SELECT " + limit + " * FROM WikiArticlesView WHERE OrganizationID = @OrganizationID AND Private <> 1 ORDER BY " + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);

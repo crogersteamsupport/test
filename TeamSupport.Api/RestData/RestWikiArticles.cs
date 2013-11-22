@@ -29,13 +29,13 @@ namespace TeamSupport.Api
       return wikiArticle.GetXml("Article", true);
     }
 
-    public static string GetWikiArticles(RestCommand command, bool orderByDateCreated = false)
+    public static string GetWikiArticles(RestCommand command, bool orderByDateCreated = false, int? limitNumber = null)
     {
 
       WikiArticlesView wikiArticles = new WikiArticlesView(command.LoginUser);
       if (orderByDateCreated)
       {
-        wikiArticles.LoadByOrganizationID(command.Organization.OrganizationID, "CreatedDate DESC");      
+        wikiArticles.LoadByOrganizationID(command.Organization.OrganizationID, "CreatedDate DESC", limitNumber);      
       }
       else
       {

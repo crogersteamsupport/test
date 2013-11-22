@@ -24,12 +24,12 @@ namespace TeamSupport.Api
       return action.GetXml("Action", true);
     }
 
-    public static string GetActions(RestCommand command, int ticketID)
+    public static string GetActions(RestCommand command, int ticketID, int? limitNumber = null)
     {
       Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
       if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       ActionsView actions = new ActionsView(command.LoginUser);
-      actions.LoadByTicketID(ticketID);
+      actions.LoadByTicketID(ticketID, limitNumber);
 
       return actions.GetXml("Actions", "Action", true, command.Filters);
     }

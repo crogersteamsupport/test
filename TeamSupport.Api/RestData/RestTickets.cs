@@ -70,14 +70,14 @@ namespace TeamSupport.Api
       return xml;
     }
 
-    public static string GetZapierTickets(RestCommand command)
+    public static string GetZapierTickets(RestCommand command, int limitNumber)
     {
       string xml = "";
 
       TicketsView tickets = new TicketsView(command.LoginUser);
       XmlTextWriter writer = Tickets.BeginXmlWrite("Tickets");
 
-      tickets.LoadByOrganizationIDOrderByNumberDESC(command.Organization.OrganizationID);
+      tickets.LoadByOrganizationIDOrderByNumberDESC(command.Organization.OrganizationID, limitNumber);
       foreach (DataRow row in tickets.Table.Rows)
       {
         tickets.WriteXml(writer, row, "Ticket", true, command.Filters);

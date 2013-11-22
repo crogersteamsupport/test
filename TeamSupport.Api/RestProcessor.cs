@@ -78,6 +78,8 @@ namespace TeamSupport.Api
 
       if (!_command.IsCustomerOnly)
       {
+        int zapierLimit = 50;
+
         switch (uriTemplate)
         {
           case "/tickets/": data = RestTickets.GetTickets(_command); break;
@@ -144,14 +146,14 @@ namespace TeamSupport.Api
           case "/properties/tickettypes/": data = RestProperties.GetTicketTypes(_command); break;
           case "/properties/knowledgebasecategories/": data = RestProperties.GetKnowledgeBaseCategories(_command); break;
 
-          case "/zapier/tickets/": data = RestTickets.GetZapierTickets(_command); break;
+          case "/zapier/tickets/": data = RestTickets.GetZapierTickets(_command, zapierLimit); break;
           case "/zapier/tickets/{id}/history/": data = RestActionLogs.GetItems(_command, ReferenceType.Tickets, GetId(2), true); break;
           case "/zapier/tickets/{id}/customers/": data = RestOrganizations.GetTicketOrganizations(_command, GetId(2), true); break;
           case "/zapier/tickets/{id}/contacts/": data = RestContacts.GetTicketContacts(_command, GetId(2), true); break;
           // TicketActions is already sorted by DateCreated DESC nevertheless I added a Zapier accesspoint for consistency.
-          case "/zapier/tickets/{id}/actions/": data = RestActions.GetActions(_command, GetId(2)); break;
+          case "/zapier/tickets/{id}/actions/": data = RestActions.GetActions(_command, GetId(2), zapierLimit); break;
           case "/zapier/tickets/{id}/actions/{id}/attachments/": data = RestAttachments.GetAttachments(_command, GetId(4), true); break;
-          case "/zapier/customers/": data = RestOrganizations.GetOrganizations(_command, true); break;
+          case "/zapier/customers/": data = RestOrganizations.GetOrganizations(_command, true, zapierLimit); break;
           case "/zapier/customers/{id}/history/": data = RestActionLogs.GetItems(_command, ReferenceType.Organizations, GetId(2), true); break;
           case "/zapier/customers/{id}/tickets/": data = RestTickets.GetTicketsByCustomerID(_command, GetId(2), true); break;
           case "/zapier/customers/{id}/phonenumbers/": data = RestPhoneNumbers.GetPhoneNumbers(_command, ReferenceType.Organizations, GetId(2), true); break;
@@ -170,7 +172,7 @@ namespace TeamSupport.Api
           case "/zapier/customers/{id}/products/{id}/": data = RestOrganizationProducts.GetOrganizationProductItems(_command, GetId(2), GetId(4), true); break;
           case "/zapier/customers/{id}/products/{id}/versions/": data = RestVersions.GetOrganizationVersions(_command, GetId(4), GetId(2), true); break;
 
-          case "/zapier/contacts/": data = RestContacts.GetItems(_command, true); break;
+          case "/zapier/contacts/": data = RestContacts.GetItems(_command, true, zapierLimit); break;
           case "/zapier/contacts/{id}/tickets/": data = RestTickets.GetTicketsByContactID(_command, GetId(2), true); break;
           case "/zapier/contacts/{id}/addresses/": data = RestAddresses.GetAddresses(_command, ReferenceType.Users, GetId(2), true); break;
           case "/zapier/contacts/{id}/phonenumbers/": data = RestPhoneNumbers.GetPhoneNumbers(_command, ReferenceType.Users, GetId(2), true); break;
@@ -184,7 +186,7 @@ namespace TeamSupport.Api
           case "/zapier/groups/": data = RestGroups.GetGroups(_command, true); break;
           case "/zapier/users/": data = RestUsers.GetUsers(_command, true); break;
           case "/zapier/users/{id}/history/": data = RestActionLogs.GetItems(_command, ReferenceType.Users, GetId(2), true); break;
-          case "/zapier/wiki/": data = RestWikiArticles.GetWikiArticles(_command, true); break;
+          case "/zapier/wiki/": data = RestWikiArticles.GetWikiArticles(_command, true, zapierLimit); break;
           case "/zapier/properties/actiontypes/": data = RestProperties.GetActionTypes(_command, true); break;
           case "/zapier/properties/phonetypes/": data = RestProperties.GetPhoneTypes(_command, true); break;
           case "/zapier/properties/productversionstatuses/": data = RestProperties.GetProductVersionStatuses(_command, true); break;

@@ -42,15 +42,20 @@ namespace TeamSupport.Data
   
   public partial class ActionsView
   {
-    public void LoadByTicketID(int ticketID, bool onlyVisibleOnPortal)
+    public void LoadByTicketID(int ticketID, bool onlyVisibleOnPortal, int? limitNumber = null)
     {
       using (SqlCommand command = new SqlCommand())
       {
+        string limit = string.Empty;
+        if (limitNumber != null)
+        {
+          limit = "TOP " + limitNumber.ToString();
+        }
         command.CommandType = CommandType.Text;
         if (onlyVisibleOnPortal)
           command.CommandText = "SELECT * FROM ActionsView WHERE TicketID = @TicketID AND IsVisibleOnPortal=1 ORDER BY DateCreated DESC";
         else
-          command.CommandText = "SELECT * FROM ActionsView WHERE TicketID = @TicketID ORDER BY DateCreated DESC";
+          command.CommandText = "SELECT " + limit + " * FROM ActionsView WHERE TicketID = @TicketID ORDER BY DateCreated DESC";
 
         command.Parameters.AddWithValue("@TicketID", ticketID);
         Fill(command);
@@ -85,9 +90,9 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByTicketID(int ticketID)
+    public void LoadByTicketID(int ticketID, int? limitNumber = null)
     {
-      LoadByTicketID(ticketID, false);
+      LoadByTicketID(ticketID, false, limitNumber);
     }
   }
   

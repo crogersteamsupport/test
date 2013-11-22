@@ -21,12 +21,12 @@ namespace TeamSupport.Api
       return organization.GetXml("Customer", true);
     }
 
-    public static string GetOrganizations(RestCommand command, bool orderByDateCreated = false)
+    public static string GetOrganizations(RestCommand command, bool orderByDateCreated = false, int? limitNumber = null)
     {
       OrganizationsView organizations = new OrganizationsView(command.LoginUser);
       if (orderByDateCreated)
       {
-        organizations.LoadByParentID(command.Organization.OrganizationID, true, "DateCreated DESC");
+        organizations.LoadByParentID(command.Organization.OrganizationID, true, "DateCreated DESC", limitNumber);
       }
       else
       {

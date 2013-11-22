@@ -13,11 +13,16 @@ namespace TeamSupport.Data
   
   public partial class ContactsView
   {
-    public void LoadByParentOrganizationID(int organizationID, string orderBy = "LastName, FirstName")
+    public void LoadByParentOrganizationID(int organizationID, string orderBy = "LastName, FirstName", int? limitNumber = null)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM ContactsView WHERE OrganizationParentID = @OrganizationID AND (MarkDeleted = 0) ORDER BY " + orderBy;
+        string limit = string.Empty;
+        if (limitNumber != null)
+        {
+          limit = "TOP " + limitNumber.ToString();
+        }
+        command.CommandText = "SELECT " + limit + " * FROM ContactsView WHERE OrganizationParentID = @OrganizationID AND (MarkDeleted = 0) ORDER BY " + orderBy;
         command.CommandText = InjectCustomFields(command.CommandText, "UserID", ReferenceType.Contacts);
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);

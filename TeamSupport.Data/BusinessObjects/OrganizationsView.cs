@@ -24,11 +24,16 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByParentID(int parentID, bool includeCustomFields, string orderBy = "Name")
+    public void LoadByParentID(int parentID, bool includeCustomFields, string orderBy = "Name", int? limitNumber = null)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        string sql = "SELECT * FROM OrganizationsView WHERE (ParentID = @ParentID) ORDER BY " + orderBy;
+        string limit = string.Empty;
+        if (limitNumber != null)
+        {
+          limit = "TOP " + limitNumber.ToString();
+        }
+        string sql = "SELECT " + limit + " * FROM OrganizationsView WHERE (ParentID = @ParentID) ORDER BY " + orderBy;
         if (includeCustomFields) sql = InjectCustomFields(sql, "OrganizationID", ReferenceType.Organizations);
         command.CommandText = sql;
         command.CommandType = CommandType.Text;
