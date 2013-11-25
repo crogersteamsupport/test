@@ -109,13 +109,10 @@ namespace TSWebServices
           List<ReportSubcateoryItem> subs = new List<ReportSubcateoryItem>();
           foreach (ReportSubcategory cat in cats)
           {
-            if (cat.ReportTableID != null)
-            {
-              ReportSubcateoryItem sub = new ReportSubcateoryItem();
-              sub.SubCatID = cat.ReportSubcategoryID;
-              sub.Name = cat.Row["Alias"].ToString();
-              subs.Add(sub);
-            }
+            ReportSubcateoryItem sub = new ReportSubcateoryItem();
+            sub.SubCatID = cat.ReportSubcategoryID;
+            sub.Name = cat.ReportTableID != null ? cat.Row["Alias"].ToString() : "None";
+            subs.Add(sub);
           }
           item.Subcategories = subs.ToArray();
           result.Add(item);
@@ -124,19 +121,18 @@ namespace TSWebServices
       }
 
       [WebMethod]
-      public ReportFieldItem[] GetFields(int reportTableID, int reportSubCatID)
+      public ReportFieldItem[] GetFields(int reportSubCatID)
       {
         LoginUser loginUser = TSAuthentication.GetLoginUser();
         List<ReportFieldItem> result = new List<ReportFieldItem>();
         TicketTypes ticketTypes = new TicketTypes(loginUser);
         ticketTypes.LoadAllPositions(loginUser.OrganizationID);
 
-        ReportSubcategory subCat = reportSubCatID < 0 ? null : ReportSubcategories.GetReportSubcategory(loginUser, reportSubCatID);
-
-        ReportTable primaryTable = ReportTables.GetReportTable(loginUser, reportTableID);
+        ReportSubcategory subCat = ReportSubcategories.GetReportSubcategory(loginUser, reportSubCatID);
+        ReportTable primaryTable = ReportTables.GetReportTable(loginUser, subCat.ReportCategoryTableID);
 
         ReportTableFields reportTableFields = new ReportTableFields(loginUser);
-        reportTableFields.LoadByReportTableID(reportTableID);
+        reportTableFields.LoadByReportTableID(subCat.ReportCategoryTableID);
         foreach (ReportTableField reportTableField in reportTableFields)
 	      {
           result.Add(new ReportFieldItem(primaryTable.Alias, true, reportTableField));
@@ -162,7 +158,7 @@ namespace TSWebServices
           }
         }
 
-        if (subCat != null)
+        if (subCat.ReportTableID != null)
         {
           ReportTable subTable = ReportTables.GetReportTable(loginUser, (int)subCat.ReportTableID);
           reportTableFields = new ReportTableFields(loginUser);
@@ -316,7 +312,7 @@ namespace TSWebServices
           this.ReportID = report.ReportID;
           this.OrganizationID = report.OrganizationID;
           this.Name = report.Name;
-          this.Description = report.Description;
+          this.Description = string.IsNullOrWhiteSpace(report.Description) ? "&nbsp;" : report.Description;
           this.IsFavorite = (report.Row.Table.Columns.IndexOf("IsFavorite") < 0 || report.Row["IsFavorite"] == DBNull.Value ? false : (bool)report.Row["IsFavorite"]);
           this.IsHidden = (report.Row.Table.Columns.IndexOf("IsHidden") < 0 || report.Row["IsHidden"] == DBNull.Value ? false : (bool)report.Row["IsHidden"]);
           this.ReportType = report.ReportDefType;

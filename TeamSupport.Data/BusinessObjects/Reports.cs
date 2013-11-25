@@ -472,7 +472,6 @@ IF @@ROWCOUNT=0
   public class TabularReport
   {
     public TabularReport() { }
-    public int Category { get; set; }
     public int Subcategory { get; set; }
     public ReportSelectedField[] Fields { get; set; }
     public ReportFilter[] Filters { get; set; }

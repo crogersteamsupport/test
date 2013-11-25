@@ -259,7 +259,7 @@ public partial class ReportEditor_ReportEditor : System.Web.UI.Page
     cblFields.Items.Clear();
     int primaryTableID = int.Parse(cmbCategory.SelectedValue);
     int secondaryTableID = -1;
-
+    
     TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
     ticketTypes.LoadAllPositions(UserSession.LoginUser.OrganizationID);
     

@@ -24,14 +24,22 @@ $(document).ready(function () {
 
   top.Ts.Services.Reports.GetReports(loadReports);
 
-  $('.reports-list').on('click', '.action-view', function (e) {
-    e.preventDefault();
-    alert('in dev');
-  });
-
   $('.reports-list').on('click', '.action-edit', function (e) {
     e.preventDefault();
-    alert('in dev');
+    window.location.assign("reports_edit.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID);
+  });
+
+  $('.reports-list').on('click', '.action-view', function (e) {
+    e.preventDefault();
+    var report = $(this).parents('.report-item').data('o');
+
+    switch (report.ReportType) {
+      case 1: window.location.assign("reports_view_chart.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
+      case 2: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
+      case 3: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
+      default: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); 
+    }
+    
   });
 
   $('.reports-list').on('click', '.action-clone', function (e) {

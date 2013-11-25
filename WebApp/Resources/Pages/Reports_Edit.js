@@ -8,23 +8,29 @@
 /// <reference path="ts/ts.grids.models.tickets.js" />
 /// <reference path="~/Default.aspx" />
 
-var reportEditPage = null;
 $(document).ready(function () {
-  reportEditPage = new ReportEditPage();
-  reportEditPage.refresh();
+  var _reportID = top.Ts.Utils.getQueryValue('ReportID');
   top.Ts.Services.Reports.GetCategories(loadCats);
+
+  if (_reportID) { 
+  
+  
+  
+  
+  }
+
+
   $('.report-info').show();
 
 
   var _cats = null;
   var _fields = null;
   var _report = new Object();
-  var _catID = -1;
   var _subID = -1;
 
   $('.action-cancel').click(function (e) {
     e.preventDefault();
-    location = "reports.html";
+    location.assign("reports.html");
   });
 
   $('.action-next').click(function (e) {
@@ -68,7 +74,6 @@ $(document).ready(function () {
       }
     }
     else if (visibleSection.hasClass('report-tables')) {
-      _report.Category = $('#selectCat').val();
       _report.Subcategory = $('#selectSubCat').val();
 
       $('.report-fields').show();
@@ -137,7 +142,7 @@ $(document).ready(function () {
   function loadSubCats() {
     var reportTableID = $('#selectCat').val();
     $('#selectSubCat').empty();
-    $('#selectSubCat').append($('<option/>').attr('value', '-1').text('None'));
+    //$('#selectSubCat').append($('<option/>').attr('value', '-1').text('None'));
     for (var i = 0; i < _cats.length; i++) {
       if (_cats[i].ReportTableID == reportTableID) {
         for (var j = 0; j < _cats[i].Subcategories.length; j++) {
@@ -148,7 +153,6 @@ $(document).ready(function () {
   }
 
   function loadFields() {
-    var catID = $('#selectCat').val();
     var subID = $('#selectSubCat').val();
 
     if ($('.report-fields-selected li').length > 0) {
@@ -157,18 +161,17 @@ $(document).ready(function () {
       $('.report-fields-hint-add').hide();
     }
 
-    if (_catID == catID && _subID == subID) return;
+    if (_subID == subID) return;
     $('.action-next').addClass('disabled').prop('disabled', true);
     $('.report-fields-hint-order').hide();
     $('.report-fields-hint-add').show();
 
     $('.report-fields-selected ul').empty();
     $('.filter').empty();
-    _catID = catID;
     _subID = subID;
 
     var list = $('.report-fields-available ul').empty();
-    top.Ts.Services.Reports.GetFields(catID, subID, function (fields) {
+    top.Ts.Services.Reports.GetFields(subID, function (fields) {
       _fields = fields;
       $('.filter-template-cond .filter-field').empty();
       var tableName = "";
@@ -237,11 +240,9 @@ $(document).ready(function () {
     $('.filter-output').empty();
     getFilterObject($('.filter'), _report);
     var data = JSON.stringify(_report);
-    top.Ts.Services.Reports.SaveReport(null, $('.report-name').val(), $('.report-description').val(), $(".report-section.report-type input[type='radio']:checked").val(), data, function (result) {
-    });
-    $('.filter-output').text(JSON.stringify(_report, undefined, 3));
-
-    //location = "reports.html";
+    top.Ts.Services.Reports.SaveReport(null, $('.report-name').val(), $('.report-description').val(), $(".report-section.report-type input[type='radio']:checked").val(), data
+    , function (result) { location.assign("reports.html"); }
+    , function (error) { alert(error.get_message()); });
   });
 
   function getFilterObject(el, obj) {
@@ -280,7 +281,7 @@ $(document).ready(function () {
 
   $('.icon-bar-chart').click(function (e) {
     e.preventDefault();
-    location = "reports_edit.html";
+    location.assign("reports_edit.html");
   });
 
   $('.filter').on('click', '.filter-conj', function (e) {
@@ -403,17 +404,3 @@ $(document).ready(function () {
 });
 
 
-function onShow() {
-  reportEditPage.refresh();
-};
-
-ReportEditPage = function () {
-  $('.loading-section').hide().next().show();
-};
-
-ReportEditPage.prototype = {
-  constructor: ReportEditPage,
-  refresh: function () {
-
-  }
-};
