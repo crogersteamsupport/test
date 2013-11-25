@@ -32,11 +32,16 @@ $(document).ready(function () {
   $('.reports-list').on('click', '.action-view', function (e) {
     e.preventDefault();
     var report = $(this).parents('.report-item').data('o');
-
+    /*Table = 0,
+    Chart = 1,
+    External = 2,
+    Custom = 3,
+    Summary = 4*/
     switch (report.ReportType) {
-      case 1: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
-      case 2: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
-      case 3: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
+      case 1: window.location.assign("reports_view_chart.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
+      case 2: window.location.assign("reports_view_external.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
+      case 3: window.location.assign("reports_view_custom.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
+      case 4: window.location.assign("reports_view_summary.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
       default: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); 
     }
     

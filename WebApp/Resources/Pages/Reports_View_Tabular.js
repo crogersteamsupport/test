@@ -44,7 +44,6 @@ $(document).ready(function () {
 
 
   var loadingIndicator = null;
-  initGrid(columns);
 
   function initGrid(columns) {
     var options = {

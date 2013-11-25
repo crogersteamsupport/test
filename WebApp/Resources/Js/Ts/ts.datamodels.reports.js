@@ -121,19 +121,17 @@
     function onSuccess(resp) {
       var from = resp.d.From, to = resp.d.To, results = JSON.parse(resp.d.Data);
 
-      data.length = results[0].TotalRows;
+      if (results.length > 0) {
+        data.length = results[0].TotalRows;
 
-      for (var i = 0; i < results.length; i++) {
-        var item = results[i];
+        for (var i = 0; i < results.length; i++) {
+          var item = results[i];
 
-        // Old IE versions can't parse ISO dates, so change to universally-supported format.
-        //item.create_ts = item.create_ts.replace(/^(\d+)-(\d+)-(\d+)T(\d+:\d+:\d+)Z$/, "$2/$3/$1 $4 UTC");
-        //item.create_ts = new Date(item.create_ts);
-        try {
+          // Old IE versions can't parse ISO dates, so change to universally-supported format.
+          //item.create_ts = item.create_ts.replace(/^(\d+)-(\d+)-(\d+)T(\d+:\d+:\d+)Z$/, "$2/$3/$1 $4 UTC");
+          //item.create_ts = new Date(item.create_ts);
           data[from + i] = item;
           data[from + i].index = from + i;
-
-        } catch (e) {
 
         }
       }

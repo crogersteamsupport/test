@@ -387,7 +387,30 @@ WHERE RowNum BETWEEN @From AND @To";
           this.Description = string.IsNullOrWhiteSpace(report.Description) ? "&nbsp;" : report.Description;
           this.IsFavorite = (report.Row.Table.Columns.IndexOf("IsFavorite") < 0 || report.Row["IsFavorite"] == DBNull.Value ? false : (bool)report.Row["IsFavorite"]);
           this.IsHidden = (report.Row.Table.Columns.IndexOf("IsHidden") < 0 || report.Row["IsHidden"] == DBNull.Value ? false : (bool)report.Row["IsHidden"]);
-          this.ReportType = report.ReportDefType;
+          if ((int)report.ReportDefType < 0)
+          {
+            if (!string.IsNullOrWhiteSpace(report.ExternalURL))
+            {
+              this.ReportType = ReportType.External;
+            }
+            else if (!string.IsNullOrWhiteSpace(report.Query))
+            {
+              this.ReportType = ReportType.Custom;
+            }
+            else if ((int)report.ReportType == 3)
+            {
+              this.ReportType = ReportType.Chart;
+            }
+            else
+            {
+              this.ReportType = ReportType.Table;
+            }
+          }
+          else
+          {
+            this.ReportType = report.ReportDefType;
+          }
+          
           this.CreatorID = report.CreatorID;
         }
 
