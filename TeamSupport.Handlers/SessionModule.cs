@@ -44,6 +44,7 @@ namespace TeamSupport.Handlers
         //check for old webservice privateservices
         if (path.IndexOf("privateservices.asmx") > -1) return;
         if (path.IndexOf("publicservice.asmx") > -1) return;
+        if (path.IndexOf("getreportdata") > -1) return;
         if (path.IndexOf("getuserstatusupdate") > -1) return;
         if (path.IndexOf("signout") > -1) return;
 

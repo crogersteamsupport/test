@@ -1,8 +1,9 @@
 (function ($) {
-  function ReportsModel() {
+  function ReportsModel(reportID) {
     // private
     var PAGESIZE = 50;
-    var data = {length: 0};
+    var data = { length: 0 };
+    var _reportID = reportID;
     var searchstr = "";
     var sortcol = null;
     var sortdir = 1;
@@ -63,14 +64,14 @@
 
       if (fromPage > toPage || ((fromPage == toPage) && data[fromPage * PAGESIZE] !== undefined)) {
         // TODO:  look-ahead
-        onDataLoaded.notify({from: from, to: to});
+        onDataLoaded.notify({ from: from, to: to });
         return;
       }
 
       var url = "http://api.thriftdb.com/api.hnsearch.com/items/_search?filter[fields][type][]=submission&q=" + searchstr + "&start=" + (fromPage * PAGESIZE) + "&limit=" + (((toPage - fromPage) * PAGESIZE) + PAGESIZE);
 
       if (sortcol != null) {
-          url += ("&sortby=" + sortcol + ((sortdir > 0) ? "+asc" : "+desc"));
+        url += ("&sortby=" + sortcol + ((sortdir > 0) ? "+asc" : "+desc"));
       }
 
       if (h_request != null) {
@@ -81,17 +82,32 @@
         for (var i = fromPage; i <= toPage; i++)
           data[i * PAGESIZE] = null; // null indicates a 'requested but not available yet'
 
-        onDataLoading.notify({from: from, to: to});
+        onDataLoading.notify({ from: from, to: to });
 
-        req = $.jsonp({
-          url: url,
-          callbackParameter: "callback",
-          cache: true,
+        var params = { "reportID": _reportID, "from": fromPage * PAGESIZE, "to": (fromPage * PAGESIZE) + PAGESIZE, "sortField": sortcol, "isDesc": (sortdir < 1) };
+
+        req = $.ajax({
+          type: "POST",
+          url: "/Services/ReportService.asmx/GetReportData",
+          data: JSON.stringify(params),
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
           success: onSuccess,
           error: function () {
             onError(fromPage, toPage)
           }
+
         });
+        /*
+        $.jsonp({
+        url: url,
+        callbackParameter: "callback",
+        cache: true,
+        success: onSuccess,
+        error: function () {
+        onError(fromPage, toPage)
+        }
+        });*/
         req.fromPage = fromPage;
         req.toPage = toPage;
       }, 50);
@@ -99,27 +115,32 @@
 
 
     function onError(fromPage, toPage) {
-      alert("error loading pages " + fromPage + " to " + toPage);
+      //alert("error loading pages " + fromPage + " to " + toPage);
     }
 
     function onSuccess(resp) {
-      var from = resp.request.start, to = from + resp.results.length;
-      data.length = Math.min(parseInt(resp.hits),1000); // limitation of the API
+      var from = resp.d.From, to = resp.d.To, results = JSON.parse(resp.d.Data);
 
-      for (var i = 0; i < resp.results.length; i++) {
-        var item = resp.results[i].item;
+      data.length = results[0].TotalRows;
+
+      for (var i = 0; i < results.length; i++) {
+        var item = results[i];
 
         // Old IE versions can't parse ISO dates, so change to universally-supported format.
-        item.create_ts = item.create_ts.replace(/^(\d+)-(\d+)-(\d+)T(\d+:\d+:\d+)Z$/, "$2/$3/$1 $4 UTC"); 
-        item.create_ts = new Date(item.create_ts);
+        //item.create_ts = item.create_ts.replace(/^(\d+)-(\d+)-(\d+)T(\d+:\d+:\d+)Z$/, "$2/$3/$1 $4 UTC");
+        //item.create_ts = new Date(item.create_ts);
+        try {
+          data[from + i] = item;
+          data[from + i].index = from + i;
 
-        data[from + i] = item;
-        data[from + i].index = from + i;
+        } catch (e) {
+
+        }
       }
 
       req = null;
 
-      onDataLoaded.notify({from: from, to: to});
+      onDataLoaded.notify({ from: from, to: to });
     }
 
 
@@ -142,12 +163,12 @@
       clear();
     }
 
-
     init();
 
     return {
       // properties
       "data": data,
+      "reportID": reportID,
 
       // methods
       "clear": clear,

@@ -27,6 +27,78 @@ namespace TSWebServices
       public ReportService() { }
 
       [WebMethod]
+      public string[] GetReportColumnNames(int reportID)
+      {
+        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+
+        DataTable table = new DataTable();
+
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText = report.GetSql(true);
+          command.CommandType = CommandType.Text;
+          Report.CreateParameters(TSAuthentication.GetLoginUser(), command, TSAuthentication.GetLoginUser().UserID);
+
+          using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
+          {
+            connection.Open();
+            command.Connection = connection;
+            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+            {
+              adapter.FillSchema(table, SchemaType.Source);
+              adapter.Fill(table);
+            }
+            connection.Close();
+          }
+        }
+        List<string> result = new List<string>();
+        foreach (DataColumn column in table.Columns)
+        {
+          result.Add(column.ColumnName);
+        }
+
+        return result.ToArray();
+      }
+
+      [WebMethod]
+      public GridResult GetReportData(int reportID, int from, int to, string sortField, bool isDesc)
+      {
+        string[] cols = GetReportColumnNames(reportID);
+        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+        SqlCommand command = new SqlCommand();
+        string query = @"
+WITH 
+q AS ({0}),
+r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
+SELECT  *, (SELECT MAX(RowNum) FROM r) AS 'TotalRows' FROM r
+WHERE RowNum BETWEEN @From AND @To";
+
+
+        command.CommandText = string.Format(query, report.GetSql(false), cols[0], isDesc ? "DESC" : "ASC");
+        command.Parameters.AddWithValue("@From", from);
+        command.Parameters.AddWithValue("@To", to);
+        Report.CreateParameters(TSAuthentication.GetLoginUser(), command, TSAuthentication.GetLoginUser().UserID);
+
+        DataTable table = new DataTable();
+        using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
+        {
+          connection.Open();
+          command.Connection = connection;
+          using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+          {
+            adapter.Fill(table);
+          }
+          connection.Close();
+        }
+        
+        GridResult result = new GridResult();
+        result.From = from;
+        result.To = to;
+        result.Data = JsonConvert.SerializeObject(table);
+        return result;
+      }
+
+      [WebMethod]
       public ReportItem[] GetReports()
       {
         List<ReportItem> result = new List<ReportItem>();
@@ -327,9 +399,15 @@ namespace TSWebServices
         [DataMember] public bool IsFavorite { get; set; }
         [DataMember] public bool IsHidden { get; set; }
         [DataMember] public int CreatorID { get; set; }
+      }
 
-  
-
+      [DataContract]
+      public class GridResult
+      {
+        public GridResult() { }
+        [DataMember] public int From { get; set; }
+        [DataMember] public int To { get; set; }
+        [DataMember] public string Data { get; set; }
       }
     }
 }

@@ -9,34 +9,51 @@
 /// <reference path="~/Default.aspx" />
 
 $(document).ready(function () {
-  //var _reportID = top.Ts.Utils.getQueryValue('ReportID');
+  $('.slick-header').click(function (e) {
+    e.preventDefault();
+    window.location.href = window.location.href;
+  });
+
+  var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
 
   var grid;
-  var datamodel = new TeamSupport.DataModels.Reports();
+  var datamodel = new TeamSupport.DataModels.Reports(_reportID);
 
   var dateFormatter = function (row, cell, value, columnDef, dataContext) {
     return (value.getMonth() + 1) + "/" + value.getDate() + "/" + value.getFullYear();
   };
 
-
+  top.Ts.Services.Reports.GetReportColumnNames(_reportID, function (names) {
+    var columns = new Array();
+    for (var i = 0; i < names.length; i++) {
+      var column = new Object();
+      column.id = names[i];
+      column.name = names[i];
+      column.field = names[i];
+      columns.push(column);
+    }
+    initGrid(columns);
+  });
+  /*
   var columns = [
     { id: "num", name: "#", field: "index", width: 40 },
     { id: "story", name: "Story", width: 520, field: "title" },
     { id: "date", name: "Date", field: "create_ts", width: 60, formatter: dateFormatter, sortable: true },
     { id: "points", name: "Points", field: "points", width: 60, sortable: true }
-  ];
+  ];*/
 
-  var options = {
-    rowHeight: 64,
-    editable: false,
-    enableAddRow: false,
-    enableCellNavigation: false
-  };
 
   var loadingIndicator = null;
+  initGrid(columns);
 
+  function initGrid(columns) {
+    var options = {
+      rowHeight: 64,
+      editable: false,
+      enableAddRow: false,
+      enableCellNavigation: false
+    };
 
-  $(function () {
     grid = new Slick.Grid("#grid-container", datamodel.data, columns, options);
 
     grid.onViewportChanged.subscribe(function (e, args) {
@@ -83,13 +100,13 @@ $(document).ready(function () {
       }
     });
 
-    datamodel.setSearch($("#txtSearch").val());
-    datamodel.setSort("create_ts", -1);
-    grid.setSortColumn("date", false);
+    //datamodel.setSearch($("#txtSearch").val());
+    //datamodel.setSort("create_ts", -1);
+    //grid.setSortColumn("date", false);
 
     // load the first page
     grid.onViewportChanged.notify();
-  })
+  }
 });
 
 
