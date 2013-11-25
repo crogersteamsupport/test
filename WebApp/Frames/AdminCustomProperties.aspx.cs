@@ -583,11 +583,18 @@ public partial class Frames_AdminCustomProperties : BaseFramePage
         ticketType.Collection.ValidatePositions(UserSession.LoginUser.OrganizationID);
         if (id == null)
         {
+          try
+          {
+            System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand();
+            command.CommandText = "UPDATE Users SET MenuItems = MenuItems + ',mniTicketType_" + ticketType.TicketTypeID.ToString() + "' WHERE UserID IN (SELECT UserID WHERE OrganizationID = @OrganizationID)";
+            command.Parameters.AddWithValue("OrganizationID", UserSession.LoginUser.OrganizationID);
+            SqlExecutor.ExecuteNonQuery(UserSession.LoginUser, command);
 
-          System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand();
-          command.CommandText = "UPDATE Users SET MenuItems = MenuItems + ',mniTicketType_" + ticketType.TicketTypeID.ToString() + " WHERE UserID IN (SELECT UserID WHERE OrganizationID = @OrganizationID)";
-          command.Parameters.AddWithValue("OrganizationID", UserSession.LoginUser.OrganizationID);
-          SqlExecutor.ExecuteNonQuery(UserSession.LoginUser, command);
+          }
+          catch (Exception ex)
+          {
+            ExceptionLogs.LogException(UserSession.LoginUser, ex, "Ticket Type Creation - menu item");
+          }
 
           TicketStatuses ticketStatuses = new TicketStatuses(UserSession.LoginUser);
           ticketStatus = ticketStatuses.AddNewTicketStatus();
