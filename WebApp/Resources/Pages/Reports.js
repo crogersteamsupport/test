@@ -34,7 +34,7 @@ $(document).ready(function () {
     var report = $(this).parents('.report-item').data('o');
 
     switch (report.ReportType) {
-      case 1: window.location.assign("reports_view_chart.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
+      case 1: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
       case 2: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
       case 3: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
       default: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); 
