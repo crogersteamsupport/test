@@ -20,6 +20,19 @@
       }
       return null;
     },
+    webMethod: function (service, method, params, onSuccess, onFailure) {
+      return $.ajax({
+        type: "POST",
+        url: "/Services/" + service + ".asmx/" + method,
+        data: JSON.stringify(params),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (result) {
+          if (typeof (onSuccess) !== 'undefined') { onSuccess(result.d); }
+        },
+        error: onFailure
+      });
+    },
 
     findClass: function (classString, term) {
       if (!classString || classString.length < 1) return '';

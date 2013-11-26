@@ -45,7 +45,7 @@ namespace TeamSupport.Handlers
         if (path.IndexOf("privateservices.asmx") > -1) return;
         if (path.IndexOf("publicservice.asmx") > -1) return;
         if (path.IndexOf("getreportdata") > -1) return;  // this is a temp hack.
-        if (path.IndexOf("getuserstatusupdate") > -1) return;
+        if (path.IndexOf("asmx") > -1) return;
         if (path.IndexOf("signout") > -1) return;
 
         bool isSessionValid = true;

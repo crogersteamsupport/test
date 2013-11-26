@@ -182,6 +182,5 @@
     };
   }
 
-  // Slick.Data.RemoteModel
   $.extend(true, window, { TeamSupport: { DataModels: { Reports: ReportsModel}} });
 })(jQuery);

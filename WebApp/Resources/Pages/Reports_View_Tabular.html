@@ -20,49 +20,33 @@
   <script src="../Js/Ts/ts.datamodels.reports.js" type="text/javascript"></script>
   <script src="../SlickGrid/slick.core.js" type="text/javascript"></script>
   <script src="../SlickGrid/slick.grid.js" type="text/javascript"></script>
+  <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
+
+  <script src="../Js/Ts/ts.utils.js" type="text/javascript"></script>
+  
   <script src="reports_view_tabular.js" type="text/javascript"></script>
   <title>View Tabular Report</title>
 <style>
-        #grid-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-
-    .cell-story {
-      white-space: normal !important;
-      line-height: 19px !important;
-    }
-
-    .loading-indicator {
-      display: inline-block;
-      padding: 12px;
-      background: white;
-      -opacity: 0.5;
-      color: black;
-      font-weight: bold;
-      z-index: 9999;
-      border: 1px solid red;
-      -moz-border-radius: 10px;
-      -webkit-border-radius: 10px;
-      -moz-box-shadow: 0 0 5px red;
-      -webkit-box-shadow: 0px 0px 5px red;
-      -text-shadow: 1px 1px 1px white;
-    }
-
-    .loading-indicator label {
-      padding-left: 20px;
-      background: url('../images/ajax-loader-small.gif') no-repeat center left;
-    }
-  </style>
+  .cell-story { white-space: normal !important; line-height: 19px !important; }
+  
+  .loading-indicator { display: inline-block; padding: 12px; background: white; -opacity: 0.5; color: black; font-weight: bold; z-index: 9999; border: 1px solid red; -moz-border-radius: 10px; -webkit-border-radius: 10px; -moz-box-shadow: 0 0 5px red; -webkit-box-shadow: 0px 0px 5px red; -text-shadow: 1px 1px 1px white; }
+  
+  .loading-indicator label { padding-left: 20px; background: url('../images/ajax-loader-small.gif') no-repeat center left; }
+  
+  html, body { width: 100%; height: 100%; padding: 0; margin: 0; overflow: auto; }
+  #reports-tabview-layout { height: 100%; margin: 0 auto; width: 100%; }
+  .pane { display: none; }
+</style>
 </head>
 <body>
-  <div class="container frame-container">
-    <div id="grid-container">
-    
+    <div id="reports-tabview-layout">
+      <div class="pane ui-layout-center">
+        <div id="reports-tabview-grid-container"></div>
+      </div>
+      <div class="pane ui-layout-north">Toolbar</div>
+      <div class="pane ui-layout-south">Footer</div>
     </div>
-  </div>
+    
+    
 </body>
 </html>
