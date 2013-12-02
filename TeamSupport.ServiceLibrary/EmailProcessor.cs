@@ -827,13 +827,13 @@ namespace TeamSupport.ServiceLibrary
       message.To.Add(new MailAddress(user.Email));
       message.Bcc.Add(new MailAddress("eharrington@teamsupport.com"));
       message.From = new MailAddress("eharrington@teamsupport.com", "Eric Harrington");
-      AddMessage(1078, "New Sign Up - Check In[" + organization.Name + "]", message, null, DateTime.UtcNow.AddDays(1));
+      AddMessage(1078, "New Sign Up - Check In[" + organization.Name + "]", message, null, DateTime.UtcNow.AddMinutes(1));
 
       message = EmailTemplates.GetWelcomeNewSignUp(LoginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 28);
       message.To.Add(new MailAddress(user.Email));
       message.Bcc.Add(new MailAddress("eharrington@teamsupport.com"));
       message.From = new MailAddress(from);
-      AddMessage(1078, "New Sign Up - Notice [" + organization.Name + "]", message, null, DateTime.UtcNow.AddDays(10));
+      AddMessage(1078, "New Sign Up - Notice [" + organization.Name + "]", message, null, DateTime.UtcNow.AddMinutes(2));
     }
 
     public void ProcessWelcomeTSUser(int userID, string password)
