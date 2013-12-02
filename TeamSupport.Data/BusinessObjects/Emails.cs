@@ -133,7 +133,7 @@ namespace TeamSupport.Data
       return builder.ToString();
     }
 
-    public Email AddEmail(int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
+    public Email AddEmail(int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames, DateTime? timeToSend)
     {
       Email email = AddNewEmail();
       
@@ -149,7 +149,7 @@ namespace TeamSupport.Data
       email.DateSent = null;
       email.LastFailedReason = "";
       email.IsSuccess = false;
-      email.NextAttempt = DateTime.UtcNow;
+      email.NextAttempt = timeToSend == null ? DateTime.UtcNow : (DateTime) timeToSend;
       email.IsWaiting = !string.IsNullOrWhiteSpace(message.Body);
       email.EmailPostID = emailPostID;
       email.Attempts = 0;
@@ -172,22 +172,32 @@ namespace TeamSupport.Data
       return email;
     }
 
-    public void AddEmail(int organizationID, int? emailPostID, string description, MailMessage message)
+    public Email AddEmail(int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
     {
-      AddEmail(organizationID, emailPostID, description, message, null);
+      return AddEmail(organizationID, emailPostID, description, message, null, null);
     }
 
-    public static Email AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
+    public Email AddEmail(int organizationID, int? emailPostID, string description, MailMessage message)
+    {
+      return AddEmail(organizationID, emailPostID, description, message, null, null);
+    }
+
+    public static Email AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames, DateTime? timeToSend)
     {
       Emails emails = new Emails(loginUser);
-      Email email = emails.AddEmail(organizationID, emailPostID, description, message, attachmentFileNames);
+      Email email = emails.AddEmail(organizationID, emailPostID, description, message, attachmentFileNames, timeToSend);
       emails.Save();
       return email;
     }
 
+    public static Email AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message, string[] attachmentFileNames)
+    {
+      return Emails.AddEmail(loginUser, organizationID, emailPostID, description, message, attachmentFileNames, null);
+    }
+
     public static Email AddEmail(LoginUser loginUser, int organizationID, int? emailPostID, string description, MailMessage message)
     {
-      return Emails.AddEmail(loginUser, organizationID, emailPostID, description, message, null);
+      return Emails.AddEmail(loginUser, organizationID, emailPostID, description, message, null, null);
     }
 
   }

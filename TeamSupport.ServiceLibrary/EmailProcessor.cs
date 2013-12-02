@@ -249,10 +249,15 @@ namespace TeamSupport.ServiceLibrary
 
     private void AddMessage(int organizationID, string description, MailMessage message)
     {
-      AddMessage(organizationID, description, message, null);
+      AddMessage(organizationID, description, message, null, null);
     }
 
     private void AddMessage(int organizationID, string description, MailMessage message, string[] attachments)
+    {
+      AddMessage(organizationID, description, message, attachments, null);
+    }
+
+    private void AddMessage(int organizationID, string description, MailMessage message, string[] attachments, DateTime? timeToSend)
     {
       Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
       string replyAddress = organization.GetReplyToAddress().ToLower();
@@ -288,7 +293,7 @@ namespace TeamSupport.ServiceLibrary
         message.Body = body;
         message.Subject = subject;
         EmailTemplates.ReplaceMailAddressParameters(message);
-        Emails.AddEmail(LoginUser, organizationID, _currentEmailPostID, description, message, attachments);
+        Emails.AddEmail(LoginUser, organizationID, _currentEmailPostID, description, message, attachments, timeToSend);
         if (message.Subject == null) message.Subject = "";
         Logs.WriteEvent(string.Format("Queueing email [{0}] - {1}  Subject: {2}", description, address.ToString(), message.Subject));
 
@@ -816,7 +821,19 @@ namespace TeamSupport.ServiceLibrary
       message.To.Add(new MailAddress(user.Email));
       message.Bcc.Add(new MailAddress("dropbox@79604342.murocsystems.highrisehq.com"));
       message.From = new MailAddress(from);
-      AddMessage(1078, "New Sign Up [" + organization.Name + "]", message);
+      AddMessage(1078, "New Sign Up - Welcome [" + organization.Name + "]", message);
+
+      message = EmailTemplates.GetWelcomeNewSignUp(LoginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 27);
+      message.To.Add(new MailAddress(user.Email));
+      message.Bcc.Add(new MailAddress("eharrington@teamsupport.com"));
+      message.From = new MailAddress("eharrington@teamsupport.com", "Eric Harrington");
+      AddMessage(1078, "New Sign Up - Check In[" + organization.Name + "]", message, null, DateTime.UtcNow.AddDays(1));
+
+      message = EmailTemplates.GetWelcomeNewSignUp(LoginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 28);
+      message.To.Add(new MailAddress(user.Email));
+      message.Bcc.Add(new MailAddress("eharrington@teamsupport.com"));
+      message.From = new MailAddress(from);
+      AddMessage(1078, "New Sign Up - Notice [" + organization.Name + "]", message, null, DateTime.UtcNow.AddDays(10));
     }
 
     public void ProcessWelcomeTSUser(int userID, string password)
