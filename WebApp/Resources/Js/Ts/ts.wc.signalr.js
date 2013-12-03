@@ -199,8 +199,8 @@ function loadSignalR() {
         }
 
 
-        if ($('.main-tab-content-item-mniDashboard').length > 0 && $('.main-tab-content-item-mniDashboard').is(":visible"))
-            $('.main-tab-content-item-mniDashboard').find('iframe')[0].contentWindow.refresh();
+        //if ($('.main-tab-content-item-mniDashboard').length > 0 && $('.main-tab-content-item-mniDashboard').is(":visible"))
+            //$('.main-tab-content-item-mniDashboard').find('iframe')[0].contentWindow.refresh();
     };
 
     ticketSocket.client.getTicketViewing = function (ticketNum) {
