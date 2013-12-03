@@ -85,10 +85,10 @@ $(document).ready(function () {
     top.Ts.Services.Reports.SetHidden(report.ReportID, !isHidden, function () {
       if (isHidden) {
         item.removeClass('report-hidden');
-        item.find('.action-hide').html('<i class="icon-fixed-width icon-ban-circle"></i> Hide');
+        item.find('.action-hide').html('<i class="fa-fw fa fa-ban"></i> Hide');
       }
       else {
-        item.find('.action-hide').html('<i class="icon-fixed-width icon-ban-circle"></i> Show');
+        item.find('.action-hide').html('<i class="fa-fw fa fa-ban"></i> Show');
         if (_hiddenVisible == true) {
           item.addClass('report-hidden').show();
         }
@@ -104,13 +104,13 @@ $(document).ready(function () {
     e.preventDefault();
     var item = $(this).parents('.report-item');
     var report = item.data('o');
-    var isFavorite = item.find('.report-star i').hasClass('icon-star');
+    var isFavorite = item.find('.report-star i').hasClass('fa fa-star');
     top.Ts.Services.Reports.SetFavorite(report.ReportID, !isFavorite, function () {
       if (isFavorite) {
-        item.find('.report-star i').removeClass('icon-star').addClass('icon-star-empty');
+        item.find('.report-star i').removeClass('fa fa-star').addClass('fa fa-star-o');
       }
       else {
-        item.find('.report-star i').removeClass('icon-star-empty').addClass('icon-star');
+        item.find('.report-star i').removeClass('fa fa-star-o').addClass('fa fa-star');
       }
     });
   });
@@ -139,10 +139,10 @@ $(document).ready(function () {
     var item = $('<li>').data('o', report).addClass('report-item reportid-' + report.ReportID).html($('.reports-list-template li').html());
     if (report.IsHidden == true) {
       item.addClass('report-hidden');
-      item.find('.action-hide').html('<i class="icon-fixed-width icon-ban-circle"></i> Show');
+      item.find('.action-hide').html('<i class="fa-fw fa fa-ban"></i> Show');
     }
     item.find('.report-name').text(report.Name);
-    item.find('.report-star i').addClass(report.IsFavorite == true ? 'icon-star' : 'icon-star-empty');
+    item.find('.report-star i').addClass(report.IsFavorite == true ? 'fa fa-star' : 'fa fa-star-o');
 
     item.find('.report-description').html(report.Description == null ? '&nbsp' : report.Description);
 
@@ -151,10 +151,10 @@ $(document).ready(function () {
     }
 
     switch (report.ReportType) {
-      case 1: item.find('.report-type i').addClass('icon-bar-chart'); break;
-      case 2: item.find('.report-type i').addClass('icon-globe'); break;
-      case 3: item.find('.report-type i').addClass('icon-wrench'); break;
-      default: item.find('.report-type i').addClass('icon-table');
+      case 1: item.find('.report-type i').addClass('fa fa-bar-chart-o'); break;
+      case 2: item.find('.report-type i').addClass('fa fa-globe'); break;
+      case 3: item.find('.report-type i').addClass('fa fa-wrench'); break;
+      default: item.find('.report-type i').addClass('fa fa-table');
     }
 
     if ((top.Ts.System.User.IsSystemAdmin == false && report.CreatorID != top.Ts.System.User.UserID)) {

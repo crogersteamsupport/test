@@ -45,13 +45,9 @@
           data[i * PAGESIZE] = undefined;
       }
 
-      if (from < 0) {
-        from = 0;
-      }
+      if (from < 0) { from = 0; }
 
-      if (data.length > 0) {
-        to = Math.min(to, data.length - 1);
-      }
+      if (data.length > 0) { to = Math.min(to, data.length - 1); }
 
       var fromPage = Math.floor(from / PAGESIZE);
       var toPage = Math.floor(to / PAGESIZE);
@@ -66,12 +62,6 @@
         // TODO:  look-ahead
         onDataLoaded.notify({ from: from, to: to });
         return;
-      }
-
-      var url = "http://api.thriftdb.com/api.hnsearch.com/items/_search?filter[fields][type][]=submission&q=" + searchstr + "&start=" + (fromPage * PAGESIZE) + "&limit=" + (((toPage - fromPage) * PAGESIZE) + PAGESIZE);
-
-      if (sortcol != null) {
-        url += ("&sortby=" + sortcol + ((sortdir > 0) ? "+asc" : "+desc"));
       }
 
       if (h_request != null) {
@@ -98,19 +88,9 @@
           }
 
         });
-        /*
-        $.jsonp({
-        url: url,
-        callbackParameter: "callback",
-        cache: true,
-        success: onSuccess,
-        error: function () {
-        onError(fromPage, toPage)
-        }
-        });*/
         req.fromPage = fromPage;
         req.toPage = toPage;
-      }, 50);
+      }, 100);
     }
 
 
@@ -126,18 +106,12 @@
 
         for (var i = 0; i < results.length; i++) {
           var item = results[i];
-
-          // Old IE versions can't parse ISO dates, so change to universally-supported format.
-          //item.create_ts = item.create_ts.replace(/^(\d+)-(\d+)-(\d+)T(\d+:\d+:\d+)Z$/, "$2/$3/$1 $4 UTC");
-          //item.create_ts = new Date(item.create_ts);
           data[from + i] = item;
           data[from + i].index = from + i;
-
         }
       }
 
       req = null;
-
       onDataLoaded.notify({ from: from, to: to });
     }
 

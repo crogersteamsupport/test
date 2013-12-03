@@ -5,34 +5,39 @@ $(document).ready(function () {
   var _grid;
   var datamodel = new TeamSupport.DataModels.Reports(_reportID);
 
-/*  $('.slick-header').click(function (e) {
+  $('.reports-tabview-back').click(function (e) {
     e.preventDefault();
-    window.location.href = window.location.href;
+    window.location.assign('reports.html');
+  });
+
+  $('.reports-tabview-refresh').click(function (e) {
+    e.preventDefault();
+    window.location = window.location;
+  });
+
+  /*  $('.slick-header').click(function (e) {
+  e.preventDefault();
+  window.location.href = window.location.href;
   });*/
 
-    _layout = $('#reports-tabview-layout').layout({
-  //resizeNestedLayout: true,
-  //maskIframesOnResize: true,
-  defaults: {
-  spacing_open: 5,
-  closable: false
-  },
-center: { 
-  
-  onresize: resizeGrid,
-  triggerEventsOnLoad: false,
-  minSize: 500
-  },
-  north: {
-  size: 50,
-  spacing_open: 0,
-  resizable: false
-  },
-  south: {
-  spacing_open: 5,
-  size: 20,
-  closable: false
-  }
+  _layout = $('#reports-tabview-layout').layout({
+    //resizeNestedLayout: true,
+    //maskIframesOnResize: true,
+    defaults: {
+      spacing_open: 5,
+      closable: false
+    },
+    center: {
+
+      onresize: resizeGrid,
+      triggerEventsOnLoad: false,
+      minSize: 500
+    },
+    north: {
+      size: 55,
+      spacing_open: 0,
+      resizable: false
+    }
   });
 
 
@@ -59,8 +64,14 @@ center: {
     return (value.getMonth() + 1) + "/" + value.getDate() + "/" + value.getFullYear();
   };
 
-  Ts.Utils.webMethod("ReportService", "GetReportColumnNames", {"reportID": _reportID}, function (names) {
+  Ts.Utils.webMethod("ReportService", "GetReportColumnNames", { "reportID": _reportID }, function (names) {
     var columns = new Array();
+    var idx = new Object();
+    idx.id = "index";
+    idx.name = "index";
+    idx.field = "index";
+    columns.push(idx);
+
     for (var i = 0; i < names.length; i++) {
       var column = new Object();
       column.id = names[i];
@@ -70,26 +81,44 @@ center: {
     }
     initGrid(columns);
   });
-  /*
-  var columns = [
-  { id: "num", name: "#", field: "index", width: 40 },
-  { id: "story", name: "Story", width: 520, field: "title" },
-  { id: "date", name: "Date", field: "create_ts", width: 60, formatter: dateFormatter, sortable: true },
-  { id: "points", name: "Points", field: "points", width: 60, sortable: true }
-  ];*/
 
-
+  var tmrDelayIndicator = null;
+  var tmrHideLoading = null;
   var loadingIndicator = null;
+  showLoadingIndicator();
+  function showLoadingIndicator(delay) {
+    if (!delay) {
+      if (!loadingIndicator) {
+        loadingIndicator = $("<div class='grid-loading'></div>").appendTo(document.body);
+        loadingIndicator.position({ my: "center center", at: "center center", of: _layout.panes.center, collision: "none" });
+      }
+      loadingIndicator.show();
+    }
+    else {
+      if (tmrDelayIndicator) clearTimeout(tmrDelayIndicator);
+      tmrDelayIndicator = setTimeout(function () { showLoadingIndicator(); }, delay);
+    }
+    if (tmrHideLoading) { clearTimeout(tmrHideLoading); }
+    tmrHideLoading = setTimeout(function () { hideLoadingIndicator(); }, 3000);
+  }
+
+  function hideLoadingIndicator() {
+    tmrHideLoading = null;
+    if (tmrDelayIndicator) clearTimeout(tmrDelayIndicator);
+    tmrDelayIndicator = null;
+    if (loadingIndicator) loadingIndicator.fadeOut();
+  }
+
 
   function initGrid(columns) {
     var options = {
-      rowHeight: 22,
+      rowHeight: 32,
       editable: false,
       enableAddRow: false,
       enableCellNavigation: true,
       multiSelect: false,
       enableColumnReorder: true,
-      forceFitColumns: true
+      forceFitColumns: false
     };
 
     _grid = new Slick.Grid("#reports-tabview-grid-container", datamodel.data, columns, options);
@@ -106,17 +135,7 @@ center: {
     });
 
     datamodel.onDataLoading.subscribe(function () {
-      if (!loadingIndicator) {
-        loadingIndicator = $("<span class='loading-indicator'><label>Buffering...</label></span>").appendTo(document.body);
-        var $g = $("#reports-tabview-grid-container");
-
-        loadingIndicator
-            .css("position", "absolute")
-            .css("top", $g.position().top + $g.height() / 2 - loadingIndicator.height() / 2)
-            .css("left", $g.position().left + $g.width() / 2 - loadingIndicator.width() / 2);
-      }
-
-      loadingIndicator.show();
+      showLoadingIndicator(250);
     });
 
     datamodel.onDataLoaded.subscribe(function (e, args) {
@@ -127,17 +146,17 @@ center: {
       _grid.updateRowCount();
       _grid.render();
 
-      loadingIndicator.fadeOut();
+      hideLoadingIndicator();
     });
-
+    /*
     $("#txtSearch").keyup(function (e) {
-      if (e.which == 13) {
-        datamodel.setSearch($(this).val());
-        var vp = _grid.getViewport();
-        datamodel.ensureData(vp.top, vp.bottom);
-      }
+    if (e.which == 13) {
+    datamodel.setSearch($(this).val());
+    var vp = _grid.getViewport();
+    datamodel.ensureData(vp.top, vp.bottom);
+    }
     });
-
+    */
     //datamodel.setSearch($("#txtSearch").val());
     //datamodel.setSort("create_ts", -1);
     //grid.setSortColumn("date", false);
