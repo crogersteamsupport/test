@@ -1594,7 +1594,8 @@ Namespace TeamSupport
                     Case "createdbyid"
                       'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
                       Dim creator As User = Users.GetUser(User, ticket.CreatorID)
-                      If creator IsNot Nothing Then
+                      'Ticket 14381. SalesForce does not allow contact to create cases. Therefore we only try to add the creator if is not a contact.
+                      If creator IsNot Nothing AndAlso creator.OrganizationID = ticket.OrganizationID Then
                         Dim salesForceID As String = creator.SalesForceID
                         If salesForceID Is Nothing Then
                           salesForceID = GetSalesForceUserID(creator.Email)
@@ -1622,7 +1623,8 @@ Namespace TeamSupport
                     Case "lastmodifiedbyid"
                       'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
                       Dim modifier As User = Users.GetUser(User, ticket.ModifierID)
-                      If modifier IsNot Nothing Then
+                      'Ticket 14381. SalesForce does not allow contacts to modify cases. Therefore we only try to add the modifier if is not a contact.
+                      If modifier IsNot Nothing AndAlso modifier.OrganizationID = ticket.OrganizationID Then
                         Dim salesForceID As String = modifier.SalesForceID
                         If salesForceID Is Nothing Then
                           salesForceID = GetSalesForceUserID(modifier.Email)
