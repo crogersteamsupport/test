@@ -193,3 +193,9 @@
         height:16px;width:16px;padding-right: 5px;padding-left: 5px;top: 3px; position: relative;
     }
 
+    .customFieldLink{
+      background: url(../Images/nav/16/www.png) no-repeat 6px center !important;
+      width: 24px;
+      height: 24px;
+      float: left;
+    }

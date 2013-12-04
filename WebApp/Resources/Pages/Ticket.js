@@ -3137,6 +3137,7 @@ var appendCustomEdit = function(field, element) {
       .addClass('value ui-state-default ts-link')
       .appendTo(element)
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .after(getUrls(field.Value))
       .click(function (e) {
           e.preventDefault();
           $('.ticket-cutstom-edit').prev().show().next().remove();
@@ -3194,6 +3195,27 @@ var appendCustomEdit = function(field, element) {
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('ui-state-error-custom ui-corner-all');
     }
+}
+
+var getUrls = function (input) {
+  var source = (input || '').toString();
+  var url;
+  var matchArray;
+  var result = '';
+
+  // Regular expression to find FTP, HTTP(S) and email URLs. Updated to include urls without http
+  var regexToken = /(((ftp|https?|www):?\/?\/?)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g;
+
+  // Iterate through any URLs in the text.
+  while ((matchArray = regexToken.exec(source)) !== null) {
+    url = matchArray[0];
+    if (url.length > 2 && url.substring(0, 3) == 'www') {
+      url = 'http://' + url;
+    }
+    result = result + '<a target="_blank" class="customFieldLink" href="' + url + '" title="' + matchArray[0] + '"/>'
+  }
+
+  return result;
 }
 
 var appendCustomEditDate = function(field, element) {
