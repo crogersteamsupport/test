@@ -382,6 +382,12 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         portalOption.CopyRowData(PortalOptions.GetPortalOption(loginUser, sourceOrgID));
         portalOption.OrganizationID = organization.OrganizationID;
         portalOption.PortalName = PortalOptions.ValidatePortalNameChars(organization.Name);
+
+        portalOption.PortalHTMLHeader = string.Format(@"<div align=""right""><a href=""#"" onclick=""window.open('{1}/Chat/ChatInit.aspx?uid={0}', 'TSChat', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no,width=450,height=500'); return false;""><img src=""{1}/dc/{2}/chat/image"" border=""0"" /></a></div>",
+          organization.ChatID.ToString(),
+          SystemSettings.ReadString(loginUser, "AppDomain", "https://app.teamsupport.com"),
+          organization.OrganizationID.ToString()
+          );
         portalOptions.Save();
 
         ProductVersionStatuses pvsSources = new ProductVersionStatuses(loginUser);
