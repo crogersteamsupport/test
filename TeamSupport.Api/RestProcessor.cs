@@ -590,6 +590,11 @@ namespace TeamSupport.Api
           squareBracketIndex = "{\"TicketTypes\":{\"TicketType\":".Length;
           objectIDLabel = "TicketTypeID";
           break;
+        case "/properties/knowledgebasecategories/":
+          result = "{\"KnowledgeBaseCategory\":";
+          squareBracketIndex = "{\"KnowledgeBaseCategories\":{\"KnowledgeBaseCategory\":".Length;
+          objectIDLabel = "CategoryID";
+          break;
         case "/zapier/users/":
         case "/users/":
           result = "{\"User\":";
