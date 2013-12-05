@@ -37,7 +37,11 @@ Namespace TeamSupport
           result = false
           Log.Write("HostName is missing and it is required to sync.")
         Else
-          _baseURI = CRMLinkRow.HostName + "/rest/api/latest"
+          Dim protocol As String = String.Empty
+          If CRMLinkRow.HostName.Length > 4 AndAlso CRMLinkRow.HostName.Substring(0, 4).ToLower() <> "http" Then
+            protocol = "https://"
+          End If
+          _baseURI = protocol + CRMLinkRow.HostName + "/rest/api/latest"
         End If
 
         If CRMLinkRow.Username Is Nothing OrElse CRMLinkRow.Password Is Nothing Then
