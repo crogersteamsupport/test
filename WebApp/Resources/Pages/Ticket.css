@@ -194,9 +194,8 @@
     }
 
     .customFieldLink{
-      background: url(../Images/nav/16/www.png) no-repeat 6px center !important;
-      width: 24px;
-      height: 24px;
+      color: #00304e !important;
       float: left;
-      margin-top: -4px;
+      margin-top: 2px;
+      margin-left: 6px;      
     }

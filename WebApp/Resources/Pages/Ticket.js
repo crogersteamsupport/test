@@ -3130,8 +3130,8 @@ var appendCustomEditBool = function(field, element) {
       });
 }
 
-var appendCustomEdit = function(field, element) {
-    var result = $('<a>')
+var appendCustomEdit = function (field, element) {
+  var result = $('<a>')
       .attr('href', '#')
       .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
       .addClass('value ui-state-default ts-link')
@@ -3139,15 +3139,15 @@ var appendCustomEdit = function(field, element) {
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .after(getUrls(field.Value))
       .click(function (e) {
-          e.preventDefault();
-          $('.ticket-cutstom-edit').prev().show().next().remove();
-          var parent = $(this).parent().hide();
-          var container = $('<div>')
+        e.preventDefault();
+        $('.ticket-cutstom-edit').prev().show().next().remove();
+        var parent = $(this).parent().hide();
+        var container = $('<div>')
           .addClass('ticket-cutstom-edit')
           .css('marginTop', '1em')
           .insertAfter(parent);
-          var fieldValue = parent.closest('.ticket-name-value').data('field').Value;
-          var input = $('<input type="text">')
+        var fieldValue = parent.closest('.ticket-name-value').data('field').Value;
+        var input = $('<input type="text">')
             .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
             .css('width', '100%')
             .val(fieldValue)
@@ -3155,46 +3155,48 @@ var appendCustomEdit = function(field, element) {
             .focus();
 
 
-          var buttons = $('<div>')
+        var buttons = $('<div>')
           .addClass('ticket-custom-edit-buttons')
           .appendTo(container);
 
-          $('<button>')
+        $('<button>')
           .text('Cancel')
           .click(function (e) {
-              parent.show();
-              container.remove();
+            parent.show();
+            container.remove();
           })
           .appendTo(buttons)
           .button();
 
-          $('<button>')
+        $('<button>')
           .text('Save')
           .click(function (e) {
-              parent.show().find('img').show();
-              var value = input.val();
-              container.remove();
-              if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                  result.parent().addClass('ui-state-error-custom ui-corner-all');
-              }
-              else {
-                  result.parent().removeClass('ui-state-error-custom ui-corner-all');
-              }
-              top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-                  parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                  parent.closest('.ticket-name-value').data('field', result);
-                  parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
-                  window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
-              }, function () {
-                  alert("There was a problem saving your ticket property.");
-              });
+            parent.show().find('img').show();
+            var value = input.val();
+            container.remove();
+            if (field.IsRequired && (value === null || $.trim(value) === '')) {
+              result.parent().addClass('ui-state-error-custom ui-corner-all');
+            }
+            else {
+              result.parent().removeClass('ui-state-error-custom ui-corner-all');
+            }
+            top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+              parent.find('img').hide().next().show().delay(800).fadeOut(400);
+              parent.closest('.ticket-name-value').data('field', result);
+              parent.find('a.value').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+              parent.find('.valueLink').remove();
+              parent.find('a.value').after(getUrls(result.Value));
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+            }, function () {
+              alert("There was a problem saving your ticket property.");
+            });
           })
           .appendTo(buttons)
           .button();
       });
-    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
-        result.parent().addClass('ui-state-error-custom ui-corner-all');
-    }
+  if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+    result.parent().addClass('ui-state-error-custom ui-corner-all');
+  }
 }
 
 var getUrls = function (input) {
@@ -3212,7 +3214,7 @@ var getUrls = function (input) {
     if (url.length > 2 && url.substring(0, 3) == 'www') {
       url = 'http://' + url;
     }
-    result = result + '<a target="_blank" class="customFieldLink" href="' + url + '" title="' + matchArray[0] + '"/>'
+    result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '"><i class="fa fa-globe fa-lg customFieldLink"></i></a>'
   }
 
   return result;
