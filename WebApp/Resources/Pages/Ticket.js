@@ -3214,7 +3214,7 @@ var getUrls = function (input) {
     if (url.length > 2 && url.substring(0, 3) == 'www') {
       url = 'http://' + url;
     }
-    result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '"><i class="fa fa-globe fa-lg customFieldLink"></i></a>'
+    result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '"><i class="fa fa-external-link fa-lg customFieldLink"></i></a>'
   }
 
   return result;
