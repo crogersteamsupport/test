@@ -1263,8 +1263,7 @@ Namespace TeamSupport
                 'Therefore we are assigning the first customer created in TeamSupport.
                 Dim salesForceCustomer As SalesForceCustomer = New SalesForceCustomer(User)
                 salesForceCustomer.LoadByTicketID(ticket.TicketID, Binding)
-                'Per ticket 14397 I've reviewed the code and realized a customer or contact is not required to create case. Therefore I'm taking it out as a required field.
-                'If salesForceCustomer.AccountID IsNot Nothing Then
+                If salesForceCustomer.AccountID IsNot Nothing Then
                   Dim salesForceCase As sForce.sObject = New sObject()
                   salesForceCase.type = "Case"
                   salesForceCase.Id   = ticket.SalesForceID
@@ -1321,7 +1320,7 @@ Namespace TeamSupport
 
                     If salesForceCustomer.ContactID IsNot Nothing Then
                       updateTicket.SetUserAsSentToSalesForce(salesForceCustomer.TeamSupportUserID, ticket.TicketID)
-                    Else If salesForceCustomer.AccountID IsNot Nothing Then
+                    Else
                       updateTicket.SetOrganizationAsSentToSalesForce(salesForceCustomer.TeamSupportOrganizationID, ticket.TicketID)              
                     End If
 
@@ -1330,9 +1329,9 @@ Namespace TeamSupport
                   Else
                     Log.Write("TicketID: " + ticket.TicketID.ToString() + ", was not pushed because it is colliding with a case being pulled from SalesForce (If DatesModified missing above SF object did not include it).")
                   End If
-                'Else
-                '  Log.Write("TicketID: " + ticket.TicketID.ToString() + ", was not pushed because first customer is not in SalesForce.")                
-                'End If
+                Else
+                  Log.Write("TicketID: " + ticket.TicketID.ToString() + ", was not pushed because first customer is not in SalesForce.")                
+                End If
               Next
             End Sub
 
