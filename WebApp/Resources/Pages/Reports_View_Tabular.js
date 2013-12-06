@@ -77,6 +77,7 @@ $(document).ready(function () {
       column.id = names[i];
       column.name = names[i];
       column.field = names[i];
+      column.width = 250;
       columns.push(column);
     }
     initGrid(columns);

@@ -91,7 +91,7 @@
           function appendUser(user) {
             var row = $('<tr>');
             row.append($('<td>').text(user.UserID));
-            row.append($('<td>').html('<a href="' + getEGUserLink(user.Email) + '" target="EverGage">' + user.FirstName + ' ' + user.LastName + '&nbsp;<i class="icon-external-link"></i>'));
+            row.append($('<td>').html('<a href="' + getEGUserLink(user.Email) + '" target="EverGage">' + user.FirstName + ' ' + user.LastName + '&nbsp;<i class="fa fa-external-link"></i>'));
             row.append($('<td>').html('<a href="mailto:' + user.Email + '">' + user.Email + '</a>'));
             row.append($('<td>').text(user.LastLogin));
 
@@ -213,9 +213,9 @@
       <div class="col-xs-12">
         <div class="box">
           <div class="box-header">
-            <h3><i class="icon-building"></i>Accounts Utility</h3>
+            <h3><i class="fa fa-building-o"></i>Accounts Utility</h3>
             <div class="box-actions">
-              <a class="btn btn-link action-refresh" href="#"><i class="icon-refresh"></i></a>
+              <a class="btn btn-link action-refresh" href="#"><i class="fa fa-refresh"></i></a>
             </div>
           </div>
           <div class="box-content">
@@ -254,7 +254,7 @@
               <div class="clearfix">
               </div>
               <p><a href="#" class="evergage-company" target="EverGage">View in Evergage&nbsp;<i
-                class="icon-external-link"></i></a> </p>
+                class="fa fa-external-link"></i></a> </p>
             </div>
           </div>
         </div>
@@ -262,7 +262,7 @@
       <div class="col-xs-12">
         <div class="box users-box" style="display: none;">
           <div class="box-header">
-            <h3><i class="icon-group"></i><span>Users</span></h3>
+            <h3><i class="fa fa-group"></i><span>Users</span></h3>
           </div>
           <div class="box-content">
             <div class="users-info">
