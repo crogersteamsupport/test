@@ -276,6 +276,20 @@ namespace TeamSupport.Data
       }
     }
 
+    public void UpdateSalesForceSync(string salesForceID, DateTime dateModifiedBySalesForceSync, int actionID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "UPDATE Actions SET SalesForceID = @salesForceID, DateModifiedBySalesForceSync = @dateModifiedBySalesForceSync WHERE ActionID = @actionID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@salesForceID", salesForceID);
+        command.Parameters.AddWithValue("@dateModifiedBySalesForceSync", dateModifiedBySalesForceSync);
+        command.Parameters.AddWithValue("@actionID", actionID);
+        ExecuteNonQuery(command, "Actions");
+      }
+    }
+
     public static Action GetActionByID(LoginUser loginUser, int actionID)
     {
       Actions actions = new Actions(loginUser);

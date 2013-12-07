@@ -1752,8 +1752,7 @@ Namespace TeamSupport
                   Dim tickets As Tickets = New Tickets(User)
                   tickets.LoadByTicketID(action.TicketID)
                   
-                  action.DateModifiedBySalesForceSync = DateTime.UtcNow
-                  action.Collection.Save()
+                  action.Collection.UpdateSalesForceSync(action.SalesForceID, DateTime.UtcNow, action.ActionID)
 
                   tickets(0).DateModifiedBySalesForceSync = DateTime.UtcNow
                   tickets.Save()
