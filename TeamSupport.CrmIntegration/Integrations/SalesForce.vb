@@ -1818,7 +1818,7 @@ Namespace TeamSupport
                   Case "createdbyid"
                     'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
                     Dim creator As User = Users.GetUser(User, action.CreatorID)
-                    If creator IsNot Nothing Then
+                    If creator IsNot Nothing AndAlso creator.OrganizationID = CRMLinkRow.OrganizationID Then
                       Dim salesForceID As String = creator.SalesForceID
                       If salesForceID IsNot Nothing AndAlso ((isNewCaseComment AndAlso field.createable) OrElse field.updateable)  Then
                         result.Add(GetNewXmlElement(field.name, salesForceID))
@@ -1841,7 +1841,7 @@ Namespace TeamSupport
                   Case "lastmodifiedbyid"
                     'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
                     Dim modifier As User = Users.GetUser(User, action.ModifierID)
-                    If modifier IsNot Nothing Then
+                    If modifier IsNot Nothing AndAlso modifier.OrganizationID = CRMLinkRow.OrganizationID Then
                       Dim salesForceID As String = Users.GetUser(User, action.ModifierID).SalesForceID
                       If salesForceID IsNot Nothing AndAlso ((isNewCaseComment AndAlso field.createable) OrElse field.updateable)  Then
                         result.Add(GetNewXmlElement(field.name, salesForceID))
