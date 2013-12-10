@@ -1307,6 +1307,9 @@ Namespace TeamSupport
                         If result.errors Is Nothing Then
                           Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
                           ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
+                        Else If result.errors(0).message.ToLower() = "invalid cross reference id" OrElse result.errors(0).message.ToLower() = "entity is deleted" Then
+                          Dim actionLogDescription As String = "SalesForce Case ID: '" + ticket.SalesForceID + "' was not found. No update applied. Error: " + result.errors(0).message
+                          ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
                         Else
                           Throw(New Exception(result.errors(0).message))
                         End If
@@ -1724,6 +1727,9 @@ Namespace TeamSupport
                         action.SalesForceID = result.id
                         Dim actionLogDescription As String = "Sent Action to SalesForce as new CaseComment with ID: '" + result.id + "'."
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+                      Else If result.errors(0).message.ToLower() = "entity is deleted" OrElse result.errors(0).message.Contains("insufficient access rights on cross-reference id") Then
+                        Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
+                        ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
                       Else
                         Throw(New Exception(result.errors(0).message))
                       End If
@@ -1739,6 +1745,9 @@ Namespace TeamSupport
                       If result.errors Is Nothing Then
                         Dim actionLogDescription As String = "Updated SalesForce CaseComment ID: '" + action.SalesForceID + "' with action changes."
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)                                  
+                      Else If result.errors(0).message.ToLower() = "entity is deleted" OrElse result.errors(0).message.Contains("insufficient access rights on cross-reference id") Then
+                        Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
+                        ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
                       Else
                         Throw(New Exception(result.errors(0).message))
                       End If

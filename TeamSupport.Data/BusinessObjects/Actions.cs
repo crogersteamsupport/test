@@ -283,7 +283,12 @@ namespace TeamSupport.Data
         command.CommandText = "UPDATE Actions SET SalesForceID = @salesForceID, DateModifiedBySalesForceSync = @dateModifiedBySalesForceSync WHERE ActionID = @actionID";
         command.CommandType = CommandType.Text;
         command.Parameters.Clear();
-        command.Parameters.AddWithValue("@salesForceID", salesForceID);
+        SqlParameter salesForceIDParameter = new SqlParameter("@salesForceID", DBNull.Value);
+        if (salesForceID != null)
+        {
+          salesForceIDParameter.Value = salesForceID;
+        }
+        command.Parameters.Add(salesForceIDParameter);
         command.Parameters.AddWithValue("@dateModifiedBySalesForceSync", dateModifiedBySalesForceSync);
         command.Parameters.AddWithValue("@actionID", actionID);
         ExecuteNonQuery(command, "Actions");
