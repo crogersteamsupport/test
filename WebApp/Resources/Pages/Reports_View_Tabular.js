@@ -78,6 +78,7 @@ $(document).ready(function () {
       column.name = names[i];
       column.field = names[i];
       column.width = 250;
+      column.sortable = true;
       columns.push(column);
     }
     initGrid(columns);
@@ -123,6 +124,7 @@ $(document).ready(function () {
     };
 
     _grid = new Slick.Grid("#reports-tabview-grid-container", datamodel.data, columns, options);
+    _grid.setSortColumn(columns[0].field, true);
 
     _grid.onViewportChanged.subscribe(function (e, args) {
       var vp = _grid.getViewport();
@@ -146,6 +148,7 @@ $(document).ready(function () {
 
       _grid.updateRowCount();
       _grid.render();
+
 
       hideLoadingIndicator();
     });

@@ -75,8 +75,12 @@ r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
 SELECT  *, (SELECT MAX(RowNum) FROM r) AS 'TotalRows' FROM r
 WHERE RowNum BETWEEN @From AND @To";
 
-
-        command.CommandText = string.Format(query, report.GetSql(false), cols[0], isDesc ? "DESC" : "ASC");
+        if (string.IsNullOrWhiteSpace(sortField)) 
+        { 
+          sortField = cols[0];
+          isDesc = false;
+        }
+        command.CommandText = string.Format(query, report.GetSql(false), sortField, isDesc ? "DESC" : "ASC");
         command.Parameters.AddWithValue("@From", from);
         command.Parameters.AddWithValue("@To", to);
         Report.CreateParameters(TSAuthentication.GetLoginUser(), command, TSAuthentication.GetLoginUser().UserID);

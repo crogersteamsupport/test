@@ -1,4 +1,15 @@
-﻿button::-moz-focus-inner { border: 0; }
+﻿body {  
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.428571429;
+  color: #333333;
+  background-color: #ffffff;
+}
+.ui-widget { font-family:  "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family:  "Helvetica Neue", Helvetica, Arial, sans-serif; }
+
+
+button::-moz-focus-inner { border: 0; }
 a:focus { outline: 0; }
 :focus { -moz-outline-style: none; outline:0; }
 img { border: 0; }

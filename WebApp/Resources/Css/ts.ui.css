@@ -266,7 +266,7 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .ts-menutree { border: none; height: 100%; overflow: auto; position:relative; }
 .ts-menutree > ul { padding:0; margin: .5em 0;}
 .ts-menutree li ul { padding:0; margin:0;}
-.ts-menutree li { list-style: none; position: relative; cursor:pointer; padding:.05em 0; margin:0; overflow:hidden;}
+.ts-menutree li { list-style: none; position: relative; cursor:pointer; padding:0; margin:2px 0; overflow:hidden;}
 .ts-menutree li ul li { padding-left: .5em;}
 .ts-menutree li a { text-decoration: none;  height: 16px; overflow:hidden;}
 .ts-menutree li > div { padding: .25em .1em; height: 16px; line-height:16px;  }
