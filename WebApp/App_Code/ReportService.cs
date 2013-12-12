@@ -63,6 +63,8 @@ namespace TSWebServices
       [WebMethod]
       public GridResult GetReportData(int reportID, int from, int to, string sortField, bool isDesc)
       {
+        from++;
+        to++;
         string[] cols = GetReportColumnNames(reportID);
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
         SqlCommand command = new SqlCommand();
@@ -92,8 +94,8 @@ WHERE RowNum BETWEEN @From AND @To";
         }
         
         GridResult result = new GridResult();
-        result.From = from;
-        result.To = to;
+        result.From = --from;
+        result.To = --to;
         result.Data = JsonConvert.SerializeObject(table);
         return result;
       }

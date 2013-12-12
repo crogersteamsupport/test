@@ -26,12 +26,14 @@
   <script src="reports_view_tabular.js" type="text/javascript"></script>
   <title>View Tabular Report</title>
 <style>
-  html, body { width: 100%; height: 100%; padding: 0; margin: 0; overflow: auto; }
+  html, body { width: 100%; height: 100%; padding: 0; margin: 0; overflow: auto; background-color:#fff; }
   #reports-tabview-layout { height: 100%; margin: 0 auto; width: 100%; }
   #reports-tabview-grid-container { height: 100%; }
-  .slick-cell, .slick-headerrow-column { border-bottom: 1px solid transparent; border-left: none; border-right: none; border-top: 1px solid #ddd; line-height: 27px; }
+  .slick-headerrow-column, .slick-cell {line-height: 27px; border:none;}
+  .slick-row.ui-widget-content { border-top: 1px solid transparent; border-left: none; border-right: none; border-bottom: 1px solid #ddd; line-height: 27px; }
   .slick-row.odd { background-color: #f9f9f9; }
-  .slick-header-column.ui-state-default { line-height: 22px; height: 32px; border-top: 1px solid transparent; border-left: none; border-right: none; border-bottom: 2px solid #ddd; }
+  .slick-header-column.ui-state-default { line-height: 22px; height: 32px; border-top: 1px solid transparent; border-left: none; border-right: none; }
+  .slick-header-columns { border-bottom: 2px solid #ddd;}
   .grid-loading { display: inline-block; z-index: 9999; background: transparent url('../images/loading/loading.gif') no-repeat; height: 100px; width: 100px; }
   .reports-tabview-toolbar { padding: 10px 10px; border-bottom: 1px solid #ddd; }
   .pane { display: none; }

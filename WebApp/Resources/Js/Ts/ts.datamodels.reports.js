@@ -38,7 +38,7 @@
     }
 
 
-    function ensureData(from, to) {
+    function ensureData(from, to, loadedCallback) {
       if (req) {
         req.abort();
         for (var i = req.fromPage; i <= req.toPage; i++)
@@ -74,17 +74,21 @@
 
         onDataLoading.notify({ from: from, to: to });
 
-        var params = { "reportID": _reportID, "from": fromPage * PAGESIZE, "to": (fromPage * PAGESIZE) + PAGESIZE, "sortField": sortcol, "isDesc": (sortdir < 1) };
-
+        var params = { "reportID": _reportID, "from": fromPage * PAGESIZE, "to": (toPage * PAGESIZE) + PAGESIZE - 1, "sortField": sortcol, "isDesc": (sortdir < 1) };
+        //console.log('REQUEST: From: ' + fromPage * PAGESIZE + ', To: ' + ((fromPage * PAGESIZE) + PAGESIZE-1) + "  Page: " + fromPage);
         req = $.ajax({
           type: "POST",
           url: "/Services/ReportService.asmx/GetReportData",
           data: JSON.stringify(params),
           contentType: "application/json; charset=utf-8",
           dataType: "json",
-          success: onSuccess,
+          success: function (resp) {
+            onSuccess(resp)
+            if (loadedCallback) loadedCallback();
+          },
           error: function () {
-            onError(fromPage, toPage)
+            onError(fromPage, toPage);
+            if (loadedCallback) loadedCallback();
           }
 
         });
@@ -100,10 +104,11 @@
 
     function onSuccess(resp) {
       var from = resp.d.From, to = resp.d.To, results = JSON.parse(resp.d.Data);
+      //console.log('RESPONSE: From: ' + from + ', To: ' + to);
 
       if (results.length > 0) {
         data.length = results[0].TotalRows;
-
+        //console.log('count: ' + results.length);
         for (var i = 0; i < results.length; i++) {
           var item = results[i];
           data[from + i] = item;
