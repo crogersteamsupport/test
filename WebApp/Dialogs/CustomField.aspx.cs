@@ -49,6 +49,7 @@ public partial class Dialogs_CustomField : BaseDialogPage
 
     pnlPickList.Visible = GetSelectedFieldType() == CustomFieldType.PickList;
     cbIsRequired.Visible = GetSelectedFieldType() != CustomFieldType.Boolean;
+    cbIsRequiredToClose.Visible = GetSelectedFieldType() != CustomFieldType.Boolean;
 
   }
 
@@ -88,6 +89,7 @@ public partial class Dialogs_CustomField : BaseDialogPage
     cbIsVisibleOnPortal.Checked = fields[0].IsVisibleOnPortal == null ? false : (bool)fields[0].IsVisibleOnPortal;
     cbIsRequired.Checked = fields[0].IsRequired;
     cbFirstSelect.Checked = fields[0].IsFirstIndexSelect;
+    cbIsRequiredToClose.Checked = fields[0].IsRequiredToClose;
   }
 
   public override bool Save()
@@ -137,6 +139,7 @@ public partial class Dialogs_CustomField : BaseDialogPage
     field.IsVisibleOnPortal = cbIsVisibleOnPortal.Checked;
     field.IsFirstIndexSelect = cbFirstSelect.Checked;
     field.IsRequired = cbIsRequired.Checked;
+    field.IsRequiredToClose = cbIsRequiredToClose.Checked;
 
     string list = textList.Text.Replace("\n", "|");
     if (list != "")

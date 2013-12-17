@@ -175,6 +175,7 @@
     .ts-icon-merge{ background-image: url('../Images/icons/merge.png') !important;}
 
     .ui-state-error-custom {border: 1px solid #cd0a0a; background: #fef1ec url(images/ui-bg_flat_100_fef1ec_40x100.png) 50% 50% repeat-x; color: #cd0a0a; margin-top:.25em; padding: .25em !important; }
+    .ui-state-error-to-close-custom {border: 1px solid #cd0a0a; background: #fef1ec url(images/ui-bg_flat_100_fef1ec_40x100.png) 50% 50% repeat-x; color: #cd0a0a; margin-top:.25em; padding: .25em !important; }
     .nonrequired-field-error {border: 1px solid #cd0a0a; background: #fef1ec url(images/ui-bg_flat_100_fef1ec_40x100.png) 50% 50% repeat-x; color: #cd0a0a; margin-top:.25em; padding: .25em !important; }
     #dialog-ticketmerge-preview div {padding: 5px 0px;}
     .ui-dialog-buttonpane.saving{

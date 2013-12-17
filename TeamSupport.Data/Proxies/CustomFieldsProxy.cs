@@ -33,6 +33,7 @@ namespace TeamSupport.Data
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
     */      
+    [DataMember] public bool IsRequiredToClose { get; set; }
   }
   
   public partial class CustomField : BaseItem
@@ -40,6 +41,7 @@ namespace TeamSupport.Data
     public CustomFieldProxy GetProxy()
     {
       CustomFieldProxy result = new CustomFieldProxy();
+      result.IsRequiredToClose = this.IsRequiredToClose;
       result.IsRequired = this.IsRequired;
       result.IsFirstIndexSelect = this.IsFirstIndexSelect;
       result.IsVisibleOnPortal = this.IsVisibleOnPortal;

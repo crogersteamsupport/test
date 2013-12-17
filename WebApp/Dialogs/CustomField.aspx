@@ -39,6 +39,7 @@
           <div><asp:CheckBox ID="cbFirstSelect" runat="server" Text="The first value is not a valid selection for a required field." /></div>
         </div>
           <div><asp:CheckBox ID="cbIsRequired" runat="server" Text="A value is required" /></div>
+          <div><asp:CheckBox ID="cbIsRequiredToClose" runat="server" Text="A value is required prior to closing ticket" /></div>
         <br />
         <div>
           Description:</div>

@@ -142,6 +142,17 @@ namespace TeamSupport.Data
         else return false;
       }
     }
+    public bool IsRequiredToClose
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("IsRequiredToClose") && Row["IsRequiredToClose"] != DBNull.Value)
+        {
+          return (bool)Row["IsRequiredToClose"];
+        }
+        else return false;
+      }
+    }
     public int OrganizationID
     {
       get
@@ -184,7 +195,8 @@ cf.IsVisibleOnPortal,
 cf.IsFirstIndexSelect,
 cf.IsRequired,
 cf.OrganizationID, 
-cf.CustomFieldID
+cf.CustomFieldID,
+cf.IsRequiredToClose
 FROM CustomFields cf LEFT JOIN CustomValues cv on cv.CustomFieldID = cf.CustomFieldID 
 WHERE cf.CustomFieldID = @CustomFieldID
 AND cv.RefID=@RefID";
@@ -226,7 +238,8 @@ cf.IsVisibleOnPortal,
 cf.IsFirstIndexSelect,
 cf.IsRequired,
 cf.OrganizationID, 
-cf.CustomFieldID
+cf.CustomFieldID,
+cf.IsRequiredToClose
 FROM CustomFields cf LEFT JOIN CustomValues cv on cv.CustomFieldID = cf.CustomFieldID AND cv.RefID=@RefID
 WHERE cf.OrganizationID = @OrganizationID
 AND cf.RefType=@RefType

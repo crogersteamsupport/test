@@ -31,6 +31,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CreatorID", "CreatorID", false, false, false);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("CustomFieldCategoryID", "CustomFieldCategoryID", false, false, false);
+      _fieldMap.AddMap("IsRequiredToClose", "IsRequiredToClose", false, false, false);
             
     }
   }

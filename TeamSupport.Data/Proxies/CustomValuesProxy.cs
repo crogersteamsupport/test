@@ -36,6 +36,7 @@ namespace TeamSupport.Data
     [DataMember] public bool IsFirstIndexSelect { get; set; }
     [DataMember] public bool IsRequired { get; set; }
     [DataMember] public int OrganizationID { get; set; }
+    [DataMember] public bool IsRequiredToClose { get; set; }
   }
   
   public partial class CustomValue : BaseItem
@@ -65,6 +66,7 @@ namespace TeamSupport.Data
       result.IsFirstIndexSelect = this.IsFirstIndexSelect;
       result.IsRequired = this.IsRequired;
       result.OrganizationID = this.OrganizationID;
+      result.IsRequiredToClose = this.IsRequiredToClose;
 
       if (this.FieldType == CustomFieldType.DateTime)
       {
