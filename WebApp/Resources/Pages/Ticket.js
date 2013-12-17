@@ -3279,7 +3279,7 @@ var appendCustomEdit = function (field, element) {
   if (field.IsRequiredToClose) {
     result.parent().addClass('is-required-to-close');
   }
-  if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+  if (field.Value === null || $.trim(field.Value) === '') {
     result.parent().addClass('is-empty');
   }
 }
