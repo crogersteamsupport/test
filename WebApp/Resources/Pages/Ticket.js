@@ -1209,6 +1209,7 @@ $(document).ready(function () {
       select.combobox({
         selected: function (e, ui) {
           parent.show().find('img').show();
+          _ticketSender = new Object();
           _ticketSender.UserID = top.Ts.System.User.UserID;
           _ticketSender.Name = userFullName;
           var user = $(ui.item).data('user');
