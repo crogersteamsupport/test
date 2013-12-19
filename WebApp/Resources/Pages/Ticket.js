@@ -5,7 +5,8 @@
 /// <reference path="ts/ts.pages.main.js" />
 var _ticketID = null;
 var _ticketNumber = null;
-var _ticketCreatorID = null;
+var _ticketCreator = null;
+var _ticketSender = null;
 var _timerid;
 var _timerElapsed = 0;
 var speed = 50, counter = 0, start;
@@ -50,8 +51,7 @@ $(document).ready(function () {
     minLength: 2,
     source: selectTicket,
     select: function (event, ui) {
-          if (ui.item.data == _ticketID)
-          {
+      if (ui.item.data == _ticketID) {
         alert("Sorry, but you can not merge this ticket into itself.");
         return;
       }
@@ -106,8 +106,7 @@ $(document).ready(function () {
           return;
         }
 
-              if ($('#dialog-ticketmerge-confirm').prop("checked"))
-              {
+        if ($('#dialog-ticketmerge-confirm').prop("checked")) {
           $(e.target).closest('.ui-dialog-buttonpane').addClass('saving');
           var winningID = $('#dialog-ticketmerge-search').data('ticketid');
           var winningTicketNumber = $('#dialog-ticketmerge-search').data('ticketnumber');
@@ -742,8 +741,7 @@ $(document).ready(function () {
     var icon = $(this);
     var actionDiv = $(this).parents('.ticket-action');
     var action = actionDiv.data('action');
-      if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin)
-      {
+    if (top.Ts.System.User.ChangeKbVisibility || top.Ts.System.User.IsSystemAdmin) {
       top.Ts.System.logAction('Ticket - Action KB Icon Clicked');
       top.Ts.Services.Tickets.SetActionKb(action.ActionID, !$(this).hasClass('ts-icon-kb'),
           function (result) {
@@ -1174,16 +1172,45 @@ $(document).ready(function () {
         option.attr('selected', 'selected');
       }
 
+      var creatorAdded = false;
+
+      if (_ticketSender != null) {
+        var senderSuffix = ' (Sender)';
+
+        if (_ticketCreator.Name == _ticketSender.Name) {
+          senderSuffix = ' (Sender and Creator)';
+        }
+
+        var sender = new Object();
+        sender.UserID = _ticketSender.UserID;
+        sender.Name = _ticketSender.Name;
+        $('<option>').text(sender.Name + senderSuffix).appendTo(select).data('user', sender);
+
+        if (_ticketCreator.UserID > 0 && _ticketCreator.Name != $(this).text() && _ticketCreator.Name != _ticketSender.Name) {
+          var creator = new Object();
+          creator.UserID = _ticketCreator.UserID;
+          creator.Name = _ticketCreator.Name;
+          $('<option>').text(creator.Name + ' (Creator)').appendTo(select).data('user', creator);
+          creatorAdded = true;
+        }
+        //var separator = $('<option disabled>').text('------------------------ THIS IS DISABLED').appendTo(select);
+      }
+
       for (var i = 0; i < users.length; i++) {
-        var option = $('<option>').text(users[i].Name).appendTo(select).data('user', users[i]);
-        if ($(this).text() === users[i].Name) {
-          option.attr('selected', 'selected');
+        // If it has not been added previously as sender or creator
+        if (_ticketSender === null || (_ticketSender.Name != users[i].Name && (!creatorAdded || _ticketCreator.Name != users[i].Name))) {
+          var option = $('<option>').text(users[i].Name).appendTo(select).data('user', users[i]);
+          if ($(this).text() === users[i].Name) {
+            option.attr('selected', 'selected');
+          }
         }
       }
 
       select.combobox({
         selected: function (e, ui) {
           parent.show().find('img').show();
+          _ticketSender.UserID = top.Ts.System.User.UserID;
+          _ticketSender.Name = userFullName;
           var user = $(ui.item).data('user');
           top.Ts.System.logAction('Ticket - Assignment Changed');
           top.Ts.Services.Tickets.SetTicketUser(_ticketID, user.UserID, function (userInfo) {
@@ -1595,7 +1622,7 @@ $(document).ready(function () {
 
   });
 
-  if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === _ticketCreatorID) {
+  if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === _ticketCreator.UserID) {
     addToolbarButton('btnDelete', 'ts-icon-delete', 'Delete', function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -2776,7 +2803,16 @@ var loadTicket = function (ticketNumber, refresh) {
 
     _ticketID = info.Ticket.TicketID;
     _ticketNumber = info.Ticket.TicketNumber;
-    _ticketCreatorID = info.Ticket.CreatorID;
+    top.Ts.Services.Tickets.GetTicketLastSender(_ticketID, function (result) {
+      if (result !== null) {
+        _ticketSender = new Object();
+        _ticketSender.UserID = result.UserID;
+        _ticketSender.Name = result.FirstName + ' ' + result.LastName;
+      }
+    });
+    _ticketCreator = new Object();
+    _ticketCreator.UserID = info.Ticket.CreatorID;
+    _ticketCreator.Name = info.Ticket.CreatorName;
     top.Ts.System.logAction('View Ticket');
     $('.page-loading').hide().next().show();
     if (_layout === null) {
@@ -2874,18 +2910,15 @@ var loadTicket = function (ticketNumber, refresh) {
 
 
     //if the current actions don't equal the # for the ticket , update 
-    if ($('.ticket-action').length - 1 != info.Actions.length)
-    {
-        if ($('.ticket-action-form').length <= 0)
-        {
+    if ($('.ticket-action').length - 1 != info.Actions.length) {
+      if ($('.ticket-action-form').length <= 0) {
         $('#divActions').empty();
 
         for (var i = 0; i < info.Actions.length; i++) {
           appendActionElement(info.Actions[i], info.Actions.length - i);
         }
       }
-        else
-        {
+      else {
         preappendActionElement(info.Actions[0], info.Actions.length);
       }
     }

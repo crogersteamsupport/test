@@ -1868,6 +1868,19 @@ namespace TSWebServices
       return info;
     }
 
+    [WebMethod]
+    public UsersViewItemProxy GetTicketLastSender(int ticketID)
+    {
+      UsersView sender = new UsersView(TSAuthentication.GetLoginUser());
+      sender.LoadLastSenderByTicketNumber(TSAuthentication.OrganizationID, ticketID);
+      UsersViewItemProxy result = null;
+      if (sender.Count > 0)
+      {
+        result = sender[0].GetProxy();
+      }
+      return result;
+    }
+
     private ActionInfo GetActionInfo(LoginUser loginUser, TeamSupport.Data.Action action)
     {
       return GetActionInfo(loginUser, action, true);

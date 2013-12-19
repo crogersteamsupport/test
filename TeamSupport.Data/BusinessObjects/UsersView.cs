@@ -39,6 +39,42 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadLastSenderByTicketNumber(int organizationID, int ticketID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+          SELECT
+	          *
+          FROM
+	          UsersView
+          WHERE
+	          OrganizationID = @OrganizationID
+	          AND MarkDeleted = 0
+	          AND UserID =
+	          (
+		          SELECT 
+			          TOP 1
+			          ModifierID
+		          FROM 
+			          ActionLogs 
+		          WHERE 
+			          OrganizationID = @OrganizationID
+			          AND RefType = 17
+			          AND RefID = @TicketID
+			          AND Description LIKE '%</a>  from user %' 
+		          ORDER BY 
+			          ActionLogID DESC
+	          )
+          ORDER BY
+	          UserID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        Fill(command, "Organizations,OrganizationTickets");
+      }
+    }
+
     public void LoadByTerm(int parentID, string term, int max)
     {
       if (term.Trim().Length < 2) return;
