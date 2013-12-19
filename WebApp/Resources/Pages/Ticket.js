@@ -1185,16 +1185,16 @@ $(document).ready(function () {
         sender.UserID = _ticketSender.UserID;
         sender.Name = _ticketSender.Name;
         $('<option>').text(sender.Name + senderSuffix).appendTo(select).data('user', sender);
-
-        if (_ticketCreator.UserID > 0 && _ticketCreator.Name != $(this).text() && _ticketCreator.Name != _ticketSender.Name) {
-          var creator = new Object();
-          creator.UserID = _ticketCreator.UserID;
-          creator.Name = _ticketCreator.Name;
-          $('<option>').text(creator.Name + ' (Creator)').appendTo(select).data('user', creator);
-          creatorAdded = true;
-        }
-        //var separator = $('<option disabled>').text('------------------------ THIS IS DISABLED').appendTo(select);
       }
+
+      if (_ticketCreator.UserID > 0 && _ticketCreator.Name != $(this).text() && (_ticketSender == null || _ticketCreator.Name != _ticketSender.Name)) {
+        var creator = new Object();
+        creator.UserID = _ticketCreator.UserID;
+        creator.Name = _ticketCreator.Name;
+        $('<option>').text(creator.Name + ' (Creator)').appendTo(select).data('user', creator);
+        creatorAdded = true;
+      }
+      //var separator = $('<option disabled>').text('------------------------ THIS IS DISABLED').appendTo(select);
 
       for (var i = 0; i < users.length; i++) {
         // If it has not been added previously as sender or creator
