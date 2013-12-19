@@ -5,7 +5,7 @@
 /// <reference path="ts/ts.pages.main.js" />
 var _ticketID = null;
 var _ticketNumber = null;
-var _ticketCreator = null;
+var _ticketCreator = new Object();
 var _ticketSender = null;
 var _timerid;
 var _timerElapsed = 0;
