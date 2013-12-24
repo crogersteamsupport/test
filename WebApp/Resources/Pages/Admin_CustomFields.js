@@ -271,6 +271,7 @@ AdminCustomFields = function () {
       }
 
       if (field.IsRequired) typeName = typeName + ', Required';
+      if (field.IsRequiredToClose) typeName = typeName + ', Required to Close';
       if (field.IsVisibleOnPortal) typeName = typeName + ', Visible to Customers';
       typeName = '(' + typeName + ')';
 
