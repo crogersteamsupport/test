@@ -87,6 +87,12 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("LastIndexRebuilt", "LastIndexRebuilt", false, false, false);
       _fieldMap.AddMap("IsIndexLocked", "IsIndexLocked", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
+      _fieldMap.AddMap("TotalTicketsCreated", "TotalTicketsCreated", false, false, false);
+      _fieldMap.AddMap("TicketsOpen", "TicketsOpen", false, false, false);
+      _fieldMap.AddMap("CreatedLast30", "CreatedLast30", false, false, false);
+      _fieldMap.AddMap("AvgTimeOpen", "AvgTimeOpen", false, false, false);
+      _fieldMap.AddMap("AvgTimeToClose", "AvgTimeToClose", false, false, false);
+      _fieldMap.AddMap("CustDisIndex", "CustDisIndex", false, false, false);
             
     }
   }

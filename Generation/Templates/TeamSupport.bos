@@ -8065,6 +8065,108 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>TotalTicketsCreated</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>TicketsOpen</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>CreatedLast30</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>AvgTimeOpen</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>AvgTimeToClose</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>CustDisIndex</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>ReportFields</TableName>
     <FieldName>ReportFieldID</FieldName>
     <CustomType>int</CustomType>
@@ -23634,6 +23736,23 @@
     <SystemType>System.Int32</SystemType>
     <Size>4</Size>
     <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>CustomFields</TableName>
+    <FieldName>IsRequiredToClose</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
     <Scale>255</Scale>
   </Fields>
   <Fields>

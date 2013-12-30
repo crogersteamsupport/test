@@ -87,6 +87,12 @@ namespace TeamSupport.Data
     [DataMember] public DateTime LastIndexRebuilt { get; set; }
     [DataMember] public bool IsIndexLocked { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public int TotalTicketsCreated { get; set; }
+    [DataMember] public int TicketsOpen { get; set; }
+    [DataMember] public int CreatedLast30 { get; set; }
+    [DataMember] public int AvgTimeOpen { get; set; }
+    [DataMember] public int AvgTimeToClose { get; set; }
+    [DataMember] public int CustDisIndex { get; set; }
           
   }
   
@@ -95,6 +101,12 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.CustDisIndex = this.CustDisIndex;
+      result.AvgTimeToClose = this.AvgTimeToClose;
+      result.AvgTimeOpen = this.AvgTimeOpen;
+      result.CreatedLast30 = this.CreatedLast30;
+      result.TicketsOpen = this.TicketsOpen;
+      result.TotalTicketsCreated = this.TotalTicketsCreated;
       result.NeedsIndexing = this.NeedsIndexing;
       result.IsIndexLocked = this.IsIndexLocked;
       result.IsRebuildingIndex = this.IsRebuildingIndex;
