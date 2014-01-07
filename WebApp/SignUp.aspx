@@ -125,7 +125,7 @@
   <asp:ScriptManager ID="ScriptManager" runat="server" EnablePageMethods="true">
   </asp:ScriptManager>
   </form>
-  <div class="container">
+  <div class="">
     <div class="row">
       <div class="col-xs-8 main-column">
         <form role="form" class="form-horizontal">
