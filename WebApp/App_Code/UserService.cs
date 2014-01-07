@@ -226,6 +226,7 @@ namespace TSWebServices
                 BasicUser basic = new BasicUser();
                 basic.Name = user.FirstName + " " + user.LastName;
                 basic.UserID = user.UserID;
+                basic.InOfficeComment = user.InOfficeComment;
                 result.Add(basic);
             }
             return result.ToArray();
@@ -856,6 +857,8 @@ namespace TSWebServices
             public string Name { get; set; }
             [DataMember]
             public int UserID { get; set; }
+            [DataMember]
+            public string InOfficeComment { get; set; }
         }
 
 

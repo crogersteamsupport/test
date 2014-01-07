@@ -1184,14 +1184,42 @@ $(document).ready(function () {
         var sender = new Object();
         sender.UserID = _ticketSender.UserID;
         sender.Name = _ticketSender.Name;
-        $('<option>').text(sender.Name + senderSuffix).appendTo(select).data('user', sender);
+        sender.InOfficeComment = '';
+
+        var senderInUsers = users.filter(function (user) {
+          return user.UserID == _ticketSender.UserID;
+        });
+
+        if (senderInUsers.length > 0) {
+          sender.InOfficeComment = senderInUsers[0].InOfficeComment;
+        }
+
+        var senderInOfficeComment = '';
+        if (sender.InOfficeComment) {
+          senderInOfficeComment = ' - ' + sender.InOfficeComment;
+        }
+        $('<option>').text(sender.Name + senderInOfficeComment + senderSuffix).appendTo(select).data('user', sender);
       }
 
       if (_ticketCreator.UserID > 0 && _ticketCreator.Name != $(this).text() && (_ticketSender == null || _ticketCreator.Name != _ticketSender.Name)) {
         var creator = new Object();
         creator.UserID = _ticketCreator.UserID;
         creator.Name = _ticketCreator.Name;
-        $('<option>').text(creator.Name + ' (Creator)').appendTo(select).data('user', creator);
+        creator.InOfficeComment = '';
+
+        var creatorInUsers = users.filter(function (user) {
+          return user.UserID == _ticketCreator.UserID;
+        });
+
+        if (creatorInUsers.length > 0) {
+          creator.InOfficeComment = creatorInUsers[0].InOfficeComment;
+        }
+
+        var creatorInOfficeComment = '';
+        if (creator.InOfficeComment) {
+          creatorInOfficeComment = ' - ' + creator.InOfficeComment;
+        }
+        $('<option>').text(creator.Name + creatorInOfficeComment + ' (Creator)').appendTo(select).data('user', creator);
         creatorAdded = true;
       }
       //var separator = $('<option disabled>').text('------------------------ THIS IS DISABLED').appendTo(select);
@@ -1199,7 +1227,11 @@ $(document).ready(function () {
       for (var i = 0; i < users.length; i++) {
         // If it has not been added previously as sender or creator
         if (_ticketSender === null || (_ticketSender.Name != users[i].Name && (!creatorAdded || _ticketCreator.Name != users[i].Name))) {
-          var option = $('<option>').text(users[i].Name).appendTo(select).data('user', users[i]);
+          var inOfficeComment = '';
+          if (users[i].InOfficeComment) {
+            inOfficeComment = ' - ' + users[i].InOfficeComment;
+          }
+          var option = $('<option>').text(users[i].Name + inOfficeComment).appendTo(select).data('user', users[i]);
           if ($(this).text() === users[i].Name) {
             option.attr('selected', 'selected');
           }
