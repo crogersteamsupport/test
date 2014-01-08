@@ -1192,13 +1192,13 @@ $(document).ready(function () {
 
         if (senderInUsers.length > 0) {
           sender.InOfficeComment = senderInUsers[0].InOfficeComment;
-        }
 
         var senderInOfficeComment = '';
         if (sender.InOfficeComment) {
           senderInOfficeComment = ' - ' + sender.InOfficeComment;
         }
         $('<option>').text(sender.Name + senderInOfficeComment + senderSuffix).appendTo(select).data('user', sender);
+      }
       }
 
       if (_ticketCreator.UserID > 0 && _ticketCreator.Name != $(this).text() && (_ticketSender == null || _ticketCreator.Name != _ticketSender.Name)) {
@@ -1213,7 +1213,6 @@ $(document).ready(function () {
 
         if (creatorInUsers.length > 0) {
           creator.InOfficeComment = creatorInUsers[0].InOfficeComment;
-        }
 
         var creatorInOfficeComment = '';
         if (creator.InOfficeComment) {
@@ -1221,6 +1220,7 @@ $(document).ready(function () {
         }
         $('<option>').text(creator.Name + creatorInOfficeComment + ' (Creator)').appendTo(select).data('user', creator);
         creatorAdded = true;
+        }
       }
       //var separator = $('<option disabled>').text('------------------------ THIS IS DISABLED').appendTo(select);
 
