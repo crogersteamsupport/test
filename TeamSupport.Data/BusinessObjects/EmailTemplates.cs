@@ -79,6 +79,29 @@ namespace TeamSupport.Data
       return count < 1 ? "" : builder.ToString();
     }
 
+    public EmailTemplate ReplaceIntroduction(string introduction)
+    {
+      ReplaceParameter("Introduction", GetIntroductionText(introduction));
+      return this;
+    }
+
+    private string GetIntroductionText(string introduction)
+    {
+      StringBuilder builder = new StringBuilder();
+
+      if (String.IsNullOrEmpty(introduction))
+      {
+        builder.Append(".");
+      }
+      else
+      {
+        builder.AppendLine(" with the next introduction:<br/><br/>");
+        builder.AppendLine();
+        builder.AppendLine("\"" + introduction + "\"");
+      }
+
+      return builder.ToString();
+    }
 
     private bool DoesParameterExist(string parameterName)
     {
@@ -511,10 +534,11 @@ namespace TeamSupport.Data
       return template.GetMessage();
     }
 
-    public static MailMessage GetTicketSendEmail(LoginUser loginUser, UsersViewItem sender, TicketsViewItem ticket, string recipient)
+    public static MailMessage GetTicketSendEmail(LoginUser loginUser, UsersViewItem sender, TicketsViewItem ticket, string recipient, string introduction)
     {
       EmailTemplate template = GetTemplate(loginUser, ticket.OrganizationID, 21);
       template.ReplaceCommonParameters().ReplaceFields("Sender", sender).ReplaceFields("Ticket", ticket);
+      template.ReplaceIntroduction(introduction);
       template.ReplaceActions(ticket, true).ReplaceParameter("Recipient", recipient); ;
       template.ReplaceContacts(ticket);
       return template.GetMessage();

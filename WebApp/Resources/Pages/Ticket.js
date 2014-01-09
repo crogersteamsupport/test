@@ -31,13 +31,13 @@ $(document).ready(function () {
   $('.page-loading').show().next().hide();
 
   $(".dialog-emailinput").dialog({
-    height: 200,
+    height: 205,
     width: 400,
     autoOpen: false,
     modal: true,
     buttons: { OK: function () {
       $(this).dialog("close");
-      top.Ts.Services.Tickets.EmailTicket(_ticketID, $(".dialog-emailinput input").val(), function () {
+      top.Ts.Services.Tickets.EmailTicket(_ticketID, $(".dialog-emailinput input").val(), $(".dialog-emailinput textarea").val(), function () {
         alert('Your emails have been sent.');
       }, function () {
         alert('There was an error sending the ticket email');

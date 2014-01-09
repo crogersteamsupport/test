@@ -1711,7 +1711,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void EmailTicket(int ticketID, string addresses)
+    public void EmailTicket(int ticketID, string addresses, string introduction)
     {
       EmailPosts posts = new EmailPosts(TSAuthentication.GetLoginUser());
       EmailPost post = posts.AddNewEmailPost();
@@ -1721,6 +1721,7 @@ namespace TSWebServices
       post.Param1 = TSAuthentication.UserID.ToString();
       post.Param2 = ticketID.ToString();
       post.Param3 = addresses;
+      post.Text1 = introduction;
       posts.Save();
     }
 

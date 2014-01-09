@@ -216,7 +216,7 @@ namespace TeamSupport.ServiceLibrary
           ProcessTicketUpdateRequest(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2));
           break;
         case EmailPostType.TicketSendEmail:
-          ProcessTicketSendEmail(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2), emailPost.Param3);
+          ProcessTicketSendEmail(GetIntParam(emailPost.Param1), GetIntParam(emailPost.Param2), emailPost.Param3, emailPost.Text1);
           break;
         case EmailPostType.WelcomeNewSignup:
           ProcessWelcomeNewSignup(GetIntParam(emailPost.Param1), emailPost.Param2);
@@ -704,7 +704,7 @@ namespace TeamSupport.ServiceLibrary
 
     }
 
-    private void ProcessTicketSendEmail(int userID, int ticketID, string addresses)
+    private void ProcessTicketSendEmail(int userID, int ticketID, string addresses, string introduction)
     {
       Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
       User sender = Users.GetUser(LoginUser, userID);
@@ -736,7 +736,7 @@ namespace TeamSupport.ServiceLibrary
       {
         try
         {
-          MailMessage message = EmailTemplates.GetTicketSendEmail(LoginUser, sender.GetUserView(), ticket.GetTicketView(), item.Trim());
+          MailMessage message = EmailTemplates.GetTicketSendEmail(LoginUser, sender.GetUserView(), ticket.GetTicketView(), item.Trim(), introduction);
           message.To.Add(new MailAddress(item.Trim()));
           message.Subject = message.Subject;
 
