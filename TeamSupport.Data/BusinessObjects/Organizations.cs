@@ -645,12 +645,14 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       phone.Collection.Save();
 
       AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 219); //TeamSupport
+      /*
       AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 233); //Email Handler
       AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 234); //Adv Portal
       AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 1068); //Basic Portal
       AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 1970); //Chat
       AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 2580); //KB
       AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 1877); //API
+       */
     }
 
     private static void AddMurocProduct(LoginUser loginUser, int organizationID, int productID)
