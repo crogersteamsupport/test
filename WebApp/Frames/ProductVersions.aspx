@@ -6,7 +6,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 <div id="pnlGrid" runat="server" style="width:100%; height:100%;">
   <telerik:RadGrid ID="gridVersions" runat="server" AutoGenerateColumns="False" 
-  GridLines="None" Height="100%" 
+  GridLines="None" Height="100%" OnItemDataBound="gridVersions_ItemDataBound"
   OnNeedDataSource="gridVersions_NeedDataSource" Width="100%" BorderWidth="0px">
 <MasterTableView datakeynames="ProductVersionID">
 <RowIndicatorColumn>
@@ -26,10 +26,10 @@
     <telerik:GridBoundColumn DataField="IsReleased" DataType="System.Boolean" 
       HeaderText="Released" UniqueName="IsReleased">
     </telerik:GridBoundColumn>
-    <telerik:GridBoundColumn DataField="ReleaseDate" DataFormatString="{0:d}" 
+    <telerik:GridDateTimeColumn DataField="ReleaseDate" DataFormatString="{0:d}" 
       DataType="System.DateTime" HeaderText="Release Date" 
       UniqueName="ReleaseDate">
-    </telerik:GridBoundColumn>
+    </telerik:GridDateTimeColumn>
     <telerik:GridBoundColumn DataField="Description" 
       HeaderText="Description" UniqueName="Description">
     </telerik:GridBoundColumn>

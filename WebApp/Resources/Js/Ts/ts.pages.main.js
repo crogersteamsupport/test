@@ -315,7 +315,7 @@ Ts.Pages.Main.prototype =
         }
       });
 
-      $('.dialog-reminder .reminder-date').datetimepicker();
+      $('.dialog-reminder .reminder-date').datetimepicker({ "dateFormat": top.Ts.Utils.getJqueryDateFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern) });
       $('.dialog-reminder .reminder-user').combobox();
 
     }
@@ -367,7 +367,7 @@ Ts.Pages.Main.prototype =
 
       }
     });
-  
+
     function beforeMenuItemSelect(item) {
       var mi = self.MainMenu.getSelected();
       if (mi == null) return;

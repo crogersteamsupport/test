@@ -127,9 +127,36 @@
      else {
        return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
       }
-
-     
    },
+   getJqueryDateFormat: function(dateFormat)
+   {
+        var result = dateFormat;
+
+        result = dateFormat.replace("dddd", "DD");
+        result = result.replace("ddd", "D");
+
+        if (result.indexOf("MMMM") > -1)
+        {
+            result = result.replace("MMMM", "MM");
+        }
+        else if (result.indexOf("MMM") > -1)
+        {
+            result = result.replace("MMM", "M");
+        }
+        else if (result.indexOf("MM")> -1 )
+        {
+            result = result.replace("MM", "mm");
+        }
+        else
+        {
+            result = result.replace("M", "m");
+        }
+
+        result = result.indexOf("yyyy") > -1 ?  result.replace("yyyy", "yy") : result.replace("yy", "y");
+
+        return result;
+   },
+
    getDateTimePattern: function () {
      return top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
    },
