@@ -73,7 +73,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM Tags t LEFT JOIN TagLinks tl ON tl.TagID = t.TagID WHERE t.OrganizationID = @OrganizationID AND tl.RefType = @RefType AND tl.RefID = @RefID";
+        command.CommandText = "SELECT * FROM Tags t LEFT JOIN TagLinks tl ON tl.TagID = t.TagID WHERE t.OrganizationID = @OrganizationID AND tl.RefType = @RefType AND tl.RefID = @RefID ORDER BY tl.DateCreated";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", LoginUser.OrganizationID);
         command.Parameters.AddWithValue("RefType", refType);
