@@ -96,6 +96,8 @@ UserPage = function () {
 
     $('#userTitle').html(user.Title == '' || user.Title == null ? 'None' : user.Title);
     $('#userTimeZone').html(user.timeZoneDisplay);
+    $('#userFontFamily').html(user.FontFamilyDescription);
+    $('#userFontSize').html(user.FontSizeDescription);
     $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
     $('#userKBVisibility').html((user.ChangeKbVisibility == true ? 'Yes' : 'No'));
     $('#userTicketRights').html(userRightsToString(user.TicketRights)).data('o', user.TicketRights);
@@ -853,6 +855,98 @@ UserPage = function () {
             function (error) {
               parent.show().find('img').hide();
               alert('There was an error setting user timezone.');
+            });
+              container.remove();
+            },
+            close: function (e, ui) {
+              removeComboBoxes();
+            }
+          });
+          select.combobox('search', '');
+        });
+
+    $('#userFontFamily')
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          removeComboBoxes();
+          var value = $(this).text();
+          var parent = $(this).parent().hide();
+          var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+          var select = $('<select>').appendTo(container);
+
+          var families = top.Ts.Cache.getFontFamilies();
+          for (var i = 0; i < families.length; i += 2) {
+            var option = $('<option>').text(families[i]).data('type', families[i + 1]).appendTo(select);
+            if ($.trim(value) == $.trim(families[i])) {
+              option.attr('selected', 'selected');
+            }
+          }
+
+          select.combobox({
+            selected: function (e, ui) {
+              parent.show().find('img').show();
+              var type = $(ui.item).data('type');
+              top.Ts.Services.Users.SetFontFamily(_user.UserID, type, function (result) {
+                top.Ts.System.logAction('User Info - User Font Family Changed');
+                if (result !== null) {
+                  $('#userFontFamily').html(result);
+                  parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                }
+                else {
+                  parent.show().find('img').hide();
+                }
+              },
+            function (error) {
+              parent.show().find('img').hide();
+              alert('There was an error setting user Font Family.');
+            });
+              container.remove();
+            },
+            close: function (e, ui) {
+              removeComboBoxes();
+            }
+          });
+          select.combobox('search', '');
+        });
+
+    $('#userFontSize')
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          removeComboBoxes();
+          var value = $(this).text();
+          var parent = $(this).parent().hide();
+          var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
+          var select = $('<select>').appendTo(container);
+
+          var sizes = top.Ts.Cache.getFontSizes();
+          for (var i = 0; i < sizes.length; i += 2) {
+            var option = $('<option>').text(sizes[i]).data('type', sizes[i + 1]).appendTo(select);
+            if ($.trim(value) == $.trim(sizes[i])) {
+              option.attr('selected', 'selected');
+            }
+          }
+
+          select.combobox({
+            selected: function (e, ui) {
+              parent.show().find('img').show();
+              var type = $(ui.item).data('type');
+              top.Ts.Services.Users.SetFontSize(_user.UserID, type, function (result) {
+                top.Ts.System.logAction('User Info - User Font Size Changed');
+                if (result !== null) {
+                  $('#userFontSize').html(result);
+                  parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                }
+                else {
+                  parent.show().find('img').hide();
+                }
+              },
+            function (error) {
+              parent.show().find('img').hide();
+              alert('There was an error setting user Font Size.');
             });
               container.remove();
             },

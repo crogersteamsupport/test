@@ -463,6 +463,22 @@ $(document).ready(function () {
         external_image_list_url: "tinymce/jscripts/image_list.js",
         media_external_list_url: "tinymce/jscripts/media_list.js",
         setup: function (ed) {
+          ed.onInit.add(function (ed) {
+            if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
+              ed.execCommand("fontName", false, top.Ts.System.User.FontFamilyDescription);
+            }
+            else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+              ed.execCommand("fontName", false, top.Ts.System.Organization.FontFamilyDescription);
+            }
+
+            if (top.Ts.System.User.FontSize != "0") {
+              ed.execCommand("fontSize", false, top.Ts.System.User.FontSize);
+            }
+            else if (top.Ts.System.Organization.FontSize != "0") {
+              ed.execCommand("fontSize", false, top.Ts.System.Organization.FontSize);
+            }
+          });
+
           ed.addButton('insertTicket', {
             title: 'Insert Ticket',
             image: '../images/nav/16/tickets.png',

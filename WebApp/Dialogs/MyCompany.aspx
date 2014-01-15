@@ -52,6 +52,20 @@
         </tr>
         <tr>
           <td class="labelColTD">
+            Default Font Family:
+          </td>
+          <td class="inputColTD">
+            <telerik:RadComboBox ID="cmbFontFamily" runat="server" Width="200px">
+            </telerik:RadComboBox>
+          </td>
+          <td>Date Font Size:</td>
+          <td>
+            <telerik:RadComboBox ID="cmbFontSize" runat="server" Width="200px">
+            </telerik:RadComboBox>
+          </td>
+        </tr>
+        <tr>
+          <td class="labelColTD">
             Domains:
           </td>
           <td class="inputColTD">

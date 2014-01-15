@@ -47,6 +47,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, true);
       _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
+      _fieldMap.AddMap("FontFamily", "FontFamily", false, false, false);
+      _fieldMap.AddMap("FontSize", "FontSize", false, false, false);
             
     }
   }

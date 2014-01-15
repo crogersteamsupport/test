@@ -850,6 +850,30 @@ namespace TSWebServices
             return organizations[0].OrganizationID;
         }
 
+        [WebMethod]
+        public string SetFontFamily(int userID, string value)
+        {
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+          user.FontFamily = (FontFamily)Convert.ToInt16(value);
+          user.Collection.Save();
+
+          return Enums.GetDescription(user.FontFamily);
+        }
+
+        [WebMethod]
+        public string SetFontSize(int userID, string value)
+        {
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+          user.FontSize = (FontSize)Convert.ToInt16(value);
+          user.Collection.Save();
+
+          return Enums.GetDescription(user.FontSize);
+        }
+
       [DataContract]
         public class BasicUser
         {

@@ -83,6 +83,10 @@ namespace TeamSupport.Data
     [DataMember] public bool AllowUnsecureAttachmentViewing { get; set; }
     [DataMember] public bool ForceBCCEmailsPrivate { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public FontFamily FontFamily { get; set; }
+    [DataMember] public FontSize FontSize { get; set; }
+    [DataMember] public string FontFamilyDescription { get; set; }
+    [DataMember] public string FontSizeDescription { get; set; }
           
   }
   
@@ -91,6 +95,10 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.FontSize = this.FontSize;
+      result.FontFamily = this.FontFamily;
+      result.FontSizeDescription = this.FontSizeDescription;
+      result.FontFamilyDescription = this.FontFamilyDescription;
       result.NeedsIndexing = this.NeedsIndexing;
       result.ForceBCCEmailsPrivate = this.ForceBCCEmailsPrivate;
       result.AllowUnsecureAttachmentViewing = this.AllowUnsecureAttachmentViewing;

@@ -132,6 +132,9 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Time Zone:", timeZoneInfo == null ? "Central Standard Time" : timeZoneInfo.DisplayName });
 
     table.Rows.Add(new string[] { "Date Format:", (new CultureInfo(organization.CultureName)).DisplayName });
+    table.Rows.Add(new string[] { "Default Font Family:", organization.FontFamilyDescription });
+    table.Rows.Add(new string[] { "Default Font Size:", organization.FontSizeDescription });
+
     table.Rows.Add(new string[] { "Business Days:", organization.BusinessDaysText == "" ? "[None Assigned]" : organization.BusinessDaysText });
     table.Rows.Add(new string[] { "Business Day Start:", organization.BusinessDayStart == null ? "[None Assigned]" : ((DateTime)organization.BusinessDayStart).ToString("t", UserSession.LoginUser.CultureInfo) });
     table.Rows.Add(new string[] { "Business Day End:", organization.BusinessDayEnd == null ? "[None Assigned]" : ((DateTime)organization.BusinessDayEnd).ToString("t", UserSession.LoginUser.CultureInfo) });

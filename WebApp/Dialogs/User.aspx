@@ -121,6 +121,20 @@
             <telerik:RadComboBox ID="cmbDateFormat" runat="server" Width="200px"></telerik:RadComboBox>
           </td>
         </tr>
+        <tr>
+          <td class="labelColTD">
+            Default Font Family:
+          </td>
+          <td class="inputColTD">
+            <telerik:RadComboBox ID="cmbFontFamilies" runat="server" Width="200px"></telerik:RadComboBox>
+          </td>
+          <td class="labelColTD">
+            Default Font Size:
+          </td>
+          <td class="inputColTD">
+            <telerik:RadComboBox ID="cmbFontSizes" runat="server" Width="200px"></telerik:RadComboBox>
+          </td>
+        </tr>
       </table>
       <br />
       <div id="pnlChange" runat="server" style="margin-bottom: 5px;">

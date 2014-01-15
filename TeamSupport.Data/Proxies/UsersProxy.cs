@@ -72,6 +72,10 @@ namespace TeamSupport.Data
     [DataMember] public bool EnforceSingleSession { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public bool AllowAnyTicketCustomer { get; set; }
+    [DataMember] public FontFamily FontFamily { get; set; }
+    [DataMember] public FontSize FontSize { get; set; }
+    [DataMember] public string FontFamilyDescription { get; set; }
+    [DataMember] public string FontSizeDescription { get; set; }
           
   }
   
@@ -81,6 +85,10 @@ namespace TeamSupport.Data
     {
 
       UserProxy result = new UserProxy();
+      result.FontSize = this.FontSize;
+      result.FontFamily = this.FontFamily;
+      result.FontSizeDescription = this.FontSizeDescription;
+      result.FontFamilyDescription = this.FontFamilyDescription;
       result.AllowAnyTicketCustomer = this.AllowAnyTicketCustomer;
       result.NeedsIndexing = this.NeedsIndexing;
       result.EnforceSingleSession = this.EnforceSingleSession;

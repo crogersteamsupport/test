@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace TeamSupport.Data
@@ -203,6 +205,21 @@ namespace TeamSupport.Data
       {SystemActionType.Reminder, "Reminder"}
     };
 
+    public static string GetDescription(Enum input)
+    {
+      FieldInfo fi = input.GetType().GetField(input.ToString());
+      DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+      string result;
+      if (attributes.Length > 0)
+      {
+        result = attributes[0].Description;
+      }
+      else
+      {
+        result = input.ToString();
+      }
+      return result;
+    }
   }
 
   public enum WaterCoolerAttachmentType
@@ -214,4 +231,51 @@ namespace TeamSupport.Data
       Group
   }
 
+  public enum FontFamily
+  {
+    Unassigned      = 0,
+    [Description("Andale Mono")]
+    AndaleMono      = 1,
+    Arial           = 2,
+    [Description("Arial Black")]
+    ArialBlack      = 3,
+    [Description("Book Antiqua")]
+    BookAntiqua     = 4,
+    [Description("Comic Sans MS")]
+    ComicSansMS     = 5,
+    [Description("Courier New ")]
+    CourierNew      = 6,
+    Georgia         = 7,
+    Helvetica       = 8,
+    Impact          = 9,
+    Symbol          = 10,
+    Tahoma          = 11,
+    Terminal        = 12,
+    [Description("Times New Roman")]
+    TimesNewRoman   = 13,
+    [Description("Trebuchet MS")]
+    TrebuchetMS     = 14,
+    Verdana         = 15,
+    Webdings        = 16,
+    Wingdings       = 17
+  }
+
+  public enum FontSize
+  {
+    Unassigned  = 0,
+    [Description("1 (8pt)")]
+    One8pt      = 1,
+    [Description("2 (10pt)")]
+    Two10pt     = 2,
+    [Description("3 (12pt)")]
+    Three12pt   = 3,
+    [Description("4 (14pt)")]
+    Four14pt    = 4,
+    [Description("5 (18pt)")]
+    Five18pt    = 5,
+    [Description("6 (24pt)")]
+    Six24pt     = 6,
+    [Description("7 (36pt)")]
+    Seven36pt   = 7
+  }
 }

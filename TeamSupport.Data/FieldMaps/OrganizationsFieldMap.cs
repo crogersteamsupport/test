@@ -63,6 +63,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, true);
       _fieldMap.AddMap("SupportHoursMonth", "SupportHoursMonth", true, true, true);            
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
+      _fieldMap.AddMap("FontFamily", "FontFamily", false, false, false);
+      _fieldMap.AddMap("FontSize", "FontSize", false, false, false);
+            
     }
   }
   

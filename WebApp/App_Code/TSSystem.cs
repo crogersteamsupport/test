@@ -654,6 +654,37 @@ namespace TSWebServices
       WaterCoolerView wcv = new WaterCoolerView(TSAuthentication.GetLoginUser());
       return wcv.GetLatestWatercoolerCount(user.LastPingUtc.ToString());
     }
+
+    [WebMethod]
+    public string[] GetFontFamilies()
+    {
+      List<string> result = new List<string>();
+      Array fontFamilyValues = Enum.GetValues(typeof(FontFamily));
+      int x = 0;
+      foreach (FontFamily value in fontFamilyValues)
+      {
+        result.Add(Enums.GetDescription(value));
+        x = (int)value;
+        result.Add(x.ToString());
+      }
+      return result.ToArray();
+    }
+
+    [WebMethod]
+    public string[] GetFontSizes()
+    {
+      List<string> result = new List<string>();
+      Array fontSizeValues = Enum.GetValues(typeof(FontSize));
+      int x = 0;
+      foreach (FontSize value in fontSizeValues)
+      {
+        result.Add(Enums.GetDescription(value));
+        x = (int)value;
+        result.Add(x.ToString());
+      }
+      return result.ToArray();
+    }
+
   }
 
   [Serializable]

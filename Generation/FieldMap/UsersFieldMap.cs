@@ -71,6 +71,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("EnforceSingleSession", "EnforceSingleSession", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
       _fieldMap.AddMap("AllowAnyTicketCustomer", "AllowAnyTicketCustomer", false, false, false);
+      _fieldMap.AddMap("FontFamily", "FontFamily", false, false, false);
+      _fieldMap.AddMap("FontSize", "FontSize", false, false, false);
             
     }
   }

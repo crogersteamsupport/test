@@ -19,6 +19,8 @@
         this._cultures = null;
         this._knowledgeBaseCategories = null;
         this._isJiraLinkActive = null;
+        this._fontFamilies = null;
+        this._fontSizes = null;
       }
 
     TsCache.prototype =
@@ -42,6 +44,8 @@
           this.getCultures();
           this.getKnowledgeBaseCategories();
           this.getIsJiraLinkActive();
+          this.getFontFamilies();
+          this.getFontSizes();
       },
       getUsers: function () {
           var self = this;
@@ -219,6 +223,24 @@
             });
           }
           return self._isJiraLinkActive
+      },
+      getFontFamilies: function () {
+          var self = this;
+          if (self._fontFamilies == null) {
+            Ts.Services.System.GetFontFamilies(function (result) {
+              self._fontFamilies = result;
+            });
+          }
+          return self._fontFamilies
+      },
+      getFontSizes: function () {
+          var self = this;
+          if (self._fontSizes == null) {
+            Ts.Services.System.GetFontSizes(function (result) {
+              self._fontSizes = result;
+            });
+          }
+          return self._fontSizes
       }
   };
 

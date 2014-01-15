@@ -64,6 +64,8 @@ public partial class Dialogs_User : BaseDialogPage
     {
       LoadTimeZones();
       LoadDateFormats();
+      LoadFontFamilies(organization.FontFamily);
+      LoadFontSizes(organization.FontSize);
       textEmail.Text = "";
       textFirstName.Text = "";
       textLastName.Text = "";
@@ -124,6 +126,33 @@ public partial class Dialogs_User : BaseDialogPage
     cmbDateFormat.SortItems();
     cmbDateFormat.SelectedValue = "en-US";
 
+  }
+
+  private void LoadFontFamilies(FontFamily selectedValue)
+  {
+    cmbFontFamilies.Items.Clear();
+
+    Array fontFamilyValues = Enum.GetValues(typeof(FontFamily));
+    int x = 0;
+    foreach (FontFamily value in fontFamilyValues)
+    {
+      x = (int)value;
+      cmbFontFamilies.Items.Add(new RadComboBoxItem(Enums.GetDescription(value), x.ToString()));
+    }
+    cmbFontFamilies.SelectedValue = Convert.ToInt32(selectedValue).ToString();
+  }
+
+  private void LoadFontSizes(TeamSupport.Data.FontSize selectedValue)
+  {
+    cmbFontSizes.Items.Clear();
+    Array fontSizeValues = Enum.GetValues(typeof(TeamSupport.Data.FontSize));
+    int x = 0;
+    foreach (TeamSupport.Data.FontSize value in fontSizeValues)
+    {
+      x = (int)value;
+      cmbFontSizes.Items.Add(new RadComboBoxItem(Enums.GetDescription(value), x.ToString()));
+    }
+    cmbFontSizes.SelectedValue = Convert.ToInt32(selectedValue).ToString();
   }
 
 
@@ -263,6 +292,8 @@ public partial class Dialogs_User : BaseDialogPage
     user.IsPortalUser = true;
     user.TimeZoneID = cmbTimeZones.SelectedValue;
     user.CultureName = cmbDateFormat.SelectedValue;
+    user.FontFamily = (FontFamily)Convert.ToInt32(cmbFontFamilies.SelectedValue);
+    user.FontSize = (TeamSupport.Data.FontSize)Convert.ToInt32(cmbFontSizes.SelectedValue);
     user.ReceiveTicketNotifications = cbEmailNotify.Checked;
     user.SubscribeToNewTickets = cbSubscribe.Checked;
     user.SubscribeToNewActions = cbSubscribeAction.Checked;

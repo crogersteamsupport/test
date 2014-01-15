@@ -34,6 +34,8 @@ public partial class Dialogs_Organization : BaseDialogPage
     {
       LoadDateFormats();
       LoadTimeZones();
+      LoadFontFamilies();
+      LoadFontSizes();
       LoadWikiArticles();
       LoadSlas();
       LoadUsers(_organizationID);
@@ -63,6 +65,32 @@ public partial class Dialogs_Organization : BaseDialogPage
     foreach (TimeZoneInfo info in timeZones)
     {
       cmbTimeZones.Items.Add(new RadComboBoxItem(info.DisplayName, info.Id));
+    }
+  }
+
+  private void LoadFontFamilies()
+  {
+    cmbFontFamily.Items.Clear();
+
+    Array fontFamilyValues = Enum.GetValues(typeof(FontFamily));
+    int x = 0;
+    foreach (FontFamily value in fontFamilyValues)
+    {
+      x = (int)value;
+      cmbFontFamily.Items.Add(new RadComboBoxItem(Enums.GetDescription(value), x.ToString()));
+    }
+  }
+
+  private void LoadFontSizes()
+  {
+    cmbFontSize.Items.Clear();
+
+    Array fontSizeValues = Enum.GetValues(typeof(TeamSupport.Data.FontSize));
+    int x = 0;
+    foreach (TeamSupport.Data.FontSize value in fontSizeValues)
+    {
+      x = (int)value;
+      cmbFontSize.Items.Add(new RadComboBoxItem(Enums.GetDescription(value), x.ToString()));
     }
   }
 
@@ -154,6 +182,9 @@ public partial class Dialogs_Organization : BaseDialogPage
 
     if (!string.IsNullOrEmpty(organization.CultureName)) cmbDateFormat.SelectedValue = organization.CultureName;
 
+    cmbFontFamily.SelectedValue = Convert.ToInt32(organization.FontFamily).ToString();
+    cmbFontSize.SelectedValue = Convert.ToInt32(organization.FontSize).ToString();
+
     cbLinkTicketCustomersWithProducts.Checked = Settings.OrganizationDB.ReadBool("ShowOnlyCustomerProducts", false);
 
     timeBDEnd.SelectedDate = organization.BusinessDayEnd;
@@ -190,6 +221,9 @@ public partial class Dialogs_Organization : BaseDialogPage
     Settings.OrganizationDB.WriteBool("ShowOnlyCustomerProducts", cbLinkTicketCustomersWithProducts.Checked);
     organization.CultureName = cmbDateFormat.SelectedValue;
     organization.UseEuropeDate = (cmbDateFormat.SelectedValue == "en-GB");
+
+    organization.FontFamily = (FontFamily)Convert.ToInt32(cmbFontFamily.SelectedValue);
+    organization.FontSize = (TeamSupport.Data.FontSize)Convert.ToInt32(cmbFontSize.SelectedValue);
 
     if (cmbSla.SelectedIndex == 0)
       organization.InternalSlaLevelID = null;
