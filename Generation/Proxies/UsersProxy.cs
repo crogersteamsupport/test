@@ -71,8 +71,8 @@ namespace TeamSupport.Data
     [DataMember] public bool EnforceSingleSession { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public bool AllowAnyTicketCustomer { get; set; }
-    [DataMember] public int FontFamily { get; set; }
-    [DataMember] public int FontSize { get; set; }
+    [DataMember] public FontFamily FontFamily { get; set; }
+    [DataMember] public FontSize FontSize { get; set; }
           
   }
   

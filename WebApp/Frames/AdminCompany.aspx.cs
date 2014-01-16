@@ -148,7 +148,9 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Disable ticket status update emails:", Settings.OrganizationDB.ReadBool("DisableStatusNotification", false).ToString() });
     table.Rows.Add(new string[] { "Visible to customers is initially enabled for new actions:", organization.SetNewActionsVisibleToCustomers.ToString() });
     table.Rows.Add(new string[] { "Allow unauthenticated users to view attachments:", organization.AllowUnsecureAttachmentViewing.ToString() });
+    table.Rows.Add(new string[] { "Allow private actions to satisfy SLA first reponse:", organization.SlaInitRespAnyAction.ToString() });
     table.Rows.Add(new string[] { "Chat ID:", organization.ChatID.ToString() });
+    
     
 /*    string email = organization.SystemEmailID + "@teamsupport.com";
     table.Rows.Add(new string[] { "System Email:", "<a href=\"mailto:" + email + "\">" + email + "</a>" });

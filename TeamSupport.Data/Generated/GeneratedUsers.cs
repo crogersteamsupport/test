@@ -119,17 +119,7 @@ namespace TeamSupport.Data
       get { return (FontFamily)Row["FontFamily"]; }
       set { Row["FontFamily"] = CheckValue("FontFamily", value); }
     }
-
-    public string FontSizeDescription
-    {
-      get { return Enums.GetDescription((FontSize)Row["FontSize"]); }
-    }
-
-    public string FontFamilyDescription
-    {
-      get { return Enums.GetDescription((FontFamily)Row["FontFamily"]); }
-    }
-
+    
     public bool AllowAnyTicketCustomer
     {
       get { return (bool)Row["AllowAnyTicketCustomer"]; }

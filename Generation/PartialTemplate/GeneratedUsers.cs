@@ -108,15 +108,15 @@ namespace TeamSupport.Data
     
 
     
-    public int FontSize
+    public FontSize FontSize
     {
-      get { return (int)Row["FontSize"]; }
+      get { return (FontSize)Row["FontSize"]; }
       set { Row["FontSize"] = CheckValue("FontSize", value); }
     }
     
-    public int FontFamily
+    public FontFamily FontFamily
     {
-      get { return (int)Row["FontFamily"]; }
+      get { return (FontFamily)Row["FontFamily"]; }
       set { Row["FontFamily"] = CheckValue("FontFamily", value); }
     }
     

@@ -93,8 +93,9 @@ namespace TeamSupport.Data
     [DataMember] public int AvgTimeOpen { get; set; }
     [DataMember] public int AvgTimeToClose { get; set; }
     [DataMember] public int CustDisIndex { get; set; }
-    [DataMember] public int FontFamily { get; set; }
-    [DataMember] public int FontSize { get; set; }
+    [DataMember] public bool SlaInitRespAnyAction { get; set; }
+    [DataMember] public FontFamily FontFamily { get; set; }
+    [DataMember] public FontSize FontSize { get; set; }
           
   }
   
@@ -105,6 +106,7 @@ namespace TeamSupport.Data
       OrganizationProxy result = new OrganizationProxy();
       result.FontSize = this.FontSize;
       result.FontFamily = this.FontFamily;
+      result.SlaInitRespAnyAction = this.SlaInitRespAnyAction;
       result.CustDisIndex = this.CustDisIndex;
       result.AvgTimeToClose = this.AvgTimeToClose;
       result.AvgTimeOpen = this.AvgTimeOpen;

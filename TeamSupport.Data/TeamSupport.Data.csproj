@@ -191,6 +191,7 @@
     <Compile Include="BusinessObjects\RecentlyViewedItems.cs" />
     <Compile Include="BusinessObjects\Reminders.cs" />
     <Compile Include="BusinessObjects\ReportEmails.cs" />
+    <Compile Include="BusinessObjects\ReportFolders.cs" />
     <Compile Include="BusinessObjects\ReportViews.cs" />
     <Compile Include="BusinessObjects\SearchCustomFilters.cs" />
     <Compile Include="BusinessObjects\SearchSorters.cs" />
@@ -258,6 +259,7 @@
     <Compile Include="FieldMaps\RecentlyViewedItemsFieldMap.cs" />
     <Compile Include="FieldMaps\RemindersFieldMap.cs" />
     <Compile Include="FieldMaps\ReportEmailsFieldMap.cs" />
+    <Compile Include="FieldMaps\ReportFoldersFieldMap.cs" />
     <Compile Include="FieldMaps\ReportViewsFieldMap.cs" />
     <Compile Include="FieldMaps\SearchCustomFiltersFieldMap.cs" />
     <Compile Include="FieldMaps\SearchSortersFieldMap.cs" />
@@ -495,6 +497,7 @@
     <Compile Include="Generated\GeneratedReportData.cs" />
     <Compile Include="Generated\GeneratedReportEmails.cs" />
     <Compile Include="Generated\GeneratedReportFields.cs" />
+    <Compile Include="Generated\GeneratedReportFolders.cs" />
     <Compile Include="Generated\GeneratedReports.cs" />
     <Compile Include="Generated\GeneratedReportSubcategories.cs" />
     <Compile Include="Generated\GeneratedReportTableFields.cs" />
@@ -633,6 +636,7 @@
     <Compile Include="Proxies\ReportDataProxy.cs" />
     <Compile Include="Proxies\ReportEmailsProxy.cs" />
     <Compile Include="Proxies\ReportFieldsProxy.cs" />
+    <Compile Include="Proxies\ReportFoldersProxy.cs" />
     <Compile Include="Proxies\ReportsProxy.cs" />
     <Compile Include="Proxies\ReportSubcategoriesProxy.cs" />
     <Compile Include="Proxies\ReportTableFieldsProxy.cs" />

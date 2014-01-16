@@ -93,6 +93,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("AvgTimeOpen", "AvgTimeOpen", false, false, false);
       _fieldMap.AddMap("AvgTimeToClose", "AvgTimeToClose", false, false, false);
       _fieldMap.AddMap("CustDisIndex", "CustDisIndex", false, false, false);
+      _fieldMap.AddMap("SlaInitRespAnyAction", "SlaInitRespAnyAction", false, false, false);
       _fieldMap.AddMap("FontFamily", "FontFamily", false, false, false);
       _fieldMap.AddMap("FontSize", "FontSize", false, false, false);
             

@@ -117,6 +117,7 @@
             <asp:CheckBox ID="cbUnsecureAttachments" runat="server" Text="Allow unauthenticated users to view attachments"/>
           </td>
           <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbSlaInitRespAnyAction" runat="server" Text="Allow private actions to satisfy SLA first reponse"/>
           </td>
         </tr>
 

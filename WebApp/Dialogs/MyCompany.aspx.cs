@@ -155,6 +155,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     cbDisableStatusNotifications.Checked = Settings.OrganizationDB.ReadBool("DisableStatusNotification", false);
     cbNewActionsVisible.Checked = organization.SetNewActionsVisibleToCustomers;
     cbUnsecureAttachments.Checked = organization.AllowUnsecureAttachmentViewing;
+    cbSlaInitRespAnyAction.Checked = organization.SlaInitRespAnyAction;
 
    // cbCommunity.Checked = organization.UseForums;
     cbRequireCustomer.Checked = Settings.OrganizationDB.ReadBool("RequireNewTicketCustomer", false);
@@ -232,6 +233,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     Settings.OrganizationDB.WriteBool("DisableStatusNotification", cbDisableStatusNotifications.Checked);
     organization.SetNewActionsVisibleToCustomers = cbNewActionsVisible.Checked;
     organization.AllowUnsecureAttachmentViewing = cbUnsecureAttachments.Checked;
+    organization.SlaInitRespAnyAction = cbSlaInitRespAnyAction.Checked;
     //organization.UseForums = cbCommunity.Checked;
     Settings.OrganizationDB.WriteBool("RequireNewTicketCustomer", cbRequireCustomer.Checked);
     organization.AdminOnlyCustomers = cbAdminCustomers.Checked;

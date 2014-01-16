@@ -990,7 +990,9 @@ AS
     [ChangeKBVisibility],
     [EnforceSingleSession],
     [NeedsIndexing],
-    [AllowAnyTicketCustomer]
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -1058,6 +1060,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @EnforceSingleSession bit,
   @NeedsIndexing bit,
   @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
   @Identity int OUT
 )
 AS
@@ -1120,7 +1124,9 @@ AS
     [ChangeKBVisibility],
     [EnforceSingleSession],
     [NeedsIndexing],
-    [AllowAnyTicketCustomer])
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize])
   VALUES (
     @Email,
     @FirstName,
@@ -1178,7 +1184,9 @@ AS
     @ChangeKBVisibility,
     @EnforceSingleSession,
     @NeedsIndexing,
-    @AllowAnyTicketCustomer)
+    @AllowAnyTicketCustomer,
+    @FontFamily,
+    @FontSize)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1244,7 +1252,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ChangeKBVisibility bit,
   @EnforceSingleSession bit,
   @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int
 )
 AS
   SET NOCOUNT OFF;
@@ -1304,7 +1314,9 @@ AS
     [ChangeKBVisibility] = @ChangeKBVisibility,
     [EnforceSingleSession] = @EnforceSingleSession,
     [NeedsIndexing] = @NeedsIndexing,
-    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer
+    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize
   WHERE ([UserID] = @UserID)
 GO
 
@@ -1352,7 +1364,8 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType]
+    [ReportDefType],
+    [FolderID]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -1381,6 +1394,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
+  @FolderID int,
   @Identity int OUT
 )
 AS
@@ -1404,7 +1418,8 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType])
+    [ReportDefType],
+    [FolderID])
   VALUES (
     @OrganizationID,
     @Name,
@@ -1423,7 +1438,8 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType)
+    @ReportDefType,
+    @FolderID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1450,7 +1466,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int
+  @ReportDefType int,
+  @FolderID int
 )
 AS
   SET NOCOUNT OFF;
@@ -1471,7 +1488,8 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType
+    [ReportDefType] = @ReportDefType,
+    [FolderID] = @FolderID
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -2021,7 +2039,10 @@ AS
     [CreatedLast30],
     [AvgTimeOpen],
     [AvgTimeToClose],
-    [CustDisIndex]
+    [CustDisIndex],
+    [SlaInitRespAnyAction],
+    [FontFamily],
+    [FontSize]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -2111,6 +2132,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @AvgTimeOpen int,
   @AvgTimeToClose int,
   @CustDisIndex int,
+  @SlaInitRespAnyAction bit,
+  @FontFamily int,
+  @FontSize int,
   @Identity int OUT
 )
 AS
@@ -2195,7 +2219,10 @@ AS
     [CreatedLast30],
     [AvgTimeOpen],
     [AvgTimeToClose],
-    [CustDisIndex])
+    [CustDisIndex],
+    [SlaInitRespAnyAction],
+    [FontFamily],
+    [FontSize])
   VALUES (
     @Name,
     @Description,
@@ -2275,7 +2302,10 @@ AS
     @CreatedLast30,
     @AvgTimeOpen,
     @AvgTimeToClose,
-    @CustDisIndex)
+    @CustDisIndex,
+    @SlaInitRespAnyAction,
+    @FontFamily,
+    @FontSize)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -2363,7 +2393,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @CreatedLast30 int,
   @AvgTimeOpen int,
   @AvgTimeToClose int,
-  @CustDisIndex int
+  @CustDisIndex int,
+  @SlaInitRespAnyAction bit,
+  @FontFamily int,
+  @FontSize int
 )
 AS
   SET NOCOUNT OFF;
@@ -2445,7 +2478,10 @@ AS
     [CreatedLast30] = @CreatedLast30,
     [AvgTimeOpen] = @AvgTimeOpen,
     [AvgTimeToClose] = @AvgTimeToClose,
-    [CustDisIndex] = @CustDisIndex
+    [CustDisIndex] = @CustDisIndex,
+    [SlaInitRespAnyAction] = @SlaInitRespAnyAction,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -3947,6 +3983,95 @@ AS
     [NeedsIndexing]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReportFolder
+
+(
+  @FolderID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [OrganizationID],
+    [FolderID],
+    [Name],
+    [ParentID],
+    [CreatorID],
+    [DateCreated]
+  FROM [dbo].[ReportFolders]
+  WHERE ([FolderID] = @FolderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReportFolder
+
+(
+  @OrganizationID int,
+  @Name varchar(250),
+  @ParentID int,
+  @CreatorID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ReportFolders]
+  (
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [CreatorID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @CreatorID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReportFolder
+
+(
+  @OrganizationID int,
+  @FolderID int,
+  @Name varchar(250),
+  @ParentID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ReportFolders]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID
+  WHERE ([FolderID] = @FolderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReportFolder
+
+(
+  @FolderID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ReportFolders]
+  WHERE ([FolderID] = @FolderID)
 GO
 
 
@@ -14116,7 +14241,9 @@ AS
     [ChangeKBVisibility],
     [EnforceSingleSession],
     [NeedsIndexing],
-    [AllowAnyTicketCustomer]
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -14184,6 +14311,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @EnforceSingleSession bit,
   @NeedsIndexing bit,
   @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
   @Identity int OUT
 )
 AS
@@ -14246,7 +14375,9 @@ AS
     [ChangeKBVisibility],
     [EnforceSingleSession],
     [NeedsIndexing],
-    [AllowAnyTicketCustomer])
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize])
   VALUES (
     @Email,
     @FirstName,
@@ -14304,7 +14435,9 @@ AS
     @ChangeKBVisibility,
     @EnforceSingleSession,
     @NeedsIndexing,
-    @AllowAnyTicketCustomer)
+    @AllowAnyTicketCustomer,
+    @FontFamily,
+    @FontSize)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -14370,7 +14503,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ChangeKBVisibility bit,
   @EnforceSingleSession bit,
   @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int
 )
 AS
   SET NOCOUNT OFF;
@@ -14430,7 +14565,9 @@ AS
     [ChangeKBVisibility] = @ChangeKBVisibility,
     [EnforceSingleSession] = @EnforceSingleSession,
     [NeedsIndexing] = @NeedsIndexing,
-    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer
+    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize
   WHERE ([UserID] = @UserID)
 GO
 
@@ -14478,7 +14615,8 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType]
+    [ReportDefType],
+    [FolderID]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -14507,6 +14645,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
+  @FolderID int,
   @Identity int OUT
 )
 AS
@@ -14530,7 +14669,8 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType])
+    [ReportDefType],
+    [FolderID])
   VALUES (
     @OrganizationID,
     @Name,
@@ -14549,7 +14689,8 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType)
+    @ReportDefType,
+    @FolderID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -14576,7 +14717,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int
+  @ReportDefType int,
+  @FolderID int
 )
 AS
   SET NOCOUNT OFF;
@@ -14597,7 +14739,8 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType
+    [ReportDefType] = @ReportDefType,
+    [FolderID] = @FolderID
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -15147,7 +15290,10 @@ AS
     [CreatedLast30],
     [AvgTimeOpen],
     [AvgTimeToClose],
-    [CustDisIndex]
+    [CustDisIndex],
+    [SlaInitRespAnyAction],
+    [FontFamily],
+    [FontSize]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -15237,6 +15383,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @AvgTimeOpen int,
   @AvgTimeToClose int,
   @CustDisIndex int,
+  @SlaInitRespAnyAction bit,
+  @FontFamily int,
+  @FontSize int,
   @Identity int OUT
 )
 AS
@@ -15321,7 +15470,10 @@ AS
     [CreatedLast30],
     [AvgTimeOpen],
     [AvgTimeToClose],
-    [CustDisIndex])
+    [CustDisIndex],
+    [SlaInitRespAnyAction],
+    [FontFamily],
+    [FontSize])
   VALUES (
     @Name,
     @Description,
@@ -15401,7 +15553,10 @@ AS
     @CreatedLast30,
     @AvgTimeOpen,
     @AvgTimeToClose,
-    @CustDisIndex)
+    @CustDisIndex,
+    @SlaInitRespAnyAction,
+    @FontFamily,
+    @FontSize)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -15489,7 +15644,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @CreatedLast30 int,
   @AvgTimeOpen int,
   @AvgTimeToClose int,
-  @CustDisIndex int
+  @CustDisIndex int,
+  @SlaInitRespAnyAction bit,
+  @FontFamily int,
+  @FontSize int
 )
 AS
   SET NOCOUNT OFF;
@@ -15571,7 +15729,10 @@ AS
     [CreatedLast30] = @CreatedLast30,
     [AvgTimeOpen] = @AvgTimeOpen,
     [AvgTimeToClose] = @AvgTimeToClose,
-    [CustDisIndex] = @CustDisIndex
+    [CustDisIndex] = @CustDisIndex,
+    [SlaInitRespAnyAction] = @SlaInitRespAnyAction,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -17073,6 +17234,95 @@ AS
     [NeedsIndexing]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReportFolder
+
+(
+  @FolderID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [OrganizationID],
+    [FolderID],
+    [Name],
+    [ParentID],
+    [CreatorID],
+    [DateCreated]
+  FROM [dbo].[ReportFolders]
+  WHERE ([FolderID] = @FolderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReportFolder
+
+(
+  @OrganizationID int,
+  @Name varchar(250),
+  @ParentID int,
+  @CreatorID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ReportFolders]
+  (
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [CreatorID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @CreatorID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReportFolder
+
+(
+  @OrganizationID int,
+  @FolderID int,
+  @Name varchar(250),
+  @ParentID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ReportFolders]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID
+  WHERE ([FolderID] = @FolderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReportFolder
+
+(
+  @FolderID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ReportFolders]
+  WHERE ([FolderID] = @FolderID)
 GO
 
 
@@ -27242,7 +27492,9 @@ AS
     [ChangeKBVisibility],
     [EnforceSingleSession],
     [NeedsIndexing],
-    [AllowAnyTicketCustomer]
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -27310,6 +27562,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @EnforceSingleSession bit,
   @NeedsIndexing bit,
   @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
   @Identity int OUT
 )
 AS
@@ -27372,7 +27626,9 @@ AS
     [ChangeKBVisibility],
     [EnforceSingleSession],
     [NeedsIndexing],
-    [AllowAnyTicketCustomer])
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize])
   VALUES (
     @Email,
     @FirstName,
@@ -27430,7 +27686,9 @@ AS
     @ChangeKBVisibility,
     @EnforceSingleSession,
     @NeedsIndexing,
-    @AllowAnyTicketCustomer)
+    @AllowAnyTicketCustomer,
+    @FontFamily,
+    @FontSize)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -27496,7 +27754,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ChangeKBVisibility bit,
   @EnforceSingleSession bit,
   @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int
 )
 AS
   SET NOCOUNT OFF;
@@ -27556,7 +27816,9 @@ AS
     [ChangeKBVisibility] = @ChangeKBVisibility,
     [EnforceSingleSession] = @EnforceSingleSession,
     [NeedsIndexing] = @NeedsIndexing,
-    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer
+    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize
   WHERE ([UserID] = @UserID)
 GO
 
@@ -27604,7 +27866,8 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType]
+    [ReportDefType],
+    [FolderID]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -27633,6 +27896,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
+  @FolderID int,
   @Identity int OUT
 )
 AS
@@ -27656,7 +27920,8 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType])
+    [ReportDefType],
+    [FolderID])
   VALUES (
     @OrganizationID,
     @Name,
@@ -27675,7 +27940,8 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType)
+    @ReportDefType,
+    @FolderID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -27702,7 +27968,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int
+  @ReportDefType int,
+  @FolderID int
 )
 AS
   SET NOCOUNT OFF;
@@ -27723,7 +27990,8 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType
+    [ReportDefType] = @ReportDefType,
+    [FolderID] = @FolderID
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -28273,7 +28541,10 @@ AS
     [CreatedLast30],
     [AvgTimeOpen],
     [AvgTimeToClose],
-    [CustDisIndex]
+    [CustDisIndex],
+    [SlaInitRespAnyAction],
+    [FontFamily],
+    [FontSize]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -28363,6 +28634,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @AvgTimeOpen int,
   @AvgTimeToClose int,
   @CustDisIndex int,
+  @SlaInitRespAnyAction bit,
+  @FontFamily int,
+  @FontSize int,
   @Identity int OUT
 )
 AS
@@ -28447,7 +28721,10 @@ AS
     [CreatedLast30],
     [AvgTimeOpen],
     [AvgTimeToClose],
-    [CustDisIndex])
+    [CustDisIndex],
+    [SlaInitRespAnyAction],
+    [FontFamily],
+    [FontSize])
   VALUES (
     @Name,
     @Description,
@@ -28527,7 +28804,10 @@ AS
     @CreatedLast30,
     @AvgTimeOpen,
     @AvgTimeToClose,
-    @CustDisIndex)
+    @CustDisIndex,
+    @SlaInitRespAnyAction,
+    @FontFamily,
+    @FontSize)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -28615,7 +28895,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @CreatedLast30 int,
   @AvgTimeOpen int,
   @AvgTimeToClose int,
-  @CustDisIndex int
+  @CustDisIndex int,
+  @SlaInitRespAnyAction bit,
+  @FontFamily int,
+  @FontSize int
 )
 AS
   SET NOCOUNT OFF;
@@ -28697,7 +28980,10 @@ AS
     [CreatedLast30] = @CreatedLast30,
     [AvgTimeOpen] = @AvgTimeOpen,
     [AvgTimeToClose] = @AvgTimeToClose,
-    [CustDisIndex] = @CustDisIndex
+    [CustDisIndex] = @CustDisIndex,
+    [SlaInitRespAnyAction] = @SlaInitRespAnyAction,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -30199,6 +30485,95 @@ AS
     [NeedsIndexing]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReportFolder
+
+(
+  @FolderID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [OrganizationID],
+    [FolderID],
+    [Name],
+    [ParentID],
+    [CreatorID],
+    [DateCreated]
+  FROM [dbo].[ReportFolders]
+  WHERE ([FolderID] = @FolderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReportFolder
+
+(
+  @OrganizationID int,
+  @Name varchar(250),
+  @ParentID int,
+  @CreatorID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ReportFolders]
+  (
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [CreatorID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @CreatorID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReportFolder
+
+(
+  @OrganizationID int,
+  @FolderID int,
+  @Name varchar(250),
+  @ParentID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ReportFolders]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID
+  WHERE ([FolderID] = @FolderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReportFolder
+
+(
+  @FolderID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ReportFolders]
+  WHERE ([FolderID] = @FolderID)
 GO
 
 
@@ -40368,7 +40743,9 @@ AS
     [ChangeKBVisibility],
     [EnforceSingleSession],
     [NeedsIndexing],
-    [AllowAnyTicketCustomer]
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -40436,6 +40813,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @EnforceSingleSession bit,
   @NeedsIndexing bit,
   @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
   @Identity int OUT
 )
 AS
@@ -40498,7 +40877,9 @@ AS
     [ChangeKBVisibility],
     [EnforceSingleSession],
     [NeedsIndexing],
-    [AllowAnyTicketCustomer])
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize])
   VALUES (
     @Email,
     @FirstName,
@@ -40556,7 +40937,9 @@ AS
     @ChangeKBVisibility,
     @EnforceSingleSession,
     @NeedsIndexing,
-    @AllowAnyTicketCustomer)
+    @AllowAnyTicketCustomer,
+    @FontFamily,
+    @FontSize)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -40622,7 +41005,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ChangeKBVisibility bit,
   @EnforceSingleSession bit,
   @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int
 )
 AS
   SET NOCOUNT OFF;
@@ -40682,7 +41067,9 @@ AS
     [ChangeKBVisibility] = @ChangeKBVisibility,
     [EnforceSingleSession] = @EnforceSingleSession,
     [NeedsIndexing] = @NeedsIndexing,
-    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer
+    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize
   WHERE ([UserID] = @UserID)
 GO
 
@@ -40730,7 +41117,8 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType]
+    [ReportDefType],
+    [FolderID]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -40759,6 +41147,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
+  @FolderID int,
   @Identity int OUT
 )
 AS
@@ -40782,7 +41171,8 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType])
+    [ReportDefType],
+    [FolderID])
   VALUES (
     @OrganizationID,
     @Name,
@@ -40801,7 +41191,8 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType)
+    @ReportDefType,
+    @FolderID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -40828,7 +41219,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int
+  @ReportDefType int,
+  @FolderID int
 )
 AS
   SET NOCOUNT OFF;
@@ -40849,7 +41241,8 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType
+    [ReportDefType] = @ReportDefType,
+    [FolderID] = @FolderID
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -41399,7 +41792,10 @@ AS
     [CreatedLast30],
     [AvgTimeOpen],
     [AvgTimeToClose],
-    [CustDisIndex]
+    [CustDisIndex],
+    [SlaInitRespAnyAction],
+    [FontFamily],
+    [FontSize]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -41489,6 +41885,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @AvgTimeOpen int,
   @AvgTimeToClose int,
   @CustDisIndex int,
+  @SlaInitRespAnyAction bit,
+  @FontFamily int,
+  @FontSize int,
   @Identity int OUT
 )
 AS
@@ -41573,7 +41972,10 @@ AS
     [CreatedLast30],
     [AvgTimeOpen],
     [AvgTimeToClose],
-    [CustDisIndex])
+    [CustDisIndex],
+    [SlaInitRespAnyAction],
+    [FontFamily],
+    [FontSize])
   VALUES (
     @Name,
     @Description,
@@ -41653,7 +42055,10 @@ AS
     @CreatedLast30,
     @AvgTimeOpen,
     @AvgTimeToClose,
-    @CustDisIndex)
+    @CustDisIndex,
+    @SlaInitRespAnyAction,
+    @FontFamily,
+    @FontSize)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -41741,7 +42146,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @CreatedLast30 int,
   @AvgTimeOpen int,
   @AvgTimeToClose int,
-  @CustDisIndex int
+  @CustDisIndex int,
+  @SlaInitRespAnyAction bit,
+  @FontFamily int,
+  @FontSize int
 )
 AS
   SET NOCOUNT OFF;
@@ -41823,7 +42231,10 @@ AS
     [CreatedLast30] = @CreatedLast30,
     [AvgTimeOpen] = @AvgTimeOpen,
     [AvgTimeToClose] = @AvgTimeToClose,
-    [CustDisIndex] = @CustDisIndex
+    [CustDisIndex] = @CustDisIndex,
+    [SlaInitRespAnyAction] = @SlaInitRespAnyAction,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -43325,6 +43736,95 @@ AS
     [NeedsIndexing]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReportFolder
+
+(
+  @FolderID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [OrganizationID],
+    [FolderID],
+    [Name],
+    [ParentID],
+    [CreatorID],
+    [DateCreated]
+  FROM [dbo].[ReportFolders]
+  WHERE ([FolderID] = @FolderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReportFolder
+
+(
+  @OrganizationID int,
+  @Name varchar(250),
+  @ParentID int,
+  @CreatorID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ReportFolders]
+  (
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [CreatorID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @CreatorID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReportFolder
+
+(
+  @OrganizationID int,
+  @FolderID int,
+  @Name varchar(250),
+  @ParentID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ReportFolders]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID
+  WHERE ([FolderID] = @FolderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReportFolder
+
+(
+  @FolderID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ReportFolders]
+  WHERE ([FolderID] = @FolderID)
 GO
 
 
@@ -53494,7 +53994,9 @@ AS
     [ChangeKBVisibility],
     [EnforceSingleSession],
     [NeedsIndexing],
-    [AllowAnyTicketCustomer]
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -53562,6 +54064,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @EnforceSingleSession bit,
   @NeedsIndexing bit,
   @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int,
   @Identity int OUT
 )
 AS
@@ -53624,7 +54128,9 @@ AS
     [ChangeKBVisibility],
     [EnforceSingleSession],
     [NeedsIndexing],
-    [AllowAnyTicketCustomer])
+    [AllowAnyTicketCustomer],
+    [FontFamily],
+    [FontSize])
   VALUES (
     @Email,
     @FirstName,
@@ -53682,7 +54188,9 @@ AS
     @ChangeKBVisibility,
     @EnforceSingleSession,
     @NeedsIndexing,
-    @AllowAnyTicketCustomer)
+    @AllowAnyTicketCustomer,
+    @FontFamily,
+    @FontSize)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -53748,7 +54256,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @ChangeKBVisibility bit,
   @EnforceSingleSession bit,
   @NeedsIndexing bit,
-  @AllowAnyTicketCustomer bit
+  @AllowAnyTicketCustomer bit,
+  @FontFamily int,
+  @FontSize int
 )
 AS
   SET NOCOUNT OFF;
@@ -53808,7 +54318,9 @@ AS
     [ChangeKBVisibility] = @ChangeKBVisibility,
     [EnforceSingleSession] = @EnforceSingleSession,
     [NeedsIndexing] = @NeedsIndexing,
-    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer
+    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize
   WHERE ([UserID] = @UserID)
 GO
 
@@ -53856,7 +54368,8 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType]
+    [ReportDefType],
+    [FolderID]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -53885,6 +54398,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
+  @FolderID int,
   @Identity int OUT
 )
 AS
@@ -53908,7 +54422,8 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType])
+    [ReportDefType],
+    [FolderID])
   VALUES (
     @OrganizationID,
     @Name,
@@ -53927,7 +54442,8 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType)
+    @ReportDefType,
+    @FolderID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -53954,7 +54470,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int
+  @ReportDefType int,
+  @FolderID int
 )
 AS
   SET NOCOUNT OFF;
@@ -53975,7 +54492,8 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType
+    [ReportDefType] = @ReportDefType,
+    [FolderID] = @FolderID
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -54525,7 +55043,10 @@ AS
     [CreatedLast30],
     [AvgTimeOpen],
     [AvgTimeToClose],
-    [CustDisIndex]
+    [CustDisIndex],
+    [SlaInitRespAnyAction],
+    [FontFamily],
+    [FontSize]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -54615,6 +55136,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @AvgTimeOpen int,
   @AvgTimeToClose int,
   @CustDisIndex int,
+  @SlaInitRespAnyAction bit,
+  @FontFamily int,
+  @FontSize int,
   @Identity int OUT
 )
 AS
@@ -54699,7 +55223,10 @@ AS
     [CreatedLast30],
     [AvgTimeOpen],
     [AvgTimeToClose],
-    [CustDisIndex])
+    [CustDisIndex],
+    [SlaInitRespAnyAction],
+    [FontFamily],
+    [FontSize])
   VALUES (
     @Name,
     @Description,
@@ -54779,7 +55306,10 @@ AS
     @CreatedLast30,
     @AvgTimeOpen,
     @AvgTimeToClose,
-    @CustDisIndex)
+    @CustDisIndex,
+    @SlaInitRespAnyAction,
+    @FontFamily,
+    @FontSize)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -54867,7 +55397,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @CreatedLast30 int,
   @AvgTimeOpen int,
   @AvgTimeToClose int,
-  @CustDisIndex int
+  @CustDisIndex int,
+  @SlaInitRespAnyAction bit,
+  @FontFamily int,
+  @FontSize int
 )
 AS
   SET NOCOUNT OFF;
@@ -54949,7 +55482,10 @@ AS
     [CreatedLast30] = @CreatedLast30,
     [AvgTimeOpen] = @AvgTimeOpen,
     [AvgTimeToClose] = @AvgTimeToClose,
-    [CustDisIndex] = @CustDisIndex
+    [CustDisIndex] = @CustDisIndex,
+    [SlaInitRespAnyAction] = @SlaInitRespAnyAction,
+    [FontFamily] = @FontFamily,
+    [FontSize] = @FontSize
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -56451,6 +56987,95 @@ AS
     [NeedsIndexing]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
+GO
+
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedSelectReportFolder
+
+(
+  @FolderID int
+)
+AS
+  SET NOCOUNT OFF;
+  SELECT
+    [OrganizationID],
+    [FolderID],
+    [Name],
+    [ParentID],
+    [CreatorID],
+    [DateCreated]
+  FROM [dbo].[ReportFolders]
+  WHERE ([FolderID] = @FolderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedInsertReportFolder
+
+(
+  @OrganizationID int,
+  @Name varchar(250),
+  @ParentID int,
+  @CreatorID int,
+  @DateCreated datetime,
+  @Identity int OUT
+)
+AS
+  SET NOCOUNT OFF;
+  INSERT INTO [dbo].[ReportFolders]
+  (
+    [OrganizationID],
+    [Name],
+    [ParentID],
+    [CreatorID],
+    [DateCreated])
+  VALUES (
+    @OrganizationID,
+    @Name,
+    @ParentID,
+    @CreatorID,
+    @DateCreated)
+
+SET @Identity = SCOPE_IDENTITY()
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedUpdateReportFolder
+
+(
+  @OrganizationID int,
+  @FolderID int,
+  @Name varchar(250),
+  @ParentID int
+)
+AS
+  SET NOCOUNT OFF;
+  UPDATE [dbo].[ReportFolders]
+  SET
+    [OrganizationID] = @OrganizationID,
+    [Name] = @Name,
+    [ParentID] = @ParentID
+  WHERE ([FolderID] = @FolderID)
+GO
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteReportFolder' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteReportFolder
+GO
+
+CREATE PROCEDURE dbo.uspGeneratedDeleteReportFolder
+
+(
+  @FolderID int
+)
+AS
+  SET NOCOUNT OFF;
+  DELETE FROM [dbo].[ReportFolders]
+  WHERE ([FolderID] = @FolderID)
 GO
 
 
