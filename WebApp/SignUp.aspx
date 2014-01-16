@@ -159,7 +159,6 @@
             <select id="product" class="form-control">
               <option value="2" selected="selected">Enterprise</option>
               <option value="1">Support Desk</option>
-              <option value="0">Express</option>
             </select>
           </div>
         </div>
