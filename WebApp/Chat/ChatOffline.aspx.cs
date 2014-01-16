@@ -68,6 +68,7 @@ public partial class Chat_ChatOffline : System.Web.UI.Page
 
     }
   }
+
   protected void btnSubmit_Click(object sender, EventArgs e)
   {
     try
