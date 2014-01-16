@@ -1639,6 +1639,28 @@ namespace TeamSupport.Data
       return result;
     }
 
+    public static string GetCompaniesIndexPath(LoginUser loginUser)
+    {
+      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
+      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Customers");
+      if (!Directory.Exists(result))
+      {
+        result = Path.Combine(root, "Customers");
+      }
+      return result;
+    }
+
+    public static string GetContactsIndexPath(LoginUser loginUser)
+    {
+      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
+      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Contacts");
+      if (!Directory.Exists(result))
+      {
+        result = Path.Combine(root, "Contacts");
+      }
+      return result;
+    }
+
     public static bool GetIsColumnInBaseCollection(BaseCollection baseCollection, string columnName)
     {
       bool result = false;
