@@ -952,64 +952,74 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public CompaniesAndContactsSearchResults SearchCompaniesAndContacts(string searchTerm, int from, int to)
+    public CompaniesAndContactsSearchResults SearchCompaniesAndContacts(string searchTerm, int from, int to, bool searchCompanies, bool searchContacts)
     {      
       List<CompanyOrContact> resultItems = new List<CompanyOrContact>();
 
-      Options options = new Options();
-      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
-      using (SearchJob job = new SearchJob())
+      if (searchCompanies || searchContacts)
       {
-
-        searchTerm = searchTerm.Trim();
-        job.Request = searchTerm;
-        job.FieldWeights = "Name: 1000";
-
-        job.MaxFilesToRetrieve = to + 1;
-        //job.AutoStopLimit = 1000000;
-        job.TimeoutSeconds = 30;
-        job.SearchFlags =
-          //SearchFlags.dtsSearchSelectMostRecent |
-          SearchFlags.dtsSearchDelayDocInfo;
-
-        int num = 0;
-        if (!int.TryParse(searchTerm, out num))
+        Options options = new Options();
+        options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+        using (SearchJob job = new SearchJob())
         {
-          //job.Fuzziness = 1;
-          job.SearchFlags = job.SearchFlags |
-            //SearchFlags.dtsSearchFuzzy | 
-            //SearchFlags.dtsSearchStemming |
-            SearchFlags.dtsSearchPositionalScoring |
-            SearchFlags.dtsSearchAutoTermWeight;
-        }
 
-        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+          searchTerm = searchTerm.Trim();
+          job.Request = searchTerm;
+          job.FieldWeights = "Name: 1000";
 
-        LoginUser loginUser = TSAuthentication.GetLoginUser();
-        string companiesIndexPath = DataUtils.GetCompaniesIndexPath(loginUser);
-        job.IndexesToSearch.Add(companiesIndexPath);
-        string contactsIndexPath = DataUtils.GetContactsIndexPath(loginUser);
-        job.IndexesToSearch.Add(contactsIndexPath);
-        job.Execute();
+          job.MaxFilesToRetrieve = to + 1;
+          //job.AutoStopLimit = 1000000;
+          job.TimeoutSeconds = 30;
+          job.SearchFlags =
+            //SearchFlags.dtsSearchSelectMostRecent |
+            SearchFlags.dtsSearchDelayDocInfo;
 
-        for (int i = from; i < job.Results.Count; i++)
-        {
-          job.Results.GetNthDoc(i);
-
-          CompanyOrContact item = new CompanyOrContact();
-          item.Id = job.Results.CurrentItem.DocId;
-          if (job.Results.CurrentItem.IndexRetrievedFrom == companiesIndexPath)
+          int num = 0;
+          if (!int.TryParse(searchTerm, out num))
           {
-            item.ReferenceType = ReferenceType.Organizations;
-          }
-          else
-          {
-            item.ReferenceType = ReferenceType.Contacts;
+            //job.Fuzziness = 1;
+            job.SearchFlags = job.SearchFlags |
+              //SearchFlags.dtsSearchFuzzy | 
+              //SearchFlags.dtsSearchStemming |
+              SearchFlags.dtsSearchPositionalScoring |
+              SearchFlags.dtsSearchAutoTermWeight;
           }
 
-          resultItems.Add(item);
+          if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+
+          LoginUser loginUser = TSAuthentication.GetLoginUser();
+          string companiesIndexPath = DataUtils.GetCompaniesIndexPath(loginUser);
+          if (searchCompanies)
+          {
+            job.IndexesToSearch.Add(companiesIndexPath);
+          }
+          string contactsIndexPath = DataUtils.GetContactsIndexPath(loginUser);
+          if (searchContacts)
+          {
+            job.IndexesToSearch.Add(contactsIndexPath);
+          }
+          job.Execute();
+
+          for (int i = from; i < job.Results.Count; i++)
+          {
+            job.Results.GetNthDoc(i);
+
+            CompanyOrContact item = new CompanyOrContact();
+            item.Id = job.Results.CurrentItem.DocId;
+            if (job.Results.CurrentItem.IndexRetrievedFrom == companiesIndexPath)
+            {
+              item.ReferenceType = ReferenceType.Organizations;
+            }
+            else
+            {
+              item.ReferenceType = ReferenceType.Contacts;
+            }
+
+            resultItems.Add(item);
+          }
         }
       }
+
       CompaniesAndContactsSearchResults result = new CompaniesAndContactsSearchResults();
       result.SearchTerm = searchTerm;
       result.From = from;
