@@ -46,6 +46,7 @@ public partial class Chat_ChatOffline : System.Web.UI.Page
 
     if (!IsPostBack)
     {
+      
       if (Request.Cookies["TSChat"] != null)
       {
         textEmail.Text = Request.Cookies["TSChat"]["Email"];
@@ -57,6 +58,13 @@ public partial class Chat_ChatOffline : System.Web.UI.Page
       if (Request.Params["fname"] != null) textFirstName.Text = Request.Params["fname"];
       if (Request.Params["lname"] != null) textLastName.Text = Request.Params["lname"];
       if (Request.Params["msg"] != null) textMessage.Text = Request.Params["msg"];
+
+      if (_organization.OrganizationID == 566596)
+      {
+        pnlChatForm.Visible = false;
+        pnlCustom.InnerHtml = "Lo sentimos, por el momento no hay un ejecutivo disponible. Por favor de click <a href=\"https://ticket.teamsupport.com/AMCO\" target=\"_blank\">aquí</a> para solicitar asistencia y nos comunicaremos con usted en un máximo de 24 horas.";
+      }
+      
 
     }
   }
