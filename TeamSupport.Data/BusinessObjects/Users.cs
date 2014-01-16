@@ -239,6 +239,16 @@ namespace TeamSupport.Data
       {
       }
     }
+
+    public string FontSizeDescription
+    {
+      get { return Enums.GetDescription((FontSize)Row["FontSize"]); }
+    }
+
+    public string FontFamilyDescription
+    {
+      get { return Enums.GetDescription((FontFamily)Row["FontFamily"]); }
+    }
   }
   
   public partial class Users
