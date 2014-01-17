@@ -2132,19 +2132,21 @@ var initEditor = function (element, init) {
       media_external_list_url: "tinymce/jscripts/media_list.js",
       setup: function (ed) {
         ed.onInit.add(function (ed) {
-          if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
-            ed.execCommand("fontName", false, top.Ts.System.User.FontFamilyDescription);
-          }
-          else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-            ed.execCommand("fontName", false, top.Ts.System.Organization.FontFamilyDescription);
-          }
+          top.Ts.System.refreshUser(function () {
+            if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
+              ed.execCommand("fontName", false, top.Ts.System.User.FontFamilyDescription);
+            }
+            else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+              ed.execCommand("fontName", false, top.Ts.System.Organization.FontFamilyDescription);
+            }
 
-          if (top.Ts.System.User.FontSize != "0") {
-            ed.execCommand("fontSize", false, top.Ts.System.User.FontSize);
-          }
-          else if (top.Ts.System.Organization.FontSize != "0") {
-            ed.execCommand("fontSize", false, top.Ts.System.Organization.FontSize);
-          }
+            if (top.Ts.System.User.FontSize != "0") {
+              ed.execCommand("fontSize", false, top.Ts.System.User.FontSize);
+            }
+            else if (top.Ts.System.Organization.FontSize != "0") {
+              ed.execCommand("fontSize", false, top.Ts.System.Organization.FontSize);
+            }          
+          });
         });
 
         ed.onPaste.add(function (ed, e) {
@@ -2259,12 +2261,12 @@ var initEditor = function (element, init) {
             onclick: function () {
               //var x = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/e75084e0156749969d4c82ed05e35a9c" frameborder="0" width="650" height="400"><a href="http://google.com" target="_blank">Click here to view screen recording video</a></iframe>&nbsp;</div>';
               top.Ts.MainPage.recordScreen(null, function (result) {
-              var link = '<a href="' + result.url + '" target="_blank">Click here to view screen recording video</a>';
-              var html = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/' + result.id + '" width="650" height="400" frameborder="0">' + link + '</iframe>&nbsp;</div>'
-              ed.selection.setContent(html);
-              ed.execCommand('mceAutoResize');
-              ed.focus();
-              top.Ts.System.logAction('Ticket - Screen Recorded');
+                var link = '<a href="' + result.url + '" target="_blank">Click here to view screen recording video</a>';
+                var html = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/' + result.id + '" width="650" height="400" frameborder="0">' + link + '</iframe>&nbsp;</div>'
+                ed.selection.setContent(html);
+                ed.execCommand('mceAutoResize');
+                ed.focus();
+                top.Ts.System.logAction('Ticket - Screen Recorded');
               });
             }
           });
