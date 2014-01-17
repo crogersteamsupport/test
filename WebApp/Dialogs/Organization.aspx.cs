@@ -58,6 +58,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 
     if (!IsPostBack)
     {
+      dpSAExpiration.MinDate = new DateTime(1800, 1, 1);
       LoadTimeZones();
       LoadSlas();
       LoadUsers(_organizatinID);
