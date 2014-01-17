@@ -164,7 +164,7 @@ public partial class Dialogs_Organization : BaseDialogPage
         cmbTimeZones.SelectedValue = "Central Standard Time";
       else
         cmbTimeZones.SelectedValue = organizations[0].TimeZoneID;
-      dpSAExpiration.SelectedDate = organizations[0].SAExpirationDate;
+      dpSAExpiration.SelectedDate = organizations[0].SAExpirationDate < new DateTime(1901, 1, 1, 0, 0, 0) ? new DateTime(1901, 1, 1, 0, 0, 0) : organizations[0].SAExpirationDate;
       if (organizations[0].SlaLevelID != null) cmbSlas.SelectedValue = organizations[0].SlaLevelID.ToString();
     }
     else

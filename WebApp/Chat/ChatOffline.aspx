@@ -39,9 +39,9 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
   <div class="chat-content">
+  <div runat="server" id="pnlChatForm">
     <div style="float: left; width: 250px;">
       <h3>A chat operator is not available.</h3>
-      <div runat="server" id="pnlChatForm">
         <p>Please submit your question and we will get back with you.</p>
         <div id="divValidate" class="ui-helper-hidden ui-state-highlight ui-corner-all" style="margin: 10px 10px;
           padding: 5px 5px;">
@@ -69,10 +69,6 @@
         </div>
         <div style="padding-bottom: 8px;">
           <em>* Required</em></div>
-      </div>
-      <div runat="server" id="pnlCustom" style="padding: 15px 0;">
-        
-      </div>
 
     </div>
     <div style="float: right; margin: 5px 0 0 0;">
@@ -89,5 +85,11 @@
     <div style="text-align: center; margin: 0 auto; padding: 10px 0;">
       <asp:Button ID="btnSubmit" runat="server" Text="Submit" OnClick="btnSubmit_Click"
         OnClientClick="return Validate();" /></div>
+      </div>
+      <div runat="server" id="pnlCustom" style="padding: 15px 0;">
+        
+      </div>
   </div>
+
+
 </asp:Content>
