@@ -62,7 +62,7 @@ public partial class Chat_ChatOffline : System.Web.UI.Page
       if (_organization.OrganizationID == 566596)
       {
         pnlChatForm.Visible = false;
-        pnlCustom.InnerHtml = "<p>Lo sentimos, por el momento no hay un ejecutivo disponible. Por favor de dar click <a href=\"https://ticket.teamsupport.com/AMCO\" target=\"_blank\">aquí</a> para solicitar asistencia y nos comunicaremos con usted en un máximo de 24 horas.</p>";
+        pnlCustom.InnerHtml = "<p style=\"font-weight:bold;\">Lo sentimos, por el momento no hay un ejecutivo disponible.</p><p>Por favor de click <a href=\"https://ticket.teamsupport.com/AMCO\" target=\"_blank\">aquí</a> para solicitar asistencia y nos comunicaremos con usted en un máximo de 24 horas.</p>";
         pnlQuestion.Visible = false;
         headTitle.Visible = false;
       }
