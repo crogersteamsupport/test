@@ -1186,9 +1186,13 @@ $(document).ready(function () {
         sender.Name = _ticketSender.Name;
         sender.InOfficeComment = '';
 
-        var senderInUsers = users.filter(function (user) {
-          return user.UserID == _ticketSender.UserID;
-        });
+        var senderInUsers = new Array();
+        for (var i = 0; i < users.length; i++) {
+          if (users[i].UserID == _ticketSender.UserID) {
+            senderInUsers[0] = users[i];
+            break;
+          }
+        }
 
         if (senderInUsers.length > 0) {
           sender.InOfficeComment = senderInUsers[0].InOfficeComment;
@@ -1207,9 +1211,13 @@ $(document).ready(function () {
         creator.Name = _ticketCreator.Name;
         creator.InOfficeComment = '';
 
-        var creatorInUsers = users.filter(function (user) {
-          return user.UserID == _ticketCreator.UserID;
-        });
+        var creatorInUsers = new Array();
+        for (var i = 0; i < users.length; i++) {
+          if (users[i].UserID == _ticketCreator.UserID) {
+            creatorInUsers[0] = users[i];
+            break;
+          }
+        }
 
         if (creatorInUsers.length > 0) {
           creator.InOfficeComment = creatorInUsers[0].InOfficeComment;
