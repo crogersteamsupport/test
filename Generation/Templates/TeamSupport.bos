@@ -10703,6 +10703,57 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>ReportTableFields</TableName>
+    <FieldName>IsOpenable</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportTableFields</TableName>
+    <FieldName>IsEmail</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportTableFields</TableName>
+    <FieldName>IsLink</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>ActionLogs</TableName>
     <FieldName>ActionLogID</FieldName>
     <CustomType>int</CustomType>

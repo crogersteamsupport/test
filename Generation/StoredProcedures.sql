@@ -3286,7 +3286,10 @@ AS
     [IsVisible],
     [Description],
     [LookupTableID],
-    [IsReadOnly]
+    [IsReadOnly],
+    [IsOpenable],
+    [IsEmail],
+    [IsLink]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -3306,6 +3309,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @Description varchar(1000),
   @LookupTableID int,
   @IsReadOnly bit,
+  @IsOpenable bit,
+  @IsEmail bit,
+  @IsLink bit,
   @Identity int OUT
 )
 AS
@@ -3320,7 +3326,10 @@ AS
     [IsVisible],
     [Description],
     [LookupTableID],
-    [IsReadOnly])
+    [IsReadOnly],
+    [IsOpenable],
+    [IsEmail],
+    [IsLink])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -3330,7 +3339,10 @@ AS
     @IsVisible,
     @Description,
     @LookupTableID,
-    @IsReadOnly)
+    @IsReadOnly,
+    @IsOpenable,
+    @IsEmail,
+    @IsLink)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -3350,7 +3362,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @IsVisible bit,
   @Description varchar(1000),
   @LookupTableID int,
-  @IsReadOnly bit
+  @IsReadOnly bit,
+  @IsOpenable bit,
+  @IsEmail bit,
+  @IsLink bit
 )
 AS
   SET NOCOUNT OFF;
@@ -3364,7 +3379,10 @@ AS
     [IsVisible] = @IsVisible,
     [Description] = @Description,
     [LookupTableID] = @LookupTableID,
-    [IsReadOnly] = @IsReadOnly
+    [IsReadOnly] = @IsReadOnly,
+    [IsOpenable] = @IsOpenable,
+    [IsEmail] = @IsEmail,
+    [IsLink] = @IsLink
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -16537,7 +16555,10 @@ AS
     [IsVisible],
     [Description],
     [LookupTableID],
-    [IsReadOnly]
+    [IsReadOnly],
+    [IsOpenable],
+    [IsEmail],
+    [IsLink]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -16557,6 +16578,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @Description varchar(1000),
   @LookupTableID int,
   @IsReadOnly bit,
+  @IsOpenable bit,
+  @IsEmail bit,
+  @IsLink bit,
   @Identity int OUT
 )
 AS
@@ -16571,7 +16595,10 @@ AS
     [IsVisible],
     [Description],
     [LookupTableID],
-    [IsReadOnly])
+    [IsReadOnly],
+    [IsOpenable],
+    [IsEmail],
+    [IsLink])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -16581,7 +16608,10 @@ AS
     @IsVisible,
     @Description,
     @LookupTableID,
-    @IsReadOnly)
+    @IsReadOnly,
+    @IsOpenable,
+    @IsEmail,
+    @IsLink)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -16601,7 +16631,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @IsVisible bit,
   @Description varchar(1000),
   @LookupTableID int,
-  @IsReadOnly bit
+  @IsReadOnly bit,
+  @IsOpenable bit,
+  @IsEmail bit,
+  @IsLink bit
 )
 AS
   SET NOCOUNT OFF;
@@ -16615,7 +16648,10 @@ AS
     [IsVisible] = @IsVisible,
     [Description] = @Description,
     [LookupTableID] = @LookupTableID,
-    [IsReadOnly] = @IsReadOnly
+    [IsReadOnly] = @IsReadOnly,
+    [IsOpenable] = @IsOpenable,
+    [IsEmail] = @IsEmail,
+    [IsLink] = @IsLink
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -29788,7 +29824,10 @@ AS
     [IsVisible],
     [Description],
     [LookupTableID],
-    [IsReadOnly]
+    [IsReadOnly],
+    [IsOpenable],
+    [IsEmail],
+    [IsLink]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -29808,6 +29847,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @Description varchar(1000),
   @LookupTableID int,
   @IsReadOnly bit,
+  @IsOpenable bit,
+  @IsEmail bit,
+  @IsLink bit,
   @Identity int OUT
 )
 AS
@@ -29822,7 +29864,10 @@ AS
     [IsVisible],
     [Description],
     [LookupTableID],
-    [IsReadOnly])
+    [IsReadOnly],
+    [IsOpenable],
+    [IsEmail],
+    [IsLink])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -29832,7 +29877,10 @@ AS
     @IsVisible,
     @Description,
     @LookupTableID,
-    @IsReadOnly)
+    @IsReadOnly,
+    @IsOpenable,
+    @IsEmail,
+    @IsLink)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -29852,7 +29900,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @IsVisible bit,
   @Description varchar(1000),
   @LookupTableID int,
-  @IsReadOnly bit
+  @IsReadOnly bit,
+  @IsOpenable bit,
+  @IsEmail bit,
+  @IsLink bit
 )
 AS
   SET NOCOUNT OFF;
@@ -29866,7 +29917,10 @@ AS
     [IsVisible] = @IsVisible,
     [Description] = @Description,
     [LookupTableID] = @LookupTableID,
-    [IsReadOnly] = @IsReadOnly
+    [IsReadOnly] = @IsReadOnly,
+    [IsOpenable] = @IsOpenable,
+    [IsEmail] = @IsEmail,
+    [IsLink] = @IsLink
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -43039,7 +43093,10 @@ AS
     [IsVisible],
     [Description],
     [LookupTableID],
-    [IsReadOnly]
+    [IsReadOnly],
+    [IsOpenable],
+    [IsEmail],
+    [IsLink]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -43059,6 +43116,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @Description varchar(1000),
   @LookupTableID int,
   @IsReadOnly bit,
+  @IsOpenable bit,
+  @IsEmail bit,
+  @IsLink bit,
   @Identity int OUT
 )
 AS
@@ -43073,7 +43133,10 @@ AS
     [IsVisible],
     [Description],
     [LookupTableID],
-    [IsReadOnly])
+    [IsReadOnly],
+    [IsOpenable],
+    [IsEmail],
+    [IsLink])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -43083,7 +43146,10 @@ AS
     @IsVisible,
     @Description,
     @LookupTableID,
-    @IsReadOnly)
+    @IsReadOnly,
+    @IsOpenable,
+    @IsEmail,
+    @IsLink)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -43103,7 +43169,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @IsVisible bit,
   @Description varchar(1000),
   @LookupTableID int,
-  @IsReadOnly bit
+  @IsReadOnly bit,
+  @IsOpenable bit,
+  @IsEmail bit,
+  @IsLink bit
 )
 AS
   SET NOCOUNT OFF;
@@ -43117,7 +43186,10 @@ AS
     [IsVisible] = @IsVisible,
     [Description] = @Description,
     [LookupTableID] = @LookupTableID,
-    [IsReadOnly] = @IsReadOnly
+    [IsReadOnly] = @IsReadOnly,
+    [IsOpenable] = @IsOpenable,
+    [IsEmail] = @IsEmail,
+    [IsLink] = @IsLink
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -56290,7 +56362,10 @@ AS
     [IsVisible],
     [Description],
     [LookupTableID],
-    [IsReadOnly]
+    [IsReadOnly],
+    [IsOpenable],
+    [IsEmail],
+    [IsLink]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -56310,6 +56385,9 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @Description varchar(1000),
   @LookupTableID int,
   @IsReadOnly bit,
+  @IsOpenable bit,
+  @IsEmail bit,
+  @IsLink bit,
   @Identity int OUT
 )
 AS
@@ -56324,7 +56402,10 @@ AS
     [IsVisible],
     [Description],
     [LookupTableID],
-    [IsReadOnly])
+    [IsReadOnly],
+    [IsOpenable],
+    [IsEmail],
+    [IsLink])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -56334,7 +56415,10 @@ AS
     @IsVisible,
     @Description,
     @LookupTableID,
-    @IsReadOnly)
+    @IsReadOnly,
+    @IsOpenable,
+    @IsEmail,
+    @IsLink)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -56354,7 +56438,10 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @IsVisible bit,
   @Description varchar(1000),
   @LookupTableID int,
-  @IsReadOnly bit
+  @IsReadOnly bit,
+  @IsOpenable bit,
+  @IsEmail bit,
+  @IsLink bit
 )
 AS
   SET NOCOUNT OFF;
@@ -56368,7 +56455,10 @@ AS
     [IsVisible] = @IsVisible,
     [Description] = @Description,
     [LookupTableID] = @LookupTableID,
-    [IsReadOnly] = @IsReadOnly
+    [IsReadOnly] = @IsReadOnly,
+    [IsOpenable] = @IsOpenable,
+    [IsEmail] = @IsEmail,
+    [IsLink] = @IsLink
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 

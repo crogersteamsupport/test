@@ -23,6 +23,9 @@ namespace TeamSupport.Data
     [DataMember] public string Description { get; set; }
     [DataMember] public int? LookupTableID { get; set; }
     [DataMember] public bool IsReadOnly { get; set; }
+    [DataMember] public bool IsOpenable { get; set; }
+    [DataMember] public bool IsEmail { get; set; }
+    [DataMember] public bool IsLink { get; set; }
           
   }
   
@@ -31,6 +34,9 @@ namespace TeamSupport.Data
     public ReportTableFieldProxy GetProxy()
     {
       ReportTableFieldProxy result = new ReportTableFieldProxy();
+      result.IsLink = this.IsLink;
+      result.IsEmail = this.IsEmail;
+      result.IsOpenable = this.IsOpenable;
       result.IsReadOnly = this.IsReadOnly;
       result.LookupTableID = this.LookupTableID;
       result.Description = this.Description;
