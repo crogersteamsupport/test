@@ -74,7 +74,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         DocIsFile = false;
-        DocName = contact.Email;
+        DocName = contact.UserID.ToString();
         DocDisplayName = contact.FirstName + " " + contact.LastName;
         DocCreatedDate = (DateTime)contact.Row["DateCreated"];
         DocModifiedDate = (DateTime)contact.Row["DateModified"];

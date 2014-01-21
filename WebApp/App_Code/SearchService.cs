@@ -1005,7 +1005,7 @@ namespace TSWebServices
             job.Results.GetNthDoc(i);
 
             CompanyOrContact item = new CompanyOrContact();
-            item.Id = job.Results.CurrentItem.DocId;
+            item.Id = int.Parse(job.Results.CurrentItem.Filename);
             if (job.Results.CurrentItem.IndexRetrievedFrom == companiesIndexPath)
             {
               item.ReferenceType = ReferenceType.Organizations;
