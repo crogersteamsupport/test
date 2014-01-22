@@ -32,6 +32,7 @@ namespace TeamSupport.Data
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public int? CustomFieldCategoryID { get; set; }
     [DataMember] public bool IsRequiredToClose { get; set; }
+    [DataMember] public string Mask { get; set; }
           
   }
   
@@ -40,6 +41,7 @@ namespace TeamSupport.Data
     public CustomFieldProxy GetProxy()
     {
       CustomFieldProxy result = new CustomFieldProxy();
+      result.Mask = this.Mask;
       result.IsRequiredToClose = this.IsRequiredToClose;
       result.CustomFieldCategoryID = this.CustomFieldCategoryID;
       result.ModifierID = this.ModifierID;

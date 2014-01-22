@@ -26,6 +26,7 @@ namespace TeamSupport.Data
     [DataMember] public bool IsOpenable { get; set; }
     [DataMember] public bool IsEmail { get; set; }
     [DataMember] public bool IsLink { get; set; }
+    [DataMember] public bool IsSortable { get; set; }
           
   }
   
@@ -34,6 +35,7 @@ namespace TeamSupport.Data
     public ReportTableFieldProxy GetProxy()
     {
       ReportTableFieldProxy result = new ReportTableFieldProxy();
+      result.IsSortable = this.IsSortable;
       result.IsLink = this.IsLink;
       result.IsEmail = this.IsEmail;
       result.IsOpenable = this.IsOpenable;

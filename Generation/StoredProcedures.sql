@@ -1364,8 +1364,7 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType],
-    [FolderID]
+    [ReportDefType]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -1394,7 +1393,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
-  @FolderID int,
   @Identity int OUT
 )
 AS
@@ -1418,8 +1416,7 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType],
-    [FolderID])
+    [ReportDefType])
   VALUES (
     @OrganizationID,
     @Name,
@@ -1438,8 +1435,7 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType,
-    @FolderID)
+    @ReportDefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1466,8 +1462,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int,
-  @FolderID int
+  @ReportDefType int
 )
 AS
   SET NOCOUNT OFF;
@@ -1488,8 +1483,7 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType,
-    [FolderID] = @FolderID
+    [ReportDefType] = @ReportDefType
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -3289,7 +3283,8 @@ AS
     [IsReadOnly],
     [IsOpenable],
     [IsEmail],
-    [IsLink]
+    [IsLink],
+    [IsSortable]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -3312,6 +3307,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @IsOpenable bit,
   @IsEmail bit,
   @IsLink bit,
+  @IsSortable bit,
   @Identity int OUT
 )
 AS
@@ -3329,7 +3325,8 @@ AS
     [IsReadOnly],
     [IsOpenable],
     [IsEmail],
-    [IsLink])
+    [IsLink],
+    [IsSortable])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -3342,7 +3339,8 @@ AS
     @IsReadOnly,
     @IsOpenable,
     @IsEmail,
-    @IsLink)
+    @IsLink,
+    @IsSortable)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -3365,7 +3363,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @IsReadOnly bit,
   @IsOpenable bit,
   @IsEmail bit,
-  @IsLink bit
+  @IsLink bit,
+  @IsSortable bit
 )
 AS
   SET NOCOUNT OFF;
@@ -3382,7 +3381,8 @@ AS
     [IsReadOnly] = @IsReadOnly,
     [IsOpenable] = @IsOpenable,
     [IsEmail] = @IsEmail,
-    [IsLink] = @IsLink
+    [IsLink] = @IsLink,
+    [IsSortable] = @IsSortable
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -8761,7 +8761,8 @@ AS
     [CreatorID],
     [ModifierID],
     [CustomFieldCategoryID],
-    [IsRequiredToClose]
+    [IsRequiredToClose],
+    [Mask]
   FROM [dbo].[CustomFields]
   WHERE ([CustomFieldID] = @CustomFieldID)
 GO
@@ -8790,6 +8791,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
   @ModifierID int,
   @CustomFieldCategoryID int,
   @IsRequiredToClose bit,
+  @Mask varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -8813,7 +8815,8 @@ AS
     [CreatorID],
     [ModifierID],
     [CustomFieldCategoryID],
-    [IsRequiredToClose])
+    [IsRequiredToClose],
+    [Mask])
   VALUES (
     @OrganizationID,
     @Name,
@@ -8832,7 +8835,8 @@ AS
     @CreatorID,
     @ModifierID,
     @CustomFieldCategoryID,
-    @IsRequiredToClose)
+    @IsRequiredToClose,
+    @Mask)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -8859,7 +8863,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
   @DateModified datetime,
   @ModifierID int,
   @CustomFieldCategoryID int,
-  @IsRequiredToClose bit
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -8880,7 +8885,8 @@ AS
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
     [CustomFieldCategoryID] = @CustomFieldCategoryID,
-    [IsRequiredToClose] = @IsRequiredToClose
+    [IsRequiredToClose] = @IsRequiredToClose,
+    [Mask] = @Mask
   WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
@@ -14633,8 +14639,7 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType],
-    [FolderID]
+    [ReportDefType]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -14663,7 +14668,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
-  @FolderID int,
   @Identity int OUT
 )
 AS
@@ -14687,8 +14691,7 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType],
-    [FolderID])
+    [ReportDefType])
   VALUES (
     @OrganizationID,
     @Name,
@@ -14707,8 +14710,7 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType,
-    @FolderID)
+    @ReportDefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -14735,8 +14737,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int,
-  @FolderID int
+  @ReportDefType int
 )
 AS
   SET NOCOUNT OFF;
@@ -14757,8 +14758,7 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType,
-    [FolderID] = @FolderID
+    [ReportDefType] = @ReportDefType
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -16558,7 +16558,8 @@ AS
     [IsReadOnly],
     [IsOpenable],
     [IsEmail],
-    [IsLink]
+    [IsLink],
+    [IsSortable]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -16581,6 +16582,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @IsOpenable bit,
   @IsEmail bit,
   @IsLink bit,
+  @IsSortable bit,
   @Identity int OUT
 )
 AS
@@ -16598,7 +16600,8 @@ AS
     [IsReadOnly],
     [IsOpenable],
     [IsEmail],
-    [IsLink])
+    [IsLink],
+    [IsSortable])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -16611,7 +16614,8 @@ AS
     @IsReadOnly,
     @IsOpenable,
     @IsEmail,
-    @IsLink)
+    @IsLink,
+    @IsSortable)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -16634,7 +16638,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @IsReadOnly bit,
   @IsOpenable bit,
   @IsEmail bit,
-  @IsLink bit
+  @IsLink bit,
+  @IsSortable bit
 )
 AS
   SET NOCOUNT OFF;
@@ -16651,7 +16656,8 @@ AS
     [IsReadOnly] = @IsReadOnly,
     [IsOpenable] = @IsOpenable,
     [IsEmail] = @IsEmail,
-    [IsLink] = @IsLink
+    [IsLink] = @IsLink,
+    [IsSortable] = @IsSortable
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -22030,7 +22036,8 @@ AS
     [CreatorID],
     [ModifierID],
     [CustomFieldCategoryID],
-    [IsRequiredToClose]
+    [IsRequiredToClose],
+    [Mask]
   FROM [dbo].[CustomFields]
   WHERE ([CustomFieldID] = @CustomFieldID)
 GO
@@ -22059,6 +22066,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
   @ModifierID int,
   @CustomFieldCategoryID int,
   @IsRequiredToClose bit,
+  @Mask varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -22082,7 +22090,8 @@ AS
     [CreatorID],
     [ModifierID],
     [CustomFieldCategoryID],
-    [IsRequiredToClose])
+    [IsRequiredToClose],
+    [Mask])
   VALUES (
     @OrganizationID,
     @Name,
@@ -22101,7 +22110,8 @@ AS
     @CreatorID,
     @ModifierID,
     @CustomFieldCategoryID,
-    @IsRequiredToClose)
+    @IsRequiredToClose,
+    @Mask)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -22128,7 +22138,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
   @DateModified datetime,
   @ModifierID int,
   @CustomFieldCategoryID int,
-  @IsRequiredToClose bit
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -22149,7 +22160,8 @@ AS
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
     [CustomFieldCategoryID] = @CustomFieldCategoryID,
-    [IsRequiredToClose] = @IsRequiredToClose
+    [IsRequiredToClose] = @IsRequiredToClose,
+    [Mask] = @Mask
   WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
@@ -27902,8 +27914,7 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType],
-    [FolderID]
+    [ReportDefType]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -27932,7 +27943,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
-  @FolderID int,
   @Identity int OUT
 )
 AS
@@ -27956,8 +27966,7 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType],
-    [FolderID])
+    [ReportDefType])
   VALUES (
     @OrganizationID,
     @Name,
@@ -27976,8 +27985,7 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType,
-    @FolderID)
+    @ReportDefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -28004,8 +28012,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int,
-  @FolderID int
+  @ReportDefType int
 )
 AS
   SET NOCOUNT OFF;
@@ -28026,8 +28033,7 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType,
-    [FolderID] = @FolderID
+    [ReportDefType] = @ReportDefType
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -29827,7 +29833,8 @@ AS
     [IsReadOnly],
     [IsOpenable],
     [IsEmail],
-    [IsLink]
+    [IsLink],
+    [IsSortable]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -29850,6 +29857,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @IsOpenable bit,
   @IsEmail bit,
   @IsLink bit,
+  @IsSortable bit,
   @Identity int OUT
 )
 AS
@@ -29867,7 +29875,8 @@ AS
     [IsReadOnly],
     [IsOpenable],
     [IsEmail],
-    [IsLink])
+    [IsLink],
+    [IsSortable])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -29880,7 +29889,8 @@ AS
     @IsReadOnly,
     @IsOpenable,
     @IsEmail,
-    @IsLink)
+    @IsLink,
+    @IsSortable)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -29903,7 +29913,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @IsReadOnly bit,
   @IsOpenable bit,
   @IsEmail bit,
-  @IsLink bit
+  @IsLink bit,
+  @IsSortable bit
 )
 AS
   SET NOCOUNT OFF;
@@ -29920,7 +29931,8 @@ AS
     [IsReadOnly] = @IsReadOnly,
     [IsOpenable] = @IsOpenable,
     [IsEmail] = @IsEmail,
-    [IsLink] = @IsLink
+    [IsLink] = @IsLink,
+    [IsSortable] = @IsSortable
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -35299,7 +35311,8 @@ AS
     [CreatorID],
     [ModifierID],
     [CustomFieldCategoryID],
-    [IsRequiredToClose]
+    [IsRequiredToClose],
+    [Mask]
   FROM [dbo].[CustomFields]
   WHERE ([CustomFieldID] = @CustomFieldID)
 GO
@@ -35328,6 +35341,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
   @ModifierID int,
   @CustomFieldCategoryID int,
   @IsRequiredToClose bit,
+  @Mask varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -35351,7 +35365,8 @@ AS
     [CreatorID],
     [ModifierID],
     [CustomFieldCategoryID],
-    [IsRequiredToClose])
+    [IsRequiredToClose],
+    [Mask])
   VALUES (
     @OrganizationID,
     @Name,
@@ -35370,7 +35385,8 @@ AS
     @CreatorID,
     @ModifierID,
     @CustomFieldCategoryID,
-    @IsRequiredToClose)
+    @IsRequiredToClose,
+    @Mask)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -35397,7 +35413,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
   @DateModified datetime,
   @ModifierID int,
   @CustomFieldCategoryID int,
-  @IsRequiredToClose bit
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -35418,7 +35435,8 @@ AS
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
     [CustomFieldCategoryID] = @CustomFieldCategoryID,
-    [IsRequiredToClose] = @IsRequiredToClose
+    [IsRequiredToClose] = @IsRequiredToClose,
+    [Mask] = @Mask
   WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
@@ -41171,8 +41189,7 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType],
-    [FolderID]
+    [ReportDefType]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -41201,7 +41218,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
-  @FolderID int,
   @Identity int OUT
 )
 AS
@@ -41225,8 +41241,7 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType],
-    [FolderID])
+    [ReportDefType])
   VALUES (
     @OrganizationID,
     @Name,
@@ -41245,8 +41260,7 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType,
-    @FolderID)
+    @ReportDefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -41273,8 +41287,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int,
-  @FolderID int
+  @ReportDefType int
 )
 AS
   SET NOCOUNT OFF;
@@ -41295,8 +41308,7 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType,
-    [FolderID] = @FolderID
+    [ReportDefType] = @ReportDefType
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -43096,7 +43108,8 @@ AS
     [IsReadOnly],
     [IsOpenable],
     [IsEmail],
-    [IsLink]
+    [IsLink],
+    [IsSortable]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -43119,6 +43132,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @IsOpenable bit,
   @IsEmail bit,
   @IsLink bit,
+  @IsSortable bit,
   @Identity int OUT
 )
 AS
@@ -43136,7 +43150,8 @@ AS
     [IsReadOnly],
     [IsOpenable],
     [IsEmail],
-    [IsLink])
+    [IsLink],
+    [IsSortable])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -43149,7 +43164,8 @@ AS
     @IsReadOnly,
     @IsOpenable,
     @IsEmail,
-    @IsLink)
+    @IsLink,
+    @IsSortable)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -43172,7 +43188,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @IsReadOnly bit,
   @IsOpenable bit,
   @IsEmail bit,
-  @IsLink bit
+  @IsLink bit,
+  @IsSortable bit
 )
 AS
   SET NOCOUNT OFF;
@@ -43189,7 +43206,8 @@ AS
     [IsReadOnly] = @IsReadOnly,
     [IsOpenable] = @IsOpenable,
     [IsEmail] = @IsEmail,
-    [IsLink] = @IsLink
+    [IsLink] = @IsLink,
+    [IsSortable] = @IsSortable
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -48568,7 +48586,8 @@ AS
     [CreatorID],
     [ModifierID],
     [CustomFieldCategoryID],
-    [IsRequiredToClose]
+    [IsRequiredToClose],
+    [Mask]
   FROM [dbo].[CustomFields]
   WHERE ([CustomFieldID] = @CustomFieldID)
 GO
@@ -48597,6 +48616,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
   @ModifierID int,
   @CustomFieldCategoryID int,
   @IsRequiredToClose bit,
+  @Mask varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -48620,7 +48640,8 @@ AS
     [CreatorID],
     [ModifierID],
     [CustomFieldCategoryID],
-    [IsRequiredToClose])
+    [IsRequiredToClose],
+    [Mask])
   VALUES (
     @OrganizationID,
     @Name,
@@ -48639,7 +48660,8 @@ AS
     @CreatorID,
     @ModifierID,
     @CustomFieldCategoryID,
-    @IsRequiredToClose)
+    @IsRequiredToClose,
+    @Mask)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -48666,7 +48688,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
   @DateModified datetime,
   @ModifierID int,
   @CustomFieldCategoryID int,
-  @IsRequiredToClose bit
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -48687,7 +48710,8 @@ AS
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
     [CustomFieldCategoryID] = @CustomFieldCategoryID,
-    [IsRequiredToClose] = @IsRequiredToClose
+    [IsRequiredToClose] = @IsRequiredToClose,
+    [Mask] = @Mask
   WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
@@ -54440,8 +54464,7 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType],
-    [FolderID]
+    [ReportDefType]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -54470,7 +54493,6 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
-  @FolderID int,
   @Identity int OUT
 )
 AS
@@ -54494,8 +54516,7 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType],
-    [FolderID])
+    [ReportDefType])
   VALUES (
     @OrganizationID,
     @Name,
@@ -54514,8 +54535,7 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType,
-    @FolderID)
+    @ReportDefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -54542,8 +54562,7 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int,
-  @FolderID int
+  @ReportDefType int
 )
 AS
   SET NOCOUNT OFF;
@@ -54564,8 +54583,7 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType,
-    [FolderID] = @FolderID
+    [ReportDefType] = @ReportDefType
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -56365,7 +56383,8 @@ AS
     [IsReadOnly],
     [IsOpenable],
     [IsEmail],
-    [IsLink]
+    [IsLink],
+    [IsSortable]
   FROM [dbo].[ReportTableFields]
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
@@ -56388,6 +56407,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReportTableField
   @IsOpenable bit,
   @IsEmail bit,
   @IsLink bit,
+  @IsSortable bit,
   @Identity int OUT
 )
 AS
@@ -56405,7 +56425,8 @@ AS
     [IsReadOnly],
     [IsOpenable],
     [IsEmail],
-    [IsLink])
+    [IsLink],
+    [IsSortable])
   VALUES (
     @ReportTableID,
     @FieldName,
@@ -56418,7 +56439,8 @@ AS
     @IsReadOnly,
     @IsOpenable,
     @IsEmail,
-    @IsLink)
+    @IsLink,
+    @IsSortable)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -56441,7 +56463,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReportTableField
   @IsReadOnly bit,
   @IsOpenable bit,
   @IsEmail bit,
-  @IsLink bit
+  @IsLink bit,
+  @IsSortable bit
 )
 AS
   SET NOCOUNT OFF;
@@ -56458,7 +56481,8 @@ AS
     [IsReadOnly] = @IsReadOnly,
     [IsOpenable] = @IsOpenable,
     [IsEmail] = @IsEmail,
-    [IsLink] = @IsLink
+    [IsLink] = @IsLink,
+    [IsSortable] = @IsSortable
   WHERE ([ReportTableFieldID] = @ReportTableFieldID)
 GO
 
@@ -61837,7 +61861,8 @@ AS
     [CreatorID],
     [ModifierID],
     [CustomFieldCategoryID],
-    [IsRequiredToClose]
+    [IsRequiredToClose],
+    [Mask]
   FROM [dbo].[CustomFields]
   WHERE ([CustomFieldID] = @CustomFieldID)
 GO
@@ -61866,6 +61891,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
   @ModifierID int,
   @CustomFieldCategoryID int,
   @IsRequiredToClose bit,
+  @Mask varchar(MAX),
   @Identity int OUT
 )
 AS
@@ -61889,7 +61915,8 @@ AS
     [CreatorID],
     [ModifierID],
     [CustomFieldCategoryID],
-    [IsRequiredToClose])
+    [IsRequiredToClose],
+    [Mask])
   VALUES (
     @OrganizationID,
     @Name,
@@ -61908,7 +61935,8 @@ AS
     @CreatorID,
     @ModifierID,
     @CustomFieldCategoryID,
-    @IsRequiredToClose)
+    @IsRequiredToClose,
+    @Mask)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -61935,7 +61963,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
   @DateModified datetime,
   @ModifierID int,
   @CustomFieldCategoryID int,
-  @IsRequiredToClose bit
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX)
 )
 AS
   SET NOCOUNT OFF;
@@ -61956,7 +61985,8 @@ AS
     [DateModified] = @DateModified,
     [ModifierID] = @ModifierID,
     [CustomFieldCategoryID] = @CustomFieldCategoryID,
-    [IsRequiredToClose] = @IsRequiredToClose
+    [IsRequiredToClose] = @IsRequiredToClose,
+    [Mask] = @Mask
   WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 

@@ -94,12 +94,6 @@ namespace TeamSupport.Data
       set { Row["ReportDef"] = CheckValue("ReportDef", value); }
     }
     
-    public int? FolderID
-    {
-      get { return Row["FolderID"] != DBNull.Value ? (int?)Row["FolderID"] : null; }
-      set { Row["FolderID"] = CheckValue("FolderID", value); }
-    }
-    
 
     
     public ReportType ReportDefType
@@ -263,7 +257,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Reports] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [Query] = @Query,    [CustomFieldKeyName] = @CustomFieldKeyName,    [CustomRefType] = @CustomRefType,    [CustomAuxID] = @CustomAuxID,    [ReportSubcategoryID] = @ReportSubcategoryID,    [QueryObject] = @QueryObject,    [ExternalURL] = @ExternalURL,    [LastSqlExecuted] = @LastSqlExecuted,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ReportType] = @ReportType,    [ReportDef] = @ReportDef,    [ReportDefType] = @ReportDefType,    [FolderID] = @FolderID  WHERE ([ReportID] = @ReportID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Reports] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [Query] = @Query,    [CustomFieldKeyName] = @CustomFieldKeyName,    [CustomRefType] = @CustomRefType,    [CustomAuxID] = @CustomAuxID,    [ReportSubcategoryID] = @ReportSubcategoryID,    [QueryObject] = @QueryObject,    [ExternalURL] = @ExternalURL,    [LastSqlExecuted] = @LastSqlExecuted,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ReportType] = @ReportType,    [ReportDef] = @ReportDef,    [ReportDefType] = @ReportDefType  WHERE ([ReportID] = @ReportID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportID", SqlDbType.Int, 4);
@@ -385,27 +379,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("FolderID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Reports] (    [OrganizationID],    [Name],    [Description],    [Query],    [CustomFieldKeyName],    [CustomRefType],    [CustomAuxID],    [ReportSubcategoryID],    [QueryObject],    [ExternalURL],    [LastSqlExecuted],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ReportType],    [ReportDef],    [ReportDefType],    [FolderID]) VALUES ( @OrganizationID, @Name, @Description, @Query, @CustomFieldKeyName, @CustomRefType, @CustomAuxID, @ReportSubcategoryID, @QueryObject, @ExternalURL, @LastSqlExecuted, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ReportType, @ReportDef, @ReportDefType, @FolderID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Reports] (    [OrganizationID],    [Name],    [Description],    [Query],    [CustomFieldKeyName],    [CustomRefType],    [CustomAuxID],    [ReportSubcategoryID],    [QueryObject],    [ExternalURL],    [LastSqlExecuted],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ReportType],    [ReportDef],    [ReportDefType]) VALUES ( @OrganizationID, @Name, @Description, @Query, @CustomFieldKeyName, @CustomRefType, @CustomAuxID, @ReportSubcategoryID, @QueryObject, @ExternalURL, @LastSqlExecuted, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ReportType, @ReportDef, @ReportDefType); SET @Identity = SCOPE_IDENTITY();";
 
-		
-		tempParameter = insertCommand.Parameters.Add("FolderID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("ReportDefType", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -645,7 +625,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportID], [OrganizationID], [Name], [Description], [Query], [CustomFieldKeyName], [CustomRefType], [CustomAuxID], [ReportSubcategoryID], [QueryObject], [ExternalURL], [LastSqlExecuted], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ReportType], [ReportDef], [ReportDefType], [FolderID] FROM [dbo].[Reports] WHERE ([ReportID] = @ReportID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportID], [OrganizationID], [Name], [Description], [Query], [CustomFieldKeyName], [CustomRefType], [CustomAuxID], [ReportSubcategoryID], [QueryObject], [ExternalURL], [LastSqlExecuted], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ReportType], [ReportDef], [ReportDefType] FROM [dbo].[Reports] WHERE ([ReportID] = @ReportID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportID", reportID);
         Fill(command);

@@ -26,6 +26,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("IsOpenable", "IsOpenable", false, false, false);
       _fieldMap.AddMap("IsEmail", "IsEmail", false, false, false);
       _fieldMap.AddMap("IsLink", "IsLink", false, false, false);
+      _fieldMap.AddMap("IsSortable", "IsSortable", false, false, false);
             
     }
   }

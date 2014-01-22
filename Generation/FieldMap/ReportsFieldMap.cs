@@ -32,7 +32,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ReportType", "ReportType", false, false, false);
       _fieldMap.AddMap("ReportDef", "ReportDef", false, false, false);
       _fieldMap.AddMap("ReportDefType", "ReportDefType", false, false, false);
-      _fieldMap.AddMap("FolderID", "FolderID", false, false, false);
             
     }
   }

@@ -48,6 +48,12 @@ namespace TeamSupport.Data
     
 
     
+    public bool IsSortable
+    {
+      get { return (bool)Row["IsSortable"]; }
+      set { Row["IsSortable"] = CheckValue("IsSortable", value); }
+    }
+    
     public bool IsLink
     {
       get { return (bool)Row["IsLink"]; }
@@ -211,7 +217,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportTableFields] SET     [ReportTableID] = @ReportTableID,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [Description] = @Description,    [LookupTableID] = @LookupTableID,    [IsReadOnly] = @IsReadOnly,    [IsOpenable] = @IsOpenable,    [IsEmail] = @IsEmail,    [IsLink] = @IsLink  WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[ReportTableFields] SET     [ReportTableID] = @ReportTableID,    [FieldName] = @FieldName,    [Alias] = @Alias,    [DataType] = @DataType,    [Size] = @Size,    [IsVisible] = @IsVisible,    [Description] = @Description,    [LookupTableID] = @LookupTableID,    [IsReadOnly] = @IsReadOnly,    [IsOpenable] = @IsOpenable,    [IsEmail] = @IsEmail,    [IsLink] = @IsLink,    [IsSortable] = @IsSortable  WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportTableFieldID", SqlDbType.Int, 4);
@@ -305,13 +311,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("IsSortable", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportTableFields] (    [ReportTableID],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [Description],    [LookupTableID],    [IsReadOnly],    [IsOpenable],    [IsEmail],    [IsLink]) VALUES ( @ReportTableID, @FieldName, @Alias, @DataType, @Size, @IsVisible, @Description, @LookupTableID, @IsReadOnly, @IsOpenable, @IsEmail, @IsLink); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[ReportTableFields] (    [ReportTableID],    [FieldName],    [Alias],    [DataType],    [Size],    [IsVisible],    [Description],    [LookupTableID],    [IsReadOnly],    [IsOpenable],    [IsEmail],    [IsLink],    [IsSortable]) VALUES ( @ReportTableID, @FieldName, @Alias, @DataType, @Size, @IsVisible, @Description, @LookupTableID, @IsReadOnly, @IsOpenable, @IsEmail, @IsLink, @IsSortable); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("IsSortable", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("IsLink", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -509,7 +529,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportTableFieldID], [ReportTableID], [FieldName], [Alias], [DataType], [Size], [IsVisible], [Description], [LookupTableID], [IsReadOnly], [IsOpenable], [IsEmail], [IsLink] FROM [dbo].[ReportTableFields] WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportTableFieldID], [ReportTableID], [FieldName], [Alias], [DataType], [Size], [IsVisible], [Description], [LookupTableID], [IsReadOnly], [IsOpenable], [IsEmail], [IsLink], [IsSortable] FROM [dbo].[ReportTableFields] WHERE ([ReportTableFieldID] = @ReportTableFieldID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportTableFieldID", reportTableFieldID);
         Fill(command);

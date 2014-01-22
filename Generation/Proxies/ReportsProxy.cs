@@ -32,7 +32,6 @@ namespace TeamSupport.Data
     [DataMember] public ReportType ReportType { get; set; }
     [DataMember] public string ReportDef { get; set; }
     [DataMember] public ReportType ReportDefType { get; set; }
-    [DataMember] public int? FolderID { get; set; }
           
   }
   
@@ -41,7 +40,6 @@ namespace TeamSupport.Data
     public ReportProxy GetProxy()
     {
       ReportProxy result = new ReportProxy();
-      result.FolderID = this.FolderID;
       result.ReportDefType = this.ReportDefType;
       result.ReportDef = this.ReportDef;
       result.ReportType = this.ReportType;
