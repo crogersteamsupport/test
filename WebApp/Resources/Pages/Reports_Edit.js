@@ -9,398 +9,397 @@
 /// <reference path="~/Default.aspx" />
 
 $(document).ready(function () {
-  var _reportID = top.Ts.Utils.getQueryValue('ReportID');
-  top.Ts.Services.Reports.GetCategories(loadCats);
-
-  if (_reportID) { 
-  
-  
-  
-  
-  }
-
-
-  $('.report-info').show();
-
-
+  var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
+  var _tempReport = new Object();
+  var location = window.location;
+  var _report = null;
   var _cats = null;
   var _fields = null;
-  var _report = new Object();
   var _subID = -1;
 
-  $('.action-cancel').click(function (e) {
-    e.preventDefault();
-    location.assign("reports.html");
-  });
+  $('.report-filter').reportFilter();
 
-  $('.action-next').click(function (e) {
-    e.preventDefault();
-    var visibleSection = $('.report-section:visible');
-    if (visibleSection.hasClass('report-info')) {
-      if ($('.report-name').val() == '') {
-        $('.report-name').popover('show').parent('.form-group').addClass('has-error');
-        return;
-      }
-      $('.report-name').popover('hide').parent('.form-group').removeClass('has-error');
-      $('.action-back').removeClass('disabled').prop('disabled', false);
-      $('.report-type').show();
-    }
-    else if (visibleSection.hasClass('report-type')) {
-      var reportType = visibleSection.find("input[type='radio']:checked").val();
-      _report.ReportType = reportType;
-      switch (reportType) {
-        case 'tabular':
-          $('.report-tables').show();
-          if (_cats == null) {
-            top.Ts.Services.Reports.GetCategories(loadCats);
-          }
+  if (_reportID) {
+    top.Ts.Utils.webMethod("ReportService", "GetReport", { "reportID": _reportID }, function (report) {
+      _report = report;
+
+      $('.report-name').val(report.Name);
+      $('.report-description').val(report.Description);
+      switch (report.ReportType) {
+        case 0:
+          $('#radioTabular').prop('checked', true);
+          _report.Def = JSON.parse(report.ReportDef);
           break;
-        case 'chart':
-          $('.report-tables').show();
-          if (_cats == null) {
-            top.Ts.Services.Reports.GetCategories(loadCats);
-          }
+        case 1:
+          $('#radioChart').prop('checked', true);
+          _report.Def = JSON.parse(report.ReportDef);
           break;
-        case 'summary':
-          $('.report-tables').show();
-          if (_cats == null) {
-            top.Ts.Services.Reports.GetCategories(loadCats);
-          }
+        case 2:
+          $('#radioExternal').prop('checked', true);
+          $('#external-url').val(report.ReportDef);
           break;
-        case 'external':
-          $('.report-external').show();
+        case 4:
+          $('#radioSummary').prop('checked', true);
+          _report.Def = JSON.parse(report.ReportDef);
           break;
         default:
       }
-    }
-    else if (visibleSection.hasClass('report-tables')) {
-      _report.Subcategory = $('#selectSubCat').val();
-
-      $('.report-fields').show();
-      $('.action-next').addClass('disabled').prop('disabled', true);
-
-      loadFields();
-    }
-    else if (visibleSection.hasClass('report-fields')) {
-      _report.Fields = new Array();
-      $('.report-fields-selected li').each(function (index) {
-        var field = $(this).data('field');
-        var fieldItem = new Object();
-        fieldItem.FieldID = field.ID;
-        fieldItem.IsCustom = field.IsCustom;
-        _report.Fields.push(fieldItem);
-      });
-
-      initFilters();
-      $('.report-filters').show();
-    }
-    visibleSection.hide();
-
-    if ($('.report-section:visible').hasClass('report-wizard-end')) {
-      $('.action-next').hide();
-      $('.action-save').show();
-    }
-  });
-
-  $('.action-back').click(function (e) {
-    e.preventDefault();
-    $('.action-save').hide();
-    $('.action-next').show();
-    $('.action-next').removeClass('disabled').prop('disabled', false);
-
-    var visibleSection = $('.report-section:visible');
-    visibleSection.hide();
-
-    if (visibleSection.hasClass('report-type')) {
-      $('.report-info').show();
-      $('.action-back').addClass('disabled').prop('disabled', true);
-    }
-    else if (visibleSection.hasClass('report-external')) {
-      $('.report-type').show();
-    }
-    else if (visibleSection.hasClass('report-tables')) {
-      $('.report-type').show();
-    }
-    else if (visibleSection.hasClass('report-fields')) {
-      $('.report-tables').show();
-    }
-    else if (visibleSection.hasClass('report-filters')) {
-      $('.report-fields').show();
-    }
-  });
-
-  function loadCats(cats) {
-    _cats = cats;
-    for (var i = 0; i < cats.length; i++) {
-      $('#selectCat').append($('<option/>').attr('value', cats[i].ReportTableID).text(cats[i].Name));
-    }
-    loadSubCats();
+      initReport();
+    });
+  }
+  else {
+    initReport();
   }
 
-  $('#selectCat').change(loadSubCats);
 
-  function loadSubCats() {
-    var reportTableID = $('#selectCat').val();
-    $('#selectSubCat').empty();
-    //$('#selectSubCat').append($('<option/>').attr('value', '-1').text('None'));
-    for (var i = 0; i < _cats.length; i++) {
-      if (_cats[i].ReportTableID == reportTableID) {
-        for (var j = 0; j < _cats[i].Subcategories.length; j++) {
-          $('#selectSubCat').append($('<option/>').attr('value', _cats[i].Subcategories[j].SubCatID).text(_cats[i].Subcategories[j].Name));
+  function initReport() {
+    top.Ts.Services.Reports.GetCategories(loadCats);
+    $('.report-info').show();
+
+
+    $('.action-cancel').click(function (e) {
+      e.preventDefault();
+      var returnURL = top.Ts.Utils.getQueryValue('ReturnURL', window);
+      if (returnURL == null) returnURL = '/vcr/1_7_0/pages/reports.html';
+      location.assign(returnURL);
+    });
+
+    $('.action-next').click(function (e) {
+      e.preventDefault();
+      var visibleSection = $('.report-section:visible');
+      var reportType = $(".report-type input[type='radio']:checked").val();
+      if (visibleSection.hasClass('report-info')) {
+        if ($('.report-name').val() == '') {
+          $('.report-name').popover('show').parent('.form-group').addClass('has-error');
+          return;
+        }
+        $('.report-name').popover('hide').parent('.form-group').removeClass('has-error');
+        $('.action-back').removeClass('disabled').prop('disabled', false);
+        $('.report-type').show();
+      }
+      else if (visibleSection.hasClass('report-type')) {
+        if (reportType == 2) $('.report-external').show(); else $('.report-tables').show();
+      }
+      else if (visibleSection.hasClass('report-charttype')) {
+        $('.report-summary').show();
+      }
+      else if (visibleSection.hasClass('report-tables')) {
+
+        $('.action-next').addClass('disabled').prop('disabled', true);
+        if (_report && _report.Def.Subcategory != $('#selectSubCat').val()) { _report = null; }
+
+        if (!(_tempReport.Subcategory && _tempReport.Subcategory == $('#selectSubCat').val())) {
+          loadFields();
+        }
+
+        switch (reportType) {
+          case "0":
+            $('.report-fields').show();
+            break;
+          case "1":
+            $('.action-next').removeClass('disabled').prop('disabled', false);
+            $('.report-charttype').show();
+            break;
+          case "4":
+            $('.action-next').removeClass('disabled').prop('disabled', false);
+            $('.report-summary').show();
+            break;
+          default:
+
+        }
+
+      }
+      else if (visibleSection.hasClass('report-summary')) {
+        initFilters();
+        $('.report-filters').show();
+      }
+      else if (visibleSection.hasClass('report-fields')) {
+        initFilters();
+        $('.report-filters').show();
+      }
+      visibleSection.hide();
+
+      if ($('.report-section:visible').hasClass('report-wizard-end')) {
+        $('.action-next').hide();
+        $('.action-save').show();
+      }
+    });
+
+    $('.action-back').click(function (e) {
+      e.preventDefault();
+      var reportType = $(".report-type input[type='radio']:checked").val();
+
+      $('.action-save').hide();
+      $('.action-next').show();
+      $('.action-next').removeClass('disabled').prop('disabled', false);
+
+      var visibleSection = $('.report-section:visible');
+      visibleSection.hide();
+
+      if (visibleSection.hasClass('report-type')) {
+        $('.report-info').show();
+        $('.action-back').addClass('disabled').prop('disabled', true);
+      }
+      else if (visibleSection.hasClass('report-external')) {
+        $('.report-type').show();
+      }
+      else if (visibleSection.hasClass('report-tables')) {
+        $('.report-type').show();
+      }
+      else if (visibleSection.hasClass('report-summary')) {
+        if (reportType == "1") $('.report-charttype').show(); else $('.report-tables').show();
+      }
+      else if (visibleSection.hasClass('report-charttype')) {
+        $('.report-tables').show();
+      }
+      else if (visibleSection.hasClass('report-fields')) {
+        $('.report-tables').show();
+      }
+      else if (visibleSection.hasClass('report-filters')) {
+        switch (reportType) {
+          case "0":
+            $('.report-fields').show();
+            break;
+          case "1":
+            $('.report-summary').show();
+            break;
+          case "4":
+            $('.report-summary').show();
+            break;
+          default:
+        }
+      }
+    });
+
+    function loadCats(cats) {
+      _cats = cats;
+      for (var i = 0; i < cats.length; i++) {
+        var option = $('<option/>').attr('value', cats[i].ReportTableID).text(cats[i].Name);
+        if (_report != null && findSubCat(cats[i].Subcategories, _report.Def.Subcategory) != null) {
+          option.prop('selected', true);
+        }
+        $('#selectCat').append(option);
+      }
+      loadSubCats();
+    }
+
+    function findSubCat(subcats, subcatID) {
+      for (var i = 0; i < subcats.length; i++) {
+        if (subcats[i].SubCatID == subcatID) return subcats[i];
+      }
+      return null;
+    }
+
+    $('#selectCat').change(loadSubCats);
+
+    function loadSubCats() {
+      var reportTableID = $('#selectCat').val();
+      $('#selectSubCat').empty();
+      //$('#selectSubCat').append($('<option/>').attr('value', '-1').text('None'));
+      for (var i = 0; i < _cats.length; i++) {
+        if (_cats[i].ReportTableID == reportTableID) {
+          for (var j = 0; j < _cats[i].Subcategories.length; j++) {
+            var option = $('<option/>').attr('value', _cats[i].Subcategories[j].SubCatID).text(_cats[i].Subcategories[j].Name);
+            if (_report != null && _cats[i].Subcategories[j].SubCatID == _report.Def.Subcategory) {
+              option.prop('selected', true);
+            }
+            $('#selectSubCat').append(option);
+          }
         }
       }
     }
-  }
 
-  function loadFields() {
-    var subID = $('#selectSubCat').val();
+    function loadFields() {
+      var subID = $('#selectSubCat').val();
 
-    if ($('.report-fields-selected li').length > 0) {
-      $('.action-next').removeClass('disabled').prop('disabled', false);
-      $('.report-fields-hint-order').show();
-      $('.report-fields-hint-add').hide();
-    }
+      if ($('.report-fields-selected li').length > 0) {
+        $('.action-next').removeClass('disabled').prop('disabled', false);
+        $('.report-fields-hint-order').show();
+        $('.report-fields-hint-add').hide();
+      }
 
-    if (_subID == subID) return;
-    $('.action-next').addClass('disabled').prop('disabled', true);
-    $('.report-fields-hint-order').hide();
-    $('.report-fields-hint-add').show();
+      if (_subID == subID) return;
+      $('.action-next').addClass('disabled').prop('disabled', true);
+      $('.report-fields-hint-order').hide();
+      $('.report-fields-hint-add').show();
 
-    $('.report-fields-selected ul').empty();
-    $('.filter').empty();
-    _subID = subID;
+      $('.report-fields-selected ul').empty();
 
-    var list = $('.report-fields-available ul').empty();
-    top.Ts.Services.Reports.GetFields(subID, function (fields) {
-      _fields = fields;
-      $('.filter-template-cond .filter-field').empty();
-      var tableName = "";
-      var optGroup = null;
-      for (var i = 0; i < fields.length; i++) {
-        delete fields[i]['__type'];
-        $('<li>')
-          .addClass('report-field-id-' + fields[i].ID)
+      $('#selectSummaryField').empty();
+      $('#selectSummaryCalc').empty();
+
+      _subID = subID;
+      _fields = null;
+      var list = $('.report-fields-available ul').empty();
+      top.Ts.Services.Reports.GetFields(subID, function (fields) {
+        var tableName = "";
+        var optGroup = null;
+        var optGroupx = null;
+        var optGroupy = null;
+        for (var i = 0; i < fields.length; i++) {
+          delete fields[i]['__type'];
+          $('<li>')
+          .addClass(getUniqueFieldClass(fields[i]))
           .data('field', fields[i])
           .append($('<div>', { class: 'checkbox' }).append($('<label>', { html: ' <span class="text-muted">' + fields[i].Table + '.</span>' + fields[i].Name }).prepend('<input type="checkbox" />')))
           .appendTo(list);
-        if (tableName != fields[i].Table) {
-          tableName = fields[i].Table;
-          optGroup = $('<optgroup>').attr('label', tableName).appendTo('.filter-template-cond .filter-field');
+          if (tableName != fields[i].Table) {
+            tableName = fields[i].Table;
+            optGroupx = $('<optgroup>').attr('label', tableName).appendTo('#selectSummaryField');
+            optGroupy = $('<optgroup>').attr('label', tableName).appendTo('#selectSummaryCalc');
+          }
+
+          $('<option>').text(fields[i].Name).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupx);
+          $('<option>').text(fields[i].Name).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupy);
         }
+        _fields = fields;
+        if (_report != null) loadSelectedFields();
+        $('.report-filter').reportFilter('loadFields', fields);
+        
+      });
+    }
 
-        $('<option>').text(fields[i].Name).data('field', fields[i]).appendTo(optGroup);
+    function loadSelectedFields() {
+      for (var i = 0; i < _report.Def.Fields.length; i++) {
+        $('.' + getUniqueFieldClass(_report.Def.Fields[i]) + ' input').prop('checked', true).trigger('change');
       }
+    }
+
+    function getUniqueFieldClass(field) {
+      var id = field.ID ? field.ID : field.FieldID;
+      if (field.IsCustom)
+        return 'report-field-id-c' + id;
+      else
+        return 'report-field-id-s' + id;
+    }
+
+    $('.report-fields-available ul').on('change', 'input', function (e) {
+      e.preventDefault();
+      var el = $(this).closest('li');
+      if ($(this).is(":checked") == true) addSelectedField(el); else removeSelectedField(el);
     });
-  }
 
-  $('.report-fields-available ul').on('change', 'input', function (e) {
-    e.preventDefault();
-    var el = $(this).closest('li');
-    if ($(this).is(":checked") == true) addSelectedField(el); else removeSelectedField(el);
-  });
+    $('.report-fields-selected ul').on('change', 'input', function (e) {
+      e.preventDefault();
+      var li = $(this).closest('li');
+      var field = li.data('field');
+      $('.report-fields-available .' + getUniqueFieldClass(field)).find('input').prop('checked', false);
+      li.fadeOut(function () { $(this).remove(); });
+    });
 
-  $('.report-fields-selected ul').on('change', 'input', function (e) {
-    e.preventDefault();
-    var li = $(this).closest('li');
-    var id = li.data('field').ID;
-    $('.report-fields-available .report-field-id-' + id).find('input').prop('checked', false);
-    li.fadeOut(function () { $(this).remove(); });
-  });
-
-  function addSelectedField(el) {
-    var list = $('.report-fields-selected ul');
-    var field = el.data('field');
-    $('<li>')
-          .addClass('report-field-id-' + field.ID)
+    function addSelectedField(el) {
+      var list = $('.report-fields-selected ul');
+      var field = el.data('field');
+      $('<li>')
+          .addClass(getUniqueFieldClass(field))
           .data('field', field)
           .html('<span class="text-muted">' + field.Table + '.</span>' + field.Name)
           .prepend($('<i class="icon-ellipsis-vertical">'))
           .appendTo(list);
 
-    list.sortable({ axis: 'y' }).disableSelection();
-    $('.report-fields-hint-add').hide();
-    $('.report-fields-hint-order').show();
-    $('.action-next').removeClass('disabled').prop('disabled', false);
+      list.sortable({ axis: 'y' }).disableSelection();
+      $('.report-fields-hint-add').hide();
+      $('.report-fields-hint-order').show();
+      $('.action-next').removeClass('disabled').prop('disabled', false);
 
-  }
+    }
 
-  function removeSelectedField(el) {
-    $('.report-fields-selected .report-field-id-' + el.data('field').ID).fadeOut(function () {
-      $(this).remove();
-      if ($('.report-fields-selected li').length < 1) {
-        $('.action-next').addClass('disabled').prop('disabled', true);
-        $('.report-fields-hint-order').hide();
-        $('.report-fields-hint-add').show();
-      }
-    });
-  }
-
-  $('.action-save').click(function (e) {
-    e.preventDefault();
-    $('.filter-output').empty();
-    getFilterObject($('.filter'), _report);
-    var data = JSON.stringify(_report);
-    top.Ts.Services.Reports.SaveReport(null, $('.report-name').val(), $('.report-description').val(), $(".report-section.report-type input[type='radio']:checked").val(), data
-    , function (result) { location.assign("reports.html"); }
-    , function (error) { alert(error.get_message()); });
-  });
-
-  function getFilterObject(el, obj) {
-    el = $(el);
-    obj.Filters = new Array();
-
-    el.find('>.filter-group').each(function () {
-      var group = new Object();
-      var table = $(this);
-      group.Conjunction = table.find('.filter-conj:first').text().toUpperCase();
-      group.Conditions = new Array();
-
-      table.find('.filter-conds:first').find('.filter-cond').each(function () {
-        var condition = new Object();
-        var field = $(this).find(':selected').data('field');
-        condition.FieldID = field.ID;
-        condition.IsCustom = field.IsCustom;
-        var comp = $(this).find('.filter-comp');
-        condition.Comparator = comp.val().toUpperCase();
-        var next = comp.next();
-        if (!next.hasClass('filter-remove-cond')) {
-          condition.Value1 = next.val();
+    function removeSelectedField(el) {
+      $('.report-fields-selected .' + getUniqueFieldClass(el.data('field'))).fadeOut(function () {
+        $(this).remove();
+        if ($('.report-fields-selected li').length < 1) {
+          $('.action-next').addClass('disabled').prop('disabled', true);
+          $('.report-fields-hint-order').hide();
+          $('.report-fields-hint-add').show();
         }
-        else {
-          condition.Value1 = null;
-        }
-        group.Conditions.push(condition);
       });
-
-      obj.Filters.push(group);
-      getFilterObject(table.find('.filter-subs:first'), group);
-    });
-
-    return obj;
-  }
-
-  $('.icon-bar-chart').click(function (e) {
-    e.preventDefault();
-    location.assign("reports_edit.html");
-  });
-
-  $('.filter').on('click', '.filter-conj', function (e) {
-    e.preventDefault();
-    var btn = $(this);
-    if (btn.text() == 'And') btn.text('Or'); else btn.text('And');
-  });
-
-  $('.filter').on('click', '.filter-add-cond', function (e) {
-    e.preventDefault();
-    var list = $(this).closest('.filter-content').find('.filter-conds:first');
-    addCondition(list);
-  });
-
-  function addCondition(list) {
-    var clone = $('.filter-template-cond li.filter-cond').clone(true);
-    clone.appendTo(list).hide();
-    clone.find('.filter-field').trigger('change');
-    clone.fadeIn();
-  }
-
-  $('.filter').on('click', '.filter-add-group', function (e) {
-    e.preventDefault();
-    var subs = $(this).closest('.filter-content').find('.filter-subs:first');
-    var list = $('.filter-template-body table').clone().appendTo(subs).hide().fadeIn().find('.filter-conds:first');
-    addCondition(list);
-  });
-
-  $('.filter').on('click', '.filter-remove-cond', function (e) {
-    e.preventDefault();
-    if ($(this).closest('ul').find('li').length <= 1) {
-      $(this).closest('table').remove();
     }
-    else {
-      $(this).closest('li').remove();
-    }
-  });
 
-  $('.filter').on('change', '.filter-field', function (e) {
-    e.preventDefault();
-    $(this).closest('li').find('.filter-comp').remove();
-    $(this).closest('li').find('.filter-value').remove();
-    var field = $(this).find(':selected').data('field');
-    var comp = null;
-    switch (field.DataType) {
-      case 'datetime': comp = $('.filter-template-comps .filter-comp-datetime').clone().insertAfter($(this)); break;
-      case 'bool': comp = $('.filter-template-comps .filter-comp-bool').clone().insertAfter($(this)); break;
-      case 'number': comp = $('.filter-template-comps .filter-comp-number').clone().insertAfter($(this)); break;
-      default: comp = $('.filter-template-comps .filter-comp-text').clone().insertAfter($(this)); break;
-    }
-    comp.trigger('change');
-  });
+    $('.action-save').click(function (e) {
+      e.preventDefault();
+      var reportType = $(".report-section.report-type input[type='radio']:checked").val();
+      switch (reportType) {
+        case "0":
+          var tabData = new Object();
+          tabData.Fields = new Array();
+          $('.report-fields-selected li').each(function (index) {
+            var field = $(this).data('field');
+            var fieldItem = new Object();
+            fieldItem.FieldID = field.ID;
+            fieldItem.IsCustom = field.IsCustom;
+            tabData.Fields.push(fieldItem);
+          });
+          tabData.Subcategory = $('#selectSubCat').val();
+          tabData.Filters = $('.report-filter').reportFilter('getObject');
+          
 
-  $('.filter').on('change', '.filter-comp', function (e) {
-    e.preventDefault();
-    var field = $(this).closest('li').find('.filter-field').find(':selected').data('field');
-    $(this).closest('li').find('.filter-value').remove();
-    var arg1type = $(this).find(':selected').data('argtype-1');
-    if (arg1type) {
-      switch (arg1type) {
-        case 'int':
-          $('<input type="text">').addClass('form-control filter-value').insertAfter($(this)).numeric({ 'decimal': false });
-          break;
-        case 'float':
-          $('<input type="text">').addClass('form-control filter-value').insertAfter($(this)).numeric();
-          break;
-        case 'month':
-          var months = $('<select>').addClass('form-control filter-value').insertAfter($(this));
-          $('<option>').attr('value', 1).text('January').appendTo(months);
-          $('<option>').attr('value', 2).text('February').appendTo(months);
-          $('<option>').attr('value', 3).text('March').appendTo(months);
-          $('<option>').attr('value', 4).text('April').appendTo(months);
-          $('<option>').attr('value', 5).text('May').appendTo(months);
-          $('<option>').attr('value', 6).text('June').appendTo(months);
-          $('<option>').attr('value', 7).text('July').appendTo(months);
-          $('<option>').attr('value', 8).text('August').appendTo(months);
-          $('<option>').attr('value', 9).text('September').appendTo(months);
-          $('<option>').attr('value', 10).text('October').appendTo(months);
-          $('<option>').attr('value', 11).text('November').appendTo(months);
-          $('<option>').attr('value', 12).text('December').appendTo(months);
-          break;
-        case 'day':
-          var days = $('<select>').addClass('form-control filter-value').insertAfter($(this));
-          $('<option>').attr('value', 1).text('Sunday').appendTo(days);
-          $('<option>').attr('value', 2).text('Monday').appendTo(days);
-          $('<option>').attr('value', 3).text('Tuesday').appendTo(days);
-          $('<option>').attr('value', 4).text('Wednesday').appendTo(days);
-          $('<option>').attr('value', 5).text('Thursday').appendTo(days);
-          $('<option>').attr('value', 6).text('Friday').appendTo(days);
-          $('<option>').attr('value', 7).text('Saturday').appendTo(days);
-          break;
-        case 'date':
-          $('<input type="text">').addClass('form-control filter-value').insertAfter($(this)).datetimepicker(
+          top.Ts.Utils.webMethod("ReportService", "SaveReport",
             {
-              icons: { time: "fa fa-clock-o", date: "fa fa-calendar", up: "fa fa-arrow-up", down: "fa fa-arrow-down" },
-              pickTime: false
+              "reportID": _reportID,
+              "name": $('.report-name').val(),
+              "description": $('.report-description').val(),
+              "reportType": reportType,
+              "data": JSON.stringify(tabData)
+            },
+            function (reportID) {
+              var returnURL = top.Ts.Utils.getQueryValue('ReturnURL', window);
+              if (returnURL == null) returnURL = '/vcr/1_7_0/pages/reports.html';
+              if (returnURL.toLowerCase().indexOf('reportid=') < 0) {
+                returnURL = returnURL + (returnURL.indexOf('?') > -1 ? '&' : '?') + 'ReportID=' + reportID;
+              }
+              location.assign(returnURL);
+            },
+            function (error) { alert(error.get_message()); }
+            );
+
+          break;
+        case "4":
+          break;
+        case "2":
+          top.Ts.Utils.webMethod("ReportService", "SaveReport",
+            {
+              "reportID": _reportID,
+              "name": $('.report-name').val(),
+              "description": $('.report-description').val(),
+              "reportType": reportType,
+              "data": $('#external-url').val()
             }
-          );
+            , function (reportID) {
+              var returnURL = top.Ts.Utils.getQueryValue('ReturnURL', window);
+              if (returnURL == null) returnURL = '/vcr/1_7_0/pages/reports.html';
+              if (returnURL.toLowerCase().indexOf('reportid=') < 0) {
+                returnURL = returnURL + (returnURL.indexOf('?') > -1 ? '&' : '?') + 'ReportID=' + reportID;
+              }
+              location.assign(returnURL);
+            }
+           , function (error) { alert(error.get_message()); }
+           );
+          break;
+        case "1":
           break;
         default:
-          var input = $('<input type="text">').addClass('form-control filter-value').insertAfter($(this));
-          if (field.LookupTableID) {
-            input.autocomplete({ minLength: 2, source: getFieldValues, select: function (event, ui) { } });
-            input.data('fieldid', field.ID);
-          }
+          break;
+      }
+
+    });
+
+
+
+    function initFilters() {
+      if ($('.filter .filter-group').length < 1) {
+        if (_report != null && _report.Def.Filters && _report.Def.Filters.length > 0) {
+          $('.report-filter').reportFilter('loadFilters', _report.Def.Filters);
+        }
       }
     }
+  }
+
+
+  $('.fa-bar-chart-o').click(function (e) {
+    e.preventDefault();
+    location.assign(location.href);
   });
 
-  var execGetFieldValues = null;
-  function getFieldValues(request, response) {
-    if (execGetFieldValues) { execGetFieldValues._executor.abort(); }
-    execGetFieldValues = top.Ts.Services.System.GetLookupDisplayNames($(this.element).data('fieldid'), request.term, function (result) { response(result); $(this).removeClass('ui-autocomplete-loading'); });
-  }
-
-
-  function initFilters() {
-    addCondition($('.filter-template-body table').clone().appendTo('.filter').find('.filter-conds:first'));
-  }
 });
 
 

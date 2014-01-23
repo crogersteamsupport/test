@@ -13,6 +13,16 @@ namespace TeamSupport.Data
   
   public partial class ReportFolders
   {
+    public void LoadAll(int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM ReportFolders WHERE (OrganizationID = @OrganizationID) ORDER BY Name";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
   }
   
 }
