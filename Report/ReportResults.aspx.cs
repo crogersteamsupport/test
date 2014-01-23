@@ -104,7 +104,7 @@ public partial class Frames_ReportResults : BaseFramePage
 
     using (SqlCommand command = new SqlCommand())
     {
-      command.CommandText = report.GetSql(true, filterControl.ReportConditions);
+      command.CommandText = report.GetSqlOld(true, filterControl.ReportConditions);
       command.CommandType = CommandType.Text;
       Report.CreateParameters(UserSession.LoginUser, command, UserSession.LoginUser.UserID);
 
@@ -288,7 +288,7 @@ public partial class Frames_ReportResults : BaseFramePage
       reportView.ReportID = report.ReportID;
       reportView.DateViewed = DateTime.UtcNow;
 
-      _query = report.GetSql(false, filterControl.ReportConditions);
+      _query = report.GetSqlOld(false, filterControl.ReportConditions);
       reportView.SQLExecuted = _query;
       report.LastSqlExecuted = _query;
       report.Collection.Save();

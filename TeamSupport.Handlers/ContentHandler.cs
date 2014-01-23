@@ -319,9 +319,8 @@ namespace TeamSupport.Handlers
         return;
       }
 
-      string sql = report.GetSql(false);
-      SqlCommand command = new SqlCommand(sql);
-      Report.CreateParameters(UserSession.LoginUser, command, UserSession.LoginUser.UserID);
+      SqlCommand command = new SqlCommand();
+      report.GetCommand(command, false);
       string text = DataUtils.CommandToCsv(UserSession.LoginUser, command, false);
       /*
       MemoryStream stream = new MemoryStream();

@@ -68,7 +68,70 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 /* remove underline from icons in links */
 a:active > i, a:focus > i, a:visited > i, a:link > i { text-decoration: none; }
 
+/* remove outline from tabs when active */
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover {  outline: 0; }
 
+/* jqueryui ui-menu to boostrap dropdown */
+    
+.ui-helper-hidden-accessible { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+    
+.ui-menu { position: absolute; top: 100%; left: 0; z-index: 1000; display: none; float: left; min-width: 160px; padding: 5px 0; margin: 2px 0 0; list-style: none; font-size: 14px; background-color: #ffffff; border: 1px solid #cccccc; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 4px; -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175); background-clip: padding-box; }
+.ui-menu .ui-menu { margin-top: -3px; position: absolute; }
+.ui-menu .ui-menu-item { margin: 0; padding: 0; width: 100%; /* support: IE10, see #8844 */ list-style-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7); }
+.ui-menu .ui-menu-divider { height: 1px; margin: 9px 0; overflow: hidden; background-color: #e5e5e5; }
+.ui-menu .ui-menu-item a { display: block; padding: 3px 20px; clear: both; font-weight: normal; line-height: 1.428571429; color: #333333; white-space: nowrap; }
+.ui-menu .ui-menu-item a.ui-state-focus, .ui-menu .ui-menu-item a.ui-state-active { background-color: #F5F5F5; color: #262626; text-decoration: none; }
+.ui-menu .ui-state-disabled { font-weight: normal; margin: .4em 0 .2em; line-height: 1.5; }
+.ui-menu .ui-state-disabled a { color: #999999; }
+.ui-menu-icons { position: relative; }
+.ui-menu-icons .ui-menu-item a { position: relative; padding-left: 2em; }
+.ui-menu .ui-icon { position: absolute; top: .2em; left: .2em; }
+.ui-menu .ui-menu-icon { position: static; float: right; }
+
+
+/* default button, make gray */
+
+.btn-default {
+  color: #6f6f6f;
+  background-color: #f3f3f3;
+  border-color: #dadada;
+}
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active,
+.btn-default.active,
+.open .dropdown-toggle.btn-default {
+  color: #444444;
+  background-color: #f6f6f6;
+  border-color: #c6c6c6;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+  text-decoration: none;
+  color: #444444;
+  background-color: #eee;
+}
+
+
+.btn-default.disabled,
+.btn-default[disabled],
+fieldset[disabled] .btn-default,
+.btn-default.disabled:hover,
+.btn-default[disabled]:hover,
+fieldset[disabled] .btn-default:hover,
+.btn-default.disabled:focus,
+.btn-default[disabled]:focus,
+fieldset[disabled] .btn-default:focus,
+.btn-default.disabled:active,
+.btn-default[disabled]:active,
+fieldset[disabled] .btn-default:active,
+.btn-default.disabled.active,
+.btn-default[disabled].active,
+fieldset[disabled] .btn-default.active {
+  background-color: #f3f3f3;
+  border-color: #dadada;
+}
 
 /* Needs comments */
 .maincontainer { padding: 15px; margin-left: auto; margin-right: auto; border: none; overflow: auto; height: 100%; position: relative; }

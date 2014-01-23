@@ -106,7 +106,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
       {
         try
         {
-          adapter.SelectCommand.CommandText = report.GetSql(false);
+          adapter.SelectCommand.CommandText = report.GetSqlOld(false);
           adapter.Fill(table);
         }
         catch (Exception ex2)
