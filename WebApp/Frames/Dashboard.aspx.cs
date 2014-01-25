@@ -13,6 +13,8 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using Telerik.Web.UI;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 public partial class Frames_Dashboard : System.Web.UI.Page
 {
@@ -49,102 +51,18 @@ public partial class Frames_Dashboard : System.Web.UI.Page
 
   private static DataTable GetReportDataTable(Report report)
   {
-    using (SqlConnection connection = new SqlConnection(GetReportConnectionString()))
+    string sortField = "";
+    bool isAsc = true;
+    string settings = report.Row["Settings"].ToString();
+    if (settings != "")
     {
-      // Pull repoprt data in preparation to apply column order and sort.
-      ReportData reportData = new ReportData(UserSession.LoginUser);
-      reportData.LoadReportData(report.ReportID, UserSession.LoginUser.UserID);
-      Pair[] columnOrder = null;
-
-      if (!reportData.IsEmpty)
-      {
-        LosFormatter formatter = new LosFormatter();
-        StringReader reader = new StringReader(reportData[0].ReportData);
-        object[] gridSettings = (object[])formatter.Deserialize(reader);
-        columnOrder = (Pair[])gridSettings[2];
-
-        if(string.IsNullOrEmpty(reportData[0].OrderByClause))
-        {
-          // here is where we need to get the order by clause and initialize the report data.
-          // this most be in the first version of the code.
-          string sortColumn = null;
-          string sortDirection = null;
-          TSUtils.GetSortColumnAndDirection((ArrayList)gridSettings[1], ref sortColumn, ref sortDirection);
-          if (sortColumn != null)
-          {
-            string sortArgumentSuffix = null;
-            if (string.Compare(sortDirection, "Descending", StringComparison.OrdinalIgnoreCase) == 0)
-            {
-              sortArgumentSuffix = " DESC";
-            }
-            else
-            {
-              sortArgumentSuffix = " ASC";
-            }
-
-            reportData[0].OrderByClause = sortColumn + sortArgumentSuffix;
-            reportData[0].Collection.Save();
-          }
-
-        }
-      }
-
-      // Get Table
-      string query = report.GetSqlWithOrderByClause(false, null);
-      query = query.Replace("SELECT ", "SELECT TOP 100 ");
-      SqlCommand command = new SqlCommand(query, connection);
-      Report.CreateParameters(UserSession.LoginUser, command, UserSession.LoginUser.UserID);
-      SqlDataAdapter adapter = new SqlDataAdapter(command);
-      DataTable table = new DataTable();
-      connection.Open();
-      try
-      {
-        adapter.Fill(table);
-
-      }
-      catch (Exception ex)
-      {
-        try
-        {
-          adapter.SelectCommand.CommandText = report.GetSqlOld(false);
-          adapter.Fill(table);
-        }
-        catch (Exception ex2)
-        {
-        ex.Data["Query"] = query;
-        ExceptionLogs.LogException(UserSession.LoginUser, ex2, "Dashboard");
-        }
-      }
-
-      // columnNames used to apply column order.
-      string[] columnNames = new string[table.Columns.Count];
-
-      for (int i = 0; i < table.Columns.Count; i++)
-      {
-        table.Columns[i].ColumnName = table.Columns[i].ColumnName.Replace(' ', '_');
-        columnNames[i] = table.Columns[i].ColumnName;
-      }
-
-      // Apply column order.
-      if (columnOrder != null)
-      {
-        int standardReportAdjuster = 0;
-        int columnOrderAdjuster = 2;
-
-        if (columnOrder.Length > table.Columns.Count)
-        {
-          standardReportAdjuster = 1;
-          columnOrderAdjuster = 3;
-        }
-
-        for (int i = 0; i < table.Columns.Count; i++)
-        {
-          table.Columns[columnNames[i]].SetOrdinal((int)columnOrder[i + standardReportAdjuster].First - columnOrderAdjuster);
-        }
-      }
-
-      return table;
+      dynamic userSettings = JObject.Parse(settings);
+      sortField = userSettings.SortField;
+      isAsc = userSettings.IsSortAsc;
     }
+
+    GridResult result = Reports.GetReportData(UserSession.LoginUser, report.ReportID, 0, 100, sortField, !isAsc);
+    return JsonConvert.DeserializeObject<DataTable>(result.Data);
 
   }
 
@@ -350,7 +268,8 @@ public partial class Frames_Dashboard : System.Web.UI.Page
       try
       {
         Portlet portlet = LoadPortlet(GetPortletID(id));
-        Report report = Reports.GetReport(UserSession.LoginUser, id);
+        Report report = Reports.GetReport(UserSession.LoginUser, id, UserSession.LoginUser.UserID);
+        report.MigrateToNewReport();
         if (report != null)
         {
           if (portlet == null)

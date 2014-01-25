@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="../Css/jquery-ui-bs3.min.css" rel="stylesheet" type="text/css" />
   <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
   <link href="../Css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
   <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
@@ -23,7 +22,9 @@
   <style>
     .report-section { display: none; }
     .action-save { display: none; }
-    .action-cancel { float: right; }
+    .action-cancel { float:right; }
+    
+    .form-actions {text-align:center;}
     .report-type ul { list-style: none outside none; margin: 0 20px; padding: 10px 0; }
     .report-charttype ul { list-style: none outside none; margin: 0 20px; padding: 10px 0; }
     .report-type input { margin: 3px 15px 0 0; }
@@ -32,20 +33,21 @@
     .report-fields-selected li i { opacity: 0; filter: alpha(opacity=0); padding-right: 7px; }
     .report-fields-selected li:hover i { opacity: 0.5; filter: alpha(opacity=50); }
     li.ui-sortable-helper { cursor: url(../cursors/grab.cur), move !important; }
+    .wrap { padding-bottom: 30px;}
+    .reports-header { font-size: 18px; padding: 20px 0 10px 10px; color:#555; margin-right: 25px; }
   </style>
 </head>
 <body>
   <div class="container frame-container">
-    <div class="box">
-      <div class="box-header">
-        <h3><i class="fa fa-bar-chart-o"></i>Report</h3>
+    <div class="wrap">
+      <div class="reports-header">
+          <i class="fa"></i>&nbsp;&nbsp;<span class="report-title"></span>
       </div>
-      <div class="box-content">
-        <form role="form">
-        <div class="report-section report-info">
+      <form role="form">
+        <div class="report-section report-setup report-class-chart report-class-summary report-class-tabular report-class-external">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Report Information</h3>
+              <h3 class="panel-title">Setup your report</h3>
             </div>
             <div class="panel-body">
               <fieldset>
@@ -55,48 +57,71 @@
                     data-title="Report Name" data-placement="top" data-content="You must enter a report name before moving on."
                     data-trigger="manual">
                 </div>
-                <div class="form-group">
-                  <label>Description</label>
-                  <textarea rows="3" class="form-control report-description"></textarea>
+
+                <div class="form-group report-class-item report-class-chart report-class-summary report-class-tabular">
+                  <label>Primary Table</label>
+                  <select id="selectCat" class="form-control"></select>
+                </div>
+                <div class="form-group report-class-item report-class-chart report-class-summary report-class-tabular">
+                  <label>Secondary Table</label>
+                  <select id="selectSubCat" class="form-control"></select>
                 </div>
               </fieldset>
+
+              <div class="form-group report-class-item report-class-external">
+                <label>External URL</label>
+                <input id="external-url" class="form-control" type="text" placeholder="Enter a website's url…"
+                  data-title="External URL" data-placement="bottom" data-content="You must enter a website's url before moving on."
+                  data-trigger="manual">
+              </div>
+
             </div>
           </div>
-
         </div>
-        <div class="report-section report-type">
+        <div class="report-section report-fields report-class-tabular">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">What type of report would you like?</h3>
+              <h3 class="panel-title">Select some fields</h3>
             </div>
-            <div class="panel-body">
-              <ul>
-                <li>
-                  <label class="radio">
-                    <input type="radio" name="optRadioType" id="radioTabular" value="0" checked>
-                    <i class="fa fa-table"></i>&nbsp;Tabular</label>
-                </li>
-                <li>
-                  <label class="radio">
-                    <input type="radio" name="optRadioType" id="radioChart" value="1">
-                    <i class="fa fa-bar-chart-o"></i>&nbsp;Chart</label>
-                </li>
-                <li>
-                  <label class="radio">
-                    <input type="radio" name="optRadioType" id="radioSummary" value="4">
-                    <i class="fa fa-tasks"></i>&nbsp;Summary</label>
-                </li>
-                <li>
-                  <label class="radio">
-                    <input type="radio" name="optRadioType" id="radioExternal" value="2">
-                    <i class="fa fa-globe"></i>&nbsp;External Web Page</label>
-                </li>
-                <li></li>
-              </ul>
+            <div class="panel-body report-fields-available">
+              <div class="row">
+                <div class="col-md-4">
+                  <ul class="list-unstyled report-fields-1">
+                    <li></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <ul class="list-unstyled report-fields-2">
+                    <li></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <ul class="list-unstyled report-fields-3">
+                    <li></li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="report-section report-charttype">
+        <div class="report-section report-filters report-class-chart report-class-summary report-class-tabular">
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Filter your data</h3>
+                </div>
+                <div class="panel-body">
+                  <div class="report-filter">
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        
+        <div class="report-section report-chartproperties report-class-chart">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">What data of chart do you want?</h3>
@@ -122,7 +147,7 @@
             </div>
           </div>
         </div>
-        <div class="report-section report-summary">
+        <div class="report-section report-class-summary report-class-chart">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">What data do you want to report on?</h3>
@@ -143,104 +168,15 @@
           </div>
 
         </div>
-
-        <div class="report-section report-tables">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">What data do you want to report on?</h3>
-            </div>
-            <div class="panel-body">
-              <fieldset>
-                <div class="form-group">
-                  <label>Primary Table</label>
-                  <select id="selectCat" class="form-control"></select>
-                </div>
-                <div class="form-group">
-                  <label>Secondary Table</label>
-                  <select id="selectSubCat" class="form-control"></select>
-                </div>
-              </fieldset>
-            </div>
-          </div>
-
-        </div>
-        <div class="report-section report-fields">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Available Fields</h3>
-                </div>
-                <div class="panel-body  report-fields-available">
-                  <ul class="list-unstyled">
-                    <li></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Selected Fields</h3>
-                </div>
-                <div class="panel-body  report-fields-selected">
-                  <ul class="list-unstyled">
-                    <li></li>
-                  </ul>
-                  <div class="alert alert-info report-fields-hint-add">
-                    Add some fields from the list on the left.
-                  </div>
-                </div>
-              </div>
-              <div class="alert alert-info alert-dismissable report-fields-hint-order">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                Drag the selected fields to change the default order.
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="report-section report-filters report-wizard-end">
-          <div class="row">
-            <div class="col-xs-12">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Filtering</h3>
-                </div>
-                <div class="panel-body">
-                  <div class="report-filter">
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-          </div>
-        </div>
-        <div class="report-section report-external report-wizard-end">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Where is your external report located?</h3>
-            </div>
-            <div class="panel-body">
-              <fieldset>
-                <div class="form-group">
-                  <label>External URL</label>
-                  <input id="external-url" class="form-control" type="text" placeholder="Enter a website's url…"
-                    data-title="External URL" data-placement="bottom" data-content="You must enter a website's url before moving on."
-                    data-trigger="manual">
-                </div>
-              </fieldset>
-            </div>
-          </div>
-        </div>
         <div class="form-actions clearfix">
-          <button class="btn btn-warning action-cancel">Cancel</button>
           <button class="btn btn-default action-back disabled" disabled><i class="fa fa-long-arrow-left">
           </i>&nbsp;Back</button>
           <button class="btn btn-primary action-next">Next&nbsp;<i class="fa fa-long-arrow-right"></i></button>
           <button class="btn btn-primary action-save">Save</button>
+          <button class="btn btn-default action-cancel">Cancel</button>
         </div>
         </form>
-      </div>
+    </div>
     </div>
 </body>
 </html>

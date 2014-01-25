@@ -183,7 +183,7 @@
                                     input.autocomplete({
                                         minLength: 2,
                                         source: getFieldValues,
-                                        appendTo: el,
+                                        appendTo: el.closest('.modal'),
                                         select: function (event, ui) { }
                                     });
                                     input.data('fieldid', field.ID);

@@ -34,9 +34,9 @@
     .report-header-create { width: 186px; float: left; padding-left: 30px; }
     .report-header-create h3 { margin-top: 15px; margin-bottom: 18px; }
     .report-header-create .dropdown-menu li { }
-    .report-header-create .dropdown-menu li a { color:#676767; padding: 10px;}
+    .report-header-create .dropdown-menu li a { color:#676767; padding: 10px 20px;  }
     .report-header-create .dropdown-menu li a i { margin-right: 20px; font-size: 24px;  vertical-align: middle;}
-    .report-header-create .dropdown-menu { padding: 10px 10px; }
+    .report-header-create .dropdown-menu { }
     .report-header-search { width: 500px; float: left; padding-top: 15px; }
     .report-header-search .btn-toolbar { padding-top: 10px; }
     .nav > li.drop-active.drop-hover.report-folder a { background-color: #ffffcc; }
@@ -68,10 +68,10 @@
             <button type="button" class="btn btn-primary" data-toggle="dropdown">Create</button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                <li class="report-folder-new"><a href="#"><i class="fa fa-folder"></i> New Folder</a></li>
-               <li><a href="#"><i class="fa fa-table color-red"></i> Tabular Report</a></li>
-               <li><a href="#"><i class="fa fa-tasks color-yellow"></i> Summary</a></li>
-               <li><a href="#"><i class="fa fa-bar-chart-o color-green"></i> Graph</a></li>
-               <li><a href="#"><i class="fa fa-globe color-blue"></i> External Report</a></li>
+               <li><a href="Reports_Edit.html?ReportType=0"><i class="fa fa-table color-red"></i> Tabular Report</a></li>
+               <li><a href="Reports_Edit.html?ReportType=4"><i class="fa fa-tasks color-yellow"></i> Summary</a></li>
+               <li><a href="Reports_Edit.html?ReportType=1"><i class="fa fa-bar-chart-o color-green"></i> Graph</a></li>
+               <li><a href="Reports_Edit.html?ReportType=2"><i class="fa fa-globe color-blue"></i> External Report</a></li>
             </ul>
           </div>
         </div>
@@ -84,13 +84,13 @@
           </div>
           <div class="btn-toolbar" role="toolbar">
             <div class="btn-group">
-              <button class="btn btn-default report-move disabled" type="button"><i class="fa fa-folder">
+              <button class="btn btn-default report-move disabled" type="button" data-toggle="tooltip" title="Move to folder"><i class="fa fa-folder">
               </i></button>
-              <button class="btn btn-default report-delete disabled" type="button"><i class="fa fa-trash-o">
+              <button class="btn btn-default report-delete disabled" type="button" data-toggle="tooltip" title="Delete report"><i class="fa fa-trash-o">
               </i></button>
-              <button class="btn btn-default report-clone disabled" type="button"><i class="fa fa-copy">
+              <button class="btn btn-default report-clone disabled" type="button" data-toggle="tooltip" title="Make a copy of the active report"><i class="fa fa-copy">
               </i></button>
-              <button class="btn btn-default report-refresh" type="button"><i class="fa fa-refresh">
+              <button class="btn btn-default report-refresh" type="button" data-toggle="tooltip" title="Refresh"><i class="fa fa-refresh">
               </i></button>
             </div>
           </div>

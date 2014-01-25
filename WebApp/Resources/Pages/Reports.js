@@ -1,6 +1,7 @@
 ﻿
 $(document).ready(function () {
     var _rowClone = {};
+    $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
 
     $('.report-refresh').click(
     function (e) {
@@ -89,17 +90,7 @@ $(document).ready(function () {
             activeClass: "drop-active",
             hoverClass: "drop-hover",
             drop: function (event, ui) {
-                var ints = new Array();
-                var item = $(ui.draggable);
-                var report = item.data('o');
-                var folderID = $(this).data('o').FolderID;
-                ints.push(report.ReportID);
-                top.Ts.Services.Reports.MoveReports(JSON.stringify(ints), folderID, function () {
-                    filterReport();
-                    report.FolderID = folderID;
-                    item.data('o', report).attr('data-folderid', folderID);
-
-                });
+                moveSelectedReports($(this).data('o').FolderID);
                 //$(_rowClone.tr).remove();
                 $(_rowClone.helper).remove();
             }
@@ -225,13 +216,7 @@ $(document).ready(function () {
     $('.report-list').on('click', '.report-list-title a', function (e) {
         e.preventDefault();
         var report = $(this).parents('.report-item').data('o');
-        //Table = 0, Chart = 1, External = 2, Custom = 3, Summary = 4
-        switch (report.ReportType) {
-            case 1: window.location.assign("reports_view_chart.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
-            case 2: window.location.assign("reports_view_external.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID); break;
-            default: window.location.assign("reports_view_tabular.html?ReportID=" + $(this).parents('.report-item').data('o').ReportID);
-        }
-
+        top.Ts.MainPage.openReport($(this).parents('.report-item').data('o'));
     });
 
     function updateToolbar() {
@@ -258,20 +243,22 @@ $(document).ready(function () {
         e.preventDefault();
         var button = $(this);
         if (button.hasClass('disabled')) return;
-        var ids = new Array();
-        var folderID = $('.select-folders').val();
+        moveSelectedReports($('.select-folders').val());
+        $('.modal-folder-move').modal('hide');
+    });
 
-        $('.report-item.report-selected:visible').each(function () {
+    function moveSelectedReports(folderID) {
+        var ids = new Array();
+
+        $('.report-list .report-item.report-selected:visible').not('.ui-draggable-dragging').each(function () {
             var report = $(this).data('o');
             report.FolderID = folderID;
             $(this).data('o', report).attr('data-folderid', folderID);
-
             ids.push(report.ReportID);
         });
-        $('.modal-folder-move').modal('hide');
 
         top.Ts.Services.Reports.MoveReports(JSON.stringify(ids), folderID, function () { filterReport(); });
-    });
+    }
 
     $('.report-clone').click(function (e) {
         e.preventDefault();
@@ -328,6 +315,7 @@ $(document).ready(function () {
     function filterReport() {
         if (_tmrSearch) { clearTimeout(_tmrSearch); }
         _tmrSearch = null;
+        $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
 
         $('.report-list .report-item:hidden').show();
 

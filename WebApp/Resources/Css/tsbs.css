@@ -1,6 +1,6 @@
 ﻿/* TeamSupport Colors Light Blue: #F8FAFE  Background: #EAF1F8  Header Blue: #2882CC  */
 
-body { background-color: #EAF1F8; }
+body { background-color: #fff; }
 
 /* This fixes the scrolling for the iframes */
 html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
@@ -70,6 +70,7 @@ a:active > i, a:focus > i, a:visited > i, a:link > i { text-decoration: none; }
 
 /* remove outline from tabs when active */
 .nav-tabs > .active > a, .nav-tabs > .active > a:hover {  outline: 0; }
+.nav > .active > a, .nav > .active > a:hover {  outline: 0; }
 
 /* jqueryui ui-menu to boostrap dropdown */
     

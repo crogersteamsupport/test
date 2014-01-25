@@ -27,145 +27,15 @@ namespace TSWebServices
       public ReportService() { }
 
       [WebMethod]
-      public ReportColumn[] GetReportColumnNames(int reportID)
+      public ReportColumn[] GetReportColumns(int reportID)
       {
-        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
-        return report.GetTabularColumns();
+        return Reports.GetReportColumns(TSAuthentication.GetLoginUser(), reportID);
       }
 
-      
       [WebMethod]
       public GridResult GetReportData(int reportID, int from, int to, string sortField, bool isDesc)
       {
-        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
-
-        if (report.ReportDefType == ReportType.Custom)
-        {
-          CustomReport customReport = JsonConvert.DeserializeObject<CustomReport>(report.ReportDef);
-          if (customReport.UsePaging)
-          {
-            try
-            {
-              return GetReportDataPage(report, from, to, sortField, isDesc);
-            }
-            catch (Exception ex)
-            {
-              customReport.UsePaging = false;
-              report.ReportDef = JsonConvert.SerializeObject(customReport);
-              report.Collection.Save();
-
-              try
-              {
-                return GetReportDataAll(report, sortField, isDesc);
-              }
-              catch (Exception ex2)
-              {
-                ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex2, "Custom Report");
-                throw;
-              }
-            }
-          }
-          else
-          {
-            return GetReportDataAll(report, sortField, isDesc);
-          }
-        
-        }
-        else
-        {
-          return GetReportDataPage(report, from, to, sortField, isDesc);
-        }
-
-      }
-
-      private GridResult GetReportDataPage(Report report, int from, int to, string sortField, bool isDesc)
-      {
-        from++;
-        to++;
-        
-        SqlCommand command = new SqlCommand();
-        string query = @"
-WITH 
-q AS ({0}),
-r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
-SELECT  *, (SELECT MAX(RowNum) FROM r) AS 'TotalRows' FROM r
-WHERE RowNum BETWEEN @From AND @To";
-
-        if (string.IsNullOrWhiteSpace(sortField))
-        {
-          ReportColumn[] cols = GetReportColumnNames(report.ReportID);
-          sortField = cols[0].Name;
-          isDesc = false;
-        }
-        command.Parameters.AddWithValue("@From", from);
-        command.Parameters.AddWithValue("@To", to);
-        report.GetCommand(command);
-        command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC");
-
-        DataTable table = new DataTable();
-        using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
-        {
-          connection.Open();
-          command.Connection = connection;
-          using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-          {
-            try
-            {
-              adapter.Fill(table);
-            }
-            catch (Exception ex)
-            {
-              ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Report Data");
-              throw;
-            }
-          }
-          connection.Close();
-        }
-
-        GridResult result = new GridResult();
-        result.From = --from;
-        result.To = --to;
-        result.Data = JsonConvert.SerializeObject(table);
-        return result;
-      }
-
-      private GridResult GetReportDataAll(Report report, string sortField, bool isDesc)
-      {
-        SqlCommand command = new SqlCommand();
-        
-        report.GetCommand(command);
-
-        if (command.CommandText.ToLower().IndexOf(" order by ") < 0 && !string.IsNullOrWhiteSpace(sortField))
-        {
-          command.CommandText = command.CommandText + " ORDER BY " + sortField + (isDesc ? "DESC" : "ASC");        
-        }
-
-        DataTable table = new DataTable();
-        using (SqlConnection connection = new SqlConnection(TSAuthentication.GetLoginUser().ConnectionString))
-        {
-          connection.Open();
-          command.Connection = connection;
-          using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-          {
-            try
-            {
-              adapter.Fill(table);
-            }
-            catch (Exception ex)
-            {
-              ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Report Data");
-              throw;
-            }
-          }
-          connection.Close();
-        }
-
-        GridResult result = new GridResult();
-        result.From = 0;
-        result.To = table.Rows.Count-1;
-        result.Data = JsonConvert.SerializeObject(table);
-        return result;      
-      
+        return Reports.GetReportData(TSAuthentication.GetLoginUser(), reportID, from, to, sortField, isDesc);
       }
 
       [WebMethod]
@@ -352,7 +222,7 @@ WHERE RowNum BETWEEN @From AND @To";
       }
 
       [WebMethod]
-      public int? SaveReport(int? reportID, string name, string description, int reportType, string data)
+      public ReportItem SaveReport(int? reportID, string name, int reportType, string data)
       {
         Report report = null;
         if (reportID == null)
@@ -366,7 +236,6 @@ WHERE RowNum BETWEEN @From AND @To";
         }
 
         report.Name = name;
-        report.Description = description;
         report.ReportDef = data;
         report.OrganizationID = TSAuthentication.OrganizationID;
 
@@ -381,7 +250,7 @@ WHERE RowNum BETWEEN @From AND @To";
         }
 
         report.Collection.Save();
-        return report.ReportID;
+        return new ReportItem(report, true);
       }
 
       [WebMethod]
@@ -446,12 +315,7 @@ WHERE RowNum BETWEEN @From AND @To";
         int[] ids = JsonConvert.DeserializeObject<int[]>(reportIDs);
         for (int i = 0; i < ids.Length; i++)
         {
-          int reportID = ids[i];
-          Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
-          if (report.OrganizationID == TSAuthentication.OrganizationID)
-          {
-            Reports.AssignFolder(TSAuthentication.GetLoginUser(), folderID, TSAuthentication.OrganizationID, reportID);
-          }
+          Reports.AssignFolder(TSAuthentication.GetLoginUser(), folderID, TSAuthentication.OrganizationID, ids[i]);
         }
       }
 
@@ -534,78 +398,9 @@ WHERE RowNum BETWEEN @From AND @To";
         [DataMember] public int SubCatID { get; set; }
       }
 
-      [DataContract]
-      public class ReportItem
-      {
- 
-        public ReportItem(Report report, bool indcludeDef)
-        {
-          this.ReportID = report.ReportID;
-          this.OrganizationID = report.OrganizationID;
-          this.Name = report.Name;
-          this.Description = report.Description;
-          this.IsFavorite = (report.Row.Table.Columns.IndexOf("IsFavorite") < 0 || report.Row["IsFavorite"] == DBNull.Value ? false : (bool)report.Row["IsFavorite"]);
-          this.IsHidden = (report.Row.Table.Columns.IndexOf("IsHidden") < 0 || report.Row["IsHidden"] == DBNull.Value ? false : (bool)report.Row["IsHidden"]);
-          this.UserSettings = (report.Row.Table.Columns.IndexOf("Settings") < 0 || report.Row["Settings"] == DBNull.Value ? "" : (string)report.Row["Settings"]);
-          this.LastModified = report.DateModifiedUtc;
-          this.LastViewed = (report.Row.Table.Columns.IndexOf("LastViewed") < 0 || report.Row["LastViewed"] == DBNull.Value ? null : (DateTime?)report.Row["LastViewed"]);
-          this.Creator = (report.Row.Table.Columns.IndexOf("Creator") < 0 || report.Row["Creator"] == DBNull.Value ? "" : (string)report.Row["Creator"]);
-          this.Modifier = (report.Row.Table.Columns.IndexOf("Modifier") < 0 || report.Row["Modifier"] == DBNull.Value ? "" : (string)report.Row["Modifier"]);
-          this.FolderID = (report.Row.Table.Columns.IndexOf("FolderID") < 0 || report.Row["FolderID"] == DBNull.Value ? null : (int?)report.Row["FolderID"]);
-          if ((int)report.ReportDefType < 0)
-          {
-            if (!string.IsNullOrWhiteSpace(report.ExternalURL))
-            {
-              this.ReportType = ReportType.External;
-            }
-            else if (!string.IsNullOrWhiteSpace(report.Query))
-            {
-              this.ReportType = ReportType.Custom;
-            }
-            else if ((int)report.ReportType == 3)
-            {
-              this.ReportType = ReportType.Chart;
-            }
-            else
-            {
-              this.ReportType = ReportType.Table;
-            }
-          }
-          else
-          {
-            this.ReportType = report.ReportDefType;
-          }
+      
 
-          if (indcludeDef) this.ReportDef = report.ReportDef;
-          
-          this.CreatorID = report.CreatorID;
-        }
 
-        [DataMember] public int ReportID { get; set; }
-        [DataMember] public int? OrganizationID { get; set; }
-        [DataMember] public string Name { get; set; }
-        [DataMember] public string Description { get; set; }
-        [DataMember] public ReportType ReportType { get; set; }
-        [DataMember] public string ReportDef { get; set; }
-        [DataMember] public string UserSettings { get; set; }
-        [DataMember] public bool IsFavorite { get; set; }
-        [DataMember] public bool IsHidden { get; set; }
-        [DataMember] public int CreatorID { get; set; }
-        [DataMember] public string Creator { get; set; }
-        [DataMember] public string Modifier { get; set; }
-        [DataMember] public DateTime? LastViewed { get; set; }
-        [DataMember] public DateTime LastModified { get; set; }
-        [DataMember] public int? FolderID { get; set; }
-      }
-
-      [DataContract]
-      public class GridResult
-      {
-        public GridResult() { }
-        [DataMember] public int From { get; set; }
-        [DataMember] public int To { get; set; }
-        [DataMember] public string Data { get; set; }
-      }
 
 
       

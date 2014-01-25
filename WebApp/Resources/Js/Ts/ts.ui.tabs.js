@@ -276,3 +276,4 @@ Ts.Ui.Tabs.Tab.Type.Company = 'company';
 Ts.Ui.Tabs.Tab.Type.NewCompany = 'new_company';
 Ts.Ui.Tabs.Tab.Type.Contact = 'contact';
 Ts.Ui.Tabs.Tab.Type.NewContact = 'new_contact';
+Ts.Ui.Tabs.Tab.Type.Report = 'report';

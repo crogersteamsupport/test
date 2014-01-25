@@ -14,15 +14,14 @@ Ts.Ui.MenuTree.prototype = {
   add: function (parent, id, type, caption, imageUrl, data) {
     var html = '<li class="ts-menutree-item menutree-item-' + type + '-' + id + '">' +
               '<div class="ui-corner-allx">' +
-              '<span class="ui-icon ts-icon-none"></span>' +
               '<img />' +
-              '<a href="#' + type + '-' + id + '"></a></div></li>';
+              '<a href="#' + type + '-' + id + '"></a><span class="ui-icon ts-icon-none"></span></div></li>';
     var list = null;
     if (parent) {
       list = $(parent.getElement()).children('ul');
       if (list.length < 1) {
         list = $('<ul>').addClass('ui-helper-hidden').appendTo(parent.getElement());
-        $(parent.getElement()).children('div').children('.ui-icon').removeClass('ts-icon-none').addClass('ui-icon-triangle-1-e').click(function (e) {
+        $(parent.getElement()).children('div').children('.ui-icon').removeClass('ts-icon-none').addClass('ui-icon-carat-1-e').click(function (e) {
           e.stopPropagation();
           var item = new Ts.Ui.MenuTree.Item($(this).parents('li'));
           item.setIsExpanded(!item.getIsExpanded());
@@ -118,14 +117,14 @@ Ts.Ui.MenuTree.Item.prototype = {
   getIsHighlighted: function () { return $(this._element).children('div').hasClass('ui-state-active'); },
   setIsHighlighted: function (value) { if (value) { $(this._element).children('div').addClass('ui-state-active'); } else { $(this._element).children('div').removeClass('ui-state-active'); } },
   getIsSelected: function () { return $(this._element).children('div').hasClass('ui-state-default'); },
-  getIsExpanded: function () { return $(this._element).children('div').children('.ui-icon').hasClass('ui-icon-triangle-1-s'); },
+  getIsExpanded: function () { return $(this._element).children('div').children('.ui-icon').hasClass('ui-icon-carat-1-s'); },
   setIsExpanded: function (value) {
     var item = $(this._element).children('div').children('.ui-icon');
     if (value) {
-      $(item).addClass('ui-icon-triangle-1-s').removeClass('ui-icon-triangle-1-e').parents('li').children('ul').show();
+      $(item).addClass('ui-icon-carat-1-s').removeClass('ui-icon-carat-1-e').parents('li').children('ul').show();
     }
     else {
-      $(item).addClass('ui-icon-triangle-1-e').removeClass('ui-icon-triangle-1-s').parents('li').children('ul').hide();
+      $(item).addClass('ui-icon-carat-1-e').removeClass('ui-icon-carat-1-s').parents('li').children('ul').hide();
       new Ts.Ui.MenuTree.Item($(item).parents('li')).select();
     }
 

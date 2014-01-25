@@ -1,10 +1,10 @@
 ﻿      html, body { width: 100%; height: 100%; padding: 0; margin: 0; overflow: hidden; background-color: #fff; }
     #reports-tabview-layout { height: 100%; margin: 0 auto; width: 100%; }
     #reports-tabview-grid-container { height: 100%; }
-    .reports-toolbar { padding-left: 10px; }
+    .reports-toolbar { padding: 10px 20px; }
     .reports-header { font-size: 18px; padding: 5px 0; color:#555; }
-    .reports-count {float:right; padding: 50px 20px 0 0; color: #555;}
     .btn-toolbar i { padding-left: 10px; padding-right: 10px;}
+    .reports-count {float:right; padding: 50px 20px 0 0; color: #555;}
     .grid-loading { display: inline-block; z-index: 9999; background: transparent url('../images/loading/loading.gif') no-repeat; height: 100px; width: 100px; }
     .pane { display: none; }
     .slick-header-column, .slick-header-column:before, .slick-header-column:after { -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; }

@@ -5,12 +5,16 @@
     var datamodel = new TeamSupport.DataModels.Reports(_reportID);
     var _report = null;
 
+    $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
+
     top.Ts.Utils.webMethod("ReportService", "GetReport", {
         "reportID": _reportID
     }, function (report) {
         _report = report;
         _report.Def = JSON.parse(report.ReportDef);
         _report.Settings = report.UserSettings == '' ? new Object() : JSON.parse(report.UserSettings);
+
+        if (_report.ReportType == 3) $('.btn.reports-filter').remove();
 
         if (report.IsFavorite) {
             $('.reports-fav i').removeClass('fa-star-o').addClass('fa-star');
@@ -40,12 +44,14 @@
             $('.reports-edit').remove();
         }
 
-        top.Ts.Services.Reports.GetFields(_report.Def.Subcategory, function (fields) {
-            $('#filter-user').reportFilter({ "fields": fields });
-            $('#filter-global').reportFilter({ "fields": fields });
-        });
+        if (_report.Def.Subcategory) {
+            top.Ts.Services.Reports.GetFields(_report.Def.Subcategory, function (fields) {
+                $('#filter-user').reportFilter({ "fields": fields });
+                $('#filter-global').reportFilter({ "fields": fields });
+            });
+        }
 
-        top.Ts.Utils.webMethod("ReportService", "GetReportColumnNames", {
+        top.Ts.Utils.webMethod("ReportService", "GetReportColumns", {
             "reportID": _reportID
         }, function (repCols) {
             //var idx = new Object();idx.id = "index";idx.name = "index";idx.field = "index";columns.push(idx);
@@ -220,7 +226,7 @@
             minSize: 500
         },
         north: {
-            size: 85,
+            size: 100,
             spacing_open: 0,
             resizable: false
         }
@@ -269,7 +275,7 @@
 
     var openFormatter = function (row, cell, value, columnDef, dataContext) {
         if (columnDef.openField == "TicketID") {
-            return '<a href="#" onclick="top.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
+            return '<a href="#" onclick="top.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
         } else if (columnDef.openField == "OrganizationID") {
             return '<a href="#" onclick="top.Ts.MainPage.openCustomer(' + dataContext["hiddenOrganizationID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
         }
@@ -380,14 +386,14 @@
 
         });
         if (_report.Settings.SortField) {
-          _grid.setSortColumn(_report.Settings.SortField, _report.Settings.IsSortAsc);
-      }
-      if (!_report.Settings.Columns) _grid.autosizeColumns();
+            _grid.setSortColumn(_report.Settings.SortField, _report.Settings.IsSortAsc);
+        }
+        if (!_report.Settings.Columns) _grid.autosizeColumns();
         refresh();
     }
 
     function refresh() {
-        
+
         _layout.resizeAll();
     }
 });
