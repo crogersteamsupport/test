@@ -232,7 +232,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
   {
     string caption = portlet.Caption.Length >= 35 ? portlet.Caption.Substring(0, 32) + "..." : portlet.Caption;
 
-    if (string.IsNullOrEmpty(report.ExternalURL))
+    if (report.ReportDefType == ReportType.Custom || report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Table)
     {
       DataTable table = GetReportDataTable(report);
       string data = table.Rows.Count < 1 ? "<div class=\"noRecords\">There are no items to display.</div>" : DataTableToHtml(table);
@@ -242,7 +242,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
       builder.Append("<div class=\"portlet-body ui-corner-bottom\"><div class=\"portlet-content ui-corner-bottom\">{2}</div><div class=\"viewMore ui-corner-bottom\"><a href=\"#\" class=\"ts-link\">View Report</a></div></div></div>");
       return string.Format(builder.ToString(), portlet.ID, caption, data, portlet.IsOpen ? "s" : "w", portlet.IsOpen ? "ui-corner-top" : "ui-corner-all");
     }
-    else
+    else if (report.ReportDefType == ReportType.External)
     {
       StringBuilder builder = new StringBuilder();
       builder.Append("<div class=\"portlet\" id=\"{0}\">");
@@ -250,6 +250,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
       builder.Append("<div class=\"portlet-body ui-corner-bottom externalReport\"><div class=\"portlet-content ui-corner-bottom\"><iframe height=\"250px\" width=\"100%\" scrolling=\"no\" frameborder=\"0\" src=\"{2}\"></iframe></div></div></div>");
       return string.Format(builder.ToString(), portlet.ID, caption, report.ExternalURL, portlet.IsOpen ? "s" : "w", portlet.IsOpen ? "ui-corner-top" : "ui-corner-all");
     }
+    return "";
   }
 
   [WebMethod(true)]

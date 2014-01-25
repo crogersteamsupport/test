@@ -8,6 +8,8 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 
 /* This fixes the max width for large screens in bootstrap */
 @media (min-width: 1200px) { .container { max-width: 1920px; } }
+@media (min-width: 992px) { .container { max-width: 1920px; } }
+@media (min-width: 768px) { .container { max-width: 1920px; }}
 
 /* Box styles */
 .box { margin-top: 15px; }

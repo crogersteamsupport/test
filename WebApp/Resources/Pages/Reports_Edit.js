@@ -102,13 +102,17 @@ $(document).ready(function () {
             }
         }
 
-        function loadNewSection(el) {
-            if (el.hasClass('report-fields')) {
+        function loadNewSection(el, callback) {
+            if (el.hasClass('report-fields') || el.hasClass('report-summary-fields')) {
                 if (_report && _report.Def.Subcategory != $('#selectSubCat').val()) { _report = null; }
-                if (!(_tempReport.Subcategory && _tempReport.Subcategory == $('#selectSubCat').val())) { loadFields(); }
+                if (!(_tempReport.Subcategory && _tempReport.Subcategory == $('#selectSubCat').val())) { loadFields(callback); }
             }
-            if (el.hasClass('report-filters')) {
+            else if (el.hasClass('report-filters')) {
                 initFilters();
+                if (callback) callback();
+            }
+            else {
+                if (callback) callback();
             }
         }
 
@@ -125,15 +129,20 @@ $(document).ready(function () {
                     return;
                 }
             }
-            var nextSection = currentSection.hide().nextAll('.' + _typeClass + ':first').show();
+            var nextSection = currentSection.nextAll('.' + _typeClass + ':first');
 
-            $('.action-back').removeClass('disabled').prop('disabled', false);
-            $('.action-next').removeClass('disabled').prop('disabled', false);
-            if (nextSection.nextAll('.' + _typeClass + ':first').length < 1) {
-                $('.action-next').hide();
-                $('.action-save').show();
-            }
-            loadNewSection(nextSection);
+            loadNewSection(nextSection, function () {
+                currentSection.fadeOut(200, function () {
+                    $('.action-back').removeClass('disabled').prop('disabled', false);
+                    $('.action-next').removeClass('disabled').prop('disabled', false);
+                    if (nextSection.nextAll('.' + _typeClass + ':first').length < 1) {
+                        $('.action-next').hide();
+                        $('.action-save').show();
+                    }
+                    nextSection.show();
+                });
+            });
+
         });
 
         $('.action-back').click(function (e) {
@@ -161,6 +170,18 @@ $(document).ready(function () {
             loadSubCats();
         }
 
+
+        $('.summary-add-field').click(function (e) {
+            e.preventDefault();
+            var list = $(this).prev();
+            list.find('li:last').clone().appendTo(list);
+        });
+
+        $('.summary-fields').on('click', 'li a', function (e) {
+            e.preventDefault();
+            $(this).closest('li').fadeOut(function () { remove(); });
+        });
+
         function findSubCat(subcats, subcatID) {
             for (var i = 0; i < subcats.length; i++) {
                 if (subcats[i].SubCatID == subcatID) return subcats[i];
@@ -187,13 +208,16 @@ $(document).ready(function () {
             }
         }
 
-        function loadFields() {
+        function loadFields(callback) {
             var subID = $('#selectSubCat').val();
 
-            if (_subID == subID) return;
+            if (_subID == subID) {
+                if (callback) callback();
+                return;
+            }
 
-            $('#selectSummaryField').empty();
-            $('#selectSummaryCalc').empty();
+            $('.summary-desc .summary-field').empty();
+            $('.summary-calc .summary-field').empty();
 
             _subID = subID;
             _fields = null;
@@ -209,7 +233,7 @@ $(document).ready(function () {
                 var cnt = rem > 0 ? -1 : 0;
                 var list = $('.report-fields-available  ul.report-fields-1');
                 for (var i = 0; i < fields.length; i++) {
-                    if (cnt > max-1) {
+                    if (cnt > max - 1) {
                         iteration++;
                         cnt = rem == iteration ? -1 : 0;
                         list = $('.report-fields-available  ul.report-fields-' + iteration);
@@ -229,8 +253,8 @@ $(document).ready(function () {
                                 .appendTo(list);
                     if (tableName != fields[i].Table) {
                         tableName = fields[i].Table;
-                        optGroupx = $('<optgroup>').attr('label', tableName).appendTo('#selectSummaryField');
-                        optGroupy = $('<optgroup>').attr('label', tableName).appendTo('#selectSummaryCalc');
+                        optGroupx = $('<optgroup>').attr('label', tableName).appendTo('.summary-desc .summary-field');
+                        optGroupy = $('<optgroup>').attr('label', tableName).appendTo('.summary-calc .summary-field');
                     }
 
                     $('<option>').text(fields[i].Name).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupx);
@@ -239,7 +263,7 @@ $(document).ready(function () {
                 _fields = fields;
                 if (_report != null) loadSelectedFields();
                 $('.report-filter').reportFilter('loadFields', fields);
-
+                if (callback) callback();
             });
         }
 
@@ -259,7 +283,7 @@ $(document).ready(function () {
 
         $('.action-save').click(function (e) {
             e.preventDefault();
-            
+
             switch (_reportType) {
                 case 0: // tabular
                     var tabData = new Object();
@@ -280,7 +304,7 @@ $(document).ready(function () {
                         "name": $('.report-name').val(),
                         "reportType": _reportType,
                         "data": JSON.stringify(tabData)
-                    }, 
+                    },
                     closeReport,
                     function (error) { alert(error.get_message()); }
                     );
@@ -296,7 +320,7 @@ $(document).ready(function () {
                         "name": $('.report-name').val(),
                         "reportType": _reportType,
                         "data": $('#external-url').val()
-                    }, closeReport, 
+                    }, closeReport,
                     function (error) { alert(error.get_message()); }
                     );
                     break;
