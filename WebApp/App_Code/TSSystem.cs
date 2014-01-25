@@ -203,7 +203,7 @@ namespace TSWebServices
 
         if ((user.IsSystemAdmin || !org.AdminOnlyReports) && IsMenuItemActive(user, "mniReports"))
         {
-          items.Add(new TsMenuItem("reports", "mniReports", "Reports", "vcr/1_7_0/images/nav/20/reports.png", string.Format(data, "Frames/Reports.aspx", "vcr/1_7_0/PaneInfo/Reports.html")));
+          items.Add(new TsMenuItem("reports2", "mniReports2", "New Reports", "vcr/1_7_0/images/nav/20/reports.png", string.Format(data, "vcr/1_7_0/pages/reports.html", "vcr/1_7_0/PaneInfo/Reports.html")));
         }
         if (user.IsSystemAdmin && IsMenuItemActive(user, "mniAdmin"))
           items.Add(new TsMenuItem("admin", "mniAdmin", "Admin", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "Frames/Admin.aspx", "vcr/1_7_0/PaneInfo/Admin.html")));
@@ -226,8 +226,6 @@ namespace TSWebServices
         }
         if (TSAuthentication.OrganizationID == 1078)
           items.Add(new TsMenuItem("customers2", "mniCustomers2", "New Customers", "vcr/1_7_0/images/nav/20/customers.png", string.Format(data, "vcr/1_7_0/Pages/Customers.html", "vcr/1_7_0/PaneInfo/Customers.html")));
-        if (TSAuthentication.OrganizationID == 1078)
-          items.Add(new TsMenuItem("reports2", "mniReports2", "New Reports", "vcr/1_7_0/images/nav/20/reports.png", string.Format(data, "vcr/1_7_0/pages/reports.html", "vcr/1_7_0/PaneInfo/Reports.html")));
 
       }
       else
