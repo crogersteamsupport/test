@@ -1049,7 +1049,6 @@ namespace TeamSupport.Data
               offset < TimeSpan.Zero ? "-" : "+",
               Math.Abs(offset.Hours),
               Math.Abs(offset.Minutes));
-            fieldName = GetDateGroupField(fieldName, field.Value1);
           }
             result.Add(GetCalcItem(fieldName, tableField.Alias, field));
         }
