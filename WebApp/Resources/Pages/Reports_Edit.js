@@ -51,6 +51,7 @@ $(document).ready(function () {
                 _typeClass = 'report-class-chart';
                 $('.reports-header i').addClass('fa-bar-chart-o color-green');
                 $('.report-title').text(_report ? _report.Name : 'New Chart');
+                $('.report-type-radio-chart').prop('checked', true);
                 break;
             case 2:
                 _typeClass = 'report-class-external';
@@ -170,17 +171,119 @@ $(document).ready(function () {
             loadSubCats();
         }
 
+        $('.report-type-radio').click(function (e) {
+            if ($(this).val() == 'summary') {
+                if (_report == null) {
+                    $('.report-title').text(_report ? _report.Name : 'New Summary Report');
+                }
+                $('.reports-header i').addClass('fa-tasks color-yellow');
+                $('.reports-header i').removeClass('fa-bar-chart-o color-green');
+                _reportType = 4;
+                _typeClass = 'report-class-summary';
+            }
+            else {
+                if (_report == null) {
+                    $('.report-title').text(_report ? _report.Name : 'New Chart');
+                }
+                $('.reports-header i').addClass('fa-bar-chart-o color-green');
+                $('.reports-header i').removeClass('fa-tasks color-yellow');
+                _reportType = 1;
+                _typeClass = 'report-class-chart';
+            }
+
+
+        });
 
         $('.summary-add-field').click(function (e) {
             e.preventDefault();
             var list = $(this).prev();
-            list.find('li:last').clone().appendTo(list);
+            initSummaryRow(list.find('li:first').clone(true).appendTo(list));
         });
 
         $('.summary-fields').on('click', 'li a', function (e) {
             e.preventDefault();
             $(this).closest('li').fadeOut(function () { remove(); });
         });
+
+        $('.summary-fields').on('change', '.summary-desc-field', function (e) {
+            e.preventDefault();
+            var item = $(this);
+            var field = item.find(':selected').data('field');
+            if (field.DataType == 'datetime') {
+                item.next().show();
+            }
+            else {
+                item.next().hide();
+            }
+        });
+
+        $('.summary-fields').on('change', '.summary-calc-field', function (e) {
+            e.preventDefault();
+            var item = $(this);
+            var field = item.find(':selected').data('field');
+            console.log(JSON.stringify(field));
+            if (field.DataType == 'number') {
+                item.next().show().next().hide();
+            }
+            else {
+                item.next().hide().next().show();
+            }
+        });
+
+        $('.summary-fields').on('change', '.summary-calc-comp', function (e) {
+            e.preventDefault();
+            var value = $(this).val();
+            if (value == 'none') {
+                $(this).next().hide().next().hide();
+            }
+            else if (value == 'bet') {
+                $(this).next().show().next().show();
+            } else {
+                $(this).next().show().next().hide();
+            }
+        });
+
+        function initSummaryRow(el) {
+            el.find('.summary-desc-field').trigger('change');
+            el.find('.summary-calc-field').trigger('change');
+            el.find('.summary-calc-comp').trigger('change');
+        }
+
+        function loadSummaryFields() {
+            clearSummaryFields();
+            var list = $('.summary-desc');
+            for (var i = 0; i < _report.Def.Fields.Descriptive.length; i++) {
+                var field = _report.Def.Fields.Descriptive[i];
+                if (i > 0) list.find('li:first').clone(true).appendTo(list);
+                var item = list.find('li:last');
+                item.find('.' + getUniqueFieldClass(field.Field)).prop('selected', true).trigger('change');
+                item.next().val(field.Value1);
+            }
+
+            list = $('.summary-calc');
+            for (var i = 0; i < _report.Def.Fields.Calculated.length; i++) {
+                var field = _report.Def.Fields.Calculated[i];
+                if (i > 0) list.find('li:first').clone(true).appendTo(list);
+                var item = list.find('li:last');
+                item.find('.' + getUniqueFieldClass(field.Field)).prop('selected', true).trigger('change');
+                item.find('.summary-calc-arg').val(field.Aggregate);
+                item.find('.summary-calc-text-arg').val(field.Aggregate);
+                item.find('.summary-calc-comp').val(field.Comparator).trigger('change');
+                item.find('.summary-calc-val1').val(field.Value1);
+                item.find('.summary-calc-val2').val(field.Value2);
+
+            }
+
+        }
+
+        function clearSummaryFields() {
+            $('.summary-calc li').not(':first').remove();
+            $('.summary-desc li').not(':first').remove();
+        }
+
+
+
+
 
         function findSubCat(subcats, subcatID) {
             for (var i = 0; i < subcats.length; i++) {
@@ -261,7 +364,13 @@ $(document).ready(function () {
                     $('<option>').text(fields[i].Name).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupy);
                 }
                 _fields = fields;
-                if (_report != null) loadSelectedFields();
+
+                clearSummaryFields();
+                initSummaryRow($('.summary-fields'));
+                if (_report != null) {
+                    loadSelectedFields();
+                    if (_reportType == 1 || _reportType == 4) loadSummaryFields();
+                }
                 $('.report-filter').reportFilter('loadFields', fields);
                 if (callback) callback();
             });
@@ -306,14 +415,42 @@ $(document).ready(function () {
                         "data": JSON.stringify(tabData)
                     },
                     closeReport,
-                    function (error) { alert(error.get_message()); }
-                    );
+                    function (error) { alert(error.get_message()); });
+                    break;
 
-                    break;
                 case 1: // chart
+                    var chartData = new Object();
+                    chartData.Filters = $('.report-filter').reportFilter('getObject');
+                    chartData.Subcategory = $('#selectSubCat').val();
+                    chartData.Fields = getSummaryObject();
+                    chartData.Chart = getChartObject();
+
+                    top.Ts.Utils.webMethod("ReportService", "SaveReport", {
+                        "reportID": _reportID,
+                        "name": $('.report-name').val(),
+                        "reportType": _reportType,
+                        "data": JSON.stringify(chartData)
+                    },
+                    closeReport,
+                    function (error) { alert(error.get_message()); });
                     break;
+
                 case 4: // summary
+                    var sumData = new Object();
+                    sumData.Filters = $('.report-filter').reportFilter('getObject');
+                    sumData.Subcategory = $('#selectSubCat').val();
+                    sumData.Fields = getSummaryObject();
+
+                    top.Ts.Utils.webMethod("ReportService", "SaveReport", {
+                        "reportID": _reportID,
+                        "name": $('.report-name').val(),
+                        "reportType": _reportType,
+                        "data": JSON.stringify(sumData)
+                    },
+                    closeReport,
+                    function (error) { alert(error.get_message()); });
                     break;
+
                 case 2: // external
                     top.Ts.Utils.webMethod("ReportService", "SaveReport", {
                         "reportID": _reportID,
@@ -321,13 +458,53 @@ $(document).ready(function () {
                         "reportType": _reportType,
                         "data": $('#external-url').val()
                     }, closeReport,
-                    function (error) { alert(error.get_message()); }
-                    );
+                    function (error) { alert(error.get_message()); });
                     break;
                 default:
                     break;
             }
         });
+
+        function getChartObject() {
+
+        }
+
+        function getSummaryObject() {
+            var fields = new Object();
+            descs = new Array();
+            calcs = new Array();
+
+            $('.summary-desc li').each(function () {
+                var desc = new Object();
+                var item = $(this);
+                var data = item.find('.summary-desc-field option:selected').data('field');
+                desc.Field = new Object();
+                desc.Field.FieldID = data.ID;
+                desc.Field.IsCustom = data.IsCustom;
+                desc.Value1 = item.find('.summary-desc-val1').val();
+                descs.push(desc);
+            });
+
+            $('.summary-calc li').each(function () {
+                var calc = new Object();
+                var item = $(this);
+                var data = item.find('.summary-calc-field option:selected').data('field');
+                calc.Field = new Object();
+                calc.Field.FieldID = data.ID;
+                calc.Field.IsCustom = data.IsCustom;
+                var agg = item.find('.summary-calc-agr');
+                calc.Aggregate = agg.is(':visible') ? agg.val() : item.find('.summary-calc-text-agr').val();
+                calc.Comparator = item.find('.summary-calc-comp').val();
+                calc.Value1 = item.find('.summary-calc-val1').val();
+                calc.Value2 = item.find('.summary-calc-val2').val();
+                calcs.push(calc);
+            });
+
+
+            fields.Descriptive = descs;
+            fields.Calculated = calcs;
+            return fields;
+        }
 
         function closeReport(report) {
             var result = '/vcr/1_7_0/pages/';

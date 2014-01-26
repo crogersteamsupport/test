@@ -318,16 +318,16 @@ namespace TeamSupport.Data
       switch (ReportDefType)
       {
         case ReportType.Table:
-          GetTabularSql(command, inlcudeHiddenFields, isSchemaOnly);
+          GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID);
           break;
         case ReportType.Chart:
-          GetSummarySql(command);
+          GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null);
           break;
         case ReportType.Custom:
           GetCustomSql(command, isSchemaOnly);
           break;
         case ReportType.Summary:
-          GetSummarySql(command);
+          GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID);
           break;
         default:
           break;
@@ -344,9 +344,12 @@ namespace TeamSupport.Data
         reportView.SQLExecuted = command.CommandText;
         reportView.Collection.Save();
       }
-      
 
-      User user = Users.GetUser(Collection.LoginUser, Collection.LoginUser.UserID);
+      AddCommandParameters(command, Users.GetUser(Collection.LoginUser, Collection.LoginUser.UserID));
+    }
+
+    private static void AddCommandParameters(SqlCommand command, User user)
+    {
       if (command.CommandText.IndexOf("@OrganizationID") > -1)
       {
         command.Parameters.AddWithValue("OrganizationID", user.OrganizationID);
@@ -356,9 +359,8 @@ namespace TeamSupport.Data
       }
       else
       {
-       // throw new Exception("Missing OrganizationID parameter in report query.");
+        // throw new Exception("Missing OrganizationID parameter in report query.");
       }
-
     }
 
     private void GetCustomSql(SqlCommand command, bool isSchemaOnly)
@@ -367,30 +369,31 @@ namespace TeamSupport.Data
       command.CommandText = customReport.Query;
     }
 
-    private void GetTabularSql(SqlCommand command, bool inlcudeHiddenFields, bool isSchemaOnly)
+    private static void GetTabularSql(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly, int? reportID)
     {
-      TabularReport tabularReport = JsonConvert.DeserializeObject<TabularReport>(ReportDef);
-
       StringBuilder builder = new StringBuilder();
-      GetTabluarSelectClause(command, builder, tabularReport, inlcudeHiddenFields, isSchemaOnly);
+      GetTabluarSelectClause(loginUser, command, builder, tabularReport, inlcudeHiddenFields, isSchemaOnly);
       if (isSchemaOnly)
       {
         command.CommandText = builder.ToString();
       }
       else
       {
-        GetWhereClause(command, builder, tabularReport.Filters);
-        Report report = Reports.GetReport(Collection.LoginUser, ReportID, Collection.LoginUser.UserID);
-        if (report != null && report.Row["Settings"] != DBNull.Value)
+        GetWhereClause(loginUser, command, builder, tabularReport.Filters);
+        if (reportID != null)
         {
-          try
+          Report report = Reports.GetReport(loginUser, (int)reportID, loginUser.UserID);
+          if (report != null && report.Row["Settings"] != DBNull.Value)
           {
-            UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
-            GetWhereClause(command, builder, userFilters.Filters);
-          }
-          catch (Exception ex)
-          {
-            ExceptionLogs.LogException(Collection.LoginUser, ex, "Tabular SQL - User filters");
+            try
+            {
+              UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
+              GetWhereClause(loginUser, command, builder, userFilters.Filters);
+            }
+            catch (Exception ex)
+            {
+              ExceptionLogs.LogException(loginUser, ex, "Tabular SQL - User filters");
+            }
           }
         }
 
@@ -398,28 +401,28 @@ namespace TeamSupport.Data
       }
     }
 
-    private void GetTabluarSelectClause(SqlCommand command, StringBuilder builder, TabularReport tabularReport, bool includeHiddenFields, bool isSchemaOnly)
+    private static void GetTabluarSelectClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, TabularReport tabularReport, bool includeHiddenFields, bool isSchemaOnly)
     {
-      ReportSubcategory sub = ReportSubcategories.GetReportSubcategory(Collection.LoginUser, tabularReport.Subcategory);
+      ReportSubcategory sub = ReportSubcategories.GetReportSubcategory(loginUser, tabularReport.Subcategory);
 
-      ReportTables tables = new ReportTables(Collection.LoginUser);
+      ReportTables tables = new ReportTables(loginUser);
       tables.LoadAll();
 
-      ReportTableFields tableFields = new ReportTableFields(Collection.LoginUser);
+      ReportTableFields tableFields = new ReportTableFields(loginUser);
       tableFields.LoadAll();
-      TimeSpan offset = Collection.LoginUser.TimeZoneInfo.BaseUtcOffset;
+      TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
 
       foreach (ReportSelectedField field in tabularReport.Fields)
       {
 
         if (field.IsCustom)
         {
-          CustomField customField = (CustomField)CustomFields.GetCustomField(Collection.LoginUser, field.FieldID);
+          CustomField customField = (CustomField)CustomFields.GetCustomField(loginUser, field.FieldID);
           if (customField == null) continue;
           string fieldName = DataUtils.GetReportPrimaryKeyFieldName(customField.RefType);
           if (fieldName != "")
           {
-            fieldName = DataUtils.GetCustomFieldColumn(Collection.LoginUser, customField, fieldName, true, false);
+            fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
             if (customField.FieldType == CustomFieldType.DateTime)
             {
               fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
@@ -490,45 +493,45 @@ namespace TeamSupport.Data
       if (isSchemaOnly) builder.Append(" AND (0=1)");
     }
 
-    private void GetWhereClause(SqlCommand command, StringBuilder builder, ReportFilter[] filters)
+    private static void GetWhereClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters)
     {
-      WriteFilters(command, builder, filters, null);
+      WriteFilters(loginUser, command, builder, filters, null);
     }
 
-    private void WriteFilters(SqlCommand command, StringBuilder builder, ReportFilter[] filters, ReportFilter parentFilter)
+    private static void WriteFilters(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, ReportFilter parentFilter)
     {
       foreach (ReportFilter filter in filters)
       {
         if (filter.Conditions.Length < 1) continue;
 
         builder.Append(string.Format(" {0} (", parentFilter == null ? "AND" : parentFilter.Conjunction.ToUpper()));
-        WriteFilter(command, builder, filter);
-        WriteFilters(command, builder, filter.Filters, filter);
+        WriteFilter(loginUser, command, builder, filter);
+        WriteFilters(loginUser, command, builder, filter.Filters, filter);
         builder.Append(")");
       }
     }
 
-    private void WriteFilter(SqlCommand command, StringBuilder builder, ReportFilter filter)
+    private static void WriteFilter(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter filter)
     {
       for (int i = 0; i < filter.Conditions.Length; i++)
       {
         ReportFilterCondition condition = filter.Conditions[i];
         if (i > 0) builder.Append(string.Format(" {0} ", filter.Conjunction.ToUpper()));
         builder.Append("(");
-        WriteFilterCondition(command, builder, condition);
+        WriteFilterCondition(loginUser, command, builder, condition);
         builder.Append(")");
       }
     }
 
-    private void WriteFilterCondition(SqlCommand command, StringBuilder builder, ReportFilterCondition condition)
+    private static void WriteFilterCondition(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilterCondition condition)
     {
       string fieldName = "";
       string dataType;
       if (condition.IsCustom)
       {
-        CustomField customField = TeamSupport.Data.CustomFields.GetCustomField(Collection.LoginUser, condition.FieldID);
+        CustomField customField = TeamSupport.Data.CustomFields.GetCustomField(loginUser, condition.FieldID);
         if (customField == null) return;
-        fieldName = DataUtils.GetCustomFieldColumn(Collection.LoginUser, customField, DataUtils.GetReportPrimaryKeyFieldName(customField.RefType), true, false);
+        fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, DataUtils.GetReportPrimaryKeyFieldName(customField.RefType), true, false);
         switch (customField.FieldType)
         {
           case CustomFieldType.DateTime:
@@ -548,8 +551,8 @@ namespace TeamSupport.Data
       }
       else
       {
-        ReportTableField field = ReportTableFields.GetReportTableField(Collection.LoginUser, condition.FieldID);
-        ReportTable reportTable = ReportTables.GetReportTable(Collection.LoginUser, field.ReportTableID);
+        ReportTableField field = ReportTableFields.GetReportTableField(loginUser, condition.FieldID);
+        ReportTable reportTable = ReportTables.GetReportTable(loginUser, field.ReportTableID);
         fieldName = reportTable.TableName + ".[" + field.FieldName + "]";
         dataType = field.DataType;
       }
@@ -623,7 +626,7 @@ namespace TeamSupport.Data
           }
           break;
         case "datetime":
-          TimeSpan offset = Collection.LoginUser.TimeZoneInfo.BaseUtcOffset;
+          TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
           string datetimeSql = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
             fieldName,
             offset < TimeSpan.Zero ? "-" : "+",
@@ -755,15 +758,15 @@ namespace TeamSupport.Data
 
             case "TODAY":
               builder.Append(string.Format("{0} = @{1}", dateSql, paramName));
-              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(Collection.LoginUser, DateTime.UtcNow).Date;
+              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
               break;
             case "YESTERDAY": 
               builder.Append(string.Format("{0} = @{1}", dateSql, paramName));
-              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(Collection.LoginUser, DateTime.UtcNow).AddDays(-1).Date;
+              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(-1).Date;
               break;
             case "TOMORROW": 
               builder.Append(string.Format("{0} = @{1}", dateSql, paramName));
-              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(Collection.LoginUser, DateTime.UtcNow).AddDays(-1).Date;
+              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(-1).Date;
               break;
             case "SPECIFIC DAY":
               builder.Append(string.Format("DATEPART(weekday, {0}) = {1:D}", dateSql, int.Parse(condition.Value1)));
@@ -771,20 +774,20 @@ namespace TeamSupport.Data
             case "PREVIOUS # DAYS":
               string paramName2 = paramName + "-2";
               builder.Append(string.Format("({0} >= @{1} AND {0} < @{2})", dateSql, paramName, paramName2));
-              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(Collection.LoginUser, DateTime.UtcNow).AddDays(-1*int.Parse(condition.Value1)).Date;
-              command.Parameters.Add(paramName2, SqlDbType.Date).Value = DataUtils.DateToLocal(Collection.LoginUser, DateTime.UtcNow).Date;
+              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(-1*int.Parse(condition.Value1)).Date;
+              command.Parameters.Add(paramName2, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
               break;
             case "LAST # DAYS": 
               string paramName2a = paramName + "-2";
               builder.Append(string.Format("({0} >= @{1} AND {0} <= @{2})", dateSql, paramName, paramName2a));
-              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(Collection.LoginUser, DateTime.UtcNow).AddDays(-1*int.Parse(condition.Value1)).Date;
-              command.Parameters.Add(paramName2a, SqlDbType.Date).Value = DataUtils.DateToLocal(Collection.LoginUser, DateTime.UtcNow).Date;
+              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(-1*int.Parse(condition.Value1)).Date;
+              command.Parameters.Add(paramName2a, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
               break;
             case "NEXT # DAYS": 
               string paramName2b = paramName + "-2";
               builder.Append(string.Format("({0} >= @{1} AND {0} <= @{2})", dateSql, paramName2b, paramName));
-              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(Collection.LoginUser, DateTime.UtcNow).AddDays(int.Parse(condition.Value1)).Date;
-              command.Parameters.Add(paramName2b, SqlDbType.Date).Value = DataUtils.DateToLocal(Collection.LoginUser, DateTime.UtcNow).Date;
+              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(int.Parse(condition.Value1)).Date;
+              command.Parameters.Add(paramName2b, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
               break;
 
             case "CURRENT HOUR": break;
@@ -831,11 +834,317 @@ namespace TeamSupport.Data
 
     }
 
-    public void GetSummarySql(SqlCommand command)
+    private static void GetSummarySql(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly, int? reportID)
     {
-       
+      StringBuilder builder = new StringBuilder();
+      ReportSubcategory sub = ReportSubcategories.GetReportSubcategory(loginUser, summaryReport.Subcategory);
+      ReportTables tables = new ReportTables(loginUser);
+      tables.LoadAll();
+      List<DescriptiveClauseItem> descFields = GetSummaryDescFields(loginUser, summaryReport);
+      List<CalculatedClauseItem> calcFields = GetSummaryCalcFields(loginUser, summaryReport);
+
+      builder.Append("WITH x AS (");
+      bool flag = true;
+      foreach (DescriptiveClauseItem descField in descFields)
+      {
+        if (flag)
+          builder.Append(string.Format(" SELECT {0} AS [{1}]", descField.Field, descField.Alias));
+        else
+          builder.Append(string.Format(", {0} AS [{1}]", descField.Field, descField.Alias));
+        flag = false;
+      }
+
+      foreach (CalculatedClauseItem calcField in calcFields)
+      {
+        builder.Append(string.Format(", {0} AS [{1}]", calcField.Field, calcField.Alias));
+      }
+
+      // from + where clause
+      builder.Append(" " + sub.BaseQuery);
+      ReportTable mainTable = tables.FindByReportTableID(sub.ReportCategoryTableID);
+      builder.Append(" WHERE (" + mainTable.TableName + "." + mainTable.OrganizationIDFieldName + " = @OrganizationID)");
+      if (isSchemaOnly) builder.Append(" AND (0=1)");
+
+      // filters
+      if (!isSchemaOnly)
+      {
+        GetWhereClause(loginUser, command, builder, summaryReport.Filters);
+        if (reportID != null)
+        {
+          Report report = Reports.GetReport(loginUser, (int)reportID, loginUser.UserID);
+          if (report != null && report.Row["Settings"] != DBNull.Value)
+          {
+            try
+            {
+              UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
+              GetWhereClause(loginUser, command, builder, userFilters.Filters);
+            }
+            catch (Exception ex)
+            {
+              ExceptionLogs.LogException(loginUser, ex, "Summary SQL - User filters");
+            }
+          }
+        }
+      }
+      flag = true;
+
+      builder.Append(")"); // end with
+
+      flag = true;
+      foreach (DescriptiveClauseItem descField in descFields)
+      {
+        if (flag)
+          builder.Append(string.Format(" SELECT [{0}]", descField.Alias));
+        else
+          builder.Append(string.Format(", [{0}]", descField.Alias));
+        flag = false;
+      }
+
+      foreach (CalculatedClauseItem calcField in calcFields)
+      {
+        builder.Append(string.Format(", {0} AS [{1}]", calcField.AggField, calcField.Alias));
+      }
+
+      builder.Append(" FROM x ");
+
+      // group by
+      flag = true;
+      foreach (DescriptiveClauseItem descField in descFields)
+      {
+        if (flag)
+          builder.Append(string.Format(" GROUP BY [{0}]", descField.Alias));
+        else
+          builder.Append(string.Format(", [{0}]", descField.Alias));
+
+        flag = false;
+      }
+
+      // having
+      flag = true;
+      foreach (CalculatedClauseItem calcField in calcFields)
+      {
+        if (calcField.Comparator == null) continue;
+        if (flag)
+          builder.Append(string.Format(" HAVING {0}", calcField.Comparator));
+        else
+          builder.Append(string.Format(" AND {0}", calcField.Comparator));
+        flag = false;
+      }
+      
+      command.CommandText = builder.ToString();
     }
 
+    public static void GetSummaryCommand(SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly)
+    {
+    
+    }
+
+    private static List<DescriptiveClauseItem> GetSummaryDescFields(LoginUser loginUser, SummaryReport summaryReport)
+    {
+      List<DescriptiveClauseItem> result = new List<DescriptiveClauseItem>();
+      ReportSubcategory sub = ReportSubcategories.GetReportSubcategory(loginUser, summaryReport.Subcategory);
+
+      ReportTables tables = new ReportTables(loginUser);
+      tables.LoadAll();
+
+      ReportTableFields tableFields = new ReportTableFields(loginUser);
+      tableFields.LoadAll();
+      TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
+
+      foreach (ReportSummaryDescriptiveField field in summaryReport.Fields.Descriptive)
+      {
+        if (field.Field.IsCustom)
+        {
+          CustomField customField = (CustomField)CustomFields.GetCustomField(loginUser, field.Field.FieldID);
+          if (customField == null) continue;
+          string fieldName = DataUtils.GetReportPrimaryKeyFieldName(customField.RefType);
+          if (fieldName != "")
+          {
+            fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
+            
+            
+            if (customField.FieldType == CustomFieldType.DateTime)
+            {
+              fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+              fieldName,
+              offset < TimeSpan.Zero ? "-" : "+",
+              Math.Abs(offset.Hours),
+              Math.Abs(offset.Minutes));
+
+              fieldName = GetDateGroupField(fieldName, field.Value1);
+            }
+
+            result.Add(new DescriptiveClauseItem(fieldName, customField.Name));
+          }
+
+        }
+        else
+        {
+          ReportTableField tableField = tableFields.FindByReportTableFieldID(field.Field.FieldID);
+          ReportTable table = tables.FindByReportTableID(tableField.ReportTableID);
+          string fieldName = table.TableName + "." + tableField.FieldName;
+          if (tableField.DataType.Trim().ToLower() == "datetime")
+          {
+            fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+              fieldName,
+              offset < TimeSpan.Zero ? "-" : "+",
+              Math.Abs(offset.Hours),
+              Math.Abs(offset.Minutes));
+            fieldName = GetDateGroupField(fieldName, field.Value1);
+          }
+
+          result.Add(new DescriptiveClauseItem(fieldName, tableField.Alias));
+        }
+      }
+      return result;
+    }
+
+    private static List<CalculatedClauseItem> GetSummaryCalcFields(LoginUser loginUser, SummaryReport summaryReport)
+    {
+      List<CalculatedClauseItem> result = new List<CalculatedClauseItem>();
+      ReportSubcategory sub = ReportSubcategories.GetReportSubcategory(loginUser, summaryReport.Subcategory);
+
+      ReportTables tables = new ReportTables(loginUser);
+      tables.LoadAll();
+
+      ReportTableFields tableFields = new ReportTableFields(loginUser);
+      tableFields.LoadAll();
+      TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
+
+      foreach (ReportSummaryCalculatedField field in summaryReport.Fields.Calculated)
+      {
+        StringBuilder builder = new StringBuilder();
+        if (field.Field.IsCustom)
+        {
+          CustomField customField = (CustomField)CustomFields.GetCustomField(loginUser, field.Field.FieldID);
+          if (customField == null) continue;
+          string fieldName = DataUtils.GetReportPrimaryKeyFieldName(customField.RefType);
+          if (fieldName != "")
+          {
+            fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
+
+
+            if (customField.FieldType == CustomFieldType.DateTime)
+            {
+              fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+              fieldName,
+              offset < TimeSpan.Zero ? "-" : "+",
+              Math.Abs(offset.Hours),
+              Math.Abs(offset.Minutes));
+            }
+
+            result.Add(GetCalcItem(fieldName, customField.Name, field));
+          }
+
+        }
+        else
+        {
+          ReportTableField tableField = tableFields.FindByReportTableFieldID(field.Field.FieldID);
+          ReportTable table = tables.FindByReportTableID(tableField.ReportTableID);
+          string fieldName = table.TableName + "." + tableField.FieldName;
+          if (tableField.DataType.Trim().ToLower() == "datetime")
+          {
+            fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+              fieldName,
+              offset < TimeSpan.Zero ? "-" : "+",
+              Math.Abs(offset.Hours),
+              Math.Abs(offset.Minutes));
+            fieldName = GetDateGroupField(fieldName, field.Value1);
+          }
+            result.Add(GetCalcItem(fieldName, tableField.Alias, field));
+        }
+      }
+      return result;
+    }
+
+    private static CalculatedClauseItem GetCalcItem(string field, string alias, ReportSummaryCalculatedField calc)
+    {
+      CalculatedClauseItem result = new CalculatedClauseItem();
+
+      result.Field = field;
+      switch (calc.Aggregate.ToLower())
+      {
+        case "sum":
+          result.Alias = alias + " Sum";
+          result.AggField = string.Format("SUM([{0}])", result.Alias);
+          break;
+        case "max":
+          result.Alias = alias + " Max";
+          result.AggField = string.Format("MAX([{0}])", result.Alias);
+          break;
+        case "min":
+          result.Alias = alias + " Min";
+          result.AggField = string.Format("MIN([{0}])", result.Alias);
+          break;
+        case "avg":
+          result.Alias = alias + " Average";
+          result.AggField = string.Format("AVG([{0}])", result.Alias);
+          break;
+        case "stdev": 
+          result.Alias = alias + " Std Dev";
+          result.AggField = string.Format("STDEV([{0}])", result.Alias);
+          break;
+        case "var": 
+          result.Alias = alias + " Variance";
+          result.AggField = string.Format("VAR([{0}])", result.Alias);
+          break;
+        case "count": 
+          result.Alias = alias + " Count";
+          result.AggField = string.Format("COUNT([{0}])", result.Alias);
+          break;
+        case "countdistinct": 
+          result.Alias = alias + " Distinct Count";
+          result.AggField = string.Format("COUNT(DISTINCT([{0}]))", result.Alias); 
+          break;
+        default:
+          break;
+      }
+
+      if (calc.Comparator.ToLower() == "none")
+      {
+        result.Comparator = null;
+        return result;
+      }
+
+      // verify values are numbers for sql injection
+      float.Parse(calc.Value1);
+      float.Parse(calc.Value2);
+
+      switch (calc.Comparator.ToLower())
+      {
+        case "lt": result.Comparator = string.Format("({0} < {1})", result.Alias, calc.Value1); break;
+        case "gt": result.Comparator = string.Format("({0} > {1})", result.Alias, calc.Value1); break;
+        case "bet": result.Comparator = string.Format("({0} BETWEEN {1} AND {2})", result.Alias, calc.Value1, calc.Value2); break;
+        case "eq": result.Comparator = string.Format("({0} = {1})", result.Alias, calc.Value1); break;
+        default:
+          break;
+      }
+
+
+      return result;
+    }
+
+    private static string GetDateGroupField(string fieldName, string option)
+    {
+      switch (option)
+      {
+        case "year": return string.Format("DATENAME(YEAR, {0})", fieldName);
+        case "qtryear": return string.Format("DATENAME(QUARTER, {0}) + '-' + DATENAME(YEAR, {0})", fieldName);
+        case "monthyear": return string.Format("DATENAME(MONTH, {0}) + '-' + DATENAME(YEAR, {0})", fieldName);
+        case "weekyear": return string.Format("DATENAME(WEEK, {0}) + '-' + DATENAME(YEAR, {0})", fieldName);
+        case "date": return string.Format("CAST({0} AS DATE)", fieldName);
+        case "qtr": return string.Format("DATENAME(QUARTER, {0})", fieldName);
+        case "month": return string.Format("DATENAME(MONTH, {0}) ", fieldName);
+        case "week": return string.Format("DATENAME(WEEK, {0}) ", fieldName);
+        case "dayweek": return string.Format("DATENAME(WEEKDAY, {0})", fieldName);
+        case "daymonth": return string.Format("DATENAME(DAY, {0})", fieldName);
+        case "hourday": return string.Format("DATENAME(HOUR, {0})", fieldName);
+        default:
+          break;
+      }
+
+      return "";
+    }
 
     public ReportColumn[] GetSqlColumns()
     {
@@ -851,8 +1160,19 @@ namespace TeamSupport.Data
           command.Connection = connection;
           using (SqlDataAdapter adapter = new SqlDataAdapter(command))
           {
-            adapter.FillSchema(table, SchemaType.Source);
-            adapter.Fill(table);
+            try
+            {
+              adapter.FillSchema(table, SchemaType.Source);
+              adapter.Fill(table);
+            }
+            catch (Exception ex)
+            {
+              ExceptionLogs.LogException(Collection.LoginUser, ex, "GetSqlColumns", command.CommandText);
+              Report report = Reports.GetReport(Collection.LoginUser, ReportID);
+              report.LastSqlExecuted = command.CommandText;
+              report.Collection.Save();
+              throw;
+            }
           }
           connection.Close();
         }
@@ -1250,6 +1570,9 @@ namespace TeamSupport.Data
         }
 
       }
+      else if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart) {
+        return GetReportDataAll(loginUser, report, sortField, isDesc);
+      }
       else
       {
         return GetReportDataPage(loginUser, report, from, to, sortField, isDesc);
@@ -1312,10 +1635,14 @@ WHERE RowNum BETWEEN @From AND @To";
       SqlCommand command = new SqlCommand();
 
       report.GetCommand(command);
-
-      if (command.CommandText.ToLower().IndexOf(" order by ") < 0 && !string.IsNullOrWhiteSpace(sortField))
+      if (command.CommandText.ToLower().IndexOf(" order by ") < 0)
       {
-        command.CommandText = command.CommandText + " ORDER BY " + sortField + (isDesc ? "DESC" : "ASC");
+        if (string.IsNullOrWhiteSpace(sortField))
+        {
+          sortField = GetReportColumnNames(loginUser, report.ReportID)[0];
+          isDesc = false;
+        }
+        command.CommandText = command.CommandText + " ORDER BY [" + sortField + (isDesc ? "] DESC" : "] ASC");
       }
 
       DataTable table = new DataTable();
@@ -1360,8 +1687,8 @@ WHERE RowNum BETWEEN @From AND @To";
     public static ReportColumn[] GetReportColumns(LoginUser loginUser, int reportID)
     {
       Report report = Reports.GetReport(loginUser, reportID);
-      if (report.ReportDefType == ReportType.Custom) return report.GetSqlColumns();
-      return report.GetTabularColumns();
+      if (report.ReportDefType == ReportType.Table) return report.GetTabularColumns();
+      return report.GetSqlColumns();
     }
 
     public void LoadByFolder(int organizationID, int folderID)
@@ -1540,6 +1867,39 @@ IF @@ROWCOUNT=0
     public string Query { get; set; }
   }
 
+
+  public class SummaryReport
+  {
+    public SummaryReport() { }
+    public int Subcategory { get; set; }
+    public ReportSummaryFields Fields { get; set; }
+    public ReportFilter[] Filters { get; set; }
+  }
+
+  public class ReportSummaryFields
+  {
+    public ReportSummaryFields() { }
+    public ReportSummaryDescriptiveField[] Descriptive { get; set; }
+    public ReportSummaryCalculatedField[] Calculated { get; set; }
+  }
+
+  public class ReportSummaryDescriptiveField
+  {
+    public ReportSummaryDescriptiveField() { }
+    public ReportSelectedField Field { get; set; }
+    public string Value1 { get; set; }
+  }
+
+  public class ReportSummaryCalculatedField
+  {
+    public ReportSummaryCalculatedField() { }
+    public ReportSelectedField Field { get; set; }
+    public string Aggregate { get; set; }
+    public string Comparator { get; set; }
+    public string Value1 { get; set; }
+    public string Value2 { get; set; }
+  }
+
   public class TabularReport
   {
     public TabularReport() { }
@@ -1659,7 +2019,7 @@ IF @@ROWCOUNT=0
         [DataMember] public int? FolderID { get; set; }
       }
  
-        [DataContract]
+      [DataContract]
       public class GridResult
       {
         public GridResult() { }
@@ -1668,6 +2028,28 @@ IF @@ROWCOUNT=0
         [DataMember] public string Data { get; set; }
       }
 
+  public class CalculatedClauseItem
+  {
+    public CalculatedClauseItem() { }
+    public CalculatedClauseItem(string field, string comparator, string alias) {
+      this.Field = field;
+      this.Comparator = comparator;
+      this.Alias = alias;
+    }
+    public string Field { get; set; }
+    public string AggField { get; set; }
+    public string Comparator { get; set; }
+    public string Alias { get; set; }
+  }
 
+  public class DescriptiveClauseItem
+  {
+    public DescriptiveClauseItem(string field, string alias) {
+      this.Field = field;
+      this.Alias = alias;
+    }
+    public string Field { get; set; }
+    public string Alias { get; set; }
+  }
 
 }

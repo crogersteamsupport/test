@@ -253,7 +253,7 @@ $(document).ready(function () {
         $('.report-list .report-item.report-selected:visible').not('.ui-draggable-dragging').each(function () {
             var report = $(this).data('o');
             report.FolderID = folderID;
-            $(this).data('o', report).attr('data-folderid', folderID);
+            $(this).data('o', report).attr('data-folderid', folderID).attr('data-reporttype', report.ReportType);
             ids.push(report.ReportID);
         });
 
@@ -327,8 +327,25 @@ $(document).ready(function () {
         else if (item.hasClass('menu-recent')) {
             sortReports('LastViewed', false);
         }
-        else if (item.hasClass('menu-activity')) {
-            sortReports('LastModified', false);
+        else if (item.hasClass('menu-tablular')) {
+            $('.report-list .report-item').not('[data-reporttype="0"]').hide();
+            sortReports('Name', true);
+        }
+        else if (item.hasClass('menu-summary')) {
+            $('.report-list .report-item').not('[data-reporttype="4"]').hide();
+            sortReports('Name', true);
+        }
+        else if (item.hasClass('menu-charts')) {
+            $('.report-list .report-item').not('[data-reporttype="1"]').hide();
+            sortReports('Name', true);
+        }
+        else if (item.hasClass('menu-external')) {
+            $('.report-list .report-item').not('[data-reporttype="2"]').hide();
+            sortReports('Name', true);
+        }
+        else if (item.hasClass('menu-custom')) {
+            $('.report-list .report-item').not('[data-reporttype="3"]').hide();
+            sortReports('Name', true);
         }
         else if (item.hasClass('menu-all')) {
             sortReports('Name', true);
@@ -403,7 +420,7 @@ $(document).ready(function () {
 
     function getNewReportItem(report) {
 
-        var item = $('<tr>').data('o', report).attr('data-folderid', report.FolderID).addClass('report-item reportid-' + report.ReportID).html($('.report-row-template tr').html());
+        var item = $('<tr>').data('o', report).attr('data-folderid', report.FolderID).attr('data-reporttype', report.ReportType).addClass('report-item reportid-' + report.ReportID).html($('.report-row-template tr').html());
 
         item.find('.report-list-title a').text(report.Name);
         item.find('.report-list-star i').addClass(report.IsFavorite == true ? 'fa-star color-yellow' : 'fa-star-o');
@@ -415,6 +432,7 @@ $(document).ready(function () {
             case 1: item.find('.report-list-title i').addClass('fa-bar-chart-o color-green'); break;
             case 2: item.find('.report-list-title i').addClass('fa-globe color-blue'); break;
             case 3: item.find('.report-list-title i').addClass('fa-wrench color-orange'); break;
+            case 4: item.find('.report-list-title i').addClass('fa-tasks color-yellow'); break;
             default: item.find('.report-list-title i').addClass('fa-table color-red');
         }
 

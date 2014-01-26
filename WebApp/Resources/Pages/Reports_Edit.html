@@ -77,6 +77,16 @@
                   <label>Secondary Table</label>
                   <select id="selectSubCat" class="form-control"></select>
                 </div>
+                
+                <label>Report Type </label>
+                <div class="form-group report-class-item report-class-chart report-class-summary">
+                  <label class="radio-inline">
+                    <input type="radio" class="report-type-radio report-type-radio-summary" name="radioReportType" id="radSummary" value="summary" checked>&nbsp;Summary</label>
+                  <label class="radio-inline">
+                    <input type="radio" class="report-type-radio report-type-radio-chart" name="radioReportType" id="radChart" value="chart">&nbsp;Chart</label>
+                </div>
+        
+
               </fieldset>
 
               <div class="form-group report-class-item report-class-external">
@@ -150,25 +160,25 @@
                     <li>
                       <select class="form-control summary-calc-field summary-field list-unstyled"></select>
                       <select class="form-control summary-calc-agr">
-                        <option value="">Sum</option>
-                        <option value="">Maximum</option>
-                        <option value="">Minimum</option>
-                        <option value="">Average</option>
-                        <option value="">Standard Deviation</option>
-                        <option value="">Variance</option>
-                        <option value="">Count</option>
-                        <option value="">Distinct Count</option>
+                        <option value="sum">Sum</option>
+                        <option value="max">Maximum</option>
+                        <option value="min">Minimum</option>
+                        <option value="avg">Average</option>
+                        <option value="stdev">Standard Deviation</option>
+                        <option value="var">Variance</option>
+                        <option value="count">Count</option>
+                        <option value="countdistinct">Distinct Count</option>
                       </select>
                       <select class="form-control summary-calc-text-agr">
-                        <option value="">Count</option>
+                        <option value="countdistinct">Count</option>
                         <option value="">Distinct Count</option>
                       </select>
                       <select class="form-control summary-calc-comp">
-                        <option value="">No Limits</option>
-                        <option value="">Less Than</option>
-                        <option value="">Greater Than</option>
-                        <option value="">Between</option>
-                        <option value="">Equals</option>
+                        <option value="none">No Limits</option>
+                        <option value="lt">Less Than</option>
+                        <option value="gt">Greater Than</option>
+                        <option value="bet">Between</option>
+                        <option value="eq">Equals</option>
                       </select>
                       <input type="text" class="form-control summary-calc-val1" />
                       <input type="text" class="form-control summary-calc-val2" />

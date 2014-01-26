@@ -338,6 +338,7 @@ namespace TSWebServices
             case "datetime": this.DataType = "datetime"; break;
             case "bit": this.DataType = "bool"; break;
             case "float": this.DataType = "number"; break;
+            case "int": this.DataType = "number"; break;
             default: this.DataType = "text"; break;
           }
 

@@ -333,7 +333,6 @@
         };
 
         _grid = new Slick.Grid("#reports-tabview-grid-container", datamodel.data, columns, options);
-        _grid.setSortColumn(columns[0].field, true);
 
         _grid.onViewportChanged.subscribe(function (e, args) {
             var vp = _grid.getViewport();
@@ -387,7 +386,13 @@
         });
         if (_report.Settings.SortField) {
             _grid.setSortColumn(_report.Settings.SortField, _report.Settings.IsSortAsc);
+            datamodel.setSort(_report.Settings.SortField, _report.Settings.IsSortAsc);
         }
+        else {
+            _grid.setSortColumn(columns[0].field, true);
+            datamodel.setSort(columns[0].field, true);
+        }
+
         if (!_report.Settings.Columns) _grid.autosizeColumns();
         refresh();
     }
