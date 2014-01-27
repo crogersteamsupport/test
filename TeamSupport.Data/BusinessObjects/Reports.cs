@@ -772,19 +772,19 @@ namespace TeamSupport.Data
               builder.Append(string.Format("DATEPART(weekday, {0}) = {1:D}", dateSql, int.Parse(condition.Value1)));
               break;
             case "PREVIOUS # DAYS":
-              string paramName2 = paramName + "-2";
+              string paramName2 = paramName + "x2";
               builder.Append(string.Format("({0} >= @{1} AND {0} < @{2})", dateSql, paramName, paramName2));
               command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(-1*int.Parse(condition.Value1)).Date;
               command.Parameters.Add(paramName2, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
               break;
             case "LAST # DAYS": 
-              string paramName2a = paramName + "-2";
+              string paramName2a = paramName + "x2";
               builder.Append(string.Format("({0} >= @{1} AND {0} <= @{2})", dateSql, paramName, paramName2a));
               command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(-1*int.Parse(condition.Value1)).Date;
               command.Parameters.Add(paramName2a, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
               break;
             case "NEXT # DAYS": 
-              string paramName2b = paramName + "-2";
+              string paramName2b = paramName + "x2";
               builder.Append(string.Format("({0} >= @{1} AND {0} <= @{2})", dateSql, paramName2b, paramName));
               command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(int.Parse(condition.Value1)).Date;
               command.Parameters.Add(paramName2b, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).Date;
