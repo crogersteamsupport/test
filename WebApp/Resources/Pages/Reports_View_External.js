@@ -36,7 +36,12 @@ $(document).ready(function () {
 
 
     $('body').layout({
+        defaults: {
+            spacing_open: 0,
+            closable: false
+        },
         north: {
+            spacing_open: 1,
             size: 100
         },
         center: {

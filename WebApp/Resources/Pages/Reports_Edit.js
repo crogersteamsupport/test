@@ -378,7 +378,11 @@ $(document).ready(function () {
                 case 0: data = JSON.stringify(getTabularObject()); break;
                 case 1: data = JSON.stringify(getChartObject()); break;
                 case 4: data = JSON.stringify(getSummaryObject()); break;
-                case 2: data = $('#external-url').val(); break;
+                case 2: 
+                  data = $('#external-url').val();
+                  if (data.indexOf('http://') < 0) data = 'http://' + data;
+                  
+                break;
                 default: break;
             }
 

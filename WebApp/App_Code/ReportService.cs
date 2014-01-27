@@ -39,20 +39,30 @@ namespace TSWebServices
       }
 
       [WebMethod]
-      public string GetSummary(string data)
+      public ChartData GetChartData(string summaryReportFields)
       {
-        DataTable table = Reports.GetSummaryData(TSAuthentication.GetLoginUser(), JsonConvert.DeserializeObject<SummaryReport>(data));
+        return null;/*
+        DataTable table = Reports.GetSummaryData(TSAuthentication.GetLoginUser(), JsonConvert.DeserializeObject<SummaryReport>(summaryReportFields));
 
-
+        ChartData result = new ChartData();
+        List<string> cats = new List<string>();
+        
         if (table.Columns.Count == 2)
         {
-          Object[] result = new Object[table.Rows.Count];
+          
           for (int i = 0; i < table.Rows.Count; i++)
 			    {
             DataRow row = table.Rows[i];
-            result[i] = new Object[] { (row[0] == DBNull.Value ? "" : row[0].ToString()), (row[1] == DBNull.Value ? 0 : row[1]) };
+            string cat = row[0] == DBNull.Value ? "" : row[0].ToString();
+            if (cats.IndexOf(cat) < 0) {
+              cats.Add(cat);
+            }
 			    }
-          return JsonConvert.SerializeObject(result);
+
+
+          //result[i] = new Object[] { (row[0] == DBNull.Value ? "" : row[0].ToString()), (row[1] == DBNull.Value ? 0 : row[1]) };
+          result.Categories = cats.ToArray();
+          return result;
         }
         else if (table.Columns.Count == 3)
         {
@@ -88,7 +98,7 @@ namespace TSWebServices
           return JsonConvert.SerializeObject(result);
         }
 
-        return "";
+        return "";*/
       }
 
 
@@ -456,8 +466,15 @@ namespace TSWebServices
       [DataContract]
       public class ChartSeries
       {
-        [DataMember] public string SeriesName { get; set; }
-        [DataMember] public Object[] Value { get; set; }
+        [DataMember] public string name { get; set; }
+        [DataMember] public Object[] data { get; set; }
+      }
+
+      [DataContract]
+      public class ChartData
+      {
+        [DataMember] public string[] Categories { get; set; }
+        [DataMember] public ChartSeries[] Series { get; set; }
       }
 
 
