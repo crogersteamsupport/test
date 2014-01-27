@@ -52,6 +52,7 @@ $(document).ready(function () {
                 $('.reports-header i').addClass('fa-bar-chart-o color-green');
                 $('.report-title').text(_report ? _report.Name : 'New Chart');
                 $('.report-type-radio-chart').prop('checked', true);
+                $('.summary-add-calcfield').hide();
                 break;
             case 2:
                 _typeClass = 'report-class-external';
@@ -112,6 +113,9 @@ $(document).ready(function () {
                 initFilters();
                 if (callback) callback();
             }
+            else if (el.hasClass('report-chartproperties')) {
+                initChart(callback);
+            }
             else {
                 if (callback) callback();
             }
@@ -171,38 +175,18 @@ $(document).ready(function () {
             loadSubCats();
         }
 
-        $('.report-type-radio').click(function (e) {
-            if ($(this).val() == 'summary') {
-                if (_report == null) {
-                    $('.report-title').text(_report ? _report.Name : 'New Summary Report');
-                }
-                $('.reports-header i').addClass('fa-tasks color-yellow');
-                $('.reports-header i').removeClass('fa-bar-chart-o color-green');
-                _reportType = 4;
-                _typeClass = 'report-class-summary';
-            }
-            else {
-                if (_report == null) {
-                    $('.report-title').text(_report ? _report.Name : 'New Chart');
-                }
-                $('.reports-header i').addClass('fa-bar-chart-o color-green');
-                $('.reports-header i').removeClass('fa-tasks color-yellow');
-                _reportType = 1;
-                _typeClass = 'report-class-chart';
-            }
-
-
-        });
 
         $('.summary-add-field').click(function (e) {
             e.preventDefault();
             var list = $(this).prev();
             initSummaryRow(list.find('li:first').clone(true).appendTo(list));
+            if (_reportType == 1) $('.summary-add-descfield').hide();
         });
 
         $('.summary-fields').on('click', 'li a', function (e) {
             e.preventDefault();
-            $(this).closest('li').fadeOut(function () { remove(); });
+            $(this).closest('li').fadeOut(function () { $(this).remove(); });
+            if (_reportType == 1) $('.summary-add-descfield').show();
         });
 
         $('.summary-fields').on('change', '.summary-desc-field', function (e) {
@@ -279,11 +263,8 @@ $(document).ready(function () {
         function clearSummaryFields() {
             $('.summary-calc li').not(':first').remove();
             $('.summary-desc li').not(':first').remove();
+            $('.summary-add-descfield').show();
         }
-
-
-
-
 
         function findSubCat(subcats, subcatID) {
             for (var i = 0; i < subcats.length; i++) {
@@ -392,84 +373,58 @@ $(document).ready(function () {
 
         $('.action-save').click(function (e) {
             e.preventDefault();
-
+            var data = null;
             switch (_reportType) {
-                case 0: // tabular
-                    var tabData = new Object();
-                    tabData.Fields = new Array();
-                    $('li.report-field input:checked').each(function (index) {
-                        var field = $(this).closest('li').data('field');
-                        var fieldItem = new Object();
-                        fieldItem.FieldID = field.ID;
-                        fieldItem.IsCustom = field.IsCustom;
-                        tabData.Fields.push(fieldItem);
-                    });
-                    tabData.Subcategory = $('#selectSubCat').val();
-                    tabData.Filters = $('.report-filter').reportFilter('getObject');
-
-
-                    top.Ts.Utils.webMethod("ReportService", "SaveReport", {
-                        "reportID": _reportID,
-                        "name": $('.report-name').val(),
-                        "reportType": _reportType,
-                        "data": JSON.stringify(tabData)
-                    },
-                    closeReport,
-                    function (error) { alert(error.get_message()); });
-                    break;
-
-                case 1: // chart
-                    var chartData = new Object();
-                    chartData.Filters = $('.report-filter').reportFilter('getObject');
-                    chartData.Subcategory = $('#selectSubCat').val();
-                    chartData.Fields = getSummaryObject();
-                    chartData.Chart = getChartObject();
-
-                    top.Ts.Utils.webMethod("ReportService", "SaveReport", {
-                        "reportID": _reportID,
-                        "name": $('.report-name').val(),
-                        "reportType": _reportType,
-                        "data": JSON.stringify(chartData)
-                    },
-                    closeReport,
-                    function (error) { alert(error.get_message()); });
-                    break;
-
-                case 4: // summary
-                    var sumData = new Object();
-                    sumData.Filters = $('.report-filter').reportFilter('getObject');
-                    sumData.Subcategory = $('#selectSubCat').val();
-                    sumData.Fields = getSummaryObject();
-
-                    top.Ts.Utils.webMethod("ReportService", "SaveReport", {
-                        "reportID": _reportID,
-                        "name": $('.report-name').val(),
-                        "reportType": _reportType,
-                        "data": JSON.stringify(sumData)
-                    },
-                    closeReport,
-                    function (error) { alert(error.get_message()); });
-                    break;
-
-                case 2: // external
-                    top.Ts.Utils.webMethod("ReportService", "SaveReport", {
-                        "reportID": _reportID,
-                        "name": $('.report-name').val(),
-                        "reportType": _reportType,
-                        "data": $('#external-url').val()
-                    }, closeReport,
-                    function (error) { alert(error.get_message()); });
-                    break;
-                default:
-                    break;
+                case 0: data = JSON.stringify(getTabularObject()); break;
+                case 1: data = JSON.stringify(getChartObject()); break;
+                case 4: data = JSON.stringify(getSummaryObject()); break;
+                case 2: data = $('#external-url').val(); break;
+                default: break;
             }
+
+            top.Ts.Utils.webMethod("ReportService", "SaveReport", {
+                "reportID": _reportID,
+                "name": $('.report-name').val(),
+                "reportType": _reportType,
+                "data": data
+            },
+            closeReport,
+            function (error) { alert(error.get_message()); });
         });
 
-        function getChartObject() {
+        function getTabularObject() {
+            var tabData = new Object();
+            tabData.Fields = new Array();
+            $('li.report-field input:checked').each(function (index) {
+                var field = $(this).closest('li').data('field');
+                var fieldItem = new Object();
+                fieldItem.FieldID = field.ID;
+                fieldItem.IsCustom = field.IsCustom;
+                tabData.Fields.push(fieldItem);
+            });
+            tabData.Subcategory = $('#selectSubCat').val();
+            tabData.Filters = $('.report-filter').reportFilter('getObject');
+            return tabData;
+        }
 
+        function getChartObject() {
+            var chartData = new Object();
+            chartData.Filters = $('.report-filter').reportFilter('getObject');
+            chartData.Subcategory = $('#selectSubCat').val();
+            chartData.Fields = getSummaryFieldsObject();
+            chartData.Chart = getChartObject();
+            return chartData;
         }
 
         function getSummaryObject() {
+            var sumData = new Object();
+            sumData.Filters = $('.report-filter').reportFilter('getObject');
+            sumData.Subcategory = $('#selectSubCat').val();
+            sumData.Fields = getSummaryFieldsObject();
+            return sumData;
+        }
+
+        function getSummaryFieldsObject() {
             var fields = new Object();
             descs = new Array();
             calcs = new Array();
@@ -550,12 +505,120 @@ $(document).ready(function () {
                 }
             }
         }
+
+        function initChart(callback) {
+            if (callback) callback();
+        }
+
+        $('.chart-generate').click(function (e) {
+            e.preventDefault();
+            getSummaryData(function (table) { buildChart(JSON.parse(table)); }, JSON.stringify(getSummaryObject()));
+        });
+
+        function getHighChartOptions(table) {
+            var options = {};
+            options.credits = { enabled: false }
+            options.title = { text: $('.report-name').val(), x: -20 };
+            options.subtitle = { text: $('#chart-subtitle').val(), x: -20 };
+            options.yAxis = {};
+            options.yAxis.title = { text: $('#chart-y-title').val() };
+            options.yAxis.plotLines = [{ value: 0, width: 1, color: '#808080'}];
+            options.tooltip = { valueSuffix: $('#chart-tip-suffix').val() };
+            options.legend = {};
+            options.legend.layout = $('#chart-legend-layout').val();
+            options.legend.align = $('#chart-legend-align').val();
+            options.legend.verticalAlign = $('#chart-legend-valign').val();
+            options.series = [];
+
+            if (typeof table[0].SeriesName === 'undefined') {
+                var cats = [];
+                var vals = [];
+
+                for (var i = 0; i < table.length; i++) {
+                    cats.push(table[i][0]);
+                    vals.push(table[i][1]);
+                }
+                options.xAxis = { categories: cats };
+                options.series.push({ name: '', data: vals, showInLegend: false });
+            }
+            else {
+                var cats = [];
+
+                for (var i = 0; i < table.length; i++) {
+                    if (table[i].SeriesName == '') continue;
+                    var vals = [];
+                    for (var j = 0; j < table[i].Value.length; j++) {
+                        var cat = table[i].Value[j][0];
+                        if (cat != '') cats.push(table[i].Value[j][0]);
+                        vals.push(table[i].Value[j][1]);
+                    }
+                    options.series.push({ name: table[i].SeriesName, data: vals });
+                }
+                options.xAxis = { categories: cats };
+
+            }
+
+            switch ($('#chart-type').val()) {
+                case 'line':
+                    break;
+                case 'area':
+                    options.chart = { type: 'area' };
+                    break;
+                case 'stackedarea':
+                    options.chart = { type: 'area' };
+                    options.plotOptions = {};
+                    options.plotOptions.area = { stacking: 'normal' };
+                    break;
+                case 'bar':
+                    options.chart = { type: 'bar' };
+                    options.plotOptions = {};
+                    options.plotOptions.bar = { dataLabels: true };
+                    break;
+                case 'stackedbar':
+                    options.chart = { type: 'bar' };
+                    options.plotOptions = {};
+                    options.plotOptions.bar = { stacking: 'normal' };
+                    break;
+                case 'column':
+                    options.chart = { type: 'column' };
+                    options.plotOptions = {};
+                    options.plotOptions.column = { dataLabels: true };
+                    break;
+                case 'stackedcolumn':
+                    options.chart = { type: 'column' };
+                    options.plotOptions = {};
+                    options.plotOptions.column = { stacking: 'normal' };
+                    break;
+                case 'pie':
+                    options.chart = { type: 'pie' };
+                    break;
+                default:
+            }
+
+            return options;
+
+        }
+
+        function buildChart(table) {
+            if (table.length < 1) {
+                alert("There is no data to create a chart.");
+                return;
+            }
+            var options = getHighChartOptions(table);
+            $('.chart-container').highcharts(options);
+        }
+
+
+        function getSummaryData(callback, data) {
+            top.Ts.Utils.webMethod("ReportService", "GetSummary",
+              { "data": data },
+              callback,
+              function (error) {
+                  alert(error.get_message());
+              });
+        }
+
+
     }
-
-
-    $('.nav-brand').click(function (e) {
-        e.preventDefault();
-        location.assign(location.href);
-    });
 
 });

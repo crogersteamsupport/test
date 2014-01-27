@@ -934,9 +934,11 @@ namespace TeamSupport.Data
       command.CommandText = builder.ToString();
     }
 
-    public static void GetSummaryCommand(SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly)
+    public static void GetSummaryCommand(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly)
     {
-    
+      command.CommandType = CommandType.Text;
+      GetSummarySql(loginUser, command, summaryReport, isSchemaOnly, null);
+      AddCommandParameters(command, Users.GetUser(loginUser, loginUser.UserID));
     }
 
     private static List<DescriptiveClauseItem> GetSummaryDescFields(LoginUser loginUser, SummaryReport summaryReport)
@@ -1671,6 +1673,36 @@ WHERE RowNum BETWEEN @From AND @To";
       return result;
 
     }
+
+    public static DataTable GetSummaryData(LoginUser loginUser, SummaryReport summaryReport)
+    {
+      SqlCommand command = new SqlCommand();
+
+      Report.GetSummaryCommand(loginUser, command, summaryReport, false);
+
+      DataTable table = new DataTable();
+      using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+      {
+        connection.Open();
+        command.Connection = connection;
+        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+        {
+          try
+          {
+            adapter.Fill(table);
+          }
+          catch (Exception ex)
+          {
+            ExceptionLogs.LogException(loginUser, ex, "GetSummaryData");
+            throw;
+          }
+        }
+        connection.Close();
+      }
+      return table;
+    }
+
+
 
     public static string[] GetReportColumnNames(LoginUser loginUser, int reportID)
     {

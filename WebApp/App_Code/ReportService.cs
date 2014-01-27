@@ -39,6 +39,60 @@ namespace TSWebServices
       }
 
       [WebMethod]
+      public string GetSummary(string data)
+      {
+        DataTable table = Reports.GetSummaryData(TSAuthentication.GetLoginUser(), JsonConvert.DeserializeObject<SummaryReport>(data));
+
+
+        if (table.Columns.Count == 2)
+        {
+          Object[] result = new Object[table.Rows.Count];
+          for (int i = 0; i < table.Rows.Count; i++)
+			    {
+            DataRow row = table.Rows[i];
+            result[i] = new Object[] { (row[0] == DBNull.Value ? "" : row[0].ToString()), (row[1] == DBNull.Value ? 0 : row[1]) };
+			    }
+          return JsonConvert.SerializeObject(result);
+        }
+        else if (table.Columns.Count == 3)
+        {
+          SortedDictionary<string, List<Object[]>> dic = new SortedDictionary<string, List<Object[]>>();
+         
+          for (int i = 0; i < table.Rows.Count; i++)
+          {
+            DataRow row = table.Rows[i];
+            string series = row[0] == DBNull.Value ? "" : row[0].ToString();
+            
+
+            Object[] point = new Object[] { (row[1] == DBNull.Value ? "" : row[1].ToString()), (row[2] == DBNull.Value ? 0 : row[2]) };
+            if (dic.ContainsKey(series))
+            {
+              dic[series].Add(point);
+            }
+            else
+	          {
+              List<Object[]> list = new List<object[]>();
+              list.Add(point);
+              dic.Add(series, list);
+	          }
+          }
+          List<ChartSeries> result = new List<ChartSeries>();
+
+          foreach (KeyValuePair<string, List<object[]>> entry in dic)
+          {
+            ChartSeries item = new ChartSeries();
+            item.SeriesName = entry.Key;
+            item.Value = entry.Value.ToArray();
+            result.Add(item);
+          }
+          return JsonConvert.SerializeObject(result);
+        }
+
+        return "";
+      }
+
+
+      [WebMethod]
       public ReportItem[] GetReports()
       {
         List<ReportItem> result = new List<ReportItem>();
@@ -399,7 +453,12 @@ namespace TSWebServices
         [DataMember] public int SubCatID { get; set; }
       }
 
-      
+      [DataContract]
+      public class ChartSeries
+      {
+        [DataMember] public string SeriesName { get; set; }
+        [DataMember] public Object[] Value { get; set; }
+      }
 
 
 

@@ -14,6 +14,7 @@
   <script src="../Js/jquery.numeric.js" type="text/javascript"></script>
   <script src="../Js/moment.min.js" type="text/javascript"></script>
   <script src="../Js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+  <script src="../Js/highcharts.js" type="text/javascript"></script>
   <script src="reports_edit.js" type="text/javascript"></script>
   <script src="ReportFilters.js" type="text/javascript"></script>
 
@@ -77,17 +78,7 @@
                   <label>Secondary Table</label>
                   <select id="selectSubCat" class="form-control"></select>
                 </div>
-                
-                <label>Report Type </label>
-                <div class="form-group report-class-item report-class-chart report-class-summary">
-                  <label class="radio-inline">
-                    <input type="radio" class="report-type-radio report-type-radio-summary" name="radioReportType" id="radSummary" value="summary" checked>&nbsp;Summary</label>
-                  <label class="radio-inline">
-                    <input type="radio" class="report-type-radio report-type-radio-chart" name="radioReportType" id="radChart" value="chart">&nbsp;Chart</label>
-                </div>
-        
-
-              </fieldset>
+                </fieldset>
 
               <div class="form-group report-class-item report-class-external">
                 <label>External URL</label>
@@ -152,7 +143,7 @@
                       </select>
                       <a href="#"><i class="fa fa-times"></i></a></li>
                   </ul>
-                  <button class="btn btn-primary summary-add-field">Add Field</button>
+                  <button class="btn btn-primary summary-add-field summary-add-descfieldx">Add Field</button>
                 </div>
                 <div class="form-group">
                   <label>Calculated Fields</label>
@@ -184,14 +175,14 @@
                       <input type="text" class="form-control summary-calc-val2" />
                       <a href="#"><i class="fa fa-times"></i></a></li>
                   </ul>
-                  <button class="btn btn-primary summary-add-field">Add Field</button>
+                  <button class="btn btn-primary summary-add-field summary-add-calcfield">Add Field</button>
                 </div>
               </fieldset>
             </div>
           </div>
 
         </div>
-      <div class="report-section report-filters report-class-chart report-class-summary report-class-tabular">
+        <div class="report-section report-filters report-class-chart report-class-summary report-class-tabular">
         <div class="row">
           <div class="col-xs-12">
             <div class="panel panel-default">
@@ -206,34 +197,75 @@
           </div>
         </div>
       </div>
-      <div class="report-section report-chartproperties report-class-chart">
+        <div class="report-section report-chartproperties report-class-chart">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h3 class="panel-title">What data of chart do you want?</h3>
           </div>
           <div class="panel-body">
-            I will be glad when this last section is done.
-            <ul>
-              <li>
-                <label class="radio">
-                  <input type="radio" name="optRadioChartType" id="radioChartBar" value="BAR" checked>
-                  Bar</label>
-              </li>
-              <li>
-                <label class="radio">
-                  <input type="radio" name="optRadioChartType" id="radioChartLine" value="LINE">
-                  Line</label>
-              </li>
-              <li>
-                <label class="radio">
-                  <input type="radio" name="optRadioChartType" id="radioChartPie" value="PIE">
-                  Pie</label>
-              </li>
-            </ul>
+            <div class="row">
+              <div class="col-xs-2 chart-options">
+
+                <div class="form-group">
+                  <label for="chart-type">Chart Type</label>
+                  <select class="form-control" id="chart-type">
+                    <option value="line">Line</option>
+                    <option value="area">Area</option>
+                    <option value="stackedarea">Stacked Area</option>
+                    <option value="bar">Bar</option>
+                    <option value="stackedbar">Stacked Bar</option>
+                    <option value="column">Column</option>
+                    <option value="stackedcolumn">Stacked Column</option>
+                    <option value="pie">Pie</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="chart-subtitle">Subtitle</label>
+                  <input type="text" class="form-control" id="chart-subtitle" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                  <label for="chart-y-title">Y Axis Title</label>
+                  <input type="text" class="form-control" id="chart-y-title" placeholder="Enter subtitle">
+                </div>
+                <div class="form-group">
+                  <label for="chart-tip-suffix">Tool Tip Suffix</label>
+                  <input type="text" class="form-control" id="chart-tip-suffix" placeholder="Enter suffix">
+                </div>
+
+                <div class="form-group">
+                  <label for="chart-legend-layout">Legend Layout</label>
+                  <select class="form-control" id="chart-legend-layout">
+                    <option value="horizontal">Horizontal</option>
+                    <option value="verticle">Verticle</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="chart-legend-align">Legend Align</label>
+                  <select class="form-control" id="chart-legend-align">
+                    <option value="center">Center</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="chart-legend-valign">Legend Verticle Align</label>
+                  <select class="form-control" id="chart-legend-valign">
+                    <option value="bottom">Bottom</option>
+                    <option value="top">Top</option>
+                    <option value="middle">Middle</option>
+                  </select>
+                </div>
+
+                <button class="btn btn-default chart-generate">Generate Chart</button>
+              </div>
+              <div class="col-xs-10 chart-display">
+                <div class="chart-container"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="form-actions clearfix">
+        <div class="form-actions clearfix">
           <button class="btn btn-default action-back disabled" disabled><i class="fa fa-long-arrow-left">
           </i>&nbsp;Back</button>
           <button class="btn btn-primary action-next">Next&nbsp;<i class="fa fa-long-arrow-right"></i></button>
