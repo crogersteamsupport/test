@@ -332,18 +332,6 @@ namespace TeamSupport.Data
         default:
           break;
       }
-      if (!isSchemaOnly)
-      {
-        LastSqlExecuted = command.CommandText;
-        Collection.Save();
-
-        ReportView reportView = (new ReportViews(Collection.LoginUser)).AddNewReportView();
-        reportView.UserID = Collection.LoginUser.UserID;
-        reportView.ReportID = ReportID;
-        reportView.DateViewed = DateTime.UtcNow;
-        reportView.SQLExecuted = command.CommandText;
-        reportView.Collection.Save();
-      }
 
       AddCommandParameters(command, Users.GetUser(Collection.LoginUser, Collection.LoginUser.UserID));
     }
@@ -1591,7 +1579,7 @@ namespace TeamSupport.Data
 WITH 
 q AS ({0}),
 r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
-SELECT  *, (SELECT MAX(RowNum) FROM r) AS 'TotalRows' FROM r
+SELECT  *, (SELECT COUNT(RowNum) FROM r) AS 'TotalRows' FROM r
 WHERE RowNum BETWEEN @From AND @To";
 
       if (string.IsNullOrWhiteSpace(sortField))
@@ -1603,6 +1591,16 @@ WHERE RowNum BETWEEN @From AND @To";
       command.Parameters.AddWithValue("@To", to);
       report.GetCommand(command);
       command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC");
+
+      report.LastSqlExecuted = command.CommandText;
+      report.Collection.Save();
+
+      ReportView reportView = (new ReportViews(loginUser)).AddNewReportView();
+      reportView.UserID = loginUser.UserID;
+      reportView.ReportID = report.ReportID;
+      reportView.DateViewed = DateTime.UtcNow;
+      reportView.SQLExecuted = command.CommandText;
+      reportView.Collection.Save();
 
       DataTable table = new DataTable();
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
@@ -1645,6 +1643,16 @@ WHERE RowNum BETWEEN @From AND @To";
         }
         command.CommandText = command.CommandText + " ORDER BY [" + sortField + (isDesc ? "] DESC" : "] ASC");
       }
+
+      report.LastSqlExecuted = command.CommandText;
+      report.Collection.Save();
+
+      ReportView reportView = (new ReportViews(loginUser)).AddNewReportView();
+      reportView.UserID = loginUser.UserID;
+      reportView.ReportID = report.ReportID;
+      reportView.DateViewed = DateTime.UtcNow;
+      reportView.SQLExecuted = command.CommandText;
+      reportView.Collection.Save();
 
       DataTable table = new DataTable();
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
