@@ -39,9 +39,8 @@ namespace TSWebServices
       }
 
       [WebMethod]
-      public ChartData GetChartData(string summaryReportFields)
+      public string GetChartData(string summaryReportFields)
       {
-        return null;/*
         DataTable table = Reports.GetSummaryData(TSAuthentication.GetLoginUser(), JsonConvert.DeserializeObject<SummaryReport>(summaryReportFields));
 
         ChartData result = new ChartData();
@@ -49,7 +48,6 @@ namespace TSWebServices
         
         if (table.Columns.Count == 2)
         {
-          
           for (int i = 0; i < table.Rows.Count; i++)
 			    {
             DataRow row = table.Rows[i];
@@ -58,47 +56,75 @@ namespace TSWebServices
               cats.Add(cat);
             }
 			    }
+          cats.Sort();
 
+          Object[] data = new Object[cats.Count];
 
-          //result[i] = new Object[] { (row[0] == DBNull.Value ? "" : row[0].ToString()), (row[1] == DBNull.Value ? 0 : row[1]) };
-          result.Categories = cats.ToArray();
-          return result;
-        }
-        else if (table.Columns.Count == 3)
-        {
-          SortedDictionary<string, List<Object[]>> dic = new SortedDictionary<string, List<Object[]>>();
-         
           for (int i = 0; i < table.Rows.Count; i++)
           {
             DataRow row = table.Rows[i];
-            string series = row[0] == DBNull.Value ? "" : row[0].ToString();
-            
-
-            Object[] point = new Object[] { (row[1] == DBNull.Value ? "" : row[1].ToString()), (row[2] == DBNull.Value ? 0 : row[2]) };
-            if (dic.ContainsKey(series))
-            {
-              dic[series].Add(point);
-            }
-            else
-	          {
-              List<Object[]> list = new List<object[]>();
-              list.Add(point);
-              dic.Add(series, list);
-	          }
+            int index = cats.IndexOf(row[0] == DBNull.Value ? "" : row[0].ToString());
+            if (index > -1) data[index] = row[1] == DBNull.Value ? 0 : row[1];
           }
-          List<ChartSeries> result = new List<ChartSeries>();
 
-          foreach (KeyValuePair<string, List<object[]>> entry in dic)
+          result.Categories = cats.ToArray();
+          List<ChartSeries> chartSeries = new List<ChartSeries>();
+          ChartSeries series = new ChartSeries();
+          series.data = data;
+          series.name = "";
+          chartSeries.Add(series);
+          result.Series = chartSeries.ToArray();
+          return JsonConvert.SerializeObject(result);
+        }
+        else if (table.Columns.Count == 3)
+        {
+          List<string> seriesNames = new List<string>();
+
+          for (int i = 0; i < table.Rows.Count; i++)
           {
-            ChartSeries item = new ChartSeries();
-            item.SeriesName = entry.Key;
-            item.Value = entry.Value.ToArray();
-            result.Add(item);
+            DataRow row = table.Rows[i];
+            string cat = row[1] == DBNull.Value ? "" : row[1].ToString();
+            if (cats.IndexOf(cat) < 0)
+            {
+              cats.Add(cat);
+            }
+          }
+          cats.Sort();
+
+
+          for (int i = 0; i < table.Rows.Count; i++)
+          {
+            DataRow row = table.Rows[i];
+            string name = row[0] == DBNull.Value ? "" : row[0].ToString();
+            if (seriesNames.IndexOf(name) < 0)
+            {
+              seriesNames.Add(name);
+            }
+          }
+          seriesNames.Sort();
+
+          List<ChartSeries> chartSeries = new List<ChartSeries>();
+          foreach (string name in seriesNames)
+          {
+            ChartSeries series = new ChartSeries();
+            series.name = name;
+            series.data = new object[cats.Count];
+            chartSeries.Add(series);
+          }
+          result.Series = chartSeries.ToArray();
+          result.Categories = cats.ToArray();
+
+          for (int i = 0; i < table.Rows.Count; i++)
+          {
+            DataRow row = table.Rows[i];
+            int index = cats.IndexOf(row[1] == DBNull.Value ? "" : row[1].ToString());
+            ChartSeries series = result.FindSeries(row[0] == DBNull.Value ? "" : row[0].ToString());
+            if (series != null) series.data[index] = row[2] == DBNull.Value ? 0 : row[2];
           }
           return JsonConvert.SerializeObject(result);
         }
 
-        return "";*/
+        return null;
       }
 
 
@@ -475,6 +501,18 @@ namespace TSWebServices
       {
         [DataMember] public string[] Categories { get; set; }
         [DataMember] public ChartSeries[] Series { get; set; }
+        
+        public ChartSeries FindSeries(string name) {
+          foreach (ChartSeries item in this.Series)
+          {
+            if (item.name.Trim().ToLower() == name.Trim().ToLower())
+            {
+              return item;
+            }
+          }
+          return null;
+        }
+        
       }
 
 

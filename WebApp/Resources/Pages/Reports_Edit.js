@@ -516,10 +516,10 @@ $(document).ready(function () {
 
         $('.chart-generate').click(function (e) {
             e.preventDefault();
-            getSummaryData(function (table) { buildChart(JSON.parse(table)); }, JSON.stringify(getSummaryObject()));
+            getChartData(function (data) { buildChart(JSON.parse(data)); }, JSON.stringify(getSummaryObject()));
         });
 
-        function getHighChartOptions(table) {
+        function getHighChartOptions(data) {
             var options = {};
             options.credits = { enabled: false }
             options.title = { text: $('.report-name').val(), x: -20 };
@@ -532,35 +532,8 @@ $(document).ready(function () {
             options.legend.layout = $('#chart-legend-layout').val();
             options.legend.align = $('#chart-legend-align').val();
             options.legend.verticalAlign = $('#chart-legend-valign').val();
-            options.series = [];
-
-            if (typeof table[0].SeriesName === 'undefined') {
-                var cats = [];
-                var vals = [];
-
-                for (var i = 0; i < table.length; i++) {
-                    cats.push(table[i][0]);
-                    vals.push(table[i][1]);
-                }
-                options.xAxis = { categories: cats };
-                options.series.push({ name: '', data: vals, showInLegend: false });
-            }
-            else {
-                var cats = [];
-
-                for (var i = 0; i < table.length; i++) {
-                    if (table[i].SeriesName == '') continue;
-                    var vals = [];
-                    for (var j = 0; j < table[i].Value.length; j++) {
-                        var cat = table[i].Value[j][0];
-                        if (cat != '') cats.push(table[i].Value[j][0]);
-                        vals.push(table[i].Value[j][1]);
-                    }
-                    options.series.push({ name: table[i].SeriesName, data: vals });
-                }
-                options.xAxis = { categories: cats };
-
-            }
+            options.series = data.Series;
+            options.xAxis = { categories: data.Categories };
 
             switch ($('#chart-type').val()) {
                 case 'line':
@@ -603,19 +576,19 @@ $(document).ready(function () {
 
         }
 
-        function buildChart(table) {
-            if (table.length < 1) {
+        function buildChart(data) {
+            if (data.length < 1) {
                 alert("There is no data to create a chart.");
                 return;
             }
-            var options = getHighChartOptions(table);
+            var options = getHighChartOptions(data);
             $('.chart-container').highcharts(options);
         }
 
 
-        function getSummaryData(callback, data) {
-            top.Ts.Utils.webMethod("ReportService", "GetSummary",
-              { "data": data },
+        function getChartData(callback, data) {
+            top.Ts.Utils.webMethod("ReportService", "GetChartData",
+              { "summaryReportFields": data },
               callback,
               function (error) {
                   alert(error.get_message());
