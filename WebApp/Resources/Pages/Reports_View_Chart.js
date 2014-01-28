@@ -20,9 +20,7 @@
             top.Ts.Utils.webMethod("ReportService", "GetChartReportData",
               { "reportID": _reportID },
               function (data) {
-                  data = JSON.parse(data);
-                  _report.Def.Chart.series = data.Series;
-                  _report.Def.Chart.xAxis = { categories: data.Categories };
+                  updateSeriesOptions(_report.Def.Chart, JSON.parse(data));
                   $('.chart-container').highcharts(_report.Def.Chart);
               },
               function (error) {
@@ -31,6 +29,27 @@
 
         });
     }
+
+    function updateSeriesOptions(options, data) {
+        if (options.ts.chartType == 'pie') {
+            var total = 0;
+            for (var i = 0; i < data.Series[0].data.length; i++) {
+                total += data.Series[0].data[i];
+            }
+
+            options.series = [{ type: 'pie', name: options.ts.seriesTitle, data: []}];
+
+            for (var i = 0; i < data.Categories.length; i++) {
+                var val = data.Series[0].data[i] / total * 100;
+                options.series[0].data.push([data.Categories[i], parseFloat(val.toFixed(2))]);
+            }
+        }
+        else {
+            options.series = data.Series;
+            options.xAxis = { categories: data.Categories };
+        }
+    }
+
 
     $('.reports-refresh').click(function (e) {
         e.preventDefault();

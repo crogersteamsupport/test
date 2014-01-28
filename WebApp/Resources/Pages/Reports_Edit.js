@@ -515,18 +515,20 @@ $(document).ready(function () {
 
         function getHighChartOptions(data) {
             var options = {};
+            options.ts = { chartType: $('#chart-type').val(), seriesTitle: $('#chart-series-title').val() }
             options.credits = { enabled: false }
             options.title = { text: $('.report-name').val(), x: -20 };
             options.subtitle = { text: $('#chart-subtitle').val(), x: -20 };
-            options.yAxis = {};
-            options.yAxis.title = { text: $('#chart-y-title').val() };
-            options.yAxis.plotLines = [{ value: 0, width: 1, color: '#808080'}];
             options.tooltip = { valueSuffix: $('#chart-tip-suffix').val() };
             options.legend = {};
             options.legend.layout = $('#chart-legend-layout').val();
             options.legend.align = $('#chart-legend-align').val();
             options.legend.verticalAlign = $('#chart-legend-valign').val();
-            options.tscharttype = $('#chart-type').val();
+            if (options.ts.chartType != 'pie') {
+                options.yAxis = {};
+                options.yAxis.title = { text: $('#chart-series-title').val() };
+                options.yAxis.plotLines = [{ value: 0, width: 1, color: '#808080'}];
+            }
             switch ($('#chart-type').val()) {
                 case 'line':
                     break;
@@ -559,17 +561,46 @@ $(document).ready(function () {
                     options.plotOptions.column = { stacking: 'normal' };
                     break;
                 case 'pie':
-                    options.chart = { type: 'pie' };
+                    options.chart = { plotBackgroundColor: null, plotBorderWidth: null, plotShadow: false };
+                    options.plotOptions = {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: { enabled: false },
+                            showInLegend: true
+                        }
+                    }
+
                     break;
                 default:
             }
 
-            if (data) {
+            if (data) { updateSeriesOptions(options, data); }
+
+            return options;
+        }
+
+        function updateSeriesOptions(options, data) {
+            if (options.ts.chartType == 'pie') {
+                var total = 0;
+                for (var i = 0; i < data.Series[0].data.length; i++) {
+                    total += data.Series[0].data[i];
+                }
+
+                options.series = [{ type: 'pie', name: options.ts.seriesTitle, data: []}];
+
+                for (var i = 0; i < data.Categories.length; i++) {
+                    var val = data.Series[0].data[i] / total * 100;
+                    options.series[0].data.push([data.Categories[i], parseFloat(val.toFixed(2))]);
+                }
+            }
+            else {
                 options.series = data.Series;
                 options.xAxis = { categories: data.Categories };
             }
 
-            return options;
+
+
         }
 
         function buildChart(data) {
@@ -594,7 +625,7 @@ $(document).ready(function () {
                 var options = _report.Def.Chart;
                 $('#chart-type').val(options.tscharttype);
                 $('#chart-subtitle').val(options.subtitle.text);
-                $('#chart-y-title').val(options.yAxis.title.text);
+                $('#chart-series-title').val(options.yAxis.title.text);
                 $('#chart-tip-suffix').val(options.tooltip.valueSuffix);
                 $('#chart-legend-layout').val(options.legend.layout);
                 $('#chart-legend-align').val(options.legend.align);
