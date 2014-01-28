@@ -1521,6 +1521,56 @@ namespace TeamSupport.Data
             }
         }
     }
+
+    public void UpdateFavoritesToNew()
+    {
+      SqlCommand command = new SqlCommand();
+      DataTable userFavorites = new DataTable();
+      BaseCollection.FixCommandParameters(command);
+      command.CommandText = "select UserID, SettingValue from UserSettings where SettingKey = 'FavoriteReport'";
+      using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
+      {
+        connection.Open();
+        command.Connection = connection;
+        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+        {
+          adapter.Fill(userFavorites);
+        }
+        connection.Close();
+      }
+
+      foreach (DataRow row in userFavorites.Rows)
+      {
+        try
+        {
+
+          int userID = (int)row[0];
+          string favstring = row[1].ToString();
+          string[] favs = favstring.Split(',');
+
+          foreach (string fav in favs)
+          {
+            try
+            {
+              int reportID = int.Parse(fav);
+              SetIsFavorite(LoginUser, userID, reportID, true);
+
+            }
+            catch (Exception)
+            {
+
+            }
+          }
+        }
+        catch (Exception)
+        {
+
+        }
+
+      }
+    
+    
+    }
     // end old stuff
 
     public static GridResult GetReportData(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc)
