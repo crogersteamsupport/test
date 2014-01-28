@@ -383,7 +383,7 @@ $(document).ready(function () {
                 case 4: data = JSON.stringify(getSummaryObject()); break;
                 case 2:
                     data = $('#external-url').val();
-                    if (data.indexOf('http://') < 0) data = 'http://' + data;
+                    if (data.indexOf('https://') < 0) data = 'https://' + data;
 
                     break;
                 default: break;
