@@ -318,6 +318,8 @@ $(document).ready(function () {
         $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
 
         $('.report-list .report-item:hidden').show();
+        $('.report-list-lastviewed').show();
+        $('.report-list-modified').hide();
 
         var item = $('.report-menu-item.active');
         if (item.hasClass('menu-starred')) {
@@ -325,7 +327,15 @@ $(document).ready(function () {
             $('.report-list .fa-star-o').closest('.report-item').hide();
         }
         else if (item.hasClass('menu-recent')) {
+            $('.report-list-lastviewed').show();
+            $('.report-list-modified').hide();
+            $('.report-list .report-item').each(function () {
+                if ($(this).find('.report-list-lastviewed:empty').length > 0) $(this).hide();
+            });
+
             sortReports('LastViewed', false);
+            applySearch();
+            return;
         }
         else if (item.hasClass('menu-tablular')) {
             $('.report-list .report-item').not('[data-reporttype="0"]').hide();
@@ -354,6 +364,9 @@ $(document).ready(function () {
             var folder = item.data('o');
             $('.report-list .report-item').not('[data-folderid="' + folder.FolderID + '"]').hide();
         }
+        $('.report-list-lastviewed').hide();
+        $('.report-list-modified').show();
+
         applySearch();
 
     }
@@ -408,6 +421,7 @@ $(document).ready(function () {
 
         $(".report-list .report-item").draggable({
             revert: "invalid",
+            delay: 250,
             helper: "clone",
             start: function (event, ui) {
                 _rowClone.tr = this;
@@ -425,9 +439,9 @@ $(document).ready(function () {
         item.find('.report-list-title a').text(report.Name);
         item.find('.report-list-star i').addClass(report.IsFavorite == true ? 'fa-star color-yellow' : 'fa-star-o');
         item.find('.report-list-owner').text(report.Creator);
-
-        item.find('.report-list-modified').html('<span>' + top.Ts.Utils.getMsDate(report.LastModified).localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern) + '</span> <span class="text-muted">' + report.Modifier + '</span>');
-
+        var name = report.EditorID == top.Ts.System.User.UserID ? "me" : report.Editor;
+        item.find('.report-list-modified').html('<span>' + top.Ts.Utils.getDateString(report.DateEdited, true, false, true) + '</span> <span class="text-muted">' + name + '</span>');
+        item.find('.report-list-lastviewed').text(report.LastViewed ? top.Ts.Utils.getDateString(report.LastViewed, true, true, true) : "");
         switch (report.ReportType) {
             case 1: item.find('.report-list-title i').addClass('fa-bar-chart-o color-green'); break;
             case 2: item.find('.report-list-title i').addClass('fa-globe color-blue'); break;
@@ -447,3 +461,27 @@ $(document).ready(function () {
 
 
 
+
+if (!Date.prototype.toISOString) {
+    (function () {
+
+        function pad(number) {
+            if (number < 10) {
+                return '0' + number;
+            }
+            return number;
+        }
+
+        Date.prototype.toISOString = function () {
+            return this.getUTCFullYear() +
+        '-' + pad(this.getUTCMonth() + 1) +
+        '-' + pad(this.getUTCDate()) +
+        'T' + pad(this.getUTCHours()) +
+        ':' + pad(this.getUTCMinutes()) +
+        ':' + pad(this.getUTCSeconds()) +
+        '.' + (this.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) +
+        'Z';
+        };
+
+    } ());
+}

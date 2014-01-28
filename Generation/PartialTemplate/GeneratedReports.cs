@@ -96,6 +96,12 @@ namespace TeamSupport.Data
     
 
     
+    public int EditorID
+    {
+      get { return (int)Row["EditorID"]; }
+      set { Row["EditorID"] = CheckValue("EditorID", value); }
+    }
+    
     public ReportType ReportDefType
     {
       get { return (ReportType)Row["ReportDefType"]; }
@@ -140,6 +146,17 @@ namespace TeamSupport.Data
 
     
 
+    
+    public DateTime DateEdited
+    {
+      get { return DateToLocal((DateTime)Row["DateEdited"]); }
+      set { Row["DateEdited"] = CheckValue("DateEdited", value); }
+    }
+
+    public DateTime DateEditedUtc
+    {
+      get { return (DateTime)Row["DateEdited"]; }
+    }
     
     public DateTime DateModified
     {
@@ -257,7 +274,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Reports] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [Query] = @Query,    [CustomFieldKeyName] = @CustomFieldKeyName,    [CustomRefType] = @CustomRefType,    [CustomAuxID] = @CustomAuxID,    [ReportSubcategoryID] = @ReportSubcategoryID,    [QueryObject] = @QueryObject,    [ExternalURL] = @ExternalURL,    [LastSqlExecuted] = @LastSqlExecuted,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ReportType] = @ReportType,    [ReportDef] = @ReportDef,    [ReportDefType] = @ReportDefType  WHERE ([ReportID] = @ReportID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Reports] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [Query] = @Query,    [CustomFieldKeyName] = @CustomFieldKeyName,    [CustomRefType] = @CustomRefType,    [CustomAuxID] = @CustomAuxID,    [ReportSubcategoryID] = @ReportSubcategoryID,    [QueryObject] = @QueryObject,    [ExternalURL] = @ExternalURL,    [LastSqlExecuted] = @LastSqlExecuted,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ReportType] = @ReportType,    [ReportDef] = @ReportDef,    [ReportDefType] = @ReportDefType,    [DateEdited] = @DateEdited,    [EditorID] = @EditorID  WHERE ([ReportID] = @ReportID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportID", SqlDbType.Int, 4);
@@ -379,13 +396,41 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("DateEdited", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("EditorID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Reports] (    [OrganizationID],    [Name],    [Description],    [Query],    [CustomFieldKeyName],    [CustomRefType],    [CustomAuxID],    [ReportSubcategoryID],    [QueryObject],    [ExternalURL],    [LastSqlExecuted],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ReportType],    [ReportDef],    [ReportDefType]) VALUES ( @OrganizationID, @Name, @Description, @Query, @CustomFieldKeyName, @CustomRefType, @CustomAuxID, @ReportSubcategoryID, @QueryObject, @ExternalURL, @LastSqlExecuted, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ReportType, @ReportDef, @ReportDefType); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Reports] (    [OrganizationID],    [Name],    [Description],    [Query],    [CustomFieldKeyName],    [CustomRefType],    [CustomAuxID],    [ReportSubcategoryID],    [QueryObject],    [ExternalURL],    [LastSqlExecuted],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ReportType],    [ReportDef],    [ReportDefType],    [DateEdited],    [EditorID]) VALUES ( @OrganizationID, @Name, @Description, @Query, @CustomFieldKeyName, @CustomRefType, @CustomAuxID, @ReportSubcategoryID, @QueryObject, @ExternalURL, @LastSqlExecuted, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ReportType, @ReportDef, @ReportDefType, @DateEdited, @EditorID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("EditorID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DateEdited", SqlDbType.DateTime, 8);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 23;
+		  tempParameter.Scale = 23;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ReportDefType", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -625,7 +670,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportID], [OrganizationID], [Name], [Description], [Query], [CustomFieldKeyName], [CustomRefType], [CustomAuxID], [ReportSubcategoryID], [QueryObject], [ExternalURL], [LastSqlExecuted], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ReportType], [ReportDef], [ReportDefType] FROM [dbo].[Reports] WHERE ([ReportID] = @ReportID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportID], [OrganizationID], [Name], [Description], [Query], [CustomFieldKeyName], [CustomRefType], [CustomAuxID], [ReportSubcategoryID], [QueryObject], [ExternalURL], [LastSqlExecuted], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ReportType], [ReportDef], [ReportDefType], [DateEdited], [EditorID] FROM [dbo].[Reports] WHERE ([ReportID] = @ReportID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportID", reportID);
         Fill(command);

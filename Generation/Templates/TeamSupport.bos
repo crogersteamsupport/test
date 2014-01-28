@@ -5644,6 +5644,40 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>Reports</TableName>
+    <FieldName>DateEdited</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Reports</TableName>
+    <FieldName>EditorID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>OrganizationProducts</TableName>
     <FieldName>OrganizationProductID</FieldName>
     <CustomType>int</CustomType>

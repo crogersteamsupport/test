@@ -1364,7 +1364,9 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType]
+    [ReportDefType],
+    [DateEdited],
+    [EditorID]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -1393,6 +1395,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
+  @DateEdited datetime,
+  @EditorID int,
   @Identity int OUT
 )
 AS
@@ -1416,7 +1420,9 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType])
+    [ReportDefType],
+    [DateEdited],
+    [EditorID])
   VALUES (
     @OrganizationID,
     @Name,
@@ -1435,7 +1441,9 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType)
+    @ReportDefType,
+    @DateEdited,
+    @EditorID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1462,7 +1470,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int
+  @ReportDefType int,
+  @DateEdited datetime,
+  @EditorID int
 )
 AS
   SET NOCOUNT OFF;
@@ -1483,7 +1493,9 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType
+    [ReportDefType] = @ReportDefType,
+    [DateEdited] = @DateEdited,
+    [EditorID] = @EditorID
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -14639,7 +14651,9 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType]
+    [ReportDefType],
+    [DateEdited],
+    [EditorID]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -14668,6 +14682,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
+  @DateEdited datetime,
+  @EditorID int,
   @Identity int OUT
 )
 AS
@@ -14691,7 +14707,9 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType])
+    [ReportDefType],
+    [DateEdited],
+    [EditorID])
   VALUES (
     @OrganizationID,
     @Name,
@@ -14710,7 +14728,9 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType)
+    @ReportDefType,
+    @DateEdited,
+    @EditorID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -14737,7 +14757,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int
+  @ReportDefType int,
+  @DateEdited datetime,
+  @EditorID int
 )
 AS
   SET NOCOUNT OFF;
@@ -14758,7 +14780,9 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType
+    [ReportDefType] = @ReportDefType,
+    [DateEdited] = @DateEdited,
+    [EditorID] = @EditorID
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -27914,7 +27938,9 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType]
+    [ReportDefType],
+    [DateEdited],
+    [EditorID]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -27943,6 +27969,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
+  @DateEdited datetime,
+  @EditorID int,
   @Identity int OUT
 )
 AS
@@ -27966,7 +27994,9 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType])
+    [ReportDefType],
+    [DateEdited],
+    [EditorID])
   VALUES (
     @OrganizationID,
     @Name,
@@ -27985,7 +28015,9 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType)
+    @ReportDefType,
+    @DateEdited,
+    @EditorID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -28012,7 +28044,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int
+  @ReportDefType int,
+  @DateEdited datetime,
+  @EditorID int
 )
 AS
   SET NOCOUNT OFF;
@@ -28033,7 +28067,9 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType
+    [ReportDefType] = @ReportDefType,
+    [DateEdited] = @DateEdited,
+    [EditorID] = @EditorID
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -41189,7 +41225,9 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType]
+    [ReportDefType],
+    [DateEdited],
+    [EditorID]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -41218,6 +41256,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
+  @DateEdited datetime,
+  @EditorID int,
   @Identity int OUT
 )
 AS
@@ -41241,7 +41281,9 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType])
+    [ReportDefType],
+    [DateEdited],
+    [EditorID])
   VALUES (
     @OrganizationID,
     @Name,
@@ -41260,7 +41302,9 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType)
+    @ReportDefType,
+    @DateEdited,
+    @EditorID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -41287,7 +41331,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int
+  @ReportDefType int,
+  @DateEdited datetime,
+  @EditorID int
 )
 AS
   SET NOCOUNT OFF;
@@ -41308,7 +41354,9 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType
+    [ReportDefType] = @ReportDefType,
+    [DateEdited] = @DateEdited,
+    [EditorID] = @EditorID
   WHERE ([ReportID] = @ReportID)
 GO
 
@@ -54464,7 +54512,9 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType]
+    [ReportDefType],
+    [DateEdited],
+    [EditorID]
   FROM [dbo].[Reports]
   WHERE ([ReportID] = @ReportID)
 GO
@@ -54493,6 +54543,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertReport
   @ReportType int,
   @ReportDef varchar(MAX),
   @ReportDefType int,
+  @DateEdited datetime,
+  @EditorID int,
   @Identity int OUT
 )
 AS
@@ -54516,7 +54568,9 @@ AS
     [ModifierID],
     [ReportType],
     [ReportDef],
-    [ReportDefType])
+    [ReportDefType],
+    [DateEdited],
+    [EditorID])
   VALUES (
     @OrganizationID,
     @Name,
@@ -54535,7 +54589,9 @@ AS
     @ModifierID,
     @ReportType,
     @ReportDef,
-    @ReportDefType)
+    @ReportDefType,
+    @DateEdited,
+    @EditorID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -54562,7 +54618,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateReport
   @ModifierID int,
   @ReportType int,
   @ReportDef varchar(MAX),
-  @ReportDefType int
+  @ReportDefType int,
+  @DateEdited datetime,
+  @EditorID int
 )
 AS
   SET NOCOUNT OFF;
@@ -54583,7 +54641,9 @@ AS
     [ModifierID] = @ModifierID,
     [ReportType] = @ReportType,
     [ReportDef] = @ReportDef,
-    [ReportDefType] = @ReportDefType
+    [ReportDefType] = @ReportDefType,
+    [DateEdited] = @DateEdited,
+    [EditorID] = @EditorID
   WHERE ([ReportID] = @ReportID)
 GO
 

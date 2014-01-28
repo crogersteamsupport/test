@@ -1097,14 +1097,14 @@ namespace TeamSupport.Data
 
       // verify values are numbers for sql injection
       float.Parse(calc.Value1);
-      float.Parse(calc.Value2);
+      
 
       switch (calc.Comparator.ToLower())
       {
-        case "lt": result.Comparator = string.Format("({0} < {1})", result.Alias, calc.Value1); break;
-        case "gt": result.Comparator = string.Format("({0} > {1})", result.Alias, calc.Value1); break;
-        case "bet": result.Comparator = string.Format("({0} BETWEEN {1} AND {2})", result.Alias, calc.Value1, calc.Value2); break;
-        case "eq": result.Comparator = string.Format("({0} = {1})", result.Alias, calc.Value1); break;
+        case "lt": result.Comparator = string.Format("({0} < {1})", result.AggField, calc.Value1); break;
+        case "gt": result.Comparator = string.Format("({0} > {1})", result.AggField, calc.Value1); break;
+        case "bet": result.Comparator = string.Format("({0} BETWEEN {1} AND {2})", result.AggField, calc.Value1, calc.Value2); float.Parse(calc.Value2); break;
+        case "eq": result.Comparator = string.Format("({0} = {1})", result.AggField, calc.Value1); break;
         default:
           break;
       }
@@ -1595,13 +1595,6 @@ WHERE RowNum BETWEEN @From AND @To";
       report.LastSqlExecuted = command.CommandText;
       report.Collection.Save();
 
-      ReportView reportView = (new ReportViews(loginUser)).AddNewReportView();
-      reportView.UserID = loginUser.UserID;
-      reportView.ReportID = report.ReportID;
-      reportView.DateViewed = DateTime.UtcNow;
-      reportView.SQLExecuted = command.CommandText;
-      reportView.Collection.Save();
-
       DataTable table = new DataTable();
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
       {
@@ -1646,13 +1639,6 @@ WHERE RowNum BETWEEN @From AND @To";
 
       report.LastSqlExecuted = command.CommandText;
       report.Collection.Save();
-
-      ReportView reportView = (new ReportViews(loginUser)).AddNewReportView();
-      reportView.UserID = loginUser.UserID;
-      reportView.ReportID = report.ReportID;
-      reportView.DateViewed = DateTime.UtcNow;
-      reportView.SQLExecuted = command.CommandText;
-      reportView.Collection.Save();
 
       DataTable table = new DataTable();
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
@@ -1710,8 +1696,6 @@ WHERE RowNum BETWEEN @From AND @To";
       return table;
     }
 
-
-
     public static string[] GetReportColumnNames(LoginUser loginUser, int reportID)
     {
       List<string> result = new List<string>();
@@ -1747,7 +1731,7 @@ WHERE RowNum BETWEEN @From AND @To";
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = @"
-SELECT r.*, u1.FirstName + ' ' + u1.LastName AS Creator, u2.FirstName + ' ' + u2.LastName AS Modifier,
+SELECT r.*, u1.FirstName + ' ' + u1.LastName AS Creator, u2.FirstName + ' ' + u2.LastName AS Editor,
 (SELECT TOP 1 rv.DateViewed FROM ReportViews rv WHERE rv.ReportID = r.ReportID AND rv.UserID = @UserID ORDER BY rv.DateViewed DESC) AS LastViewed,
 ISNULL((SELECT rus.Settings FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), '') AS Settings,
 ISNULL((SELECT rus.IsFavorite FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsFavorite,
@@ -1755,7 +1739,7 @@ ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.R
 (SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS FolderID
 FROM Reports r
 LEFT JOIN Users u1 ON u1.UserID = r.CreatorID
-LEFT JOIN Users u2 ON u2.UserID = r.ModifierID
+LEFT JOIN Users u2 ON u2.UserID = r.EditorID
 WHERE (r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL) 
 AND r.ReportID NOT IN (SELECT ros.ReportID FROM ReportOrganizationSettings ros WHERE ros.OrganizationID = @OrganizationID AND ros.IsHidden=1) 
 ORDER BY r.Name
@@ -1775,7 +1759,7 @@ ORDER BY r.Name
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = @"
-SELECT r.*, u1.FirstName + ' ' + u1.LastName AS Creator, u2.FirstName + ' ' + u2.LastName AS Modifier,
+SELECT r.*, u1.FirstName + ' ' + u1.LastName AS Creator, u2.FirstName + ' ' + u2.LastName AS Editor,
 (SELECT TOP 1 rv.DateViewed FROM ReportViews rv WHERE rv.ReportID = r.ReportID AND rv.UserID = @UserID ORDER BY rv.DateViewed DESC) AS LastViewed,
 ISNULL((SELECT rus.Settings FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), '') AS Settings,
 ISNULL((SELECT rus.IsFavorite FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsFavorite,
@@ -1783,7 +1767,7 @@ ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.R
 (SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS FolderID
 FROM Reports r
 LEFT JOIN Users u1 ON u1.UserID = r.CreatorID
-LEFT JOIN Users u2 ON u2.UserID = r.ModifierID
+LEFT JOIN Users u2 ON u2.UserID = r.EditorID
 WHERE (r.ReportID = @ReportID)";
 
         command.CommandType = CommandType.Text;
@@ -2007,10 +1991,11 @@ IF @@ROWCOUNT=0
           this.IsFavorite = (report.Row.Table.Columns.IndexOf("IsFavorite") < 0 || report.Row["IsFavorite"] == DBNull.Value ? false : (bool)report.Row["IsFavorite"]);
           this.IsHidden = (report.Row.Table.Columns.IndexOf("IsHidden") < 0 || report.Row["IsHidden"] == DBNull.Value ? false : (bool)report.Row["IsHidden"]);
           this.UserSettings = (report.Row.Table.Columns.IndexOf("Settings") < 0 || report.Row["Settings"] == DBNull.Value ? "" : (string)report.Row["Settings"]);
-          this.LastModified = report.DateModifiedUtc;
+          this.DateEdited = report.DateEditedUtc;
           this.LastViewed = (report.Row.Table.Columns.IndexOf("LastViewed") < 0 || report.Row["LastViewed"] == DBNull.Value ? null : (DateTime?)report.Row["LastViewed"]);
           this.Creator = (report.Row.Table.Columns.IndexOf("Creator") < 0 || report.Row["Creator"] == DBNull.Value ? "" : (string)report.Row["Creator"]);
-          this.Modifier = (report.Row.Table.Columns.IndexOf("Modifier") < 0 || report.Row["Modifier"] == DBNull.Value ? "" : (string)report.Row["Modifier"]);
+          this.Editor = (report.Row.Table.Columns.IndexOf("Editor") < 0 || report.Row["Editor"] == DBNull.Value ? "" : (string)report.Row["Editor"]);
+          this.EditorID = report.EditorID;
           this.FolderID = (report.Row.Table.Columns.IndexOf("FolderID") < 0 || report.Row["FolderID"] == DBNull.Value ? null : (int?)report.Row["FolderID"]);
           if ((int)report.ReportDefType < 0)
           {
@@ -2052,9 +2037,10 @@ IF @@ROWCOUNT=0
         [DataMember] public bool IsHidden { get; set; }
         [DataMember] public int CreatorID { get; set; }
         [DataMember] public string Creator { get; set; }
-        [DataMember] public string Modifier { get; set; }
+        [DataMember] public string Editor { get; set; }
+        [DataMember] public int EditorID { get; set; }
         [DataMember] public DateTime? LastViewed { get; set; }
-        [DataMember] public DateTime LastModified { get; set; }
+        [DataMember] public DateTime DateEdited { get; set; }
         [DataMember] public int? FolderID { get; set; }
       }
  

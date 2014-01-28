@@ -10,6 +10,7 @@
 $(document).ready(function () {
     var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
     var _reportType = top.Ts.Utils.getQueryValue('ReportType', window);
+    var _chartData = null;
     if (_reportType != null) _reportType = parseInt(_reportType);
     var _tempReport = new Object();
     var _typeClass = '';
@@ -241,7 +242,7 @@ $(document).ready(function () {
                 if (i > 0) list.find('li:first').clone(true).appendTo(list);
                 var item = list.find('li:last');
                 item.find('.' + getUniqueFieldClass(field.Field)).prop('selected', true).trigger('change');
-                item.next().val(field.Value1);
+                item.find('.summary-desc-val1').val(field.Value1);
             }
 
             list = $('.summary-calc');
@@ -326,13 +327,15 @@ $(document).ready(function () {
 
 
                     delete fields[i]['__type'];
+                    var fieldName = fields[i].Name + (fields[i].AuxName ? " (" + fields[i].AuxName + ")" : "");
+
                     $('<li>')
                                 .addClass('report-field ' + getUniqueFieldClass(fields[i]))
                                 .data('field', fields[i])
                                 .append($('<div>', {
                                     class: 'checkbox'
                                 }).append($('<label>', {
-                                    html: ' <span class="text-muted">' + fields[i].Table + '.</span>' + fields[i].Name
+                                    html: ' <span class="text-muted">' + fields[i].Table + '.</span>' + fieldName
                                 }).prepend('<input type="checkbox" />')))
                                 .appendTo(list);
                     if (tableName != fields[i].Table) {
@@ -341,8 +344,8 @@ $(document).ready(function () {
                         optGroupy = $('<optgroup>').attr('label', tableName).appendTo('.summary-calc .summary-field');
                     }
 
-                    $('<option>').text(fields[i].Name).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupx);
-                    $('<option>').text(fields[i].Name).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupy);
+                    $('<option>').text(fieldName).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupx);
+                    $('<option>').text(fieldName).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroupy);
                 }
                 _fields = fields;
 
@@ -378,11 +381,11 @@ $(document).ready(function () {
                 case 0: data = JSON.stringify(getTabularObject()); break;
                 case 1: data = JSON.stringify(getChartObject()); break;
                 case 4: data = JSON.stringify(getSummaryObject()); break;
-                case 2: 
-                  data = $('#external-url').val();
-                  if (data.indexOf('http://') < 0) data = 'http://' + data;
-                  
-                break;
+                case 2:
+                    data = $('#external-url').val();
+                    if (data.indexOf('http://') < 0) data = 'http://' + data;
+
+                    break;
                 default: break;
             }
 
@@ -416,7 +419,7 @@ $(document).ready(function () {
             chartData.Filters = $('.report-filter').reportFilter('getObject');
             chartData.Subcategory = $('#selectSubCat').val();
             chartData.Fields = getSummaryFieldsObject();
-            chartData.Chart = getChartObject();
+            chartData.Chart = getHighChartOptions();
             return chartData;
         }
 
@@ -451,8 +454,7 @@ $(document).ready(function () {
                 calc.Field = new Object();
                 calc.Field.FieldID = data.ID;
                 calc.Field.IsCustom = data.IsCustom;
-                var agg = item.find('.summary-calc-agr');
-                calc.Aggregate = agg.is(':visible') ? agg.val() : item.find('.summary-calc-text-agr').val();
+                calc.Aggregate = data.DataType == 'number' ? item.find('.summary-calc-arg').val() : item.find('.summary-calc-text-arg').val();
                 calc.Comparator = item.find('.summary-calc-comp').val();
                 calc.Value1 = item.find('.summary-calc-val1').val();
                 calc.Value2 = item.find('.summary-calc-val2').val();
@@ -510,14 +512,6 @@ $(document).ready(function () {
             }
         }
 
-        function initChart(callback) {
-            if (callback) callback();
-        }
-
-        $('.chart-generate').click(function (e) {
-            e.preventDefault();
-            getChartData(function (data) { buildChart(JSON.parse(data)); }, JSON.stringify(getSummaryObject()));
-        });
 
         function getHighChartOptions(data) {
             var options = {};
@@ -532,9 +526,7 @@ $(document).ready(function () {
             options.legend.layout = $('#chart-legend-layout').val();
             options.legend.align = $('#chart-legend-align').val();
             options.legend.verticalAlign = $('#chart-legend-valign').val();
-            options.series = data.Series;
-            options.xAxis = { categories: data.Categories };
-
+            options.tscharttype = $('#chart-type').val();
             switch ($('#chart-type').val()) {
                 case 'line':
                     break;
@@ -572,8 +564,12 @@ $(document).ready(function () {
                 default:
             }
 
-            return options;
+            if (data) {
+                options.series = data.Series;
+                options.xAxis = { categories: data.Categories };
+            }
 
+            return options;
         }
 
         function buildChart(data) {
@@ -581,12 +577,10 @@ $(document).ready(function () {
                 alert("There is no data to create a chart.");
                 return;
             }
-            var options = getHighChartOptions(data);
-            $('.chart-container').highcharts(options);
+            $('.chart-container').highcharts(getHighChartOptions(data));
         }
 
-
-        function getChartData(callback, data) {
+        function getChartData(data, callback) {
             top.Ts.Utils.webMethod("ReportService", "GetChartData",
               { "summaryReportFields": data },
               callback,
@@ -595,6 +589,34 @@ $(document).ready(function () {
               });
         }
 
+        function initChart(callback) {
+            if (_report != null && _report.Def.Chart) {
+                var options = _report.Def.Chart;
+                $('#chart-type').val(options.tscharttype);
+                $('#chart-subtitle').val(options.subtitle.text);
+                $('#chart-y-title').val(options.yAxis.title.text);
+                $('#chart-tip-suffix').val(options.tooltip.valueSuffix);
+                $('#chart-legend-layout').val(options.legend.layout);
+                $('#chart-legend-align').val(options.legend.align);
+                $('#chart-legend-valign').val(options.legend.verticalAlign);
+            }
+
+            getChartData(JSON.stringify(getSummaryObject()),
+                function (data) {
+                    _chartData = data;
+                    buildChart(JSON.parse(data));
+                    if (callback) callback();
+                });
+        }
+
+        $('.chart-generate').click(function (e) {
+            e.preventDefault();
+            buildChart(JSON.parse(_chartData));
+        });
+
+        $('.report-chartproperties input, .report-chartproperties select').change(function (e) {
+            buildChart(JSON.parse(_chartData));
+        });
 
     }
 

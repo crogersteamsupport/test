@@ -35,7 +35,25 @@ namespace TSWebServices
       [WebMethod]
       public GridResult GetReportData(int reportID, int from, int to, string sortField, bool isDesc)
       {
+        UpdateReportView(reportID); 
         return Reports.GetReportData(TSAuthentication.GetLoginUser(), reportID, from, to, sortField, isDesc);
+      }
+
+      [WebMethod]
+      public string GetChartReportData(int reportID)
+      {
+        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID, TSAuthentication.UserID);
+        UpdateReportView(reportID); 
+        return GetChartData(report.ReportDef);
+      }
+
+      private void UpdateReportView(int reportID)
+      {
+        ReportView reportView = (new ReportViews(TSAuthentication.GetLoginUser())).AddNewReportView();
+        reportView.UserID = TSAuthentication.UserID;
+        reportView.ReportID = reportID;
+        reportView.DateViewed = DateTime.UtcNow;
+        reportView.Collection.Save();
       }
 
       [WebMethod]
@@ -327,6 +345,8 @@ namespace TSWebServices
 
         report.Name = name;
         report.ReportDef = data;
+        report.EditorID = TSAuthentication.UserID;
+        report.DateEdited = DateTime.UtcNow;
         report.OrganizationID = TSAuthentication.OrganizationID;
 
         switch (reportType)
@@ -348,6 +368,8 @@ namespace TSWebServices
       {
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
         if (!TSAuthentication.IsSystemAdmin && report.CreatorID != TSAuthentication.UserID) return;
+        report.EditorID = TSAuthentication.UserID;
+        report.DateEdited = DateTime.UtcNow;
         report.ReportDef = data;
         report.Collection.Save();
       }

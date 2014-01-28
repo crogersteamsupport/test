@@ -237,8 +237,8 @@
                     tableName = fields[i].Table;
                     optGroup = $('<optgroup>').attr('label', tableName).appendTo(select);
                 }
-
-                $('<option>').text(fields[i].Name).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroup);
+                var fieldName = fields[i].Name + (fields[i].AuxName ? " (" + fields[i].AuxName + ")" : "");
+                $('<option>').text(fieldName).data('field', fields[i]).addClass(getUniqueFieldClass(fields[i])).appendTo(optGroup);
             }
         },
         getDefaults: function () {

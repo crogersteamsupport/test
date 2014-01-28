@@ -40,6 +40,10 @@
             default:
         }
 
+        if (_report.Settings && _report.Settings.Filters && _report.Settings.Filters.length == 1) {
+            $('.reports-filter i').addClass('color-red');
+        }
+
         if ((top.Ts.System.User.IsSystemAdmin == false && report.CreatorID != top.Ts.System.User.UserID) || report.ReportType == 3) {
             $('.reports-edit').remove();
         }
@@ -132,6 +136,11 @@
         e.preventDefault();
         _report.Def.Filters = $('#filter-global').reportFilter('getObject');
         _report.Settings.Filters = $('#filter-user').reportFilter('getObject');
+        if (_report.Settings.Filters.length == 1) {
+            $('.reports-filter i').addClass('color-red');
+        } else {
+            $('.reports-filter i').removeClass('color-red');
+        }
 
         top.Ts.Utils.webMethod("ReportService", "SaveReportDef",
             {
@@ -278,6 +287,8 @@
             return '<a href="#" onclick="top.Ts.MainPage.openTicketByID(' + dataContext["hiddenTicketID"] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
         } else if (columnDef.openField == "OrganizationID") {
             return '<a href="#" onclick="top.Ts.MainPage.openCustomer(' + dataContext["hiddenOrganizationID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
+        } else if (columnDef.openField == "UserID") {
+            return '<a href="#" onclick="top.Ts.MainPage.openContact(' + dataContext["hiddenUserID"] + '); return false;">' + dataContext[columnDef.id] + '</a>';
         }
         return value;
     };

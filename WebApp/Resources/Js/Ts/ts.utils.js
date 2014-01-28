@@ -114,8 +114,10 @@
      }
    },
  
-   getDateString: function(date, showDate, showTime)
+   getDateString: function(date, showDate, showTime, isUTC)
    {
+     if (!date) return "";
+     if (isUTC) date = date + "GMT";
      var msDate = this.getMsDate(date);
      if ((!showDate || showDate === true) && (!showTime || showTime === true))
      {
