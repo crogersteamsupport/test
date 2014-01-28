@@ -359,7 +359,6 @@ namespace TSWebServices
         }
 
         report.Collection.Save();
-        report.Collection.UpdateFavoritesToNew();
         return new ReportItem(report, true);
       }
 
