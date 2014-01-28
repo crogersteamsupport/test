@@ -2,7 +2,6 @@
 $(document).ready(function () {
     var _rowClone = {};
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
-
     $('.report-refresh').click(
     function (e) {
         e.preventDefault();
@@ -106,6 +105,7 @@ $(document).ready(function () {
         e.preventDefault();
         $('.active.report-menu-item').removeClass('active');
         $(this).addClass('active');
+        top.Ts.Services.Reports.GetReports(loadReports);
         filterReport();
     });
 
