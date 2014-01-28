@@ -967,7 +967,7 @@ namespace TSWebServices
           job.Request = searchTerm;
           job.FieldWeights = "Name: 1000";
 
-          job.MaxFilesToRetrieve = to + 1;
+          //job.MaxFilesToRetrieve = to + 1;
           //job.AutoStopLimit = 1000000;
           job.TimeoutSeconds = 30;
           job.SearchFlags =
@@ -1000,7 +1000,20 @@ namespace TSWebServices
           }
           job.Execute();
 
-          for (int i = from; i < job.Results.Count; i++)
+          for (int i = 0; i < job.Results.Count; i++)
+          {
+            job.Results.GetNthDoc(i);
+            job.Results.SetSortKey(job.Results.CurrentItem.DisplayName);
+          }
+          job.Results.Sort(SortFlags.dtsSortBySortKey | SortFlags.dtsSortAscending | SortFlags.dtsSortCaseInsensitive, "");
+
+          int topLimit = to;
+          if (topLimit > job.Results.Count)
+          {
+            topLimit = job.Results.Count;
+          }
+
+          for (int i = from; i < topLimit; i++)
           {
             job.Results.GetNthDoc(i);
 
