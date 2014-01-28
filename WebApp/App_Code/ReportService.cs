@@ -35,7 +35,6 @@ namespace TSWebServices
       [WebMethod]
       public GridResult GetReportData(int reportID, int from, int to, string sortField, bool isDesc)
       {
-        UpdateReportView(reportID); 
         return Reports.GetReportData(TSAuthentication.GetLoginUser(), reportID, from, to, sortField, isDesc);
       }
 
@@ -43,7 +42,6 @@ namespace TSWebServices
       public string GetChartReportData(int reportID)
       {
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID, TSAuthentication.UserID);
-        UpdateReportView(reportID); 
         return GetChartData(report.ReportDef);
       }
 
@@ -164,6 +162,7 @@ namespace TSWebServices
       {
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID, TSAuthentication.UserID);
         report.MigrateToNewReport();
+        UpdateReportView(reportID);
         return new ReportItem(report, true);
       }
 
