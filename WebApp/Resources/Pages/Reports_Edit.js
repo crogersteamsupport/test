@@ -517,18 +517,17 @@ $(document).ready(function () {
             var options = {};
             options.ts = { chartType: $('#chart-type').val(), seriesTitle: $('#chart-series-title').val() }
             options.credits = { enabled: false }
-            options.title = { text: $('.report-name').val(), x: -20 };
+            options.title = { text: $('#chart-title').val(), x: -20 };
             options.subtitle = { text: $('#chart-subtitle').val(), x: -20 };
             options.tooltip = { valueSuffix: $('#chart-tip-suffix').val() };
             options.legend = {};
             options.legend.layout = $('#chart-legend-layout').val();
             options.legend.align = $('#chart-legend-align').val();
             options.legend.verticalAlign = $('#chart-legend-valign').val();
-            if (options.ts.chartType != 'pie') {
-                options.yAxis = {};
-                options.yAxis.title = { text: $('#chart-series-title').val() };
-                options.yAxis.plotLines = [{ value: 0, width: 1, color: '#808080'}];
-            }
+            options.yAxis = {};
+            options.yAxis.title = { text: $('#chart-series-title').val() };
+            options.yAxis.plotLines = [{ value: 0, width: 1, color: '#808080'}];
+
             switch ($('#chart-type').val()) {
                 case 'line':
                     break;
@@ -598,9 +597,6 @@ $(document).ready(function () {
                 options.series = data.Series;
                 options.xAxis = { categories: data.Categories };
             }
-
-
-
         }
 
         function buildChart(data) {
@@ -623,9 +619,10 @@ $(document).ready(function () {
         function initChart(callback) {
             if (_report != null && _report.Def.Chart) {
                 var options = _report.Def.Chart;
-                $('#chart-type').val(options.tscharttype);
+                $('#chart-title').val(options.title.text);
+                $('#chart-type').val(options.ts.chartType);
                 $('#chart-subtitle').val(options.subtitle.text);
-                $('#chart-series-title').val(options.yAxis.title.text);
+                $('#chart-series-title').val(options.ts.seriesTitle);
                 $('#chart-tip-suffix').val(options.tooltip.valueSuffix);
                 $('#chart-legend-layout').val(options.legend.layout);
                 $('#chart-legend-align').val(options.legend.align);
