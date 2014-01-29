@@ -158,6 +158,20 @@ namespace TeamSupport.Data
   public partial class TicketsView
   {
 
+    public int GetUserTicketCount(int userID, int closed)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT COUNT(*) FROM TicketsView tv LEFT JOIN UserTickets ut ON ut.TicketID = tv.TicketID WHERE ut.UserID = @UserID and tv.IsClosed = @closed";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@UserID", userID);
+            command.Parameters.AddWithValue("@closed", closed);
+            object o = ExecuteScalar(command);
+            if (o == null || o == DBNull.Value) return 0;
+            return (int)o;
+        }
+    }
+
     public void LoadByOrganizationID(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -283,6 +297,17 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@UserID", userID);
         Fill(command);
       }
+    }
+
+    public void Load5MostRecentByContactID(int userID, string orderBy)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT tv.* FROM TicketsView tv LEFT JOIN UserTickets ut ON ut.TicketID = tv.TicketID WHERE ut.UserID = @UserID and tv.IsClosed = 'False'  ORDER BY " + orderBy;
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@UserID", userID);
+            Fill(command);
+        }
     }
 
     public void LoadByContactID(int userID)
@@ -639,7 +664,7 @@ namespace TeamSupport.Data
       if (filter.ContactID != null)
       {
         builder.Append(" AND (EXISTS(SELECT * FROM UserTickets ut WHERE (ut.UserID = @ContactID) AND (ut.TicketID = tv.TicketID)))");
-        command.Parameters.AddWithValue("ContactID", filter.CustomerID);
+        command.Parameters.AddWithValue("ContactID", filter.ContactID);
       }
 
       if (!String.IsNullOrEmpty(filter.SearchText.Trim()))

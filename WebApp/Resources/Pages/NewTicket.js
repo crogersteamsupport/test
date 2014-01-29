@@ -687,7 +687,7 @@ $(document).ready(function () {
     .attr('target', '_blank')
     .click(function (e) {
       e.preventDefault();
-      top.Ts.MainPage.openUser(customer.UserID);
+      top.Ts.MainPage.openNewContact(customer.UserID);
     })
     .text(ellipseString(customer.Contact, 30))
     .appendTo(title);
@@ -702,7 +702,7 @@ $(document).ready(function () {
     .attr('href', '#')
     .click(function (e) {
       e.preventDefault();
-      top.Ts.MainPage.openCustomer(customer.OrganizationID);
+      top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
     })
     .text(ellipseString(customer.Company, 30))
     .appendTo(desc);
@@ -719,7 +719,7 @@ $(document).ready(function () {
     .attr('href', '#')
     .click(function (e) {
       e.preventDefault();
-      top.Ts.MainPage.openCustomer(customer.OrganizationID);
+      top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
     })
     .text(ellipseString(customer.Company, 30))
     .appendTo(title);
@@ -1203,7 +1203,7 @@ $(document).ready(function () {
       .addClass('value ui-state-default ts-link')
       .click(function (e) {
         e.preventDefault();
-        top.Ts.MainPage.openUser(queue.UserID);
+        top.Ts.MainPage.openNewContact(queue.UserID);
       })
       .text(ellipseString(queue.FirstName + ' ' + queue.LastName, 30))
       .appendTo(title);
@@ -1297,7 +1297,7 @@ $(document).ready(function () {
       .addClass('value ui-state-default ts-link')
       .click(function (e) {
         e.preventDefault();
-        top.Ts.MainPage.openUser(subscriber.UserID);
+        top.Ts.MainPage.openNewContact(subscriber.UserID);
       })
       .text(ellipseString(subscriber.FirstName + ' ' + subscriber.LastName, 30))
       .appendTo(title);

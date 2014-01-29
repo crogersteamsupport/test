@@ -1,0 +1,85 @@
+﻿body {
+}
+.form-horizontal .control-label{font-weight:normal;color:#888;}
+/*.form-group {margin-bottom: 0px;}*/
+.borderbottom{border-bottom: 1px dashed #e3e3e3;}
+.mr15{margin-right:15px;}
+.modal-body .form-group{margin-bottom: 10px;}
+.pageheader .nav-tabs{border-bottom:none !important;}
+.hiddenmenu {display:none;}
+
+#addressPanel{margin-top: 20px;}
+
+#tblNotes, #tblProducts, #tblFiles i {cursor:pointer;}
+
+.user-active{
+    color: #808080;
+}
+
+.user-inactive {
+    color: #f00;
+}
+
+.note-list{
+    border-bottom: 3px solid #DDDDDD;
+    max-height: 208px;
+    overflow: auto;
+}
+
+.hiddenfile{
+    position:absolute;
+    opacity:0;
+}
+
+.upload-queue {
+    list-style: none outside none;
+    margin: 0;
+    padding: 0.5em 0;
+}
+.upload-queue .ts-color-bg-accent {
+    float: left;
+    margin-bottom: 0.25em;
+    padding: 0.25em;
+    background-color: #D5E5F7;
+    margin-right:10px;
+}
+.upload-queue li .filename {
+    float: left;
+    line-height: 16px;
+}
+.upload-queue li .glyphicon {
+    cursor: pointer;
+    float: left;
+    margin-left: 0.25em;
+    padding: 0;
+}
+.progress-bar{
+    float:none !important;
+}
+.progress {overflow:visible !important;margin-bottom: 0px !important;}
+
+#companyName{
+    padding-left:15px;
+    font-size: 24px;
+}
+
+.userProperties i, .customProperties i{line-height: 2em;cursor:pointer}
+
+.form-group p.editable, .editable {
+    color:#428BCA;
+    cursor:pointer;
+}
+
+.form-inline .form-group input {
+	width:140px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.form-inline .form-group i{
+    margin-right:10px;
+    cursor:pointer;
+}
+
+.viewFile {cursor:pointer}
+.db{display:block;}

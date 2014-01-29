@@ -193,7 +193,10 @@ namespace TSWebServices
         }
 
         if ((org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.HelpDesk) && IsMenuItemActive(user, "mniCustomers"))
-          items.Add(new TsMenuItem("customers", "mniCustomers", "Customers", "vcr/1_7_0/images/nav/20/customers.png", string.Format(data, "Frames/Organizations.aspx", "vcr/1_7_0/PaneInfo/Customers.html")));
+        {
+          items.Add(new TsMenuItem("customers", "mniCustomers", "Customers", "vcr/1_7_0/images/nav/20/customers.png", string.Format(data, "vcr/1_7_0/Pages/Customers.html", "vcr/1_7_0/PaneInfo/Customers.html")));
+        }
+
 
         if ((org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.BugTracking) && IsMenuItemActive(user, "mniProducts"))
           items.Add(new TsMenuItem("products", "mniProducts", "Products", "vcr/1_7_0/images/nav/20/products.png", string.Format(data, "Frames/Products.aspx", "vcr/1_7_0/PaneInfo/Products.html")));
@@ -224,8 +227,6 @@ namespace TSWebServices
           utils.AddItem(new TsMenuItem("utils", "utils-emailsearch", "Email Search", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_EmailsSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
 
         }
-        if (TSAuthentication.OrganizationID == 1078)
-          items.Add(new TsMenuItem("customers2", "mniCustomers2", "New Customers", "vcr/1_7_0/images/nav/20/customers.png", string.Format(data, "vcr/1_7_0/Pages/Customers.html", "vcr/1_7_0/PaneInfo/Customers.html")));
 
       }
       else
@@ -622,7 +623,7 @@ namespace TSWebServices
         return null;
       }
 
-      if (customValue.FieldType == CustomFieldType.DateTime || customValue.FieldType == CustomFieldType.Date || customValue.FieldType == CustomFieldType.Time)
+      if (customValue.FieldType == CustomFieldType.DateTime)
       {
         customValue.Value = ((DateTime)value).ToString();
       }

@@ -26,7 +26,7 @@ namespace TeamSupport.Data
     [DataMember] public int ModifierID { get; set; }
     [DataMember] public ReferenceType RefType { get; set; }
     [DataMember] public int RefID { get; set; }
-          
+    [DataMember] public string CreatorName { get; set; }          
   }
   
   public partial class Attachment : BaseItem
@@ -45,6 +45,7 @@ namespace TeamSupport.Data
       result.FileName = this.FileName;
       result.OrganizationID = this.OrganizationID;
       result.AttachmentID = this.AttachmentID;
+      result.CreatorName = this.CreatorName;
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);

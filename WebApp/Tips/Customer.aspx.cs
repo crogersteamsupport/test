@@ -22,7 +22,7 @@ public partial class Tips_Customer : System.Web.UI.Page
       if (organization.OrganizationID != TSAuthentication.OrganizationID && organization.ParentID != TSAuthentication.OrganizationID) EndResponse("Invalid Customer");
       
       tipCompany.InnerText = organization.Name;
-      tipCompany.Attributes.Add("onclick", "top.Ts.MainPage.openCustomer(" + organizationID.ToString() + "); return false;");
+      tipCompany.Attributes.Add("onclick", "top.Ts.MainPage.openNewCustomer(" + organizationID.ToString() + "); return false;");
 
       StringBuilder props = new StringBuilder();
       if (!string.IsNullOrEmpty(organization.Website))

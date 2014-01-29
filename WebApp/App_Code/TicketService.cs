@@ -1734,6 +1734,14 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public TicketsViewItemProxy[] Load5MostRecentByContactID(int userID)
+    {
+        TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+        tickets.Load5MostRecentByContactID(userID, "DateModified DESC");
+        return tickets.GetTicketsViewItemProxies();
+    }
+
+    [WebMethod]
     public string[] CreateDummyTickets()
     {
 
@@ -2295,7 +2303,7 @@ namespace TSWebServices
     public int[] NewTicket(string data)
     {
       List<int> result = new List<int>();
-      NewTicketSaveInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<NewTicketSaveInfo>(data);
+        NewTicketSaveInfo info = Newtonsoft.Json.JsonConvert.DeserializeObject<NewTicketSaveInfo>(data);
 
       Ticket ticket = (new Tickets(TSAuthentication.GetLoginUser())).AddNewTicket();
       ticket.OrganizationID = TSAuthentication.OrganizationID;

@@ -29,6 +29,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public string MapLink { get; set; }
           
   }
   
@@ -54,8 +55,46 @@ namespace TeamSupport.Data
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
-       
-       
+
+      string link = "http://maps.google.com/maps?q={0}";
+      StringBuilder builder = new StringBuilder();
+      if (!String.IsNullOrEmpty(this.Addr1))
+      {
+          builder.Append(this.Addr1.Replace(' ', '+'));
+      }
+
+      if (!String.IsNullOrEmpty(this.Addr2))
+      {
+          if (builder.Length > 0) builder.Append("+");
+          builder.Append(this.Addr2.Replace(' ', '+'));
+      }
+
+      if (!String.IsNullOrEmpty(this.Addr3))
+      {
+          if (builder.Length > 0) builder.Append("+");
+          builder.Append(this.Addr3.Replace(' ', '+'));
+      }
+
+      if (!String.IsNullOrEmpty(this.City))
+      {
+          if (builder.Length > 0) builder.Append(",");
+          builder.Append(this.City.Replace(' ', '+'));
+      }
+
+      if (!String.IsNullOrEmpty(this.State))
+      {
+          if (builder.Length > 0) builder.Append(",");
+          builder.Append(this.State.Replace(' ', '+'));
+      }
+
+      if (!String.IsNullOrEmpty(this.Country))
+      {
+          if (builder.Length > 0) builder.Append(",");
+          builder.Append(this.Country.Replace(' ', '+'));
+      }
+
+      link = String.Format(link, builder.ToString());
+      result.MapLink = link;
       return result;
     }	
   }

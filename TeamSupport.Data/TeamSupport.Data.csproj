@@ -696,6 +696,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="bin\x86\Debug\TeamSupport.Data.dll.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -714,6 +715,21 @@
       <Project>{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}</Project>
       <Name>TidyNet</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\x86\Debug\dtSearchNetApi3.dll" />
+    <Content Include="bin\x86\Debug\HtmlAgilityPack.dll" />
+    <Content Include="bin\x86\Debug\HtmlAgilityPack.pdb" />
+    <Content Include="bin\x86\Debug\HtmlAgilityPack.xml" />
+    <Content Include="bin\x86\Debug\Newtonsoft.Json.dll" />
+    <Content Include="bin\x86\Debug\Newtonsoft.Json.xml" />
+    <Content Include="bin\x86\Debug\TeamSupport.Data.dll" />
+    <Content Include="bin\x86\Debug\TeamSupport.Data.pdb" />
+    <Content Include="bin\x86\Debug\TidyNet.dll" />
+    <Content Include="bin\x86\Debug\TidyNet.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\Debug\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

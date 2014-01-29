@@ -1391,7 +1391,7 @@ UserPage = function () {
       .addClass('ui-state-default ts-link')
       .click(function (e) {
         e.preventDefault();
-        top.Ts.MainPage.openCustomer(customer.OrganizationID);
+        top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
       })
       .text(top.Ts.Utils.ellipseString(customer.Name, 30))
       .appendTo(title);

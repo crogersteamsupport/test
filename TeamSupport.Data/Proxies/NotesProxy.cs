@@ -23,6 +23,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public string CreatorName { get; set; }
           
   }
   
@@ -39,6 +40,9 @@ namespace TeamSupport.Data
       result.RefID = this.RefID;
       result.RefType = this.RefType;
       result.NoteID = this.NoteID;
+      result.CreatorName = this.CreatorName;
+            
+
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);

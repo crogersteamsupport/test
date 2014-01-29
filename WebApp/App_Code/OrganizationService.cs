@@ -815,6 +815,21 @@ namespace TSWebServices
         return list.ToArray();
     }
 
+    [WebMethod]
+    public List<string> OrgSearch(string searchTerm)
+    {
+        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+        organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true);
+
+        List<string> list = new List<string>();
+        foreach (Organization organization in organizations)
+        {
+            list.Add(organization.Name);
+        }
+
+        return list;
+    }
+
 
     [WebMethod]
     public string ReadServiceSettings()
@@ -873,6 +888,20 @@ namespace TSWebServices
       dString.Append("</tbody>");
 
       return dString.ToString();
+    }
+
+    [WebMethod]
+    public string GetShortNameFromID(int orgID)
+    {
+        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+        organizations.LoadByOrganizationID(orgID);
+        
+        if (organizations.IsEmpty) return "N/A";
+
+        if (organizations[0].Name.Length > 10)
+            return organizations[0].Name.Substring(0, 10).ToString() + "...";
+        else
+            return organizations[0].Name.ToString();
     }
 
   }

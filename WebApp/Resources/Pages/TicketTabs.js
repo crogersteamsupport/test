@@ -21,6 +21,7 @@ $(document).ready(function () {
   var productID = top.Ts.Utils.getQueryValue('productid', window);
   var versionID = top.Ts.Utils.getQueryValue('versionid', window);
   var isKB = top.Ts.Utils.getQueryValue('iskb', window);
+  var contactID = top.Ts.Utils.getQueryValue('contactid', window);
 
   var filter = new top.TeamSupport.Data.TicketLoadFilter();
   var url = 'TicketGrid.html?';
@@ -85,6 +86,27 @@ $(document).ready(function () {
   }
   else if (isKB) {
 
+  }
+  else if (contactID) {
+      filter.UserID = top.Ts.System.User.UserID;
+      filter.ContactID = contactID;
+      filter.IsClosed = false;
+      tabs.add(true, 'tickettab', 'my', 'All My Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      delete filter.UserID;
+      filter.ContactID = contactID;
+      filter.IsClosed = false;
+      tabs.add(true, 'tickettab', 'open', 'All Open Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      filter.IsClosed = true;
+      tabs.add(true, 'tickettab', 'closed', 'All Closed Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      filter.IsClosed = false;
+      filter.UserID = -1;
+      tabs.add(true, 'tickettab', 'unassigned', 'All Unassigned Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      delete filter.IsClosed;
+      delete filter.UserID;
+      tabs.add(true, 'tickettab', 'all', 'All Tickets', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
+      //loggingSection = 'All Tickets';
+
+      afterLoad();
   }
   else {
     filter.IsClosed = false;

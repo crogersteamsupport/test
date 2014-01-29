@@ -37,11 +37,11 @@ WelcomePage = function () {
 
   $('.welcome-new-user').click(function (e) {
     e.preventDefault();
-    top.Ts.MainPage.openUser(top.Ts.System.User.UserID);
+    top.Ts.MainPage.openNewContact(top.Ts.System.User.UserID);
   });
   $('.welcome-new-customer').click(function (e) {
     e.preventDefault();
-    top.Ts.MainPage.openCustomer(-1);
+    top.Ts.MainPage.openNewCustomer(-1);
   });
   $('.welcome-new-ticket').click(function (e) {
     e.preventDefault();

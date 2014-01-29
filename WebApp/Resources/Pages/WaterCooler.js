@@ -1020,7 +1020,7 @@ function updateattachments (message) {
         if (tixcompany.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixcompany.length; i++) {
-                tixcompanystr = tixcompanystr + ' ' + tixcompany[i].CreatorName + ' added company <a href="#" target="_blank" onclick="top.Ts.MainPage.openCustomer(' + tixcompany[i].AttachmentID + '); return false;">' + tixcompany[i].CompanyName + '</a><br/>';
+                tixcompanystr = tixcompanystr + ' ' + tixcompany[i].CreatorName + ' added company <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewCustomer(' + tixcompany[i].AttachmentID + '); return false;">' + tixcompany[i].CompanyName + '</a><br/>';
             }
         }
 
@@ -1029,7 +1029,7 @@ function updateattachments (message) {
         if (tixuser.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixuser.length; i++) {
-                tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="top.Ts.MainPage.openUser(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
+                tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewContact(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
             }
         }
 
@@ -1136,7 +1136,7 @@ function createThread(thread) {
             .text(thread.Message.UserName)
             .click(function (e) {
                 e.preventDefault();
-                top.Ts.MainPage.openUser(thread.Message.UserID);
+                top.Ts.MainPage.openNewContact(thread.Message.UserID);
             })
             .attr('rel', '../../../Tips/User.aspx?UserID=' + thread.Message.UserID)
             .cluetip(clueTipOptions)
@@ -1234,7 +1234,7 @@ function createThread(thread) {
         if (tixcompany.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixcompany.length; i++) {
-                tixcompanystr = tixcompanystr + ' ' + tixcompany[i].CreatorName + ' added company <a href="#" target="_blank" onclick="top.Ts.MainPage.openCustomer(' + tixcompany[i].AttachmentID + '); return false;">' + tixcompany[i].CompanyName + '</a><br/>';
+                tixcompanystr = tixcompanystr + ' ' + tixcompany[i].CreatorName + ' added company <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewCustomer(' + tixcompany[i].AttachmentID + '); return false;">' + tixcompany[i].CompanyName + '</a><br/>';
             }
         }
 
@@ -1243,7 +1243,7 @@ function createThread(thread) {
         if (tixuser.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixuser.length; i++) {
-                tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="top.Ts.MainPage.openUser(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
+                tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewContact(' + tixuser[i].AttachmentID + '); return false;">' + tixuser[i].UserName + '</a><br/>';
                 //tixuserstr = tixuserstr + ' ' + tixuser[i].CreatorName + ' added user ' + tixuser[i].UserName + '<br/>';
             }
         }
@@ -1393,7 +1393,7 @@ function createReply(thread) {
             .text(thread.UserName)
             .click(function (e) {
                 e.preventDefault();
-                top.Ts.MainPage.openUser(thread.UserID);
+                top.Ts.MainPage.openNewContact(thread.UserID);
             })
             .appendTo(sptpic);
 

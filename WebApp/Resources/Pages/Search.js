@@ -600,7 +600,8 @@ function showSearchResults(results) {
         break;
       case 4: //Notes
         iconPath = "/vcr/1_7_0/images/nav/16/customers.png";
-        onClickHandler = "top.Ts.MainPage.openCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ", true)";
+          //onClickHandler = "top.Ts.MainPage.openCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ", true)";
+        onClickHandler = "top.Ts.MainPage.openNewCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
         subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
         break;

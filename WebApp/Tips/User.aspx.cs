@@ -32,7 +32,7 @@ public partial class Tips_User : System.Web.UI.Page
 
       if (user.OrganizationID == TSAuthentication.OrganizationID)
       {
-        tipName.Attributes.Add("onclick", "top.Ts.MainPage.openUser("+user.UserID.ToString()+"); return false;");
+          tipName.Attributes.Add("onclick", "top.Ts.MainPage.openNewContact(" + user.UserID.ToString() + "); return false;");
         tipCompany.Visible = false;
       }
       else
@@ -42,7 +42,7 @@ public partial class Tips_User : System.Web.UI.Page
       }
 
       tipCompany.InnerText = organization.Name;
-      tipCompany.Attributes.Add("onclick", "top.Ts.MainPage.openCustomer(" + user.OrganizationID.ToString() + "); return false;");
+      tipCompany.Attributes.Add("onclick", "top.Ts.MainPage.openNewCustomer(" + user.OrganizationID.ToString() + "); return false;");
       if (!string.IsNullOrEmpty(user.Title)) tipTitle.InnerHtml = user.Title + ", ";
 
       StringBuilder props = new StringBuilder();

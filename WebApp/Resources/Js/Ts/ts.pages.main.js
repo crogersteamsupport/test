@@ -352,11 +352,11 @@ Ts.Pages.Main.prototype = {
             }
         });
 
-        function setupReminderDialog() {
-            $(".dialog-reminder").dialog({
-                height: 250,
-                width: 300,
-                autoOpen: false,
+    function setupReminderDialog() {
+      $(".dialog-reminder").dialog({
+        height: 250,
+        width: 300,
+        autoOpen: false,
                 modal: true,
                 buttons: {
                     OK: function () {
@@ -463,53 +463,54 @@ Ts.Pages.Main.prototype = {
 
                 var contactID = Ts.Utils.getQueryValue('contactid');
                 var customerID = Ts.Utils.getQueryValue('customerid');
-                if (contactID) {
-                    self.openContact(contactID);
-                } else if (customerID) {
-                    self.openCustomer(customerID);
-                }
-
-                var customerName = Ts.Utils.getQueryValue('customername');
-                if (customerName) {
-                    Ts.Services.Organizations.GetIDByName(customerName, function (result) {
-                        self.openCustomer(result);
-                    });
-                }
-
-                var phoneNumber = Ts.Utils.getQueryValue('phonenumber');
-                if (phoneNumber) {
-                    Ts.Services.Organizations.GetIDByPhone(phoneNumber, function (result) {
-                        if (result[1] > -1) self.openContact(result[1], result[0]);
-                        else if (result[0] > -1) self.openCustomer(result[0]);
-
-                    });
-                }
-
-                var articleID = Ts.Utils.getQueryValue('articleid');
-                if (articleID) {
-                    self.openWiki(articleID);
-                }
-
-                var productID = Ts.Utils.getQueryValue('productid');
-                var versionID = Ts.Utils.getQueryValue('versionid');
-                if (productID || versionID) {
-                    self.openProduct(productID, versionID);
-                }
-
-                var organizationProductID = Ts.Utils.getQueryValue('organizationproductid');
-                if (organizationProductID) {
-                    self.openOrganizationProduct(organizationProductID);
-                }
-
-            });
+        if (contactID) {
+          self.openNewContact(contactID);
+        }
+        else if (customerID) {
+          self.openNewCustomer(customerID);
         }
 
+        var customerName = Ts.Utils.getQueryValue('customername');
+        if (customerName) {
+          Ts.Services.Organizations.GetIDByName(customerName, function (result) {
+            self.openNewCustomer(result);
+          });
+        }
 
-        function getUserStatusUpdate() {
+        var phoneNumber = Ts.Utils.getQueryValue('phonenumber');
+        if (phoneNumber) {
+          Ts.Services.Organizations.GetIDByPhone(phoneNumber, function (result) {
+            if (result[1] > -1) self.openNewContact(result[1], result[0]);
+            else if (result[0] > -1) self.openNewCustomer(result[0]);
 
-            Ts.Services.System.GetUserStatusUpdate(Ts.System.getSessionID(), function (result) {
+          });
+        }
 
-                if (result != null) {
+        var articleID = Ts.Utils.getQueryValue('articleid');
+        if (articleID) {
+          self.openWiki(articleID);
+        }
+
+        var productID = Ts.Utils.getQueryValue('productid');
+        var versionID = Ts.Utils.getQueryValue('versionid');
+        if (productID || versionID) {
+          self.openProduct(productID, versionID);
+        }
+
+        var organizationProductID = Ts.Utils.getQueryValue('organizationproductid');
+        if (organizationProductID) {
+          self.openOrganizationProduct(organizationProductID);
+        }
+
+      });
+    }
+
+
+    function getUserStatusUpdate() {
+
+      Ts.Services.System.GetUserStatusUpdate(Ts.System.getSessionID(), function (result) {
+
+        if (result != null) {
 
                     if (result.RefreshID != refreshID && refreshID > -1) {
                         window.location = '.';
@@ -659,23 +660,26 @@ Ts.Pages.Main.prototype = {
                 mainTabs.bind('afterSelect', openTab);
                 mainTabs.bind('afterAdd', saveTabs);
                 mainTabs.bind('beforeRemove', function (tab) {
-                    var div = null;
-                    switch (tab.getTabType()) {
-                        case Ts.Ui.Tabs.Tab.Type.Ticket:
-                            div = $('.main-ticket-' + tab.getId());
-                            break;
-                        case Ts.Ui.Tabs.Tab.Type.NewTicket:
-                            div = $('.main-ticket-new');
-                            break;
-                        default:
+          var div = null;
+          switch (tab.getTabType()) {
+            case Ts.Ui.Tabs.Tab.Type.Ticket:
+              div = $('.main-ticket-' + tab.getId());
+              break;
+            case Ts.Ui.Tabs.Tab.Type.NewTicket:
+              div = $('.main-ticket-new');
+              break;
+              case Ts.Ui.Tabs.Tab.Type.NewCompany:
+                  div = $('.main-ticket-newCompany');
+                  break;
                         case Ts.Ui.Tabs.Tab.Type.Report:
                             div = $('.main-report-' + tab.getId());
                             break;
-                    }
+            default:
+          }
 
-                    if (div) {
-                        div.children('iframe').remove();
-                        div.remove();
+          if (div) {
+            div.children('iframe').remove();
+            div.remove();
                     }
 
                 });
@@ -684,39 +688,39 @@ Ts.Pages.Main.prototype = {
                 });
                 mainTabs.bind('sort', saveTabs);
 
-                processQuery();
+        processQuery();
 
-                self.MainMenu.find('mniWC2', 'wc2').select();
-                if (notifyNewWC > 0) {
-                    top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
-                    top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + notifyNewWC + ")");
-                }
+        self.MainMenu.find('mniWC2', 'wc2').select();
+        if (notifyNewWC > 0) {
+          top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(true);
+          top.Ts.MainPage.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler (" + notifyNewWC + ")");
+        }
 
-            });
+      });
 
 
-        });
+    });
 
-        function openTab(tab) {
+    function openTab(tab) {
 
-            $('.main-tab-content .ts-loading').show();
-            $('.main-tab-content-item').hide();
-            var div = null;
-            switch (tab.getTabType()) {
-                case Ts.Ui.Tabs.Tab.Type.Main:
-                    var item = self.MainMenu.getSelected();
+      $('.main-tab-content .ts-loading').show();
+      $('.main-tab-content-item').hide();
+      var div = null;
+      switch (tab.getTabType()) {
+        case Ts.Ui.Tabs.Tab.Type.Main:
+          var item = self.MainMenu.getSelected();
 
-                    Ts.Services.Settings.WriteUserSetting('main-menu-selected', item.getId());
+          Ts.Services.Settings.WriteUserSetting('main-menu-selected', item.getId());
 
-                    if (item.getType() == 'wc2') {
-                        self.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(false);
-                        Ts.Services.System.UpdateLastWaterCoolerID();
-                        self.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler");
-                    }
+          if (item.getType() == 'wc2') {
+            self.MainMenu.find('mniWC2', 'wc2').setIsHighlighted(false);
+            Ts.Services.System.UpdateLastWaterCoolerID();
+            self.MainMenu.find('mniWC2', 'wc2').setCaption("Water Cooler");
+          }
 
-                    if (item.getType() == 'chat') {
-                        self.MainMenu.find('mniChat', 'chat').setIsHighlighted(false);
-                    }
+          if (item.getType() == 'chat') {
+            self.MainMenu.find('mniChat', 'chat').setIsHighlighted(false);
+          }
                     div = $('.main-tab-content-item-' + item.getId());
                     if (div.length < 1) {
                         div = $('<div>')
@@ -731,8 +735,8 @@ Ts.Pages.Main.prototype = {
                         .attr('src', item.getData().ContentUrl);
                     } else {
                         div.show();
-                        var data = div.data('pageData');
-                        if (data) {
+            var data = div.data('pageData');
+            if (data) {
                             data.refresh();
                         } else {
                             var contentFrame = $(div).children('iframe')[0];
@@ -752,19 +756,19 @@ Ts.Pages.Main.prototype = {
                     break;
 
 
-                case Ts.Ui.Tabs.Tab.Type.Ticket:
-                    var ticketID = tab.getId();
-                    div = $('.main-tab-content .main-ticket-' + ticketID);
-                    if (div.length < 1) {
-                        div = $('<div>')
-                        .addClass('main-tab-content-item main-tab-ticket main-ticket-' + ticketID)
-                        .appendTo('.main-tab-content');
+        case Ts.Ui.Tabs.Tab.Type.Ticket:
+          var ticketID = tab.getId();
+          div = $('.main-tab-content .main-ticket-' + ticketID);
+          if (div.length < 1) {
+            div = $('<div>')
+              .addClass('main-tab-content-item main-tab-ticket main-ticket-' + ticketID)
+              .appendTo('.main-tab-content');
 
-                        $('<iframe>')
-                        .attr('frameborder', 0)
-                        .attr('scrolling', 'no')
-                        .addClass('ticketIframe')
-                        .appendTo(div)
+            $('<iframe>')
+              .attr('frameborder', 0)
+              .attr('scrolling', 'no')
+              .addClass('ticketIframe')
+              .appendTo(div)
                         .attr('src', 'vcr/1_7_0/Pages/Ticket.html?TicketNumber=' + ticketID);
                     } else {
                         div.show();
@@ -779,30 +783,91 @@ Ts.Pages.Main.prototype = {
 
 
                 case Ts.Ui.Tabs.Tab.Type.NewTicket:
-                    div = $('.main-tab-content .main-ticket-new');
-                    if (div.length < 1) {
-                        var query = '';
-                        if (tab.getData()) query = tab.getData();
-                        div = $('<div>')
-                        .addClass('main-tab-content-item main-tab-newticket main-ticket-new')
-                        .appendTo('.main-tab-content');
+          div = $('.main-tab-content .main-ticket-new');
+          if (div.length < 1) {
+            var query = '';
+            if (tab.getData()) query = tab.getData();
+            div = $('<div>')
+              .addClass('main-tab-content-item main-tab-newticket main-ticket-new')
+              .appendTo('.main-tab-content');
 
-                        $('<iframe>')
-                        .attr('frameborder', 0)
-                        .attr('scrolling', 'no')
-                        .appendTo(div)
-                        .attr('src', 'vcr/1_7_0/Pages/NewTicket.html' + query);
-                        //.attr('src', 'frames/newticket.aspx' + query);
+            $('<iframe>')
+              .attr('frameborder', 0)
+              .attr('scrolling', 'no')
+              .appendTo(div)
+              .attr('src', 'vcr/1_7_0/Pages/NewTicket.html' + query);
+            //.attr('src', 'frames/newticket.aspx' + query);
                     } else {
                         div.show();
                     }
                     try {
                         if (parent.ticketSocket.server.ticketViewingRemove) parent.ticketSocket.server.ticketViewingRemove(top.Ts.System.User.UserID);
                     } catch (err) { }
-                    $('.main-info-content').load('vcr/1_7_0/PaneInfo/newticket.html');
-                    break;
+          $('.main-info-content').load('vcr/1_7_0/PaneInfo/newticket.html');
+          break;
 
+          case Ts.Ui.Tabs.Tab.Type.NewCompany:
+              div = $('.main-tab-content .main-ticket-newCompany');
+              if (div.length < 1) {
+                  var query = '';
+                  if (tab.getData()) query = tab.getData();
+                  div = $('<div>')
+                    .addClass('main-tab-content-item main-tab-newCompany main-ticket-newCompany')
+                    .appendTo('.main-tab-content');
 
+                  $('<iframe>')
+                    .attr('frameborder', 0)
+                    .attr('scrolling', 'no')
+                    .appendTo(div)
+                    .attr('src', 'vcr/1_7_0/Pages/NewCustomer.html' + query);
+              }
+              else {
+                  div.show();
+              }
+              $('.main-info-content').load('vcr/1_7_0/PaneInfo/customers.html');
+              break;
+          case Ts.Ui.Tabs.Tab.Type.Company:
+              var OrgID = tab.getId();
+              div = $('.main-tab-content .main-Customer-' + OrgID);
+              if (div.length < 1) {
+                  var query = '';
+                  if (tab.getData()) query = tab.getData();
+                  div = $('<div>')
+                    .addClass('main-tab-content-item main-tab-Customer main-Customer-' + OrgID)
+                    .appendTo('.main-tab-content');
+
+                  $('<iframe>')
+                    .attr('frameborder', 0)
+                    .attr('scrolling', 'no')
+                    .appendTo(div)
+                    .attr('src', 'vcr/1_7_0/Pages/CustomerDetail.html' + query);
+              }
+              else {
+                  div.show();
+              }
+              $('.main-info-content').load('vcr/1_7_0/PaneInfo/customers.html');
+              break;
+          case Ts.Ui.Tabs.Tab.Type.Contact:
+              var contactID = tab.getId();
+              div = $('.main-tab-content .main-Contact-' + contactID);
+              if (div.length < 1) {
+                  var query = '';
+                  if (tab.getData()) query = tab.getData();
+                  div = $('<div>')
+                    .addClass('main-tab-content-item main-tab-Contact main-Contact-' + contactID)
+                    .appendTo('.main-tab-content');
+
+                  $('<iframe>')
+                    .attr('frameborder', 0)
+                    .attr('scrolling', 'no')
+                    .appendTo(div)
+                    .attr('src', 'vcr/1_7_0/Pages/ContactDetail.html' + query);
+              }
+              else {
+                  div.show();
+              }
+              $('.main-info-content').load('vcr/1_7_0/PaneInfo/customers.html');
+              break;
                 case Ts.Ui.Tabs.Tab.Type.Report:
                     var reportID = tab.getId();
                     var report = tab.getData();
@@ -833,9 +898,9 @@ Ts.Pages.Main.prototype = {
                     $('.main-info-content').load('vcr/1_7_0/PaneInfo/report.html');
 
                     break;
-                default:
+        default:
 
-            }
+      }
 
 
             $('.main-tab-content .ts-loading').hide();
@@ -860,46 +925,46 @@ Ts.Pages.Main.prototype = {
         }
 
         this.MainTabs = new Ts.Ui.Tabs($('.main-tabs')[0], '.main-tab-content');
-        var mainTabs = this.MainTabs;
+    var mainTabs = this.MainTabs;
 
 
 
 
-        $('.main-info-close').click(function (e) {
-            e.preventDefault();
-            self.MainLayout.close('east');
+    $('.main-info-close').click(function (e) {
+      e.preventDefault();
+      self.MainLayout.close('east');
 
 
-        });
+    });
 
-        var execGetTicket = null;
+    var execGetTicket = null;
 
-        function getTicketsByTerm(request, response) {
+    function getTicketsByTerm(request, response) {
             if (execGetTicket) {
                 execGetTicket._executor.abort();
             }
-            //execGetTicket = Ts.Services.Tickets.GetTicketsByTerm(request.term, function (result) { response(result); });
-            execGetTicket = Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
-                $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
-                response(result);
-            });
+      //execGetTicket = Ts.Services.Tickets.GetTicketsByTerm(request.term, function (result) { response(result); });
+      execGetTicket = Ts.Services.Tickets.SearchTickets(request.term, null, function (result) {
+        $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
+        response(result);
+      });
 
-        }
+    }
 
         $('.main-quick-ticket').autocomplete({
             minLength: 2,
             source: getTicketsByTerm,
             delay: 300,
-            select: function (event, ui) {
-                if (ui.item) {
-                    self.openTicket(ui.item.id);
-                    top.Ts.System.logAction('Main Page - Quick Search Open Ticket');
-                }
-                $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
-            }
-        });
+      select: function (event, ui) {
+        if (ui.item) {
+          self.openTicket(ui.item.id);
+          top.Ts.System.logAction('Main Page - Quick Search Open Ticket');
+        }
+        $('.main-quick-ticket').removeClass('ui-autocomplete-loading');
+      }
+    });
 
-        $('.main-quick-ticket')
+    $('.main-quick-ticket')
             .focusin(function () {
                 $(this).val('').removeClass('main-quick-ticket-blur');
             })
@@ -909,35 +974,35 @@ Ts.Pages.Main.prototype = {
             .click(function () {
                 $(this).val('').removeClass('main-quick-ticket-blur');
             })
-            .val('Search for a ticket...');
-        /*
-        top.Ts.Services.Users.ShowIntroVideo(function (result) {
-        var overrideIntro = Ts.Utils.getQueryValue('intro');
-        if (result === false && !(overrideIntro != null && overrideIntro == 1)) return;
-        var div = $('<div>')
-        .addClass('dialog-intro')
-        .append('<iframe width="420" height="315" src="https://www.youtube.com/embed/BVl7zLVzT7E?rel=0&autoplay=1" frameborder="0" allowfullscreen></iframe>')
-        .appendTo('body');
+    .val('Search for a ticket...');
+    /*
+    top.Ts.Services.Users.ShowIntroVideo(function (result) {
+    var overrideIntro = Ts.Utils.getQueryValue('intro');
+    if (result === false && !(overrideIntro != null && overrideIntro == 1)) return;
+    var div = $('<div>')
+    .addClass('dialog-intro')
+    .append('<iframe width="420" height="315" src="https://www.youtube.com/embed/BVl7zLVzT7E?rel=0&autoplay=1" frameborder="0" allowfullscreen></iframe>')
+    .appendTo('body');
 
-        div.dialog({
-        width: 'auto',
-        height: 'auto',
-        title: 'Introduction',
-        resizable: false,
-        close: function () {
-        div.remove();
-        }
-        });
-        });
-        */
+    div.dialog({
+    width: 'auto',
+    height: 'auto',
+    title: 'Introduction',
+    resizable: false,
+    close: function () {
+    div.remove();
+    }
+    });
+    });
+    */
 
 
 
-        Ts.Services.Settings.ReadUserSetting('main-info-state', true, function (isOpen) {
+    Ts.Services.Settings.ReadUserSetting('main-info-state', true, function (isOpen) {
 
-            if (isOpen == "True") self.MainLayout.open('east');
+      if (isOpen == "True") self.MainLayout.open('east');
 
-        });
+    });
 
         this.WndScreenR = $('<iframe>', {
             id: 'wndScreenR',
@@ -951,60 +1016,60 @@ Ts.Pages.Main.prototype = {
 
 
 
-    }, // end init
+  }, // end init
 
-    recordScreen: function (params, onComplete, onCancel) {
-        if (!params) {
-            params = new Object();
-            params.userName = top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName;
-            params.userEmail = top.Ts.System.User.Email;
-            params.hideAllFields = true;
-            params.maxTimeLimit = 300;
-        }
+  recordScreen: function (params, onComplete, onCancel) {
+    if (!params) {
+      params = new Object();
+      params.userName = top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName;
+      params.userEmail = top.Ts.System.User.Email;
+      params.hideAllFields = true;
+      params.maxTimeLimit = 300;
+    }
 
-        params.id = "b67bdeab7c084032bc4f37e5308eae1e";
+    params.id = "b67bdeab7c084032bc4f37e5308eae1e";
 
         var recorder = this.WndScreenR.contentWindow.Screenr.Recorder({
             id: "b67bdeab7c084032bc4f37e5308eae1e",
             hideAllFields: true,
             maxTimeLimit: 300
         }); // this.WndScreenR.contentWindow.Screenr.Recorder(params);
-        if (onComplete) recorder.setOnComplete(onComplete);
-        if (onCancel) recorder.setOnCancel(onCancel);
+    if (onComplete) recorder.setOnComplete(onComplete);
+    if (onCancel) recorder.setOnCancel(onCancel);
 
 
-        recorder.record();
+    recorder.record();
 
 
-    },
+  },
 
-    openTicketByID: function (ticketID, doSelect) {
-        var self = this;
-        Ts.Services.Tickets.GetTicketNumber(ticketID, function (number) {
-            self.openTicket(number, doSelect);
-        });
-    },
-    openTicket: function (ticketNumber, doSelect) {
-        var self = this;
-        doSelect = doSelect == null ? true : doSelect;
-        Ts.Services.Tickets.GetTicketName(ticketNumber, function (name) {
-            self.MainTabs.prepend(doSelect, Ts.Ui.Tabs.Tab.Type.Ticket, ticketNumber, 'Ticket: ' + ticketNumber, true, true, false, null, null, null, name);
-        });
-    },
-    newTicket: function (query) {
+  openTicketByID: function (ticketID, doSelect) {
+    var self = this;
+    Ts.Services.Tickets.GetTicketNumber(ticketID, function (number) {
+      self.openTicket(number, doSelect);
+    });
+  },
+  openTicket: function (ticketNumber, doSelect) {
+    var self = this;
+    doSelect = doSelect == null ? true : doSelect;
+    Ts.Services.Tickets.GetTicketName(ticketNumber, function (name) {
+      self.MainTabs.prepend(doSelect, Ts.Ui.Tabs.Tab.Type.Ticket, ticketNumber, 'Ticket: ' + ticketNumber, true, true, false, null, null, null, name);
+    });
+  },
+  newTicket: function (query) {
 
-        this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTicket, 'new', 'New Ticket', true, true, true, null, null, query, null);
-    },
-    closeNewTicketTab: function () {
-        var tab = this.MainTabs.find('new', Ts.Ui.Tabs.Tab.Type.NewTicket);
-        if (tab) {
-            this.closeTab(tab);
-            tab.remove();
-        }
-    },
-    closeTab: function (tab) {
-        return tab.remove();
-    },
+    this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewTicket, 'new', 'New Ticket', true, true, true, null, null, query, null);
+  },
+  closeNewTicketTab: function () {
+    var tab = this.MainTabs.find('new', Ts.Ui.Tabs.Tab.Type.NewTicket);
+    if (tab) {
+      this.closeTab(tab);
+      tab.remove();
+    }
+  },
+  closeTab: function (tab) {
+    return tab.remove();
+  },
     openReport: function (report, doSelect) {
         var self = this;
         if (report.ReportID) {
@@ -1017,249 +1082,252 @@ Ts.Pages.Main.prototype = {
             });
         }
     },
-    closeTicketTab: function (ticketNumber) {
-        var tab = this.MainTabs.find(ticketNumber, Ts.Ui.Tabs.Tab.Type.Ticket);
+  closeTicketTab: function (ticketNumber) {
+    var tab = this.MainTabs.find(ticketNumber, Ts.Ui.Tabs.Tab.Type.Ticket);
         if (tab) {
             return this.closeTab(tab);
         }
-        return false;
-    },
-    highlightTicketTab: function (ticketNumber, isHighlighted) {
-        var tab = this.MainTabs.find(ticketNumber, Ts.Ui.Tabs.Tab.Type.Ticket);
-        if (tab) {
-            tab.setIsHighlighted(isHighlighted);
-        }
-    },
-    openAttachment: function (attachmentID) {
-        window.open('../Attachment.aspx?attachmentID=' + attachmentID, 'Attachment' + attachmentID);
-    },
-    openAsset: function (assetID) {
-        //alert('Needs implementation');
-    },
-    openUser: function (userID) {
-        var self = this;
-        Ts.Services.Organizations.IsUserContact(userID, function (isContact) {
+    return false;
+  },
+  highlightTicketTab: function (ticketNumber, isHighlighted) {
+    var tab = this.MainTabs.find(ticketNumber, Ts.Ui.Tabs.Tab.Type.Ticket);
+    if (tab) {
+      tab.setIsHighlighted(isHighlighted);
+    }
+  },
+  openAttachment: function (attachmentID) {
+    window.open('../Attachment.aspx?attachmentID=' + attachmentID, 'Attachment' + attachmentID);
+  },
+  openNewAttachment: function (attachmentID) {
+      window.open('../../../Attachment.aspx?attachmentID=' + attachmentID, 'Attachment' + attachmentID);
+  },
+  openAsset: function (assetID) {
+    //alert('Needs implementation');
+  },
+  openUser: function (userID) {
+    var self = this;
+    Ts.Services.Organizations.IsUserContact(userID, function (isContact) {
             if (isContact) {
                 self.openContact(userID);
                 return;
             }
-            Ts.Services.Settings.WriteUserSetting('SelectedUserID', userID, function () {
-                Ts.Services.Settings.WriteUserSetting('SelectedUserTabIndex', 0, function () {
-                    self.MainMenu.find('mniUsers', 'users').select();
-                    var element = $('.main-tab-content-item:visible');
-                    var contentFrame = $(element).children('iframe')[0];
-                    if (contentFrame && contentFrame.contentWindow.refreshData) {
-                        contentFrame.contentWindow.refreshData;
-                    }
-                });
-            });
-
-
+      Ts.Services.Settings.WriteUserSetting('SelectedUserID', userID, function () {
+        Ts.Services.Settings.WriteUserSetting('SelectedUserTabIndex', 0, function () {
+          self.MainMenu.find('mniUsers', 'users').select();
+          var element = $('.main-tab-content-item:visible');
+          var contentFrame = $(element).children('iframe')[0];
+          if (contentFrame && contentFrame.contentWindow.refreshData) {
+            contentFrame.contentWindow.refreshData;
+          }
         });
-    },
-    openContact: function (contactID, customerID) {
-        var self = this;
-        if (customerID == null) {
-            Ts.Services.Organizations.GetUser(contactID, function (user) {
-                if (user) self.openContact(contactID, user.OrganizationID);
-            });
-        }
+      });
 
-        _selectContactID = contactID;
-        _selectCustomerID = customerID;
 
-        this.MainMenu.find('mniCustomers', 'customers').select();
+    });
+  },
+  openContact: function (contactID, customerID) {
+    var self = this;
+    if (customerID == null) {
+      Ts.Services.Organizations.GetUser(contactID, function (user) {
+        if (user) self.openContact(contactID, user.OrganizationID);
+      });
+    }
+
+    _selectContactID = contactID;
+    _selectCustomerID = customerID;
+
+    this.MainMenu.find('mniCustomers', 'customers').select();
+    var element = $('.main-tab-content-item:visible');
+    var contentFrame = $(element).children('iframe')[0];
+    if (contentFrame && contentFrame.contentWindow.selectCustomer) {
+      contentFrame.contentWindow.selectContact(contactID, customerID);
+    }
+
+
+  },
+  openCustomerByName: function (name) {
+    var self = this;
+    Ts.Services.Organizations.GetIDByName(name, function (id) {
+      self.openCustomer(id);
+    });
+  },
+  openCustomer: function (customerID) {
+    _selectContactID = -1;
+    _selectCustomerID = customerID;
+
+    this.MainMenu.find('mniCustomers', 'customers').select();
+    var element = $('.main-tab-content-item:visible');
+    var contentFrame = $(element).children('iframe')[0];
+    if (contentFrame && contentFrame.contentWindow.selectCustomer) {
+      contentFrame.contentWindow.selectCustomer(customerID);
+    }
+  },
+  openCustomerNote: function (customerID, noteID) {
+    _selectContactID = -1;
+    _selectCustomerID = customerID;
+
+    var self = this;
+    Ts.Services.Settings.WriteUserSetting('SelectedOrganizationTabIndex', 4, function () {
+      Ts.Services.Settings.WriteUserSetting('SelectedCustomerNoteID', noteID, function () {
+        self.MainMenu.find('mniCustomers', 'customers').select();
         var element = $('.main-tab-content-item:visible');
         var contentFrame = $(element).children('iframe')[0];
-        if (contentFrame && contentFrame.contentWindow.selectCustomer) {
-            contentFrame.contentWindow.selectContact(contactID, customerID);
+        if (contentFrame && contentFrame.contentWindow.reload) {
+          contentFrame.contentWindow.reload();
         }
-
-
-    },
-    openCustomerByName: function (name) {
-        var self = this;
-        Ts.Services.Organizations.GetIDByName(name, function (id) {
-            self.openCustomer(id);
-        });
-    },
-    openCustomer: function (customerID) {
-        _selectContactID = -1;
-        _selectCustomerID = customerID;
-
-        this.MainMenu.find('mniCustomers', 'customers').select();
+      });
+    });
+  },
+  openGroup: function (groupID) {
+    var self = this;
+    Ts.Services.Settings.WriteUserSetting('SelectedGroupID', groupID, function () {
+      Ts.Services.Settings.WriteUserSetting('SelectedGroupTabIndex', 0, function () {
+        self.MainMenu.find('mniGroups', 'groups').select();
         var element = $('.main-tab-content-item:visible');
         var contentFrame = $(element).children('iframe')[0];
-        if (contentFrame && contentFrame.contentWindow.selectCustomer) {
-            contentFrame.contentWindow.selectCustomer(customerID);
+        if (contentFrame && contentFrame.contentWindow.refreshData) {
+          contentFrame.contentWindow.refreshData;
         }
-    },
-    openCustomerNote: function (customerID, noteID) {
-        _selectContactID = -1;
-        _selectCustomerID = customerID;
+      });
+    });
+  },
+  openAdmin: function (tabText) {
+    var self = this;
+    top.Ts.Settings.Organization.write('SelectedAdminTabText', tabText, function () {
+      self.MainMenu.find('mniAdmin', 'admin').select();
+    });
 
-        var self = this;
-        Ts.Services.Settings.WriteUserSetting('SelectedOrganizationTabIndex', 4, function () {
-            Ts.Services.Settings.WriteUserSetting('SelectedCustomerNoteID', noteID, function () {
-                self.MainMenu.find('mniCustomers', 'customers').select();
-                var element = $('.main-tab-content-item:visible');
-                var contentFrame = $(element).children('iframe')[0];
-                if (contentFrame && contentFrame.contentWindow.reload) {
-                    contentFrame.contentWindow.reload();
-                }
-            });
+
+  },
+  openProduct: function (productID, versionID) {
+    var self = this;
+    if (versionID == null) versionID = -1;
+    Ts.Services.Settings.WriteUserSetting('SelectedProductTabIndex', versionID < 0 ? 0 : 1, function () {
+      Ts.Services.Settings.WriteUserSetting('SelectedProductID', productID, function () {
+        Ts.Services.Settings.WriteUserSetting('SelectedVersionID', versionID, function () {
+          self.MainMenu.find('mniProducts', 'products').select();
+          var element = $('.main-tab-content-item:visible');
+          var contentFrame = $(element).children('iframe')[0];
+          if (contentFrame && contentFrame.contentWindow.refreshData) {
+            contentFrame.contentWindow.refreshData;
+          }
+
         });
-    },
-    openGroup: function (groupID) {
-        var self = this;
-        Ts.Services.Settings.WriteUserSetting('SelectedGroupID', groupID, function () {
-            Ts.Services.Settings.WriteUserSetting('SelectedGroupTabIndex', 0, function () {
-                self.MainMenu.find('mniGroups', 'groups').select();
-                var element = $('.main-tab-content-item:visible');
-                var contentFrame = $(element).children('iframe')[0];
-                if (contentFrame && contentFrame.contentWindow.refreshData) {
-                    contentFrame.contentWindow.refreshData;
-                }
-            });
+      });
+    });
+    
+  },
+  openProductVersion: function (productID, versionID) {
+    var self = this;
+    if (versionID == null) versionID = -1;
+    Ts.Services.Settings.WriteUserSetting('SelectedProductTabIndex', versionID < 0 ? 0 : 1, function () {
+      Ts.Services.Settings.WriteUserSetting('SelectedProductID', productID, function () {
+        Ts.Services.Settings.WriteUserSetting('SelectedVersionID', versionID, function () {
+          self.MainMenu.find('mniProducts', 'products').select();
+          var element = $('.main-tab-content-item:visible');
+          var contentFrame = $(element).children('iframe')[0];
+          if (contentFrame && contentFrame.contentWindow.reload) {
+            contentFrame.contentWindow.reload();
+          }
+
         });
-    },
-    openAdmin: function (tabText) {
-        var self = this;
-        top.Ts.Settings.Organization.write('SelectedAdminTabText', tabText, function () {
-            self.MainMenu.find('mniAdmin', 'admin').select();
-        });
+      });
+    });
 
+  },
+  openWiki: function (articleID) {
+    this.MainMenu.find('mniWiki', 'wiki').select();
+    var element = $('.main-tab-content-item:visible');
+    $(element).children('iframe').attr('src', 'Wiki/ViewPage.aspx?ArticleID=' + articleID);
+  },
+  hideWelcome: function () {
+    this.MainMenu.find('mniDashboard', 'dashboard').select();
+    $('.menutree-item-welcome-mniWelcome').remove();
 
-    },
-    openProduct: function (productID, versionID) {
-        var self = this;
-        if (versionID == null) versionID = -1;
-        Ts.Services.Settings.WriteUserSetting('SelectedProductTabIndex', versionID < 0 ? 0 : 1, function () {
-            Ts.Services.Settings.WriteUserSetting('SelectedProductID', productID, function () {
-                Ts.Services.Settings.WriteUserSetting('SelectedVersionID', versionID, function () {
-                    self.MainMenu.find('mniProducts', 'products').select();
-                    var element = $('.main-tab-content-item:visible');
-                    var contentFrame = $(element).children('iframe')[0];
-                    if (contentFrame && contentFrame.contentWindow.refreshData) {
-                        contentFrame.contentWindow.refreshData;
-                    }
+    top.Ts.Services.Users.HideWelcomePage(function () { });
+  },
+  openOrganizationProduct: function (organizationProductID) {
+    var self = this;
+    Ts.Services.Organizations.GetOrganizationProduct(organizationProductID, function (op) {
+      self.openProduct(op.ProductID, op.ProductVersionID == null ? -1 : op.ProductVersionID);
+    });
+  },
+  openTag: function (tagID) {
+    this.MainMenu.find('mniTicketTags', 'tickettags').select();
+    var element = $('.main-tab-content-item:visible');
+    $(element).children('iframe').attr('src', 'Frames/TicketTags.aspx?TagID=' + tagID);
+  },
+  addDebugStatus: function (text) {
+    $('.status-debug').text(text);
+  },
+  selectTicket: function (filter, callback) {
+    $('.dialog-select-ticket').find('input').data('filter', filter).val('');
+    var buttons = $('.dialog-select-ticket').dialog('option', 'buttons');
 
-                });
-            });
-        });
-
-    },
-    openProductVersion: function (productID, versionID) {
-        var self = this;
-        if (versionID == null) versionID = -1;
-        Ts.Services.Settings.WriteUserSetting('SelectedProductTabIndex', versionID < 0 ? 0 : 1, function () {
-            Ts.Services.Settings.WriteUserSetting('SelectedProductID', productID, function () {
-                Ts.Services.Settings.WriteUserSetting('SelectedVersionID', versionID, function () {
-                    self.MainMenu.find('mniProducts', 'products').select();
-                    var element = $('.main-tab-content-item:visible');
-                    var contentFrame = $(element).children('iframe')[0];
-                    if (contentFrame && contentFrame.contentWindow.reload) {
-                        contentFrame.contentWindow.reload();
-                    }
-
-                });
-            });
-        });
-
-    },
-    openWiki: function (articleID) {
-        this.MainMenu.find('mniWiki', 'wiki').select();
-        var element = $('.main-tab-content-item:visible');
-        $(element).children('iframe').attr('src', 'Wiki/ViewPage.aspx?ArticleID=' + articleID);
-    },
-    hideWelcome: function () {
-        this.MainMenu.find('mniDashboard', 'dashboard').select();
-        $('.menutree-item-welcome-mniWelcome').remove();
-
-        top.Ts.Services.Users.HideWelcomePage(function () { });
-    },
-    openOrganizationProduct: function (organizationProductID) {
-        var self = this;
-        Ts.Services.Organizations.GetOrganizationProduct(organizationProductID, function (op) {
-            self.openProduct(op.ProductID, op.ProductVersionID == null ? -1 : op.ProductVersionID);
-        });
-    },
-    openTag: function (tagID) {
-        this.MainMenu.find('mniTicketTags', 'tickettags').select();
-        var element = $('.main-tab-content-item:visible');
-        $(element).children('iframe').attr('src', 'Frames/TicketTags.aspx?TagID=' + tagID);
-    },
-    addDebugStatus: function (text) {
-        $('.status-debug').text(text);
-    },
-    selectTicket: function (filter, callback) {
-        $('.dialog-select-ticket').find('input').data('filter', filter).val('');
-        var buttons = $('.dialog-select-ticket').dialog('option', 'buttons');
-
-        buttons.OK = function () {
-            $(this).dialog("close");
-            callback($(this).find('input').data('item').data);
-        }
-        $('.dialog-select-ticket').dialog('option', 'buttons', buttons).dialog('open').find('input').focus();
-    },
-    updateMyOpenTicketReadCount: function () {
-        Ts.Services.Tickets.GetMyOpenReadCount(function (result) {
-            if (result > 0) {
-                $('.menutree-item-mytickets-mniMyTickets a').text('My Tickets (' + result + ')').css('font-weight', 'bold');
+    buttons.OK = function () {
+      $(this).dialog("close");
+      callback($(this).find('input').data('item').data);
+    }
+    $('.dialog-select-ticket').dialog('option', 'buttons', buttons).dialog('open').find('input').focus();
+  },
+  updateMyOpenTicketReadCount: function () {
+    Ts.Services.Tickets.GetMyOpenReadCount(function (result) {
+      if (result > 0) {
+        $('.menutree-item-mytickets-mniMyTickets a').text('My Tickets (' + result + ')').css('font-weight', 'bold');
             } else {
-                $('.menutree-item-mytickets-mniMyTickets a').text('My Tickets').css('font-weight', 'normal');
-            }
-        });
-    },
-    editReminder: function (reminder, doSave, callback) {
-        $('.dialog-reminder').dialog('option', 'width', 300);
-        $('.dialog-reminder').dialog('option', 'height', 300);
+        $('.menutree-item-mytickets-mniMyTickets a').text('My Tickets').css('font-weight', 'normal');
+      }
+    });
+  },
+  editReminder: function (reminder, doSave, callback) {
+    $('.dialog-reminder').dialog('option', 'width', 300);
+    $('.dialog-reminder').dialog('option', 'height', 300);
 
-        var select = $('.dialog-reminder .reminder-user');
-        select.empty();
-        var users = top.Ts.Cache.getUsers();
-        if (users != null) {
-            for (var i = 0; i < users.length; i++) {
-                $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo(select);
-            }
-        }
+    var select = $('.dialog-reminder .reminder-user');
+    select.empty();
+    var users = top.Ts.Cache.getUsers();
+    if (users != null) {
+      for (var i = 0; i < users.length; i++) {
+        $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo(select);
+      }
+    }
 
-        var buttons = $('.dialog-reminder').dialog('option', 'buttons');
+    var buttons = $('.dialog-reminder').dialog('option', 'buttons');
 
-        buttons.OK = function () {
-            if ($.trim($('.dialog-reminder .reminder-description').val()) == '') {
-                $('.dialog-reminder .reminder-description').closest('.label-block').addClass('ui-state-error ui-corner-all');
-                return;
-            }
+    buttons.OK = function () {
+      if ($.trim($('.dialog-reminder .reminder-description').val()) == '') {
+        $('.dialog-reminder .reminder-description').closest('.label-block').addClass('ui-state-error ui-corner-all');
+        return;
+      }
 
-            reminder.Description = $('.dialog-reminder .reminder-description').val();
-            reminder.DueDate = top.Ts.Utils.getMsDate($('.dialog-reminder .reminder-date').datetimepicker('getDate'));
-            reminder.UserID = $('.dialog-reminder .reminder-user').val();
-            var dialog = $(this);
-            if (doSave == false) {
-                dialog.dialog("close");
-                if (callback) callback(reminder);
+      reminder.Description = $('.dialog-reminder .reminder-description').val();
+      reminder.DueDate = top.Ts.Utils.getMsDate($('.dialog-reminder .reminder-date').datetimepicker('getDate'));
+      reminder.UserID = $('.dialog-reminder .reminder-user').val();
+      var dialog = $(this);
+      if (doSave == false) {
+        dialog.dialog("close");
+        if (callback) callback(reminder);
             } else {
-                //(int? reminderID, ReferenceType refType, int refID, string description, DateTime dueDate, int userID)
-                top.Ts.Services.System.EditReminder(
-                    reminder.ReminderID,
-                    reminder.RefType,
-                    reminder.RefID,
-                    reminder.Description,
-                    reminder.DueDate,
-                    reminder.UserID,
-                    function (result) {
-                        dialog.dialog("close");
-                        if (callback) callback(result);
-                    },
-                    function () {
-                        alert('There was an error saving your reminder.  Please try again.');
-                    }
-                );
-            }
+        //(int? reminderID, ReferenceType refType, int refID, string description, DateTime dueDate, int userID)
+        top.Ts.Services.System.EditReminder(
+        reminder.ReminderID,
+        reminder.RefType,
+        reminder.RefID,
+        reminder.Description,
+        reminder.DueDate,
+        reminder.UserID,
+        function (result) {
+          dialog.dialog("close");
+          if (callback) callback(result);
+        },
+        function () {
+          alert('There was an error saving your reminder.  Please try again.');
         }
+        );
+      }
+    }
 
-        $('.dialog-reminder').dialog('option', 'buttons', buttons).dialog('open');
+    $('.dialog-reminder').dialog('option', 'buttons', buttons).dialog('open');
 
         if (!reminder.RefID) {
             reminder.RefID = null;
@@ -1268,59 +1336,100 @@ Ts.Pages.Main.prototype = {
             reminder.RefType = null;
         }
 
-        if (reminder.ReminderID) {
-            $('.dialog-reminder').find('.ts-loading').show().next().hide();
-            top.Ts.Services.System.GetReminder(reminder.ReminderID, function (result) {
-                reminder = result;
-                $('.dialog-reminder .reminder-description').val(reminder.Description);
-                $('.dialog-reminder .reminder-date').datetimepicker('setDate', reminder.DueDate),
-                $('.dialog-reminder .reminder-user').combobox('setValue', reminder.UserID);
-                $('.dialog-reminder').find('.ts-loading').hide().next().show();
-            });
+    if (reminder.ReminderID) {
+      $('.dialog-reminder').find('.ts-loading').show().next().hide();
+      top.Ts.Services.System.GetReminder(reminder.ReminderID, function (result) {
+        reminder = result;
+        $('.dialog-reminder .reminder-description').val(reminder.Description);
+        $('.dialog-reminder .reminder-date').datetimepicker('setDate', reminder.DueDate),
+        $('.dialog-reminder .reminder-user').combobox('setValue', reminder.UserID);
+        $('.dialog-reminder').find('.ts-loading').hide().next().show();
+      });
         } else {
-            reminder.ReminderID = null;
-            $('.dialog-reminder').find('.ts-loading').hide().next().show();
-            $('.dialog-reminder .reminder-description').val((params.Description ? reminder.Description : ''));
-            $('.dialog-reminder .reminder-date').datetimepicker('setDate', (reminder.DueDate ? reminder.DueDate : new Date()));
-            select.combobox('setValue', (reminder.UserID ? reminder.UserID : top.Ts.System.User.UserID));
-        }
-        //$('.reminder-description').val((params.Description ? params.Description : ''));
-        //$('.reminder-description').val((params.Description ? params.Description : ''));
-    },
-
-    openWaterCoolerInstance: function (wcID, pagetype, pageid) {
-        var self = this;
-        self.MainMenu.find('mniWC2', 'wc2').select();
-        var element = $('.main-tab-content-item:visible');
-        $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/WaterCooler.html?wcinstanceid=' + wcID + '&pageid=' + pageid + '&pagetype=' + pagetype);
-    },
-
-    pasteImage: function (filter, callback) {
-        var buttons = $('.dialog-paste-image').dialog('option', 'buttons');
-
-        buttons.OK = function () {
-            Ts.Services.Tickets.SavePasteImage($('#img1').val(), $('#testImage').attr('src'), function (result) {
-                callback(result);
-            });
-            $(this).dialog("close");
-
-        };
-        $('.dialog-paste-image').dialog('option', 'buttons', buttons).dialog('open').focus();
-    },
-
-    AppNotify: function (title, message, options) {
-
-        if (options == null)
-            options = "info";
-
-        $.pnotify({
-            title: title,
-            text: message,
-            type: options,
-            icon: 'ui-icon ui-icon-lightbulb',
-            sticker: false
-        });
-
+      reminder.ReminderID = null;
+      $('.dialog-reminder').find('.ts-loading').hide().next().show();
+      $('.dialog-reminder .reminder-description').val((params.Description ? reminder.Description : ''));
+      $('.dialog-reminder .reminder-date').datetimepicker('setDate', (reminder.DueDate ? reminder.DueDate : new Date()));
+      select.combobox('setValue', (reminder.UserID ? reminder.UserID : top.Ts.System.User.UserID));
     }
+    //$('.reminder-description').val((params.Description ? params.Description : ''));
+    //$('.reminder-description').val((params.Description ? params.Description : ''));
+  },
+
+  openWaterCoolerInstance: function (wcID, pagetype, pageid) {
+    var self = this;
+    self.MainMenu.find('mniWC2', 'wc2').select();
+    var element = $('.main-tab-content-item:visible');
+    $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/WaterCooler.html?wcinstanceid=' + wcID + '&pageid=' + pageid + '&pagetype=' + pagetype);
+  },
+
+  pasteImage: function (filter, callback) {
+    var buttons = $('.dialog-paste-image').dialog('option', 'buttons');
+
+    buttons.OK = function () {
+      Ts.Services.Tickets.SavePasteImage($('#img1').val(), $('#testImage').attr('src'), function (result) {
+        callback(result);
+      });
+      $(this).dialog("close");
+
+    };
+    $('.dialog-paste-image').dialog('option', 'buttons', buttons).dialog('open').focus();
+  },
+
+  newCustomer: function (tab, orgID) {
+      var query;
+      if (tab != undefined)
+        query = "?open=" + tab + "&organizationid="+orgID;
+      this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewCompany, 'newCustomer', 'Add Customer', true, true, true, null, null, query, null);
+  },
+  closenewCustomerTab: function () {
+      var tab = this.MainTabs.find('newCustomer', Ts.Ui.Tabs.Tab.Type.NewCompany);
+      if (tab) {
+          this.closeTab(tab);
+          tab.remove();
+      }
+  },
+  openNewCustomer: function (customerID) {
+      var orgname;
+      var query = "?organizationid=" + customerID;
+      top.Ts.Services.Organizations.GetShortNameFromID(customerID, function (result) {
+          this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Company, customerID, result, true, true, false, null, null, query, null);
+      });
+      
+  },
+  closeNewCustomer: function (customerID){
+      var div = $('.main-tab-content .main-Customer-' + customerID);
+      div.remove();
+  },
+  openNewContact: function (contactID, orgID) {
+      var query = "?user=" + contactID;
+      top.Ts.Services.Users.GetShortNameFromID(contactID, function (result) {
+          this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Contact, contactID, result, true, true, false, null, null, query, null);
+      });
+
+  },
+  closeNewContact: function (contactID) {
+      var div = $('.main-tab-content .main-Contact-' + contactID);
+      div.remove();
+  },
+  AppNotify: function (title, message, options) {
+
+    if (options == null)
+      options = "info";
+
+    $.pnotify({
+      title: title,
+      text: message,
+      type: options,
+      icon: 'ui-icon ui-icon-lightbulb',
+      sticker: false
+    });
+
+  }
 
 };
+
+
+
+
+

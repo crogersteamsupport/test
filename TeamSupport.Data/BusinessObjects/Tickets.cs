@@ -1532,7 +1532,35 @@ AND u.OrganizationID = @OrganizationID
         return (int)tickets.ExecuteScalar(command, "Tickets");
       }
     }
-    
+
+    public static int GetContactOpenTicketCount(LoginUser loginUser, int userID, int ticketTypeID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT COUNT(*) FROM Tickets t LEFT JOIN TicketStatuses ts ON ts.TicketStatusID = t.TicketStatusID WHERE (t.TicketTypeID = @TicketTypeID) AND (ts.IsClosed = 0) AND EXISTS(SELECT * FROM UserTickets ut WHERE (t.TicketID = ut.TicketID) AND (ut.UserID = @userID))";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@userID", userID);
+            command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+
+            Tickets tickets = new Tickets(loginUser);
+            return (int)tickets.ExecuteScalar(command, "Tickets");
+        }
+    }
+
+    public static int GetContactClosedTicketCount(LoginUser loginUser, int userID, int ticketTypeID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT COUNT(*) FROM Tickets t LEFT JOIN TicketStatuses ts ON ts.TicketStatusID = t.TicketStatusID WHERE (t.TicketTypeID = @TicketTypeID) AND (ts.IsClosed = 1) AND EXISTS(SELECT * FROM UserTickets ut WHERE (t.TicketID = ut.TicketID) AND (ut.UserID = @userID))";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@userID", userID);
+            command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+
+            Tickets tickets = new Tickets(loginUser);
+            return (int)tickets.ExecuteScalar(command, "Tickets");
+        }
+    }
+
     public static int GetOrganizationOpenTicketCount(LoginUser loginUser, int organizationID, int ticketTypeID)
     {
       using (SqlCommand command = new SqlCommand())
