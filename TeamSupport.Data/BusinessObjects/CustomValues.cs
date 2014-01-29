@@ -164,6 +164,17 @@ namespace TeamSupport.Data
         else return -1;
       }
     }
+    public string Mask
+    {
+      get
+      {
+        if (Row.Table.Columns.Contains("Mask") && Row["Mask"] != DBNull.Value)
+        {
+          return (string)Row["Mask"];
+        }
+        else return "";
+      }
+    }
   }
 
   public partial class CustomValues 
@@ -196,7 +207,8 @@ cf.IsFirstIndexSelect,
 cf.IsRequired,
 cf.OrganizationID, 
 cf.CustomFieldID,
-cf.IsRequiredToClose
+cf.IsRequiredToClose,
+cf.Mask
 FROM CustomFields cf LEFT JOIN CustomValues cv on cv.CustomFieldID = cf.CustomFieldID 
 WHERE cf.CustomFieldID = @CustomFieldID
 AND cv.RefID=@RefID";
@@ -239,7 +251,8 @@ cf.IsFirstIndexSelect,
 cf.IsRequired,
 cf.OrganizationID, 
 cf.CustomFieldID,
-cf.IsRequiredToClose
+cf.IsRequiredToClose,
+cf.Mask
 FROM CustomFields cf LEFT JOIN CustomValues cv on cv.CustomFieldID = cf.CustomFieldID AND cv.RefID=@RefID
 WHERE cf.OrganizationID = @OrganizationID
 AND cf.RefType=@RefType

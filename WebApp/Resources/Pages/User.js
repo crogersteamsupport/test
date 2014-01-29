@@ -1427,7 +1427,9 @@ UserPage = function () {
 
       switch (field.FieldType) {
         case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
-        case top.Ts.CustomFieldType.DateTime: appendCustomEditDate(field, div); break;
+        case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+        case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+        case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
         case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
         case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
         case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
@@ -1616,6 +1618,12 @@ UserPage = function () {
                   .appendTo(container)
                   .focus();
 
+            var fieldMask = parent.closest('.user-name-value').data('field').Mask;
+            if (fieldMask) {
+              input.mask(fieldMask);
+              input.attr("placeholder", fieldMask);
+            }
+
             $('<span>')
                 .addClass('ts-icon ts-icon-save')
                 .click(function (e) {
@@ -1654,6 +1662,145 @@ UserPage = function () {
   }
 
   function appendCustomEditDate(field, element) {
+    var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+    var result = $('<a>')
+        .attr('href', '#')
+        .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+        .addClass('value ui-state-default ts-link')
+        .appendTo(element)
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          if (canEdit) {
+            $('.user-cutstom-edit').prev().show().next().remove();
+            $(this).hide();
+            var parent = $(this).parent();
+
+            var container = $('<div>')
+                .addClass('user-cutstom-edit')
+                .css('marginTop', '1em')
+                .insertAfter($(this));
+
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
+
+            var input = $('<input type="text">')
+                  .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+                  .appendTo(container)
+                  .datepicker()
+                  //.datetimepicker('setDate', top.Ts.Utils.getMsDate(fieldValue))
+                  .focus();
+
+            $('<span>')
+                .addClass('ts-icon ts-icon-save')
+                .click(function (e) {
+                  parent.show().find('img').show();
+                  var value = top.Ts.Utils.getMsDate(input.datepicker('getDate'));
+                  container.remove();
+                  if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                    result.parent().addClass('ui-state-error-custom ui-corner-all');
+                  }
+                  else {
+                    result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                  }
+                  top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                    parent.closest('.user-name-value').data('field', result);
+                    var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern()))).show();
+
+                  }, function () {
+                    alert("There was a problem saving your user property.");
+                  });
+                })
+                .appendTo(container);
+
+            $('<span>')
+                .addClass('ts-icon ts-icon-cancel')
+                .click(function (e) {
+                  parent.show();
+                  parent.find('a').show();
+                  container.remove();
+                })
+                .appendTo(container);
+          }
+        });
+    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+      result.parent().addClass('ui-state-error-custom ui-corner-all');
+    }
+  }
+
+  function appendCustomEditTime(field, element) {
+    var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+    var result = $('<a>')
+        .attr('href', '#')
+        .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+        .addClass('value ui-state-default ts-link')
+        .appendTo(element)
+        .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+        .click(function (e) {
+          e.preventDefault();
+          if (canEdit) {
+            $('.user-cutstom-edit').prev().show().next().remove();
+            $(this).hide();
+            var parent = $(this).parent();
+
+            var container = $('<div>')
+                .addClass('user-cutstom-edit')
+                .css('marginTop', '1em')
+                .insertAfter($(this));
+
+            var fieldValue = parent.closest('.user-name-value').data('field').Value;
+
+            var input = $('<input type="text">')
+                  .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+                  .appendTo(container)
+                  .timepicker()
+                  .timepicker('setDate', top.Ts.Utils.getMsDate(fieldValue))
+                  .focus();
+
+            $('<span>')
+                .addClass('ts-icon ts-icon-save')
+                .click(function (e) {
+                  parent.show().find('img').show();
+                  var time = new Date("January 1, 1970 00:00:00");
+                  time.setHours(input.timepicker('getDate')[0].value.substring(0, 2));
+                  time.setMinutes(input.timepicker('getDate')[0].value.substring(3, 5));
+                  var value = top.Ts.Utils.getMsDate(time);
+                  container.remove();
+                  if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                    result.parent().addClass('ui-state-error-custom ui-corner-all');
+                  }
+                  else {
+                    result.parent().removeClass('ui-state-error-custom ui-corner-all');
+                  }
+                  top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _user.UserID, value, function (result) {
+                    parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                    parent.closest('.user-name-value').data('field', result);
+                    var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                    parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern()))).show();
+
+                  }, function () {
+                    alert("There was a problem saving your user property.");
+                  });
+                })
+                .appendTo(container);
+
+            $('<span>')
+                .addClass('ts-icon ts-icon-cancel')
+                .click(function (e) {
+                  parent.show();
+                  parent.find('a').show();
+                  container.remove();
+                })
+                .appendTo(container);
+          }
+        });
+    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+      result.parent().addClass('ui-state-error-custom ui-corner-all');
+    }
+  }
+
+  function appendCustomEditDateTime(field, element) {
     var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
     var result = $('<a>')
         .attr('href', '#')

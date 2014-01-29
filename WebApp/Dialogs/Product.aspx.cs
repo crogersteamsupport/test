@@ -40,6 +40,13 @@ public partial class Dialogs_Product : BaseDialogPage
     {
       LoadProduct(_productID);
       _fieldControls.LoadValues();
+      Page.RegisterStartupScript("AddMasks", @"
+        <script type=""text/javascript"">
+          $('.masked').each(function (index) {
+            $(this).mask($(this).attr('placeholder'));
+          });
+        </script>
+      ");
     }
   }
 

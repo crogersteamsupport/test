@@ -172,6 +172,31 @@ namespace TeamSupport.WebUtils
             {
               (control as RadComboBox).SelectedValue = value.Value;
             }
+            else if (control is RadDatePicker)
+            {
+              if (control is RadTimePicker)
+              {
+                if (value.Value == "")
+                {
+                  (control as RadTimePicker).SelectedDate = null;
+                }
+                else
+                {
+                  (control as RadTimePicker).SelectedDate = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+                }
+              }
+              else
+              {
+                if (value.Value == "")
+                {
+                  (control as RadDatePicker).SelectedDate = null;
+                }
+                else
+                {
+                  (control as RadDatePicker).SelectedDate = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+                }
+              }
+            }
             else if (control is RadDateTimePicker)
             {
               if (value.Value == "")
@@ -256,6 +281,23 @@ namespace TeamSupport.WebUtils
           else if (control is RadComboBox)
           {
             value.Value = (control as RadComboBox).SelectedValue;
+          }
+          else if (control is RadDatePicker)
+          {
+            if (control is RadTimePicker)
+            {
+              DateTime? selectedNullableDateTime = (control as RadTimePicker).SelectedDate;
+              if (selectedNullableDateTime != null)
+              {
+                DateTime selectedDateTime = (DateTime)selectedNullableDateTime;
+                DateTime timeOnly = new DateTime(1970, 1, 1, selectedDateTime.Hour, selectedDateTime.Minute, 0, 0, UserSession.LoginUser.CultureInfo.Calendar);
+                value.Value = DataUtils.DateToUtc(UserSession.LoginUser, timeOnly).ToString();
+              }
+            }
+            else
+            {
+              value.Value = DataUtils.DateToUtc(UserSession.LoginUser, (control as RadDatePicker).SelectedDate).ToString();
+            }
           }
           else if (control is RadDateTimePicker)
           {
@@ -385,6 +427,8 @@ namespace TeamSupport.WebUtils
       {
         case CustomFieldType.Text: result = CreateTextControl(field, width); break;
         case CustomFieldType.Number: result = CreateNumberControl(field, width); break;
+        case CustomFieldType.Date: result = CreateDateControl(field, width); break;
+        case CustomFieldType.Time: result = CreateTimeControl(field, width); break;
         case CustomFieldType.DateTime: result = CreateDateTimeControl(field, width); break;
         case CustomFieldType.Boolean: result = CreateBooleanControl(field); break;
         case CustomFieldType.PickList: result = CreatePickListControl(field, width); break;
@@ -418,6 +462,12 @@ namespace TeamSupport.WebUtils
       _customControls.Add(new CustomControl(result, "$find('{0}').get_value()", "SaveCustomFieldText", _refID, field.CustomFieldID));
       if (field.IsRequired) result.CssClass = "validate(required)";
 
+      if (!String.IsNullOrEmpty(field.Mask))
+      {
+        result.CssClass += " masked";
+        result.Attributes.Add("placeholder", field.Mask);
+      }
+
       return result;
     }
 
@@ -433,6 +483,41 @@ namespace TeamSupport.WebUtils
       result.ID = FieldIDToControlID(field.CustomFieldID);
       _customControls.Add(new CustomControl(result, "$find('{0}').get_value()", "SaveCustomFieldText", _refID, field.CustomFieldID));
       return result;
+    }
+
+    private WebControl CreateDateControl(CustomField field, int width)
+    {
+      RadDatePicker result = new RadDatePicker();
+      result.Width = Unit.Pixel(width);
+      if (_autoSave) result.ClientEvents.OnDateSelected = "function(sender, args) { top.privateServices.SaveCustomFieldDate(" + _refID.ToString() + "," + field.CustomFieldID.ToString() + ", args.get_newValue()); }";
+      if (_clientSaveEvent != "") result.ClientEvents.OnDateSelected = _clientSaveEvent;
+      result.MinDate = new DateTime(1900, 1, 1);
+      result.ID = FieldIDToControlID(field.CustomFieldID);
+      result.Culture = UserSession.LoginUser.CultureInfo;
+      if (field.IsRequired) result.CssClass = "validateDateTime";
+      //_customControls.Add(new CustomControl(result, "/*$find('{0}').get_selectedDate()*/ new Date()", "SaveCustomFieldDate", _refID, field.CustomFieldID));
+      _customControls.Add(new CustomControl(result, "ConvertDate($find('{0}').get_selectedDate())", "SaveCustomFieldDate", _refID, field.CustomFieldID));
+      return result;
+
+
+    }
+
+    private WebControl CreateTimeControl(CustomField field, int width)
+    {
+      RadTimePicker result = new RadTimePicker();
+      result.Width = Unit.Pixel(width);
+      if (_autoSave) result.ClientEvents.OnDateSelected = "function(sender, args) { top.privateServices.SaveCustomFieldDate(" + _refID.ToString() + "," + field.CustomFieldID.ToString() + ", args.get_newValue()); }";
+      if (_clientSaveEvent != "") result.ClientEvents.OnDateSelected = _clientSaveEvent;
+      result.MinDate = new DateTime(1900, 1, 1);
+      result.SelectedDate = new DateTime(1970, 1, 1, 0, 0, 0);
+      result.ID = FieldIDToControlID(field.CustomFieldID);
+      result.Culture = UserSession.LoginUser.CultureInfo;
+      if (field.IsRequired) result.CssClass = "validateDateTime";
+      //_customControls.Add(new CustomControl(result, "/*$find('{0}').get_selectedDate()*/ new Date()", "SaveCustomFieldDate", _refID, field.CustomFieldID));
+      _customControls.Add(new CustomControl(result, "ConvertDate($find('{0}').get_selectedDate())", "SaveCustomFieldDate", _refID, field.CustomFieldID));
+      return result;
+
+
     }
 
     private WebControl CreateDateTimeControl(CustomField field, int width)

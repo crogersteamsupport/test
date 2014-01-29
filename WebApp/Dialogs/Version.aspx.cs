@@ -52,6 +52,13 @@ public partial class Dialogs_Version : BaseDialogPage
       LoadProducts();
       LoadVersion(_versionID);
       _fieldControls.LoadValues();
+      Page.RegisterStartupScript("AddMasks", @"
+        <script type=""text/javascript"">
+          $('.masked').each(function (index) {
+            $(this).mask($(this).attr('placeholder'));
+          });
+        </script>
+      ");
     }
     dpRelease.Culture = UserSession.LoginUser.CultureInfo;
 

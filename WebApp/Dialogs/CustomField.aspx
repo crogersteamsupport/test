@@ -50,6 +50,15 @@
             <asp:CheckBox ID="cbIsVisibleOnPortal" runat="server" Text="Visible on Portal" />
           
           </div>
+        <div ID="maskDiv" runat="server" style="margin-top: 15px;">
+          <div>
+            Mask: -leave blank for no mask (What's an edit mask? <a>Click here</a>)
+          </div>
+          <div class="inputDiv">
+            <telerik:RadTextBox ID="textMask" runat="server" MaxLength="250" Width="350px">
+            </telerik:RadTextBox>
+          </div>
+        </div>
       </div>
     </div>
   </div>

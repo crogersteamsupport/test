@@ -406,6 +406,8 @@ namespace TeamSupport.Data
                     break;
                 }
                 break;
+              case CustomFieldType.Date:
+              case CustomFieldType.Time:
               case CustomFieldType.DateTime:
                 if (condition.ConditionOperator != ConditionOperator.IsInBetween && condition.ConditionOperator != ConditionOperator.IsNotInBetween)
                 {

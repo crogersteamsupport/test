@@ -33,8 +33,34 @@ $(document).ready(function () {
           $('<tr>').append('<td>Status:</td><td>' + version.VersionStatus + '</td>').appendTo(table);
           $('<tr>').append('<td>Released:</td><td>' + (version.IsReleased === false ? 'No' : 'Yes') + '</td>').appendTo(table);
           if (version.ReleaseDate) $('<tr>').append('<td>Date:</td><td>' + version.ReleaseDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern) + '</td>').appendTo(table);
+          var formattedValue = '';
           for (var i = 0; i < values.length; i++) {
-            $('<tr>').append('<td>' + values[i].Name + ':</td><td>' + values[i].Value + '</td>').appendTo(table);
+            if (values[i].Value) {
+              formattedValue = values[i].Value;
+            }
+            else {
+              formattedValue = '';
+            }
+
+            switch (values[i].FieldType) {
+              case top.Ts.CustomFieldType.Date:
+                if (values[i].Value) {
+                  formattedValue = top.Ts.Utils.getMsDate(values[i].Value).localeFormat(top.Ts.Utils.getDatePattern());
+                }
+                break;
+              case top.Ts.CustomFieldType.Time:
+                if (values[i].Value) {
+                  formattedValue = top.Ts.Utils.getMsDate(values[i].Value).localeFormat(top.Ts.Utils.getTimePattern());
+                }
+                break;
+              case top.Ts.CustomFieldType.DateTime:
+                if (values[i].Value) {
+                  formattedValue = top.Ts.Utils.getMsDate(values[i].Value).localeFormat(top.Ts.Utils.getDateTimePattern());
+                }
+                break;
+            }
+
+            $('<tr>').append('<td>' + values[i].Name + ':</td><td>' + formattedValue + '</td>').appendTo(table);
           }
 
           table.appendTo(div);

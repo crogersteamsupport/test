@@ -37,6 +37,7 @@ namespace TeamSupport.Data
     [DataMember] public bool IsRequired { get; set; }
     [DataMember] public int OrganizationID { get; set; }
     [DataMember] public bool IsRequiredToClose { get; set; }
+    [DataMember] public string Mask { get; set; }
   }
   
   public partial class CustomValue : BaseItem
@@ -67,8 +68,9 @@ namespace TeamSupport.Data
       result.IsRequired = this.IsRequired;
       result.OrganizationID = this.OrganizationID;
       result.IsRequiredToClose = this.IsRequiredToClose;
+      result.Mask = this.Mask;
 
-      if (this.FieldType == CustomFieldType.DateTime)
+      if (this.FieldType == CustomFieldType.DateTime || this.FieldType == CustomFieldType.Date || this.FieldType == CustomFieldType.Time)
       {
         result.Value = null;
         if (Row["CustomValue"] != DBNull.Value)

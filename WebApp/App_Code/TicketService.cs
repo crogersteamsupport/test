@@ -2390,7 +2390,7 @@ namespace TSWebServices
         }
         else
         {
-          if (customValue.FieldType == CustomFieldType.DateTime)
+          if (customValue.FieldType == CustomFieldType.DateTime || customValue.FieldType == CustomFieldType.Date || customValue.FieldType == CustomFieldType.Time)
           {
             //customValue.Value = ((DateTime)field.Value).ToString();
             DateTime dt;
@@ -2489,7 +2489,7 @@ namespace TSWebServices
                         customValue.Collection.Save();
                     }
 
-                    if (customValue.FieldType == CustomFieldType.DateTime)
+                    if (customValue.FieldType == CustomFieldType.DateTime || customValue.FieldType == CustomFieldType.Date || customValue.FieldType == CustomFieldType.Time)
                     {
                         if (oldCustVal.Value != null)
                         {

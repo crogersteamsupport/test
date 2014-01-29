@@ -201,6 +201,8 @@ namespace TeamSupport.Data
         case CustomFieldType.Boolean: result = "True or False"; break;
         case CustomFieldType.Number: result = "Number"; break;
         case CustomFieldType.PickList: result = "Pick List"; break;
+        case CustomFieldType.Date: result = "Date"; break;
+        case CustomFieldType.Time: result = "Time"; break;
         default: break;
       }
       return result;
@@ -249,6 +251,12 @@ namespace TeamSupport.Data
       builder.Append("(SELECT CAST(NULLIF(RTRIM(CustomValue), '') AS ");
       switch (field.FieldType)
       {
+        case CustomFieldType.Date:
+          builder.Append("date");
+          break;
+        case CustomFieldType.Time:
+          builder.Append("time");
+          break;
         case CustomFieldType.DateTime:
           builder.Append("datetime");
           break;

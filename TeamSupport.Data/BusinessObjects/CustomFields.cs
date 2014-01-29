@@ -43,6 +43,8 @@ namespace TeamSupport.Data
         switch (FieldType)
         {
           case CustomFieldType.Text: return result;
+          case CustomFieldType.Date:
+          case CustomFieldType.Time:
           case CustomFieldType.DateTime: return DateTime.Parse(result.ToString(), BaseCollection.LoginUser.CultureInfo);
           case CustomFieldType.Boolean: return bool.Parse(result.ToString());
           case CustomFieldType.Number: return double.Parse(result.ToString());
@@ -134,6 +136,8 @@ namespace TeamSupport.Data
         case CustomFieldType.Boolean: result = "True or False"; break;
         case CustomFieldType.Number: result = "Number"; break;
         case CustomFieldType.PickList: result = "Pick List"; break;
+        case CustomFieldType.Date: result = "Date"; break;
+        case CustomFieldType.Time: result = "Time"; break;
         default: result = ""; break;
       }
       return result;

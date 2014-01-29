@@ -49,6 +49,13 @@ public partial class Dialogs_OrganizationProduct : BaseDialogPage
     {
       LoadOrganizationProduct(_organizationProductID);
       _fieldControls.LoadValues();
+      Page.RegisterStartupScript("AddMasks", @"
+        <script type=""text/javascript"">
+          $('.masked').each(function (index) {
+            $(this).mask($(this).attr('placeholder'));
+          });
+        </script>
+      ");
     }
 
 

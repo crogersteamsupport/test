@@ -622,7 +622,7 @@ namespace TSWebServices
         return null;
       }
 
-      if (customValue.FieldType == CustomFieldType.DateTime)
+      if (customValue.FieldType == CustomFieldType.DateTime || customValue.FieldType == CustomFieldType.Date || customValue.FieldType == CustomFieldType.Time)
       {
         customValue.Value = ((DateTime)value).ToString();
       }

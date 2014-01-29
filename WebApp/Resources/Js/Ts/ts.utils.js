@@ -162,6 +162,12 @@
    getDateTimePattern: function () {
      return top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
    },
+   getDatePattern: function () {
+     return top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern
+   },
+   getTimePattern: function () {
+     return top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern
+   },
    getMsDate: function(args)
    {
      if (args) return new top.Date(args);

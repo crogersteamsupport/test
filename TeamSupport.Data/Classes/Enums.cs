@@ -139,7 +139,9 @@ namespace TeamSupport.Data
     DateTime = 1,
     Boolean = 2,
     Number = 3,
-    PickList = 4
+    PickList = 4,
+    Date = 5,
+    Time = 6
   }
 
   public enum ActionLogType

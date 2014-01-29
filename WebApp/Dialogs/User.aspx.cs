@@ -93,6 +93,13 @@ public partial class Dialogs_User : BaseDialogPage
       cbEmail.Visible = _userID < 0;
       _fieldControls.RefID = _userID;
       _fieldControls.LoadValues();
+      Page.RegisterStartupScript("AddMasks", @"
+        <script type=""text/javascript"">
+          $('.masked').each(function (index) {
+            $(this).mask($(this).attr('placeholder'));
+          });
+        </script>
+      ");
     }
 
 

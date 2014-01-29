@@ -65,6 +65,13 @@ public partial class Dialogs_Organization : BaseDialogPage
       LoadGroups(_organizatinID);
       LoadOrganization(_organizatinID);
       if (_organizatinID != UserSession.LoginUser.OrganizationID) _customControls.LoadValues();
+      Page.RegisterStartupScript("AddMasks", @"
+        <script type=""text/javascript"">
+          $('.masked').each(function (index) {
+            $(this).mask($(this).attr('placeholder'));
+          });
+        </script>
+      ");
     }
 
     pnlActiveReason.Visible = _isAdmin && !cbActive.Checked;

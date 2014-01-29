@@ -210,11 +210,65 @@ public partial class Frames_OrganizationInformation : BaseFramePage
     CustomFields fields = new CustomFields(UserSession.LoginUser);
     fields.LoadByReferenceType(UserSession.LoginUser.OrganizationID, ReferenceType.Organizations);
 
+    StringBuilder valueAsString = null;
     foreach (CustomField field in fields)
     {
       if (field.CustomFieldCategoryID != null) continue;
       CustomValue value = CustomValues.GetValue(UserSession.LoginUser, field.CustomFieldID, organizationID);
+      switch (value.FieldType)
+      {
+        case CustomFieldType.Date:
+          valueAsString = new StringBuilder();
+          if (!string.IsNullOrEmpty(value.Value))
+          {
+            try
+            {
+              DateTime valueAsDateTime = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+              valueAsString.Append(valueAsDateTime.ToString("d", UserSession.LoginUser.CultureInfo));
+            }
+            catch
+            {
+              valueAsString.Append(value.Value);
+            }
+          }
+          table.Rows.Add(new string[] { field.Name + ":", valueAsString.ToString() });
+          break;
+        case CustomFieldType.Time:
+          valueAsString = new StringBuilder();
+          if (!string.IsNullOrEmpty(value.Value))
+          {
+            try
+            {
+              DateTime valueAsDateTime = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+              valueAsString.Append(valueAsDateTime.ToString("t", UserSession.LoginUser.CultureInfo));
+            }
+            catch
+            {
+              valueAsString.Append(value.Value);
+            }
+          }
+          table.Rows.Add(new string[] { field.Name + ":", valueAsString.ToString() });
+          break;
+        case CustomFieldType.DateTime:
+          valueAsString = new StringBuilder();
+          if (!string.IsNullOrEmpty(value.Value))
+          {
+            try
+            {
+              DateTime valueAsDateTime = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+              valueAsString.Append(valueAsDateTime.ToString("g", UserSession.LoginUser.CultureInfo));
+            }
+            catch
+            {
+              valueAsString.Append(value.Value);
+            }
+          }
+          table.Rows.Add(new string[] { field.Name + ":", valueAsString.ToString() });
+          break;
+        default:
       table.Rows.Add(new string[] { field.Name + ":", value.Value });
+          break;
+      }
     }
 
     CustomFieldCategories cats = new CustomFieldCategories(UserSession.LoginUser);
@@ -236,7 +290,60 @@ public partial class Frames_OrganizationInformation : BaseFramePage
         if (field.CustomFieldCategoryID != null && field.CustomFieldCategoryID == cat.CustomFieldCategoryID)
         { 
          CustomValue value = CustomValues.GetValue(UserSession.LoginUser, field.CustomFieldID, organizationID);
+          switch (value.FieldType)
+          {
+            case CustomFieldType.Date:
+              valueAsString = new StringBuilder();
+              if (!string.IsNullOrEmpty(value.Value))
+              {
+                try
+                {
+                  DateTime valueAsDateTime = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+                  valueAsString.Append(valueAsDateTime.ToString("d", UserSession.LoginUser.CultureInfo));
+                }
+                catch
+                {
+                  valueAsString.Append(value.Value);
+                }
+              }
+              builder.Append(string.Format(prop, field.Name, valueAsString.ToString()));
+              break;
+            case CustomFieldType.Time:
+              valueAsString = new StringBuilder();
+              if (!string.IsNullOrEmpty(value.Value))
+              {
+                try
+                {
+                  DateTime valueAsDateTime = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+                  valueAsString.Append(valueAsDateTime.ToString("t", UserSession.LoginUser.CultureInfo));
+                }
+                catch
+                {
+                  valueAsString.Append(value.Value);
+                }
+              }
+              builder.Append(string.Format(prop, field.Name, valueAsString.ToString()));
+              break;
+            case CustomFieldType.DateTime:
+              valueAsString = new StringBuilder();
+              if (!string.IsNullOrEmpty(value.Value))
+              {
+                try
+                {
+                  DateTime valueAsDateTime = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+                  valueAsString.Append(valueAsDateTime.ToString("g", UserSession.LoginUser.CultureInfo));
+                }
+                catch
+                {
+                  valueAsString.Append(value.Value);
+                }
+              }
+              builder.Append(string.Format(prop, field.Name, valueAsString.ToString()));
+              break;
+            default:
          builder.Append(string.Format(prop, field.Name, value.Value));
+              break;
+          }
         }
       }
       builder.Append("</div>");

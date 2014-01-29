@@ -29,6 +29,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CreatorID", "CreatorID", true, true, true);
       _fieldMap.AddMap("ModifierID", "ModifierID", true, true, true);
       _fieldMap.AddMap("IsRequiredToClose", "IsRequiredToClose", false, false, false);
+      _fieldMap.AddMap("Mask", "Mask", false, false, false);
             
     }
   }

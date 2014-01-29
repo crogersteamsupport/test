@@ -406,6 +406,8 @@ namespace TSWebServices
         case CustomFieldType.Text:
           this.DataType = "text";
           break;
+        case CustomFieldType.Date:
+        case CustomFieldType.Time:
         case CustomFieldType.DateTime:
           this.DataType = "datetime";
           break;

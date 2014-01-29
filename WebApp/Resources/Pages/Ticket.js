@@ -3071,7 +3071,9 @@ var appendCustomValues = function (fields) {
 
     switch (field.FieldType) {
       case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
-      case top.Ts.CustomFieldType.DateTime: appendCustomEditDate(field, div); break;
+      case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+      case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+      case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
       case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
       case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
       case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
@@ -3307,6 +3309,11 @@ var appendCustomEdit = function (field, element) {
             .appendTo(container)
             .focus();
 
+        var fieldMask = parent.closest('.ticket-name-value').data('field').Mask;
+        if (fieldMask) {
+          input.mask(fieldMask);
+          input.attr("placeholder", fieldMask);
+        }
 
         var buttons = $('<div>')
           .addClass('ticket-custom-edit-buttons')
@@ -3398,6 +3405,193 @@ var getUrls = function (input) {
 }
 
 var appendCustomEditDate = function(field, element) {
+  var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+  var result = $('<a>')
+      .attr('href', '#')
+      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+      .addClass('value ui-state-default ts-link')
+      .appendTo(element)
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        $('.ticket-cutstom-edit').prev().show().next().remove();
+        var parent = $(this).parent().hide();
+        var container = $('<div>')
+          .addClass('ticket-cutstom-edit')
+          .css('marginTop', '1em')
+          .insertAfter(parent);
+        var fieldValue = parent.closest('.ticket-name-value').data('field').Value;
+        var input = $('<input type="text">')
+            .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+            .css('width', '100%')
+            .appendTo(container)
+            .datepicker()
+            //.datetimepicker('setDate', top.Ts.Utils.getMsDate(fieldValue))
+            .focus();
+
+        var buttons = $('<div>')
+          .addClass('ticket-custom-edit-buttons')
+          .appendTo(container);
+
+        $('<button>')
+          .text('Cancel')
+          .click(function (e) {
+            parent.show();
+            container.remove();
+          })
+          .appendTo(buttons)
+          .button();
+
+        $('<button>')
+          .text('Save')
+          .click(function (e) {
+            parent.show().find('img').show();
+            var value = top.Ts.Utils.getMsDate(input.datepicker('getDate'));
+            container.remove();
+            if (field.IsRequired && (value === null || $.trim(value) === '')) {
+              result.parent().addClass('ui-state-error-custom ui-corner-all');
+            }
+            else {
+              result.parent().removeClass('ui-state-error-custom ui-corner-all');
+            }
+            if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
+              result.parent().addClass('ui-state-error-to-close-custom ui-corner-all');
+              alert("This field can not be cleared in a closed ticket");
+              parent.find('img').hide().next().show().delay(800).fadeOut(400);
+              return;
+            }
+            else {
+              result.parent().removeClass('ui-state-error-to-close-custom ui-corner-all');
+            }
+            if (value === null || $.trim(value) === '') {
+              result.parent().addClass('is-empty');
+            }
+            else {
+              result.parent().removeClass('is-empty');
+            }
+            top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+              parent.find('img').hide().next().show().delay(800).fadeOut(400);
+              parent.closest('.ticket-name-value').data('field', result);
+              var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+              parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+            }, function () {
+              alert("There was a problem saving your ticket property.");
+            });
+          })
+          .appendTo(buttons)
+          .button();
+      });
+  if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+    result.parent().addClass('ui-state-error-custom ui-corner-all');
+  }
+  if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
+    result.parent().addClass('ui-state-error-to-close-custom ui-corner-all');
+  }
+  if (field.IsRequiredToClose) {
+    result.parent().addClass('is-required-to-close');
+  }
+  if (field.Value === null || $.trim(field.Value) === '') {
+    result.parent().addClass('is-empty');
+  }
+}
+
+var appendCustomEditTime = function (field, element) {
+  var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+  var result = $('<a>')
+      .attr('href', '#')
+      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+      .addClass('value ui-state-default ts-link')
+      .appendTo(element)
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        $('.ticket-cutstom-edit').prev().show().next().remove();
+        var parent = $(this).parent().hide();
+        var container = $('<div>')
+          .addClass('ticket-cutstom-edit')
+          .css('marginTop', '1em')
+          .insertAfter(parent);
+        var fieldValue = parent.closest('.ticket-name-value').data('field').Value;
+        var input = $('<input type="text">')
+            .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+            .css('width', '100%')
+            .appendTo(container)
+            .timepicker()
+            .timepicker('setDate', top.Ts.Utils.getMsDate(fieldValue))
+            .focus();
+
+        var buttons = $('<div>')
+          .addClass('ticket-custom-edit-buttons')
+          .appendTo(container);
+
+        $('<button>')
+          .text('Cancel')
+          .click(function (e) {
+            parent.show();
+            container.remove();
+          })
+          .appendTo(buttons)
+          .button();
+
+        $('<button>')
+          .text('Save')
+          .click(function (e) {
+            parent.show().find('img').show();
+            var time = new Date("January 1, 1970 00:00:00");
+            time.setHours(input.timepicker('getDate')[0].value.substring(0, 2));
+            time.setMinutes(input.timepicker('getDate')[0].value.substring(3, 5));
+            var value = top.Ts.Utils.getMsDate(time);
+            container.remove();
+            if (field.IsRequired && (value === null || $.trim(value) === '')) {
+              result.parent().addClass('ui-state-error-custom ui-corner-all');
+            }
+            else {
+              result.parent().removeClass('ui-state-error-custom ui-corner-all');
+            }
+            if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (value === null || $.trim(value) === '')) {
+              result.parent().addClass('ui-state-error-to-close-custom ui-corner-all');
+              alert("This field can not be cleared in a closed ticket");
+              parent.find('img').hide().next().show().delay(800).fadeOut(400);
+              return;
+            }
+            else {
+              result.parent().removeClass('ui-state-error-to-close-custom ui-corner-all');
+            }
+            if (value === null || $.trim(value) === '') {
+              result.parent().addClass('is-empty');
+            }
+            else {
+              result.parent().removeClass('is-empty');
+            }
+            top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
+              parent.find('img').hide().next().show().delay(800).fadeOut(400);
+              parent.closest('.ticket-name-value').data('field', result);
+              var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+              parent.find('a').text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
+            }, function () {
+              alert("There was a problem saving your ticket property.");
+            });
+          })
+          .appendTo(buttons)
+          .button();
+      });
+  if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+    result.parent().addClass('ui-state-error-custom ui-corner-all');
+  }
+  if (field.IsRequiredToClose && $('.ticket-closed').length > 0 && (field.Value === null || $.trim(field.Value) === '')) {
+    result.parent().addClass('ui-state-error-to-close-custom ui-corner-all');
+  }
+  if (field.IsRequiredToClose) {
+    result.parent().addClass('is-required-to-close');
+  }
+  if (field.Value === null || $.trim(field.Value) === '') {
+    result.parent().addClass('is-empty');
+  }
+}
+
+var appendCustomEditDateTime = function (field, element) {
     var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
     var result = $('<a>')
       .attr('href', '#')

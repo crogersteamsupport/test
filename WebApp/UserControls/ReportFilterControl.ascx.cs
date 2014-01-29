@@ -219,6 +219,8 @@ public partial class UserControls_ReportFilterControl : System.Web.UI.UserContro
       CustomField field = (CustomField)CustomFields.GetCustomField(UserSession.LoginUser, id);
       switch (field.FieldType)
       {
+        case CustomFieldType.Date:
+        case CustomFieldType.Time:
         case CustomFieldType.DateTime:
           dataType = ReportDataType.DateTime;
           break;

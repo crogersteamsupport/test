@@ -398,6 +398,8 @@ var _startDate = new Date();
   Ts.CustomFieldType.Boolean = 2;
   Ts.CustomFieldType.Number = 3;
   Ts.CustomFieldType.PickList = 4;
+  Ts.CustomFieldType.Date = 5;
+  Ts.CustomFieldType.Time = 6;
 
   Ts.ProductType = {}
   Ts.ProductType.Express = 0;

@@ -8,34 +8,32 @@ $(document).ready(function () {
   var _lastTicketTypeID = null;
   var _ticketID = null;
   var _doClose = false;
-  var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility ;
+  var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility;
   top.Ts.System.logAction('New Ticket - Started');
 
   $('#knowledgeBaseCategoryDiv').hide();
 
-  if (!canEdit)
-  {
-      //$('.newticket-kb').attr("disabled", true);
-      $('.new-ticket-div').hide();
+  if (!canEdit) {
+    //$('.newticket-kb').attr("disabled", true);
+    $('.new-ticket-div').hide();
   }
-  else
-  {
-      $('.newticket-kb').click(function (e) {
-              if ($('.newticket-kb').prop('checked')) {
-                  $('#knowledgeBaseCategoryDiv').show();
-              }
-              else {
-                  $('#knowledgeBaseCategoryDiv').hide();
-              }
-      });
+  else {
+    $('.newticket-kb').click(function (e) {
+      if ($('.newticket-kb').prop('checked')) {
+        $('#knowledgeBaseCategoryDiv').show();
+      }
+      else {
+        $('#knowledgeBaseCategoryDiv').hide();
+      }
+    });
   }
 
   var knowledgeBaseCategories = top.Ts.Cache.getKnowledgeBaseCategories();
   var option = $('<option>').text('Unassigned').attr('value', -1).appendTo('.newticket-kbCategory').data('o', null).attr('selected', 'selected');
   for (var i = 0; i < knowledgeBaseCategories.length; i++) {
-      var cat = knowledgeBaseCategories[i].Category;
-      option = $('<option>').text(cat.CategoryName).attr('value', cat.CategoryID).appendTo('.newticket-kbCategory').data('o', cat);
-      if ($(this).text() === cat.CategoryName) { option.attr('selected', 'selected'); }
+    var cat = knowledgeBaseCategories[i].Category;
+    option = $('<option>').text(cat.CategoryName).attr('value', cat.CategoryID).appendTo('.newticket-kbCategory').data('o', cat);
+    if ($(this).text() === cat.CategoryName) { option.attr('selected', 'selected'); }
 
     for (var j = 0; j < knowledgeBaseCategories[i].Subcategories.length; j++) {
       var sub = knowledgeBaseCategories[i].Subcategories[j];
@@ -112,6 +110,8 @@ $(document).ready(function () {
               case top.Ts.CustomFieldType.Text:
                 field2.find('input').val(field1.find('input').val());
                 break;
+              case top.Ts.CustomFieldType.Date:
+              case top.Ts.CustomFieldType.Time:
               case top.Ts.CustomFieldType.DateTime:
                 field2.find('input').val(field1.find('input').val());
                 break;
@@ -279,7 +279,9 @@ $(document).ready(function () {
         try {
           switch (result[i].FieldType) {
             case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i]); break;
-            case top.Ts.CustomFieldType.DateTime: appendCustomEditDate(result[i]); break;
+            case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i]); break;
+            case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i]); break;
+            case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i]); break;
             case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i]); break;
             case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i]); break;
             case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i]); break;
@@ -361,14 +363,57 @@ $(document).ready(function () {
     .text(field.Name)
     .appendTo(div);
 
-    $('<input>')
+    var customFieldTextBox = $('<input>')
     .attr('type', 'text')
     .addClass('ui-widget-content ui-corner-all')
     .css('width', '150px')
     .appendTo(div);
+
+    if (field.Mask) {
+      customFieldTextBox.mask(field.Mask);
+      customFieldTextBox.attr("placeholder", field.Mask);
+    }
   }
 
   function appendCustomEditDate(field) {
+    var div = $('<div>')
+    .addClass('label-block newticket-custom-field')
+    .data('o', field)
+    .appendTo('.newticket-fields');
+
+    $('<span>')
+    .addClass('label')
+    .text(field.Name)
+    .appendTo(div);
+
+    $('<input>')
+    .attr('type', 'text')
+    .appendTo(div)
+    .addClass('ui-widget-content ui-corner-all newticket-custom-datetime')
+    .css('width', '150px')
+    .datepicker();
+  }
+
+  function appendCustomEditTime(field) {
+    var div = $('<div>')
+    .addClass('label-block newticket-custom-field')
+    .data('o', field)
+    .appendTo('.newticket-fields');
+
+    $('<span>')
+    .addClass('label')
+    .text(field.Name)
+    .appendTo(div);
+
+    $('<input>')
+    .attr('type', 'text')
+    .appendTo(div)
+    .addClass('ui-widget-content ui-corner-all newticket-custom-datetime')
+    .css('width', '150px')
+    .timepicker();
+  }
+
+  function appendCustomEditDateTime(field) {
     var div = $('<div>')
     .addClass('label-block newticket-custom-field')
     .data('o', field)
@@ -500,27 +545,27 @@ $(document).ready(function () {
               });
             }
           });
-          
+
 
           ed.addButton('insertPasteImage', {
-              title: 'Insert Pasted Image',
-              image: '../images/nav/16/imagepaste.png',
-              onclick: function () {
-                  if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
-                      alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
-                  }
-                  else{
-                      top.Ts.MainPage.pasteImage(null, function (result) {
-                          ed.focus();
-                          if (result != ""){
-                              var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
-                          ed.selection.setContent(html);
-                          ed.execCommand('mceAutoResize');
-                          ed.focus();
-                          }
-                      });
-                  }
+            title: 'Insert Pasted Image',
+            image: '../images/nav/16/imagepaste.png',
+            onclick: function () {
+              if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
+                alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
               }
+              else {
+                top.Ts.MainPage.pasteImage(null, function (result) {
+                  ed.focus();
+                  if (result != "") {
+                    var html = '<img src="' + top.Ts.System.AppDomain + '/dc/' + result + '"</a>&nbsp;<br/>';
+                    ed.selection.setContent(html);
+                    ed.execCommand('mceAutoResize');
+                    ed.focus();
+                  }
+                });
+              }
+            }
           });
 
           ed.addButton('insertDropBox', {
@@ -1418,6 +1463,8 @@ $(document).ready(function () {
                     result = false;
                   }
                   break;
+                case top.Ts.CustomFieldType.Date:
+                case top.Ts.CustomFieldType.Time:
                 case top.Ts.CustomFieldType.DateTime:
                   if ($.trim($(this).find('input').val()) == '') {
                     $(this).addClass('ui-state-error ui-corner-all');
@@ -1442,7 +1489,7 @@ $(document).ready(function () {
           });
 
           $('.ticket-widget-customers').removeClass('ui-corner-all ui-state-error');
-          if (requireNewTicketCustomer == "True" && $('.newticket-kb').prop('checked') == false ) {
+          if (requireNewTicketCustomer == "True" && $('.newticket-kb').prop('checked') == false) {
             var customerCount = $('.ticket-customer-company').length + $('.ticket-customer-contact').length;
             if (customerCount < 1) {
               $('.ticket-widget-customers').addClass('ui-corner-all ui-state-error');
@@ -1495,11 +1542,11 @@ $(document).ready(function () {
           }
         });
         break;
-        case 'mnikb':
-            if (canEdit) {
-                $('.newticket-kb').prop('checked', true);
-                $('#knowledgeBaseCategoryDiv').show();
-            }
+      case 'mnikb':
+        if (canEdit) {
+          $('.newticket-kb').prop('checked', true);
+          $('#knowledgeBaseCategoryDiv').show();
+        }
 
 
         break;
@@ -1653,6 +1700,16 @@ $(document).ready(function () {
             break;
           case top.Ts.CustomFieldType.PickList:
             field.Value = $(this).find('select').val();
+            break;
+          case top.Ts.CustomFieldType.Date:
+            var dt = $(this).find('input').datepicker('getDate');
+            field.Value = dt == null ? null : dt.toUTCString();
+            break;
+          case top.Ts.CustomFieldType.Time:
+            var time = new Date("January 1, 1970 00:00:00");
+            time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
+            time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
+            field.Value = $(this).find('input').timepicker('getDate')[0].value == '' ? null : time.toUTCString();
             break;
           case top.Ts.CustomFieldType.DateTime:
             //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));

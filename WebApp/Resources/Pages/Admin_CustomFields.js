@@ -267,6 +267,8 @@ AdminCustomFields = function () {
         case 2: typeName = 'True or False'; break;
         case 3: typeName = 'Number'; break;
         case 4: typeName = 'Pick List'; break;
+        case 5: typeName = 'Date'; break;
+        case 6: typeName = 'Time'; break;
         default: typeName = 'Unknown';
       }
 

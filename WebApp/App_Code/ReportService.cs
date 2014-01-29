@@ -467,6 +467,8 @@ namespace TSWebServices
           this.Table = table;
           switch (field.FieldType)
           {
+            case CustomFieldType.Date:
+            case CustomFieldType.Time:
             case CustomFieldType.DateTime: this.DataType = "datetime"; break;
             case CustomFieldType.Boolean: this.DataType = "bool"; break;
             case CustomFieldType.Number: this.DataType = "number"; break;

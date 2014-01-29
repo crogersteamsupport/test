@@ -47,10 +47,11 @@ public partial class Dialogs_CustomField : BaseDialogPage
 
     _manager.AjaxSettings.AddAjaxSetting(comboFieldType, divMain);
 
-    pnlPickList.Visible = GetSelectedFieldType() == CustomFieldType.PickList;
-    cbIsRequired.Visible = GetSelectedFieldType() != CustomFieldType.Boolean;
-    cbIsRequiredToClose.Visible = GetSelectedFieldType() != CustomFieldType.Boolean;
-
+    CustomFieldType selectedFieldType = GetSelectedFieldType();
+    pnlPickList.Visible = selectedFieldType == CustomFieldType.PickList;
+    cbIsRequired.Visible = selectedFieldType != CustomFieldType.Boolean;
+    cbIsRequiredToClose.Visible = selectedFieldType != CustomFieldType.Boolean;
+    maskDiv.Visible = selectedFieldType == CustomFieldType.Text;
   }
 
   private CustomFieldType GetSelectedFieldType()
@@ -64,8 +65,10 @@ public partial class Dialogs_CustomField : BaseDialogPage
     comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.Text), ((int)CustomFieldType.Text).ToString()));
     comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.Number), ((int)CustomFieldType.Number).ToString()));
     comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.PickList), ((int)CustomFieldType.PickList).ToString()));
-    comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.DateTime), ((int)CustomFieldType.DateTime).ToString()));
     comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.Boolean), ((int)CustomFieldType.Boolean).ToString()));
+    comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.DateTime), ((int)CustomFieldType.DateTime).ToString()));
+    comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.Date), ((int)CustomFieldType.Date).ToString()));
+    comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.Time), ((int)CustomFieldType.Time).ToString()));
   }
 
   private void LoadCustomField(int customFieldID)
@@ -90,6 +93,7 @@ public partial class Dialogs_CustomField : BaseDialogPage
     cbIsRequired.Checked = fields[0].IsRequired;
     cbFirstSelect.Checked = fields[0].IsFirstIndexSelect;
     cbIsRequiredToClose.Checked = fields[0].IsRequiredToClose;
+    textMask.Text = fields[0].Mask;
   }
 
   public override bool Save()
@@ -140,6 +144,7 @@ public partial class Dialogs_CustomField : BaseDialogPage
     field.IsFirstIndexSelect = cbFirstSelect.Checked;
     field.IsRequired = cbIsRequired.Checked;
     field.IsRequiredToClose = cbIsRequiredToClose.Checked;
+    field.Mask = textMask.Text;
 
     string list = textList.Text.Replace("\n", "|");
     if (list != "")

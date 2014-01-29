@@ -67,6 +67,13 @@ public partial class Dialogs_Contact : BaseDialogPage
       RadComboBoxItem item = new RadComboBoxItem(organization.Name, organization.OrganizationID.ToString());
       item.Selected = true;
       cmbCustomer.Items.Add(item);
+      Page.RegisterStartupScript("AddMasks", @"
+        <script type=""text/javascript"">
+          $('.masked').each(function (index) {
+            $(this).mask($(this).attr('placeholder'));
+          });
+        </script>
+      ");
     }
 
 

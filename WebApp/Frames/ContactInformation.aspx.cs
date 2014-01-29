@@ -3,6 +3,7 @@ using System.Collections;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Security;
 using System.Web.UI;
@@ -115,11 +116,64 @@ public partial class Frames_ContactInformation : BaseFramePage
 
 
 
+      StringBuilder valueAsString = null;
       foreach (CustomField field in fields)
       {
         CustomValue value = CustomValues.GetValue(UserSession.LoginUser, field.CustomFieldID, userID);
+        switch (value.FieldType)
+        {
+          case CustomFieldType.Date:
+            valueAsString = new StringBuilder();
+            if (!string.IsNullOrEmpty(value.Value))
+            {
+              try
+              {
+                DateTime valueAsDateTime = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+                valueAsString.Append(valueAsDateTime.ToString("d", UserSession.LoginUser.CultureInfo));
+              }
+              catch
+              {
+                valueAsString.Append(value.Value);
+              }
+            }
+            table.Rows.Add(new string[] { field.Name + ":", valueAsString.ToString() });
+            break;
+          case CustomFieldType.Time:
+            valueAsString = new StringBuilder();
+            if (!string.IsNullOrEmpty(value.Value))
+            {
+              try
+              {
+                DateTime valueAsDateTime = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+                valueAsString.Append(valueAsDateTime.ToString("t", UserSession.LoginUser.CultureInfo));
+              }
+              catch
+              {
+                valueAsString.Append(value.Value);
+              }
+            }
+            table.Rows.Add(new string[] { field.Name + ":", valueAsString.ToString() });
+            break;
+          case CustomFieldType.DateTime:
+            valueAsString = new StringBuilder();
+            if (!string.IsNullOrEmpty(value.Value))
+            {
+              try
+              {
+                DateTime valueAsDateTime = DataUtils.DateToLocal(UserSession.LoginUser, DateTime.Parse(value.Value));
+                valueAsString.Append(valueAsDateTime.ToString("g", UserSession.LoginUser.CultureInfo));
+              }
+              catch
+              {
+                valueAsString.Append(value.Value);
+              }
+            }
+            table.Rows.Add(new string[] { field.Name + ":", valueAsString.ToString() });
+            break;
+          default:
         table.Rows.Add(new string[] { field.Name + ":", value.Value });
-
+            break;
+        }
       }
 
       rptProperties.DataSource = table;
