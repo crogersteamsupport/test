@@ -1020,7 +1020,7 @@ Namespace TeamSupport
                 Select Case teamSupportTypeName.ToLower()
                     Case "boolean"
                         teamSupportValue = TranslateBooleanFieldValue(salesForceValue)
-                    Case "datetime"
+                    Case "datetime", "date", "time"
                         teamSupportValue = TranslateDateTimeFieldValue(salesForceValue)
                     Case Else
                         teamSupportValue = salesForceValue
@@ -1388,7 +1388,7 @@ Namespace TeamSupport
                     End If
                   ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
                     If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                      result.Add(GetNewXmlElement(field.name, ticket.Row(cRMLinkField.TSFieldName)))
+                      result.Add(GetNewXmlElement(field.name, If(IsDbNull(ticket.Row(cRMLinkField.TSFieldName)), String.Empty, ticket.Row(cRMLinkField.TSFieldName))))
                     Else
                       Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
                       If ticket.Row(cRMLinkField.TSFieldName) Is Nothing Then
