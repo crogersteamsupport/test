@@ -52,7 +52,7 @@
           </div>
         <div ID="maskDiv" runat="server" style="margin-top: 15px;">
           <div>
-            Mask: -leave blank for no mask (What's an edit mask? <a>Click here</a>)
+            Mask: -leave blank for no mask (What's an edit mask? <a href="https://sites.google.com/site/teamsupportdocumentation/administration/custom-fields/#inputMask" target="_blank">Click here</a>)
           </div>
           <div class="inputDiv">
             <telerik:RadTextBox ID="textMask" runat="server" MaxLength="250" Width="350px">
