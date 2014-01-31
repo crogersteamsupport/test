@@ -61,6 +61,15 @@ public partial class Frames_ProductOrganizations : BaseFramePage
         column.HeaderText = field.Name;
         column.DataField = field.Name;
         column.UniqueName = "CustomField" + field.CustomFieldID.ToString();
+        switch (field.FieldType)
+        {
+          case CustomFieldType.Date:
+            column.DataFormatString = "{0:" + UserSession.LoginUser.CultureInfo.DateTimeFormat.ShortDatePattern + "}";
+            break;
+          case CustomFieldType.Time:
+            column.DataFormatString = "{0:" + UserSession.LoginUser.CultureInfo.DateTimeFormat.ShortTimePattern + "}";
+            break;
+        }
       }
       else
       {

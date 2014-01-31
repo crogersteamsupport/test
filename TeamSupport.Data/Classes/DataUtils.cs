@@ -252,11 +252,7 @@ namespace TeamSupport.Data
       switch (field.FieldType)
       {
         case CustomFieldType.Date:
-          builder.Append("date");
-          break;
         case CustomFieldType.Time:
-          builder.Append("time");
-          break;
         case CustomFieldType.DateTime:
           builder.Append("datetime");
           break;

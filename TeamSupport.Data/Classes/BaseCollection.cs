@@ -668,6 +668,8 @@ namespace TeamSupport.Data
     {
       switch (field.FieldType)
       {
+        case CustomFieldType.Date:
+        case CustomFieldType.Time:
         case CustomFieldType.DateTime: return GetCustomFieldDateSelect(field, refIDFieldName, fieldAlias);          
         case CustomFieldType.Boolean: return GetCustomFieldBooleanSelect(field, refIDFieldName, fieldAlias);          
         case CustomFieldType.Number: return GetCustomFieldNumberSelect(field, refIDFieldName, fieldAlias);          
