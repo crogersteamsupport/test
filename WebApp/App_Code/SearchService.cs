@@ -1007,7 +1007,7 @@ namespace TSWebServices
           }
           job.Results.Sort(SortFlags.dtsSortBySortKey | SortFlags.dtsSortAscending | SortFlags.dtsSortCaseInsensitive, "");
 
-          int topLimit = to;
+          int topLimit = from + to;
           if (topLimit > job.Results.Count)
           {
             topLimit = job.Results.Count;

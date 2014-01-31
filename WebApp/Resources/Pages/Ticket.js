@@ -1811,7 +1811,7 @@ var appendCustomer = function (customer) {
           .attr('target', '_blank')
           .click(function (e) {
               e.preventDefault();
-              top.Ts.MainPage.openUser(customer.UserID);
+              top.Ts.MainPage.openNewContact(customer.UserID);
           })
           .text(ellipseString(customer.Contact, 30))
           .appendTo(title);
@@ -1827,7 +1827,7 @@ var appendCustomer = function (customer) {
           .addClass('ui-state-default ts-link')
           .click(function (e) {
               e.preventDefault();
-              top.Ts.MainPage.openCustomer(customer.OrganizationID);
+              top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
           })
           .text(ellipseString(customer.Company, 30))
           .appendTo(desc);
@@ -1845,7 +1845,7 @@ var appendCustomer = function (customer) {
           .addClass('ui-state-default ts-link')
           .click(function (e) {
               e.preventDefault();
-              top.Ts.MainPage.openCustomer(customer.OrganizationID);
+              top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
           })
           .text(ellipseString(customer.Company, 30))
           .appendTo(title);

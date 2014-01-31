@@ -42,6 +42,7 @@ $(document).ready(function () {
         $("#userProperties #fieldCompany").toggleClass("link");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
+        $('#contactName').toggleClass("editable");
     });
 
     if (top.Ts.System.Organization.ParentID != null) {
@@ -90,6 +91,9 @@ $(document).ready(function () {
     }
 
     $('#contactName').click(function (e) {
+        if (!$(this).hasClass('editable'))
+            return false;
+        else{
         e.preventDefault();
         var fname, mname, lastname;
 
@@ -144,7 +148,7 @@ $(document).ready(function () {
               header.show();
           })
           .appendTo(container1);
-
+        }
 
     });
 
@@ -497,7 +501,8 @@ $(document).ready(function () {
             $('#fieldNoteDesc').val(desc);
             $('#fieldNoteID').val(note.NoteID);
             $('#btnNotesSave').text("Edit Note");
-            $('btnNotesCancel').toggle();
+            $('#btnNotesCancel').toggle();
+            $('#noteForm').show();
         });
     });
 
@@ -777,8 +782,10 @@ $(document).ready(function () {
 
     function UpdateRecentView() {
         top.Ts.Services.Customers.UpdateRecentlyViewed("u"+userID, function (resultHtml) {
+            if (window.parent.document.getElementById('iframe-mniCustomers'))
+                window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
         });
-        window.parent.document.getElementById('iframe-mniCustomers2').contentWindow.refreshPage();
+
     }
 
     function LoadReminderUsers() {
@@ -1049,6 +1056,7 @@ var appendCustomValues = function (fields) {
         container.append(div);
     }
     $('#customProperties p').toggleClass("editable");
+    $('#contactName').toggleClass("editable");
 }
 
 var appendCustomEditCombo = function (field, element) {

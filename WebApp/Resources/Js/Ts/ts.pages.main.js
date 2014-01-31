@@ -1397,6 +1397,14 @@ Ts.Pages.Main.prototype = {
       });
       
   },
+  openNewCustomerNote: function (customerID, noteID) {
+      var orgname;
+      var query = "?organizationid=" + customerID + "&noteid=" + noteID;
+      top.Ts.Services.Organizations.GetShortNameFromID(customerID, function (result) {
+          this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Company, customerID, result, true, true, false, null, null, query, null);
+      });
+
+  },
   closeNewCustomer: function (customerID){
       var div = $('.main-tab-content .main-Customer-' + customerID);
       div.remove();

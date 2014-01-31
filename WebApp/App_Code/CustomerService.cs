@@ -326,15 +326,15 @@ namespace TSWebServices
 
             if(editable == "db")
             form.AppendFormat(@"<div class='form-group'>
-                                <label class='col-md-4 control-label' for='field{0}'>{1}</label>
-                                <div class='col-md-8'>
+                                <label class='col-xs-4 control-label' for='field{0}'>{1}</label>
+                                <div class='col-xs-8'>
                                 <span class='form-control-static {3}' id='field{0}'>{2}</span>
                                 </div>
                                 </div>",fieldTitle.Replace(" ",""), fieldTitle, fieldValue != null ? fieldValue : "Empty", editable );
             else
                 form.AppendFormat(@"<div class='form-group'>
-                                <label class='col-md-4 control-label' for='field{0}'>{1}</label>
-                                <div class='col-md-8'>
+                                <label class='col-xs-4 control-label' for='field{0}'>{1}</label>
+                                <div class='col-xs-8'>
                                 <p class='form-control-static {3}' id='field{0}'>{2}</p>
                                 </div>
                                 </div>", fieldTitle.Replace(" ", ""), fieldTitle, fieldValue != null ? fieldValue : "Empty", editable);
@@ -671,7 +671,7 @@ namespace TSWebServices
 
                 if (field.CustomFieldCategoryID == null)
                 {
-                    htmltest.AppendFormat("<div class='col-md-4'><label for='{0}' class='col-md-4 control-label'>{1}</label>", field.CustomFieldID, field.Name);
+                    htmltest.AppendFormat("<div class='col-xs-4'><label for='{0}' class='col-xs-4 control-label'>{1}</label>", field.CustomFieldID, field.Name);
                     switch (field.FieldType)
                     {
                         case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
@@ -716,7 +716,7 @@ namespace TSWebServices
 
                     if (field.CustomFieldCategoryID == cat.CustomFieldCategoryID)
                     {
-                        htmltest.AppendFormat("<div class='col-md-4'><label for='{0}' class='col-md-4 control-label'>{1}</label>", field.CustomFieldID, field.Name);
+                        htmltest.AppendFormat("<div class='col-xs-4'><label for='{0}' class='col-xs-4 control-label'>{1}</label>", field.CustomFieldID, field.Name);
                         switch (field.FieldType)
                         {
                             case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
@@ -766,7 +766,7 @@ namespace TSWebServices
                     }
 
 
-                    htmltest.AppendFormat("<div class='col-md-4'><label for='{0}' class='col-md-4 control-label'>{1}</label>", field.CustomFieldID, field.Name);
+                    htmltest.AppendFormat("<div class='col-xs-4'><label for='{0}' class='col-xs-4 control-label'>{1}</label>", field.CustomFieldID, field.Name);
                     switch (field.FieldType)
                     {
                         case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
@@ -1067,11 +1067,11 @@ namespace TSWebServices
                 htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <span class='pull-right {0}'>{1}</span><a href='#' id='{7}' class='contactlink'><h4 class='list-group-item-heading'>{2}</h4></a>
                             <div class='row'>
-                                <div class='col-md-6'>
+                                <div class='col-xs-6'>
                                     <p class='list-group-item-text'><span class='glyphicon glyphicon-envelope'></span> Email: {3}</p>
                                     {6}
                                 </div>
-                                <div class='col-md-6'>
+                                <div class='col-xs-6'>
                                     <p class='list-group-item-text'>Open Tickets: {4}</p>
                                     <p class='list-group-item-text'>Closed Tickets: {5}</p>                            
                                 </div>
@@ -1604,7 +1604,7 @@ namespace TSWebServices
             string boxhtml = @"<li>
                                     <div class=""peopleinfo"">
                                         <div class=""pull-right""><span>Open Tickets:</span> {5}</div>
-                                        <h4><span class=""icon-building""></span><a class=""companylink"" id=""o{0}"" href="""">{1}</a></h4>
+                                        <h4><span class=""fa fa-building-o""></span><a class=""companylink"" id=""o{0}"" href="""">{1}</a></h4>
                                         <ul>
                                             <li><span>Phone:</span> {2}</li>
                                             <li><span>Portal Access</span> {3}</li>
@@ -1626,7 +1626,7 @@ namespace TSWebServices
             string boxhtml = @"<li>
                                     <div class=""peopleinfo"">
                                         <div class=""pull-right""><span>Open Tickets:</span> {7}</div>
-                                        <h4><span class=""icon-user""></span><a class=""contactlink"" id=""u{0}"" href="""">{1} {2} {3}</a></h4>
+                                        <h4><span class=""fa fa-user""></span><a class=""contactlink"" id=""u{0}"" href="""">{1} {2} {3}</a></h4>
                                         
                                         <ul>
                                             {8}
@@ -1643,7 +1643,7 @@ namespace TSWebServices
 
         public string CreateNoResults()
         {
-            string boxhtml = @"<div class=""col-md-12"">
+            string boxhtml = @"<div class=""col-xs-12"">
                             <div class=""peoplewrapper"">
                                 <h2 class=""text-center"">No Search Results Found!</h2>
                             </div>
@@ -1664,7 +1664,7 @@ namespace TSWebServices
                 recentHTML = @" 
                 <li>
                         <div class=""recent-info"">
-                            <h4> <span class=""icon-user""></span><a class=""contactlink"" id=""u{3}"" href="""">{0}</a></h4>
+                            <h4> <span class=""fa fa-user""></span><a class=""contactlink"" id=""u{3}"" href="""">{0}</a></h4>
                             <ul>
                                 <li><span>Email:</span> {1}</li>
                                 <li><span>Phone:</span> {2}</li>
@@ -1682,7 +1682,7 @@ namespace TSWebServices
                 recentHTML = @" 
                 <li>
                         <div class=""recent-info"">
-                            <h4><span class=""icon-building""></span><a class=""companylink"" id=""o{2}"" href="""">{0}</a></h4>
+                            <h4><span class=""fa fa-building-o""></span><a class=""companylink"" id=""o{2}"" href="""">{0}</a></h4>
                             <ul>
                                 <li><span>Phone:</span> {1}</li>
                             </ul>
@@ -1727,15 +1727,15 @@ namespace TSWebServices
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-md-4 control-label'>{1}</label> 
-                                        <div class='col-md-8'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value  );
             }
             else
             {
-                html.AppendFormat("<div class='col-md-8'><input class='form-control col-md-10 customField {1}' id='{0}' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required":"");
+                html.AppendFormat("<div class='col-xs-8'><input class='form-control col-xs-10 customField {1}' id='{0}' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required":"");
             }
             return html.ToString();
         }
@@ -1747,14 +1747,14 @@ namespace TSWebServices
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-md-4 control-label'>{1}</label> 
-                                        <div class='col-md-8'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
-                html.AppendFormat("<div class='col-md-8'><input class='form-control col-md-10 customField number {1}' id='{0}'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+                html.AppendFormat("<div class='col-xs-8'><input class='form-control col-xs-10 customField number {1}' id='{0}'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
 
             return html.ToString();
         }
@@ -1766,14 +1766,14 @@ namespace TSWebServices
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-md-4 control-label'>{1}</label> 
-                                        <div class='col-md-8'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
-                html.AppendFormat("<div class='col-md-8'><input class='form-control datepicker col-md-10 customField {1}' id='{0}'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+                html.AppendFormat("<div class='col-xs-8'><input class='form-control datepicker col-xs-10 customField {1}' id='{0}'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
             
             return html.ToString();
         }
@@ -1785,15 +1785,15 @@ namespace TSWebServices
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-md-4 control-label'>{1}</label> 
-                                        <div class='col-md-8'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
             {
-                html.AppendFormat("<div class='col-md-1'><label><input class='customField' id='{0}' type='checkbox'></label></div>", field.CustomFieldID);
+                html.AppendFormat("<div class='col-xs-1'><label><input class='customField' id='{0}' type='checkbox'></label></div>", field.CustomFieldID);
             }
             return html.ToString();
         }
@@ -1806,15 +1806,15 @@ namespace TSWebServices
             {
                 CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
                 html.AppendFormat(@"<div class='form-group'> 
-                                        <label for='{0}' class='col-md-4 control-label'>{1}</label> 
-                                        <div class='col-md-8'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
                                             <p class='form-control-static'><a class='editable' id='{0}' data-type='select'>{2}</a></p> 
                                         </div> 
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
             {
-                html.AppendFormat("<div class='col-md-8'><select class='form-control customField' id='{0}'  name='{0}' type='picklist'>", field.CustomFieldID);
+                html.AppendFormat("<div class='col-xs-8'><select class='form-control customField' id='{0}'  name='{0}' type='picklist'>", field.CustomFieldID);
                 foreach (string item in items)
                 {
                     html.AppendFormat("<option value='{0}'>{1}</option>", item, item);

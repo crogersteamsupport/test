@@ -186,8 +186,10 @@ fieldset[disabled] .btn-default.active {
 }
 
 /* Needs comments */
-.maincontainer { padding: 15px; margin-left: auto; margin-right: auto; border: none; overflow: auto; height: 100%; position: relative; }
-.pageheader { background: none repeat scroll 0 0 #FFFFFF; border-bottom: 1px solid #DDDDDD; min-height: 55px; padding: 10px; position: relative; }
+.maincontainer { margin-left: auto; margin-right: auto; border: none; overflow: auto; height: 100%; position: relative; }
+.maincontainer .row {margin-left:0px !important; margin-right: 0px !important}
+.h85 {height: 89% !important;}
+.pageheader { background: none repeat scroll 0 0 #FFFFFF; border-bottom: 1px solid #DDDDDD; /*min-height: 55px;*/ padding: 10px 0px 0px 10px; position: relative; }
 .pageheader h1 { color: #0866C6; font-size: 32px; font-weight: normal; margin: 0; }
 .pageheader h5 { color: #999999; font-size: 11px; font-weight: normal; margin: 0; text-transform: uppercase; }
 .pageicon { color: #0866C6; display: inline-block; float: left; font-size: 35px; text-align: center; }
@@ -195,3 +197,14 @@ fieldset[disabled] .btn-default.active {
 .m0 { margin: 0px; }
 .mt0 { margin-top: 0px; }
 .mt20 { margin-top: 20px;}
+.pt0 {padding-top: 0px !important;}
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus{
+    color:white;
+    background-color: #1E7DCC;
+}
+.pageheader .nav-tabs {
+    border-bottom: medium none !important;
+}
+.form-group {
+    margin-bottom: 5px !important;
+}

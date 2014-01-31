@@ -110,7 +110,7 @@ $(document).ready(function () {
     $('#searchString').keyup(function(){
         delay(function () {
             if ($('.customers-filter-all').parent().hasClass('active')) {
-                top.Ts.Services.Customers.GetSearchResults("", 0, function (resultHtml) {
+                top.Ts.Services.Customers.GetSearchResults($('#searchString').val(), 0, function (resultHtml) {
                     $('.maincontainer').animate({ scrollTop: 0 }, 600);
                     $('.searchresults').empty();
                     $('.searchresults').html(resultHtml);
