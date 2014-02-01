@@ -69,7 +69,7 @@ public partial class Tips_Sla : System.Web.UI.Page
       if (date == null) return "None";
       CultureInfo us = new CultureInfo(loginUser.CultureInfo.ToString());
 
-      return ((DateTime)DataUtils.DateToLocal(loginUser, date)).ToString("g", us.DateTimeFormat);
+      return ((DateTime)DataUtils.DateToLocal(loginUser, date)).ToString(us.DateTimeFormat.ShortDatePattern);
     }
 
    

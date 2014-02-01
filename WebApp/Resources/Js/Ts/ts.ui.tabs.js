@@ -67,6 +67,10 @@ Ts.Ui.Tabs.prototype = {
       if (tab.getIsHighlighted() && !confirm('Are you sure you would like to close this tab?')) { return false; }
       if (self._callEvent('beforeRemove', tab) === false) { return; }
       var selected = tab.getIsSelected();
+      if(tabType == "company")
+          top.Ts.MainPage.closeNewCustomer(id);
+      if (tabType == "contact")
+          top.Ts.MainPage.closeNewContact(id);
       $(element).remove();
       var flag = false;
       if (selected) {

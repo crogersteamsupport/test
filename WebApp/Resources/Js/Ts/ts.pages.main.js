@@ -1211,7 +1211,7 @@ Ts.Pages.Main.prototype = {
           if (contentFrame && contentFrame.contentWindow.refreshData) {
             contentFrame.contentWindow.refreshData;
           }
-
+          window.parent.document.getElementById('iframe-mniProducts').contentWindow.reload();
         });
       });
     });

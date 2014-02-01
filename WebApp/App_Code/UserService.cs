@@ -874,6 +874,17 @@ namespace TSWebServices
           return Enums.GetDescription(user.FontSize);
         }
 
+        [WebMethod]
+        public string GetShortNameFromID(int userID)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+
+            if (user.FirstLastName.Length > 10)
+                return user.FirstLastName.Substring(0, 10).ToString() + "...";
+            else
+                return user.FirstLastName.ToString();
+        }
+
       [DataContract]
         public class BasicUser
         {
