@@ -19,6 +19,9 @@ $(document).ready(function () {
     noteID = top.Ts.Utils.getQueryValue("noteid", window);
     var _isAdmin = top.Ts.System.User.IsSystemAdmin && (organizationID != top.Ts.System.User.OrganizationID);
     
+    top.privateServices.SetUserSetting('SelectedOrganizationID', organizationID);
+    top.privateServices.SetUserSetting('SelectedContactID', -1);
+
     LoadNotes();
     //LoadHistory();
     LoadFiles();
@@ -1339,6 +1342,7 @@ $(document).ready(function () {
     }
 
     function LoadContacts() {
+        $('.userList').empty();
         top.Ts.Services.Customers.LoadContacts(organizationID, function (users) {
             $('.userList').append(users)
             //for (var i = 0; i < users.length; i++) {
@@ -1625,6 +1629,8 @@ $(document).ready(function () {
             $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=2&pageid=" + organizationID);
         else if (e.target.innerHTML == "Details")
             createTestChart();
+        else if (e.target.innerHTML == "Contacts")
+            LoadContacts();
     })
 
     $('#inventoryIframe').attr("src", "../../../Inventory/CustomerInventory.aspx?CustID=" + organizationID);

@@ -977,7 +977,8 @@ namespace TSWebServices
           int num = 0;
           if (!int.TryParse(searchTerm, out num))
           {
-            //job.Fuzziness = 1;
+            job.Fuzziness = 1;
+            job.Request = job.Request + "*";
             job.SearchFlags = job.SearchFlags |
               //SearchFlags.dtsSearchFuzzy | 
               //SearchFlags.dtsSearchStemming |

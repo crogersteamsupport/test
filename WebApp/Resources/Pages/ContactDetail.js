@@ -77,7 +77,8 @@ $(document).ready(function () {
             $('#contactName').attr("first", user.FirstName);
             $('#contactName').attr("middle", user.MiddleName);
             $('#contactName').attr("last", user.LastName);
-
+            top.privateServices.SetUserSetting('SelectedOrganizationID', user.OrganizationID);
+            top.privateServices.SetUserSetting('SelectedContactID', user.UserID);
         });
         }
 

@@ -1179,10 +1179,14 @@ namespace TSWebServices
             User user;
             Users users = new Users(TSAuthentication.GetLoginUser());
             NewContactSave info;
+            int newOrgID;
 
             info = Newtonsoft.Json.JsonConvert.DeserializeObject<NewContactSave>(data);
 
-            int newOrgID = int.Parse(info.Company);
+            if(info.Company != null)
+                newOrgID = int.Parse(info.Company);
+            else
+                newOrgID = Organizations.GetUnknownCompanyID(TSAuthentication.GetLoginUser());
 
             if (!users.IsEmailValid(info.Email, -1, newOrgID))
             {
