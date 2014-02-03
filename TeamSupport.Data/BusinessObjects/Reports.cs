@@ -466,10 +466,11 @@ namespace TeamSupport.Data
         if (!string.IsNullOrWhiteSpace(hiddenTable.LookupKeyFieldName))
         {
           builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", hiddenTable.LookupKeyFieldName, hiddenTable.TableName));
-          if (sub.ReportTableID != null && !string.IsNullOrWhiteSpace(hiddenTable.LookupKeyFieldName))
+          if (sub.ReportTableID != null)
           {
             hiddenTable = tables.FindByReportTableID((int)sub.ReportTableID);
-            builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", hiddenTable.LookupKeyFieldName, hiddenTable.TableName));
+            if (!string.IsNullOrWhiteSpace(hiddenTable.LookupKeyFieldName))
+              builder.Append(string.Format(", {1}.{0} AS [hidden{0}]", hiddenTable.LookupKeyFieldName, hiddenTable.TableName));
           }
         }
 
@@ -1768,7 +1769,11 @@ WHERE RowNum BETWEEN @From AND @To";
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT r.* FROM Reports r LEFT JOIN ReportOrganizationSettings ros ON ros.ReportID = r.ReportID WHERE r.OrganizationID = @OrganizationID AND ros.FolderID = @FolderID";
+        command.CommandText = @"
+SELECT r.* FROM Reports r 
+LEFT JOIN ReportOrganizationSettings ros ON ros.ReportID = r.ReportID 
+WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL))
+AND ros.FolderID = @FolderID";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@FolderID", folderID);
@@ -1790,10 +1795,57 @@ ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.R
 FROM Reports r
 LEFT JOIN Users u1 ON u1.UserID = r.CreatorID
 LEFT JOIN Users u2 ON u2.UserID = r.EditorID
-WHERE (r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL) 
+WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL))
 AND r.ReportID NOT IN (SELECT ros.ReportID FROM ReportOrganizationSettings ros WHERE ros.OrganizationID = @OrganizationID AND ros.IsHidden=1) 
 ORDER BY r.Name
 ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@UserID", userID);
+        Fill(command);
+      }
+    }
+
+    public void Search(int organizationID, string term, int top = 25)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+SELECT TOP {0:D} r.*
+FROM Reports r
+WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL))
+AND r.ReportID NOT IN (SELECT ros.ReportID FROM ReportOrganizationSettings ros WHERE ros.OrganizationID = @OrganizationID AND ros.IsHidden=1) 
+AND r.Name LIKE '%' + @Term + '%'
+ORDER BY r.Name
+";
+        command.CommandText = string.Format(command.CommandText, top);
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@Term", term);
+        Fill(command);
+      }
+    }
+
+    public void LoadList(int organizationID, int userID, string[] ids)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+SELECT r.*, u1.FirstName + ' ' + u1.LastName AS Creator, u2.FirstName + ' ' + u2.LastName AS Editor,
+(SELECT TOP 1 rv.DateViewed FROM ReportViews rv WHERE rv.ReportID = r.ReportID AND rv.UserID = @UserID ORDER BY rv.DateViewed DESC) AS LastViewed,
+ISNULL((SELECT rus.Settings FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), '') AS Settings,
+ISNULL((SELECT rus.IsFavorite FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsFavorite,
+ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsHidden,
+(SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS FolderID
+FROM Reports r
+LEFT JOIN Users u1 ON u1.UserID = r.CreatorID
+LEFT JOIN Users u2 ON u2.UserID = r.EditorID
+WHERE ((r.OrganizationID = @OrganizationID) OR (r.OrganizationID IS NULL))
+AND r.ReportID NOT IN (SELECT ros.ReportID FROM ReportOrganizationSettings ros WHERE ros.OrganizationID = @OrganizationID AND ros.IsHidden=1) 
+AND r.ReportID IN ({0})
+ORDER BY r.Name
+";
+        command.CommandText = string.Format(command.CommandText, string.Join(",", ids));
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@UserID", userID);
