@@ -251,7 +251,12 @@ AdminInt = function () {
     var item = panel.data('link');
 
     if (slaLevels.length > 0) {
-      slaLevelsList.attr('disabled', '');
+      if (slaLevels.length > 1) {
+        slaLevelsList.attr('disabled', false);
+      }
+      else {
+        slaLevelsList.attr('disabled', 'disabled');
+      }
       slaLevelsList.empty();
       for (var i = 0; i < slaLevels.length; i++) {
         var selected = '">';
