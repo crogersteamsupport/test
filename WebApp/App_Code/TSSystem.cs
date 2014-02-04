@@ -227,8 +227,8 @@ namespace TSWebServices
           utils.AddItem(new TsMenuItem("utils", "utils-emailsearch", "Email Search", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_EmailsSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
           if (TSAuthentication.OrganizationID == 1078)
           {
-            items.Add(new TsMenuItem("dashboard2", "mniDashboard2", "Dashboard", "vcr/1_7_0/images/nav/20/Dashboard.png", string.Format(data, "vcr/1_7_0/Pages/Dashboard.html", "vcr/1_7_0/PaneInfo/Dashboard.html")));
-            items.Add(new TsMenuItem("reports2", "mniReports2", "New Reports", "vcr/1_7_0/images/nav/16/reports.png", string.Format(data, "vcr/1_7_0/pages/reports.html", "vcr/1_7_0/PaneInfo/Reports.html")));
+            utils.AddItem(new TsMenuItem("utils", "mniDashboard2", "Dashboard", "vcr/1_7_0/images/nav/20/Dashboard.png", string.Format(data, "vcr/1_7_0/Pages/Dashboard.html", "vcr/1_7_0/PaneInfo/Dashboard.html")));
+            utils.AddItem(new TsMenuItem("utils", "mniReports2", "Reports", "vcr/1_7_0/images/nav/20/reports.png", string.Format(data, "vcr/1_7_0/pages/reports.html", "vcr/1_7_0/PaneInfo/Reports.html")));
           }
 
         }
