@@ -321,7 +321,7 @@
         }
         tmrHideLoading = setTimeout(function () {
             hideLoadingIndicator();
-        }, 3000);
+        }, 60000);
     }
 
     function hideLoadingIndicator() {
