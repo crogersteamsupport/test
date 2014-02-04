@@ -466,7 +466,7 @@ Grid.prototype = {
 
         function initGrid(columns) {
             var options = {
-                rowHeight: 32,
+                rowHeight: 22,
                 editable: false,
                 enableAddRow: false,
                 enableCellNavigation: true,
