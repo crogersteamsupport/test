@@ -16,11 +16,6 @@ using Telerik.Web.UI;
 
 public partial class Frames_Dashboard : System.Web.UI.Page
 {
-  private static string GetReportConnectionString()
-  {
-    return System.Web.Configuration.WebConfigurationManager.ConnectionStrings["ReportConnection"].ConnectionString;
-  }
-
   protected override void OnLoad(EventArgs e)
   {
     base.OnLoad(e);
@@ -49,7 +44,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
 
   private static DataTable GetReportDataTable(Report report)
   {
-    using (SqlConnection connection = new SqlConnection(GetReportConnectionString()))
+    using (SqlConnection connection = new SqlConnection(UserSession.LoginUser.ConnectionString))
     {
       // Pull repoprt data in preparation to apply column order and sort.
       ReportData reportData = new ReportData(UserSession.LoginUser);
