@@ -10,6 +10,12 @@
 
 #addressPanel{margin-top: 20px;}
 
+li.active > a {
+    background-color: #1E7DCC !important;
+    color: white !important;
+}
+
+
 #tblNotes, #tblProducts, #tblFiles i {cursor:pointer;}
 
 .user-active{
