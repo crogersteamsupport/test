@@ -319,8 +319,16 @@ namespace TeamSupport.Handlers
         return;
       }
 
+      /*
       SqlCommand command = new SqlCommand();
       report.GetCommand(command, false);
+      string text = DataUtils.CommandToCsv(UserSession.LoginUser, command, false);
+       */
+
+
+      string sql = report.GetSqlOld(false);
+      SqlCommand command = new SqlCommand(sql);
+      Report.CreateParameters(UserSession.LoginUser, command, UserSession.LoginUser.UserID);
       string text = DataUtils.CommandToCsv(UserSession.LoginUser, command, false);
       /*
       MemoryStream stream = new MemoryStream();

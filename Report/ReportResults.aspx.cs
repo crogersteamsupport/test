@@ -28,7 +28,7 @@ public partial class Frames_ReportResults : BaseFramePage
 
   private string GetReportConnectionString()
   {
-    return System.Web.Configuration.WebConfigurationManager.ConnectionStrings["ReportConnection"].ConnectionString;
+    return System.Web.Configuration.WebConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
   }
 
   protected override void OnInit(EventArgs e)
