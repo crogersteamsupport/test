@@ -1635,23 +1635,29 @@ WHERE RowNum BETWEEN @From AND @To";
 
       report.LastSqlExecuted = command.CommandText;
       report.Collection.Save();
+      FixCommandParameters(command);
 
       DataTable table = new DataTable();
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
       {
         connection.Open();
+        SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
         command.Connection = connection;
-        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+        command.Transaction = transaction;
+        try
         {
-          try
+          using (SqlDataAdapter adapter = new SqlDataAdapter(command))
           {
             adapter.Fill(table);
           }
-          catch (Exception ex)
-          {
-            ExceptionLogs.LogException(loginUser, ex, "Report Data");
-            throw;
-          }
+          transaction.Commit();
+        }
+        catch (Exception ex)
+        {
+          transaction.Rollback();
+          ExceptionLogs.LogException(loginUser, ex, "Report Data");
+          throw;
         }
         connection.Close();
       }
