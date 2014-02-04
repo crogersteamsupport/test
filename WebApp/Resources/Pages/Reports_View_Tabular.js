@@ -2,7 +2,7 @@
     var _layout = null;
     var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
     var _grid;
-    var datamodel = new TeamSupport.DataModels.Reports(_reportID);
+    var datamodel = new TeamSupport.DataModels.Reports(_reportID, true);
     var _report = null;
 
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });

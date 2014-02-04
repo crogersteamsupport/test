@@ -61,7 +61,7 @@ public partial class Frames_Dashboard : System.Web.UI.Page
       isAsc = userSettings.IsSortAsc;
     }
 
-    GridResult result = Reports.GetReportData(UserSession.LoginUser, report.ReportID, 0, 100, sortField, !isAsc);
+    GridResult result = Reports.GetReportData(UserSession.LoginUser, report.ReportID, 0, 99, sortField, !isAsc, false);
     return JsonConvert.DeserializeObject<DataTable>(result.Data);
 
   }

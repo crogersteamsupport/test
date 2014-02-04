@@ -1,5 +1,5 @@
 (function ($) {
-    function ReportsModel(reportID) {
+    function ReportsModel(reportID, userUserFilter) {
         // private
         var PAGESIZE = 50;
         var data = { length: 0 };
@@ -74,7 +74,14 @@
 
                 onDataLoading.notify({ from: from, to: to });
 
-                var params = { "reportID": _reportID, "from": fromPage * PAGESIZE, "to": (toPage * PAGESIZE) + PAGESIZE - 1, "sortField": sortcol, "isDesc": (sortdir < 1) };
+                var params = { "reportID":
+                  _reportID,
+                    "from": fromPage * PAGESIZE,
+                    "to": (toPage * PAGESIZE) + PAGESIZE - 1,
+                    "sortField": sortcol,
+                    "isDesc": (sortdir < 1),
+                    "useUserFilter": (userUserFilter == true)
+                  };
                 //console.log('REQUEST: From: ' + fromPage * PAGESIZE + ', To: ' + ((fromPage * PAGESIZE) + PAGESIZE-1) + "  Page: " + fromPage);
                 req = $.ajax({
                     type: "POST",

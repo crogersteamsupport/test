@@ -120,7 +120,8 @@ namespace TSWebServices
 
         if (IsMenuItemActive(user, "mniDashboard"))
         {
-          items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "vcr/1_7_0/images/nav/20/Dashboard.png", string.Format(data, "Frames/Dashboard.aspx", "vcr/1_7_0/PaneInfo/Dashboard.html")));
+          //items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "vcr/1_7_0/images/nav/20/Dashboard.png", string.Format(data, "Frames/Dashboard.aspx", "vcr/1_7_0/PaneInfo/Dashboard.html")));
+          items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "vcr/1_7_0/images/nav/20/Dashboard.png", string.Format(data, "vcr/1_7_0/Pages/Dashboard.html", "vcr/1_7_0/PaneInfo/Dashboard.html")));
         }
 
         if (IsMenuItemActive(user, "mniMyTickets"))

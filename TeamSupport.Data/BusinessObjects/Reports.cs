@@ -300,17 +300,7 @@ namespace TeamSupport.Data
     }
     // end old stuff
 
-    public void GetCommand(SqlCommand command)
-    {
-      GetCommand(command, true, false);
-    }
-
-    public void GetCommand(SqlCommand command, bool inlcudeHiddenFields)
-    {
-      GetCommand(command, inlcudeHiddenFields, false);
-    }
-
-    public void GetCommand(SqlCommand command, bool inlcudeHiddenFields, bool isSchemaOnly) 
+    public void GetCommand(SqlCommand command, bool inlcudeHiddenFields = true, bool isSchemaOnly = false, bool useUserFilter = true) 
     {
       MigrateToNewReport();
 
@@ -318,16 +308,16 @@ namespace TeamSupport.Data
       switch (ReportDefType)
       {
         case ReportType.Table:
-          GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID);
+          GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter);
           break;
         case ReportType.Chart:
-          GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null);
+          GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null, false);
           break;
         case ReportType.Custom:
           GetCustomSql(command, isSchemaOnly);
           break;
         case ReportType.Summary:
-          GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID);
+          GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID, useUserFilter);
           break;
         default:
           break;
@@ -357,7 +347,7 @@ namespace TeamSupport.Data
       command.CommandText = customReport.Query;
     }
 
-    private static void GetTabularSql(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly, int? reportID)
+    private static void GetTabularSql(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly, int? reportID, bool useUserFilter)
     {
       StringBuilder builder = new StringBuilder();
       GetTabluarSelectClause(loginUser, command, builder, tabularReport, inlcudeHiddenFields, isSchemaOnly);
@@ -368,7 +358,7 @@ namespace TeamSupport.Data
       else
       {
         GetWhereClause(loginUser, command, builder, tabularReport.Filters);
-        if (reportID != null)
+        if (useUserFilter && reportID != null)
         {
           Report report = Reports.GetReport(loginUser, (int)reportID, loginUser.UserID);
           if (report != null && report.Row["Settings"] != DBNull.Value)
@@ -823,7 +813,7 @@ namespace TeamSupport.Data
 
     }
 
-    private static void GetSummarySql(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly, int? reportID)
+    private static void GetSummarySql(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly, int? reportID, bool useUserFilter)
     {
       StringBuilder builder = new StringBuilder();
       ReportSubcategory sub = ReportSubcategories.GetReportSubcategory(loginUser, summaryReport.Subcategory);
@@ -858,7 +848,7 @@ namespace TeamSupport.Data
       if (!isSchemaOnly)
       {
         GetWhereClause(loginUser, command, builder, summaryReport.Filters);
-        if (reportID != null)
+        if (useUserFilter == true && reportID != null)
         {
           Report report = Reports.GetReport(loginUser, (int)reportID, loginUser.UserID);
           if (report != null && report.Row["Settings"] != DBNull.Value)
@@ -923,10 +913,10 @@ namespace TeamSupport.Data
       command.CommandText = builder.ToString();
     }
 
-    public static void GetSummaryCommand(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly)
+    public static void GetSummaryCommand(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly, bool useUserFilter)
     {
       command.CommandType = CommandType.Text;
-      GetSummarySql(loginUser, command, summaryReport, isSchemaOnly, null);
+      GetSummarySql(loginUser, command, summaryReport, isSchemaOnly, null, useUserFilter);
       AddCommandParameters(command, Users.GetUser(loginUser, loginUser.UserID));
     }
 
@@ -1574,7 +1564,7 @@ namespace TeamSupport.Data
     }
     // end old stuff
 
-    public static GridResult GetReportData(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc)
+    public static GridResult GetReportData(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter)
     {
       Report report = Reports.GetReport(loginUser, reportID);
 
@@ -1585,7 +1575,7 @@ namespace TeamSupport.Data
         {
           try
           {
-            return GetReportDataPage(loginUser, report, from, to, sortField, isDesc);
+            return GetReportDataPage(loginUser, report, from, to, sortField, isDesc, useUserFilter);
           }
           catch (Exception ex)
           {
@@ -1595,7 +1585,7 @@ namespace TeamSupport.Data
 
             try
             {
-              return GetReportDataAll(loginUser, report, sortField, isDesc);
+              return GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
             }
             catch (Exception ex2)
             {
@@ -1606,21 +1596,21 @@ namespace TeamSupport.Data
         }
         else
         {
-          return GetReportDataAll(loginUser, report, sortField, isDesc);
+          return GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
         }
 
       }
       else if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart) {
-        return GetReportDataAll(loginUser, report, sortField, isDesc);
+        return GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
       }
       else
       {
-        return GetReportDataPage(loginUser, report, from, to, sortField, isDesc);
+        return GetReportDataPage(loginUser, report, from, to, sortField, isDesc, useUserFilter);
       }
 
     }
 
-    private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc)
+    private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter)
     {
       from++;
       to++;
@@ -1640,7 +1630,7 @@ WHERE RowNum BETWEEN @From AND @To";
       }
       command.Parameters.AddWithValue("@From", from);
       command.Parameters.AddWithValue("@To", to);
-      report.GetCommand(command);
+      report.GetCommand(command, true, false, useUserFilter);
       command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC");
 
       report.LastSqlExecuted = command.CommandText;
@@ -1673,11 +1663,11 @@ WHERE RowNum BETWEEN @From AND @To";
       return result;
     }
 
-    private static GridResult GetReportDataAll(LoginUser loginUser, Report report, string sortField, bool isDesc)
+    private static GridResult GetReportDataAll(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter)
     {
       SqlCommand command = new SqlCommand();
 
-      report.GetCommand(command);
+      report.GetCommand(command, true, false, useUserFilter);
       if (command.CommandText.ToLower().IndexOf(" order by ") < 0)
       {
         if (string.IsNullOrWhiteSpace(sortField))
@@ -1723,7 +1713,7 @@ WHERE RowNum BETWEEN @From AND @To";
     {
       SqlCommand command = new SqlCommand();
 
-      Report.GetSummaryCommand(loginUser, command, summaryReport, false);
+      Report.GetSummaryCommand(loginUser, command, summaryReport, false, false);
 
       DataTable table = new DataTable();
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
