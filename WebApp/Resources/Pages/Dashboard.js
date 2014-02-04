@@ -275,7 +275,7 @@ Dashboard.prototype = {
             }
             else {
                 el.addClass('box-grid');
-                report.grid = new Grid(content, report);
+                report.grid = new Grid($('<div>').addClass('dashboard-grid').appendTo(content), report);
                 report.grid.init();
             }
         }

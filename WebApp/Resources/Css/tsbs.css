@@ -64,7 +64,7 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 
 /* Box styles */
 .box { margin-top: 15px; background-color:#fff; border: 1px solid #fff;   border-top: 5px solid #fff; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;}
-.box .box-header { padding: 10px 15px;text-shadowx: 0 1px 0 #1E7DCC; }
+.box .box-header { padding: 10px 15px 0 15px;text-shadowx: 0 1px 0 #1E7DCC; }
 .box .box-header h3 { color: #444; display: inline-block; line-height: 18px; margin: 0; font-size: 18px; font-weight:300;  }
 .box .box-header h3 > i { margin-right: 10px; }
 .box .box-content { background: none repeat scroll 0 0 #FFFFFF; padding: 15px; }
