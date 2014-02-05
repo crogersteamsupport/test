@@ -167,5 +167,5 @@
       </div>
     </div>
   </div>
-  <a target="TSEarn25" href="http://www.teamsupport.com/web-support-software-contact-us/refer-your-friends-to-teamsupport-the-industrys-best-help-desk-software/"><img src="vcr/1_7_0/images/earn25.jpg" /></a>
+  
 </asp:Content>
