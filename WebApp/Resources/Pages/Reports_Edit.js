@@ -53,7 +53,6 @@ $(document).ready(function () {
                 $('.reports-header i').addClass('fa-bar-chart-o color-green');
                 $('.report-title').text(_report ? _report.Name : 'New Chart');
                 $('.report-type-radio-chart').prop('checked', true);
-                $('.summary-add-calcfield').hide();
                 break;
             case 2:
                 _typeClass = 'report-class-external';
@@ -115,7 +114,9 @@ $(document).ready(function () {
                 if (callback) callback();
             }
             else if (el.hasClass('report-chartproperties')) {
-                initChart(callback);
+                if (_report && _report.Def.Subcategory != $('#selectSubCat').val()) { _report = null; }
+                if (!(_tempReport.Subcategory && _tempReport.Subcategory == $('#selectSubCat').val())) { loadFields(function () { initChart(callback); }); }
+
             }
             else {
                 if (callback) callback();
@@ -380,7 +381,7 @@ $(document).ready(function () {
             switch (_reportType) {
                 case 0: data = JSON.stringify(getTabularObject()); break;
                 case 1: data = JSON.stringify(getChartObject()); break;
-                case 4: data = JSON.stringify(getSummaryObject()); break;
+                case 4: data = JSON.stringify(getSummaryObject('.report-summary-fields')); break;
                 case 2:
                     data = $('#external-url').val();
                     if (data.indexOf('https://') < 0) data = 'https://' + data;
@@ -418,25 +419,26 @@ $(document).ready(function () {
             var chartData = new Object();
             chartData.Filters = $('.report-filter').reportFilter('getObject');
             chartData.Subcategory = $('#selectSubCat').val();
-            chartData.Fields = getSummaryFieldsObject();
+            chartData.Fields = getSummaryFieldsObject('.report-chartproperties');
             chartData.Chart = getHighChartOptions();
             return chartData;
         }
 
-        function getSummaryObject() {
+        function getSummaryObject(el) {
             var sumData = new Object();
             sumData.Filters = $('.report-filter').reportFilter('getObject');
             sumData.Subcategory = $('#selectSubCat').val();
-            sumData.Fields = getSummaryFieldsObject();
+            sumData.Fields = getSummaryFieldsObject(el);
             return sumData;
         }
 
-        function getSummaryFieldsObject() {
+        function getSummaryFieldsObject(el) {
             var fields = new Object();
+            var $el = $(el);
             descs = new Array();
             calcs = new Array();
 
-            $('.summary-desc li').each(function () {
+            $el.find('.summary-desc li').each(function () {
                 var desc = new Object();
                 var item = $(this);
                 var data = item.find('.summary-desc-field option:selected').data('field');
@@ -447,7 +449,7 @@ $(document).ready(function () {
                 descs.push(desc);
             });
 
-            $('.summary-calc li').each(function () {
+            $el.find('.summary-calc li').each(function () {
                 var calc = new Object();
                 var item = $(this);
                 var data = item.find('.summary-calc-field option:selected').data('field');
@@ -599,12 +601,10 @@ $(document).ready(function () {
             }
         }
 
-        function buildChart(data) {
-            if (data.length < 1) {
-                alert("There is no data to create a chart.");
-                return;
+        function buildChart() {
+            if (_chartData) {
+                $('.chart-container').highcharts(getHighChartOptions(_chartData));
             }
-            $('.chart-container').highcharts(getHighChartOptions(data));
         }
 
         function getChartData(data, callback) {
@@ -617,6 +617,8 @@ $(document).ready(function () {
         }
 
         function initChart(callback) {
+            _chartData = null;
+            $('.chart-container').empty();
             if (_report != null && _report.Def.Chart) {
                 var options = _report.Def.Chart;
                 $('#chart-title').val(options.title.text);
@@ -628,22 +630,29 @@ $(document).ready(function () {
                 $('#chart-legend-align').val(options.legend.align);
                 $('#chart-legend-valign').val(options.legend.verticalAlign);
             }
-
-            getChartData(JSON.stringify(getSummaryObject()),
-                function (data) {
-                    _chartData = data;
-                    buildChart(JSON.parse(data));
-                    if (callback) callback();
-                });
+            if (callback) callback();
         }
 
         $('.chart-generate').click(function (e) {
             e.preventDefault();
-            buildChart(JSON.parse(_chartData));
+            buildChart();
         });
 
-        $('.report-chartproperties input, .report-chartproperties select').change(function (e) {
-            buildChart(JSON.parse(_chartData));
+        $('.chart-options input, .chart-options select').change(function (e) {
+            buildChart();
+        });
+
+        $('.chart-apply-data').click(function (e) {
+            e.preventDefault();
+
+            getChartData(JSON.stringify(getSummaryObject('.report-chartproperties')),
+                function (data) {
+                    if (data) {
+                        _chartData = JSON.parse(data);
+                        buildChart();
+                    }
+                });
+
         });
 
     }
