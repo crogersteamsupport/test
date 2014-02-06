@@ -27,7 +27,7 @@ namespace TeamSupport.Data
           NotesView nv WITH(NOLOCK)
         WHERE 
           nv.NeedsIndexing = 1
-          AND nv.RefType = 9
+          AND nv.RefType IN (9, 22)
           AND nv.ParentOrganizationID = @OrganizationID
         ORDER BY 
           nv.DateModified DESC";
@@ -40,7 +40,7 @@ namespace TeamSupport.Data
           FROM 
             NotesView nv WITH(NOLOCK)
           WHERE 
-            nv.RefType = 9
+            nv.RefType IN (9, 22)
             AND nv.ParentOrganizationID = @OrganizationID
           ORDER BY 
             nv.DateModified DESC";

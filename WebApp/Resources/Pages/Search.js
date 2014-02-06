@@ -598,7 +598,7 @@ function showSearchResults(results) {
         subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Modified by: ' + results.Items[i].Modifier + '</h2>';
         break;
-      case 4: //Notes
+      case 4: //CustomerNotes
         iconPath = "/vcr/1_7_0/images/nav/16/customers.png";
           //onClickHandler = "top.Ts.MainPage.openCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ", true)";
         onClickHandler = "top.Ts.MainPage.openNewCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
@@ -616,6 +616,12 @@ function showSearchResults(results) {
         onClickHandler = "top.Ts.MainPage.openWaterCoolerInstance(" + results.Items[i].ID + ", " + results.Items[i].RefType + ", " + results.Items[i].AttachmentID + ")";
         subText = '<h2>Posted by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Posted on: ' + results.Items[i].DateModified + '</h2>';
+        break;
+      case 7: //ContactNotes
+        iconPath = "/vcr/1_7_0/images/nav/16/customers.png";
+        onClickHandler = "top.Ts.MainPage.openNewContactNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
+        subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
+                '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
         break;
     }
 

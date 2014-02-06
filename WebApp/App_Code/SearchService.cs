@@ -320,10 +320,19 @@ namespace TSWebServices
             case ReferenceType.Notes:
               resultItem.ID = (int)row["NoteID"];
               resultItem.CustomerID = (int)row["RefID"];
-              resultItem.DisplayName = string.Format("{0}'s note: {1}",  row["OrganizationName"].ToString(), row["Title"].ToString());
               resultItem.Creator = row["CreatorName"].ToString();
               resultItem.DateModified = row["DateModified"].ToString();
-              resultItem.TypeID = 4;
+              switch ((ReferenceType)row["NoteRefType"])
+              {
+                case ReferenceType.Organizations:
+                  resultItem.DisplayName = string.Format("{0}'s note: {1}",  row["OrganizationName"].ToString(), row["Title"].ToString());
+                  resultItem.TypeID = 4;
+                  break;
+                case ReferenceType.Users:
+                  resultItem.DisplayName = string.Format("{0}'s note: {1}", row["ContactName"].ToString(), row["Title"].ToString());
+                  resultItem.TypeID = 7;
+                  break;
+              }
 
               break;
             case ReferenceType.ProductVersions:
@@ -639,6 +648,8 @@ namespace TSWebServices
         , nv.Title
         , nv.CreatorName
         , nv.DateModified
+        , nv.RefType AS NoteRefType
+        , nv.ContactName
         , pvv.ProductVersionID
         , pvv.ProductID
         , pvv.ProductName
