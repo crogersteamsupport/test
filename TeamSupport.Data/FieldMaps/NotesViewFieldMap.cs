@@ -27,6 +27,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
       _fieldMap.AddMap("ParentOrganizationID", "ParentOrganizationID", false, false, false);
       _fieldMap.AddMap("OrganizationName", "OrganizationName", false, false, false);
+      _fieldMap.AddMap("ContactName", "ContactName", false, false, false);
             
     }
   }

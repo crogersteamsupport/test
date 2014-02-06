@@ -27,6 +27,7 @@ namespace TeamSupport.Data
     [DataMember] public string ModifierName { get; set; }
     [DataMember] public int? ParentOrganizationID { get; set; }
     [DataMember] public string OrganizationName { get; set; }
+    [DataMember] public string ContactName { get; set; }
           
   }
   
@@ -35,6 +36,7 @@ namespace TeamSupport.Data
     public NotesViewItemProxy GetProxy()
     {
       NotesViewItemProxy result = new NotesViewItemProxy();
+      result.ContactName = this.ContactName;
       result.OrganizationName = this.OrganizationName;
       result.ParentOrganizationID = this.ParentOrganizationID;
       result.ModifierName = this.ModifierName;
