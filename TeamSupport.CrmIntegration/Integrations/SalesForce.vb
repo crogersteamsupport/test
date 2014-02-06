@@ -27,12 +27,10 @@ Namespace TeamSupport
 
                 Log.Write("Binding to SF object")
                 Binding = New SforceService()
-                'For GridPoint test accounts use test.salesforce.com
-                'GridPoint, Inc 		420794
                 'GridPoint-Sandbox	614460
                 'gridpointtest		  614521
-                'SandBox            13679
-                If CRMLinkRow.OrganizationID = 614460 OrElse CRMLinkRow.OrganizationID = 614521 Then
+                'Axcient            674464
+                If CRMLinkRow.OrganizationID = 614460 OrElse CRMLinkRow.OrganizationID = 614521 OrElse CRMLinkRow.OrganizationID = 674464 Then
                   Binding.Url = "https://test.salesforce.com/services/Soap/u/16.0"
                 End If
 
