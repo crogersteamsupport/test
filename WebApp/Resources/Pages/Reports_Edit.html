@@ -47,6 +47,8 @@
     .summary-fields li:hover a { opacity: 0.5; filter: alpha(opacity=50); }
     .summary-fields li:first-child a { display: none; }
     .filter-field, .filter-comp { margin-right: 15px; }
+
+    .chart-error { font-size: 20px; padding: 60px 0; text-align:center; }
   </style>
 </head>
 <body>
@@ -113,7 +115,7 @@
           </div>
         </div>
       </div>
-      <div class="report-section report-filters report-class-chart report-class-summary report-class-tabular">
+      <div class="report-section report-filters report-class-summary report-class-tabular">
         <div class="row">
           <div class="col-xs-12">
             <div class="panel panel-default">
@@ -251,6 +253,7 @@
                         <a href="#"><i class="fa fa-times"></i></a></li>
                     </ul>
                     <button class="btn btn-primary chart-apply-data">Preview Data</button>
+                    <button class="btn btn-primary chart-apply-filter">Filter Data</button>
                   </div>
                 </fieldset>
               </div>
@@ -260,8 +263,8 @@
                 <h3 class="panel-title">Preview</h3>
               </div>
               <div class="panel-body">
-                <div class="chart-container">
-                </div>
+                <div class="chart-error"></div>
+                <div class="chart-container"></div>
               </div>
             </div>
           </div>
@@ -342,5 +345,26 @@
       </form>
     </div>
   </div>
+
+  <div class="modal filter-modal" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilterLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="modalFilterLabel">Report Filters</h4>
+        </div>
+        <div class="modal-body">
+          <div class="filter-container" id="chartFilter">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
 </body>
 </html>

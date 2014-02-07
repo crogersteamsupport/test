@@ -21,6 +21,7 @@ $(document).ready(function () {
     var _subID = -1;
 
     $('.report-filter').reportFilter();
+    $('#chartFilter').reportFilter();
 
     if (_reportID != null) {
         top.Ts.Utils.webMethod("ReportService", "GetReport", {
@@ -357,6 +358,7 @@ $(document).ready(function () {
                     if (_reportType == 1 || _reportType == 4) loadSummaryFields();
                 }
                 $('.report-filter').reportFilter('loadFields', fields);
+                $('#chartFilter').reportFilter('loadFields', fields);
                 if (callback) callback();
             });
         }
@@ -381,7 +383,7 @@ $(document).ready(function () {
             switch (_reportType) {
                 case 0: data = JSON.stringify(getTabularObject()); break;
                 case 1: data = JSON.stringify(getChartObject()); break;
-                case 4: data = JSON.stringify(getSummaryObject('.report-summary-fields')); break;
+                case 4: data = JSON.stringify(getSummaryObject('.report-summary-fields', $('.report-filter').reportFilter('getObject'))); break;
                 case 2:
                     data = $('#external-url').val();
                     if (data.indexOf('https://') < 0) data = 'https://' + data;
@@ -417,16 +419,16 @@ $(document).ready(function () {
 
         function getChartObject() {
             var chartData = new Object();
-            chartData.Filters = $('.report-filter').reportFilter('getObject');
+            chartData.Filters = $('#chartFilter').reportFilter('getObject');
             chartData.Subcategory = $('#selectSubCat').val();
             chartData.Fields = getSummaryFieldsObject('.report-chartproperties');
             chartData.Chart = getHighChartOptions();
             return chartData;
         }
 
-        function getSummaryObject(el) {
+        function getSummaryObject(el, filters) {
             var sumData = new Object();
-            sumData.Filters = $('.report-filter').reportFilter('getObject');
+            sumData.Filters = filters;
             sumData.Subcategory = $('#selectSubCat').val();
             sumData.Fields = getSummaryFieldsObject(el);
             return sumData;
@@ -445,6 +447,7 @@ $(document).ready(function () {
                 desc.Field = new Object();
                 desc.Field.FieldID = data.ID;
                 desc.Field.IsCustom = data.IsCustom;
+                desc.Field.FieldType = data.DataType;
                 desc.Value1 = item.find('.summary-desc-val1').val();
                 descs.push(desc);
             });
@@ -456,6 +459,7 @@ $(document).ready(function () {
                 calc.Field = new Object();
                 calc.Field.FieldID = data.ID;
                 calc.Field.IsCustom = data.IsCustom;
+                calc.Field.FieldType = data.DataType;
                 calc.Aggregate = data.DataType == 'number' ? item.find('.summary-calc-arg').val() : item.find('.summary-calc-text-arg').val();
                 calc.Comparator = item.find('.summary-calc-comp').val();
                 calc.Value1 = item.find('.summary-calc-val1').val();
@@ -510,6 +514,8 @@ $(document).ready(function () {
             if ($('.filter .filter-group').length < 1) {
                 if (_report != null && _report.Def.Filters && _report.Def.Filters.length > 0) {
                     $('.report-filter').reportFilter('loadFilters', _report.Def.Filters);
+                    $('#chartFilter').reportFilter('loadFilters', _report.Def.Filters);
+
                 }
             }
         }
@@ -517,6 +523,7 @@ $(document).ready(function () {
 
         function getHighChartOptions(data) {
             var options = {};
+            options.chart = { zoomType: 'x' }
             options.ts = { chartType: $('#chart-type').val(), seriesTitle: $('#chart-series-title').val() }
             options.credits = { enabled: false }
             options.title = { text: $('#chart-title').val(), x: -20 };
@@ -529,9 +536,10 @@ $(document).ready(function () {
             options.yAxis = {};
             options.yAxis.title = { text: $('#chart-series-title').val() };
             options.yAxis.plotLines = [{ value: 0, width: 1, color: '#808080'}];
-
             switch ($('#chart-type').val()) {
                 case 'line':
+                    options.plotOptions = {};
+                    options.plotOptions.line = { turboThreshold: 100000 };
                     break;
                 case 'area':
                     options.chart = { type: 'area' };
@@ -576,34 +584,141 @@ $(document).ready(function () {
                 default:
             }
 
-            if (data) { updateSeriesOptions(options, data); }
+            if (data) {
+                var error = updateSeriesOptions(options, data);
+                if (error) {
+                    $('.chart-error').show().text(error);
+                    $('.chart-container').hide();
+                    return null;
+                }
+                else {
+                    $('.chart-error').hide();
+                    $('.chart-container').show();
+                }
+            }
 
             return options;
         }
 
-        function updateSeriesOptions(options, data) {
+        function updateSeriesOptions(options, records) {
+
+            function fixRecordName(record, index) {
+                if (record.fieldType == 'bool') {
+                    return record.name + (record.data[index] == true ? ' = True' : ' = False');
+                }
+                return record.data[index];
+            }
+
             if (options.ts.chartType == 'pie') {
+                if (records.length > 2) {
+                    return 'Please select only one descriptive field to plot a pie chart.';
+                }
+
+                if (records[1].length > 100) {
+                    return 'The data you have selected contains too many results.  Try filtering your data.';
+                }
                 var total = 0;
-                for (var i = 0; i < data.Series[0].data.length; i++) {
-                    total += data.Series[0].data[i];
+                for (var i = 0; i < records[1].data.length; i++) {
+                    total += parseInt(records[1].data[i]);
                 }
 
                 options.series = [{ type: 'pie', name: options.ts.seriesTitle, data: []}];
 
-                for (var i = 0; i < data.Categories.length; i++) {
-                    var val = data.Series[0].data[i] / total * 100;
-                    options.series[0].data.push([data.Categories[i], parseFloat(val.toFixed(2))]);
+                for (var i = 0; i < records[1].data.length; i++) {
+                    var val = records[1].data[i] / total * 100;
+                    options.series[0].data.push([records[0].data[i], parseFloat(val.toFixed(2))]);
                 }
             }
-            else {
-                options.series = data.Series;
-                options.xAxis = { categories: data.Categories };
+            else if ((records[0].fieldType == 'datetime' && records[0].format == 'date') || (records[1].fieldType == 'datetime' && records[1].format == 'date')) {
+                options.series = [];
+                options.xAxis = { type: 'datetime' };
+
+                if (records.length == 3) {
+                    var series = null;
+                    for (var i = 0; i < records[0].data.length; i++) {
+                        if (!series || series.value != records[0].data[i]) {
+                            series = { name: fixRecordName(records[0], i), value: records[0].data[i], data: [] };
+                            options.series.push(series);
+                        }
+
+                        var item = [];
+                        item.push(Date.parse(records[1].data[i]));
+                        item.push(records[2].data[i]);
+                        series.data.push(item);
+
+                    }
+
+                }
+                else if (records.length = 2) {
+                    options.series.push({ name: records[1].name, data: [] });
+
+                    for (var i = 0; i < records[0].data.length; i++) {
+                        var item = [];
+                        item.push(Date.parse(records[0].data[i]));
+                        item.push(records[1].data[i]);
+                        options.series[0].data.push(item);
+                    }
+                }
+
             }
+            else {
+                options.series = [];
+
+                if (records.length == 3) {
+
+                    options.xAxis = { categories: [] };
+
+                    function indexOfCategory(name) {
+                        for (var i = 0; i < options.xAxis.categories.length; i++) {
+                            if (options.xAxis.categories[i] == name) {
+                                return i;
+                            }
+                        }
+                        return -1;
+                    }
+
+                    for (var i = 0; i < records[1].data.length; i++) {
+                        var name = fixRecordName(records[1], i);
+                        if (indexOfCategory(name) < 0) {
+                            options.xAxis.categories.push(name);
+                        }
+                    }
+
+                    function createDataArray() {
+                        var result = [];
+                        for (var i = 0; i < options.xAxis.categories.length; i++) {
+                            result.push(0);
+                        }
+                        return result;
+                    }
+
+                    var series = null;
+                    for (var i = 0; i < records[0].data.length; i++) {
+                        if (!series || series.value != records[0].data[i]) {
+                            series = { name: fixRecordName(records[0], i), value: records[0].data[i], data: createDataArray() };
+                            options.series.push(series);
+                        }
+                        var catIndex = indexOfCategory(fixRecordName(records[1], i));
+                        if (records[2].data[i]) series.data[catIndex] = records[2].data[i];
+                    }
+
+                }
+                else if (records.length = 2) {
+                    if (records[0].data.length > 100) {
+                        return 'The data you have selected contains too many results.  Try filtering your data.';
+                    }
+                    options.xAxis = { categories: records[0].data };
+                    options.series.push({ name: records[1].name, data: records[1].data });
+                }
+
+            }
+
         }
 
         function buildChart() {
             if (_chartData) {
-                $('.chart-container').highcharts(getHighChartOptions(_chartData));
+                var options = getHighChartOptions(_chartData);
+                if (options) $('.chart-container').highcharts(options);
             }
         }
 
@@ -612,7 +727,7 @@ $(document).ready(function () {
               { "summaryReportFields": data },
               callback,
               function (error) {
-                  alert(error.get_message());
+                  alert(error.statusText);
               });
         }
 
@@ -642,10 +757,24 @@ $(document).ready(function () {
             buildChart();
         });
 
+        $('.filter-modal').modal({
+            "show": false,
+            "backdrop": 'static'
+        });
+
+        $('.chart-apply-filter').click(function (e) {
+            e.preventDefault();
+            $('.filter-modal').modal('show');
+        });
+
+        $('.filter-modal').on('hidden.bs.modal', function (e) {
+            $('.chart-apply-data').trigger('click');
+        })
+
         $('.chart-apply-data').click(function (e) {
             e.preventDefault();
 
-            getChartData(JSON.stringify(getSummaryObject('.report-chartproperties')),
+            getChartData(JSON.stringify(getSummaryObject('.report-chartproperties', $('#chartFilter').reportFilter('getObject'))),
                 function (data) {
                     if (data) {
                         _chartData = JSON.parse(data);

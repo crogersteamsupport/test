@@ -311,13 +311,13 @@ namespace TeamSupport.Data
           GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter);
           break;
         case ReportType.Chart:
-          GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null, false);
+          GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null, false, true);
           break;
         case ReportType.Custom:
           GetCustomSql(command, isSchemaOnly);
           break;
         case ReportType.Summary:
-          GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID, useUserFilter);
+          GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID, useUserFilter, false);
           break;
         default:
           break;
@@ -813,7 +813,7 @@ namespace TeamSupport.Data
 
     }
 
-    private static void GetSummarySql(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly, int? reportID, bool useUserFilter)
+    private static void GetSummarySql(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly, int? reportID, bool useUserFilter, bool useDefaultOrderBy)
     {
       StringBuilder builder = new StringBuilder();
       ReportSubcategory sub = ReportSubcategories.GetReportSubcategory(loginUser, summaryReport.Subcategory);
@@ -909,14 +909,28 @@ namespace TeamSupport.Data
           builder.Append(string.Format(" AND {0}", calcField.Comparator));
         flag = false;
       }
-      
+
+      if (useDefaultOrderBy)
+      {
+        // order by
+        flag = true;
+        foreach (DescriptiveClauseItem descField in descFields)
+        {
+          if (flag)
+            builder.Append(string.Format(" ORDER BY [{0}]", descField.Alias));
+          else
+            builder.Append(string.Format(", [{0}]", descField.Alias));
+
+          flag = false;
+        }
+      }
       command.CommandText = builder.ToString();
     }
 
-    public static void GetSummaryCommand(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly, bool useUserFilter)
+    public static void GetSummaryCommand(LoginUser loginUser, SqlCommand command, SummaryReport summaryReport, bool isSchemaOnly, bool useUserFilter, bool useDefaultOrderBy)
     {
       command.CommandType = CommandType.Text;
-      GetSummarySql(loginUser, command, summaryReport, isSchemaOnly, null, useUserFilter);
+      GetSummarySql(loginUser, command, summaryReport, isSchemaOnly, null, useUserFilter, useDefaultOrderBy);
       AddCommandParameters(command, Users.GetUser(loginUser, loginUser.UserID));
     }
 
@@ -1108,17 +1122,17 @@ namespace TeamSupport.Data
     {
       switch (option)
       {
-        case "year": return string.Format("DATENAME(YEAR, {0})", fieldName);
-        case "qtryear": return string.Format("DATENAME(QUARTER, {0}) + '-' + DATENAME(YEAR, {0})", fieldName);
-        case "monthyear": return string.Format("DATENAME(MONTH, {0}) + '-' + DATENAME(YEAR, {0})", fieldName);
-        case "weekyear": return string.Format("DATENAME(WEEK, {0}) + '-' + DATENAME(YEAR, {0})", fieldName);
+        case "year": return string.Format("DATEPART(YEAR, {0})", fieldName);
+        case "qtryear": return string.Format("CAST(DATEPART(YEAR, {0}) AS VARCHAR) + '-' + CAST(DATEPART(QUARTER, {0}) AS VARCHAR)", fieldName);
+        case "monthyear": return string.Format("CAST(DATEPART(YEAR, {0}) AS VARCHAR) + '-' + CAST(DATEPART(MONTH, {0}) AS VARCHAR)", fieldName);
+        case "weekyear": return string.Format("CAST(DATEPART(YEAR, {0}) AS VARCHAR) + '-' + CAST(DATEPART(WEEK, {0}) AS VARCHAR)", fieldName);
         case "date": return string.Format("CAST({0} AS DATE)", fieldName);
-        case "qtr": return string.Format("DATENAME(QUARTER, {0})", fieldName);
-        case "month": return string.Format("DATENAME(MONTH, {0}) ", fieldName);
-        case "week": return string.Format("DATENAME(WEEK, {0}) ", fieldName);
-        case "dayweek": return string.Format("DATENAME(WEEKDAY, {0})", fieldName);
-        case "daymonth": return string.Format("DATENAME(DAY, {0})", fieldName);
-        case "hourday": return string.Format("DATENAME(HOUR, {0})", fieldName);
+        case "qtr": return string.Format("DATEPART(QUARTER, {0})", fieldName);
+        case "month": return string.Format("DATEPART(MONTH, {0}) ", fieldName);
+        case "week": return string.Format("DATEPART(WEEK, {0}) ", fieldName);
+        case "dayweek": return string.Format("DATEPART(WEEKDAY, {0})", fieldName);
+        case "daymonth": return string.Format("DATEPART(DAY, {0})", fieldName);
+        case "hourday": return string.Format("DATEPART(HOUR, {0})", fieldName);
         default:
           break;
       }
@@ -1715,12 +1729,12 @@ WHERE RowNum BETWEEN @From AND @To";
 
     }
 
-    public static DataTable GetSummaryData(LoginUser loginUser, SummaryReport summaryReport)
+    public static DataTable GetSummaryData(LoginUser loginUser, SummaryReport summaryReport, bool useDefaultOrderBy)
     {
       SqlCommand command = new SqlCommand();
+      Report.GetSummaryCommand(loginUser, command, summaryReport, false, false, useDefaultOrderBy);
 
-      Report.GetSummaryCommand(loginUser, command, summaryReport, false, false);
-
+      FixCommandParameters(command);
       DataTable table = new DataTable();
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
       {
@@ -2007,14 +2021,14 @@ IF @@ROWCOUNT=0
   public class ReportSummaryDescriptiveField
   {
     public ReportSummaryDescriptiveField() { }
-    public ReportSelectedField Field { get; set; }
+    public SummarySelectedField Field { get; set; }
     public string Value1 { get; set; }
   }
 
   public class ReportSummaryCalculatedField
   {
     public ReportSummaryCalculatedField() { }
-    public ReportSelectedField Field { get; set; }
+    public SummarySelectedField Field { get; set; }
     public string Aggregate { get; set; }
     public string Comparator { get; set; }
     public string Value1 { get; set; }
@@ -2042,6 +2056,14 @@ IF @@ROWCOUNT=0
     public ReportSelectedField() { }
     public int FieldID { get; set; }
     public bool IsCustom { get; set; }
+  }
+
+  public class SummarySelectedField
+  {
+    public SummarySelectedField() { }
+    public int FieldID { get; set; }
+    public bool IsCustom { get; set; }
+    public string FieldType { get; set; }
   }
 
   public class ReportFilter

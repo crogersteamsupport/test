@@ -58,9 +58,34 @@ namespace TSWebServices
       [WebMethod]
       public string GetChartData(string summaryReportFields)
       {
-        DataTable table = Reports.GetSummaryData(TSAuthentication.GetLoginUser(), JsonConvert.DeserializeObject<SummaryReport>(summaryReportFields));
+        SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(summaryReportFields);
+        DataTable table = Reports.GetSummaryData(TSAuthentication.GetLoginUser(), summaryReport, true);
+        DataResult[] result = new DataResult[table.Columns.Count];
 
-        ChartData result = new ChartData();
+        for (int i = 0; i < table.Columns.Count; i++)
+        {
+          result[i] = new DataResult();
+          result[i].name = table.Columns[i].ColumnName;
+          result[i].data = new object[table.Rows.Count];
+
+          for (int j = 0; j < table.Rows.Count; j++)
+          {
+            object data = table.Rows[j][i];
+            result[i].data[j] = data == null || data == DBNull.Value ? null : data;
+          }
+
+          if (i < summaryReport.Fields.Descriptive.Length) 
+          {
+            result[i].fieldType = summaryReport.Fields.Descriptive[i].Field.FieldType;
+            result[i].format = summaryReport.Fields.Descriptive[i].Value1;
+            if (result[i].fieldType == "datetime") FixChartDateNames(result[i].data, summaryReport.Fields.Descriptive[i].Value1);
+          }
+   
+
+        }
+
+        return JsonConvert.SerializeObject(result);
+        /*ChartData result = new ChartData();
         List<string> cats = new List<string>();
         
         if (table.Columns.Count == 2)
@@ -73,7 +98,6 @@ namespace TSWebServices
               cats.Add(cat);
             }
 			    }
-          cats.Sort();
 
           Object[] data = new Object[cats.Count];
 
@@ -84,7 +108,9 @@ namespace TSWebServices
             if (index > -1) data[index] = row[1] == DBNull.Value ? 0 : row[1];
           }
 
-          result.Categories = cats.ToArray();
+          FixChartDateNames(cats, summaryReport.Fields.Descriptive[0].Value1);
+          if (summaryReport.Fields.Descriptive[0].Value1 == "date") result.XAxis.type = "datetime";
+          result.XAxis.categories = cats.ToArray();
           List<ChartSeries> chartSeries = new List<ChartSeries>();
           ChartSeries series = new ChartSeries();
           series.data = data;
@@ -106,7 +132,6 @@ namespace TSWebServices
               cats.Add(cat);
             }
           }
-          cats.Sort();
 
 
           for (int i = 0; i < table.Rows.Count; i++)
@@ -129,7 +154,6 @@ namespace TSWebServices
             chartSeries.Add(series);
           }
           result.Series = chartSeries.ToArray();
-          result.Categories = cats.ToArray();
 
           for (int i = 0; i < table.Rows.Count; i++)
           {
@@ -138,10 +162,82 @@ namespace TSWebServices
             ChartSeries series = result.FindSeries(row[0] == DBNull.Value ? "" : row[0].ToString());
             if (series != null) series.data[index] = row[2] == DBNull.Value ? 0 : row[2];
           }
+          FixChartDateNames(cats, summaryReport.Fields.Descriptive[1].Value1);
+          if (summaryReport.Fields.Descriptive[0].Value1 == "date") result.XAxis.type = "datetime";
+          result.XAxis.categories = cats.ToArray();
+
           return JsonConvert.SerializeObject(result);
         }
 
-        return null;
+        return null;*/
+      }
+
+      private void FixChartDateNames(object[] list, string dateType)
+      {
+        try 
+        {	        
+          DateTime baseDate = new DateTime(1970, 1, 1);  
+          for (int i = 0; i < list.Length; i++)
+          {
+            if (string.IsNullOrWhiteSpace((string)list[i])) continue;
+            string item = ((string)list[i]).Trim().ToLower();
+          
+          
+            if (dateType == "qtryear" || dateType == "monthyear" || dateType == "weekyear")
+            {
+              string[] items = item.Split('-');
+              if (items.Length == 2)
+              {
+                string year = items[0];
+                string value = items[1];
+
+                switch (dateType)
+                {
+                  case "qtryear": list[i] = string.Format("Q{0} {1}", value, year); break;
+                  case "monthyear": list[i] =
+
+
+                    string.Format("{0} {1}", TSAuthentication.GetLoginUser().CultureInfo.DateTimeFormat.GetAbbreviatedMonthName(int.Parse(value)), year); 
+                  
+                    break;
+                  case "weekyear": list[i] = string.Format("{0}-{1}", value, year); break;
+                  default:
+                    break;
+                }
+              }
+
+
+            }
+            else if (dateType == "qtr")
+            {
+              list[i] = "Q" + item;
+            }
+            else if (dateType == "month")
+            {
+              list[i] = TSAuthentication.GetLoginUser().CultureInfo.DateTimeFormat.GetMonthName(int.Parse(item));
+            }
+            else if (dateType == "dayweek")
+            {
+              list[i] = CultureInfo.CurrentCulture.DateTimeFormat.GetDayName((DayOfWeek)(int.Parse(item) - 1));
+            }
+            else if (dateType == "date")
+            {
+		
+              DateTime d = DateTime.SpecifyKind(DateTime.Parse(item), DateTimeKind.Utc);
+              list[i] = new TimeSpan(d.Ticks - baseDate.Ticks).TotalMilliseconds.ToString();
+            }
+            else
+            {
+              break;
+            }
+          }
+	      }
+        catch (Exception)
+	      {
+		
+
+	      }
+
       }
 
       [WebMethod]
@@ -598,11 +694,24 @@ namespace TSWebServices
       }
 
       [DataContract]
+      public class ChartXAxis
+      {
+        [DataMember] public string type { get; set; }
+        [DataMember] public string[] categories { get; set; }
+      }
+
+      [DataContract]
       public class ChartData
       {
-        [DataMember] public string[] Categories { get; set; }
+        [DataMember] public ChartXAxis XAxis { get; set; }
         [DataMember] public ChartSeries[] Series { get; set; }
-        
+
+        public ChartData() {
+          XAxis = new ChartXAxis();
+          XAxis.type = "linear";
+
+        }
+
         public ChartSeries FindSeries(string name) {
           foreach (ChartSeries item in this.Series)
           {
@@ -614,6 +723,17 @@ namespace TSWebServices
           return null;
         }
         
+      }
+
+      [DataContract]
+      public class DataResult
+      {
+        public DataResult() { }
+        
+        [DataMember] public string name { get; set; }
+        [DataMember] public string fieldType { get; set; }
+        [DataMember] public string format { get; set; }
+        [DataMember] public object[] data { get; set; }
       }
 
       [DataContract]
