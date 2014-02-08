@@ -1147,6 +1147,7 @@ namespace TeamSupport.Data
       using (SqlCommand command = new SqlCommand())
       {
         GetCommand(command, false, true);
+        BaseCollection.FixCommandParameters(command);
 
         using (SqlConnection connection = new SqlConnection(Collection.LoginUser.ConnectionString))
         {
@@ -1532,6 +1533,7 @@ namespace TeamSupport.Data
       SqlCommand command = new SqlCommand();
       DataTable userFavorites = new DataTable();
       BaseCollection.FixCommandParameters(command);
+
       command.CommandText = "select UserID, SettingValue from UserSettings where SettingKey = 'FavoriteReport'";
       using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
       {
@@ -1700,6 +1702,7 @@ WHERE RowNum BETWEEN @From AND @To";
 
       report.LastSqlExecuted = command.CommandText;
       report.Collection.Save();
+      FixCommandParameters(command);
 
       DataTable table = new DataTable();
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
