@@ -241,27 +241,7 @@ Dashboard.prototype = {
             top.Ts.Utils.webMethod("ReportService", "GetChartReportData",
               { "reportID": report.ReportID },
               function (data) {
-                  function updateSeriesOptions(options, data) {
-                      if (options.ts.chartType == 'pie') {
-                          var total = 0;
-                          for (var i = 0; i < data.Series[0].data.length; i++) {
-                              total += data.Series[0].data[i];
-                          }
-
-                          options.series = [{ type: 'pie', name: options.ts.seriesTitle, data: []}];
-
-                          for (var i = 0; i < data.Categories.length; i++) {
-                              var val = data.Series[0].data[i] / total * 100;
-                              options.series[0].data.push([data.Categories[i], parseFloat(val.toFixed(2))]);
-                          }
-                      }
-                      else {
-                          options.series = data.Series;
-                          options.xAxis = { categories: data.Categories };
-                      }
-                  }
-
-                  updateSeriesOptions(report.Def.Chart, JSON.parse(data));
+                  addChartData(report.Def.Chart, JSON.parse(data));
                   content.highcharts(report.Def.Chart);
               },
               function (error) {
