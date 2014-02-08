@@ -302,6 +302,7 @@ Grid.prototype = {
 
             function addRepCol(repCol) {
                 var column = new Object();
+                repCol.Name = repCol.Name.replace(/[_]/g, ' ');
                 column.id = repCol.Name;
                 column.name = repCol.Name;
                 column.field = repCol.Name;
@@ -309,6 +310,7 @@ Grid.prototype = {
                 column.sortable = true;
                 column.fieldID = repCol.FieldID;
                 column.isCustomField = repCol.IsCustomField;
+                var low = repCol.Name.toLowerCase().replace(/[_ ]/g, '');
 
                 if (repCol.DataType == "datetime") {
                     column.formatter = dateFormatter;
@@ -323,7 +325,10 @@ Grid.prototype = {
                 } else if (repCol.IsOpenable == true) {
                     column.formatter = openFormatter;
                     column.openField = repCol.OpenField;
+                } else if (low == 'ticketnumber') {
+                    column.formatter = ticketNumberFormatter;
                 }
+
                 columns.push(column);
             }
 
@@ -391,6 +396,10 @@ Grid.prototype = {
         var linkFormatter = function (row, cell, value, columnDef, dataContext) {
             return '<a href="' + dataContext[columnDef.id] + '" target="_blank">' + dataContext[columnDef.id] + '</a>';
         };
+
+        var ticketNumberFormatter = function (row, cell, value, columnDef, dataContext) {
+            return '<a href="#" onclick="top.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
+        }
 
         var openFormatter = function (row, cell, value, columnDef, dataContext) {
             if (columnDef.openField == "TicketID") {
