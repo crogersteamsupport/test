@@ -182,14 +182,25 @@ $(document).ready(function () {
         $('.summary-add-field').click(function (e) {
             e.preventDefault();
             var list = $(this).prev();
-            initSummaryRow(list.find('li:first').clone(true).appendTo(list));
-            if (_reportType == 1) $('.summary-add-descfield').hide();
+            var item = list.find('li:first').clone(true).hide();
+            initSummaryRow(item);
+            if (_reportType == 1) {
+                $('.summary-add-descfield').hide();
+                item.find('label').text('Series');
+                item.prependTo(list).fadeIn();
+            }
+            else {
+                item.appendTo(list).fadeIn();
+            }
         });
 
         $('.summary-fields').on('click', 'li a', function (e) {
             e.preventDefault();
-            $(this).closest('li').fadeOut(function () { $(this).remove(); });
-            if (_reportType == 1) $('.summary-add-descfield').show();
+            $(this).closest('li').fadeOut(function () {
+                $(this).remove();
+                if (_reportType == 1) $('.summary-add-descfield').fadeIn();
+            });
+
         });
 
         $('.summary-fields').on('change', '.summary-desc-field', function (e) {
