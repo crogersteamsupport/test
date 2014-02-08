@@ -302,9 +302,8 @@ Grid.prototype = {
 
             function addRepCol(repCol) {
                 var column = new Object();
-                repCol.Name = repCol.Name.replace(/[_]/g, ' ');
                 column.id = repCol.Name;
-                column.name = repCol.Name;
+                column.name = repCol.Name.replace(/[_]/g, ' ');
                 column.field = repCol.Name;
                 column.width = repCol.Width || 250;
                 column.sortable = true;
