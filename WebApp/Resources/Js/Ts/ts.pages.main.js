@@ -1405,6 +1405,13 @@ Ts.Pages.Main.prototype = {
       });
 
   },
+  openNewContactNote: function (contactID, noteID) {
+      var orgname;
+      var query = "?user=" + contactID + "&noteid=" + noteID;
+      top.Ts.Services.Users.GetShortNameFromID(contactID, function (result) {
+          this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Contact, contactID, result, true, true, false, null, null, query, null);
+      });
+  },
   closeNewCustomer: function (customerID){
       var div = $('.main-tab-content .main-Customer-' + customerID);
       div.remove();
