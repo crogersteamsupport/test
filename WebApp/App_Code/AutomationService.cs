@@ -146,6 +146,74 @@ namespace TSWebServices
       afiHoursSinceAction.OtherTrigger = "ticketsview.hourssincelastactionadded";
       fieldItems.Add(afiHoursSinceAction);
 
+      AutoFieldItem afiCurrentDayOfWeek = new AutoFieldItem();
+      afiCurrentDayOfWeek.Alias = "Current Day of Week";
+      afiCurrentDayOfWeek.DataType = "list";
+      afiCurrentDayOfWeek.FieldID = 101005;
+      afiCurrentDayOfWeek.FieldName = "Current Day of Week";
+      afiCurrentDayOfWeek.IsCustom = false;
+      afiCurrentDayOfWeek.IsVisible = true;
+      afiCurrentDayOfWeek.ListValues = new string[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+      afiCurrentDayOfWeek.LookupTableID = null;
+      afiCurrentDayOfWeek.Size = 0;
+      afiCurrentDayOfWeek.Description = "";
+      afiCurrentDayOfWeek.TableID = -2;
+      afiCurrentDayOfWeek.RefType = ReferenceType.Tickets;
+      afiCurrentDayOfWeek.AuxID = null;
+      afiCurrentDayOfWeek.OtherTrigger = "ticketsview.currentdayofweek";
+      fieldItems.Add(afiCurrentDayOfWeek);
+
+      AutoFieldItem afiCurrentHourOfDay = new AutoFieldItem();
+      afiCurrentHourOfDay.Alias = "Current Hour of Day";
+      afiCurrentHourOfDay.DataType = "text";
+      afiCurrentHourOfDay.FieldID = 101006;
+      afiCurrentHourOfDay.FieldName = "Current Hour of Day";
+      afiCurrentHourOfDay.IsCustom = false;
+      afiCurrentHourOfDay.IsVisible = true;
+      afiCurrentHourOfDay.ListValues = null;
+      afiCurrentHourOfDay.LookupTableID = null;
+      afiCurrentHourOfDay.Size = 0;
+      afiCurrentHourOfDay.Description = "";
+      afiCurrentHourOfDay.TableID = -2;
+      afiCurrentHourOfDay.RefType = ReferenceType.Tickets;
+      afiCurrentHourOfDay.AuxID = null;
+      afiCurrentHourOfDay.OtherTrigger = "ticketsview.currenthourofday";
+      fieldItems.Add(afiCurrentHourOfDay);
+
+      AutoFieldItem afiAssignedUserIsAvailable = new AutoFieldItem();
+      afiAssignedUserIsAvailable.Alias = "Assigned User Is Available";
+      afiAssignedUserIsAvailable.DataType = "bit";
+      afiAssignedUserIsAvailable.FieldID = 101007;
+      afiAssignedUserIsAvailable.FieldName = "Assigned User Is Available";
+      afiAssignedUserIsAvailable.IsCustom = false;
+      afiAssignedUserIsAvailable.IsVisible = true;
+      afiAssignedUserIsAvailable.ListValues = null;
+      afiAssignedUserIsAvailable.LookupTableID = null;
+      afiAssignedUserIsAvailable.Size = 0;
+      afiAssignedUserIsAvailable.Description = "";
+      afiAssignedUserIsAvailable.TableID = -2;
+      afiAssignedUserIsAvailable.RefType = ReferenceType.Tickets;
+      afiAssignedUserIsAvailable.AuxID = null;
+      afiAssignedUserIsAvailable.OtherTrigger = "ticketsview.assigneduseravailable";
+      fieldItems.Add(afiAssignedUserIsAvailable);
+
+      AutoFieldItem afiAssignedUserIsBusy = new AutoFieldItem();
+      afiAssignedUserIsBusy.Alias = "Assigned User Is Busy";
+      afiAssignedUserIsBusy.DataType = "bit";
+      afiAssignedUserIsBusy.FieldID = 101008;
+      afiAssignedUserIsBusy.FieldName = "Assigned User Is Busy";
+      afiAssignedUserIsBusy.IsCustom = false;
+      afiAssignedUserIsBusy.IsVisible = true;
+      afiAssignedUserIsBusy.ListValues = null;
+      afiAssignedUserIsBusy.LookupTableID = null;
+      afiAssignedUserIsBusy.Size = 0;
+      afiAssignedUserIsBusy.Description = "";
+      afiAssignedUserIsBusy.TableID = -2;
+      afiAssignedUserIsBusy.RefType = ReferenceType.Tickets;
+      afiAssignedUserIsBusy.AuxID = null;
+      afiAssignedUserIsBusy.OtherTrigger = "ticketsview.assignedusernotavailable";
+      fieldItems.Add(afiAssignedUserIsBusy);
+
       result.Fields = fieldItems.ToArray();
       
       Users users = new Users(UserSession.LoginUser);
