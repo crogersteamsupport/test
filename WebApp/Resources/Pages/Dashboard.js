@@ -197,7 +197,7 @@ Dashboard.prototype = {
                 var $itemElems = $($container.packery('getItemElements'));
                 $itemElems.draggable({ delay: 250, handle: '.box-header' });
                 $container.packery('bindUIDraggableEvents', $itemElems);
-
+                self.refreshReport(item);
                 saveDashboard();
             },
           function () {
