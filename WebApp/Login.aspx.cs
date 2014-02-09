@@ -182,6 +182,7 @@ public partial class Login : System.Web.UI.Page
 
   public static string IsUserValid(LoginUser loginUser, User user, string password)
   {
+
       if (user == null) return "Invalid email or password.";
 
     Organization organization = Organizations.GetOrganization(loginUser, user.OrganizationID);

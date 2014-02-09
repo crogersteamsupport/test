@@ -677,6 +677,8 @@ namespace TeamSupport.Services
       try
       {
         Attachments.DeleteAttachmentAndFile(UserSession.LoginUser, attachmentID);
+        string description = String.Format("{0} deleted attachment {1}", UserSession.CurrentUser.FirstLastName, Attachments.GetAttachment(UserSession.LoginUser,attachmentID).FileName);
+        ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Attachments, attachmentID, description);
       }
       catch (Exception ex)
       {

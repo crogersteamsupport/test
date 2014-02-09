@@ -16,6 +16,7 @@
     <script src="../Js/moment.min.js" type="text/javascript"></script>
     <script src="../Js/bootstrap-datetimepicker.js" type="text/javascript"></script>
     <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+    <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
     <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
     <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
     <script src="contactdetail.js" type="text/javascript"></script>
@@ -23,8 +24,8 @@
 
 </head>
 <body>
-    <div class="pageheader">
-        <span id="contactName" class="editable"></span>
+    <div class="pageheader ui-layout-north">
+        <span id="contactName"></span>
         <div class="col-md-12 ">
             <ul class="nav nav-tabs" id="contactTabs">
                 <li><a href="#contact-overview" data-toggle="tab">Overview</a></li>
@@ -36,12 +37,13 @@
                     <button class="btn btn-sm btn-primary" id="btnSendWelcome">Send Welcome Message</button>
                     <button class="btn btn-sm btn-primary" data-target="#modalReminder" data-toggle="modal" id="contactReminder"><span class="glyphicon glyphicon-bell"></span> Reminder</button>
                     <button class="btn btn-sm btn-primary" id="contactEdit"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+                    <button class="btn btn-sm btn-danger" id="contactDelete"><span class="glyphicon glyphicon-trash"></span> Delete</button>
                 </div>
             </ul>
         </div>
 
     </div>
-    <div class="maincontainer h85">
+    <div class="maincontainer ui-layout-center">
         <div class="tab-content">
             <div class="tab-pane fade in active" id="contact-overview">
                 <div class="row">
@@ -128,6 +130,35 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box mb10">
+                            <div class="box-header"><h3>History</h3>
+                                <div class="box-actions">
+                                    <a id="historyToggle" data-action="collapse" data-toggle="collapse" data-target="#historyContent" href="#"><i class="fa fa-chevron-down"></i></a>
+                                </div>
+                            </div>
+                            <div class="box-content collapse" id="historyContent">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-hover" id="tblHistory"> 
+                                        <thead>
+                                            <tr>
+                                            <th>Date</th>
+                                            <th>Actor</th>
+                                            <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

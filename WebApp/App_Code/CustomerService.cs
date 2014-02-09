@@ -263,6 +263,7 @@ namespace TSWebServices
             users.LoadByUserID(userID);
             User user = users[0];
 
+            html.AppendLine(CreateFormElement("Name", user.FirstLastName, "editable"));
             html.AppendLine(CreateFormElement("Email", user.Email, "editable"));
             html.AppendLine(CreateFormElement("Title", user.Title, "editable"));
             html.AppendLine(CreateFormElement("Active", user.IsActive, "editable"));
@@ -618,10 +619,12 @@ namespace TSWebServices
                     {
                         case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field, true, refID)); break;
                         case CustomFieldType.Number: htmltest.AppendLine(CreateNumberControl(field, true, refID)); break;
+                        case CustomFieldType.Date: htmltest.AppendLine(CreateDateControl(field, true, refID)); break;
                         case CustomFieldType.DateTime: htmltest.AppendLine(CreateDateTimeControl(field, true, refID)); break;
                         case CustomFieldType.Boolean: htmltest.AppendLine(CreateBooleanControl(field, true, refID)); break;
                         case CustomFieldType.PickList: htmltest.AppendLine(CreatePickListControl(field, true, refID)); break;
                         default: break;
+
                     }
                 }
             }
@@ -636,6 +639,7 @@ namespace TSWebServices
                         {
                             case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field, true, refID)); break;
                             case CustomFieldType.Number: htmltest.AppendLine(CreateNumberControl(field, true, refID)); break;
+                            case CustomFieldType.Date: htmltest.AppendLine(CreateDateControl(field, true, refID)); break;
                             case CustomFieldType.DateTime: htmltest.AppendLine(CreateDateTimeControl(field, true, refID)); break;
                             case CustomFieldType.Boolean: htmltest.AppendLine(CreateBooleanControl(field, true, refID)); break;
                             case CustomFieldType.PickList: htmltest.AppendLine(CreatePickListControl(field, true, refID)); break;
@@ -676,6 +680,8 @@ namespace TSWebServices
                     {
                         case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
                         case CustomFieldType.Number: htmltest.AppendLine(CreateNumberControl(field)); break;
+                        case CustomFieldType.Time: htmltest.AppendLine(CreateTimeControl(field)); break;
+                        case CustomFieldType.Date: htmltest.AppendLine(CreateDateControl(field)); break;
                         case CustomFieldType.DateTime: htmltest.AppendLine(CreateDateTimeControl(field)); break;
                         case CustomFieldType.Boolean: htmltest.AppendLine(CreateBooleanControl(field)); break;
                         case CustomFieldType.PickList: htmltest.AppendLine(CreatePickListControl(field)); break;
@@ -721,6 +727,7 @@ namespace TSWebServices
                         {
                             case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
                             case CustomFieldType.Number: htmltest.AppendLine(CreateNumberControl(field)); break;
+                            case CustomFieldType.Date: htmltest.AppendLine(CreateDateControl(field)); break;
                             case CustomFieldType.DateTime: htmltest.AppendLine(CreateDateTimeControl(field)); break;
                             case CustomFieldType.Boolean: htmltest.AppendLine(CreateBooleanControl(field)); break;
                             case CustomFieldType.PickList: htmltest.AppendLine(CreatePickListControl(field)); break;
@@ -771,6 +778,8 @@ namespace TSWebServices
                     {
                         case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
                         case CustomFieldType.Number: htmltest.AppendLine(CreateTextControl(field)); break;
+                        case CustomFieldType.Date: htmltest.AppendLine(CreateDateControl(field)); break;
+                        case CustomFieldType.Time: htmltest.AppendLine(CreateTimeControl(field)); break;
                         case CustomFieldType.DateTime: htmltest.AppendLine(CreateDateTimeControl(field)); break;
                         case CustomFieldType.Boolean: htmltest.AppendLine(CreateBooleanControl(field)); break;
                         case CustomFieldType.PickList: htmltest.AppendLine(CreatePickListControl(field)); break;
@@ -823,6 +832,14 @@ namespace TSWebServices
             ActionLogs actionLogs = new ActionLogs(TSAuthentication.GetLoginUser());
             actionLogs.LoadByOrganizationID(organizationID);
 
+            return actionLogs.GetActionLogProxies();
+        }
+
+        [WebMethod]
+        public ActionLogProxy[] LoadContactHistory(int userID)
+        {
+            ActionLogs actionLogs = new ActionLogs(TSAuthentication.GetLoginUser());
+            actionLogs.LoadByUserID(userID);
             return actionLogs.GetActionLogProxies();
         }
 
@@ -1051,7 +1068,7 @@ namespace TSWebServices
             StringBuilder htmlresults = new StringBuilder("");
             StringBuilder phoneResults = new StringBuilder("");
             Users users = new Users(TSAuthentication.GetLoginUser());
-            users.LoadByOrganizationID(organizationID, false);
+            users.LoadByOrganizationIDLastName(organizationID, false);
 
             foreach (User u in users)
             {
@@ -1152,12 +1169,12 @@ namespace TSWebServices
                 {
                     if (customValue.FieldType == CustomFieldType.DateTime)
                     {
-                        //customValue.Value = ((DateTime)field.Value).ToString();
-                        DateTime dt;
-                        if (DateTime.TryParse(((string)field.Value).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
-                        {
-                            customValue.Value = dt.ToUniversalTime().ToString();
-                        }
+                        customValue.Value = ((DateTime)field.Value).ToString();
+                        //DateTime dt;
+                        //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+                        //{
+                        //    customValue.Value = dt.ToUniversalTime().ToString();
+                        //}
                     }
                     else
                     {
@@ -1566,6 +1583,19 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public void DeleteOrgzanitionLinks(int organizationID)
+        {
+            RecentlyViewedItems recent = new RecentlyViewedItems(TSAuthentication.GetLoginUser());
+            recent.DeleteRecentOrg(organizationID);
+
+            int unknownID = Organizations.GetUnknownCompanyID(TSAuthentication.GetLoginUser());
+            Users u = new Users(TSAuthentication.GetLoginUser());
+            u.UpdateDeletedOrg(organizationID,unknownID);
+
+            return;
+        }
+
+        [WebMethod]
         public string PasswordReset(int userID)
         {
             Users users = new Users(TSAuthentication.GetLoginUser());
@@ -1763,6 +1793,44 @@ namespace TSWebServices
             return html.ToString();
         }
 
+        public string CreateDateControl(CustomField field, bool isEditable = false, int organizationID = -1)
+        {
+            StringBuilder html = new StringBuilder();
+            if (isEditable)
+            {
+                CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
+                html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
+                                    </div>", field.CustomFieldID, field.Name, value.Value);
+            }
+            else
+                html.AppendFormat("<div class='col-xs-8'><input class='form-control datepicker col-xs-10 customField {1}' id='{0}' type='date' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+
+            return html.ToString();
+        }
+
+        public string CreateTimeControl(CustomField field, bool isEditable = false, int organizationID = -1)
+        {
+            StringBuilder html = new StringBuilder();
+            if (isEditable)
+            {
+                CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
+                html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
+                                    </div>", field.CustomFieldID, field.Name, value.Value);
+            }
+            else
+                html.AppendFormat("<div class='col-xs-8'><input class='form-control timepicker col-xs-10 customField {1}' id='{0}' type='time'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+
+            return html.ToString();
+        }
+
         public string CreateDateTimeControl(CustomField field, bool isEditable = false, int organizationID = -1)
         {
             StringBuilder html = new StringBuilder();
@@ -1777,7 +1845,7 @@ namespace TSWebServices
                                     </div>", field.CustomFieldID, field.Name, value.Value);
             }
             else
-                html.AppendFormat("<div class='col-xs-8'><input class='form-control datepicker col-xs-10 customField {1}' id='{0}'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+                html.AppendFormat("<div class='col-xs-8'><input class='form-control datetimepicker col-xs-10 customField {1}' id='{0}' type='datetime'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
             
             return html.ToString();
         }
@@ -1835,6 +1903,7 @@ namespace TSWebServices
             {
                 case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
                 case CustomFieldType.Number: htmltest.AppendLine(CreateTextControl(field)); break;
+                case CustomFieldType.Date: htmltest.AppendLine(CreateDateControl(field)); break;
                 case CustomFieldType.DateTime: htmltest.AppendLine(CreateDateTimeControl(field)); break;
                 case CustomFieldType.Boolean: htmltest.AppendLine(CreateBooleanControl(field)); break;
                 case CustomFieldType.PickList: htmltest.AppendLine(CreatePickListControl(field)); break;

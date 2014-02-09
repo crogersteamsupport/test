@@ -15,10 +15,24 @@ $(document).ready(function () {
     customerDetailPage = new CustomerDetailPage();
     customerDetailPage.refresh();
 
+    $('body').layout({
+        defaults: {
+            spacing_open: 0,
+            closable: false
+        },
+        north: {
+            spacing_open: 1,
+            size: 100
+        },
+        center: {
+            maskContents: true
+        }
+    });
+
     organizationID = top.Ts.Utils.getQueryValue("organizationid", window);
     noteID = top.Ts.Utils.getQueryValue("noteid", window);
     var _isAdmin = top.Ts.System.User.IsSystemAdmin && (organizationID != top.Ts.System.User.OrganizationID);
-    
+    var historyLoaded = 0;
     top.privateServices.SetUserSetting('SelectedOrganizationID', organizationID);
     top.privateServices.SetUserSetting('SelectedContactID', -1);
 
@@ -45,6 +59,14 @@ $(document).ready(function () {
         }
     }));
 
+    $('#historyToggle').on('click', function () {
+        if (historyLoaded == 0) {
+            historyLoaded = 1;
+            LoadHistory();
+        }
+    });
+
+
     if (noteID != null)
     {
         $('#companyTabs a:first').tab('show');
@@ -60,6 +82,7 @@ $(document).ready(function () {
         $('#customerEdit').hide();
         $('#customerPhoneBtn').hide();
         $('#customerAddressBtn').hide();
+        $('#customerDelete').hide();
     }
 
     if (!_isAdmin && !top.Ts.System.User.HasPortalRights) {
@@ -84,6 +107,7 @@ $(document).ready(function () {
         $("#addressPanel #editmenu").toggleClass("hiddenmenu");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
+        $('#companyTabs a:first').tab('show');
     });
 
     $('#fieldName').click(function (e) {
@@ -349,7 +373,7 @@ $(document).ready(function () {
           .addClass('col-xs-10 form-control')
           .val($(this).text())
           .appendTo(container1)
-          .datetimepicker({})
+          .datetimepicker({ pickTime: false })
           .focus();
 
         $('<i>')
@@ -854,6 +878,12 @@ $(document).ready(function () {
     $('#customerDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this organization?')) {
             top.privateServices.DeleteOrganization(organizationID);
+            top.Ts.MainPage.closeNewCustomerTab(organizationID);
+            top.Ts.Services.Customers.DeleteOrgzanitionLinks(organizationID, function () {
+                if (window.parent.document.getElementById('iframe-mniCustomers'))
+                    window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
+            });
+            
         }
     });
 
@@ -901,7 +931,7 @@ $(document).ready(function () {
             $('#modalAddress').modal('show');
         });
     });
-    $('#reminderDate').datetimepicker({});
+    $('#reminderDate').datetimepicker({ pickTime: false });
     $("#btnSaveReminder").click(function (e) {
         if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
             top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), $('#reminderDate').val(), $('#reminderUsers').val());
@@ -980,7 +1010,7 @@ $(document).ready(function () {
             $('#fieldNoteDesc').val(desc);
             $('#fieldNoteID').val(note.NoteID);
             $('#btnNotesSave').text("Edit Note");
-            $('#btnNotesCancel').toggle();
+            $('#btnNotesCancel').show();
             $('#noteForm').show();
         });
     });
@@ -989,8 +1019,9 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this note?')) {
-            top.privateServices.DeleteNote($(this).parent().parent().attr('id'));
-            LoadNotes();
+            top.privateServices.DeleteNote($(this).parent().parent().attr('id'), function(){
+                LoadNotes();    
+                });
         }
     });
 
@@ -1247,11 +1278,16 @@ $(document).ready(function () {
     function LoadNotes() {
         top.Ts.Services.Customers.LoadNotes(organizationID,top.Ts.ReferenceTypes.Organizations, function (note) {
             $('#tblNotes tbody').empty();
+            var html;
             for (var i = 0; i < note.length; i++) {
-                
+                if (_isAdmin || note[i].CreatorID == top.Ts.System.User.UserID)
+                    html = '<td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                else
+                    html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+
                 $('<tr>').addClass("viewNote")
                 .attr("id", note[i].NoteID)
-                .html('<td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>')
+                .html(html)
                 .data("description", note[i].Description)
                 .appendTo('#tblNotes > tbody:last');
                 //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
@@ -1420,7 +1456,8 @@ $(document).ready(function () {
             if (dummy.length == 1) {
                 //chartData.pop();
                 //chartData.push(["No Open Tickets", 0]);
-                $('#openChart').text("No Open Tickes").addClass("text-center");
+                //$('#openChart').text("No Open Tickes").addClass("text-center");
+                $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header");
             }
             else{
             $('#openChart').highcharts({
@@ -1472,7 +1509,8 @@ $(document).ready(function () {
             if (dummy.length == 1) {
                 //chartData.pop();
                 //chartData.push(["No Closed Tickets", 0]);
-                $('#closedChart').text("No Closed Tickets").addClass("text-center");
+                //$('#closedChart').text("No Closed Tickets").addClass("text-center");
+                $('#closedChart').html("No Closed Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header");
             }
             else
             $('#closedChart').highcharts({
@@ -1511,115 +1549,115 @@ $(document).ready(function () {
             chart.series[0].setData(chartData);
         });
 
-        top.Ts.Services.Customers.LoadCDI(organizationID, function (cdiValue) {
-            var chartData = [];
-            chartData.push(cdiValue);
-            $('#csiChart').highcharts({
+        //top.Ts.Services.Customers.LoadCDI(organizationID, function (cdiValue) {
+        //    var chartData = [];
+        //    chartData.push(cdiValue);
+        //    $('#csiChart').highcharts({
 
-                chart: {
-                    type: 'gauge',
-                    plotBackgroundColor: null,
-                    plotBackgroundImage: null,
-                    plotBorderWidth: 0,
-                    plotShadow: false,
-                    height: 250,
-                },
+        //        chart: {
+        //            type: 'gauge',
+        //            plotBackgroundColor: null,
+        //            plotBackgroundImage: null,
+        //            plotBorderWidth: 0,
+        //            plotShadow: false,
+        //            height: 250,
+        //        },
 
-                title: {
-                    text: 'CDI'
-                },
+        //        title: {
+        //            text: 'CDI'
+        //        },
 
-                pane: {
-                    startAngle: -150,
-                    endAngle: 150,
-                    background: [{
-                        backgroundColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [
-                                [0, '#FFF'],
-                                [1, '#333']
-                            ]
-                        },
-                        borderWidth: 0,
-                        outerRadius: '109%'
-                    }, {
-                        backgroundColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [
-                                [0, '#333'],
-                                [1, '#FFF']
-                            ]
-                        },
-                        borderWidth: 1,
-                        outerRadius: '107%'
-                    }, {
-                        // default background
-                    }, {
-                        backgroundColor: '#DDD',
-                        borderWidth: 0,
-                        outerRadius: '105%',
-                        innerRadius: '103%'
-                    }]
-                },
+        //        pane: {
+        //            startAngle: -150,
+        //            endAngle: 150,
+        //            background: [{
+        //                backgroundColor: {
+        //                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+        //                    stops: [
+        //                        [0, '#FFF'],
+        //                        [1, '#333']
+        //                    ]
+        //                },
+        //                borderWidth: 0,
+        //                outerRadius: '109%'
+        //            }, {
+        //                backgroundColor: {
+        //                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+        //                    stops: [
+        //                        [0, '#333'],
+        //                        [1, '#FFF']
+        //                    ]
+        //                },
+        //                borderWidth: 1,
+        //                outerRadius: '107%'
+        //            }, {
+        //                // default background
+        //            }, {
+        //                backgroundColor: '#DDD',
+        //                borderWidth: 0,
+        //                outerRadius: '105%',
+        //                innerRadius: '103%'
+        //            }]
+        //        },
 
-                // the value axis
-                yAxis: {
-                    min: 0,
-                    max: 100,
+        //        // the value axis
+        //        yAxis: {
+        //            min: 0,
+        //            max: 100,
 
-                    minorTickInterval: 'auto',
-                    minorTickWidth: 1,
-                    minorTickLength: 10,
-                    minorTickPosition: 'inside',
-                    minorTickColor: '#666',
+        //            minorTickInterval: 'auto',
+        //            minorTickWidth: 1,
+        //            minorTickLength: 10,
+        //            minorTickPosition: 'inside',
+        //            minorTickColor: '#666',
 
-                    tickPixelInterval: 30,
-                    tickWidth: 2,
-                    tickPosition: 'inside',
-                    tickLength: 10,
-                    tickColor: '#666',
-                    labels: {
-                        step: 2,
-                        rotation: 'auto'
-                    },
-                    title: {
-                        text: ''
-                    },
-                    plotBands: [{
-                        from: 0,
-                        to: 60,
-                        color: '#55BF3B' // green
-                    }, {
-                        from: 60,
-                        to: 80,
-                        color: '#DDDF0D' // yellow
-                    }, {
-                        from: 80,
-                        to: 100,
-                        color: '#DF5353' // red
-                    }]
-                },
-                credits: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'CDI',
-                    data: [],
-                    tooltip: {
-                        valueSuffix: ' Rating'
-                    }
-                }]
+        //            tickPixelInterval: 30,
+        //            tickWidth: 2,
+        //            tickPosition: 'inside',
+        //            tickLength: 10,
+        //            tickColor: '#666',
+        //            labels: {
+        //                step: 2,
+        //                rotation: 'auto'
+        //            },
+        //            title: {
+        //                text: ''
+        //            },
+        //            plotBands: [{
+        //                from: 0,
+        //                to: 60,
+        //                color: '#55BF3B' // green
+        //            }, {
+        //                from: 60,
+        //                to: 80,
+        //                color: '#DDDF0D' // yellow
+        //            }, {
+        //                from: 80,
+        //                to: 100,
+        //                color: '#DF5353' // red
+        //            }]
+        //        },
+        //        credits: {
+        //            enabled: false
+        //        },
+        //        series: [{
+        //            name: 'CDI',
+        //            data: [],
+        //            tooltip: {
+        //                valueSuffix: ' Rating'
+        //            }
+        //        }]
 
-            },
-            function (chart) {
-                if (!chart.renderer.forExport) {
+        //    },
+        //    function (chart) {
+        //        if (!chart.renderer.forExport) {
 
-                }
-            });
+        //        }
+        //    });
 
-            var chart = $('#csiChart').highcharts();
-            chart.series[0].setData(chartData);
-        }); 
+        //    var chart = $('#csiChart').highcharts();
+        //    chart.series[0].setData(chartData);
+        //}); 
     }
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -1677,7 +1715,9 @@ var appendCustomValues = function (fields) {
 
         switch (field.FieldType) {
             case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
-            case top.Ts.CustomFieldType.DateTime: appendCustomEditDate(field, div); break;
+            case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+            case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+            case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
             case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
             case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
             case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
@@ -1915,6 +1955,73 @@ var appendCustomEditDate = function (field, element) {
     .appendTo(element);
 
     var result = $('<p>')
+      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+          e.preventDefault();
+          if (!$(this).hasClass('editable'))
+              return false;
+          var parent = $(this).hide();
+
+          var container = $('<div>')
+            .insertAfter(parent);
+
+          var container1 = $('<div>')
+          .addClass('col-xs-9')
+          .appendTo(container);
+
+          var fieldValue = parent.closest('.form-group').data('field').Value;
+          var input = $('<input type="text">')
+            .addClass('col-xs-10 form-control')
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getDatePattern()))
+            .datetimepicker({ pickTime: false })
+            .appendTo(container1)
+            .focus();
+
+          $('<i>')
+            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .click(function (e) {
+                $(this).closest('div').remove();
+                parent.show();
+            })
+            .insertAfter(container1);
+          $('<i>')
+            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .click(function (e) {
+                var value = top.Ts.Utils.getMsDate(input.val());
+                container.remove();
+                if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                    result.parent().addClass('has-error');
+                }
+                else {
+                    result.parent().removeClass('has-error');
+                }
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
+                    parent.closest('.form-group').data('field', result);
+                    var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                    parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                }, function () {
+                    alert("There was a problem saving your contact property.");
+                });
+                parent.show();
+            })
+            .insertAfter(container1);
+      });
+    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+        result.parent().addClass('has-error');
+    }
+
+}
+
+var appendCustomEditDateTime = function (field, element) {
+    var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+
+    var div = $('<div>')
+    .addClass('col-xs-8')
+    .appendTo(element);
+
+    var result = $('<p>')
       .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
       .addClass('form-control-static editable')
       .appendTo(div)
@@ -1934,7 +2041,7 @@ var appendCustomEditDate = function (field, element) {
           var fieldValue = parent.closest('.form-group').data('field').Value;
           var input = $('<input type="text">')
             .addClass('col-xs-10 form-control')
-            .val(fieldValue)
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getDateTimePattern()))
             .datetimepicker({
             })
 
@@ -1963,6 +2070,74 @@ var appendCustomEditDate = function (field, element) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                     parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                }, function () {
+                    alert("There was a problem saving your customer property.");
+                });
+                parent.show();
+            })
+            .insertAfter(container1);
+      });
+    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+        result.parent().addClass('has-error');
+    }
+
+}
+
+var appendCustomEditTime = function (field, element) {
+    var date = field.Value == null ? null : field.Value;
+
+    var div = $('<div>')
+    .addClass('col-xs-8')
+    .appendTo(element);
+
+    var result = $('<p>')
+      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+          e.preventDefault();
+          if (!$(this).hasClass('editable'))
+              return false;
+          var parent = $(this).hide();
+
+          var container = $('<div>')
+            .insertAfter(parent);
+
+          var container1 = $('<div>')
+          .addClass('col-xs-9')
+          .appendTo(container);
+
+          var fieldValue = parent.closest('.form-group').data('field').Value;
+          var input = $('<input type="text">')
+            .addClass('col-xs-10 form-control')
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getTimePattern()))
+            .datetimepicker({pickDate: false})
+
+            .appendTo(container1)
+            .focus();
+
+          $('<i>')
+            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .click(function (e) {
+                $(this).closest('div').remove();
+                parent.show();
+            })
+            .insertAfter(container1);
+          $('<i>')
+            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .click(function (e) {
+                var value = top.Ts.Utils.getMsDate("1/1/1900 " + input.val());
+                container.remove();
+                if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                    result.parent().addClass('has-error');
+                }
+                else {
+                    result.parent().removeClass('has-error');
+                }
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
+                    parent.closest('.form-group').data('field', result);
+                    var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                    parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
                 }, function () {
                     alert("There was a problem saving your contact property.");
                 });

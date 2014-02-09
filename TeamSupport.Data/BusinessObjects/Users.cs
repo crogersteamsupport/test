@@ -515,6 +515,18 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+    public void LoadByOrganizationIDLastName(int organizationID, bool loadOnlyActive)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT *, LastName + ', ' + FirstName AS DisplayName FROM Users WHERE OrganizationID = @OrganizationID AND (@ActiveOnly = 0 OR IsActive = 1) AND (MarkDeleted = 0) ORDER BY LastName, FirstName";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@ActiveOnly", loadOnlyActive);
+            Fill(command);
+        }
+    }
+
     /// <summary>
     /// Get users by name
     /// </summary>
@@ -658,6 +670,26 @@ namespace TeamSupport.Data
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Users, userID, description);
 
     }
+
+    public void UpdateDeletedOrg(int organizationID, int unknownID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "UPDATE Users SET OrganizationID = @unknownID WHERE OrganiationID = @OrgID";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrgID", organizationID);
+            command.Parameters.AddWithValue("@unknownID", unknownID);
+            ExecuteNonQuery(command, "Users");
+
+            command.CommandText = "UPDATE OrganizationTickets SET OrganizationID = @unknownID WHERE OrganiationID = @OrgID";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrgID", organizationID);
+            command.Parameters.AddWithValue("@unknownID", unknownID);
+            ExecuteNonQuery(command, "OrganizationTickets");
+
+        }
+    }
+
 
     public void AddUserGroup(int userID, int groupID)
     {

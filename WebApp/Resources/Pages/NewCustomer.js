@@ -12,6 +12,20 @@
 $(document).ready(function () {
     var _organizatinID = -1;
 
+    $('body').layout({
+        defaults: {
+            spacing_open: 0,
+            closable: false
+        },
+        north: {
+            spacing_open: 1,
+            size: 100
+        },
+        center: {
+            maskContents: true
+        }
+    });
+
     var defaultTab = top.Ts.Utils.getQueryValue("open", window);
     var defaultOrg = top.Ts.Utils.getQueryValue("organizationID", window);
 
@@ -23,11 +37,14 @@ $(document).ready(function () {
         }
     }));
 
-    if (defaultTab){
+    if (defaultTab) {
+        $('#customerTabs a:first').tab('show');
         $('#customerTabs a:last').tab('show');
     }
     else
+        {
         $('#customerTabs a:first').tab('show');
+    }
 
 
     if (defaultOrg) {
@@ -163,6 +180,22 @@ $(document).ready(function () {
                         case "checkbox":
                             field.Value = $(this).prop('checked');
                             break;
+                        case "date":
+                            //    var dt = $(this).find('input').datepicker('getDate');
+                            field.Value = $(this).val() == undefined ? null : top.Ts.Utils.getMsDate($(this).val());
+                            break;
+                        case "time":
+                            //    var time = new Date("January 1, 1970 00:00:00");
+                            //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
+                            //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
+                            field.Value = $(this).val() == undefined ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                            break;
+                        case "datetime":
+                            //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+                            //    var dt = $(this).find('input').datetimepicker('getDate');
+                            //    field.Value = dt == null ? null : dt.toUTCString();
+                            field.Value = $(this).val() == undefined ? null : top.Ts.Utils.getMsDate($(this).val());
+                            break;
                         default:
                             field.Value = $(this).val();
                     }
@@ -218,12 +251,29 @@ $(document).ready(function () {
                         field.Value = $(this).val();
                         break;
                     case "date":
-                        //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
-                        //var dt = $(this).find('input').datetimepicker('getDate');
-                        //field.Value = dt == null ? null : dt.toUTCString();
-                        //field.Value = $(this).find('input').datetimepicker('getDate');
-                        field.Value = $(this).val();
+                    //    var dt = $(this).find('input').datepicker('getDate');
+                        field.Value = $(this).val() == null ? null : top.Ts.Utils.getMsDate($(this).val());
                         break;
+                    case "time":
+                    //    var time = new Date("January 1, 1970 00:00:00");
+                    //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
+                    //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
+                        field.Value = $(this).val() == null ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                        break;
+                    case "datetime":
+                    //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+                    //    var dt = $(this).find('input').datetimepicker('getDate');
+                    //    field.Value = dt == null ? null : dt.toUTCString();
+                        field.Value = $(this).val() == null ? null : top.Ts.Utils.getMsDate($(this).val());
+                        break;
+
+                    //case "date":
+                    //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+                    //    //var dt = $(this).find('input').datetimepicker('getDate');
+                    //    //field.Value = dt == null ? null : dt.toUTCString();
+                    //    //field.Value = $(this).find('input').datetimepicker('getDate');
+                    //    field.Value = $(this).val();
+                    //    break;
                     default:
                         field.Value = $(this).val();
                 }
@@ -278,7 +328,9 @@ $(document).ready(function () {
     function LoadCustomControls(refType) {
         top.Ts.Services.Customers.LoadCustomControls(refType,function (html) {
             $('#customerCustomInfo').append(html);
-            $('.datepicker').datetimepicker();
+            $('.datepicker').datetimepicker({ pickTime: false });
+            $('.timepicker').datetimepicker({ pickDate: false });
+            $('.datetimepicker').datetimepicker({});
         });
     }
 
@@ -296,8 +348,9 @@ $(document).ready(function () {
 
     top.Ts.Services.Customers.GetDateFormat(true,function (dateformat) {
         //$('.datepicker').datepicker({ format: dateformat });
-        $('.datepicker').datetimepicker();
+        //$('.datepicker').datetimepicker({ pickTime: false });
         $('.datepicker').attr("data-format", dateformat);
+        $('.datetimepicker').attr("data-format", dateformat);
     });
 
     $('.number').on('keydown', function (event) {

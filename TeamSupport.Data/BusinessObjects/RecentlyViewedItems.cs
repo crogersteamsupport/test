@@ -27,6 +27,19 @@ namespace TeamSupport.Data
           }
       }
 
+      public void DeleteRecentOrg(int organizationID)
+      {
+          using (SqlCommand command = new SqlCommand())
+          {
+              command.CommandText =
+                @"DELETE FROM RecentlyViewedItems
+                WHERE (refID = @orgID) AND (refType = 1)";
+              command.CommandType = CommandType.Text;
+              command.Parameters.AddWithValue("@orgID", organizationID);
+              command.ExecuteNonQuery();
+          }
+      }
+
   }
   
 }

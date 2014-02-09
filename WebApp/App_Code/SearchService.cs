@@ -1034,13 +1034,19 @@ namespace TSWebServices
             if (job.Results.CurrentItem.IndexRetrievedFrom == companiesIndexPath)
             {
               item.ReferenceType = ReferenceType.Organizations;
+              Organization Org = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), item.Id);
+              if (Org != null)
+                  resultItems.Add(item);
+              else
+                  topLimit++;
             }
             else
             {
               item.ReferenceType = ReferenceType.Contacts;
+              resultItems.Add(item);
             }
-
-            resultItems.Add(item);
+            
+            
           }
         }
       }

@@ -190,7 +190,7 @@ fieldset[disabled] .btn-default.active {
 .maincontainer { margin-left: auto; margin-right: auto; border: none; overflow: auto; height: 100%; position: relative; }
 .maincontainer .row {margin-left:0px !important; margin-right: 0px !important}
 .h85 {height: 89% !important;}
-.pageheader { background: none repeat scroll 0 0 #FFFFFF; border-bottom: 1px solid #DDDDDD; /*min-height: 55px;*/ padding: 10px 0px 0px 10px; position: relative; }
+.pageheader { background: none repeat scroll 0 0 #FFFFFF; border-bottom: 1px solid #DDDDDD; /*min-height: 55px;*/ padding: 10px 0px 0px 10px; position: relative; height: inherit !important; }
 .pageheader h1 { color: #0866C6; font-size: 32px; font-weight: normal; margin: 0; }
 .pageheader h5 { color: #999999; font-size: 11px; font-weight: normal; margin: 0; text-transform: uppercase; }
 .pageicon { color: #0866C6; display: inline-block; float: left; font-size: 35px; text-align: center; }
@@ -198,6 +198,7 @@ fieldset[disabled] .btn-default.active {
 .m0 { margin: 0px; }
 .mt0 { margin-top: 0px; }
 .mt20 { margin-top: 20px;}
+.mb10 {margin-bottom: 10px;}
 .pt0 {padding-top: 0px !important;}
 .maincontainer .nav-tabs > li.active > a, .maincontainer .nav-tabs > li.active > a:hover, .maincontainer .nav-tabs > li.active > a:focus{
     color:white;
@@ -208,4 +209,17 @@ fieldset[disabled] .btn-default.active {
 }
 .maincontainer .form-group {
     margin-bottom: 5px !important;
+}
+.img-responsive
+{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 35px;
+    width: 176px;
+}
+.chart-header{
+    color: #274B6D;
+    fill: #274B6D;
+    font-family: "Lucida Grande","Lucida Sans Unicode",Verdana,Arial,Helvetica,sans-serif;
+    font-size: 16px;
 }

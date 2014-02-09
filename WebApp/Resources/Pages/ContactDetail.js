@@ -11,7 +11,9 @@ var userID = null;
 
 $(document).ready(function () {
     userID = top.Ts.Utils.getQueryValue("user", window);
+    noteID = top.Ts.Utils.getQueryValue("noteid", window);
     var _isAdmin = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.IsAdminOnlyCustomers;
+    var historyLoaded = 0;
 
     LoadNotes();
     LoadFiles();
@@ -24,6 +26,20 @@ $(document).ready(function () {
     UpdateRecentView();
     GetUser()
     var isTSUser;
+
+    $('body').layout({
+        defaults: {
+            spacing_open: 0,
+            closable: false
+        },
+        north: {
+            spacing_open: 1,
+            size: 100
+        },
+        center: {
+            maskContents: true
+        }
+    });
 
     $(".maincontainer").on("keypress", "input", (function (evt) {
         //Deterime where our character code is coming from within the event
@@ -42,25 +58,36 @@ $(document).ready(function () {
         $("#userProperties #fieldCompany").toggleClass("link");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
-        $('#contactName').toggleClass("editable");
+        //$('#contactName').toggleClass("editable");
+        $('#contactTabs a:first').tab('show');
     });
 
     if (top.Ts.System.Organization.ParentID != null) {
         $('#btnSendWelcome').hide();
     }
 
-    //top.Ts.Services.Customers.IsTSUser(function (isUser)
-    //{
-
-    //}
-    //);
+    if (noteID != null) {
+        $('#contactTabs a:first').tab('show');
+        $('#contactTabs a[href="#contact-notes"]').tab('show');
+    }
+    else {
+        $('#contactTabs a:first').tab('show');
+    }
 
     if (!_isAdmin)
     {
         $('#contactEdit').hide();
         $('#contactPhoneButton').hide();
         $('#contactAddressButton').hide();
+        $('#contactDelete').hide();
     }
+
+    $('#historyToggle').on('click', function () {
+        if (historyLoaded == 0) {
+            historyLoaded = 1;
+            LoadHistory();
+        }
+    });
 
     $("#btnSaveReminder").click(function (e) {
         if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
@@ -71,12 +98,22 @@ $(document).ready(function () {
             alert("Please fill in all the fields");
     });
 
+    $('#contactDelete').click(function (e) {
+        if (confirm('Are you sure you would like to remove this contact?')) {
+            top.privateServices.DeleteUser(userID);
+            top.Ts.MainPage.closeNewContactTab(userID);
+            top.Ts.MainPage.closeNewContact(userID);
+
+        }
+    });
+
     function GetUser(){
         top.Ts.Services.Customers.GetUser(userID, function (user) {
             $('#contactName').text(user.FirstName + " " + user.LastName);
-            $('#contactName').attr("first", user.FirstName);
-            $('#contactName').attr("middle", user.MiddleName);
-            $('#contactName').attr("last", user.LastName);
+            $('#userProperties #fieldName').text(user.FirstName + " " + user.LastName);
+            $('#userProperties #fieldName').attr("first", user.FirstName);
+            $('#userProperties #fieldName').attr("middle", user.MiddleName);
+            $('#userProperties #fieldName').attr("last", user.LastName);
             top.privateServices.SetUserSetting('SelectedOrganizationID', user.OrganizationID);
             top.privateServices.SetUserSetting('SelectedContactID', user.UserID);
         });
@@ -91,64 +128,69 @@ $(document).ready(function () {
         execGetCompany = top.Ts.Services.Organizations.WCSearchOrganization(request.term, function (result) { response(result); });
     }
 
-    $('#contactName').click(function (e) {
+    //$('#contactName').click(function (e) {
+        $('#userProperties').on('click', '#fieldName', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
         else{
-        e.preventDefault();
-        var fname, mname, lastname;
+            e.preventDefault();
+            var fname, mname, lastname;
+            var header = $(this).hide();
+            top.Ts.Services.Customers.GetUser(userID, function (user) {
 
-        var header = $(this).hide();
-        var container = $('<form>')
-          .addClass('form-inline')
-          .insertAfter(header);
 
-        var container1 = $('<div>')
-            .addClass('form-group')
-          .appendTo(container);
+                var container = $('<form>')
+                  .addClass('form-inline')
+                  .insertAfter(header);
 
-        $('<input type="text">')
-          .addClass('form-control')
-          .val($(this).attr("first"))
-          .appendTo(container1)
-          .focus();
-        $('<input type="text">')
-          .addClass('form-control')
-          .val($(this).attr("middle"))
-          .appendTo(container1)
-          .focus();
-        $('<input type="text">')
-          .addClass('form-control')
-          .val($(this).attr("last"))
-          .appendTo(container1)
-          .focus();
-        $('<i>')
-          .addClass('glyphicon glyphicon-ok')
-          .click(function (e) {
-              if ($(this).prev().prev().prev().val() == "")
-              {
-                  alert("The first name can not be blank");
-                  return;
-              }
+                var container1 = $('<div>')
+                    .addClass('form-group')
+                  .appendTo(container);
 
-              top.Ts.Services.Customers.SetContactName(userID, $(this).prev().prev().prev().val(), $(this).prev().prev().val(), $(this).prev().val(), function (result) {
-                  GetUser();
-              },
-              function (error) {
-                  header.show();
-                  alert('There was an error saving the customer name.');
-              });
-              $(this).closest('div').remove();
-              header.show();
-          })
-          .appendTo(container1);
-        $('<i>')
-          .addClass('glyphicon glyphicon-remove')
-          .click(function (e) {
-              $(this).closest('div').remove();
-              header.show();
-          })
-          .appendTo(container1);
+                $('<input type="text">')
+                  .addClass('form-control')
+                  .val(user.FirstName)
+                  .appendTo(container1)
+                  .focus();
+                $('<input type="text">')
+                  .addClass('form-control')
+                  .val(user.MiddleName)
+                  .appendTo(container1)
+                  .focus();
+                $('<input type="text">')
+                  .addClass('form-control')
+                  .val(user.LastName)
+                  .appendTo(container1)
+                  .focus();
+                $('<i>')
+                  .addClass('glyphicon glyphicon-ok')
+                  .click(function (e) {
+                      if ($(this).prev().prev().prev().val() == "") {
+                          alert("The first name can not be blank");
+                          return;
+                      }
+
+                      top.Ts.Services.Customers.SetContactName(userID, $(this).prev().prev().prev().val(), $(this).prev().prev().val(), $(this).prev().val(), function (result) {
+                          GetUser();
+                      },
+                      function (error) {
+                          header.show();
+                          alert('There was an error saving the customer name.');
+                      });
+                      $(this).closest('div').remove();
+                      header.show();
+                  })
+                  .appendTo(container1);
+                $('<i>')
+                  .addClass('glyphicon glyphicon-remove')
+                  .click(function (e) {
+                      $(this).closest('div').remove();
+                      header.show();
+                  })
+                  .appendTo(container1);
+            });
+
+
         }
 
     });
@@ -285,7 +327,7 @@ $(document).ready(function () {
                 .addClass('col-md-9')
               .appendTo(container);
 
-            $('<input type="text">')
+            var text = $('<input type="text">')
               .addClass('col-md-10 form-control')
               .val($(this).text())
               .appendTo(container1)
@@ -310,13 +352,17 @@ $(document).ready(function () {
             $('<i>')
               .addClass('col-md-1 glyphicon glyphicon-ok')
               .click(function (e) {
-                  top.Ts.Services.Customers.SetContactCompany(userID, $(this).prev().find('input').data('item'), function (result) {
+                  var neworgID = $(this).prev().find('input').data('item');
+                  if(neworgID != undefined){
+                  top.Ts.Services.Customers.SetContactCompany(userID, neworgID, function (result) {
                       header.text(result);
+                      header.attr('orgid', neworgID);
                   },
                   function (error) {
                       header.show();
                       alert('There was an error saving the customer company.');
                   });
+                  }
                   $(this).closest('div').remove();
                   header.show();
               })
@@ -502,7 +548,7 @@ $(document).ready(function () {
             $('#fieldNoteDesc').val(desc);
             $('#fieldNoteID').val(note.NoteID);
             $('#btnNotesSave').text("Edit Note");
-            $('#btnNotesCancel').toggle();
+            $('#btnNotesCancel').show();
             $('#noteForm').show();
         });
     });
@@ -511,8 +557,9 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this note?')) {
-            top.privateServices.DeleteNote($(this).parent().parent().attr('id'));
-            LoadNotes();
+            top.privateServices.DeleteNote($(this).parent().parent().attr('id'), function () {;
+                LoadNotes();
+            });
         }
     });
 
@@ -674,11 +721,18 @@ $(document).ready(function () {
     function LoadNotes() {
         top.Ts.Services.Customers.LoadNotes(userID, top.Ts.ReferenceTypes.Users, function (note) {
             $('#tblNotes tbody').empty();
+            var html;
             for (var i = 0; i < note.length; i++) {
+
+                if (_isAdmin || note[i].CreatorID == top.Ts.System.User.UserID)
+                    html = '<td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                else
+                    html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+
 
                 $('<tr>').addClass("viewNote")
                 .attr("id", note[i].NoteID)
-                .html('<td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>')
+                .html(html)
                 .data("description", note[i].Description)
                 .appendTo('#tblNotes > tbody:last');
                 //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
@@ -688,11 +742,18 @@ $(document).ready(function () {
 
     function LoadFiles() {
         $('#tblFiles tbody').empty();
-        top.Ts.Services.Customers.LoadFiles(userID,top.Ts.ReferenceTypes.Users, function (files) {
+        top.Ts.Services.Customers.LoadFiles(userID, top.Ts.ReferenceTypes.Users, function (files) {
+            var html;
             for (var i = 0; i < files.length; i++) {
+
+                if (_isAdmin || files[i].CreatorID == top.Ts.System.User.UserID)
+                    html = '<td><i class="glyphicon glyphicon-trash delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
+                else
+                    html = '<td></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
+
                 var tr = $('<tr>')
                 .attr('id', files[i].AttachmentID)
-                .html('<td><i class="glyphicon glyphicon-trash delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>')
+                .html(html)
                 .appendTo('#tblFiles > tbody:last');
 
 
@@ -853,6 +914,22 @@ $(document).ready(function () {
         }
     });
 
+    $('#historyToggle').click(function (e) {
+        LoadHistory();
+    });
+
+    function LoadHistory() {
+
+        $('#tblHistory tbody').empty();
+        top.Ts.Services.Customers.LoadContactHistory(userID, function (history) {
+            for (var i = 0; i < history.length; i++) {
+                $('<tr>').html('<td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
+                .appendTo('#tblHistory > tbody:last');
+                //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
+            }
+        });
+    }
+
     createTestChart();
     function createTestChart() {
 
@@ -868,7 +945,8 @@ $(document).ready(function () {
             if (dummy.length == 1) {
                 //chartData.pop();
                 //chartData.push(["No Open Tickets", 1]);
-                $('#openChart').text("No Open Tickes").addClass("text-center");
+                //$('#openChart').text("No Open Tickes").addClass("text-center");
+                $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center chart-header");
             }
             else
             $('#openChart').highcharts({
@@ -931,7 +1009,8 @@ $(document).ready(function () {
             if (dummy.length == 1) {
                 //chartData.pop();
                 //chartData.push(["No Closed Tickets", 1]);
-                $('#closedChart').text("No Closed Tickets").addClass("text-center");
+                //$('#closedChart').text("No Closed Tickets").addClass("text-center");
+                $('#closedChart').html("No Closed Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header");
             }
             else
             $('#closedChart').highcharts({
@@ -1047,7 +1126,9 @@ var appendCustomValues = function (fields) {
 
         switch (field.FieldType) {
             case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
-            case top.Ts.CustomFieldType.DateTime: appendCustomEditDate(field, div); break;
+            case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+            case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+            case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
             case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
             case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
             case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
@@ -1057,7 +1138,7 @@ var appendCustomValues = function (fields) {
         container.append(div);
     }
     $('#customProperties p').toggleClass("editable");
-    $('#contactName').toggleClass("editable");
+    //$('#contactName').toggleClass("editable");
 }
 
 var appendCustomEditCombo = function (field, element) {
@@ -1268,11 +1349,79 @@ var appendCustomEdit = function (field, element) {
     }
 }
 
+
 var appendCustomEditDate = function (field, element) {
     var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
 
     var div = $('<div>')
-    .addClass('col-md-8')
+    .addClass('col-xs-8')
+    .appendTo(element);
+
+    var result = $('<p>')
+      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+          e.preventDefault();
+          if (!$(this).hasClass('editable'))
+              return false;
+          var parent = $(this).hide();
+
+          var container = $('<div>')
+            .insertAfter(parent);
+
+          var container1 = $('<div>')
+          .addClass('col-xs-9')
+          .appendTo(container);
+
+          var fieldValue = parent.closest('.form-group').data('field').Value;
+          var input = $('<input type="text">')
+            .addClass('col-xs-10 form-control')
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getDatePattern()))
+            .datetimepicker({ pickTime: false })
+            .appendTo(container1)
+            .focus();
+
+          $('<i>')
+            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .click(function (e) {
+                $(this).closest('div').remove();
+                parent.show();
+            })
+            .insertAfter(container1);
+          $('<i>')
+            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .click(function (e) {
+                var value = top.Ts.Utils.getMsDate(input.val());
+                container.remove();
+                if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                    result.parent().addClass('has-error');
+                }
+                else {
+                    result.parent().removeClass('has-error');
+                }
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                    parent.closest('.form-group').data('field', result);
+                    var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                    parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                }, function () {
+                    alert("There was a problem saving your contact property.");
+                });
+                parent.show();
+            })
+            .insertAfter(container1);
+      });
+    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+        result.parent().addClass('has-error');
+    }
+
+}
+
+var appendCustomEditDateTime = function (field, element) {
+    var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+
+    var div = $('<div>')
+    .addClass('col-xs-8')
     .appendTo(element);
 
     var result = $('<p>')
@@ -1289,13 +1438,13 @@ var appendCustomEditDate = function (field, element) {
             .insertAfter(parent);
 
           var container1 = $('<div>')
-          .addClass('col-md-9')
+          .addClass('col-xs-9')
           .appendTo(container);
 
           var fieldValue = parent.closest('.form-group').data('field').Value;
           var input = $('<input type="text">')
-            .addClass('col-md-10 form-control')
-            .val(fieldValue)
+            .addClass('col-xs-10 form-control')
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getDateTimePattern()))
             .datetimepicker({
             })
 
@@ -1303,14 +1452,14 @@ var appendCustomEditDate = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-md-1 glyphicon glyphicon-remove')
+            .addClass('col-xs-1 glyphicon glyphicon-remove')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-md-1 glyphicon glyphicon-ok')
+            .addClass('col-xs-1 glyphicon glyphicon-ok')
             .click(function (e) {
                 var value = top.Ts.Utils.getMsDate(input.val());
                 container.remove();
@@ -1324,6 +1473,74 @@ var appendCustomEditDate = function (field, element) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                     parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                }, function () {
+                    alert("There was a problem saving your contact property.");
+                });
+                parent.show();
+            })
+            .insertAfter(container1);
+      });
+    if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+        result.parent().addClass('has-error');
+    }
+
+}
+
+var appendCustomEditTime = function (field, element) {
+    var date = field.Value == null ? null : field.Value;
+
+    var div = $('<div>')
+    .addClass('col-xs-8')
+    .appendTo(element);
+
+    var result = $('<p>')
+      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+          e.preventDefault();
+          if (!$(this).hasClass('editable'))
+              return false;
+          var parent = $(this).hide();
+
+          var container = $('<div>')
+            .insertAfter(parent);
+
+          var container1 = $('<div>')
+          .addClass('col-xs-9')
+          .appendTo(container);
+
+          var fieldValue = parent.closest('.form-group').data('field').Value;
+          var input = $('<input type="text">')
+            .addClass('col-xs-10 form-control')
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getTimePattern()))
+            .datetimepicker({ pickDate: false })
+
+            .appendTo(container1)
+            .focus();
+
+          $('<i>')
+            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .click(function (e) {
+                $(this).closest('div').remove();
+                parent.show();
+            })
+            .insertAfter(container1);
+          $('<i>')
+            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .click(function (e) {
+                var value = top.Ts.Utils.getMsDate("1/1/1900 " + input.val());
+                container.remove();
+                if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                    result.parent().addClass('has-error');
+                }
+                else {
+                    result.parent().removeClass('has-error');
+                }
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                    parent.closest('.form-group').data('field', result);
+                    var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                    parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
                 }, function () {
                     alert("There was a problem saving your contact property.");
                 });

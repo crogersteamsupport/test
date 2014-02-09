@@ -1416,6 +1416,13 @@ Ts.Pages.Main.prototype = {
       var div = $('.main-tab-content .main-Customer-' + customerID);
       div.remove();
   },
+  closeNewCustomerTab: function (customerID) {
+      var tab = this.MainTabs.find(customerID, Ts.Ui.Tabs.Tab.Type.Company);
+      if (tab) {
+          this.closeTab(tab);
+          tab.remove();
+      }
+  },
   openNewContact: function (contactID, orgID) {
       var query = "?user=" + contactID;
       top.Ts.Services.Users.GetShortNameFromID(contactID, function (result) {
@@ -1426,6 +1433,13 @@ Ts.Pages.Main.prototype = {
   closeNewContact: function (contactID) {
       var div = $('.main-tab-content .main-Contact-' + contactID);
       div.remove();
+  },
+  closeNewContactTab: function (contactID) {
+      var tab = this.MainTabs.find(contactID, Ts.Ui.Tabs.Tab.Type.Contact);
+      if (tab) {
+          this.closeTab(tab);
+          tab.remove();
+      }
   },
   AppNotify: function (title, message, options) {
 
