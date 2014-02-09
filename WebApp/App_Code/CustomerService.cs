@@ -1585,8 +1585,8 @@ namespace TSWebServices
         [WebMethod]
         public void DeleteOrgzanitionLinks(int organizationID)
         {
-            RecentlyViewedItems recent = new RecentlyViewedItems(TSAuthentication.GetLoginUser());
-            recent.DeleteRecentOrg(organizationID);
+            //RecentlyViewedItems recent = new RecentlyViewedItems(TSAuthentication.GetLoginUser());
+            //recent.DeleteRecentOrg(organizationID);
 
             int unknownID = Organizations.GetUnknownCompanyID(TSAuthentication.GetLoginUser());
             Users u = new Users(TSAuthentication.GetLoginUser());

@@ -877,8 +877,8 @@ $(document).ready(function () {
 
     $('#customerDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this organization?')) {
-            top.privateServices.DeleteOrganization(organizationID);
             top.Ts.MainPage.closeNewCustomerTab(organizationID);
+            top.privateServices.DeleteOrganization(organizationID);
             top.Ts.Services.Customers.DeleteOrgzanitionLinks(organizationID, function () {
                 if (window.parent.document.getElementById('iframe-mniCustomers'))
                     window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
@@ -1512,7 +1512,7 @@ $(document).ready(function () {
                 //$('#closedChart').text("No Closed Tickets").addClass("text-center");
                 $('#closedChart').html("No Closed Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header");
             }
-            else
+            else{
             $('#closedChart').highcharts({
                 chart: {
                     plotBackgroundColor: null,
@@ -1547,6 +1547,7 @@ $(document).ready(function () {
 
             var chart = $('#closedChart').highcharts();
             chart.series[0].setData(chartData);
+            }
         });
 
         //top.Ts.Services.Customers.LoadCDI(organizationID, function (cdiValue) {

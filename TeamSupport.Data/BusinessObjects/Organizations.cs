@@ -2101,6 +2101,9 @@ ORDER BY o.Name";
         command.CommandText = "DELETE FROM CreditCards WHERE OrganizationID = @OrganizationID";
         command.ExecuteNonQuery();
 
+        command.CommandText = "DELETE FROM RecentlyViewedItems WHERE (refID = @OrganizationID) AND (refType = 1)";
+        command.ExecuteNonQuery();
+
       }
 
       DeleteAttachments(loginUser, organizationID);

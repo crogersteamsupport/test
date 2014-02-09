@@ -675,17 +675,16 @@ namespace TeamSupport.Data
     {
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = "UPDATE Users SET OrganizationID = @unknownID WHERE OrganiationID = @OrgID";
+            command.CommandText = "UPDATE Users SET OrganizationID = @unknownID WHERE OrganizationID = @OrgID";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@OrgID", organizationID);
             command.Parameters.AddWithValue("@unknownID", unknownID);
             ExecuteNonQuery(command, "Users");
 
-            command.CommandText = "UPDATE OrganizationTickets SET OrganizationID = @unknownID WHERE OrganiationID = @OrgID";
+            command.CommandText = "UPDATE OrganizationTickets SET OrganizationID = @unknownID WHERE OrganizationID = @OrgID";
             command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@OrgID", organizationID);
-            command.Parameters.AddWithValue("@unknownID", unknownID);
             ExecuteNonQuery(command, "OrganizationTickets");
+
 
         }
     }

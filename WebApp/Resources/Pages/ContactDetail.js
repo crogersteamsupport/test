@@ -948,7 +948,7 @@ $(document).ready(function () {
                 //$('#openChart').text("No Open Tickes").addClass("text-center");
                 $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center chart-header");
             }
-            else
+            else{
             $('#openChart').highcharts({
                 chart: {
                     plotBackgroundColor: null,
@@ -995,6 +995,7 @@ $(document).ready(function () {
 
             var chart = $('#openChart').highcharts();
             chart.series[0].setData(chartData);
+            }
         });
 
         top.Ts.Services.Customers.LoadContactChartData(userID, false, function (chartString) {
@@ -1012,7 +1013,7 @@ $(document).ready(function () {
                 //$('#closedChart').text("No Closed Tickets").addClass("text-center");
                 $('#closedChart').html("No Closed Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header");
             }
-            else
+            else{
             $('#closedChart').highcharts({
                 chart: {
                     plotBackgroundColor: null,
@@ -1047,6 +1048,7 @@ $(document).ready(function () {
 
             var chart = $('#closedChart').highcharts();
             chart.series[0].setData(chartData);
+            }
         });
     }
     $('#userProperties p').toggleClass("editable");
