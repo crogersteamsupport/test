@@ -14,9 +14,6 @@
             return 'Please select only one descriptive field to plot a pie chart.';
         }
 
-        if (records[1].length > 100) {
-            return 'The data you have selected contains too many results.  Try filtering your data.';
-        }
         var total = 0;
         for (var i = 0; i < records[1].data.length; i++) {
             total += parseInt(records[1].data[i]);
@@ -104,9 +101,6 @@
 
         }
         else if (records.length = 2) {
-            if (records[0].data.length > 100) {
-                return 'The data you have selected contains too many results.  Try filtering your data.';
-            }
             options.xAxis = { categories: records[0].data };
             options.series.push({ name: records[1].name, data: records[1].data });
         }

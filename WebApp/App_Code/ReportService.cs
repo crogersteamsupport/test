@@ -686,44 +686,7 @@ namespace TSWebServices
         [DataMember] public int SubCatID { get; set; }
       }
 
-      [DataContract]
-      public class ChartSeries
-      {
-        [DataMember] public string name { get; set; }
-        [DataMember] public Object[] data { get; set; }
-      }
 
-      [DataContract]
-      public class ChartXAxis
-      {
-        [DataMember] public string type { get; set; }
-        [DataMember] public string[] categories { get; set; }
-      }
-
-      [DataContract]
-      public class ChartData
-      {
-        [DataMember] public ChartXAxis XAxis { get; set; }
-        [DataMember] public ChartSeries[] Series { get; set; }
-
-        public ChartData() {
-          XAxis = new ChartXAxis();
-          XAxis.type = "linear";
-
-        }
-
-        public ChartSeries FindSeries(string name) {
-          foreach (ChartSeries item in this.Series)
-          {
-            if (item.name.Trim().ToLower() == name.Trim().ToLower())
-            {
-              return item;
-            }
-          }
-          return null;
-        }
-        
-      }
 
       [DataContract]
       public class DataResult

@@ -41,6 +41,8 @@
     .report-header-search .btn-toolbar { padding-top: 10px; }
     .nav > li.drop-active.drop-hover.report-folder a { background-color: #ffffcc; }
     .nav > li.drop-active.report-folder > a  { }
+    .no-reports { text-align:center; padding: 60px; font-size: 18px; color: #676767; display:none;}
+    .no-reports i { font-size: 48px; color: #eee; margin-right: 15px; vertical-align:middle;}
     
     .report-container .nav > li > a { color: #444; padding: 5px 5px; }
     .report-container .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .report-container .nav-pills > li.active > a:focus { background: #fff; font-weight: bold; color: #428BCA; }
@@ -59,7 +61,7 @@
     </style>
 </head>
 <body>
-  <div class="frame-container reports-refreshx">
+  <div class="frame-container">
     <div class="report-container">
       <div class="report-header">
         <div class="report-header-create">
@@ -98,6 +100,10 @@
       </div>
       <div class="report-list-wrapper">
         <div class="report-list">
+          <div class="no-reports">
+            <i class="fa fa-bar-chart-o"></i>
+            <span>There are no reports to display.</span>
+          </div>
           <table class="table table-hover">
             <thead>
               <tr>

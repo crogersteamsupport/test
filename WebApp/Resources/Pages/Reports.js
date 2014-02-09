@@ -313,6 +313,9 @@ $(document).ready(function () {
     });
 
     function filterReport() {
+        $('.report-list .no-reports:visible').hide();
+        $('.report-list table:hidden').show();
+
         if (_tmrSearch) { clearTimeout(_tmrSearch); }
         _tmrSearch = null;
         $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
@@ -384,6 +387,11 @@ $(document).ready(function () {
             return $(this).text().toLowerCase().indexOf(term) < 0;
         }).closest('.report-item').hide();
 
+
+        if ($('.report-list .report-item:visible').length < 1) {
+            $('.report-list table:visible').hide();
+            $('.report-list .no-reports:hidden').show();
+        }
     }
 
     var _tmrSearch = null;
