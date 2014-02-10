@@ -194,7 +194,7 @@ namespace TSWebServices
 
         if ((org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.HelpDesk) && IsMenuItemActive(user, "mniCustomers"))
         {
-            items.Add(new TsMenuItem("customers1", "mniCustomers1", "Customers1", "vcr/1_7_0/images/nav/20/customers.png", string.Format(data, "Frames/Organizations.aspx", "vcr/1_7_0/PaneInfo/Customers.html")));
+            //items.Add(new TsMenuItem("customers1", "mniCustomers1", "Customers1", "vcr/1_7_0/images/nav/20/customers.png", string.Format(data, "Frames/Organizations.aspx", "vcr/1_7_0/PaneInfo/Customers.html")));
           items.Add(new TsMenuItem("customers", "mniCustomers", "Customers", "vcr/1_7_0/images/nav/20/customers.png", string.Format(data, "vcr/1_7_0/Pages/Customers.html", "vcr/1_7_0/PaneInfo/Customers.html")));
         }
 
