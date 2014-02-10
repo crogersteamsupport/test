@@ -505,10 +505,13 @@ namespace TSWebServices
       }
 
       [WebMethod]
-      public void MoveReports(string reportIDs, int folderID)
+      public void MoveReports(string reportIDs, int? folderID)
       {
-        ReportFolder folder = ReportFolders.GetReportFolder(TSAuthentication.GetLoginUser(), folderID);
-        if (folder.OrganizationID != TSAuthentication.OrganizationID) return;
+        if (folderID != null)
+        {
+          ReportFolder folder = ReportFolders.GetReportFolder(TSAuthentication.GetLoginUser(), (int)folderID);
+          if (folder.OrganizationID != TSAuthentication.OrganizationID) return;
+        }
         int[] ids = JsonConvert.DeserializeObject<int[]>(reportIDs);
         for (int i = 0; i < ids.Length; i++)
         {

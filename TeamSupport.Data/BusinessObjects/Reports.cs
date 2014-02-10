@@ -1804,7 +1804,7 @@ SELECT r.*, u1.FirstName + ' ' + u1.LastName AS Creator, u2.FirstName + ' ' + u2
 ISNULL((SELECT rus.Settings FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), '') AS Settings,
 ISNULL((SELECT rus.IsFavorite FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsFavorite,
 ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsHidden,
-(SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS FolderID
+(SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS Folder
 FROM Reports r
 LEFT JOIN Users u1 ON u1.UserID = r.CreatorID
 LEFT JOIN Users u2 ON u2.UserID = r.EditorID
@@ -1849,7 +1849,7 @@ SELECT r.*, u1.FirstName + ' ' + u1.LastName AS Creator, u2.FirstName + ' ' + u2
 ISNULL((SELECT rus.Settings FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), '') AS Settings,
 ISNULL((SELECT rus.IsFavorite FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsFavorite,
 ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsHidden,
-(SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS FolderID
+(SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS Folder
 FROM Reports r
 LEFT JOIN Users u1 ON u1.UserID = r.CreatorID
 LEFT JOIN Users u2 ON u2.UserID = r.EditorID
@@ -1879,7 +1879,7 @@ SELECT r.*, u1.FirstName + ' ' + u1.LastName AS Creator, u2.FirstName + ' ' + u2
 ISNULL((SELECT rus.Settings FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), '') AS Settings,
 ISNULL((SELECT rus.IsFavorite FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsFavorite,
 ISNULL((SELECT rus.IsHidden FROM ReportUserSettings rus WHERE rus.ReportID = r.ReportID AND rus.UserID = @UserID), 0) AS IsHidden,
-(SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS FolderID
+(SELECT ros.FolderID FROM ReportOrganizationSettings ros WHERE ros.ReportID = r.ReportID AND ros.OrganizationID = @OrganizationID) AS Folder
 FROM Reports r
 LEFT JOIN Users u1 ON u1.UserID = r.CreatorID
 LEFT JOIN Users u2 ON u2.UserID = r.EditorID
@@ -1912,17 +1912,24 @@ IF @@ROWCOUNT=0
       SqlExecutor.ExecuteNonQuery(loginUser, command); 
     }
 
-    public static void AssignFolder(LoginUser loginUser, int folderID, int organizationID, int reportID)
+    public static void AssignFolder(LoginUser loginUser, int? folderID, int organizationID, int reportID)
     {
       SqlCommand command = new SqlCommand();
 
-      command.CommandText = @"
+      if (folderID == null)
+      {
+        command.CommandText = @"UPDATE ReportOrganizationSettings SET FolderID=NULL WHERE OrganizationID = @OrganizationID AND ReportID = @ReportID";
+      }
+      else
+      {
+        command.CommandText = @"
 UPDATE ReportOrganizationSettings SET FolderID=@FolderID WHERE OrganizationID = @OrganizationID AND ReportID = @ReportID
 IF @@ROWCOUNT=0
     INSERT INTO ReportOrganizationSettings (OrganizationID, ReportID, FolderID) VALUES (@OrganizationID, @ReportID, @FolderID)
 ";
+        command.Parameters.AddWithValue("FolderID", folderID);
+      }
       command.Parameters.AddWithValue("OrganizationID", organizationID);
-      command.Parameters.AddWithValue("FolderID", folderID);
       command.Parameters.AddWithValue("ReportID", reportID);
       SqlExecutor.ExecuteNonQuery(loginUser, command);
     }
@@ -2119,7 +2126,7 @@ IF @@ROWCOUNT=0
           this.Creator = (report.Row.Table.Columns.IndexOf("Creator") < 0 || report.Row["Creator"] == DBNull.Value ? "" : (string)report.Row["Creator"]);
           this.Editor = (report.Row.Table.Columns.IndexOf("Editor") < 0 || report.Row["Editor"] == DBNull.Value ? "" : (string)report.Row["Editor"]);
           this.EditorID = report.EditorID;
-          this.FolderID = (report.Row.Table.Columns.IndexOf("FolderID") < 0 || report.Row["FolderID"] == DBNull.Value ? null : (int?)report.Row["FolderID"]);
+          this.FolderID = (report.Row.Table.Columns.IndexOf("Folder") < 0 || report.Row["Folder"] == DBNull.Value ? null : (int?)report.Row["Folder"]);
           if ((int)report.ReportDefType < 0)
           {
             if (!string.IsNullOrWhiteSpace(report.ExternalURL))

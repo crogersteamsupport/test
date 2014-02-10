@@ -41,7 +41,12 @@
                 var item = [];
                 item.push(Date.parse(records[1].data[i]));
                 item.push(records[2].data[i]);
-                series.data.push(item);
+                if (item[0] != null) {
+                    if (item[1] == null) item[1] = 0;
+                    series.data.push(item);
+                }
+
+            
 
             }
 
@@ -53,7 +58,10 @@
                 var item = [];
                 item.push(Date.parse(records[0].data[i]));
                 item.push(records[1].data[i]);
-                options.series[0].data.push(item);
+                if (item[0] != null) {
+                    if (item[1] == null) item[1] = 0;
+                    options.series[0].data.push(item);
+                }
             }
         }
 

@@ -253,9 +253,9 @@ $(document).ready(function () {
             el.find('.summary-calc-comp').trigger('change');
         }
 
-        function loadSummaryFields() {
+        function loadSummaryFields(el) {
             clearSummaryFields();
-            var list = $('.summary-desc');
+            var list = el.find('.summary-desc');
             for (var i = 0; i < _report.Def.Fields.Descriptive.length; i++) {
                 var field = _report.Def.Fields.Descriptive[i];
                 if (i > 0) list.find('li:first').clone(true).appendTo(list);
@@ -264,7 +264,7 @@ $(document).ready(function () {
                 item.find('.summary-desc-val1').val(field.Value1);
             }
 
-            list = $('.summary-calc');
+            list = el.find('.summary-calc');
             for (var i = 0; i < _report.Def.Fields.Calculated.length; i++) {
                 var field = _report.Def.Fields.Calculated[i];
                 if (i > 0) list.find('li:first').clone(true).appendTo(list);
@@ -373,7 +373,8 @@ $(document).ready(function () {
                 initSummaryRow($('.summary-fields'));
                 if (_report != null) {
                     loadSelectedFields();
-                    if (_reportType == 1 || _reportType == 4) loadSummaryFields();
+                    if (_reportType == 1) { loadSummaryFields($('.report-chartproperties')); }
+                    if (_reportType == 4) { loadSummaryFields($('.report-summary-fields')); }
                 }
                 $('.report-filter').reportFilter('loadFields', fields);
                 $('#chartFilter').reportFilter('loadFields', fields);

@@ -28,6 +28,9 @@ $(document).ready(function () {
                 }
             }
 
+            $('<option>').text('No Folder').attr('value', -1).appendTo('.select-folders');
+
+
             for (var i = 0; i < savedIDs.length; i++) {
                 var folder = findFolder(savedIDs[i]);
                 if (folder) addFolder(folder);
@@ -105,7 +108,7 @@ $(document).ready(function () {
         e.preventDefault();
         $('.active.report-menu-item').removeClass('active');
         $(this).addClass('active');
-        top.Ts.Services.Reports.GetReports(loadReports);
+        //top.Ts.Services.Reports.GetReports(loadReports);
         filterReport();
     });
 
@@ -130,7 +133,6 @@ $(document).ready(function () {
             }
             else {
                 addFolder(folder);
-
             }
         });
 
@@ -249,6 +251,7 @@ $(document).ready(function () {
 
     function moveSelectedReports(folderID) {
         var ids = new Array();
+        if (folderID < 0) folderID = null;
 
         $('.report-list .report-item.report-selected:visible').not('.ui-draggable-dragging').each(function () {
             var report = $(this).data('o');
@@ -407,15 +410,29 @@ $(document).ready(function () {
         filterReport();
     });
 
+    var toString = Object.prototype.toString;
+
+    function isString(obj) {
+        return toString.call(obj) == '[object String]';
+    }
+
     function sortReports(fieldname, asc) {
         if (asc == true) {
             $('.report-list table .report-item').sortElements(function (a, b) {
-                return $(a).data('o')[fieldname] > $(b).data('o')[fieldname] ? 1 : -1;
+                var val1 = $(a).data('o')[fieldname];
+                var val2 = $(b).data('o')[fieldname];
+                if (isString(val1)) { val1 = val1.toLowerCase(); }
+                if (isString(val2)) { val1 = val2.toLowerCase(); }
+                return val1 > val2 ? 1 : -1;
             });
         }
         else {
             $('.report-list table .report-item').sortElements(function (a, b) {
-                return $(a).data('o')[fieldname] < $(b).data('o')[fieldname] ? 1 : -1;
+                var val1 = $(a).data('o')[fieldname];
+                var val2 = $(b).data('o')[fieldname];
+                if (isString(val1)) { val1 = val1.toLowerCase(); }
+                if (isString(val2)) { val1 = val2.toLowerCase(); }
+                return val1 < val2 ? 1 : -1;
             });
         }
     }
