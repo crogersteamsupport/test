@@ -108,7 +108,7 @@ $(document).ready(function () {
         e.preventDefault();
         $('.active.report-menu-item').removeClass('active');
         $(this).addClass('active');
-        //top.Ts.Services.Reports.GetReports(loadReports);
+        top.Ts.Services.Reports.GetReports(loadReports);
         filterReport();
     });
 
