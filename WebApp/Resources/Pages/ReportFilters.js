@@ -34,7 +34,7 @@
                 if (execGetFieldValues) {
                     execGetFieldValues._executor.abort();
                 }
-                execGetFieldValues = top.Ts.Services.System.GetLookupDisplayNames($(this.element).data('fieldid'), request.term, function (result) {
+                execGetFieldValues = top.Ts.Services.Reports.GetLookupDisplayNames($(this.element).data('fieldid'), request.term, function (result) {
                     response(result);
                     $(this).removeClass('ui-autocomplete-loading');
                 });

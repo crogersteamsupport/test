@@ -506,6 +506,7 @@ namespace TeamSupport.Data
     {
       string fieldName = "";
       string dataType;
+
       if (condition.IsCustom)
       {
         CustomField customField = TeamSupport.Data.CustomFields.GetCustomField(loginUser, condition.FieldID);
@@ -536,7 +537,13 @@ namespace TeamSupport.Data
         dataType = field.DataType;
       }
 
-      string paramName = string.Format("Param{0:D5}", command.Parameters.Count + 1);
+      string paramName= string.Format("Param{0:D5}", command.Parameters.Count + 1);
+
+      if (condition.Value1 == "The Report Viewer")
+      {
+        condition.Value1 = loginUser.GetUserFullName();
+      }
+
       switch (dataType)
       {
         case "float":
@@ -782,7 +789,10 @@ namespace TeamSupport.Data
           }
           break;
         default:
-          if (condition.Value1 != null) command.Parameters.AddWithValue(paramName, condition.Value1);
+          if (condition.Value1 != null)
+          {
+            command.Parameters.AddWithValue(paramName, condition.Value1);
+          }
           switch (condition.Comparator.ToUpper())
           {
             case "IS": builder.Append(string.Format("{0} = @{1}", fieldName, paramName)); break;
@@ -1164,7 +1174,7 @@ namespace TeamSupport.Data
             {
               ExceptionLogs.LogException(Collection.LoginUser, ex, "GetSqlColumns", command.CommandText);
               Report report = Reports.GetReport(Collection.LoginUser, ReportID);
-              report.LastSqlExecuted = command.CommandText;
+              report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
               report.Collection.Save();
               throw;
             }
@@ -1649,7 +1659,7 @@ WHERE RowNum BETWEEN @From AND @To";
       report.GetCommand(command, true, false, useUserFilter);
       command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC");
 
-      report.LastSqlExecuted = command.CommandText;
+      report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
       report.Collection.Save();
       FixCommandParameters(command);
 
@@ -1700,7 +1710,7 @@ WHERE RowNum BETWEEN @From AND @To";
         command.CommandText = command.CommandText + " ORDER BY [" + sortField + (isDesc ? "] DESC" : "] ASC");
       }
 
-      report.LastSqlExecuted = command.CommandText;
+      report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
       report.Collection.Save();
       FixCommandParameters(command);
 

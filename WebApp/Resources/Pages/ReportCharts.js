@@ -16,10 +16,12 @@
 function showChartError(element, message) {
     var $el = $(element).empty();
     $('<div>')
-      .css('font-size', '20px')
-      .css('padding', '60px')
-      .css('text-align', 'center')
-      .css('color', '#676767')
+      .css({
+          'font-size': '20px',
+          'padding': '60px',
+          'text-align': 'center',
+          'color': '#676767'
+      })
       .html(message)
       .appendTo($el);
 }

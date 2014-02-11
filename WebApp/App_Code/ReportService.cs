@@ -519,7 +519,81 @@ namespace TSWebServices
         }
       }
 
+      [WebMethod]
+      public AutocompleteItem[] GetLookupDisplayNames(int reportTableFieldID, string term)
+      {
+        List<AutocompleteItem> result = new List<AutocompleteItem>();
+        Dictionary<int, string> values = GetLookupValues(TSAuthentication.GetLoginUser(), reportTableFieldID, term, 10);
+        if (values != null)
+        {
+          foreach (KeyValuePair<int, string> pair in values)
+          {
+            bool found = false;
+            foreach (AutocompleteItem item in result)
+            {
+              if (item.label.ToLower().Trim() == pair.Value.ToLower().Trim())
+              {
+                found = true;
+                break;
+              }
+            }
 
+            if (!found) result.Add(new AutocompleteItem(pair.Value, pair.Key.ToString()));
+          }
+        }
+        return result.ToArray();
+      }
+
+      public static Dictionary<int, string> GetLookupValues(LoginUser loginUser, int reportTableFieldID, string term, int maxRows)
+    {
+      Dictionary<int, string> result = new Dictionary<int, string>();
+      ReportTableField field = ReportTableFields.GetReportTableField(loginUser, reportTableFieldID);
+      if (field == null || field.LookupTableID == null) return null;
+      ReportTable table = ReportTables.GetReportTable(loginUser, (int)field.LookupTableID);
+      SqlCommand command = new SqlCommand();
+      string[] orgs = table.OrganizationIDFieldName.Split(',');
+      StringBuilder orgFields = new StringBuilder("(");
+      foreach (String s in orgs)
+      {
+        if (orgFields.Length > 1)
+        {
+          orgFields.Append(" OR " + s + " = @OrganizationID");
+        }
+        else
+        {
+          orgFields.Append(s + " = @OrganizationID");
+        }
+        
+      }
+      orgFields.Append(")");
+
+      string text = "SELECT TOP {0} {1} AS Label, {2} AS ID FROM {3} WHERE {4} AND {1} LIKE '%' + @Term + '%' ORDER BY {5}";
+      command.CommandText = string.Format(text, 
+        maxRows.ToString(),
+        table.LookupDisplayClause, 
+        table.LookupKeyFieldName, 
+        table.TableName, 
+        orgFields.ToString(), 
+        table.LookupOrderBy);
+
+      command.CommandType = CommandType.Text;
+      command.Parameters.AddWithValue("@Term", term);
+      command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+      DataTable dataTable = SqlExecutor.ExecuteQuery(loginUser, command);
+
+      if (field.LookupTableID == 11) {
+        result.Add(-2, "The Report Viewer");
+      }
+      //result.Add(-1, "Unassigned");
+      foreach (DataRow row in dataTable.Rows)
+      {
+        result.Add((int)row[1], row[0].ToString()); 
+      }
+
+      return result;
+    }
+
+  
 
 
 

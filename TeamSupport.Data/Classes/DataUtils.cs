@@ -520,6 +520,17 @@ namespace TeamSupport.Data
       return browser;
     }
 
+    public static string GetCommandTextSql(SqlCommand command)
+    {
+      StringBuilder builder = new StringBuilder();
+      builder.AppendLine(command.CommandText);
+      foreach (SqlParameter param in command.Parameters)
+      {
+        builder.AppendLine(string.Format("@{0}: {1}", param.ParameterName, param.Value.ToString()));
+      }
+      return builder.ToString();    
+    }
+
     /// <summary>
     /// Converts a DataContract Object to Json
     /// </summary>
