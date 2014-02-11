@@ -20,11 +20,10 @@
             top.Ts.Utils.webMethod("ReportService", "GetChartReportData",
               { "reportID": _reportID },
               function (data) {
-                  addChartData(_report.Def.Chart, JSON.parse(data));
-                  $('.chart-container').highcharts(_report.Def.Chart);
+                  createChart('.chart-container', _report.Def.Chart, JSON.parse(data));
               },
               function (error) {
-                  alert(error.get_message());
+                  showChartError('.chart-container', error.get_message());
               });
 
         });

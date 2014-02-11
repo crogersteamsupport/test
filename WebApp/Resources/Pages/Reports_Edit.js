@@ -540,7 +540,7 @@ $(document).ready(function () {
         }
 
 
-        function getHighChartOptions(data) {
+        function getHighChartOptions() {
             var options = {};
             options.chart = { zoomType: 'x' }
             options.ts = { chartType: $('#chart-type').val(), seriesTitle: $('#chart-series-title').val() }
@@ -603,27 +603,14 @@ $(document).ready(function () {
                 default:
             }
 
-            if (data) {
-                var error = addChartData(options, data);
-                if (error) {
-                    $('.chart-error').show().text(error);
-                    $('.chart-container').hide();
-                    return null;
-                }
-                else {
-                    $('.chart-error').hide();
-                    $('.chart-container').show();
-                }
-            }
-
             return options;
         }
 
 
         function buildChart() {
             if (_chartData) {
-                var options = getHighChartOptions(_chartData);
-                if (options) $('.chart-container').highcharts(options);
+                var options = getHighChartOptions();
+                if (options) createChart('.chart-container', options, _chartData);
             }
         }
 

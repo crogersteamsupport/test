@@ -241,11 +241,10 @@ Dashboard.prototype = {
             top.Ts.Utils.webMethod("ReportService", "GetChartReportData",
               { "reportID": report.ReportID },
               function (data) {
-                  addChartData(report.Def.Chart, JSON.parse(data));
-                  content.highcharts(report.Def.Chart);
+                  createChart(content, report.Def.Chart, JSON.parse(data));
               },
               function (error) {
-                  alert(error.get_message());
+                  showChartError(content, error.get_message());
               });
 
         }

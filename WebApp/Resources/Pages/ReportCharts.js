@@ -1,4 +1,30 @@
-﻿function addChartData(options, records) {
+﻿function createChart(element, options, records) {
+    var $el = $(element).empty();
+    var result = addChartData(options, records);
+    if (result == null) {
+        try {
+            $($el).highcharts(options);
+        } catch (err) {
+            showChartError($el, err);
+        }
+    }
+    else {
+        showChartError($el, result);
+    }
+}
+
+function showChartError(element, message) {
+    var $el = $(element).empty();
+    $('<div>')
+      .css('font-size', '20px')
+      .css('padding', '60px')
+      .css('text-align', 'center')
+      .css('color', '#676767')
+      .html(message)
+      .appendTo($el);
+}
+
+function addChartData(options, records) {
     options.colors = ['#3276B1', '#193b58', '#78A300', '#e72b19', '#008080', '#E57B3A', '#bd4cff', '#FFC312', '#BA55D3'];
     
     
@@ -11,7 +37,7 @@
 
     if (options.ts.chartType == 'pie') {
         if (records.length > 2) {
-            return 'Please select only one descriptive field to plot a pie chart.';
+            return 'Please do not select a series field to plot a pie chart.';
         }
 
         var total = 0;
@@ -115,4 +141,9 @@
 
     }
 
+    if (options.series && options.series.length > 1000) {
+        return '<p>Your series has ' + options.series.length + ' items.</p><p>This might cause issues rendering the chart, please try filtering your data to less than 1000.</p>';
+    }
+
 }
+
