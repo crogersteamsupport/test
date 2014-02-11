@@ -671,9 +671,9 @@ Ts.Pages.Main.prototype = {
               case Ts.Ui.Tabs.Tab.Type.NewCompany:
                   div = $('.main-ticket-newCompany');
                   break;
-                        case Ts.Ui.Tabs.Tab.Type.Report:
-                            div = $('.main-report-' + tab.getId());
-                            break;
+              case Ts.Ui.Tabs.Tab.Type.Report:
+                  div = $('.main-report-' + tab.getId());
+                  break;
             default:
           }
 
