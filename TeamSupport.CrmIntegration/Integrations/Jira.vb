@@ -247,7 +247,7 @@ Namespace TeamSupport
               newAction.AddNewAction()
               newAction(0).ActionTypeID = newActionsTypeID
               newAction(0).TicketID = ticket.TicketID
-              newAction(0).Description = "Ticket has been syched with Jira's Issue " + issue("key").ToString() + " with status """ + ticketLinkToJira.JiraStatus + """."
+              newAction(0).Description = "Ticket has been synced with Jira's issue " + issue("key").ToString() + " with status """ + ticketLinkToJira.JiraStatus + """."
               ticketLinkToJira.DateModifiedByJiraSync = DateTime.UtcNow()
               newAction.Save()
 
