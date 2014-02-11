@@ -1402,7 +1402,9 @@ Ts.Pages.Main.prototype = {
       var query = "?organizationid=" + customerID + "&noteid=" + noteID;
       top.Ts.Services.Organizations.GetShortNameFromID(customerID, function (result) {
           this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Company, customerID, result, true, true, false, null, null, query, null);
-      });
+          var element = $('.main-tab-content-item:visible');
+          $(element).children('iframe').attr('src', 'vcr/1_7_0/Pages/CustomerDetail.html' + query);
+        });
 
   },
   openNewContactNote: function (contactID, noteID) {
@@ -1410,7 +1412,9 @@ Ts.Pages.Main.prototype = {
       var query = "?user=" + contactID + "&noteid=" + noteID;
       top.Ts.Services.Users.GetShortNameFromID(contactID, function (result) {
           this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Contact, contactID, result, true, true, false, null, null, query, null);
-      });
+          var element = $('.main-tab-content-item:visible');
+          $(element).children('iframe').attr('src', 'vcr/1_7_0/Pages/ContactDetail.html' + query);
+        });
   },
   closeNewCustomer: function (customerID){
       var div = $('.main-tab-content .main-Customer-' + customerID);
