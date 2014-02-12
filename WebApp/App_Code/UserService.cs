@@ -469,6 +469,54 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool SetChangeCanCreateCompany(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.CanCreateCompany = value;
+            user.Collection.Save();
+            return user.CanCreateCompany;
+        }
+
+        [WebMethod]
+        public bool SetChangeCanEditCompany(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.CanEditCompany = value;
+            user.Collection.Save();
+            return user.CanEditCompany;
+        }
+
+        [WebMethod]
+        public bool SetChangeCanCreateContacts(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.CanCreateContact = value;
+            user.Collection.Save();
+            return user.CanCreateContact;
+        }
+
+        [WebMethod]
+        public bool SetChangeCanEditContacts(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.CanEditContact = value;
+            user.Collection.Save();
+            return user.CanEditContact;
+        }
+
+        [WebMethod]
         public bool SetChangeKbVisibility(int userID, bool value)
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);

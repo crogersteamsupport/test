@@ -839,6 +839,7 @@ Ts.Pages.Main.prototype = {
                   $('<iframe>')
                     .attr('frameborder', 0)
                     .attr('scrolling', 'no')
+                    .attr('id', 'iframe-o-' + OrgID)
                     .appendTo(div)
                     .attr('src', 'vcr/1_7_0/Pages/CustomerDetail.html' + query);
               }
@@ -860,6 +861,7 @@ Ts.Pages.Main.prototype = {
                   $('<iframe>')
                     .attr('frameborder', 0)
                     .attr('scrolling', 'no')
+                    .attr('id', 'iframe-u-' + contactID)
                     .appendTo(div)
                     .attr('src', 'vcr/1_7_0/Pages/ContactDetail.html' + query);
               }
@@ -1400,21 +1402,31 @@ Ts.Pages.Main.prototype = {
   openNewCustomerNote: function (customerID, noteID) {
       var orgname;
       var query = "?organizationid=" + customerID + "&noteid=" + noteID;
-      top.Ts.Services.Organizations.GetShortNameFromID(customerID, function (result) {
-          this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Company, customerID, result, true, true, false, null, null, query, null);
-          var element = $('.main-tab-content-item:visible');
-          $(element).children('iframe').attr('src', 'vcr/1_7_0/Pages/CustomerDetail.html' + query);
+
+      if (window.parent.document.getElementById('iframe-o-' + customerID)){
+          window.parent.document.getElementById('iframe-o-' + customerID).contentWindow.openNote(noteID);
+          this.openNewCustomer(customerID);
+      }
+      else{
+        top.Ts.Services.Organizations.GetShortNameFromID(customerID, function (result) {
+            this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Company, customerID, result, true, true, false, null, null, query, null);
         });
+      }
 
   },
   openNewContactNote: function (contactID, noteID) {
       var orgname;
       var query = "?user=" + contactID + "&noteid=" + noteID;
-      top.Ts.Services.Users.GetShortNameFromID(contactID, function (result) {
-          this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Contact, contactID, result, true, true, false, null, null, query, null);
-          var element = $('.main-tab-content-item:visible');
-          $(element).children('iframe').attr('src', 'vcr/1_7_0/Pages/ContactDetail.html' + query);
-        });
+
+      if (window.parent.document.getElementById('iframe-u-' + contactID)){
+          window.parent.document.getElementById('iframe-u-' + contactID).contentWindow.openNote(noteID);
+          this.openNewContact(contactID);
+      }
+      else {
+          top.Ts.Services.Users.GetShortNameFromID(contactID, function (result) {
+              this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Contact, contactID, result, true, true, false, null, null, query, null);
+          });
+      }
   },
   closeNewCustomer: function (customerID){
       var div = $('.main-tab-content .main-Customer-' + customerID);

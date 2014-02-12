@@ -76,6 +76,14 @@ namespace TeamSupport.Data
     [DataMember] public FontSize FontSize { get; set; }
     [DataMember] public string FontFamilyDescription { get; set; }
     [DataMember] public string FontSizeDescription { get; set; }
+    [DataMember]
+    public bool CanCreateCompany { get; set; }
+    [DataMember]
+    public bool CanEditCompany { get; set; }
+    [DataMember]
+    public bool CanCreateContact { get; set; }
+    [DataMember]
+    public bool CanEditContact { get; set; }
           
   }
   
@@ -159,6 +167,10 @@ namespace TeamSupport.Data
       result.AppChatStatus = this.AppChatStatus;
       result.ChangeTicketVisibility = this.ChangeTicketVisibility;
       result.ChangeKbVisibility = this.ChangeKBVisibility;
+      result.CanCreateCompany = this.CanCreateCompany;
+      result.CanCreateContact = this.CanCreateContact;
+      result.CanEditCompany = this.CanEditCompany;
+      result.CanEditContact = this.CanEditContact;
 
       Attachments att = new Attachments(BaseCollection.LoginUser);
       att.LoadByReference(ReferenceType.UserPhoto, this.UserID);

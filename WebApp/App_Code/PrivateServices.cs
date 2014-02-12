@@ -724,6 +724,10 @@ namespace TeamSupport.Services
     {
       Note note = Notes.GetNote(UserSession.LoginUser, noteID);
       if (note.CreatorID != UserSession.CurrentUser.UserID && !UserSession.CurrentUser.IsSystemAdmin) return;
+
+      string description = String.Format("{0} deleted note {1} ", UserSession.CurrentUser.FirstLastName, note.Title);
+      ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Notes, noteID, description);
+
       note.Delete();
       note.Collection.Save();
     }

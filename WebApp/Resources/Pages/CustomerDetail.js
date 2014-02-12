@@ -51,6 +51,25 @@ $(document).ready(function () {
     LoadReminderUsers();
     UpdateRecentView();
 
+    $('body').layout({
+        defaults: {
+            spacing_open: 0,
+            closable: false
+        },
+        north: {
+            spacing_open: 1,
+            size: 100
+        },
+        center: {
+            maskContents: true
+        }
+    });
+
+    if (!top.Ts.System.User.CanEditCompany && !_isAdmin) 
+    {
+        $('#productToggle').hide();
+    }
+
     $(".maincontainer").on("keypress", "input",(function (evt) {
         //Deterime where our character code is coming from within the event
         var charCode = evt.charCode || evt.keyCode;
@@ -71,12 +90,13 @@ $(document).ready(function () {
     {
         $('#companyTabs a:first').tab('show');
         $('#companyTabs a[href="#company-notes"]').tab('show');
+        openNote(noteID);
     }
     else {
         $('#companyTabs a:first').tab('show');
     }
 
-    if (!_isAdmin) {
+    if (!_isAdmin || !top.Ts.System.User.CanEditCompany) {
         $('#fieldActive').removeClass('editable');
         $('#groupAPI').hide();
         $('#customerEdit').hide();
@@ -85,7 +105,7 @@ $(document).ready(function () {
         $('#customerDelete').hide();
     }
 
-    if (!_isAdmin && !top.Ts.System.User.HasPortalRights) {
+    if ((!_isAdmin && !top.Ts.System.User.HasPortalRights) || !top.Ts.System.User.CanEditCompany) {
         $('#fieldPortalAccess').removeClass('editable');
     }
 
@@ -877,8 +897,8 @@ $(document).ready(function () {
 
     $('#customerDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this organization?')) {
-            top.Ts.MainPage.closeNewCustomerTab(organizationID);
-            top.privateServices.DeleteOrganization(organizationID);
+            deleteOrg(organizationID);
+            
             top.Ts.Services.Customers.DeleteOrgzanitionLinks(organizationID, function () {
                 if (window.parent.document.getElementById('iframe-mniCustomers'))
                     window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
@@ -1201,6 +1221,14 @@ $(document).ready(function () {
         $('#modalReminder input').val('');
     });
 
+    function deleteOrg() {
+        top.Ts.MainPage.closeNewCustomerTab(organizationID);
+        top.privateServices.DeleteOrganization(organizationID);
+        top.Ts.Services.Customers.DeleteOrgzanitionLinks(organizationID, function () {
+            if (window.parent.document.getElementById('iframe-mniCustomers'))
+                window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
+        });
+    }
 
     function LoadCustomProperties() {
         top.Ts.Services.Customers.GetCustomValues(organizationID, top.Ts.ReferenceTypes.Organizations, function (html) {
@@ -1280,7 +1308,7 @@ $(document).ready(function () {
             $('#tblNotes tbody').empty();
             var html;
             for (var i = 0; i < note.length; i++) {
-                if (_isAdmin || note[i].CreatorID == top.Ts.System.User.UserID)
+                if (_isAdmin || note[i].CreatorID == top.Ts.System.User.UserID || top.Ts.System.User.CanEditCompany)
                     html = '<td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                 else
                     html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
@@ -1410,9 +1438,19 @@ $(document).ready(function () {
                     customfields = customfields + "<td>" + product[i].CustomFields[p]  + "</td>";
                 }
 
+                var html;
+
+                if(top.Ts.System.User.CanEditCompany || _isAdmin)
+                {
+                    html = '<td><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="glyphicon glyphicon-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields;
+                }
+                else
+                {
+                    html = '<td></td><td></td><td><i class="glyphicon glyphicon-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
+                }
                 var tr = $('<tr>')
                 .attr('id', product[i].OrganizationProductID)
-                .html('<td><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="glyphicon glyphicon-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields)
+                .html(html)
                 .appendTo('#tblProducts > tbody:last');
 
 
@@ -1461,7 +1499,7 @@ $(document).ready(function () {
                 //chartData.pop();
                 //chartData.push(["No Open Tickets", 0]);
                 //$('#openChart').text("No Open Tickes").addClass("text-center");
-                $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header");
+                $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header").attr("title", "No Open Tickets");
             }
             else{
             $('#openChart').highcharts({
@@ -1514,7 +1552,7 @@ $(document).ready(function () {
                 //chartData.pop();
                 //chartData.push(["No Closed Tickets", 0]);
                 //$('#closedChart').text("No Closed Tickets").addClass("text-center");
-                $('#closedChart').html("No Closed Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header");
+                $('#closedChart').html("No Closed Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header").attr("title", "No Closed Tickets");
             }
             else{
             $('#closedChart').highcharts({
@@ -2226,4 +2264,14 @@ CustomerDetailPage.prototype = {
 
 function openTicketWindow(ticketID) {
     top.Ts.MainPage.openTicketByID(ticketID, true);
+}
+
+function openNote(noteID) {
+    top.Ts.Services.Customers.LoadNote(noteID, function (note) {
+        var desc = note.Description;
+        desc = desc.replace(/<br\s?\/?>/g, "\n");
+        $('.noteDesc').show();
+        $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
+
+    });
 }

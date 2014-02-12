@@ -567,7 +567,7 @@ namespace TSWebServices
         public UserProxy[] LoadOrgUsers(int organizationID)
         {
             Users users = new Users(TSAuthentication.GetLoginUser());
-            users.LoadByOrganizationID(organizationID, true);
+            users.LoadByOrganizationIDLastName(organizationID, true);
             return users.GetUserProxies();
         }
 
@@ -1293,12 +1293,12 @@ namespace TSWebServices
                 {
                     if (customValue.FieldType == CustomFieldType.DateTime)
                     {
-                        //customValue.Value = ((DateTime)field.Value).ToString();
-                        DateTime dt;
-                        if (DateTime.TryParse(((string)field.Value).Replace("UTC", "GMT"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
-                        {
-                            customValue.Value = dt.ToUniversalTime().ToString();
-                        }
+                        customValue.Value = ((DateTime)field.Value).ToString();
+                        //DateTime dt;
+                        //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+                        //{
+                        //    customValue.Value = dt.ToUniversalTime().ToString();
+                        //}
                     }
                     else
                     {
@@ -1313,13 +1313,13 @@ namespace TSWebServices
             string password = DataUtils.GenerateRandomPassword();
             user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
             user.IsPasswordExpired = true;
-            //user.Collection.Save();
-            //if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null && info.Email)
-            //{
-            //    EmailPosts.SendWelcomeTSUser(UserSession.LoginUser, user.UserID, password);
-            //}
-            //else if (cbEmail.Checked && info.IsPortalUser)
-            //    EmailPosts.SendWelcomePortalUser(UserSession.LoginUser, user.UserID, password);
+            user.Collection.Save();
+            if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null && info.EmailPortalPW)
+            {
+                EmailPosts.SendWelcomeTSUser(UserSession.LoginUser, user.UserID, password);
+            }
+            else if (info.EmailPortalPW && info.IsPortalUser)
+                EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), user.UserID, password);
 
             return user.UserID;
         }
@@ -1400,15 +1400,19 @@ namespace TSWebServices
         public void SaveNote(string title, string noteText, int noteID, int refID, ReferenceType refType)
         {
             Note note = null;
+            bool isNew = false;
             if (noteID > -1)
             {
                 note = (Note)Notes.GetNote(TSAuthentication.GetLoginUser(), noteID);
+                string description = String.Format("{0} modified note {1} ", UserSession.CurrentUser.FirstLastName, title);
+                ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Update, ReferenceType.Notes, noteID, description);
             }
             else
             {
                 note = (new Notes(TSAuthentication.GetLoginUser())).AddNewNote();
                 note.RefID = refID;
                 note.RefType = refType;
+                isNew = true;
             }
 
             if (note != null)
@@ -1416,6 +1420,11 @@ namespace TSWebServices
                 note.Description = noteText;
                 note.Title = title;
                 note.Collection.Save();
+                if (isNew)
+                {
+                    string description = String.Format("{0} added note {1} ", UserSession.CurrentUser.FirstLastName, title);
+                    ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Insert, ReferenceType.Notes, note.NoteID, description);
+                }
             }
 
         }
@@ -1959,6 +1968,7 @@ namespace TSWebServices
             [DataMember] public bool IsFinanceAdmin { get; set; }
             [DataMember] public bool SyncAddress { get; set; }
             [DataMember] public bool SyncPhone { get; set; }
+            [DataMember] public bool EmailPortalPW { get; set; }
             [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
         }
 

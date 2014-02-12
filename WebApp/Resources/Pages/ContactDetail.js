@@ -74,7 +74,7 @@ $(document).ready(function () {
         $('#contactTabs a:first').tab('show');
     }
 
-    if (!_isAdmin)
+    if (!_isAdmin || !top.Ts.System.User.CanEditContact)
     {
         $('#contactEdit').hide();
         $('#contactPhoneButton').hide();
@@ -109,8 +109,9 @@ $(document).ready(function () {
 
     function GetUser(){
         top.Ts.Services.Customers.GetUser(userID, function (user) {
+            var firstLast = user.FirstName + " " + user.LastName;
             $('#contactName').text(user.FirstName + " " + user.LastName);
-            $('#userProperties #fieldName').text(user.FirstName + " " + user.LastName);
+            $('#userProperties #fieldName').text(firstLast.length > 1 ? user.FirstName + " " + user.LastName : "Unassigned");
             $('#userProperties #fieldName').attr("first", user.FirstName);
             $('#userProperties #fieldName').attr("middle", user.MiddleName);
             $('#userProperties #fieldName').attr("last", user.LastName);
@@ -299,7 +300,7 @@ $(document).ready(function () {
             return false;
         top.Ts.Services.Customers.SetContactPortalUser(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldPortalUser').text((result === true ? 'Yes' : 'No'));
-            if(result != true)
+            if(result != true || !_isAdmin)
                 $('#btnSendNewPW').hide();
             else
                 $('#btnSendNewPW').show();
@@ -722,7 +723,7 @@ $(document).ready(function () {
             var html;
             for (var i = 0; i < note.length; i++) {
 
-                if (_isAdmin || note[i].CreatorID == top.Ts.System.User.UserID)
+                if (_isAdmin || note[i].CreatorID == top.Ts.System.User.UserID || top.Ts.System.User.CanEditContact)
                     html = '<td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                 else
                     html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
@@ -748,7 +749,7 @@ $(document).ready(function () {
             var html;
             for (var i = 0; i < files.length; i++) {
 
-                if (_isAdmin || files[i].CreatorID == top.Ts.System.User.UserID)
+                if (_isAdmin || files[i].CreatorID == top.Ts.System.User.UserID || !top.Ts.System.User.CanEditContact)
                     html = '<td><i class="glyphicon glyphicon-trash delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
                 else
                     html = '<td></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
@@ -822,7 +823,7 @@ $(document).ready(function () {
         top.Ts.Services.Customers.LoadContactProperties(userID, function (user) {
             $('#userProperties').html(user);
             $('#userProperties p').toggleClass("editable");
-            if ($('#fieldPortalUser').text() == "No")
+            if ($('#fieldPortalUser').text() == "No" || !_isAdmin)
                 $('#btnSendNewPW').hide();
 
             $('#userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
@@ -856,7 +857,8 @@ $(document).ready(function () {
         var users = top.Ts.Cache.getUsers();
         if (users != null) {
             for (var i = 0; i < users.length; i++) {
-                $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo('#reminderUsers');
+                var option =  $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo('#reminderUsers');
+                if (top.Ts.System.User.UserID === users[i].UserID) { option.attr('selected', 'selected'); }
             }
         }
     }
@@ -948,7 +950,7 @@ $(document).ready(function () {
                 //chartData.pop();
                 //chartData.push(["No Open Tickets", 1]);
                 //$('#openChart').text("No Open Tickes").addClass("text-center");
-                $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center chart-header");
+                $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center chart-header").attr("title","No Open Tickets");
             }
             else{
             $('#openChart').highcharts({
@@ -1013,7 +1015,7 @@ $(document).ready(function () {
                 //chartData.pop();
                 //chartData.push(["No Closed Tickets", 1]);
                 //$('#closedChart').text("No Closed Tickets").addClass("text-center");
-                $('#closedChart').html("No Closed Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header");
+                $('#closedChart').html("No Closed Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header").attr("title", "No Closed Tickets");
             }
             else{
             $('#closedChart').highcharts({
@@ -1556,4 +1558,14 @@ var appendCustomEditTime = function (field, element) {
         result.parent().addClass('has-error');
     }
 
+}
+
+function openNote(noteID) {
+    top.Ts.Services.Customers.LoadNote(noteID, function (note) {
+        var desc = note.Description;
+        desc = desc.replace(/<br\s?\/?>/g, "\n");
+        $('.noteDesc').show();
+        $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
+
+    });
 }

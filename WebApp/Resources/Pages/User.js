@@ -99,6 +99,12 @@ UserPage = function () {
     $('#userFontFamily').html(user.FontFamilyDescription);
     $('#userFontSize').html(user.FontSizeDescription);
     $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
+    $('#userCanCreateCompany').html((user.CanCreateCompany == true ? 'Yes' : 'No'));
+    $('#userCanEditCompany').html((user.CanEditCompany == true ? 'Yes' : 'No'));
+    $('#userCanCreateContacts').html((user.CanCreateContact == true ? 'Yes' : 'No'));
+    $('#userCanEditContacts').html((user.CanEditContact == true ? 'Yes' : 'No'));
+
+
     $('#userKBVisibility').html((user.ChangeKbVisibility == true ? 'Yes' : 'No'));
     $('#userTicketRights').html(userRightsToString(user.TicketRights)).data('o', user.TicketRights);
     $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Yes' : 'No'));
@@ -225,6 +231,14 @@ UserPage = function () {
       $('#chatUser').addClass('disabledlink');
       $('#userTicketVisibility').removeClass('ui-state-default ts-link');
       $('#userTicketVisibility').addClass('disabledlink');
+      $('#userCanCreateCompany').removeClass('ui-state-default ts-link');
+      $('#userCanCreateCompany').addClass('disabledlink');
+      $('#userCanEditCompany').removeClass('ui-state-default ts-link');
+      $('#userCanEditCompany').addClass('disabledlink');
+      $('#userCanCreateContacts').removeClass('ui-state-default ts-link');
+      $('#userCanCreateContacts').addClass('disabledlink');
+      $('#userCanEditContacts').removeClass('ui-state-default ts-link');
+      $('#userCanEditContacts').addClass('disabledlink');
       $('#userKBVisibility').removeClass('ui-state-default ts-link');
       $('#userKBVisibility').addClass('disabledlink');
       $('#userRightsAllTicketCustomers').removeClass('ui-state-default ts-link').addClass('disabledlink');
@@ -706,6 +720,83 @@ UserPage = function () {
               });
         }
       });
+
+      $('#userCanCreateCompany')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCanCreateCompany(_user.UserID, (item.text() !== 'Yes'),
+                  function (result) {
+                      top.Ts.System.logAction('User Info - User Change Can Create Company Changed');
+                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                  },
+                  function (error) {
+                      alert('There was an error saving the user change to can create company.');
+                      item.next().hide();
+                  });
+          }
+      });
+
+      $('#userCanEditCompany')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCanEditCompany(_user.UserID, (item.text() !== 'Yes'),
+                  function (result) {
+                      top.Ts.System.logAction('User Info - User Change Can Edit Company Changed');
+                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                  },
+                  function (error) {
+                      alert('There was an error saving the user change to can edit company.');
+                      item.next().hide();
+                  });
+          }
+      });
+
+      $('#userCanCreateContacts')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCanCreateContacts(_user.UserID, (item.text() !== 'Yes'),
+                  function (result) {
+                      top.Ts.System.logAction('User Info - User Change Can Create Contacts Changed');
+                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                  },
+                  function (error) {
+                      alert('There was an error saving the user change to can create contacts.');
+                      item.next().hide();
+                  });
+          }
+      });
+
+      $('#userCanEditContacts')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCanEditContacts(_user.UserID, (item.text() !== 'Yes'),
+                  function (result) {
+                      top.Ts.System.logAction('User Info - User Change Can Edit Contacts Changed');
+                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                  },
+                  function (error) {
+                      alert('There was an error saving the user change to can edit contacts.');
+                      item.next().hide();
+                  });
+          }
+      });
+
 
     $('#userKBVisibility')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')

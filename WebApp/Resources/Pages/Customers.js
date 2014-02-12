@@ -11,6 +11,10 @@
 
 $(document).ready(function () {
 
+    if (!top.Ts.System.User.CanCreateCompany && !top.Ts.System.User.CanCreateContact) {
+        $('.action-new').hide();
+    }
+
     $('.customer-add-new').click(function (e) {
         e.preventDefault();
         alert("Go to new Customer/Contact page");

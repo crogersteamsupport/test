@@ -11,6 +11,7 @@
 
 $(document).ready(function () {
     var _organizatinID = -1;
+    var _isAdmin = top.Ts.System.User.IsSystemAdmin && (_organizatinID != top.Ts.System.User.OrganizationID);
 
     $('body').layout({
         defaults: {
@@ -25,6 +26,8 @@ $(document).ready(function () {
             maskContents: true
         }
     });
+
+
 
     var defaultTab = top.Ts.Utils.getQueryValue("open", window);
     var defaultOrg = top.Ts.Utils.getQueryValue("organizationID", window);
@@ -46,6 +49,15 @@ $(document).ready(function () {
         $('#customerTabs a:first').tab('show');
     }
 
+    if (!top.Ts.System.User.CanCreateContact && !_isAdmin) {
+        $('#customerTabs a:last').hide();
+        $('#customerTabs a:first').tab('show');
+    }
+
+    if (!top.Ts.System.User.CanCreateCompany && !_isAdmin) {
+        $('#customerTabs a:first').hide();
+        $('#customerTabs a:last').tab('show');
+    }
 
     if (defaultOrg) {
         top.Ts.Services.Organizations.GetOrganization(defaultOrg, function (org) {
@@ -54,7 +66,6 @@ $(document).ready(function () {
         });
     }
 
-    var _isAdmin = top.Ts.System.User.IsSystemAdmin && (_organizatinID != top.Ts.System.User.OrganizationID);
     // Disable changing active if they are not an api
     // Hide the API
     if (!_isAdmin) {
@@ -92,6 +103,10 @@ $(document).ready(function () {
 
     $('#cbActive').on('click', function () {
         $('#formInactive').toggle();
+    });
+
+    $('#inputPortalUser').on('click', function () {
+        $('#contactEmailPortalUser').toggle();
     });
 
     LoadTimeZones();
@@ -182,19 +197,19 @@ $(document).ready(function () {
                             break;
                         case "date":
                             //    var dt = $(this).find('input').datepicker('getDate');
-                            field.Value = $(this).val() == undefined ? null : top.Ts.Utils.getMsDate($(this).val());
+                            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
                             break;
                         case "time":
                             //    var time = new Date("January 1, 1970 00:00:00");
                             //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
                             //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
-                            field.Value = $(this).val() == undefined ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
                             break;
                         case "datetime":
                             //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
                             //    var dt = $(this).find('input').datetimepicker('getDate');
                             //    field.Value = dt == null ? null : dt.toUTCString();
-                            field.Value = $(this).val() == undefined ? null : top.Ts.Utils.getMsDate($(this).val());
+                            field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
                             break;
                         default:
                             field.Value = $(this).val();
@@ -238,6 +253,7 @@ $(document).ready(function () {
             contactInfo.IsFinanceAdmin = $("#inputContactFinancialAdmin").prop('checked');
             contactInfo.SyncAddress = $("#inputContactSyncAddress").prop('checked');
             contactInfo.SyncPhone = $("#inputContactSyncPhone").prop('checked');
+            contactInfo.EmailPortalPW = $("#inputContactPortalEmail").prop('checked');
 
             contactInfo.Fields = new Array();
             $('.customField:visible').each(function () {
@@ -252,19 +268,19 @@ $(document).ready(function () {
                         break;
                     case "date":
                     //    var dt = $(this).find('input').datepicker('getDate');
-                        field.Value = $(this).val() == null ? null : top.Ts.Utils.getMsDate($(this).val());
+                        field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
                         break;
                     case "time":
                     //    var time = new Date("January 1, 1970 00:00:00");
                     //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
                     //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
-                        field.Value = $(this).val() == null ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                        field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
                         break;
                     case "datetime":
                     //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
                     //    var dt = $(this).find('input').datetimepicker('getDate');
                     //    field.Value = dt == null ? null : dt.toUTCString();
-                        field.Value = $(this).val() == null ? null : top.Ts.Utils.getMsDate($(this).val());
+                        field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
                         break;
 
                     //case "date":
