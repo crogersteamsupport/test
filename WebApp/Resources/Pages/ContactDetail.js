@@ -1566,6 +1566,7 @@ function openNote(noteID) {
         desc = desc.replace(/<br\s?\/?>/g, "\n");
         $('.noteDesc').show();
         $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
+        $('#contactTabs a[href="#contact-notes"]').tab('show');
 
     });
 }
