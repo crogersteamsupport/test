@@ -239,81 +239,6 @@ namespace TSWebServices
       }
 
       [WebMethod]
-      public ReportItem[] GetDashboardReports()
-      {
-        DashboardItem[] items = JsonConvert.DeserializeObject<DashboardItem[]>(GetDashboard());
-        List<string> idlist = new List<string>();
-        foreach (DashboardItem item in items)
-        {
-          idlist.Add(item.ReportID.ToString());
-        }
-        List<ReportItem> result = new List<ReportItem>();
-        Reports reports = new Reports(TSAuthentication.GetLoginUser());
-        reports.LoadList(TSAuthentication.OrganizationID, TSAuthentication.UserID, idlist.ToArray());
-        foreach (Report report in reports)
-        {
-          result.Add(new ReportItem(report, true));
-        }
-
-        return result.ToArray();
-      }
-
-      [WebMethod]
-      public string GetDashboard()
-      {
-        string result = Settings.UserDB.ReadString("Dashboard", "");
-
-        if (result == "")
-        {
-          string[] ids = null;
-          List<DashboardItem> items = new List<DashboardItem>();
-          ids = Settings.UserDB.ReadString("DashboardPortlets").Split(',');
-          foreach (string id in ids)
-          {
-
-
-            OldPortlet oldPortlet = Settings.UserDB.ReadJson<OldPortlet>("DashboardPortlet-portlet" + id);
-            int width = 1;
-            if (oldPortlet != null)
-            {
-              try
-              {
-                if (oldPortlet.X > 0) width = 2;
-              }
-              catch (Exception)
-              {
-              }
-            }
-
-            items.Add(new DashboardItem(int.Parse(id), 1, width));
-          }
-          result = JsonConvert.SerializeObject(items.ToArray());
-          Settings.UserDB.WriteString("Dashboard", result);
-        }
-        return result;
-      }
-
-      [WebMethod]
-      public void SaveDashboard(string data)
-      {
-        Settings.UserDB.WriteString("Dashboard", data);
-      }
-
-      [WebMethod]
-      public AutocompleteItem[] FindReport(string term)
-      {
-        List<AutocompleteItem> result = new List<AutocompleteItem>();
-        Reports reports = new Reports(TSAuthentication.GetLoginUser());
-        reports.Search(TSAuthentication.OrganizationID, term, 10);
-        foreach (Report report in reports)
-        {
-          result.Add(new AutocompleteItem(report.Name, report.ReportID.ToString()));
-        }
-
-        return result.ToArray();
-      }
-
-      [WebMethod]
       public ReportItem[] GetReports()
       {
         List<ReportItem> result = new List<ReportItem>();
@@ -804,19 +729,6 @@ namespace TSWebServices
 
       }
     }
-
-      [Serializable]
-      public class OldPortlet
-      {
-        public string ID { get; set; }
-        public int ReportID { get; set; }
-        public string Caption { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Height { get; set; }
-        public bool IsOpen { get; set; }
-        public string Html { get; set; }
-
 
 
 }
