@@ -43,7 +43,10 @@ namespace TSWebServices
       public string GetChartReportData(int reportID)
       {
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID, TSAuthentication.UserID);
-        return GetChartData(report.ReportDef);
+        UpdateReportView(report.ReportID);
+        SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
+        DataTable table = Reports.GetSummaryData(TSAuthentication.GetLoginUser(), summaryReport, true, report);
+        return BuildChartData(table, summaryReport);
       }
 
       private void UpdateReportView(int reportID)
@@ -60,6 +63,11 @@ namespace TSWebServices
       {
         SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(summaryReportFields);
         DataTable table = Reports.GetSummaryData(TSAuthentication.GetLoginUser(), summaryReport, true);
+        return BuildChartData(table, summaryReport);
+      }
+
+      private string BuildChartData(DataTable table, SummaryReport summaryReport)
+      {
         DataResult[] result = new DataResult[table.Columns.Count];
 
         for (int i = 0; i < table.Columns.Count; i++)
@@ -74,13 +82,13 @@ namespace TSWebServices
             result[i].data[j] = data == null || data == DBNull.Value ? null : data;
           }
 
-          if (i < summaryReport.Fields.Descriptive.Length) 
+          if (i < summaryReport.Fields.Descriptive.Length)
           {
             result[i].fieldType = summaryReport.Fields.Descriptive[i].Field.FieldType;
             result[i].format = summaryReport.Fields.Descriptive[i].Value1;
             if (result[i].fieldType == "datetime") FixChartDateNames(result[i].data, summaryReport.Fields.Descriptive[i].Value1);
           }
-   
+
 
         }
 

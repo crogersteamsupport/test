@@ -1742,12 +1742,17 @@ WHERE RowNum BETWEEN @From AND @To";
 
     }
 
-    public static DataTable GetSummaryData(LoginUser loginUser, SummaryReport summaryReport, bool useDefaultOrderBy)
+    public static DataTable GetSummaryData(LoginUser loginUser, SummaryReport summaryReport, bool useDefaultOrderBy, Report report = null)
     {
       SqlCommand command = new SqlCommand();
       Report.GetSummaryCommand(loginUser, command, summaryReport, false, false, useDefaultOrderBy);
-
       FixCommandParameters(command);
+      if (report != null)
+      {
+        report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
+        report.Collection.Save();
+      }
+
       DataTable table = new DataTable();
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
       {
@@ -1769,6 +1774,7 @@ WHERE RowNum BETWEEN @From AND @To";
       }
       return table;
     }
+
 
     public static string[] GetReportColumnNames(LoginUser loginUser, int reportID)
     {

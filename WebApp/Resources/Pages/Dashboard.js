@@ -276,7 +276,7 @@ Grid = function (element, report) {
     this.element = $(element);
     if (!this.report.Def) { this.report.Def = JSON.parse(this.report.ReportDef); }
     this.report.Settings = this.report.UserSettings == '' ? new Object() : JSON.parse(this.report.UserSettings);
-    this.datamodel = new TeamSupport.DataModels.Reports(this.report.ReportID, false);
+    this.datamodel = new TeamSupport.DataModels.Reports(this.report.ReportID, true);
 }
 
 Grid.prototype = {
