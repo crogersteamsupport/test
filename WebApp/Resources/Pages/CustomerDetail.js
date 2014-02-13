@@ -96,7 +96,7 @@ $(document).ready(function () {
         $('#companyTabs a:first').tab('show');
     }
 
-    if (!_isAdmin || !top.Ts.System.User.CanEditCompany) {
+    if (!_isAdmin && !top.Ts.System.User.CanEditCompany) {
         $('#fieldActive').removeClass('editable');
         $('#groupAPI').hide();
         $('#customerEdit').hide();

@@ -74,7 +74,7 @@ $(document).ready(function () {
         $('#contactTabs a:first').tab('show');
     }
 
-    if (!_isAdmin || !top.Ts.System.User.CanEditContact)
+    if (!_isAdmin && !top.Ts.System.User.CanEditContact)
     {
         $('#contactEdit').hide();
         $('#contactPhoneButton').hide();
