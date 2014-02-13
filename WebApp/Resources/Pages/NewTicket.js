@@ -964,23 +964,15 @@ $(document).ready(function () {
             .data('assetID', ui.item.id)
             .removeClass('ui-autocomplete-loading')
             .next().show();
+            top.Ts.Services.Assets.GetAsset(ui.item.id, function (asset) {
+              appendAsset(asset);
+            });
+            $(this).parent().remove();
           }
         })
         .appendTo(container)
         .focus()
         .width(container.width() - 48 - 12);
-
-      $('<span>')
-        .addClass('ts-icon ts-icon-save')
-        .hide()
-        .click(function (e) {
-          var assetID = $(this).prev().data('assetID');
-          $(this).parent().remove();
-          top.Ts.Services.Assets.GetAsset(assetID, function (asset) {
-            appendAsset(asset);
-          });
-        })
-        .appendTo(container)
 
       $('<span>')
         .addClass('ts-icon ts-icon-cancel')
@@ -1047,6 +1039,8 @@ $(document).ready(function () {
             $(this)
             .data('item', ui.item)
             .removeClass('ui-autocomplete-loading')
+            appendTag(ui.item.value);
+            $(this).parent().remove();
           }
         })
         .appendTo(container)
@@ -1057,6 +1051,7 @@ $(document).ready(function () {
         .addClass('ts-icon ts-icon-save')
         .click(function (e) {
           appendTag($(this).prev().val());
+          $(this).parent().remove();
         })
         .appendTo(container)
 
@@ -1255,23 +1250,15 @@ $(document).ready(function () {
             .data('userID', ui.item.id)
             .removeClass('ui-autocomplete-loading')
             .next().show();
+            top.Ts.Services.Users.GetUser(ui.item.id, function (user) {
+              appendQueue(user);
+            });
+            $(this).parent().remove();
           }
         })
         .appendTo(container)
         .focus()
         .width(container.width() - 48 - 12);
-
-      $('<span>')
-        .addClass('ts-icon ts-icon-save')
-        .hide()
-        .click(function (e) {
-          var userID = $(this).prev().data('userID');
-          $(this).parent().remove();
-          top.Ts.Services.Users.GetUser(userID, function (user) {
-            appendQueue(user);
-          });
-        })
-        .appendTo(container)
 
       $('<span>')
         .addClass('ts-icon ts-icon-cancel')
@@ -1342,23 +1329,15 @@ $(document).ready(function () {
             .data('userID', ui.item.id)
             .removeClass('ui-autocomplete-loading')
             .next().show();
+            top.Ts.Services.Users.GetUser(ui.item.id, function (user) {
+              appendSubscriber(user);
+            });
+            $(this).parent().remove();
           }
         })
         .appendTo(container)
         .focus()
         .width(container.width() - 48 - 12);
-
-      $('<span>')
-        .addClass('ts-icon ts-icon-save')
-        .hide()
-        .click(function (e) {
-          var userID = $(this).prev().data('userID');
-          $(this).parent().remove();
-          top.Ts.Services.Users.GetUser(userID, function (user) {
-            appendSubscriber(user);
-          });
-        })
-        .appendTo(container)
 
       $('<span>')
         .addClass('ts-icon ts-icon-cancel')

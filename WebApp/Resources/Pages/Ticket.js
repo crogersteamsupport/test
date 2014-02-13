@@ -310,28 +310,20 @@ $(document).ready(function () {
             .data('item', ui.item)
             .removeClass('ui-autocomplete-loading')
             .next().show();
+            top.Ts.Services.Tickets.AddTicketAsset(_ticketID, ui.item.id, function (assets) {
+              appendAssets(assets);
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addasset", userFullName);
+              $(this).parent().remove();
+            }, function () {
+              $(this).parent().remove();
+              alert('There was an error adding the asset.');
+            });
+            top.Ts.System.logAction('Ticket - Asset Added');
           }
         })
         .appendTo(container)
         .focus()
         .width(container.width() - 48 - 12);
-
-      $('<span>')
-        .addClass('ts-icon ts-icon-save')
-        .hide()
-        .click(function (e) {
-          var item = $(this).prev().data('item');
-          top.Ts.Services.Tickets.AddTicketAsset(_ticketID, item.id, function (assets) {
-            appendAssets(assets);
-            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addasset", userFullName);
-            $(this).parent().remove();
-          }, function () {
-            $(this).parent().remove();
-            alert('There was an error adding the asset.');
-          });
-          top.Ts.System.logAction('Ticket - Asset Added');
-        })
-        .appendTo(container)
 
       $('<span>')
         .addClass('ts-icon ts-icon-cancel')
@@ -380,29 +372,21 @@ $(document).ready(function () {
             .data('userID', ui.item.id)
             .removeClass('ui-autocomplete-loading')
             .next().show();
+
+            var userID = $(this).data('userID');
+            top.Ts.Services.Tickets.SetSubscribed(_ticketID, true, userID, function (subscribers) {
+              appendSubscribers(subscribers);
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addsubscriber", userFullName);
+            }, function () {
+              $(this).parent().remove();
+              alert('There was an error adding the subscriber.');
+            });
+            top.Ts.System.logAction('Ticket - User Subscribed');
           }
         })
         .appendTo(container)
         .focus()
         .width(container.width() - 48 - 12);
-
-      $('<span>')
-        .addClass('ts-icon ts-icon-save')
-        .hide()
-        .click(function (e) {
-          var userID = $(this).prev().data('userID');
-          $(this).parent().remove();
-          top.Ts.Services.Tickets.SetSubscribed(_ticketID, true, userID, function (subscribers) {
-            appendSubscribers(subscribers);
-            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addsubscriber", userFullName);
-          }, function () {
-            $(this).parent().remove();
-            alert('There was an error adding the subscriber.');
-          });
-          top.Ts.System.logAction('Ticket - User Subscribed');
-
-        })
-        .appendTo(container)
 
       $('<span>')
         .addClass('ts-icon ts-icon-cancel')
@@ -450,29 +434,22 @@ $(document).ready(function () {
             .data('userID', ui.item.id)
             .removeClass('ui-autocomplete-loading')
             .next().show();
+
+            var userID = $(this).data('userID');
+            top.Ts.Services.Tickets.SetQueue(_ticketID, true, userID, function (queues) {
+              appendQueues(queues);
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addqueue", userFullName);
+            }, function () {
+              $(this).parent().remove();
+              alert('There was an error adding the queue.');
+            });
+            top.Ts.System.logAction('Ticket - Enqueued');
+            top.Ts.System.logAction('Queued');
           }
         })
         .appendTo(container)
         .focus()
         .width(container.width() - 48 - 12);
-
-      $('<span>')
-        .addClass('ts-icon ts-icon-save')
-        .hide()
-        .click(function (e) {
-          var userID = $(this).prev().data('userID');
-          $(this).parent().remove();
-          top.Ts.Services.Tickets.SetQueue(_ticketID, true, userID, function (queues) {
-            appendQueues(queues);
-            window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addqueue", userFullName);
-          }, function () {
-            $(this).parent().remove();
-            alert('There was an error adding the queue.');
-          });
-          top.Ts.System.logAction('Ticket - Enqueued');
-          top.Ts.System.logAction('Queued');
-        })
-        .appendTo(container)
 
       $('<span>')
         .addClass('ts-icon ts-icon-cancel')
@@ -518,6 +495,18 @@ $(document).ready(function () {
             $(this)
             .data('item', ui.item)
             .removeClass('ui-autocomplete-loading')
+
+            top.Ts.Services.Tickets.AddTag(_ticketID, ui.item.value, function (tags) {
+              if (tags !== null) {
+                appendTags(tags);
+                window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addtag", userFullName);
+              }
+              $(this).parent().remove();
+            }, function () {
+              $(this).parent().remove();
+              alert('There was an error adding the tag.');
+            });
+            top.Ts.System.logAction('Ticket - Added');
           }
         })
         .appendTo(container)
