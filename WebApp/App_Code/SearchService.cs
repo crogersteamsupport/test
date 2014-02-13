@@ -976,14 +976,23 @@ namespace TSWebServices
 
           searchTerm = searchTerm.Trim();
           job.Request = searchTerm;
-          job.FieldWeights = "Name: 1000";
-
-          //job.MaxFilesToRetrieve = to + 1;
+          job.FieldWeights = "Name:1000,LastName:1000,FirstName:999,Email:998,MiddleName:997";
+          job.MaxFilesToRetrieve = 1000;
           //job.AutoStopLimit = 1000000;
           job.TimeoutSeconds = 30;
-          job.SearchFlags =
-            //SearchFlags.dtsSearchSelectMostRecent |
-            SearchFlags.dtsSearchDelayDocInfo;
+
+          //xfirstword returns all results and is being received as search term when no term has been given by user.
+          //In this case we'll sort by most recent else we'll sort by relevance.
+          if (searchTerm == "xfirstword")
+          {
+            job.SearchFlags =
+              SearchFlags.dtsSearchSelectMostRecent |
+              SearchFlags.dtsSearchDelayDocInfo;
+          }
+          else
+          {
+            job.SearchFlags = SearchFlags.dtsSearchDelayDocInfo;
+          }
 
           int num = 0;
           if (!int.TryParse(searchTerm, out num))
@@ -1011,13 +1020,6 @@ namespace TSWebServices
             job.IndexesToSearch.Add(contactsIndexPath);
           }
           job.Execute();
-
-          for (int i = 0; i < job.Results.Count; i++)
-          {
-            job.Results.GetNthDoc(i);
-            job.Results.SetSortKey(job.Results.CurrentItem.DisplayName);
-          }
-          job.Results.Sort(SortFlags.dtsSortBySortKey | SortFlags.dtsSortAscending | SortFlags.dtsSortCaseInsensitive, "");
 
           int topLimit = from + to;
           if (topLimit > job.Results.Count)
