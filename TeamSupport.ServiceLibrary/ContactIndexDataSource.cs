@@ -55,23 +55,33 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
+        List<string> columnsToIndex = new List<string>();
+        columnsToIndex.Add("Email");
+        columnsToIndex.Add("FirstName");
+        columnsToIndex.Add("MiddleName");
+        columnsToIndex.Add("LastName");
+        columnsToIndex.Add("OrganizationName");
+
         DocFields = string.Empty;
         foreach (DataColumn column in contact.Collection.Table.Columns)
         {
-          object value = contact.Row[column];
-          string s = value == null || value == DBNull.Value ? "" : value.ToString();
-          DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
+          if (columnsToIndex.Contains(column.ColumnName))
+          {
+            object value = contact.Row[column];
+            string s = value == null || value == DBNull.Value ? "" : value.ToString();
+            DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
+          }
         }
 
-        CustomValues customValues = new CustomValues(_loginUser);
-        customValues.LoadByReferenceType(_organizationID, ReferenceType.Contacts, contact.UserID);
+        //CustomValues customValues = new CustomValues(_loginUser);
+        //customValues.LoadByReferenceType(_organizationID, ReferenceType.Contacts, contact.UserID);
 
-        foreach (CustomValue value in customValues)
-        {
-          object o = value.Row["CustomValue"];
-          string s = o == null || o == DBNull.Value ? "" : o.ToString();
-          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
-        }
+        //foreach (CustomValue value in customValues)
+        //{
+        //  object o = value.Row["CustomValue"];
+        //  string s = o == null || o == DBNull.Value ? "" : o.ToString();
+        //  DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
+        //}
 
         DocIsFile = false;
         DocName = contact.UserID.ToString();

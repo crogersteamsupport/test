@@ -55,23 +55,32 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
+        List<string> columnsToIndex = new List<string>();
+        columnsToIndex.Add("Name");
+        columnsToIndex.Add("Description");
+        columnsToIndex.Add("Website");
+        columnsToIndex.Add("PrimaryContact");
+
         DocFields = string.Empty;
         foreach (DataColumn column in organization.Collection.Table.Columns)
         {
-          object value = organization.Row[column];
-          string s = value == null || value == DBNull.Value ? "" : value.ToString();
-          DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
+          if (columnsToIndex.Contains(column.ColumnName))
+          {
+            object value = organization.Row[column];
+            string s = value == null || value == DBNull.Value ? "" : value.ToString();
+            DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
+          }
         }
 
-        CustomValues customValues = new CustomValues(_loginUser);
-        customValues.LoadByReferenceType(_organizationID, ReferenceType.Organizations, organization.OrganizationID);
+        //CustomValues customValues = new CustomValues(_loginUser);
+        //customValues.LoadByReferenceType(_organizationID, ReferenceType.Organizations, organization.OrganizationID);
 
-        foreach (CustomValue value in customValues)
-        {
-          object o = value.Row["CustomValue"];
-          string s = o == null || o == DBNull.Value ? "" : o.ToString();
-          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
-        }
+        //foreach (CustomValue value in customValues)
+        //{
+        //  object o = value.Row["CustomValue"];
+        //  string s = o == null || o == DBNull.Value ? "" : o.ToString();
+        //  DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
+        //}
 
         DocIsFile = false;
         DocName = organization.OrganizationID.ToString();
