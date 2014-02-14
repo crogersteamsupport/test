@@ -103,12 +103,9 @@ $(document).ready(function () {
         $('#customerPhoneBtn').hide();
         $('#customerAddressBtn').hide();
         $('#customerDelete').hide();
+        $('.contact-action-add').hide();
+        $('#fileToggle').hide();
     }
-
-    if ((!_isAdmin && !top.Ts.System.User.HasPortalRights) || !top.Ts.System.User.CanEditCompany) {
-        $('#fieldPortalAccess').removeClass('editable');
-    }
-
 
 
     if (top.Ts.System.User.OrganizationID == organizationID)
@@ -128,6 +125,10 @@ $(document).ready(function () {
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
         $('#companyTabs a:first').tab('show');
+        if ((!_isAdmin && !top.Ts.System.User.HasPortalRights) || !top.Ts.System.User.CanEditCompany) {
+            $('#fieldPortalAccess').removeClass('editable');
+        }
+
     });
 
     $('#fieldName').click(function (e) {
@@ -149,14 +150,14 @@ $(document).ready(function () {
           .focus();
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-ok')
+          .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanyName(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
@@ -191,14 +192,14 @@ $(document).ready(function () {
           .focus();
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-ok')
+          .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanyWeb(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
@@ -232,14 +233,14 @@ $(document).ready(function () {
           .focus();
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-ok')
+          .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanyDomain(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
@@ -273,14 +274,14 @@ $(document).ready(function () {
           .focus();
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-ok')
+          .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanySupportHours(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
@@ -314,14 +315,14 @@ $(document).ready(function () {
           .focus();
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-ok')
+          .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanyDescription(organizationID, $(this).prev().find('textarea').val(), function (result) {
                   header.text(result);
@@ -355,14 +356,14 @@ $(document).ready(function () {
           .focus();
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-ok')
+          .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanyInactive(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
@@ -397,14 +398,14 @@ $(document).ready(function () {
           .focus();
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-ok')
+          .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
               //var value = top.Ts.Utils.getMsDate($(this).prev().find('input').val());
               top.Ts.Services.Customers.SetCompanySAE(organizationID, $(this).prev().find('input').val(), function (result) {
@@ -447,7 +448,7 @@ $(document).ready(function () {
 
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
@@ -494,7 +495,7 @@ $(document).ready(function () {
 
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
@@ -538,7 +539,7 @@ $(document).ready(function () {
         });
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
@@ -585,7 +586,7 @@ $(document).ready(function () {
 
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
@@ -632,7 +633,7 @@ $(document).ready(function () {
 
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
@@ -679,7 +680,7 @@ $(document).ready(function () {
 
 
         $('<i>')
-          .addClass('col-xs-1 glyphicon glyphicon-remove')
+          .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
@@ -725,7 +726,7 @@ $(document).ready(function () {
     });
 
     $('#fieldPortalAccess').click(function (e) {
-        if (!$(this).hasClass('editable'))
+        if (!$(this).hasClass('editable') || (!_isAdmin && !top.Ts.System.User.HasPortalRights) || !top.Ts.System.User.CanEditCompany)
             return false;
         top.Ts.Services.Customers.SetCompanyPortalAccess(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldPortalAccess').text((result === true ? 'Yes' : 'No'));
@@ -885,9 +886,9 @@ $(document).ready(function () {
 
     function issubbed(result) {
         if (result)
-            $('#customerSubscribe').html('<span class="glyphicon glyphicon-share"></span> Unsubscribe');
+            $('#customerSubscribe').html('<span class="fa fa-share"></span> Unsubscribe');
         else
-            $('#customerSubscribe').html('<span class="glyphicon glyphicon-share"></span> Subscribe');
+            $('#customerSubscribe').html('<span class="fa fa-share"></span> Subscribe');
     }
 
     $('#customerSubscribe').click(function (e) {
@@ -897,13 +898,11 @@ $(document).ready(function () {
 
     $('#customerDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this organization?')) {
-            deleteOrg(organizationID);
-            
-            top.Ts.Services.Customers.DeleteOrgzanitionLinks(organizationID, function () {
+            top.privateServices.DeleteOrganization(organizationID, function (e) {
                 if (window.parent.document.getElementById('iframe-mniCustomers'))
                     window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
+                top.Ts.MainPage.closeNewCustomerTab(organizationID);
             });
-            
         }
     });
 
@@ -1136,7 +1135,7 @@ $(document).ready(function () {
                   .appendTo(bg);
 
                 $('<span>')
-                  .addClass('glyphicon glyphicon-remove')
+                  .addClass('icon-remove')
                   .click(function (e) {
                       e.preventDefault();
                       $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
@@ -1144,7 +1143,7 @@ $(document).ready(function () {
                   .appendTo(bg);
 
                 $('<span>')
-                  .addClass('glyphicon glyphicon-remove')
+                  .addClass('icon-remove')
                   .hide()
                   .click(function (e) {
                       e.preventDefault();
@@ -1222,12 +1221,7 @@ $(document).ready(function () {
     });
 
     function deleteOrg() {
-        top.Ts.MainPage.closeNewCustomerTab(organizationID);
-        top.privateServices.DeleteOrganization(organizationID);
-        top.Ts.Services.Customers.DeleteOrgzanitionLinks(organizationID, function () {
-            if (window.parent.document.getElementById('iframe-mniCustomers'))
-                window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
-        });
+
     }
 
     function LoadCustomProperties() {
@@ -1273,6 +1267,8 @@ $(document).ready(function () {
                 $('#customerEdit').hide();
                 $('#customerDelete').hide();
             }
+
+
         });
     }
 
@@ -1290,11 +1286,11 @@ $(document).ready(function () {
                                             " + ((address[i].State != null) ? "<p class='form-control-static pt0'>" + address[i].State + "</p>" : "") + " \
                                             " + ((address[i].Zip != null) ? "<p class='form-control-static pt0'>" + address[i].Zip + "</p>" : "") + " \
                                             " + ((address[i].Country != null) ? "<p class='form-control-static pt0'>" + address[i].Country + "</p>" : "") + " \
-                                            <p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='glyphicon glyphicon-map-marker'></span></a>\
+                                            <p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a>\
                                         </div> \
                                         <div id='editmenu' class='col-xs-2 hiddenmenu'> \
-                                            <a href='#' id='" + address[i].AddressID + "' class='editaddress'><span class='glyphicon glyphicon-pencil'></span></a>\
-                                            <a href='#' id='" + address[i].AddressID + "' class='deladdress'><span class='glyphicon glyphicon-trash'></span></a/></p>\
+                                            <a href='#' id='" + address[i].AddressID + "' class='editaddress'><span class='icon-pencil'></span></a>\
+                                            <a href='#' id='" + address[i].AddressID + "' class='deladdress'><span class='fa fa-trash-o'></span></a/></p>\
                                         </div> \
                                     </div>");
             }
@@ -1309,7 +1305,7 @@ $(document).ready(function () {
             var html;
             for (var i = 0; i < note.length; i++) {
                 if (_isAdmin || note[i].CreatorID == top.Ts.System.User.UserID || top.Ts.System.User.CanEditCompany)
-                    html = '<td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                    html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                 else
                     html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
 
@@ -1345,7 +1341,7 @@ $(document).ready(function () {
             for (var i = 0; i < files.length; i++) {
                 var tr = $('<tr>')
                 .attr('id', files[i].AttachmentID)
-                .html('<td><i class="glyphicon glyphicon-trash delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>')
+                .html('<td><i class="fa fa-trash-o delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>')
                 .appendTo('#tblFiles > tbody:last');
 
 
@@ -1366,8 +1362,8 @@ $(document).ready(function () {
                                         </div> \
                                         <div id='editmenu' class='col-xs-2 hiddenmenu'> \
                                             <p class='form-control-static'> \
-                                            <a href='' id='" + phone[i].PhoneID + "' class='editphone'><span class='glyphicon glyphicon-pencil'></span></a>\
-                                            <a href='' id='" + phone[i].PhoneID + "' class='delphone'><span class='glyphicon glyphicon-trash'></span></a/>\
+                                            <a href='' id='" + phone[i].PhoneID + "' class='editphone'><span class='fa fa-pencil'></span></a>\
+                                            <a href='' id='" + phone[i].PhoneID + "' class='delphone'><span class='fa fa-trash-o'></span></a/>\
                                             </p> \
                                         </div> \
                                     </div>");
@@ -1442,11 +1438,11 @@ $(document).ready(function () {
 
                 if(top.Ts.System.User.CanEditCompany || _isAdmin)
                 {
-                    html = '<td><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="glyphicon glyphicon-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields;
+                    html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields;
                 }
                 else
                 {
-                    html = '<td></td><td></td><td><i class="glyphicon glyphicon-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
+                    html = '<td></td><td></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
                 }
                 var tr = $('<tr>')
                 .attr('id', product[i].OrganizationProductID)
@@ -1454,7 +1450,7 @@ $(document).ready(function () {
                 .appendTo('#tblProducts > tbody:last');
 
 
-                //$('#tblProducts > tbody:last').append('<tr><td><a href="#" id='+ product.ProductID +'><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="glyphicon glyphicon-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td></td></tr>');
+                //$('#tblProducts > tbody:last').append('<tr><td><a href="#" id='+ product.ProductID +'><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td></td></tr>');
             }
         });
 
@@ -1734,45 +1730,105 @@ $(document).ready(function () {
     });
 
     $('.userProperties p').toggleClass("editable");
-    $('.customProperties p').toggleClass("editable");
+    //$('.customProperties p').toggleClass("editable");
 });
 
 var appendCustomValues = function (fields) {
+
+    top.Ts.Services.Customers.GetCustomFieldCategories(function (categories) {
+
+        for (var i = 0; i < fields.length; i++) {
+
+            if (fields[i].CustomFieldCategoryID == -1) {
+                var item = null;
+                var field = fields[i];
+                var div = $('<div>').addClass('form-group').data('field', field);
+
+                $('<label>')
+                  .addClass('col-xs-4 control-label')
+                  .text(field.Name)
+                  .appendTo(div);
+
+                switch (field.FieldType) {
+                    case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+                    case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+                    case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+                    case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
+                    case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+                    case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+                    case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
+                    default:
+                }
+
+
+                //if (i < (fields.length / 2))
+                //    containerL.append(div);
+                //else
+                $('#customPropertiesL').append(div);
+            }
+        }
+
+
+        for (var c = 0; c < categories.length; c++)
+        {
+            var custom = $('<div>').insertBefore($('#customPropRow'));
+
+            var row = $('<div>').addClass('row').appendTo(custom);
+            var col12 = $('<div>').addClass('col-md-12').appendTo(row);
+            var box = $('<div>').addClass('box').appendTo(col12);
+            var header = $('<div>').addClass('box-header').appendTo(box);
+            var h3title = $('<h3>').text(categories[c].Category).appendTo(header);
+            var boxcontent = $('<div>').addClass('box-content').appendTo(box);
+            var boxrow = $('<div>').addClass('row').appendTo(boxcontent);
+            var formh = $('<form>').addClass('form-horizontal').appendTo(boxrow);
+            var colxs = $('<div>').addClass('col-xs-6 customProperties').appendTo(formh);
+
+
+            for (var i = 0; i < fields.length; i++) {
+
+                if (categories[c].CustomFieldCategoryID == fields[i].CustomFieldCategoryID)
+                {
+                    var item = null;
+                    var field = fields[i];
+                    var div = $('<div>').addClass('form-group').data('field', field);
+
+                    $('<label>')
+                      .addClass('col-xs-4 control-label')
+                      .text(field.Name)
+                      .appendTo(div);
+
+                    switch (field.FieldType) {
+                        case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+                        case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+                        case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+                        case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
+                        case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+                        case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+                        case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
+                        default:
+                    }
+
+                    colxs.append(div);
+                    //if (i < (fields.length / 2))
+                    //    containerL.append(div);
+                    //else
+                    //    containerR.append(div);
+                }
+            }
+        }
+        $('.customProperties p').toggleClass("editable");
+    });
+
+
     if (fields === null || fields.length < 1) {
         $('#customPropertiesL').empty();
         $('#customPropertiesR').empty();
         return;
     }
-    var containerL = $('#customPropertiesL').empty();
-    var containerR = $('#customPropertiesR').empty();
-    for (var i = 0; i < fields.length; i++) {
-        var item = null;
-
-        var field = fields[i];
-
-        var div = $('<div>').addClass('form-group').data('field', field);
-        $('<label>')
-          .addClass('col-xs-4 control-label')
-          .text(field.Name)
-          .appendTo(div);
-
-        switch (field.FieldType) {
-            case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
-            case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
-            case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
-            case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
-            case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
-            case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
-            case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
-            default:
-        }
-
-        if(i < (fields.length/2))
-            containerL.append(div);
-        else
-            containerR.append(div);
-    }
-    $('.customProperties p').toggleClass("editable");
+    //var containerL = $('#customPropertiesL').empty();
+    //var containerR = $('#customPropertiesR').empty();
+    
+    
 }
 
 var appendCustomEditCombo = function (field, element) {
@@ -1807,7 +1863,7 @@ var appendCustomEditCombo = function (field, element) {
           }
 
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .addClass('col-xs-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
@@ -1869,14 +1925,14 @@ var appendCustomEditNumber = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .addClass('col-xs-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
                 var value = input.val();
                 container.remove();
@@ -1958,14 +2014,14 @@ var appendCustomEdit = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .addClass('col-xs-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
                 var value = input.val();
                 container.remove();
@@ -2023,14 +2079,14 @@ var appendCustomEditDate = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .addClass('col-xs-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
                 var value = top.Ts.Utils.getMsDate(input.val());
                 container.remove();
@@ -2092,14 +2148,14 @@ var appendCustomEditDateTime = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .addClass('col-xs-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
                 var value = top.Ts.Utils.getMsDate(input.val());
                 container.remove();
@@ -2160,14 +2216,14 @@ var appendCustomEditTime = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .addClass('col-xs-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
                 var value = top.Ts.Utils.getMsDate("1/1/1900 " + input.val());
                 container.remove();
@@ -2272,7 +2328,6 @@ function openNote(noteID) {
         desc = desc.replace(/<br\s?\/?>/g, "\n");
         $('.noteDesc').show();
         $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
-        $('#companyTabs a[href="#company-notes"]').tab('show');
 
     });
 }

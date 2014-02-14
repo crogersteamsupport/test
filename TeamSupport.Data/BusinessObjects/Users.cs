@@ -686,6 +686,9 @@ namespace TeamSupport.Data
             ExecuteNonQuery(command, "OrganizationTickets");
 
 
+            command.CommandText =  @"DELETE FROM RecentlyViewedItems WHERE (refID = @orgID) AND (refType = 1)";
+            command.CommandType = CommandType.Text;
+            ExecuteNonQuery(command, "RecentlyViewedItems");
         }
     }
 

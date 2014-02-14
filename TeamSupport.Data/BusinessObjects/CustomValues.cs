@@ -175,6 +175,17 @@ namespace TeamSupport.Data
         else return "";
       }
     }
+    public int CustomFieldCategoryID
+    {
+        get
+        {
+            if (Row.Table.Columns.Contains("CustomFieldCategoryID") && Row["CustomFieldCategoryID"] != DBNull.Value)
+            {
+                return (int)Row["CustomFieldCategoryID"];
+            }
+            else return -1;
+        }
+    }
   }
 
   public partial class CustomValues 
@@ -252,7 +263,8 @@ cf.IsRequired,
 cf.OrganizationID, 
 cf.CustomFieldID,
 cf.IsRequiredToClose,
-cf.Mask
+cf.Mask,
+cf.CustomFieldCategoryID
 FROM CustomFields cf LEFT JOIN CustomValues cv on cv.CustomFieldID = cf.CustomFieldID AND cv.RefID=@RefID
 WHERE cf.OrganizationID = @OrganizationID
 AND cf.RefType=@RefType

@@ -738,6 +738,10 @@ namespace TeamSupport.Services
       if (!UserSession.CurrentUser.IsSystemAdmin) return;
       try
       {
+        int unknownID = Organizations.GetUnknownCompanyID(UserSession.LoginUser);
+        Users u = new Users(UserSession.LoginUser);
+        u.UpdateDeletedOrg(organizationID, unknownID);
+
         Organizations.DeleteOrganizationAndAllReleatedData(UserSession.LoginUser, organizationID);
 
       }

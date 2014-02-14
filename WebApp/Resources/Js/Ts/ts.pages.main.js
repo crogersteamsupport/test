@@ -844,6 +844,8 @@ Ts.Pages.Main.prototype = {
                     .attr('src', 'vcr/1_7_0/Pages/CustomerDetail.html' + query);
               }
               else {
+                  top.privateServices.SetUserSetting('SelectedOrganizationID', OrgID);
+                  top.privateServices.SetUserSetting('SelectedContactID', -1);
                   div.show();
               }
               $('.main-info-content').load('vcr/1_7_0/PaneInfo/customers.html');
@@ -866,6 +868,10 @@ Ts.Pages.Main.prototype = {
                     .attr('src', 'vcr/1_7_0/Pages/ContactDetail.html' + query);
               }
               else {
+                  top.Ts.Services.Customers.GetUser(contactID, function (user) {
+                      top.privateServices.SetUserSetting('SelectedOrganizationID', user.OrganizationID);
+                      top.privateServices.SetUserSetting('SelectedContactID', user.UserID);
+                  });
                   div.show();
               }
               $('.main-info-content').load('vcr/1_7_0/PaneInfo/customers.html');

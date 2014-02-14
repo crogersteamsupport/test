@@ -604,6 +604,15 @@ namespace TSWebServices
             return values.GetCustomValueProxies();
         }
 
+
+        [WebMethod]
+        public CustomFieldCategoryProxy[] GetCustomFieldCategories()
+        {
+            CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
+            cats.LoadByRefType(ReferenceType.Organizations, -1);
+            return cats.GetCustomFieldCategoryProxies();
+        }
+
         [WebMethod]
         public string LoadCustomProperties(int refID, ReferenceType refType){
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
@@ -1063,6 +1072,8 @@ namespace TSWebServices
 
         }
 
+
+
         [WebMethod]
         public string LoadContacts(int organizationID){
             StringBuilder htmlresults = new StringBuilder("");
@@ -1078,14 +1089,14 @@ namespace TSWebServices
 
                 foreach (PhoneNumber p in phoneNumbers)
                 {
-                    phoneResults.AppendFormat("<p class='list-group-item-text'><span class='glyphicon glyphicon-earphone'></span> {0}: {1} {2}</p>", p.PhoneTypeName, p.Number, p.Extension == "" ? "":"Ext:" + p.Extension);
+                    phoneResults.AppendFormat("<p class='list-group-item-text'><span class='fa fa-phone'></span> {0}: {1} {2}</p>", p.PhoneTypeName, p.Number, p.Extension == "" ? "":"Ext:" + p.Extension);
                 }
 
                 htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <span class='pull-right {0}'>{1}</span><a href='#' id='{7}' class='contactlink'><h4 class='list-group-item-heading'>{2}</h4></a>
                             <div class='row'>
                                 <div class='col-xs-6'>
-                                    <p class='list-group-item-text'><span class='glyphicon glyphicon-envelope'></span> Email: {3}</p>
+                                    <p class='list-group-item-text'><span class='fa fa-envelope'></span> Email: {3}</p>
                                     {6}
                                 </div>
                                 <div class='col-xs-6'>
@@ -1316,7 +1327,7 @@ namespace TSWebServices
             user.Collection.Save();
             if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null && info.EmailPortalPW)
             {
-                EmailPosts.SendWelcomeTSUser(UserSession.LoginUser, user.UserID, password);
+                EmailPosts.SendWelcomeTSUser(TSAuthentication.GetLoginUser(), user.UserID, password);
             }
             else if (info.EmailPortalPW && info.IsPortalUser)
                 EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), user.UserID, password);
@@ -1404,8 +1415,8 @@ namespace TSWebServices
             if (noteID > -1)
             {
                 note = (Note)Notes.GetNote(TSAuthentication.GetLoginUser(), noteID);
-                string description = String.Format("{0} modified note {1} ", UserSession.CurrentUser.FirstLastName, title);
-                ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Update, ReferenceType.Notes, noteID, description);
+                string description = String.Format("{0} modified note {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Notes, noteID, description);
             }
             else
             {
@@ -1422,8 +1433,8 @@ namespace TSWebServices
                 note.Collection.Save();
                 if (isNew)
                 {
-                    string description = String.Format("{0} added note {1} ", UserSession.CurrentUser.FirstLastName, title);
-                    ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Insert, ReferenceType.Notes, note.NoteID, description);
+                    string description = String.Format("{0} added note {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
+                    ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Notes, note.NoteID, description);
                 }
             }
 
@@ -1596,6 +1607,8 @@ namespace TSWebServices
         {
             //RecentlyViewedItems recent = new RecentlyViewedItems(TSAuthentication.GetLoginUser());
             //recent.DeleteRecentOrg(organizationID);
+
+
 
             int unknownID = Organizations.GetUnknownCompanyID(TSAuthentication.GetLoginUser());
             Users u = new Users(TSAuthentication.GetLoginUser());

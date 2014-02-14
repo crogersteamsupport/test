@@ -11,7 +11,8 @@
 
 $(document).ready(function () {
 
-    if (!top.Ts.System.User.CanCreateCompany && !top.Ts.System.User.CanCreateContact) {
+    var _isAdmin = top.Ts.System.User.IsSystemAdmin;
+    if (!top.Ts.System.User.CanCreateCompany && !top.Ts.System.User.CanCreateContact && !_isAdmin) {
         $('.action-new').hide();
     }
 

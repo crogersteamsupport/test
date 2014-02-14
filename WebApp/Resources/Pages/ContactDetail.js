@@ -164,7 +164,7 @@ $(document).ready(function () {
                   .appendTo(container1)
                   .focus();
                 $('<i>')
-                  .addClass('glyphicon glyphicon-ok')
+                  .addClass('fa fa-check')
                   .click(function (e) {
                       if ($(this).prev().prev().prev().val() == "") {
                           alert("The first name can not be blank");
@@ -183,7 +183,7 @@ $(document).ready(function () {
                   })
                   .appendTo(container1);
                 $('<i>')
-                  .addClass('glyphicon glyphicon-remove')
+                  .addClass('fa fa-times')
                   .click(function (e) {
                       $(this).closest('div').remove();
                       header.show();
@@ -220,14 +220,14 @@ $(document).ready(function () {
               .focus();
 
             $('<i>')
-              .addClass('col-md-1 glyphicon glyphicon-remove')
+              .addClass('col-md-1 fa fa-times')
               .click(function (e) {
                   $(this).closest('div').remove();
                   header.show();
               })
               .insertAfter(container1);
             $('<i>')
-              .addClass('col-md-1 glyphicon glyphicon-ok')
+              .addClass('col-md-1 fa fa-check')
               .click(function (e) {
                   top.Ts.Services.Customers.SetContactEmail(userID, $(this).prev().find('input').val(), function (result) {
                       header.text(result);
@@ -261,14 +261,14 @@ $(document).ready(function () {
           .focus();
 
         $('<i>')
-          .addClass('col-md-1 glyphicon glyphicon-remove')
+          .addClass('col-md-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
         $('<i>')
-          .addClass('col-md-1 glyphicon glyphicon-ok')
+          .addClass('col-md-1 fa fa-check')
           .click(function (e) {
               top.Ts.Services.Customers.SetContactTitle(userID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
@@ -344,14 +344,14 @@ $(document).ready(function () {
               .focus();
 
             $('<i>')
-              .addClass('col-md-1 glyphicon glyphicon-remove')
+              .addClass('col-md-1 fa fa-times')
               .click(function (e) {
                   $(this).closest('div').remove();
                   header.show();
               })
               .insertAfter(container1);
             $('<i>')
-              .addClass('col-md-1 glyphicon glyphicon-ok')
+              .addClass('col-md-1 fa fa-check')
               .click(function (e) {
                   var neworgID = $(this).prev().find('input').data('item');
                   if(neworgID != undefined){
@@ -639,7 +639,7 @@ $(document).ready(function () {
                   .appendTo(bg);
 
                 $('<span>')
-                  .addClass('glyphicon glyphicon-remove')
+                  .addClass('fa fa-times')
                   .click(function (e) {
                       e.preventDefault();
                       $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
@@ -647,7 +647,7 @@ $(document).ready(function () {
                   .appendTo(bg);
 
                 $('<span>')
-                  .addClass('glyphicon glyphicon-remove')
+                  .addClass('fa fa-times')
                   .hide()
                   .click(function (e) {
                       e.preventDefault();
@@ -724,7 +724,7 @@ $(document).ready(function () {
             for (var i = 0; i < note.length; i++) {
 
                 if (_isAdmin || note[i].CreatorID == top.Ts.System.User.UserID || top.Ts.System.User.CanEditContact)
-                    html = '<td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
+                    html = '<td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
                 else
                     html = '<td></td><td></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td>';
 
@@ -734,7 +734,7 @@ $(document).ready(function () {
                 .html(html)
                 .data("description", note[i].Description)
                 .appendTo('#tblNotes > tbody:last');
-                //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="glyphicon glyphicon-edit editNote"></i></td><td><i class="glyphicon glyphicon-trash deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
+                //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
                 if (noteID != null && noteID == note[i].NoteID) {
                   $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
                   $('.noteDesc').show();
@@ -749,8 +749,8 @@ $(document).ready(function () {
             var html;
             for (var i = 0; i < files.length; i++) {
 
-                if (_isAdmin || files[i].CreatorID == top.Ts.System.User.UserID || !top.Ts.System.User.CanEditContact)
-                    html = '<td><i class="glyphicon glyphicon-trash delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
+                if (_isAdmin || files[i].CreatorID == top.Ts.System.User.UserID || top.Ts.System.User.CanEditContact)
+                    html = '<td><i class="fa fa-trash-o delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
                 else
                     html = '<td></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>';
 
@@ -776,8 +776,8 @@ $(document).ready(function () {
                                         </div> \
                                         <div id='editmenu' class='col-md-2 hiddenmenu'> \
                                             <p class='form-control-static'> \
-                                            <a href='' id='" + phone[i].PhoneID + "' class='editphone'><span class='glyphicon glyphicon-pencil'></span></a>\
-                                            <a href='' id='" + phone[i].PhoneID + "' class='delphone'><span class='glyphicon glyphicon-trash'></span></a/>\
+                                            <a href='' id='" + phone[i].PhoneID + "' class='editphone'><span class='fa fa-pencil'></span></a>\
+                                            <a href='' id='" + phone[i].PhoneID + "' class='delphone'><span class='fa fa-trash-o'></span></a/>\
                                             </p> \
                                         </div> \
                                     </div>");
@@ -799,11 +799,11 @@ $(document).ready(function () {
                                             " + ((address[i].State.length > 0) ? "<p class='form-control-static pt0'>" + address[i].State + "</p>" : "") + " \
                                             " + ((address[i].Zip.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Zip + "</p>" : "") + " \
                                             " + ((address[i].Country.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Country + "</p>" : "") + " \
-                                            <p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='glyphicon glyphicon-map-marker'></span></a>\
+                                            <p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a>\
                                         </div> \
                                         <div id='editmenu' class='col-md-2 hiddenmenu'> \
-                                            <a href='#' id='" + address[i].AddressID + "' class='editaddress'><span class='glyphicon glyphicon-pencil'></span></a>\
-                                            <a href='#' id='" + address[i].AddressID + "' class='deladdress'><span class='glyphicon glyphicon-trash'></span></a/></p>\
+                                            <a href='#' id='" + address[i].AddressID + "' class='editaddress'><span class='fa fa-pencil'></span></a>\
+                                            <a href='#' id='" + address[i].AddressID + "' class='deladdress'><span class='fa fa-trash-o'></span></a/></p>\
                                         </div> \
                                     </div>");
             }
@@ -1234,14 +1234,14 @@ var appendCustomEditNumber = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-md-1 glyphicon glyphicon-remove')
+            .addClass('col-md-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-md-1 glyphicon glyphicon-ok')
+            .addClass('col-md-1 fa fa-check')
             .click(function (e) {
                 var value = input.val();
                 container.remove();
@@ -1323,14 +1323,14 @@ var appendCustomEdit = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-md-1 glyphicon glyphicon-remove')
+            .addClass('col-md-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-md-1 glyphicon glyphicon-ok')
+            .addClass('col-md-1 fa fa-check')
             .click(function (e) {
                 var value = input.val();
                 container.remove();
@@ -1389,14 +1389,14 @@ var appendCustomEditDate = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .addClass('col-xs-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
                 var value = top.Ts.Utils.getMsDate(input.val());
                 container.remove();
@@ -1458,14 +1458,14 @@ var appendCustomEditDateTime = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .addClass('col-xs-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
                 var value = top.Ts.Utils.getMsDate(input.val());
                 container.remove();
@@ -1526,14 +1526,14 @@ var appendCustomEditTime = function (field, element) {
             .focus();
 
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-remove')
+            .addClass('col-xs-1 fa fa-times')
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
             })
             .insertAfter(container1);
           $('<i>')
-            .addClass('col-xs-1 glyphicon glyphicon-ok')
+            .addClass('col-xs-1 fa fa-check')
             .click(function (e) {
                 var value = top.Ts.Utils.getMsDate("1/1/1900 " + input.val());
                 container.remove();
@@ -1566,7 +1566,6 @@ function openNote(noteID) {
         desc = desc.replace(/<br\s?\/?>/g, "\n");
         $('.noteDesc').show();
         $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
-        $('#contactTabs a[href="#contact-notes"]').tab('show');
 
     });
 }
