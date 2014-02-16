@@ -16,6 +16,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Email", "Email", false, false, false);
       _fieldMap.AddMap("FirstName", "FirstName", false, false, false);
       _fieldMap.AddMap("UserID", "UserID", false, false, false);
+      _fieldMap.AddMap("Name", "Name", false, false, false);
       _fieldMap.AddMap("MiddleName", "MiddleName", false, false, false);
       _fieldMap.AddMap("LastName", "LastName", false, false, false);
       _fieldMap.AddMap("Title", "Title", false, false, false);

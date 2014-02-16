@@ -73,6 +73,10 @@ namespace TeamSupport.Data
     [DataMember] public bool AllowAnyTicketCustomer { get; set; }
     [DataMember] public FontFamily FontFamily { get; set; }
     [DataMember] public FontSize FontSize { get; set; }
+    [DataMember] public bool CanCreateCompany { get; set; }
+    [DataMember] public bool CanEditCompany { get; set; }
+    [DataMember] public bool CanCreateContact { get; set; }
+    [DataMember] public bool CanEditContact { get; set; }
           
   }
   
@@ -81,6 +85,10 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.CanEditContact = this.CanEditContact;
+      result.CanCreateContact = this.CanCreateContact;
+      result.CanEditCompany = this.CanEditCompany;
+      result.CanCreateCompany = this.CanCreateCompany;
       result.FontSize = this.FontSize;
       result.FontFamily = this.FontFamily;
       result.AllowAnyTicketCustomer = this.AllowAnyTicketCustomer;

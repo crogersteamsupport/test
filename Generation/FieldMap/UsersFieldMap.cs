@@ -73,6 +73,10 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("AllowAnyTicketCustomer", "AllowAnyTicketCustomer", false, false, false);
       _fieldMap.AddMap("FontFamily", "FontFamily", false, false, false);
       _fieldMap.AddMap("FontSize", "FontSize", false, false, false);
+      _fieldMap.AddMap("CanCreateCompany", "CanCreateCompany", false, false, false);
+      _fieldMap.AddMap("CanEditCompany", "CanEditCompany", false, false, false);
+      _fieldMap.AddMap("CanCreateContact", "CanCreateContact", false, false, false);
+      _fieldMap.AddMap("CanEditContact", "CanEditContact", false, false, false);
             
     }
   }

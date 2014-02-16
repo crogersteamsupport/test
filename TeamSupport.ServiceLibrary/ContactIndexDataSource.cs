@@ -57,6 +57,7 @@ namespace TeamSupport.ServiceLibrary
 
         List<string> columnsToIndex = new List<string>();
         columnsToIndex.Add("Email");
+        columnsToIndex.Add("Name");
         columnsToIndex.Add("FirstName");
         columnsToIndex.Add("MiddleName");
         columnsToIndex.Add("LastName");
@@ -73,15 +74,15 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        //CustomValues customValues = new CustomValues(_loginUser);
-        //customValues.LoadByReferenceType(_organizationID, ReferenceType.Contacts, contact.UserID);
-
-        //foreach (CustomValue value in customValues)
-        //{
-        //  object o = value.Row["CustomValue"];
-        //  string s = o == null || o == DBNull.Value ? "" : o.ToString();
-        //  DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
-        //}
+        CustomValues customValues = new CustomValues(_loginUser);
+        customValues.LoadByReferenceType(_organizationID, ReferenceType.Contacts, contact.UserID);
+        
+        foreach (CustomValue value in customValues)
+        {
+          object o = value.Row["CustomValue"];
+          string s = o == null || o == DBNull.Value ? "" : o.ToString();
+          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
+        }
 
         DocIsFile = false;
         DocName = contact.UserID.ToString();

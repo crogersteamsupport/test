@@ -72,15 +72,15 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        //CustomValues customValues = new CustomValues(_loginUser);
-        //customValues.LoadByReferenceType(_organizationID, ReferenceType.Organizations, organization.OrganizationID);
+        CustomValues customValues = new CustomValues(_loginUser);
+        customValues.LoadByReferenceType(_organizationID, ReferenceType.Organizations, organization.OrganizationID);
 
-        //foreach (CustomValue value in customValues)
-        //{
-        //  object o = value.Row["CustomValue"];
-        //  string s = o == null || o == DBNull.Value ? "" : o.ToString();
-        //  DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
-        //}
+        foreach (CustomValue value in customValues)
+        {
+          object o = value.Row["CustomValue"];
+          string s = o == null || o == DBNull.Value ? "" : o.ToString();
+          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
+        }
 
         DocIsFile = false;
         DocName = organization.OrganizationID.ToString();

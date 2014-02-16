@@ -589,7 +589,8 @@ namespace TSWebServices
       command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
       DataTable dataTable = SqlExecutor.ExecuteQuery(loginUser, command);
 
-      if (field.LookupTableID == 11) {
+      if (field.LookupTableID == 11 || field.LookupTableID == 17)
+      {
         result.Add(-2, "The Report Viewer");
       }
       //result.Add(-1, "Unassigned");

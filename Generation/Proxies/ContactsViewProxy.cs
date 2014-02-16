@@ -16,6 +16,7 @@ namespace TeamSupport.Data
     [DataMember] public string Email { get; set; }
     [DataMember] public string FirstName { get; set; }
     [DataMember] public int UserID { get; set; }
+    [DataMember] public string Name { get; set; }
     [DataMember] public string MiddleName { get; set; }
     [DataMember] public string LastName { get; set; }
     [DataMember] public string Title { get; set; }
@@ -73,6 +74,7 @@ namespace TeamSupport.Data
       result.Title = this.Title;
       result.LastName = this.LastName;
       result.MiddleName = this.MiddleName;
+      result.Name = this.Name;
       result.UserID = this.UserID;
       result.FirstName = this.FirstName;
       result.Email = this.Email;

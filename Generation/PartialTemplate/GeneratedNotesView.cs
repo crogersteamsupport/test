@@ -51,15 +51,6 @@ namespace TeamSupport.Data
       set { Row["OrganizationName"] = CheckValue("OrganizationName", value); }
     }
     
-    public string ContactName
-    {
-      get { return Row["ContactName"] != DBNull.Value ? (string)Row["ContactName"] : null; }
-    }
-    
-    
-    
-
-    
 
     
     public bool NeedsIndexing
@@ -235,7 +226,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[NotesView] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName,    [ParentOrganizationID] = @ParentOrganizationID,    [OrganizationName] = @OrganizationName,    [ContactName] = @ContactName  WHERE ([NoteID] = @NoteID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[NotesView] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [CreatorName] = @CreatorName,    [ModifierName] = @ModifierName,    [ParentOrganizationID] = @ParentOrganizationID,    [OrganizationName] = @OrganizationName  WHERE ([NoteID] = @NoteID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("NoteID", SqlDbType.Int, 4);
@@ -322,27 +313,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ContactName", SqlDbType.VarChar, 201);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[NotesView] (    [NoteID],    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateModified],    [DateCreated],    [NeedsIndexing],    [CreatorName],    [ModifierName],    [ParentOrganizationID],    [OrganizationName],    [ContactName]) VALUES ( @NoteID, @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateModified, @DateCreated, @NeedsIndexing, @CreatorName, @ModifierName, @ParentOrganizationID, @OrganizationName, @ContactName); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[NotesView] (    [NoteID],    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateModified],    [DateCreated],    [NeedsIndexing],    [CreatorName],    [ModifierName],    [ParentOrganizationID],    [OrganizationName]) VALUES ( @NoteID, @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateModified, @DateCreated, @NeedsIndexing, @CreatorName, @ModifierName, @ParentOrganizationID, @OrganizationName); SET @Identity = SCOPE_IDENTITY();";
 
-
-		tempParameter = insertCommand.Parameters.Add("ContactName", SqlDbType.VarChar, 201);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("OrganizationName", SqlDbType.VarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -554,7 +531,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateModified], [DateCreated], [NeedsIndexing], [CreatorName], [ModifierName], [ParentOrganizationID], [OrganizationName], [ContactName] FROM [dbo].[NotesView] WHERE ([NoteID] = @NoteID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [NoteID], [RefType], [RefID], [Title], [Description], [CreatorID], [ModifierID], [DateModified], [DateCreated], [NeedsIndexing], [CreatorName], [ModifierName], [ParentOrganizationID], [OrganizationName] FROM [dbo].[NotesView] WHERE ([NoteID] = @NoteID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("NoteID", noteID);
         Fill(command);
