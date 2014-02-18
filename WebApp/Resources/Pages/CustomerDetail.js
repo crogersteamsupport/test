@@ -1436,7 +1436,7 @@ $(document).ready(function () {
         top.Ts.Services.Customers.LoadPhoneNumbers(organizationID,top.Ts.ReferenceTypes.Organizations, function (phone) {
             for (var i = 0; i < phone.length; i++) {
                 $('#phonePanel').append("<div class='form-group content'> \
-                                        <label for='inputName' class='col-xs-2 control-label'>" + phone[i].PhoneTypeName + "</label> \
+                                        <label for='inputName' class='col-xs-4 control-label'>" + phone[i].PhoneTypeName + "</label> \
                                         <div class='col-xs-4 '> \
                                             <p class='form-control-static '><a href='tel:"+phone[i].Number+"'>" + phone[i].Number + "</a>" + ((phone[i].Extension != null && phone[i].Extension != '') ? ' Ext:' + phone[i].Extension : '') + "</p> \
                                         </div> \
