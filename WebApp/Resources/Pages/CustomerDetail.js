@@ -76,7 +76,7 @@ $(document).ready(function () {
     $('#historyToggle').on('click', function () {
         if (historyLoaded == 0) {
             historyLoaded = 1;
-            LoadHistory();
+            LoadHistory(1);
         }
     });
 
@@ -101,7 +101,6 @@ $(document).ready(function () {
         $('#customerPhoneBtn').hide();
         $('#customerAddressBtn').hide();
         $('#customerDelete').hide();
-        $('.contact-action-add').hide();
         $('#fileToggle').hide();
         disableEdit();
     }
@@ -1365,8 +1364,8 @@ $(document).ready(function () {
                                         </div> \
                                     </div>");
             }
-            if (reload != undefined)
-                $("#addressPanel #editmenu").toggleClass("hiddenmenu");
+            //if (reload != undefined)
+            //    $("#addressPanel #editmenu").toggleClass("hiddenmenu");
         });
     }
 
@@ -1447,8 +1446,8 @@ $(document).ready(function () {
                                         </div> \
                                     </div>");
             }
-            if(reload != undefined)
-                $("#phonePanel #editmenu").toggleClass("hiddenmenu");
+            //if(reload != undefined)
+            //    $("#phonePanel #editmenu").toggleClass("hiddenmenu");
         });
     }
 
