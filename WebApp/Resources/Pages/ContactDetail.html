@@ -15,6 +15,7 @@
     <script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
     <script src="../Js/respond.js" type="text/javascript"></script>
     <script src="../Js/highcharts.js"></script>
+    <script src="../Js/jquery.placeholder.js" type="text/javascript"></script>
     <script src="../Js/moment.min.js" type="text/javascript"></script>
     <script src="../Js/bootstrap-datetimepicker.js" type="text/javascript"></script>
     <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
@@ -40,7 +41,6 @@
                     <button class="btn btn-sm btn-primary" data-target="#modalReminder" data-toggle="modal" id="contactReminder"><span class="fa fa-bell"></span> Reminder</button>
                     <button class="btn btn-sm btn-primary" id="contactEdit"><span class="fa fa-pencil"></span> Edit</button>
                     <button class="btn btn-sm btn-danger" id="contactDelete"><span class="fa fa-trash-o"></span> Delete</button>
-                    <button class="btn btn-sm btn-danger" id="contactDelete"><span class="glyphicon glyphicon-trash"></span> Delete</button>
                 </div>
             </ul>
         </div>
@@ -77,16 +77,14 @@
                             </div>
                         </div>
                         <div class="box">
-                            <div class="box-header"><h3>Contact Info</h3></div>
-                            <div class="box-content">
-                                <div class="row">
-                                    <div class="col-md-12">
+                            <div class="box-header"><h3>Contact Info</h3>
                                         <div class="pull-right">
-                                            <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalPhone" id="contactPhoneButton"><i class="fa fa-plus"></i> Phone</button>
-                                            <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalAddress" id="contactAddressButton"><i class="fa fa-plus"></i> Address</button>
+                                            <button class="btn-link btn-sm btn-primary" data-toggle="modal" data-target="#modalPhone" id="contactPhoneButton"><i class="fa fa-plus"></i> Phone</button>
+                                            <button class="btn-link btn-sm btn-primary" data-toggle="modal" data-target="#modalAddress" id="contactAddressButton"><i class="fa fa-plus"></i> Address</button>
                                         </div>
-                                    </div>
-                                </div>
+
+                            </div>
+                            <div class="box-content">
                                 <div class="form-horizontal">
                                  <div class="row">
                                         <div class="col-md-12">
@@ -143,6 +141,7 @@
                             <div class="box-header" style="padding-bottom: 10px;"><h3>History</h3>
                                 <div class="box-actions">
                                     <a id="historyToggle" data-action="collapse" data-toggle="collapse" data-target="#historyContent" href="#"><i class="fa fa-chevron-down"></i></a>
+                                    <a id="historyRefresh" href="#"><i class="fa fa-refresh"></i></a>
                                 </div>
                             </div>
                             <div class="box-content collapse" id="historyContent">
@@ -152,7 +151,7 @@
                                         <thead>
                                             <tr>
                                             <th>Date</th>
-                                            <th>Actor</th>
+                                            <th>Author</th>
                                             <th>Description</th>
                                             </tr>
                                         </thead>
@@ -209,7 +208,7 @@
                                     <th></th>
                                     <th></th>
                                     <th>Title</th>
-                                    <th>Actor</th>
+                                    <th>Author</th>
                                     <th>Date Written</th>
                                 </thead>
                                 <tbody>

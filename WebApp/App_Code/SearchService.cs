@@ -1045,10 +1045,10 @@ namespace TSWebServices
             else
             {
               item.ReferenceType = ReferenceType.Contacts;
-              resultItems.Add(item);
+                User u = Users.GetUser(TSAuthentication.GetLoginUser(), item.Id);
+                if(!u.MarkDeleted)
+                    resultItems.Add(item);
             }
-            
-            
           }
         }
       }

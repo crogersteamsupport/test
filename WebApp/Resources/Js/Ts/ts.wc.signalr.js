@@ -64,7 +64,8 @@ function loadSignalR() {
 
       addWindow($("#iframe-mniWC2"));
       addWindow($("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame"));
-      addWindow($("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
+        //addWindow($("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
+      addWindow($(".customerIframe").contents().find("#watercoolerIframe"));
       addWindow($("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
       addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));  
       return result;
@@ -83,7 +84,8 @@ function loadSignalR() {
 
         addWindow($("#iframe-mniWC2"));
         addWindow($("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame"));
-        addWindow($("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
+        //addWindow($("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
+        addWindow($(".customerIframe").contents().find("#watercoolerIframe"));
         addWindow($("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
         addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));
         return result;

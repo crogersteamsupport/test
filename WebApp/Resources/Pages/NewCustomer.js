@@ -344,9 +344,6 @@ $(document).ready(function () {
     function LoadCustomControls(refType) {
         top.Ts.Services.Customers.LoadCustomControls(refType,function (html) {
             $('#customerCustomInfo').append(html);
-            $('.datepicker').datetimepicker({ pickTime: false });
-            $('.timepicker').datetimepicker({ pickDate: false });
-            $('.datetimepicker').datetimepicker({});
         });
     }
 
@@ -362,11 +359,14 @@ $(document).ready(function () {
         });
     }
 
-    top.Ts.Services.Customers.GetDateFormat(true,function (dateformat) {
+    top.Ts.Services.Customers.GetDateFormat(false,function (dateformat) {
         //$('.datepicker').datepicker({ format: dateformat });
         //$('.datepicker').datetimepicker({ pickTime: false });
         $('.datepicker').attr("data-format", dateformat);
         $('.datetimepicker').attr("data-format", dateformat);
+        $('.datepicker').datetimepicker({ pickTime: false });
+        $('.timepicker').datetimepicker({ pickDate: false });
+        $('.datetimepicker').datetimepicker({});
     });
 
     $('.number').on('keydown', function (event) {

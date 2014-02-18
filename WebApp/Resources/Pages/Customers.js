@@ -15,6 +15,7 @@ $(document).ready(function () {
     if (!top.Ts.System.User.CanCreateCompany && !top.Ts.System.User.CanCreateContact && !_isAdmin) {
         $('.action-new').hide();
     }
+    $('input, textarea').placeholder();
 
     $('.customer-add-new').click(function (e) {
         e.preventDefault();

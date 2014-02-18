@@ -14,6 +14,7 @@ $(document).ready(function () {
     noteID = top.Ts.Utils.getQueryValue("noteid", window);
     var _isAdmin = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.IsAdminOnlyCustomers;
     var historyLoaded = 0;
+    $('input, textarea').placeholder();
 
     LoadNotes();
     LoadFiles();
@@ -54,7 +55,12 @@ $(document).ready(function () {
         $('#customProperties p').toggleClass("editable");
         $("#phonePanel #editmenu").toggleClass("hiddenmenu");
         $("#addressPanel #editmenu").toggleClass("hiddenmenu");
-        $("#userProperties #fieldEmail").toggleClass("link");
+
+        if ($("#userProperties #fieldName").hasClass('editable'))
+            $("#userProperties #fieldEmail").removeClass("link");
+        else if ($("#userProperties #fieldEmail").text() != "Empty")
+            $("#userProperties #fieldEmail").addClass("link");
+
         $("#userProperties #fieldCompany").toggleClass("link");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
@@ -85,8 +91,12 @@ $(document).ready(function () {
     $('#historyToggle').on('click', function () {
         if (historyLoaded == 0) {
             historyLoaded = 1;
-            LoadHistory();
+            LoadHistory(1);
         }
+    });
+
+    $('#historyRefresh').on('click', function () {
+            LoadHistory(1);
     });
 
     $("#btnSaveReminder").click(function (e) {
@@ -130,7 +140,7 @@ $(document).ready(function () {
     }
 
     //$('#contactName').click(function (e) {
-        $('#userProperties').on('click', '#fieldName', function (e) {
+    $('#userProperties').on('click', '#fieldName', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
         else{
@@ -151,16 +161,19 @@ $(document).ready(function () {
                 $('<input type="text">')
                   .addClass('form-control')
                   .val(user.FirstName)
+                  .attr('placeholder','First Name')
                   .appendTo(container1)
                   .focus();
                 $('<input type="text">')
                   .addClass('form-control')
                   .val(user.MiddleName)
+                  .attr('placeholder', 'Middle Name')
                   .appendTo(container1)
                   .focus();
                 $('<input type="text">')
                   .addClass('form-control')
                   .val(user.LastName)
+                  .attr('placeholder', 'Last Name')
                   .appendTo(container1)
                   .focus();
                 $('<i>')
@@ -173,6 +186,7 @@ $(document).ready(function () {
 
                       top.Ts.Services.Customers.SetContactName(userID, $(this).prev().prev().prev().val(), $(this).prev().prev().val(), $(this).prev().val(), function (result) {
                           GetUser();
+                          $('#contactEdit').removeClass("disabled");
                       },
                       function (error) {
                           header.show();
@@ -187,15 +201,17 @@ $(document).ready(function () {
                   .click(function (e) {
                       $(this).closest('div').remove();
                       header.show();
+                      $('#contactEdit').removeClass("disabled");
                   })
                   .appendTo(container1);
+                $('input, textarea').placeholder();
+                $('#contactEdit').addClass("disabled");
             });
 
 
         }
 
     });
-
     $('#userProperties').on('click', '#fieldEmail', function (e) {
         if ($(this).hasClass('link')) {
             window.location.href = "mailto:" + $('#fieldEmail').text();
@@ -224,6 +240,7 @@ $(document).ready(function () {
               .click(function (e) {
                   $(this).closest('div').remove();
                   header.show();
+                  $('#contactEdit').removeClass("disabled");
               })
               .insertAfter(container1);
             $('<i>')
@@ -231,15 +248,18 @@ $(document).ready(function () {
               .click(function (e) {
                   top.Ts.Services.Customers.SetContactEmail(userID, $(this).prev().find('input').val(), function (result) {
                       header.text(result);
+                      $('#contactEdit').removeClass("disabled");
                   },
                   function (error) {
                       header.show();
                       alert('There was an error saving the customer email.');
+                      $('#contactEdit').removeClass("disabled");
                   });
                   $(this).closest('div').remove();
                   header.show();
               })
               .insertAfter(container1);
+            $('#contactEdit').addClass("disabled");
         }
     });
     $('#userProperties').on('click', '#fieldTitle', function (e) {
@@ -272,15 +292,19 @@ $(document).ready(function () {
           .click(function (e) {
               top.Ts.Services.Customers.SetContactTitle(userID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
+                  $('#contactEdit').removeClass("disabled");
               },
               function (error) {
                   header.show();
                   alert('There was an error saving the customer title.');
+                  $('#contactEdit').removeClass("disabled");
               });
               $(this).closest('div').remove();
               header.show();
+              $('#contactEdit').removeClass("disabled");
           })
           .insertAfter(container1);
+        $('#contactEdit').addClass("disabled");
 
 
     });
@@ -348,6 +372,7 @@ $(document).ready(function () {
               .click(function (e) {
                   $(this).closest('div').remove();
                   header.show();
+                  $('#contactEdit').removeClass("disabled");
               })
               .insertAfter(container1);
             $('<i>')
@@ -358,16 +383,19 @@ $(document).ready(function () {
                   top.Ts.Services.Customers.SetContactCompany(userID, neworgID, function (result) {
                       header.text(result);
                       header.attr('orgid', neworgID);
+                      $('#contactEdit').removeClass("disabled");
                   },
                   function (error) {
                       header.show();
                       alert('There was an error saving the customer company.');
+                      $('#contactEdit').removeClass("disabled");
                   });
                   }
                   $(this).closest('div').remove();
                   header.show();
               })
               .insertAfter(container1);
+            $('#contactEdit').addClass("disabled");
         }
     });
     $('#userProperties').on('click', '#fieldPreventemailfromcreatingtickets', function (e) {
@@ -735,10 +763,6 @@ $(document).ready(function () {
                 .data("description", note[i].Description)
                 .appendTo('#tblNotes > tbody:last');
                 //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
-                if (noteID != null && noteID == note[i].NoteID) {
-                  $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
-                  $('.noteDesc').show();
-                }
             }
         });
     }
@@ -770,9 +794,9 @@ $(document).ready(function () {
         top.Ts.Services.Customers.LoadPhoneNumbers(userID,top.Ts.ReferenceTypes.Users, function (phone) {
             for (var i = 0; i < phone.length; i++) {
                 $('#phonePanel').append("<div class='form-group content'> \
-                                        <label for='inputName' class='col-md-4 control-label'>" + phone[i].PhoneTypeName + "</label> \
+                                        <label for='inputName' class='col-md-2 control-label'>" + phone[i].PhoneTypeName + "</label> \
                                         <div class='col-md-4 '> \
-                                            <p class='form-control-static '>" + phone[i].Number + ((phone[i].Extension.length > 0) ? ' Ext:' + phone[i].Extension : '') + "</p> \
+                                            <p class='form-control-static '>" + phone[i].Number + ((phone[i].Extension != null && phone[i].Extension != '') ? ' Ext:' + phone[i].Extension : '') + "</p> \
                                         </div> \
                                         <div id='editmenu' class='col-md-2 hiddenmenu'> \
                                             <p class='form-control-static'> \
@@ -790,20 +814,17 @@ $(document).ready(function () {
         top.Ts.Services.Customers.LoadAddresses(userID, top.Ts.ReferenceTypes.Users, function (address) {
             for (var i = 0; i < address.length; i++) {
                 $('#addressPanel').append("<div class='form-group content'> \
-                                        <label for='inputName' class='col-md-4 control-label'>" + address[i].Description + "</label> \
+                                        <label for='inputName' class='col-md-2 control-label'>" + address[i].Description + "</label> \
                                         <div class='col-md-5'> \
-                                            " + ((address[i].Addr1.length > 0) ? "<p class='form-control-static'>" + address[i].Addr1 + "</p>" : "") + " \
+                                            " + ((address[i].Addr1.length > 0) ? "<p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a> " + address[i].Addr1 + "</p>" : "") + " \
                                             " + ((address[i].Addr2.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Addr2 + "</p>" : "") + " \
                                             " + ((address[i].Addr3.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Addr3 + "</p>" : "") + " \
-                                            " + ((address[i].City.length > 0) ? "<p class='form-control-static pt0'>" + address[i].City + "</p>" : "") + " \
-                                            " + ((address[i].State.length > 0) ? "<p class='form-control-static pt0'>" + address[i].State + "</p>" : "") + " \
-                                            " + ((address[i].Zip.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Zip + "</p>" : "") + " \
+                                            " + ((address[i].City != null) ? "<p class='form-control-static pt0'>" + address[i].City + ((address[i].State != null) ? ", " + address[i].State : "") + ((address[i].Zip != null) ? " " + address[i].Zip : "") + "</p>" : "") + " \
                                             " + ((address[i].Country.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Country + "</p>" : "") + " \
-                                            <p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a>\
                                         </div> \
                                         <div id='editmenu' class='col-md-2 hiddenmenu'> \
                                             <a href='#' id='" + address[i].AddressID + "' class='editaddress'><span class='fa fa-pencil'></span></a>\
-                                            <a href='#' id='" + address[i].AddressID + "' class='deladdress'><span class='fa fa-trash-o'></span></a/></p>\
+                                            <a href='#' id='" + address[i].AddressID + "' class='deladdress'><span class='fa fa-trash-o'></span></a/>\
                                         </div> \
                                     </div>");
             }
@@ -826,8 +847,11 @@ $(document).ready(function () {
             if ($('#fieldPortalUser').text() == "No" || !_isAdmin)
                 $('#btnSendNewPW').hide();
 
-            $('#userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
-            $('#userProperties #fieldEmail').addClass("link");
+            if($('#fieldEmail').text() != "Empty")
+            {
+                $('#userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
+                $('#userProperties #fieldEmail').addClass("link");
+            }
 
             top.Ts.Services.Customers.GetUser(userID, function (user1) {
                 $('#userProperties #fieldCompany').attr('orgID', user1.OrganizationID);
@@ -899,7 +923,7 @@ $(document).ready(function () {
             $('<a>')
           .addClass('ts-link ui-state-defaultx')
           .attr('href', '#')
-          .text(tickets[i].TicketNumber + ': ' + tickets[i].Name)
+          .text(tickets[i].TicketNumber + ': ' + ellipseString(tickets[i].Name, 50))
           .appendTo(caption)
           .click(function (e) {
 
@@ -918,19 +942,23 @@ $(document).ready(function () {
         }
     });
 
-    $('#historyToggle').click(function (e) {
-        LoadHistory();
-    });
+    function LoadHistory(start) {
 
-    function LoadHistory() {
-
+        if (start == 1)
         $('#tblHistory tbody').empty();
-        top.Ts.Services.Customers.LoadContactHistory(userID, function (history) {
+        top.Ts.Services.Customers.LoadContactHistory(userID, start, function (history) {
             for (var i = 0; i < history.length; i++) {
-                $('<tr>').html('<td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
+                $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
                 .appendTo('#tblHistory > tbody:last');
                 //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
             }
+            if (history.length == 20)
+                $('<button>').text("Load More").addClass('btn-link')
+                .click(function (e) {
+                    LoadHistory($('#tblHistory tbody > tr').length + 1);
+                    $(this).remove();
+                })
+               .appendTo('#tblHistory > tbody:last');
         });
     }
 
@@ -1192,10 +1220,14 @@ var appendCustomEditCombo = function (field, element) {
                   parent.closest('.form-group').data('field', result);
                   parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
                   parent.show();
+                  $('#contactEdit').removeClass("disabled");
               }, function () {
                   alert("There was a problem saving your contact property.");
+                  $('#contactEdit').removeClass("disabled");
               });
           });
+
+          $('#contactEdit').addClass("disabled");
       });
     var items = field.ListValues.split('|');
     if (field.IsRequired && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
@@ -1238,6 +1270,7 @@ var appendCustomEditNumber = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#contactEdit').removeClass("disabled");
             })
             .insertAfter(container1);
           $('<i>')
@@ -1254,12 +1287,16 @@ var appendCustomEditNumber = function (field, element) {
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+                    $('#contactEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your contact property.");
+                    $('#contactEdit').removeClass("disabled");
                 });
                 parent.show();
+                $('#contactEdit').removeClass("disabled");
             })
             .insertAfter(container1);
+          $('#contactEdit').addClass("disabled");
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
@@ -1327,6 +1364,7 @@ var appendCustomEdit = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#contactEdit').removeClass("disabled");
             })
             .insertAfter(container1);
           $('<i>')
@@ -1343,18 +1381,20 @@ var appendCustomEdit = function (field, element) {
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+                    $('#contactEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your contact property.");
+                    $('#contactEdit').removeClass("disabled");
                 });
                 parent.show();
             })
             .insertAfter(container1);
+          $('#contactEdit').addClass("disabled");
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
     }
 }
-
 
 var appendCustomEditDate = function (field, element) {
     var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
@@ -1393,6 +1433,7 @@ var appendCustomEditDate = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#contactEdit').removeClass("disabled");
             })
             .insertAfter(container1);
           $('<i>')
@@ -1410,12 +1451,15 @@ var appendCustomEditDate = function (field, element) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                     parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                    $('#contactEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your contact property.");
+                    $('#contactEdit').removeClass("disabled");
                 });
                 parent.show();
             })
             .insertAfter(container1);
+          $('#contactEdit').addClass("disabled");
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
@@ -1462,6 +1506,7 @@ var appendCustomEditDateTime = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#contactEdit').removeClass("disabled");
             })
             .insertAfter(container1);
           $('<i>')
@@ -1479,12 +1524,15 @@ var appendCustomEditDateTime = function (field, element) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                     parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                    $('#contactEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your contact property.");
+                    $('#contactEdit').removeClass("disabled");
                 });
                 parent.show();
             })
             .insertAfter(container1);
+          $('#contactEdit').addClass("disabled");
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
@@ -1530,6 +1578,7 @@ var appendCustomEditTime = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#contactEdit').removeClass("disabled");
             })
             .insertAfter(container1);
           $('<i>')
@@ -1547,18 +1596,23 @@ var appendCustomEditTime = function (field, element) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                     parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+                    $('#contactEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your contact property.");
+                    $('#contactEdit').removeClass("disabled");
                 });
                 parent.show();
             })
             .insertAfter(container1);
+          $('#contactEdit').addClass("disabled");
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
     }
 
 }
+
+var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
 function openNote(noteID) {
     top.Ts.Services.Customers.LoadNote(noteID, function (note) {

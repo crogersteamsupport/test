@@ -258,7 +258,55 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
-    
+
+
+    public void LoadByOrganizationIDLimit(int organizationID, int start)
+    {
+        int end = start + 19;
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"select *  from (SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                FROM ActionLogs al
+                                LEFT JOIN Users u ON u.UserID = al.CreatorID
+                                WHERE (al.RefType = 9) AND (al.RefID = @OrganizationID)
+                                
+                                UNION 
+                                
+                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                FROM ActionLogs al
+                                LEFT JOIN Users u ON u.UserID = al.CreatorID
+                                LEFT JOIN Tickets t ON t.TicketID = al.RefID
+                                LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID
+                                WHERE (al.RefType = 17) AND (ot.OrganizationID = @OrganizationID)
+                                
+                                UNION 
+                                
+                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                FROM ActionLogs al
+                                LEFT JOIN Users u ON u.UserID = al.CreatorID
+                                LEFT JOIN Actions a ON a.ActionID = al.RefID
+                                LEFT JOIN Tickets t ON t.TicketID = a.TicketID
+                                LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID
+                                WHERE (al.RefType = 0) AND (ot.OrganizationID = @OrganizationID)
+                                
+                                UNION 
+
+                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                FROM ActionLogs al
+                                LEFT JOIN Users u ON u.UserID = al.CreatorID
+                                WHERE (al.OrganizationID = @OrganizationID)) as temp
+                                where rownum between @start and @end
+								order by rownum asc
+
+                                ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@start", start);
+            command.Parameters.AddWithValue("@end", end);
+            Fill(command);
+        }
+    }
+
     public void LoadByUserID(int userID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -299,5 +347,52 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+
+    public void LoadByUserIDLimit(int userID, int start)
+    {
+        int end = start + 19;
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"select *  from  (SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                FROM ActionLogs al
+                                LEFT JOIN Users u ON u.UserID = al.CreatorID
+                                WHERE (al.RefType = 22) AND (al.RefID = @UserID)
+                                
+                                UNION 
+                                
+                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                FROM ActionLogs al
+                                LEFT JOIN Users u ON u.UserID = al.CreatorID
+                                WHERE (al.CreatorID = @UserID)
+                                
+                                UNION 
+                                
+                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                FROM ActionLogs al
+                                LEFT JOIN Users u ON u.UserID = al.CreatorID
+                                LEFT JOIN Tickets t ON t.TicketID = al.RefID
+                                WHERE (al.RefType = 17) AND (t.UserID = @UserID)
+                                
+                                UNION 
+                                
+                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                FROM ActionLogs al
+                                LEFT JOIN Users u ON u.UserID = al.CreatorID
+                                LEFT JOIN Actions a ON a.ActionID = al.RefID
+                                LEFT JOIN Tickets t ON t.TicketID = a.TicketID
+                                WHERE (al.RefType = 0) AND (t.UserID = @UserID)
+                                )
+                                where rownum between @start and @end
+								order by rownum asc
+                                ";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@UserID", userID);
+            command.Parameters.AddWithValue("@start", start);
+            command.Parameters.AddWithValue("@end", end);
+            Fill(command);
+        }
+    }
+
   }
 }

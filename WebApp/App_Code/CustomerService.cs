@@ -338,7 +338,7 @@ namespace TSWebServices
                                 <div class='col-xs-8'>
                                 <p class='form-control-static {3}' id='field{0}'>{2}</p>
                                 </div>
-                                </div>", fieldTitle.Replace(" ", ""), fieldTitle, fieldValue != null ? fieldValue : "Empty", editable);
+                                </div>", fieldTitle.Replace(" ", ""), fieldTitle, (fieldValue != null && fieldValue !="" ) ? fieldValue : "Empty", editable);
 
             return form.ToString();
         }
@@ -836,19 +836,19 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public ActionLogProxy[] LoadHistory(int organizationID)
+        public ActionLogProxy[] LoadHistory(int organizationID, int start)
         {
             ActionLogs actionLogs = new ActionLogs(TSAuthentication.GetLoginUser());
-            actionLogs.LoadByOrganizationID(organizationID);
+            actionLogs.LoadByOrganizationIDLimit(organizationID, start);
 
             return actionLogs.GetActionLogProxies();
         }
 
         [WebMethod]
-        public ActionLogProxy[] LoadContactHistory(int userID)
+        public ActionLogProxy[] LoadContactHistory(int userID, int start)
         {
             ActionLogs actionLogs = new ActionLogs(TSAuthentication.GetLoginUser());
-            actionLogs.LoadByUserID(userID);
+            actionLogs.LoadByUserIDLimit(userID, start);
             return actionLogs.GetActionLogProxies();
         }
 
@@ -1590,7 +1590,7 @@ namespace TSWebServices
             if (lower)
                 return us.DateTimeFormat.ShortDatePattern.ToLower();
             else
-                return us.DateTimeFormat.ShortDatePattern;
+                return us.DateTimeFormat.ShortDatePattern.ToUpper();
         }
 
         [WebMethod]
@@ -1699,11 +1699,9 @@ namespace TSWebServices
 
         public string CreateNoResults()
         {
-            string boxhtml = @"<div class=""col-xs-12"">
-                            <div class=""peoplewrapper"">
+            string boxhtml = @"<li>
                                 <h2 class=""text-center"">No Search Results Found!</h2>
-                            </div>
-                            </div>";
+                            </li>";
             return boxhtml;
         }
 

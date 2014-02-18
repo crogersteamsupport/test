@@ -15,6 +15,7 @@ $(document).ready(function () {
     customerDetailPage = new CustomerDetailPage();
     customerDetailPage.refresh();
 
+    $('input, textarea').placeholder();
     $('body').layout({
         defaults: {
             spacing_open: 0,
@@ -59,6 +60,11 @@ $(document).ready(function () {
         $('#productToggle').hide();
     }
 
+    if (!top.Ts.System.Organization.IsInventoryEnabled)
+    {
+        $('#companyTabs a[href="#company-products"]').hide();
+        $('#companyTabs a[href="#company-inventory"]').hide();
+    }
     $(".maincontainer").on("keypress", "input",(function (evt) {
         //Deterime where our character code is coming from within the event
         var charCode = evt.charCode || evt.keyCode;
@@ -74,6 +80,9 @@ $(document).ready(function () {
         }
     });
 
+    $('#historyRefresh').on('click', function () {
+            LoadHistory(1);
+    });
 
     if (noteID != null)
     {
@@ -97,6 +106,10 @@ $(document).ready(function () {
         disableEdit();
     }
 
+    if (!_isAdmin && !top.Ts.System.User.CanCreateContact) {
+        $('.contact-action-add').hide();
+    }
+
 
     if (top.Ts.System.User.OrganizationID == organizationID)
     {
@@ -106,7 +119,7 @@ $(document).ready(function () {
         $('#groupTimezone').hide();
         $('#groupPortalGroup').hide();
     }
-
+    
     $('#customerEdit').click(function (e) {
         $('.userProperties p').toggleClass("editable");
         $('.customProperties p').toggleClass("editable");
@@ -120,7 +133,6 @@ $(document).ready(function () {
         }
 
     });
-
     function disableEdit()
     {
 
@@ -155,6 +167,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('<i>')
@@ -163,15 +176,18 @@ $(document).ready(function () {
               top.Ts.Services.Customers.SetCompanyName(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
                   $('#companyName').text(result);
+                  $('#customerEdit').removeClass("disabled");
               },
                             function (error) {
                                 header.show();
                                 alert('There was an error saving the company name.');
+                                $('#customerEdit').removeClass("disabled");
                             });
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldWebsite').click(function (e) {
@@ -197,6 +213,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('<i>')
@@ -204,15 +221,18 @@ $(document).ready(function () {
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanyWeb(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
+                  $('#customerEdit').removeClass("disabled");
               },
                             function (error) {
                                 header.show();
                                 alert('There was an error saving the company website.');
+                                $('#customerEdit').removeClass("disabled");
                             });
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldDomains').click(function (e) {
@@ -238,6 +258,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('<i>')
@@ -245,15 +266,18 @@ $(document).ready(function () {
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanyDomain(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
+                  $('#customerEdit').removeClass("disabled");
               },
                             function (error) {
                                 header.show();
                                 alert('There was an error saving the company domain.');
+                                $('#customerEdit').removeClass("disabled");
                             });
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldSupportHours').click(function (e) {
@@ -279,6 +303,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('<i>')
@@ -286,15 +311,18 @@ $(document).ready(function () {
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanySupportHours(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
+                  $('#customerEdit').removeClass("disabled");
               },
                             function (error) {
                                 header.show();
                                 alert('There was an error saving the company support hours.');
+                                $('#customerEdit').removeClass("disabled");
                             });
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldDescription').click(function (e) {
@@ -320,6 +348,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('<i>')
@@ -327,15 +356,18 @@ $(document).ready(function () {
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanyDescription(organizationID, $(this).prev().find('textarea').val(), function (result) {
                   header.text(result);
+                  $('#customerEdit').removeClass("disabled");
               },
                             function (error) {
                                 header.show();
                                 alert('There was an error saving the company description.');
+                                $('#customerEdit').removeClass("disabled");
                             });
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldInactive').click(function (e) {
@@ -361,6 +393,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('<i>')
@@ -368,15 +401,18 @@ $(document).ready(function () {
           .click(function (e) {
               top.Ts.Services.Customers.SetCompanyInactive(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
+                  $('#customerEdit').removeClass("disabled");
               },
                             function (error) {
                                 header.show();
                                 alert('There was an error saving the company inactive reason.');
+                                $('#customerEdit').removeClass("disabled");
                             });
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldSAED').click(function (e) {
@@ -391,20 +427,24 @@ $(document).ready(function () {
             .addClass('col-xs-9')
           .appendTo(container);
 
-        $('<input type="text">')
+        var theinput = $('<input type="text">')
           .addClass('col-xs-10 form-control')
-          .val($(this).text())
+          .val($(this).text() == "[None]" ? "" : $(this).text())
+            .datetimepicker({ pickTime: false })
           .appendTo(container1)
-          .datetimepicker({ pickTime: false })
           .focus();
+       
 
         $('<i>')
           .addClass('col-xs-1 fa fa-times')
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
+        
+
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
@@ -412,15 +452,18 @@ $(document).ready(function () {
               top.Ts.Services.Customers.SetCompanySAE(organizationID, $(this).prev().find('input').val(), function (result) {
                   var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                   header.text(date);
+                  $('#customerEdit').removeClass("disabled");
               },
                             function (error) {
                                 header.show();
                                 alert('There was an error saving the company Service Agreement Expiration Date.');
+                                $('#customerEdit').removeClass("disabled");
                             });
               $(this).closest('div').remove();
               header.show();
           })
           .insertAfter(container1);
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldPrimaryContact').click(function (e) {
@@ -453,6 +496,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('#ddlPrimaryContact').on('change', function () {
@@ -464,10 +508,13 @@ $(document).ready(function () {
                 header.data('field', result);
                 header.text(name);
                 header.show();
+                $('#customerEdit').removeClass("disabled");
             }, function () {
                 alert("There was a problem saving your company property.");
+                $('#customerEdit').removeClass("disabled");
             });
         });
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldDefaultUser').click(function (e) {
@@ -500,6 +547,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('#ddlPrimaryDefaultUser').on('change', function () {
@@ -511,10 +559,13 @@ $(document).ready(function () {
                 header.data('field', result);
                 header.text(name);
                 header.show();
+                $('#customerEdit').removeClass("disabled");
             }, function () {
                 alert("There was a problem saving your company property.");
+                $('#customerEdit').removeClass("disabled");
             });
         });
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldTimeZone').click(function (e) {
@@ -544,6 +595,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('#ddlTimezone').on('change', function () {
@@ -555,10 +607,13 @@ $(document).ready(function () {
                 header.data('field', result);
                 header.text(result);
                 header.show();
+                $('#customerEdit').removeClass("disabled");
             }, function () {
                 alert("There was a problem saving your company timezone.");
+                $('#customerEdit').removeClass("disabled");
             });
         });
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldDefaultGroup').click(function (e) {
@@ -591,6 +646,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('#ddlfieldDefaultGroup').on('change', function () {
@@ -602,10 +658,13 @@ $(document).ready(function () {
                 header.data('field', result);
                 header.text(name);
                 header.show();
+                $('#customerEdit').removeClass("disabled");
             }, function () {
                 alert("There was a problem saving your company property.");
+                $('#customerEdit').removeClass("disabled");
             });
         });
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldDefaultPortalGroup').click(function (e) {
@@ -638,6 +697,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('#ddlfieldDefaultPortalGroup').on('change', function () {
@@ -649,10 +709,13 @@ $(document).ready(function () {
                 header.data('field', result);
                 header.text(name);
                 header.show();
+                $('#customerEdit').removeClass("disabled");
             }, function () {
                 alert("There was a problem saving your company property.");
+                $('#customerEdit').removeClass("disabled");
             });
         });
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldSLA').click(function (e) {
@@ -685,6 +748,7 @@ $(document).ready(function () {
           .click(function (e) {
               $(this).closest('div').remove();
               header.show();
+              $('#customerEdit').removeClass("disabled");
           })
           .insertAfter(container1);
         $('#ddlfieldSLA').on('change', function () {
@@ -696,10 +760,13 @@ $(document).ready(function () {
                 header.data('field', result);
                 header.text(name);
                 header.show();
+                $('#customerEdit').removeClass("disabled");
             }, function () {
                 alert("There was a problem saving your company property.");
+                $('#customerEdit').removeClass("disabled");
             });
         });
+        $('#customerEdit').addClass("disabled");
     });
 
     $('#fieldActive').click(function (e) {
@@ -812,9 +879,9 @@ $(document).ready(function () {
 
     });
 
-    top.Ts.Services.Customers.GetDateFormat(true,function (dateformat) {
-        $('.datepicker').datetimepicker();
+    top.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
         $('.datepicker').attr("data-format", dateformat);
+        $('.datepicker').datetimepicker({ pickTime: false });
     });
 
     $('.userList').on('click', '.contactlink', function (e) {
@@ -951,7 +1018,9 @@ $(document).ready(function () {
             $('#modalAddress').modal('show');
         });
     });
-    $('#reminderDate').datetimepicker({ pickTime: false });
+
+    //$('#reminderDate').datetimepicker();
+
     $("#btnSaveReminder").click(function (e) {
         if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
             top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), $('#reminderDate').val(), $('#reminderUsers').val());
@@ -1325,15 +1394,23 @@ $(document).ready(function () {
         });
     }
 
-    function LoadHistory() {
+    function LoadHistory(start) {
 
+        if(start == 1)
         $('#tblHistory tbody').empty();
-            top.Ts.Services.Customers.LoadHistory(organizationID, function (history) {
+            top.Ts.Services.Customers.LoadHistory(organizationID, start, function (history) {
                 for (var i = 0; i < history.length; i++) {
-                    $('<tr>').html('<td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
+                    $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
                     .appendTo('#tblHistory > tbody:last');
                     //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
                 }
+                if(history.length == 20)
+                    $('<button>').text("Load More").addClass('btn-link')
+                    .click(function (e){
+                        LoadHistory($('#tblHistory tbody > tr').length+1);
+                        $(this).remove();
+                    })
+                   .appendTo('#tblHistory > tbody:last');
             });
     }
 
@@ -1727,9 +1804,6 @@ $(document).ready(function () {
             }
         }
     });
-    $('#historyToggle').click(function (e) {
-        LoadHistory();
-    });
 
     //$('.userProperties p').toggleClass("editable");
     //$('.customProperties p').toggleClass("editable");
@@ -1867,6 +1941,7 @@ var appendCustomEditCombo = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#customerEdit').removeClass("disabled");
             })
             .insertAfter(container1);
 
@@ -1884,10 +1959,13 @@ var appendCustomEditCombo = function (field, element) {
                   parent.closest('.form-group').data('field', result);
                   parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
                   parent.show();
+                  $('#customerEdit').removeClass("disabled");
               }, function () {
                   alert("There was a problem saving your contact property.");
+                  $('#customerEdit').removeClass("disabled");
               });
           });
+          $('#customerEdit').addClass("disabled");
       });
     var items = field.ListValues.split('|');
     if (field.IsRequired && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
@@ -1929,6 +2007,7 @@ var appendCustomEditNumber = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#customerEdit').removeClass("disabled");
             })
             .insertAfter(container1);
           $('<i>')
@@ -1945,12 +2024,15 @@ var appendCustomEditNumber = function (field, element) {
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+                    $('#customerEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your contact property.");
+                    $('#customerEdit').removeClass("disabled");
                 });
                 parent.show();
             })
             .insertAfter(container1);
+          $('#customerEdit').addClass("disabled");
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
@@ -2018,6 +2100,7 @@ var appendCustomEdit = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#customerEdit').removeClass("disabled");
             })
             .insertAfter(container1);
           $('<i>')
@@ -2034,12 +2117,15 @@ var appendCustomEdit = function (field, element) {
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+                    $('#customerEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your contact property.");
+                    $('#customerEdit').removeClass("disabled");
                 });
                 parent.show();
             })
             .insertAfter(container1);
+          $('#customerEdit').addClass("disabled");
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
@@ -2083,6 +2169,7 @@ var appendCustomEditDate = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#customerEdit').removeClass("disabled");
             })
             .insertAfter(container1);
           $('<i>')
@@ -2100,12 +2187,15 @@ var appendCustomEditDate = function (field, element) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                     parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                    $('#customerEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your contact property.");
+                    $('#customerEdit').removeClass("disabled");
                 });
                 parent.show();
             })
             .insertAfter(container1);
+          $('#customerEdit').addClass("disabled");
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
@@ -2152,6 +2242,7 @@ var appendCustomEditDateTime = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#customerEdit').removeClass("disabled");
             })
             .insertAfter(container1);
           $('<i>')
@@ -2169,12 +2260,15 @@ var appendCustomEditDateTime = function (field, element) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                     parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                    $('#customerEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your customer property.");
+                    $('#customerEdit').removeClass("disabled");
                 });
                 parent.show();
             })
             .insertAfter(container1);
+          $('#customerEdit').addClass("disabled");
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
@@ -2220,6 +2314,7 @@ var appendCustomEditTime = function (field, element) {
             .click(function (e) {
                 $(this).closest('div').remove();
                 parent.show();
+                $('#customerEdit').removeClass("disabled");
             })
             .insertAfter(container1);
           $('<i>')
@@ -2237,12 +2332,15 @@ var appendCustomEditTime = function (field, element) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                     parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+                    $('#customerEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your contact property.");
+                    $('#customerEdit').removeClass("disabled");
                 });
                 parent.show();
             })
             .insertAfter(container1);
+          $('#customerEdit').addClass("disabled");
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
