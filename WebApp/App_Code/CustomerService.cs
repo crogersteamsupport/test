@@ -1089,19 +1089,19 @@ namespace TSWebServices
 
                 foreach (PhoneNumber p in phoneNumbers)
                 {
-                    phoneResults.AppendFormat("<p class='list-group-item-text'><span class='fa fa-phone'></span> {0}: {1} {2}</p>", p.PhoneTypeName, p.Number, p.Extension == "" ? "":"Ext:" + p.Extension);
+                  phoneResults.AppendFormat("<p class='list-group-item-text'><span class=\"text-muted\">{0}</span>: <a href=\"tel:{1}\" target=\"_blank\">{1}</a> {2}</p>", p.PhoneTypeName, p.Number, string.IsNullOrWhiteSpace(p.Extension) ? "" : "Ext:" + p.Extension);
                 }
 
                 htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <span class='pull-right {0}'>{1}</span><a href='#' id='{7}' class='contactlink'><h4 class='list-group-item-heading'>{2}</h4></a>
                             <div class='row'>
                                 <div class='col-xs-6'>
-                                    <p class='list-group-item-text'><span class='fa fa-envelope'></span> Email: {3}</p>
+                                    <p class='list-group-item-text'>{3}</p>
                                     {6}
                                 </div>
                                 <div class='col-xs-6'>
-                                    <p class='list-group-item-text'>Open Tickets: {4}</p>
-                                    <p class='list-group-item-text'>Closed Tickets: {5}</p>                            
+                                    <p class='list-group-item-text'>{4} Open Tickets</p>
+                                    <p class='list-group-item-text'>{5} Closed Tickets</p>                            
                                 </div>
                             </div>
                             </div>"
@@ -1710,7 +1710,7 @@ namespace TSWebServices
         public string CreateRecentlyViewed(RecentlyViewedItem recent)
         {
             string recentHTML;
-
+            string phoneStr;
             //user
             if(recent.RefType == 0){
                 Users u = new Users(TSAuthentication.GetLoginUser());
@@ -1722,12 +1722,12 @@ namespace TSWebServices
                         <div class=""recent-info"">
                             <h4> <span class=""fa fa-user""></span><a class=""contactlink"" id=""u{3}"" href="""">{0}</a></h4>
                             <ul>
-                                <li><span>Email:</span> {1}</li>
-                                <li><span>Phone:</span> {2}</li>
+                                <li><a href=""mailto:{1}"" target=""_blank"">{1}</a></li>{2}
                             </ul>
                         </div>
                 </li>";
-                return string.Format(recentHTML, u[0].FirstLastName, u[0].Email, phone.IsEmpty ? "Empty" : phone[0].Number, u[0].UserID);
+                phoneStr = phone.IsEmpty ? "" : string.Format("<li><a href=\"tel:{0}\" target=\"_blank\">{0}</a></li>", phone[0].Number);
+                return string.Format(recentHTML, u[0].FirstLastName, u[0].Email, phoneStr, u[0].UserID);
             }
             else{
                 Organizations org = new Organizations(TSAuthentication.GetLoginUser());
@@ -1738,13 +1738,12 @@ namespace TSWebServices
                 recentHTML = @" 
                 <li>
                         <div class=""recent-info"">
-                            <h4><span class=""fa fa-building-o""></span><a class=""companylink"" id=""o{2}"" href="""">{0}</a></h4>
-                            <ul>
-                                <li><span>Phone:</span> {1}</li>
-                            </ul>
+                            <h4><span class=""fa fa-building-o""></span><a class=""companylink"" id=""o{2}"" href="""">{0}</a></h4>{1}
                         </div>
                 </li>";
-                return string.Format(recentHTML, org[0].Name, phone.IsEmpty ? "Empty" : phone[0].Number, org[0].OrganizationID);
+                phoneStr = phone.IsEmpty ? "" : string.Format("<ul><li><a href=\"tel:{0}\" target=\"_blank\">{0}</a></li></ul>", phone[0].Number);
+
+                return string.Format(recentHTML, org[0].Name, phoneStr, org[0].OrganizationID);
             }
         }
 

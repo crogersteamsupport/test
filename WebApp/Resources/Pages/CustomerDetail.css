@@ -6,15 +6,19 @@
 .mr15{margin-right:15px;}
 .modal-body .form-group{margin-bottom: 10px;}
 .pageheader .nav-tabs{border-bottom:none !important;}
-.hiddenmenu {display:none;}
 
-#addressPanel{margin-top: 20px;}
+#phonePanel .content.form-group:hover .hiddenmenu, #addressPanel .content.form-group:hover .hiddenmenu {opacity: 1;}
+.hiddenmenu {opacity: 0;}
 
+.main-nav { padding-top: 13px;}
+#addressPanel {margin-top: 20px;}
+/*
 li.active > a {
     background-color: #1E7DCC !important;
     color: white !important;
-}
+}*/
 
+.list-group { padding-top: 15px; }
 
 #tblNotes, #tblProducts, #tblFiles i {cursor:pointer;}
 
@@ -65,7 +69,7 @@ li.active > a {
 .progress {overflow:visible !important;margin-bottom: 0px !important;}
 
 #companyName{
-    padding-left:15px;
+    margin: 0 0 0 15px;
     font-size: 24px;
 }
 

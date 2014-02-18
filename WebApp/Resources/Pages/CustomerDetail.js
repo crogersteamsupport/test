@@ -18,14 +18,16 @@ $(document).ready(function () {
     $('body').layout({
         defaults: {
             spacing_open: 0,
+            resizable: false,
             closable: false
         },
         north: {
-            spacing_open: 1,
-            size: 100
+            size: 100,
+            spacing_open: 1
         },
         center: {
-            maskContents: true
+            maskContents: true,
+            size: 'auto'
         }
     });
 
@@ -51,19 +53,6 @@ $(document).ready(function () {
     LoadReminderUsers();
     UpdateRecentView();
 
-    $('body').layout({
-        defaults: {
-            spacing_open: 0,
-            closable: false
-        },
-        north: {
-            spacing_open: 1,
-            size: 100
-        },
-        center: {
-            maskContents: true
-        }
-    });
 
     if (!top.Ts.System.User.CanEditCompany && !_isAdmin) 
     {
@@ -105,6 +94,7 @@ $(document).ready(function () {
         $('#customerDelete').hide();
         $('.contact-action-add').hide();
         $('#fileToggle').hide();
+        disableEdit();
     }
 
 
@@ -130,6 +120,17 @@ $(document).ready(function () {
         }
 
     });
+
+    function disableEdit()
+    {
+
+        $('.userProperties p').removeClass("editable");
+        $('.customProperties p').removeClass("editable");
+        //$("#phonePanel #editmenu").toggleClass("hiddenmenu");
+        //$("#addressPanel #editmenu").toggleClass("hiddenmenu");
+        //$('#fieldPortalAccess').removeClass('editable');
+
+    }
 
     $('#fieldName').click(function (e) {
         e.preventDefault();
@@ -886,9 +887,9 @@ $(document).ready(function () {
 
     function issubbed(result) {
         if (result)
-            $('#customerSubscribe').html('<span class="fa fa-share"></span> Unsubscribe');
+            $('#customerSubscribe').html('Unsubscribe');
         else
-            $('#customerSubscribe').html('<span class="fa fa-share"></span> Subscribe');
+            $('#customerSubscribe').html('Subscribe');
     }
 
     $('#customerSubscribe').click(function (e) {
@@ -1234,7 +1235,7 @@ $(document).ready(function () {
     function LoadProperties() {
         top.Ts.Services.Customers.GetProperties(organizationID, function (result) {
             $('#fieldName').text(result.orgproxy.Name);
-            $('#fieldWebsite').text(result.orgproxy.Website != "" ? result.orgproxy.Website : "Empty");
+            $('#fieldWebsite').text(result.orgproxy.Website != null && result.orgproxy.Website != "" ? result.orgproxy.Website : "Empty");
             $('#fieldDomains').text(result.orgproxy.CompanyDomains != "" ? result.orgproxy.CompanyDomains : "Empty");
             $('#fieldActive').text(result.orgproxy.IsActive);
             $('#fieldPortalAccess').text(result.orgproxy.HasPortalAccess);
@@ -1243,7 +1244,7 @@ $(document).ready(function () {
             $('#fieldSLA').text(result.SLA);
             $('#fieldSLA').data('field', result.orgproxy.SlaLevelID);
             $('#fieldSupportHours').text(result.orgproxy.SupportHoursMonth);
-            $('#fieldDescription').text(result.orgproxy.Description != "" ? result.orgproxy.Description : "Empty");
+            $('#fieldDescription').text(result.orgproxy.Description != null && result.orgproxy.Description != ""? result.orgproxy.Description : "Empty");
             $('#fieldAPIToken').text(result.orgproxy.WebServiceID);
             $('#fieldOrgID').text(result.orgproxy.OrganizationID);
             $('#fieldPrimaryContact').text(result.PrimaryUser);
@@ -1266,6 +1267,7 @@ $(document).ready(function () {
                 $('#customPropRow').hide();
                 $('#customerEdit').hide();
                 $('#customerDelete').hide();
+                disableEdit();
             }
 
 
@@ -1277,19 +1279,19 @@ $(document).ready(function () {
         top.Ts.Services.Customers.LoadAddresses(organizationID,top.Ts.ReferenceTypes.Organizations, function (address) {
             for (var i = 0; i < address.length; i++) {
                 $('#addressPanel').append("<div class='form-group content'> \
-                                        <label for='inputName' class='col-xs-4 control-label'>" + address[i].Description + "</label> \
+                                        <label for='inputName' class='col-xs-4 control-label'>" + address[i].Description + " <a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a></label> \
                                         <div class='col-xs-5'> \
                                             " + ((address[i].Addr1 != null) ? "<p class='form-control-static'>" + address[i].Addr1 + "</p>" : "") + " \
                                             " + ((address[i].Addr2 != null) ? "<p class='form-control-static pt0'>" + address[i].Addr2 + "</p>" : "") + " \
                                             " + ((address[i].Addr3 != null) ? "<p class='form-control-static pt0'>" + address[i].Addr3 + "</p>" : "") + " \
-                                            " + ((address[i].City != null) ? "<p class='form-control-static pt0'>" + address[i].City + "</p>" : "") + " \
-                                            " + ((address[i].State != null) ? "<p class='form-control-static pt0'>" + address[i].State + "</p>" : "") + " \
-                                            " + ((address[i].Zip != null) ? "<p class='form-control-static pt0'>" + address[i].Zip + "</p>" : "") + " \
+                                            <p class='form-control-static pt0'> \
+                                            " + ((address[i].City != null) ? "<p class='form-control-static pt0'>" + address[i].City : "") + " \
+                                            " + ((address[i].State != null && address[i].State != '') ? ", " + address[i].State : "") + " \
+                                            " + ((address[i].Zip != null && address[i].Zip != '') ? " " + address[i].Zip : "") + " </p> \
                                             " + ((address[i].Country != null) ? "<p class='form-control-static pt0'>" + address[i].Country + "</p>" : "") + " \
-                                            <p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a>\
                                         </div> \
                                         <div id='editmenu' class='col-xs-2 hiddenmenu'> \
-                                            <a href='#' id='" + address[i].AddressID + "' class='editaddress'><span class='icon-pencil'></span></a>\
+                                            <a href='#' id='" + address[i].AddressID + "' class='editaddress'><span class='fa fa-pencil'></span></a>\
                                             <a href='#' id='" + address[i].AddressID + "' class='deladdress'><span class='fa fa-trash-o'></span></a/></p>\
                                         </div> \
                                     </div>");
@@ -1358,7 +1360,7 @@ $(document).ready(function () {
                 $('#phonePanel').append("<div class='form-group content'> \
                                         <label for='inputName' class='col-xs-4 control-label'>" + phone[i].PhoneTypeName + "</label> \
                                         <div class='col-xs-4 '> \
-                                            <p class='form-control-static '>" + phone[i].Number + ((phone[i].Extension != null) ? ' Ext:' + phone[i].Extension : '') + "</p> \
+                                            <p class='form-control-static '><a href='tel:"+phone[i].Number+"'>" + phone[i].Number + "</a>" + ((phone[i].Extension != null && phone[i].Extension != '') ? ' Ext:' + phone[i].Extension : '') + "</p> \
                                         </div> \
                                         <div id='editmenu' class='col-xs-2 hiddenmenu'> \
                                             <p class='form-control-static'> \
@@ -1729,7 +1731,7 @@ $(document).ready(function () {
         LoadHistory();
     });
 
-    $('.userProperties p').toggleClass("editable");
+    //$('.userProperties p').toggleClass("editable");
     //$('.customProperties p').toggleClass("editable");
 });
 
@@ -1773,9 +1775,7 @@ var appendCustomValues = function (fields) {
         {
             var custom = $('<div>').insertBefore($('#customPropRow'));
 
-            var row = $('<div>').addClass('row').appendTo(custom);
-            var col12 = $('<div>').addClass('col-md-12').appendTo(row);
-            var box = $('<div>').addClass('box').appendTo(col12);
+            var box = $('<div>').addClass('box').appendTo(custom);
             var header = $('<div>').addClass('box-header').appendTo(box);
             var h3title = $('<h3>').text(categories[c].Category).appendTo(header);
             var boxcontent = $('<div>').addClass('box-content').appendTo(box);
@@ -1816,7 +1816,7 @@ var appendCustomValues = function (fields) {
                 }
             }
         }
-        $('.customProperties p').toggleClass("editable");
+        //$('.customProperties p').toggleClass("editable");
     });
 
 
