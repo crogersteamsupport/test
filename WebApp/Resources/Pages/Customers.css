@@ -59,7 +59,7 @@ color: #666;
 .recent-info span.fa { color:#bababa;}
 .recent-info li span { color: #dadada;}
 
-.searchresults>li{list-style:none;border-bottom:1px solid #eee; padding: 5px}
+.searchresults>li{list-style:none;border-bottom:1px solid #eee; padding: 15px 5px 5px 5px;}
 
 .peopleinfo h3, h4{display:inline}
 .peopleinfo ul li  span{font-weight:bold}
