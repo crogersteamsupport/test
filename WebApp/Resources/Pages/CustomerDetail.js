@@ -1405,7 +1405,7 @@ $(document).ready(function () {
                     .appendTo('#tblHistory > tbody:last');
                     //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
                 }
-                if(history.length == 5)
+                if(history.length == 10)
                     $('<button>').text("Load More").addClass('btn-link')
                     .click(function (e){
                         LoadHistory($('#tblHistory tbody > tr').length+1);
