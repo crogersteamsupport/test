@@ -56,7 +56,7 @@ color: #666;
 .recent-info ul li { line-height: 18px; }
 .recent-info ul li span { line-height: 18px; }
 .recent-info {word-wrap:break-word;}
-.recent-info span.fa { color:#bababa;}
+.recent-info span.fa { color:#999;}
 .recent-info li span { color: #dadada;}
 
 .searchresults>li{list-style:none;border-bottom:1px solid #eee; padding: 15px 5px 5px 5px;}
