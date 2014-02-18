@@ -19,7 +19,9 @@ li.active > a {
     position:absolute;
     opacity:0;
 }
-.hiddenmenu {display:none;}
+#phonePanel .content.form-group:hover .hiddenmenu, #addressPanel .form-group:hover .hiddenmenu {opacity: 1;}
+.hiddenmenu {opacity: 0;}
+
 .upload-queue {
     list-style: none outside none;
     margin: 0;

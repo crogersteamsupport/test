@@ -1729,7 +1729,7 @@ namespace TSWebServices
                 Organizations org = new Organizations(TSAuthentication.GetLoginUser());
                 org.LoadByOrganizationID(recent.RefID);
                 PhoneNumbers phone = new PhoneNumbers(TSAuthentication.GetLoginUser());
-                phone.LoadByID(org[0].OrganizationID, ReferenceType.Users);
+                phone.LoadByID(org[0].OrganizationID, ReferenceType.Organizations);
 
                 recentHTML = @" 
                 <li>
