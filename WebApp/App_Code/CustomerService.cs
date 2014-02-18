@@ -1659,11 +1659,11 @@ namespace TSWebServices
 
             string boxhtml = @"<li>
                                     <div class=""peopleinfo"">
-                                        <div class=""pull-right""><span>Open Tickets:</span> {5}</div>
+                                        <div class=""pull-right""><span>{5} Open Tickets</span></div>
                                         <h4><span class=""fa fa-building-o""></span><a class=""companylink"" id=""o{0}"" href="""">{1}</a></h4>
                                         <ul>
                                             {2}
-                                            <li><span>Portal Access</span> {3}</li>
+                                            <li><span>Portal Access:</span> {3}</li>
                                             <li><span>Website:</span> {4}</li>
                                         </ul>
                                     </div>
