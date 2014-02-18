@@ -9,7 +9,7 @@
 
 #phonePanel .content.form-group:hover .hiddenmenu, #addressPanel .form-group:hover .hiddenmenu {opacity: 1;}
 .hiddenmenu {opacity: 0;}
-
+  
 .main-nav { padding-top: 13px;}
 #addressPanel {margin-top: 20px;}
 /*

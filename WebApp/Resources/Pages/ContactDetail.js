@@ -852,7 +852,7 @@ $(document).ready(function () {
             {
               $("<a>")
                 .attr('href', 'mailto:' + $('#fieldEmail').text())
-                .html(' <i class="fa fa-external-link"></i>')
+                .html('<i class="fa fa-external-link"></i>')
                 .appendTo('#fieldEmail');
                 //$('#userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
                 //$('#userProperties #fieldEmail').addClass("link");
@@ -860,7 +860,7 @@ $(document).ready(function () {
 
             top.Ts.Services.Customers.GetUser(userID, function (user1) {
               $("<a>")
-                .html(' <i class="fa fa-external-link"></i>')
+                .html('<i class="fa fa-external-link"></i>')
                 .appendTo('#fieldCompany');
 
                 $('#fieldCompany').attr('orgID', user1.OrganizationID);

@@ -8,6 +8,7 @@ li.active > a {
 }
 
 .main-nav { margin-top: 13px; }
+#userProperties .fa-external-link { margin-left: 10px; }
 
 #tblNotes, #tblFiles i {cursor:pointer;}
 .note-list{
