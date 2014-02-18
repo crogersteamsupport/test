@@ -64,11 +64,11 @@ color: #666;
 .peopleinfo h3, h4{display:inline}
 .peopleinfo ul li  span{font-weight:bold}
 .peopleinfo li {list-style:none;}
-.peopleinfo span.fa { color:#bababa;}
+.peopleinfo span.fa { color:#999;}
 .peopleinfo li span { color: #999;}
 
 
-.contactlink, .companylink {padding: 0 10px;}
+.contactlink, .companylink {padding: 0 10px; color:#444; }
 .on {color: green;}
 .off {color: lightgray;}
 .scrollup{

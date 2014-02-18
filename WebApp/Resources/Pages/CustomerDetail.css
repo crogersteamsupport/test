@@ -10,13 +10,17 @@
 #phonePanel .content.form-group:hover .hiddenmenu, #addressPanel .form-group:hover .hiddenmenu {opacity: 1;}
 .hiddenmenu {opacity: 0;}
   
-.main-nav { padding-top: 13px;}
 #addressPanel {margin-top: 20px;}
 
-li.active > a {
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus
+{
     background-color: #428BCA !important;
     color: white !important;
+    border:none;
 }
+
+.main-nav { margin-top: 15px; }
+
 
 .list-group { padding-top: 15px; }
 
