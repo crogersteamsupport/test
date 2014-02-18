@@ -1662,14 +1662,14 @@ namespace TSWebServices
                                         <div class=""pull-right""><span>Open Tickets:</span> {5}</div>
                                         <h4><span class=""fa fa-building-o""></span><a class=""companylink"" id=""o{0}"" href="""">{1}</a></h4>
                                         <ul>
-                                            <li><span>Phone:</span> {2}</li>
+                                            {2}
                                             <li><span>Portal Access</span> {3}</li>
                                             <li><span>Website:</span> {4}</li>
                                         </ul>
                                     </div>
                             </li>";
 
-            return string.Format(boxhtml, org.OrganizationID, org.Name, phone.IsEmpty ? "Empty" : phone[0].Number, org.HasPortalAccess, org.Website, GetCustomerOpenTickets(org));
+            return string.Format(boxhtml, org.OrganizationID, org.Name, phone.IsEmpty || phone[0].Number == "" ? "" : "<li>" + phone[0].Number + "</li>", org.HasPortalAccess, org.Website, GetCustomerOpenTickets(org));
         }
 
         public string CreateContactBox(int userID)
@@ -1681,20 +1681,18 @@ namespace TSWebServices
 
             string boxhtml = @"<li>
                                     <div class=""peopleinfo"">
-                                        <div class=""pull-right""><span>Open Tickets:</span> {7}</div>
+                                        <div class=""pull-right""><span>{7} Open Tickets</span></div>
                                         <h4><span class=""fa fa-user""></span><a class=""contactlink"" id=""u{0}"" href="""">{1} {2} {3}</a></h4>
                                         
                                         <ul>
-                                            {8}
-                                            <li><span>Email:</span> {4}</li>
-                                            <li><span>Phone:</span> {5}</li>
+                                            {8}{4}{5}
                                             <li><span>Portal Access:</span> {6}</li>
                                         </ul>
                                     </div>
 
                             </li>";
 
-            return string.Format(boxhtml, user.UserID, user.FirstName, user.LastName, string.IsNullOrEmpty(user.Title) ? "" : "[" + user.Title + "]", "<a href='mailto:" + user.Email + "'>" + user.Email + "</a>", phone.IsEmpty ? "Empty" : phone[0].Number, user.IsPortalUser, GetContactTickets(user.UserID, 0), org.Name != "_Unknown Company" ? "<li><span>Company: </span><a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li><li>&nbsp;</li>" : "");
+            return string.Format(boxhtml, user.UserID, user.FirstName, user.LastName, string.IsNullOrEmpty(user.Title) ? "" : "[" + user.Title + "]", "<li><a href='mailto:" + user.Email + "'>" + user.Email + "</a></li>", phone.IsEmpty || phone[0].Number == "" ? "" : "<li>" + phone[0].Number + "</li>", user.IsPortalUser, GetContactTickets(user.UserID, 0), org.Name != "_Unknown Company" ? "<li><a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : "");
         }
 
         public string CreateNoResults()
