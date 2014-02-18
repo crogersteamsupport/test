@@ -1107,6 +1107,8 @@ namespace TSWebServices
                             </div>"
 
                     , u.IsActive ? "user-active":"user-inactive", u.IsActive ? "Active":"Inactive", u.FirstLastName, u.Email != "" ? "<a href='mailto:"+u.Email+"'>"+u.Email+"</a>" : "Empty", GetContactTickets(u.UserID, 0), GetContactTickets(u.UserID, 1),  phoneResults, u.UserID);
+
+                phoneResults.Clear();
             }
 
             return htmlresults.ToString();

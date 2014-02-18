@@ -881,6 +881,8 @@ $(document).ready(function () {
     top.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
         $('.datepicker').attr("data-format", dateformat);
         $('.datepicker').datetimepicker({ pickTime: false });
+
+        $('.datetimepicker').datetimepicker({ });
     });
 
     $('.userList').on('click', '.contactlink', function (e) {
@@ -1403,7 +1405,7 @@ $(document).ready(function () {
                     .appendTo('#tblHistory > tbody:last');
                     //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
                 }
-                if(history.length == 20)
+                if(history.length == 5)
                     $('<button>').text("Load More").addClass('btn-link')
                     .click(function (e){
                         LoadHistory($('#tblHistory tbody > tr').length+1);

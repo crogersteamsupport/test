@@ -262,7 +262,7 @@ namespace TeamSupport.Data
 
     public void LoadByOrganizationIDLimit(int organizationID, int start)
     {
-        int end = start + 19;
+        int end = start + 4;
         using (SqlCommand command = new SqlCommand())
         {
             command.CommandText = @"select *  from (SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum

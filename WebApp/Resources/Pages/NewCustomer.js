@@ -363,7 +363,7 @@ $(document).ready(function () {
         //$('.datepicker').datepicker({ format: dateformat });
         //$('.datepicker').datetimepicker({ pickTime: false });
         $('.datepicker').attr("data-format", dateformat);
-        $('.datetimepicker').attr("data-format", dateformat);
+
         $('.datepicker').datetimepicker({ pickTime: false });
         $('.timepicker').datetimepicker({ pickDate: false });
         $('.datetimepicker').datetimepicker({});
