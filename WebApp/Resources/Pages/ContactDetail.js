@@ -213,6 +213,7 @@ $(document).ready(function () {
 
     });
     $('#userProperties').on('click', '#fieldEmail', function (e) {
+        if ($(e.target).hasClass('fa')) return;
         if ($(this).hasClass('link')) {
             window.location.href = "mailto:" + $('#fieldEmail').text();
             return;
@@ -335,7 +336,7 @@ $(document).ready(function () {
         });
     });
     $('#userProperties').on('click', '#fieldCompany', function (e) {
-        if ($(this).hasClass('link')) {
+        if ($(e.target).hasClass('fa')) {
             top.Ts.MainPage.openNewCustomer($(this).attr('orgID'));
             return;
         }
@@ -843,19 +844,29 @@ $(document).ready(function () {
     {
         top.Ts.Services.Customers.LoadContactProperties(userID, function (user) {
             $('#userProperties').html(user);
-            $('#userProperties p').toggleClass("editable");
+            //$('#userProperties p').toggleClass("editable");
             if ($('#fieldPortalUser').text() == "No" || !_isAdmin)
                 $('#btnSendNewPW').hide();
 
             if($('#fieldEmail').text() != "Empty")
             {
-                $('#userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
-                $('#userProperties #fieldEmail').addClass("link");
+              $("<a>")
+                .attr('href', 'mailto:' + $('#fieldEmail').text())
+                .html(' <i class="fa fa-external-link"></i>')
+                .appendTo('#fieldEmail');
+                //$('#userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
+                //$('#userProperties #fieldEmail').addClass("link");
             }
 
             top.Ts.Services.Customers.GetUser(userID, function (user1) {
-                $('#userProperties #fieldCompany').attr('orgID', user1.OrganizationID);
-                $('#userProperties #fieldCompany').addClass("link");
+              $("<a>")
+                .html(' <i class="fa fa-external-link"></i>')
+                .appendTo('#fieldCompany');
+
+                $('#fieldCompany').attr('orgID', user1.OrganizationID);
+
+                //$('#userProperties #fieldCompany').attr('orgID', user1.OrganizationID);
+                //$('#userProperties #fieldCompany').addClass("link");
             });
         });
 
@@ -1083,7 +1094,7 @@ $(document).ready(function () {
             }
         });
     }
-    $('#userProperties p').toggleClass("editable");
+    //$('#userProperties p').toggleClass("editable");
     
 
 });
@@ -1171,7 +1182,7 @@ var appendCustomValues = function (fields) {
 
         container.append(div);
     }
-    $('#customProperties p').toggleClass("editable");
+    //$('#customProperties p').toggleClass("editable");
     //$('#contactName').toggleClass("editable");
 }
 

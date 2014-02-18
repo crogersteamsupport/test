@@ -27,26 +27,33 @@
 
 </head>
 <body>
-    <div class="pageheader ui-layout-north">
+    <div class="ui-layout-north">
+    <div class="pageheader">
         <span id="contactName"></span>
-        <div class="col-md-12 ">
+        <div class="col-md-12 main-nav">
             <ul class="nav nav-tabs" id="contactTabs">
                 <li><a href="#contact-overview" data-toggle="tab">Overview</a></li>
                 <li><a href="#contact-tickets" data-toggle="tab">Tickets</a></li>
                 <li><a href="#contact-notes" data-toggle="tab">Notes</a></li>
                 <li><a href="#contact-files" data-toggle="tab">Files</a></li>
                 <div class="pull-right">
-                    <button class="btn btn-sm btn-primary" id="btnSendNewPW">Send New Portal Password</button>
-                    <button class="btn btn-sm btn-primary" id="btnSendWelcome">Send Welcome Message</button>
-                    <button class="btn btn-sm btn-primary" data-target="#modalReminder" data-toggle="modal" id="contactReminder"><span class="fa fa-bell"></span> Reminder</button>
-                    <button class="btn btn-sm btn-primary" id="contactEdit"><span class="fa fa-pencil"></span> Edit</button>
-                    <button class="btn btn-sm btn-danger" id="contactDelete"><span class="fa fa-trash-o"></span> Delete</button>
+                  <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group">
+                      <button class="btn btn-primary" id="btnSendNewPW">Send New Portal Password</button>
+                      <button class="btn btn-primary" id="btnSendWelcome">Send Welcome Message</button>
+                      <button class="btn btn-primary" data-target="#modalReminder" data-toggle="modal" id="contactReminder">Reminder</button>
+                      <button class="btn btn-primary" id="contactDelete">Delete</button>
+                    </div>
+                  </div>
                 </div>
             </ul>
         </div>
 
     </div>
-    <div class="maincontainer ui-layout-center">
+    </div>
+
+    <div class="ui-layout-center">
+    <div class="maincontainer">
         <div class="tab-content">
             <div class="tab-pane fade in active" id="contact-overview">
                 <div class="row">
@@ -66,7 +73,51 @@
                                     </div>
                         </div>
                     </div>
-                </div>
+                    <div class="box">
+                      <div class="box-header">
+                        <h3>Custom Fields</h3>
+                      </div>
+                      <div class="box-content">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <form class="form-horizontal">
+                            <div class="col-md-12">
+                              <div id="customProperties">
+                              </div>
+                            </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="box mb10">
+                        <div class="box-header" style="padding-bottom: 10px;">
+                          <h3>History</h3>
+                          <div class="box-actions">
+                            <a id="historyToggle" data-action="collapse" data-toggle="collapse" data-target="#historyContent"
+                              href="#"><i class="fa fa-chevron-down"></i></a><a id="historyRefresh" href="#"><i
+                                class="fa fa-refresh"></i></a>
+                          </div>
+                        </div>
+                        <div class="box-content collapse" id="historyContent">
+                          <div class="row">
+                            <div class="col-md-12">
+                              <table class="table table-hover" id="tblHistory">
+                                <thead>
+                                  <tr>
+                                    <th>Date</th>
+                                    <th>Author</th>
+                                    <th>Description</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="box">
                             <div class="box-header"><h3>Recent Ticket History</h3><h3 class="pull-right" id="openTicketCount"></h3></div>
@@ -92,15 +143,12 @@
                                             </div>
                                             <div id="addressPanel">
                                             </div>
+                                            <div id="userInfo"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>                        
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
+                        </div>     
                         <div class="box">
                         <div class="box-header"><h3>Settings</h3></div>
                         <div class="box-content">
@@ -115,55 +163,10 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="box">
-                        <div class="box-header"><h3>Custom Fields</h3></div>
-                        <div class="box-content">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <form class="form-horizontal">
-                                        <div class="col-md-12">
-                                            <div id="customProperties"></div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
+                    </div>                   
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="box mb10">
-                            <div class="box-header" style="padding-bottom: 10px;"><h3>History</h3>
-                                <div class="box-actions">
-                                    <a id="historyToggle" data-action="collapse" data-toggle="collapse" data-target="#historyContent" href="#"><i class="fa fa-chevron-down"></i></a>
-                                    <a id="historyRefresh" href="#"><i class="fa fa-refresh"></i></a>
-                                </div>
-                            </div>
-                            <div class="box-content collapse" id="historyContent">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <table class="table table-hover" id="tblHistory"> 
-                                        <thead>
-                                            <tr>
-                                            <th>Date</th>
-                                            <th>Author</th>
-                                            <th>Description</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+           
             </div>
             <div class="tab-pane fade" id="contact-tickets">
                 <iframe id="ticketIframe" frameborder="0" scrolling="no" src="" width="100%" style="height:96%;position:absolute"></iframe>
@@ -281,6 +284,7 @@
                 </div>
             </div>
         </div>  
+    </div>
     </div>
 
 

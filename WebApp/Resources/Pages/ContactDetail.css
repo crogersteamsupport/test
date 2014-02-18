@@ -3,9 +3,11 @@
 }
 
 li.active > a {
-    background-color: #1E7DCC !important;
-    color: white !important;
+    /*background-color: #1E7DCC !important;
+    color: white !important;*/
 }
+
+.main-nav { margin-top: 13px; }
 
 #tblNotes, #tblFiles i {cursor:pointer;}
 .note-list{
