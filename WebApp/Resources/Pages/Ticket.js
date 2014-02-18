@@ -1748,17 +1748,27 @@ $(document).ready(function () {
         });
       }
       else if (result.indexOf("The company you have specified is invalid") !== -1) {
-        if (confirm('Unknown company, would you like to create it?')) {
-          top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, true, function (result) {
-            top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
-              appendCustomers(result);
-              $('.ticket-new-customer-email').val('');
-              $('.ticket-new-customer-first').val('');
-              $('.ticket-new-customer-last').val('');
-              $('.ticket-new-customer-company').val('');
-              $('.ticket-new-customer').hide();
+        if (top.Ts.Services.Users.CanCreateCompany || top.Ts.Services.Users.IsSystemAdmin) {
+          if (confirm('Unknown company, would you like to create it?')) {
+            top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, true, function (result) {
+              top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
+                appendCustomers(result);
+                $('.ticket-new-customer-email').val('');
+                $('.ticket-new-customer-first').val('');
+                $('.ticket-new-customer-last').val('');
+                $('.ticket-new-customer-company').val('');
+                $('.ticket-new-customer').hide();
+              });
             });
-          });
+          }
+        }
+        else {
+          alert("We're sorry, but you do not have the rights to create a new company.");
+          $('.ticket-new-customer-email').val('');
+          $('.ticket-new-customer-first').val('');
+          $('.ticket-new-customer-last').val('');
+          $('.ticket-new-customer-company').val('');
+          $('.ticket-new-customer').hide();
         }
       }
       else {
@@ -2977,6 +2987,10 @@ var loadTicket = function (ticketNumber, refresh) {
     //if (info.Ticket.ModifierName) $('<div>').text('Last Modified By: ' + info.Ticket.ModifierName).appendTo(details);
     //if (info.Ticket.DateModified) $('<div>').text('Last Modified On: ' + info.Ticket.DateModified.localeFormat(top.Ts.Utils.getDateTimePattern())).appendTo(details);
     $('#timeSpent').text(top.Ts.Utils.getTimeSpentText(info.Ticket.HoursSpent));
+
+    if (!top.Ts.System.User.CanCreateContact && !top.Ts.System.User.IsSystemAdmin) {
+      $('.ticket-customer-new').hide();
+    }
 
     appendCustomers(info.Customers);
     appendAssets(info.Assets);

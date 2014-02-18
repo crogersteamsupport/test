@@ -806,6 +806,9 @@ $(document).ready(function () {
           }
         });
 
+  if (!top.Ts.System.User.CanCreateContact && !top.Ts.System.User.IsSystemAdmin) {
+    $('.ticket-customer-new').hide();
+  }
 
   $('.ticket-customer-new').click(function (e) {
     e.preventDefault();
@@ -843,17 +846,27 @@ $(document).ready(function () {
         });
       }
       else if (result.indexOf("The company you have specified is invalid") !== -1) {
-        if (confirm('Unknown company, would you like to create it?')) {
-          top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, true, function (result) {
-            top.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
-              appendCustomer(result);
-              $('.ticket-new-customer-email').val('');
-              $('.ticket-new-customer-first').val('');
-              $('.ticket-new-customer-last').val('');
-              $('.ticket-new-customer-company').val('');
-              $('.ticket-new-customer').hide();
+        if (top.Ts.Services.Users.CanCreateCompany || top.Ts.Services.Users.IsSystemAdmin) {
+          if (confirm('Unknown company, would you like to create it?')) {
+            top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, true, function (result) {
+              top.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
+                appendCustomer(result);
+                $('.ticket-new-customer-email').val('');
+                $('.ticket-new-customer-first').val('');
+                $('.ticket-new-customer-last').val('');
+                $('.ticket-new-customer-company').val('');
+                $('.ticket-new-customer').hide();
+              });
             });
-          });
+          }
+        }
+        else {
+          alert("We're sorry, but you do not have the rights to create a new company.");
+          $('.ticket-new-customer-email').val('');
+          $('.ticket-new-customer-first').val('');
+          $('.ticket-new-customer-last').val('');
+          $('.ticket-new-customer-company').val('');
+          $('.ticket-new-customer').hide();
         }
       }
       else {
