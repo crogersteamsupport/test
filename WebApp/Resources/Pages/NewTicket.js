@@ -185,7 +185,43 @@ $(document).ready(function () {
   for (var i = 0; i < groups.length; i++) {
     $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('.newticket-group');
   }
-  addUnassignedComboItem($('.newticket-group').combobox());
+
+  function checkIfUserExistsInArray(user, array) {
+    var result = false;
+    for (var i = 0; i < array.length; i++) {
+      if (user.UserID == array[i].UserID) {
+        result = true;
+        break;
+      }
+    }
+    return result;
+  }
+
+  addUnassignedComboItem($('.newticket-group').combobox({
+    selected: function (e, ui) {
+      if (top.Ts.System.Organization.ShowGroupMembersFirstInTicketAssignmentList) {
+        var groupID = $('.newticket-group').val();
+        if (groupID != -1) {
+          top.Ts.Services.Users.GetGroupUsers(groupID, function (ticketGroupUsers) {
+            if (ticketGroupUsers.length > 0) {
+              var userID = $('.newticket-user').val();
+              $('.newticket-user').empty();
+              for (var i = 0; i < ticketGroupUsers.length; i++) {
+                $('<option>').attr('value', ticketGroupUsers[i].UserID).text(ticketGroupUsers[i].Name).data('o', ticketGroupUsers[i]).appendTo('.newticket-user');
+              }
+              for (var i = 0; i < users.length; i++) {
+                if (!checkIfUserExistsInArray(users[i], ticketGroupUsers)) {
+                  $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo('.newticket-user');
+                }
+              }
+              addUnassignedComboItem($('.newticket-user').combobox());
+              $('.newticket-user').combobox('setValue', userID);
+            }
+          });
+        }
+      }
+    }
+  }));
 
   var categories = top.Ts.Cache.getForumCategories();
   var option = $('<option>').text('Unassigned').attr('value', -1).appendTo('.newticket-community').data('o', null).attr('selected', 'selected');

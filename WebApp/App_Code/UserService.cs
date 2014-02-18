@@ -247,6 +247,24 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public BasicUser[] GetGroupUsers(int groupID)
+        {
+          Users users = new Users(TSAuthentication.GetLoginUser());
+          users.LoadByGroupID(groupID);
+          List<BasicUser> result = new List<BasicUser>();
+
+          foreach (User user in users)
+          {
+            BasicUser basic = new BasicUser();
+            basic.Name = user.FirstName + " " + user.LastName;
+            basic.UserID = user.UserID;
+            basic.InOfficeComment = user.InOfficeComment;
+            result.Add(basic);
+          }
+          return result.ToArray();
+        }
+
+        [WebMethod]
         public AutocompleteItem[] SearchUsers(string searchTerm)
         {
             UsersView users = new UsersView(TSAuthentication.GetLoginUser());

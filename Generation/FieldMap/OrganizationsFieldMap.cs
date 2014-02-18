@@ -96,6 +96,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SlaInitRespAnyAction", "SlaInitRespAnyAction", false, false, false);
       _fieldMap.AddMap("FontFamily", "FontFamily", false, false, false);
       _fieldMap.AddMap("FontSize", "FontSize", false, false, false);
+      _fieldMap.AddMap("ShowGroupMembersFirstInTicketAssignmentList", "ShowGroupMembersFirstInTicketAssignmentList", false, false, false);
             
     }
   }

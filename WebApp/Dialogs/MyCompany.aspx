@@ -120,6 +120,11 @@
             <asp:CheckBox ID="cbSlaInitRespAnyAction" runat="server" Text="Allow private actions to satisfy SLA first reponse"/>
           </td>
         </tr>
+        <tr>
+          <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbShowGroupMembersFirstInTicketAssignmentList" runat="server" Text="Show Group Members First in Ticket Assignment List"/>
+          </td>
+        </tr>
 
         <tr>
           <td>Business Day Start:</td>

@@ -9,6 +9,8 @@ var _ticketCreator = new Object();
 var _ticketSender = null;
 var _timerid;
 var _timerElapsed = 0;
+var _ticketGroupID = null;
+var _ticketGroupUsers = null;
 var speed = 50, counter = 0, start;
 
 var execSelectTicket = null;
@@ -1186,12 +1188,12 @@ $(document).ready(function () {
         if (senderInUsers.length > 0) {
           sender.InOfficeComment = senderInUsers[0].InOfficeComment;
 
-        var senderInOfficeComment = '';
-        if (sender.InOfficeComment) {
-          senderInOfficeComment = ' - ' + sender.InOfficeComment;
+          var senderInOfficeComment = '';
+          if (sender.InOfficeComment) {
+            senderInOfficeComment = ' - ' + sender.InOfficeComment;
+          }
+          $('<option>').text(sender.Name + senderInOfficeComment + senderSuffix).appendTo(select).data('user', sender);
         }
-        $('<option>').text(sender.Name + senderInOfficeComment + senderSuffix).appendTo(select).data('user', sender);
-      }
       }
 
       if (_ticketCreator.UserID > 0 && _ticketCreator.Name != $(this).text() && (_ticketSender == null || _ticketCreator.Name != _ticketSender.Name)) {
@@ -1211,26 +1213,45 @@ $(document).ready(function () {
         if (creatorInUsers.length > 0) {
           creator.InOfficeComment = creatorInUsers[0].InOfficeComment;
 
-        var creatorInOfficeComment = '';
-        if (creator.InOfficeComment) {
-          creatorInOfficeComment = ' - ' + creator.InOfficeComment;
-        }
-        $('<option>').text(creator.Name + creatorInOfficeComment + ' (Creator)').appendTo(select).data('user', creator);
-        creatorAdded = true;
+          var creatorInOfficeComment = '';
+          if (creator.InOfficeComment) {
+            creatorInOfficeComment = ' - ' + creator.InOfficeComment;
+          }
+          $('<option>').text(creator.Name + creatorInOfficeComment + ' (Creator)').appendTo(select).data('user', creator);
+          creatorAdded = true;
         }
       }
-      //var separator = $('<option disabled>').text('------------------------ THIS IS DISABLED').appendTo(select);
+
+      if (top.Ts.System.Organization.ShowGroupMembersFirstInTicketAssignmentList && _ticketGroupUsers != null) {
+        for (var i = 0; i < _ticketGroupUsers.length; i++) {
+          // If it has not been added previously as sender or creator
+          if (_ticketSender === null || (_ticketSender.Name != _ticketGroupUsers[i].Name && (!creatorAdded || _ticketCreator.Name != _ticketGroupUsers[i].Name))) {
+            var inOfficeComment = '';
+            if (_ticketGroupUsers[i].InOfficeComment) {
+              inOfficeComment = ' - ' + _ticketGroupUsers[i].InOfficeComment;
+            }
+            var option = $('<option>').text(_ticketGroupUsers[i].Name + inOfficeComment).appendTo(select).data('user', _ticketGroupUsers[i]);
+            groupUserAdded = true;
+            if ($(this).text() === _ticketGroupUsers[i].Name) {
+              option.attr('selected', 'selected');
+            }
+          }
+        }
+      }
 
       for (var i = 0; i < users.length; i++) {
         // If it has not been added previously as sender or creator
         if (_ticketSender === null || (_ticketSender.Name != users[i].Name && (!creatorAdded || _ticketCreator.Name != users[i].Name))) {
-          var inOfficeComment = '';
-          if (users[i].InOfficeComment) {
-            inOfficeComment = ' - ' + users[i].InOfficeComment;
-          }
-          var option = $('<option>').text(users[i].Name + inOfficeComment).appendTo(select).data('user', users[i]);
-          if ($(this).text() === users[i].Name) {
-            option.attr('selected', 'selected');
+          // If it has not been added previously as group user
+          if (_ticketGroupUsers === null || !top.Ts.System.Organization.ShowGroupMembersFirstInTicketAssignmentList || !checkIfUserExistsInArray(users[i], _ticketGroupUsers)) {
+            var inOfficeComment = '';
+            if (users[i].InOfficeComment) {
+              inOfficeComment = ' - ' + users[i].InOfficeComment;
+            }
+            var option = $('<option>').text(users[i].Name + inOfficeComment).appendTo(select).data('user', users[i]);
+            if ($(this).text() === users[i].Name) {
+              option.attr('selected', 'selected');
+            }
           }
         }
       }
@@ -1294,7 +1315,16 @@ $(document).ready(function () {
             if (result !== null) {
               $('#ticketGroup').text(result == "" ? 'Unassigned' : result);
               parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
-              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
+              //              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
+              _ticketGroupID = group.GroupID;
+              if (_ticketGroupID != null) {
+                top.Ts.Services.Users.GetGroupUsers(_ticketGroupID, function (result) {
+                  _ticketGroupUsers = result;
+                });
+              }
+              else {
+                _ticketGroupUsers = null;
+              }
             }
             else {
               parent.show().find('img').hide();
@@ -2918,6 +2948,7 @@ var loadTicket = function (ticketNumber, refresh) {
     $('#ticketSeverity').text(info.Ticket.Severity);
     setUserName(info.Ticket.UserName, info.Ticket.UserID);
     $('#ticketGroup').text(info.Ticket.GroupName == null ? 'Unassigned' : info.Ticket.GroupName);
+    _ticketGroupID = info.Ticket.GroupID;
     setProduct(info.Ticket.ProductID, info.Ticket.ProductName);
     setVersion(info.Ticket.ReportedVersionID, info.Ticket.ReportedVersion, false);
     setVersion(info.Ticket.SolvedVersionID, info.Ticket.SolvedVersion, true);
@@ -3033,9 +3064,14 @@ var loadTicket = function (ticketNumber, refresh) {
     }
 
     if (typeof refresh === "undefined") {
-      window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
+      //      window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
     }
 
+    if (_ticketGroupID != null) {
+      top.Ts.Services.Users.GetGroupUsers(_ticketGroupID, function (result) {
+        _ticketGroupUsers = result;
+      });
+    }
   });
 }
 
@@ -3813,4 +3849,15 @@ var removeUserViewing = function (ticketNum, userID) {
             }
         }
     }
+}
+
+function checkIfUserExistsInArray(user, array) {
+  var result = false;
+  for (var i = 0; i < array.length; i++) {
+    if (user.UserID == array[i].UserID) {
+      result = true;
+      break;
+    }
+  }
+  return result;
 }

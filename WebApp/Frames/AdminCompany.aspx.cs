@@ -170,6 +170,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     SlaLevel level = organization.InternalSlaLevelID != null  ? SlaLevels.GetSlaLevel(UserSession.LoginUser, (int)organization.InternalSlaLevelID) : null;
     table.Rows.Add(new string[] { "Internal SLA:", level == null ? "[None Assigned]" :level.Name});
 
+    table.Rows.Add(new string[] { "Show Group Members First in Ticket Assignment List:", organization.ShowGroupMembersFirstInTicketAssignmentList.ToString() });
 
     
     rptProperties.DataSource = table;
