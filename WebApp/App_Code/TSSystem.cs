@@ -120,7 +120,9 @@ namespace TSWebServices
 
         if (IsMenuItemActive(user, "mniDashboard"))
         {
-          items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "vcr/1_7_0/images/nav/20/Dashboard.png", string.Format(data, "Frames/Dashboard.aspx", "vcr/1_7_0/PaneInfo/Dashboard.html")));
+          //items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "vcr/1_7_0/images/nav/20/Dashboard.png", string.Format(data, "Frames/Dashboard.aspx", "vcr/1_7_0/PaneInfo/Dashboard.html")));
+          items.Add(new TsMenuItem("dashboard", "mniDashboard", "Dashboard", "vcr/1_7_0/images/nav/20/Dashboard.png", string.Format(data, "vcr/1_7_0/Pages/Dashboard.html", "vcr/1_7_0/PaneInfo/Dashboard.html")));
+          
         }
 
         if (IsMenuItemActive(user, "mniMyTickets"))
@@ -207,7 +209,8 @@ namespace TSWebServices
 
         if ((user.IsSystemAdmin || !org.AdminOnlyReports) && IsMenuItemActive(user, "mniReports"))
         {
-          items.Add(new TsMenuItem("reports", "mniReports", "Reports", "vcr/1_7_0/images/nav/20/reports.png", string.Format(data, "Frames/Reports.aspx", "vcr/1_7_0/PaneInfo/Reports.html")));
+          //items.Add(new TsMenuItem("reports", "mniReports", "Reports", "vcr/1_7_0/images/nav/20/reports.png", string.Format(data, "Frames/Reports.aspx", "vcr/1_7_0/PaneInfo/Reports.html")));
+          items.Add(new TsMenuItem("reports", "mniReports", "Reports", "vcr/1_7_0/images/nav/20/reports.png", string.Format(data, "vcr/1_7_0/pages/reports.html", "vcr/1_7_0/PaneInfo/Reports.html")));
         }
         if (user.IsSystemAdmin && IsMenuItemActive(user, "mniAdmin"))
           items.Add(new TsMenuItem("admin", "mniAdmin", "Admin", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "Frames/Admin.aspx", "vcr/1_7_0/PaneInfo/Admin.html")));
@@ -226,11 +229,6 @@ namespace TSWebServices
           utils.AddItem(new TsMenuItem("utils", "utils-ticketsearch", "Ticket Search", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_TicketSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-portalsearch", "Portal Search", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_PortalSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-emailsearch", "Email Search", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_EmailsSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
-          if (TSAuthentication.OrganizationID == 1078)
-          {
-            utils.AddItem(new TsMenuItem("utils", "mniDashboard2", "Dashboard", "vcr/1_7_0/images/nav/20/Dashboard.png", string.Format(data, "vcr/1_7_0/Pages/Dashboard.html", "vcr/1_7_0/PaneInfo/Dashboard.html")));
-            utils.AddItem(new TsMenuItem("utils", "mniReports2", "Reports", "vcr/1_7_0/images/nav/20/reports.png", string.Format(data, "vcr/1_7_0/pages/reports.html", "vcr/1_7_0/PaneInfo/Reports.html")));
-          }
 
         }
 
