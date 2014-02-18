@@ -1348,9 +1348,9 @@ $(document).ready(function () {
         top.Ts.Services.Customers.LoadAddresses(organizationID,top.Ts.ReferenceTypes.Organizations, function (address) {
             for (var i = 0; i < address.length; i++) {
                 $('#addressPanel').append("<div class='form-group content'> \
-                                        <label for='inputName' class='col-xs-4 control-label'>" + address[i].Description + " <a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a></label> \
+                                        <label for='inputName' class='col-xs-4 control-label'>" + address[i].Description + "</label> \
                                         <div class='col-xs-5'> \
-                                            " + ((address[i].Addr1 != null) ? "<p class='form-control-static'>" + address[i].Addr1 + "</p>" : "") + " \
+                                            " + ((address[i].Addr1 != null) ? "<p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a> " + address[i].Addr1 + "</p>" : "") + " \
                                             " + ((address[i].Addr2 != null) ? "<p class='form-control-static pt0'>" + address[i].Addr2 + "</p>" : "") + " \
                                             " + ((address[i].Addr3 != null) ? "<p class='form-control-static pt0'>" + address[i].Addr3 + "</p>" : "") + " \
                                             <p class='form-control-static pt0'> \
