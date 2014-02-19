@@ -438,8 +438,8 @@ $(document).ready(function () {
           .click(function (e) {
               //var value = top.Ts.Utils.getMsDate($(this).prev().find('input').val());
               top.Ts.Services.Customers.SetCompanySAE(organizationID, $(this).prev().find('input').val(), function (result) {
-                  var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-                  header.text(date);
+                  //var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+                  header.text(result);
                   $('#customerEdit').removeClass("disabled");
               },
                             function (error) {
@@ -760,8 +760,8 @@ $(document).ready(function () {
     $('#fieldActive').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        top.Ts.Services.Customers.SetCompanyActive(userID, ($(this).text() !== 'Yes'), function (result) {
-            $('#fieldActive').text((result === true ? 'Yes' : 'No'));
+        top.Ts.Services.Customers.SetCompanyActive(organizationID, ($(this).text() !== 'True'), function (result) {
+            $('#fieldActive').text((result === true ? 'True' : 'False'));
         },
         function (error) {
             header.show();
@@ -772,8 +772,8 @@ $(document).ready(function () {
     $('#fieldAPIEnabled').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        top.Ts.Services.Customers.SetCompanyAPIEnabled(userID, ($(this).text() !== 'Yes'), function (result) {
-            $('#fieldAPIEnabled').text((result === true ? 'Yes' : 'No'));
+        top.Ts.Services.Customers.SetCompanyAPIEnabled(organizationID, ($(this).text() !== 'True'), function (result) {
+            $('#fieldAPIEnabled').text((result === true ? 'True' : 'False'));
         },
         function (error) {
             header.show();
@@ -784,8 +784,8 @@ $(document).ready(function () {
     $('#fieldPortalAccess').click(function (e) {
         if (!$(this).hasClass('editable') || (!_isAdmin && !top.Ts.System.User.HasPortalRights) || !top.Ts.System.User.CanEditCompany)
             return false;
-        top.Ts.Services.Customers.SetCompanyPortalAccess(userID, ($(this).text() !== 'Yes'), function (result) {
-            $('#fieldPortalAccess').text((result === true ? 'Yes' : 'No'));
+        top.Ts.Services.Customers.SetCompanyPortalAccess(organizationID, ($(this).text() !== 'True'), function (result) {
+            $('#fieldPortalAccess').text((result === true ? 'True' : 'False'));
         },
         function (error) {
             header.show();
@@ -1120,8 +1120,10 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this attachment?')) {
-            top.privateServices.DeleteAttachment($(this).parent().parent().attr('id'));
-            LoadFiles();
+            top.privateServices.DeleteAttachment($(this).parent().parent().attr('id'), function (e) {
+                LoadFiles();
+            });
+            
         }
     });
 
@@ -1312,7 +1314,7 @@ $(document).ready(function () {
             $('#fieldDefaultUser').data('field', result.orgproxy.DefaultSupportUserID);
             $('#fieldDefaultGroup').text(result.SupportGroup);
             $('#fieldDefaultGroup').data('field', result.orgproxy.DefaultSupportGroupID);
-            $('#fieldInactive').text(result.orgproxy.InActiveReason);
+            $('#fieldInactive').text(result.orgproxy.InActiveReason != null && result.orgproxy.InActiveReason != "" ? result.orgproxy.InActiveReason : "Empty");
 
             $('#fieldTimeZone').text(result.orgproxy.TimeZoneID == "" ? "Central Standard Time" : result.orgproxy.TimeZoneID);
             $('#fieldTimeZone').data('field', result.orgproxy.TimeZoneID);

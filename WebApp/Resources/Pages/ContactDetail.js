@@ -110,9 +110,13 @@ $(document).ready(function () {
 
     $('#contactDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this contact?')) {
-            top.privateServices.DeleteUser(userID);
-            top.Ts.MainPage.closeNewContactTab(userID);
-            top.Ts.MainPage.closeNewContact(userID);
+            top.privateServices.DeleteUser(userID, function (e) {
+                if (window.parent.document.getElementById('iframe-mniCustomers'))
+                    window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
+                top.Ts.MainPage.closeNewContactTab(userID);
+                top.Ts.MainPage.closeNewContact(userID);
+            });
+
 
         }
     });
@@ -454,7 +458,7 @@ $(document).ready(function () {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this phone number?')) {
             top.privateServices.DeletePhone($(this).attr('id'));
-            LoadPhoneNumbers();
+            LoadPhoneNumbers(1);
         }
     });
 
@@ -507,7 +511,7 @@ $(document).ready(function () {
             $('#phoneExt').val('')
             $('#phoneID').val('-1');
             $('#modalPhone').modal('hide');
-            LoadPhoneNumbers();
+            LoadPhoneNumbers(1);
         }, function () {
             alert('There was an error saving this phone number.  Please try again.');
         });
@@ -561,8 +565,10 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this attachment?')) {
-            top.privateServices.DeleteAttachment($(this).parent().parent().attr('id'));
-            LoadFiles();
+            top.privateServices.DeleteAttachment($(this).parent().parent().attr('id'), function (e) {
+                LoadFiles();
+            });
+            
         }
     });
 
@@ -789,7 +795,7 @@ $(document).ready(function () {
         });
     }
 
-    function LoadPhoneNumbers() {
+    function LoadPhoneNumbers(reload) {
         $('#phonePanel').empty();
         top.Ts.Services.Customers.LoadPhoneNumbers(userID,top.Ts.ReferenceTypes.Users, function (phone) {
             for (var i = 0; i < phone.length; i++) {
@@ -806,10 +812,12 @@ $(document).ready(function () {
                                         </div> \
                                     </div>");
             }
+            if (reload != undefined)
+                $("#phonePanel #editmenu").toggleClass("hiddenmenu");
         });
     }
 
-    function LoadAddresses() {
+    function LoadAddresses(reload) {
         $('#addressPanel').empty();
         top.Ts.Services.Customers.LoadAddresses(userID, top.Ts.ReferenceTypes.Users, function (address) {
             for (var i = 0; i < address.length; i++) {
@@ -828,6 +836,8 @@ $(document).ready(function () {
                                         </div> \
                                     </div>");
             }
+            if (reload != undefined)
+                $("#phonePanel #editmenu").toggleClass("hiddenmenu");
         });
     }
 

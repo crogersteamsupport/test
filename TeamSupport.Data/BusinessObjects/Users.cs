@@ -75,13 +75,14 @@ namespace TeamSupport.Data
 
     public void EmailCountToMuroc(bool isNew)
     { 
-      UsersViewItem view = GetUserView();
+      //UsersViewItem view = GetUserView();
+      Organization o = Organizations.GetOrganization(BaseCollection.LoginUser, this.OrganizationID);
       MailMessage message = new MailMessage();
       message.From = new MailAddress("support@teamsupport.com");
       message.To.Add("eharrington@teamsupport.com");
       message.To.Add("jhathaway@teamsupport.com");
       message.Subject = isNew ? "TeamSupport User Added" : "TeamSupport User Removed";
-      message.Subject += " - " + view.Organization;
+      message.Subject += " - " + o.Name;
       int count = Organizations.GetUserCount(Collection.LoginUser, OrganizationID);
       message.IsBodyHtml = true;
       string body = @"
@@ -100,7 +101,7 @@ namespace TeamSupport.Data
     <td>{4:D}</td>
   </tr>
 </table>";
-      message.Body = string.Format(body, view.Organization, OrganizationID, FirstLastName, UserID, count, message.Subject);
+      message.Body = string.Format(body, o.Name, OrganizationID, FirstLastName, UserID, count, message.Subject);
       Emails.AddEmail(Collection.LoginUser, 1078, null, "User Count Changed", message);
     
     }
@@ -1014,6 +1015,13 @@ AND u.IsPortalUser = 1";
         command.Parameters.Clear();
         command.Parameters.AddWithValue("@UserID", userID);
         users.ExecuteNonQuery(command, "Tickets");
+
+        command.CommandText = "DELETE FROM RecentlyViewedItems WHERE (refID = @UserID) AND (refType = 0)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@UserID", userID);
+        users.ExecuteNonQuery(command, "RecentlyViewedItems");
+
       }
 
       User user = Users.GetUser(loginUser, userID);

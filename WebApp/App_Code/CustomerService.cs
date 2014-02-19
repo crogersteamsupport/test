@@ -1069,7 +1069,7 @@ namespace TSWebServices
 
             if (organizations.IsEmpty) return null;
 
-            orgProp.SAED = organizations[0].SAExpirationDate == null ? "[None]" : ((DateTime)organizations[0].SAExpirationDate).ToLongDateString();
+            orgProp.SAED = organizations[0].SAExpirationDate == null ? "[None]" : ((DateTime)organizations[0].SAExpirationDate).ToShortDateString();
             if (organizations[0].SlaLevelID == null)
                 orgProp.SLA="[None]";
             else
