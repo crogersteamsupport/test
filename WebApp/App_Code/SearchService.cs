@@ -977,7 +977,7 @@ namespace TSWebServices
           searchTerm = searchTerm.Trim();
           job.Request = searchTerm;
           job.FieldWeights = "Name:1000,LastName:1000,FirstName:999,Email:998,MiddleName:997";
-          job.MaxFilesToRetrieve = 1000;
+          job.MaxFilesToRetrieve = 100000;
           //job.AutoStopLimit = 1000000;
           job.TimeoutSeconds = 30;
 
@@ -985,17 +985,9 @@ namespace TSWebServices
           //In this case we'll sort by most recent else we'll sort by relevance.
           if (searchTerm == "xfirstword")
           {
-            job.SearchFlags =
-              SearchFlags.dtsSearchSelectMostRecent |
-              SearchFlags.dtsSearchDelayDocInfo;
+            job.SearchFlags = SearchFlags.dtsSearchSelectMostRecent | SearchFlags.dtsSearchDelayDocInfo;
           }
           else
-          {
-            job.SearchFlags = SearchFlags.dtsSearchDelayDocInfo;
-          }
-
-          int num = 0;
-          if (!int.TryParse(searchTerm, out num))
           {
             job.Fuzziness = 1;
             job.Request = job.Request + "*";
@@ -1003,8 +995,10 @@ namespace TSWebServices
               //SearchFlags.dtsSearchFuzzy | 
               //SearchFlags.dtsSearchStemming |
               SearchFlags.dtsSearchPositionalScoring |
-              SearchFlags.dtsSearchAutoTermWeight;
+              SearchFlags.dtsSearchAutoTermWeight | 
+              SearchFlags.dtsSearchDelayDocInfo;
           }
+
 
           if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
 

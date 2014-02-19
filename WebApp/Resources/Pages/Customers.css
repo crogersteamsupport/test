@@ -52,23 +52,28 @@ color: #666;
 .recent-container ul{padding: 0px;}
 .recent-container ul.recent-list>li {list-style:none;border-bottom:1px solid #eee; padding: 10px}
 .recent-container ul.recent-list>li:last-child {border-bottom:none;}
-.recent-info ul { list-style: none; font-size: 14px; color: #666; margin-left:0px; }
+.recent-info h4 { font-size: 16px; }
+.recent-info ul { list-style: none; color: #666; margin-left:0px; }
 .recent-info ul li { line-height: 18px; }
 .recent-info ul li span { line-height: 18px; }
-.recent-info {word-wrap:break-word;}
+.recent-info {word-wrap:break-word; font-size: 12px;}
 .recent-info span.fa { color:#999;}
 .recent-info li span { color: #dadada;}
 
-.searchresults>li{list-style:none;border-bottom:1px solid #eee; padding: 15px 5px 5px 5px;}
+.results-wrapper { padding: 10px 10px;}
+.searchresults { width:100%; border-collapse:collapse;} 
+.searchresults ul {padding: 0; margin: 0;}
+.searchresults td { border-bottom: 1px solid #eee; padding: 12px 12px;}
+.result-icon { width: 50px;}
 
-.peopleinfo h3, h4{display:inline}
-.peopleinfo ul li  span{font-weight:bold}
+.peopleinfo h4{display:inline; font-size:16px;}
+.peopleinfo p { margin: 0; text-align:right;}
+.peopleinfo { font-size: 12px;}
+.peopleinfo ul a { color:#999;}
 .peopleinfo li {list-style:none;}
-.peopleinfo span.fa { color:#999;}
-.peopleinfo li span { color: #999;}
 
 
-.contactlink, .companylink {padding: 0 10px; color:#444; }
+
 .on {color: green;}
 .off {color: lightgray;}
 .scrollup{
@@ -85,6 +90,3 @@ color: #666;
     outline-style:none !important;
 }
 
-h4 a{
-    padding-left: 10px
-}

@@ -402,8 +402,7 @@ namespace TSWebServices
         {
             StringBuilder builder = new StringBuilder();
             SearchService s = new SearchService();
-            if (filter == "")
-                filter = "xfirstword";
+            if (string.IsNullOrWhiteSpace(filter)) filter = "xfirstword";
 
             CompaniesAndContactsSearchResults test = s.SearchCompaniesAndContacts(filter, startIndex, 20, true, true);
 
@@ -419,10 +418,11 @@ namespace TSWebServices
 
                 return builder.ToString();
             }
-            else
+            else if (startIndex < 2)
             {
                 return CreateNoResults();
             }
+            else { return ""; }
 
         }
 
@@ -437,8 +437,7 @@ namespace TSWebServices
             //organizations.CustomerLoadByLikeOrganizationName(loginUser.OrganizationID, filter, false, startIndex, true);
 
             SearchService s = new SearchService();
-            if (filter == "")
-                filter = "xfirstword";
+            if (string.IsNullOrWhiteSpace(filter)) filter = "xfirstword";
             CompaniesAndContactsSearchResults test = s.SearchCompaniesAndContacts(filter, startIndex, 20, true, false);
 
             if (test.Items.Length > 0)
@@ -450,11 +449,12 @@ namespace TSWebServices
 
                 return builder.ToString();
             }
-            else
+            else if (startIndex < 2)
             {
                 return CreateNoResults();
             }
-            //if (organizations.Count > 0)
+            else { return ""; }
+          //if (organizations.Count > 0)
             //{
 
             //    foreach (Organization item in organizations)
@@ -478,25 +478,25 @@ namespace TSWebServices
             StringBuilder builder = new StringBuilder();
             UsersView users = new UsersView(loginUser);
 
-            if (filter == "")
-                filter = "xfirstword";
+            if (string.IsNullOrWhiteSpace(filter)) filter = "xfirstword";
 
             SearchService s = new SearchService();
             CompaniesAndContactsSearchResults test = s.SearchCompaniesAndContacts(filter, startIndex, 20, false, true);
 
             if (test.Items.Length > 0)
             {
-                foreach (CompanyOrContact item in test.Items)
-                {
-                    builder.Append(CreateContactBox(item.Id));
-                }
+              foreach (CompanyOrContact item in test.Items)
+              {
+                builder.Append(CreateContactBox(item.Id));
+              }
 
-                return builder.ToString();
+              return builder.ToString();
             }
-            else
+            else if (startIndex < 2)
             {
-                return CreateNoResults();
+              return CreateNoResults();
             }
+            else { return ""; }
 
 
             //users.CustomerLoadByLikeName(loginUser.OrganizationID, filter, startIndex, true);
@@ -1735,19 +1735,30 @@ namespace TSWebServices
             PhoneNumbers phone = new PhoneNumbers(TSAuthentication.GetLoginUser());
             phone.LoadByID(org.OrganizationID, ReferenceType.Organizations);
 
-            string boxhtml = @"<li>
-                                    <div class=""peopleinfo"">
-                                        <div class=""pull-right""><span>{5} Open Tickets</span></div>
-                                        <h4><span class=""fa fa-building-o""></span><a class=""companylink"" id=""o{0}"" href="""">{1}</a></h4>
-                                        <ul>
-                                            {2}
-                                            <li><span>Portal Access:</span> {3}</li>
-                                            <li><span>Website:</span> {4}</li>
-                                        </ul>
-                                    </div>
-                            </li>";
+            string boxhtml = @"<tr>
+                                 <td class=""result-icon"">
+                                  <span class=""fa-stack fa-2x"">
+                                    <i class=""fa fa-circle fa-stack-2x text-primary""></i>
+                                    <i class=""fa fa-building-o fa-stack-1x fa-inverse""></i>
+                                  </span>
+                                  </td>
+                                 <td>
+                                   <div class=""peopleinfo"">
+                                     <div class=""pull-right""><p class="""">{5} Open Tickets</p>{3}</div>
+                                     <h4><a class=""companylink"" id=""o{0}"" href="""">{1}</a></h4>
+                                     <ul>{2}{4}</ul>
+                                   </div>
+                                 </td>
+                               </tr>";
 
-            return string.Format(boxhtml, org.OrganizationID, org.Name, phone.IsEmpty || phone[0].Number == "" ? "" : "<li>" + phone[0].Number + "</li>", org.HasPortalAccess, org.Website, GetCustomerOpenTickets(org));
+            return string.Format(
+              boxhtml, 
+              org.OrganizationID, 
+              org.Name, 
+              phone.IsEmpty || phone[0].Number == "" ? "" : "<li><a href=\"tel:"+ phone[0].Number+"\">" + phone[0].Number + "</a></li>",
+              org.HasPortalAccess ? "<p class=\"\">Has portal access</p>" : "<p class=\"text-muted\">Does not have portal access</p>", 
+              string.IsNullOrWhiteSpace(org.Website) ? "" : "<li><a href=\""+org.Website+" \">"+ org.Website+"</a> {4}</li>" , 
+              GetCustomerOpenTickets(org));
         }
 
         public string CreateContactBox(int userID)
@@ -1757,27 +1768,40 @@ namespace TSWebServices
             PhoneNumbers phone = new PhoneNumbers(TSAuthentication.GetLoginUser());
             phone.LoadByID(user.UserID, ReferenceType.Users);
 
-            string boxhtml = @"<li>
-                                    <div class=""peopleinfo"">
-                                        <div class=""pull-right""><span>{7} Open Tickets</span></div>
-                                        <h4><span class=""fa fa-user""></span><a class=""contactlink"" id=""u{0}"" href="""">{1} {2} {3}</a></h4>
-                                        
-                                        <ul>
-                                            {8}{4}{5}
-                                            <li><span>Portal Access:</span> {6}</li>
-                                        </ul>
-                                    </div>
+            string boxhtml = @"<tr>
+                                  <td class=""result-icon"">
 
-                            </li>";
+                                    <span class=""fa-stack fa-2x"">
+                                      <i class=""fa fa-circle fa-stack-2x text-primary""></i>
+                                      <i class=""fa fa-user fa-stack-1x fa-inverse""></i>
+                                    </span>
+                                    </td>
+                                  <td>
+                                      <div class=""peopleinfo"">
+                                      <div class=""pull-right""><p class="""">{7} Open Tickets</p>{6}</div>
+                                      <h4><a class=""contactlink"" id=""u{0}"" href="""">{1} {2} {3}</a></h4>
+                                      <ul>{8}{4}{5}</ul>
+                                  </div>
+                                  </td>
+                               </tr>";
 
-            return string.Format(boxhtml, user.UserID, user.FirstName, user.LastName, string.IsNullOrEmpty(user.Title) ? "" : "[" + user.Title + "]", "<li><a href='mailto:" + user.Email + "'>" + user.Email + "</a></li>", phone.IsEmpty || phone[0].Number == "" ? "" : "<li>" + phone[0].Number + "</li>", user.IsPortalUser, GetContactTickets(user.UserID, 0), org.Name != "_Unknown Company" ? "<li><a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : "");
+            return string.Format(
+              boxhtml, 
+              user.UserID, 
+              user.FirstName, 
+              user.LastName, 
+              "", 
+              "<li><a href='mailto:" + user.Email + "'>" + user.Email + "</a></li>", 
+              phone.IsEmpty || phone[0].Number == "" ? "" : "<li><a href=\"tel:" + phone[0].Number + "\">" + phone[0].Number + "</a></li>",
+              user.IsPortalUser ? "<p class=\"\">Has portal access</p>" : "<p class=\"text-muted\">Does not have portal access</p>",
+              GetContactTickets(user.UserID, 0),
+              string.IsNullOrWhiteSpace(user.Title) ? org.Name != "_Unknown Company" ? "<li><a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : "" : org.Name != "_Unknown Company" ? "<li>"+ user.Title +" at <a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : ""
+              );
         }
 
         public string CreateNoResults()
         {
-            string boxhtml = @"<li>
-                                <h2 class=""text-center"">No Search Results Found!</h2>
-                            </li>";
+            string boxhtml = @"<tr><td><h2 class=""text-center"">We searched hard, but we coundn't find anything.</h2></td></tr>";
             return boxhtml;
         }
 
