@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Text.RegularExpressions;
 using TeamSupport.Data;
+
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -36,7 +38,7 @@ namespace TeamSupport.ServiceLibrary
         phoneNumbers.LoadByID(organization.OrganizationID, ReferenceType.Organizations);
         foreach (PhoneNumber number in phoneNumbers)
         {
-          builder.AppendLine(number.FormattedNumber + number.Extension == "" ? "" : " Ext: " + number.Extension);
+          builder.AppendLine(Regex.Replace(number.Number, "[^0-9]", ""));
         }
 
         Addresses addresses = new Addresses(_loginUser);
@@ -56,6 +58,7 @@ namespace TeamSupport.ServiceLibrary
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
         List<string> columnsToIndex = new List<string>();
+        columnsToIndex.Add("OrganizationID");
         columnsToIndex.Add("Name");
         columnsToIndex.Add("Description");
         columnsToIndex.Add("Website");
@@ -84,7 +87,8 @@ namespace TeamSupport.ServiceLibrary
 
         DocIsFile = false;
         DocName = organization.OrganizationID.ToString();
-        DocDisplayName = organization.Name;
+        DocFields += "SortName\t" + (string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim()) + "\t";
+        DocDisplayName = string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim();
         DocCreatedDate = (DateTime)organization.Row["DateCreated"];
         DocModifiedDate = (DateTime)organization.Row["DateModified"];
 

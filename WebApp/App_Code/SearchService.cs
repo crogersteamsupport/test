@@ -977,7 +977,7 @@ namespace TSWebServices
           searchTerm = searchTerm.Trim();
           job.Request = searchTerm;
           job.FieldWeights = "Name:1000,LastName:1000,FirstName:999,Email:998,MiddleName:997";
-          job.MaxFilesToRetrieve = 100000;
+          job.MaxFilesToRetrieve = 0;
           //job.AutoStopLimit = 1000000;
           job.TimeoutSeconds = 30;
 
@@ -1017,7 +1017,7 @@ namespace TSWebServices
 
           if (searchTerm == "xfirstword")
           {
-            job.Results.Sort(SortFlags.dtsSortByField, "Name");
+            job.Results.Sort(SortFlags.dtsSortByField | SortFlags.dtsSortAscending, "SortName");
           }
 
 

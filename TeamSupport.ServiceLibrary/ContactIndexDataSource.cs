@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Text.RegularExpressions;
 using TeamSupport.Data;
 
 namespace TeamSupport.ServiceLibrary
@@ -36,7 +37,7 @@ namespace TeamSupport.ServiceLibrary
         phoneNumbers.LoadByID(contact.UserID, ReferenceType.Contacts);
         foreach (PhoneNumber number in phoneNumbers)
         {
-          builder.AppendLine(number.FormattedNumber + number.Extension == "" ? "" : " Ext: " + number.Extension);
+          builder.AppendLine(Regex.Replace(number.Number, "[^0-9]", ""));
         }
 
         Addresses addresses = new Addresses(_loginUser);
@@ -56,6 +57,7 @@ namespace TeamSupport.ServiceLibrary
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
         List<string> columnsToIndex = new List<string>();
+        columnsToIndex.Add("UserID");
         columnsToIndex.Add("Email");
         columnsToIndex.Add("Name");
         columnsToIndex.Add("FirstName");
@@ -86,7 +88,16 @@ namespace TeamSupport.ServiceLibrary
 
         DocIsFile = false;
         DocName = contact.UserID.ToString();
-        DocDisplayName = contact.FirstName + " " + contact.LastName;
+        if (string.IsNullOrWhiteSpace(contact.LastName))
+        {
+          DocFields += "SortName\t" + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim()) + "\t";
+          DocDisplayName = string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim();
+        }
+        else
+        {
+          DocFields += "SortName\t" + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim()) + "\t";
+          DocDisplayName = contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim());
+        }
         DocCreatedDate = (DateTime)contact.Row["DateCreated"];
         DocModifiedDate = (DateTime)contact.Row["DateModified"];
 

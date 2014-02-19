@@ -51,7 +51,7 @@ namespace TeamSupport.ServiceLibrary
             }
 
             cnt++;
-            ProcessIndex(org, ReferenceType.Tickets, isRebuilder);
+            //ProcessIndex(org, ReferenceType.Tickets, isRebuilder);
             ProcessIndex(org, ReferenceType.Wikis, isRebuilder);
             ProcessIndex(org, ReferenceType.Notes, isRebuilder);
             ProcessIndex(org, ReferenceType.ProductVersions, isRebuilder);
@@ -144,6 +144,7 @@ namespace TeamSupport.ServiceLibrary
         case ReferenceType.Organizations:
            indexPath                            = "\\Customers";
            deletedIndexItemsFileName            = "DeletedCustomers.txt";
+           storedFields                         = "SortName OrganizationID Name Description Website PrimaryContact";
            tableName                            = "Organizations";
            primaryKeyName                       = "OrganizationID";
            indexDataSource = new CustomerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
@@ -151,6 +152,7 @@ namespace TeamSupport.ServiceLibrary
         case ReferenceType.Contacts:
            indexPath                            = "\\Contacts";
            deletedIndexItemsFileName            = "DeletedContacts.txt";
+           storedFields                         = "SortName UserID Email Name FirstName MiddleName LastName OrganizationName";
            tableName                            = "Users";
            primaryKeyName                       = "UserID";
            indexDataSource = new ContactIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
