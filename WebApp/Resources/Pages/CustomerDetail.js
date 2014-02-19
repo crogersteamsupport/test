@@ -761,8 +761,8 @@ $(document).ready(function () {
     $('#fieldActive').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        top.Ts.Services.Customers.SetCompanyActive(organizationID, ($(this).text() !== 'True'), function (result) {
-            $('#fieldActive').text((result === true ? 'True' : 'False'));
+        top.Ts.Services.Customers.SetCompanyActive(organizationID, ($(this).text() !== 'true'), function (result) {
+            $('#fieldActive').text((result === true ? 'true' : 'false'));
         },
         function (error) {
             header.show();
@@ -773,8 +773,8 @@ $(document).ready(function () {
     $('#fieldAPIEnabled').click(function (e) {
         if (!$(this).hasClass('editable'))
             return false;
-        top.Ts.Services.Customers.SetCompanyAPIEnabled(organizationID, ($(this).text() !== 'True'), function (result) {
-            $('#fieldAPIEnabled').text((result === true ? 'True' : 'False'));
+        top.Ts.Services.Customers.SetCompanyAPIEnabled(organizationID, ($(this).text() !== 'true'), function (result) {
+            $('#fieldAPIEnabled').text((result === true ? 'true' : 'false'));
         },
         function (error) {
             header.show();
@@ -785,8 +785,8 @@ $(document).ready(function () {
     $('#fieldPortalAccess').click(function (e) {
         if (!$(this).hasClass('editable') || (!_isAdmin && !top.Ts.System.User.HasPortalRights) || !top.Ts.System.User.CanEditCompany)
             return false;
-        top.Ts.Services.Customers.SetCompanyPortalAccess(organizationID, ($(this).text() !== 'True'), function (result) {
-            $('#fieldPortalAccess').text((result === true ? 'True' : 'False'));
+        top.Ts.Services.Customers.SetCompanyPortalAccess(organizationID, ($(this).text() !== 'true'), function (result) {
+            $('#fieldPortalAccess').text((result === true ? 'true' : 'false'));
         },
         function (error) {
             header.show();
