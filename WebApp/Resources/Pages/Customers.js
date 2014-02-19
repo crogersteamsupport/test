@@ -146,7 +146,7 @@ $(document).ready(function () {
         }, 1000);
     });
 
-    $('.maincontainer').bind('scroll', function () {
+    $('.frame-container').bind('scroll', function () {
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
             var filterType = getSearchFilter();
 
