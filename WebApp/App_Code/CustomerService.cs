@@ -38,6 +38,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.Name = value;
             o.Collection.Save();
+            string description = String.Format("{0} set company name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -46,7 +48,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.TimeZoneID = value;
             o.Collection.Save();
-
+            string description = String.Format("{0} set company time zone to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
 
@@ -56,6 +59,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.Website = value;
             o.Collection.Save();
+            string description = String.Format("{0} set company website to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -64,6 +69,9 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.PrimaryUserID = value;
             o.Collection.Save();
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(), value);
+            string description = String.Format("{0} set company name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, u.FirstLastName);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -72,6 +80,9 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.DefaultSupportUserID = value;
             o.Collection.Save();
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(), value);
+            string description = String.Format("{0} set company default support user to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, u.FirstLastName);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -80,6 +91,9 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.DefaultSupportGroupID = value;
             o.Collection.Save();
+            Group g = Groups.GetGroup(TSAuthentication.GetLoginUser(), value);
+            string description = String.Format("{0} set company default support group to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, g.Name);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -88,6 +102,9 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.DefaultPortalGroupID = value;
             o.Collection.Save();
+            Group g = Groups.GetGroup(TSAuthentication.GetLoginUser(), value);
+            string description = String.Format("{0} set company default portal group to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, g.Name);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -96,6 +113,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.CompanyDomains = value;
             o.Collection.Save();
+            string description = String.Format("{0} set company domain to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -104,6 +123,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.IsActive = value;
             o.Collection.Save();
+            string description = String.Format("{0} set company active to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -112,6 +133,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.HasPortalAccess = value;
             o.Collection.Save();
+            string description = String.Format("{0} set company portal access to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -120,6 +143,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.IsApiActive = value;
             o.Collection.Save();
+            string description = String.Format("{0} set company api enabled to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -128,6 +153,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.SAExpirationDate = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), Convert.ToDateTime(value));
             o.Collection.Save();
+            string description = String.Format("{0} set company service expirated date to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -136,6 +163,9 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.SlaLevelID = value;
             o.Collection.Save();
+            SlaLevel s = SlaLevels.GetSlaLevel(TSAuthentication.GetLoginUser(), value);
+            string description = String.Format("{0} set company SLA to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, s.Name);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -144,6 +174,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.SupportHoursMonth = value;
             o.Collection.Save();
+            string description = String.Format("{0} set company support hours to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -152,6 +184,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.Description = value;
             o.Collection.Save();
+            string description = String.Format("{0} set company description to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
         [WebMethod]
@@ -160,6 +194,8 @@ namespace TSWebServices
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.InActiveReason = value;
             o.Collection.Save();
+            string description = String.Format("{0} set company inactive to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
 
@@ -169,6 +205,8 @@ namespace TSWebServices
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             u.Email = email;
             u.Collection.Save();
+            string description = String.Format("{0} set contact email to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, email);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return email != "" ? email : "Empty"; ;
         }
         [WebMethod]
@@ -179,6 +217,8 @@ namespace TSWebServices
             u.MiddleName = mname;
             u.LastName = lname;
             u.Collection.Save();
+            string description = String.Format("{0} set contact name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, u.FirstLastName);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return u.FirstLastName;
         }
 
@@ -189,6 +229,8 @@ namespace TSWebServices
             u.OrganizationID = value;
             u.Collection.Save();
             Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), value);
+            string description = String.Format("{0} set contact company to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, organization.Name);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return organization.Name != "" ? organization.Name : "Empty";
         }
         [WebMethod]
@@ -197,6 +239,8 @@ namespace TSWebServices
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             u.Title = title;
             u.Collection.Save();
+            string description = String.Format("{0} set contact title to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return title != "" ? title : "Empty";
         }
         [WebMethod]
@@ -205,6 +249,8 @@ namespace TSWebServices
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             u.IsActive = value;
             u.Collection.Save();
+            string description = String.Format("{0} set contact active to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return value;
         }
         [WebMethod]
@@ -213,6 +259,8 @@ namespace TSWebServices
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             u.IsPortalUser = value;
             u.Collection.Save();
+            string description = String.Format("{0} set contact portal user to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return value;
         }
         [WebMethod]
@@ -221,6 +269,8 @@ namespace TSWebServices
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             u.BlockInboundEmail = value;
             u.Collection.Save();
+            string description = String.Format("{0} set contact prevent email from creating tickets to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return value;
         }
         [WebMethod]
@@ -229,6 +279,8 @@ namespace TSWebServices
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             u.IsSystemAdmin = value;
             u.Collection.Save();
+            string description = String.Format("{0} set contact sys admin to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return value;
         }
         [WebMethod]
@@ -237,6 +289,8 @@ namespace TSWebServices
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             u.IsFinanceAdmin = value;
             u.Collection.Save();
+            string description = String.Format("{0} set contact financial admin to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
             return value;
         }
         [WebMethod]
@@ -1171,6 +1225,9 @@ namespace TSWebServices
             }
             organization.Collection.Save();
 
+            string description = String.Format("{0} created {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, organization.Name);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Organizations, organization.OrganizationID, description);
+
             foreach (CustomFieldSaveInfo field in info.Fields)
             {
                 CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organization.OrganizationID);
@@ -1334,6 +1391,9 @@ namespace TSWebServices
             else if (info.EmailPortalPW && info.IsPortalUser)
                 EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), user.UserID, password);
 
+            string description = String.Format("{0} created contact {1}", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, user.FirstLastName);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Users, user.UserID, description);
+
             return user.UserID;
         }
 
@@ -1351,10 +1411,13 @@ namespace TSWebServices
                 if (!phoneNumbers.IsEmpty)
                 {
                     PhoneNumber phoneNumber = phoneNumbers[0];
+                    string description = String.Format("{0} modified phone number from {1} to {2} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, phoneNumber.Number, info.Number);
+                    ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, refType, refID, description);
                     phoneNumber.Extension = info.Extension;
                     phoneNumber.Number = info.Number;
                     phoneNumber.PhoneTypeID = info.PhoneTypeID;
                 }
+
             }
             else
             {
@@ -1364,6 +1427,8 @@ namespace TSWebServices
                 phoneNumber.Extension = info.Extension;
                 phoneNumber.Number = info.Number;
                 phoneNumber.PhoneTypeID = info.PhoneTypeID;
+                string description = String.Format("{0} added phone number {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, info.Number);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, refType, refID, description);
             }
             phoneNumbers.Save();
         }
@@ -1390,6 +1455,8 @@ namespace TSWebServices
                     address.Description = info.Description;
                     address.State = info.State;
                     address.Zip = info.Zip;
+                    string description = String.Format("{0} modified address {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, info.Description);
+                    ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, refType, refID, description);
                 }
             }
             else
@@ -1405,6 +1472,8 @@ namespace TSWebServices
                 address.Description = info.Description;
                 address.State = info.State;
                 address.Zip = info.Zip;
+                string description = String.Format("{0} added address {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, info.Description);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, refType, refID, description);
             }
             addresses.Save();
         }
@@ -1418,7 +1487,7 @@ namespace TSWebServices
             {
                 note = (Note)Notes.GetNote(TSAuthentication.GetLoginUser(), noteID);
                 string description = String.Format("{0} modified note {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
-                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Notes, noteID, description);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, refType, noteID, description);
             }
             else
             {
@@ -1436,7 +1505,7 @@ namespace TSWebServices
                 if (isNew)
                 {
                     string description = String.Format("{0} added note {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
-                    ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Notes, note.NoteID, description);
+                    ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, refType, note.NoteID, description);
                 }
             }
 
@@ -1459,10 +1528,16 @@ namespace TSWebServices
             if (info.OrganizationProductID < 0)
             {
                 organizationProduct = (new OrganizationProducts(TSAuthentication.GetLoginUser())).AddNewOrganizationProduct();
+                Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), int.Parse(info.ProductID));
+                string description = String.Format("{0} added product association to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, p.Name);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, int.Parse(info.OrganizationID), description);
             }
             else
             {
                 organizationProduct = (OrganizationProduct)OrganizationProducts.GetOrganizationProduct(TSAuthentication.GetLoginUser(), info.OrganizationProductID);
+                Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), int.Parse(info.ProductID));
+                string description = String.Format("{0} modified product association to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, p.Name);
+                ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Organizations, int.Parse(info.OrganizationID), description);
             }
 
             organizationProduct.OrganizationID = int.Parse(info.OrganizationID);
@@ -1504,6 +1579,7 @@ namespace TSWebServices
 
                 }
                 customValue.Collection.Save();
+
             }
                 
 

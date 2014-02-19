@@ -1386,7 +1386,8 @@ $(document).ready(function () {
     function LoadHistory(start) {
 
         if(start == 1)
-        $('#tblHistory tbody').empty();
+            $('#tblHistory tbody').empty();
+
             top.Ts.Services.Customers.LoadHistory(organizationID, start, function (history) {
                 for (var i = 0; i < history.length; i++) {
                     $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
@@ -1436,8 +1437,8 @@ $(document).ready(function () {
                                         </div> \
                                     </div>");
             }
-            //if(reload != undefined)
-            //    $("#phonePanel #editmenu").toggleClass("hiddenmenu");
+            if(reload != undefined)
+                $("#phonePanel #editmenu").toggleClass("hiddenmenu");
         });
     }
 
