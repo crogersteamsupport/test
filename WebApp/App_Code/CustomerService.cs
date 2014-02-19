@@ -1756,8 +1756,8 @@ namespace TSWebServices
               org.OrganizationID, 
               org.Name, 
               phone.IsEmpty || phone[0].Number == "" ? "" : "<li><a href=\"tel:"+ phone[0].Number+"\">" + phone[0].Number + "</a></li>",
-              org.HasPortalAccess ? "<p class=\"\">Has portal access</p>" : "<p class=\"text-muted\">Does not have portal access</p>", 
-              string.IsNullOrWhiteSpace(org.Website) ? "" : "<li><a href=\""+org.Website+" \">"+ org.Website+"</a> {4}</li>" , 
+              org.HasPortalAccess ? "<p class=\"\">Has portal access</p>" : "<p class=\"\">Does not have portal access</p>", 
+              string.IsNullOrWhiteSpace(org.Website) ? "" : "<li><a href=\""+org.Website+" \">"+ org.Website+"</a></li>" , 
               GetCustomerOpenTickets(org));
         }
 
@@ -1793,7 +1793,7 @@ namespace TSWebServices
               "", 
               "<li><a href='mailto:" + user.Email + "'>" + user.Email + "</a></li>", 
               phone.IsEmpty || phone[0].Number == "" ? "" : "<li><a href=\"tel:" + phone[0].Number + "\">" + phone[0].Number + "</a></li>",
-              user.IsPortalUser ? "<p class=\"\">Has portal access</p>" : "<p class=\"text-muted\">Does not have portal access</p>",
+              user.IsPortalUser ? "<p class=\"\">Has portal access</p>" : "<p class=\"\">Does not have portal access</p>",
               GetContactTickets(user.UserID, 0),
               string.IsNullOrWhiteSpace(user.Title) ? org.Name != "_Unknown Company" ? "<li><a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : "" : org.Name != "_Unknown Company" ? "<li>"+ user.Title +" at <a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : ""
               );
@@ -1818,7 +1818,7 @@ namespace TSWebServices
                 recentHTML = @" 
                 <li>
                         <div class=""recent-info"">
-                            <h4> <span class=""fa fa-user""></span><a class=""contactlink"" id=""u{3}"" href="""">{0}</a></h4>
+                            <h4><a class=""contactlink"" id=""u{3}"" href=""""><span class=""fa fa-user""></span>{0}</a></h4>
                             <ul>
                                 <li><a href=""mailto:{1}"" target=""_blank"">{1}</a></li>{2}
                             </ul>
@@ -1836,7 +1836,7 @@ namespace TSWebServices
                 recentHTML = @" 
                 <li>
                         <div class=""recent-info"">
-                            <h4><span class=""fa fa-building-o""></span><a class=""companylink"" id=""o{2}"" href="""">{0}</a></h4>{1}
+                            <h4><a class=""companylink"" id=""o{2}"" href=""""><span class=""fa fa-building-o""></span>{0}</a></h4>{1}
                         </div>
                 </li>";
                 phoneStr = phone.IsEmpty ? "" : string.Format("<ul><li><a href=\"tel:{0}\" target=\"_blank\">{0}</a></li></ul>", phone[0].Number);

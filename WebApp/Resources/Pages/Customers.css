@@ -52,18 +52,19 @@ color: #666;
 .recent-container ul{padding: 0px;}
 .recent-container ul.recent-list>li {list-style:none;border-bottom:1px solid #eee; padding: 10px}
 .recent-container ul.recent-list>li:last-child {border-bottom:none;}
+
 .recent-info h4 { font-size: 16px; }
 .recent-info ul { list-style: none; color: #666; margin-left:0px; }
 .recent-info ul li { line-height: 18px; }
 .recent-info ul li span { line-height: 18px; }
 .recent-info {word-wrap:break-word; font-size: 12px;}
-.recent-info span.fa { color:#999;}
-.recent-info li span { color: #dadada;}
+.recent-info span.fa { padding-right: 10px;}
+.recent-info li a { color: #999;}
 
-.results-wrapper { padding: 10px 10px;}
+.results-wrapper { padding: 5px 5px;}
 .searchresults { width:100%; border-collapse:collapse;} 
 .searchresults ul {padding: 0; margin: 0;}
-.searchresults td { border-bottom: 1px solid #eee; padding: 12px 12px;}
+.searchresults td { border-bottom: 1px solid #eee; padding: 10px 10px;}
 .result-icon { width: 50px;}
 
 .peopleinfo h4{display:inline; font-size:16px;}
