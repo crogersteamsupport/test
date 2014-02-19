@@ -102,7 +102,6 @@ $(document).ready(function () {
         $('#customerAddressBtn').hide();
         $('#customerDelete').hide();
         $('#fileToggle').hide();
-        disableEdit();
     }
 
     if (!_isAdmin && !top.Ts.System.User.CanCreateContact) {
@@ -132,16 +131,6 @@ $(document).ready(function () {
         }
 
     });
-    function disableEdit()
-    {
-
-        $('.userProperties p').removeClass("editable");
-        $('.customProperties p').removeClass("editable");
-        //$("#phonePanel #editmenu").toggleClass("hiddenmenu");
-        //$("#addressPanel #editmenu").toggleClass("hiddenmenu");
-        //$('#fieldPortalAccess').removeClass('editable');
-
-    }
 
     $('#fieldName').click(function (e) {
         e.preventDefault();
@@ -1337,7 +1326,6 @@ $(document).ready(function () {
                 $('#customPropRow').hide();
                 $('#customerEdit').hide();
                 $('#customerDelete').hide();
-                disableEdit();
             }
 
 
@@ -1437,7 +1425,7 @@ $(document).ready(function () {
             for (var i = 0; i < phone.length; i++) {
                 $('#phonePanel').append("<div class='form-group content'> \
                                         <label for='inputName' class='col-xs-4 control-label'>" + phone[i].PhoneTypeName + "</label> \
-                                        <div class='col-xs-4 '> \
+                                        <div class='col-xs-5 '> \
                                             <p class='form-control-static '><a href='tel:"+phone[i].Number+"'>" + phone[i].Number + "</a>" + ((phone[i].Extension != null && phone[i].Extension != '') ? ' Ext:' + phone[i].Extension : '') + "</p> \
                                         </div> \
                                         <div id='editmenu' class='col-xs-2 hiddenmenu'> \
@@ -1806,7 +1794,7 @@ $(document).ready(function () {
         }
     });
 
-    //$('.userProperties p').toggleClass("editable");
+    $('.userProperties p').toggleClass("editable");
     //$('.customProperties p').toggleClass("editable");
 });
 
@@ -1891,7 +1879,7 @@ var appendCustomValues = function (fields) {
                 }
             }
         }
-        //$('.customProperties p').toggleClass("editable");
+        $('.customProperties p').toggleClass("editable");
     });
 
 

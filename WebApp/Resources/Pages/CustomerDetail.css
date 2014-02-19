@@ -7,8 +7,8 @@
 .modal-body .form-group{margin-bottom: 10px;}
 .pageheader .nav-tabs{border-bottom:none !important;}
 
-#phonePanel .content.form-group:hover .hiddenmenu, #addressPanel .form-group:hover .hiddenmenu {opacity: 1;}
-.hiddenmenu {opacity: 0;}
+
+.hiddenmenu {display:none;}
   
 #addressPanel {margin-top: 20px;}
 
