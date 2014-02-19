@@ -418,10 +418,6 @@ namespace TSWebServices
 
                 return builder.ToString();
             }
-            else if (startIndex < 2)
-            {
-                return CreateNoResults();
-            }
             else { return ""; }
 
         }
@@ -448,10 +444,6 @@ namespace TSWebServices
                 }
 
                 return builder.ToString();
-            }
-            else if (startIndex < 2)
-            {
-                return CreateNoResults();
             }
             else { return ""; }
           //if (organizations.Count > 0)
@@ -491,10 +483,6 @@ namespace TSWebServices
               }
 
               return builder.ToString();
-            }
-            else if (startIndex < 2)
-            {
-              return CreateNoResults();
             }
             else { return ""; }
 
@@ -1797,12 +1785,6 @@ namespace TSWebServices
               GetContactTickets(user.UserID, 0),
               string.IsNullOrWhiteSpace(user.Title) ? org.Name != "_Unknown Company" ? "<li><a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : "" : org.Name != "_Unknown Company" ? "<li>"+ user.Title +" at <a href='#' class='viewOrg' id='" + user.OrganizationID + "'>" + org.Name + "</a></li>" : ""
               );
-        }
-
-        public string CreateNoResults()
-        {
-            string boxhtml = @"<tr><td><h2 class=""text-center"">We searched hard, but we coundn't find anything.</h2></td></tr>";
-            return boxhtml;
         }
 
         public string CreateRecentlyViewed(RecentlyViewedItem recent)

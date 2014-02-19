@@ -73,6 +73,9 @@ color: #666;
 .peopleinfo ul a { color:#999;}
 .peopleinfo li {list-style:none;}
 
+.results-loading { display:none; padding: 20px 15px; color: #999; }
+.results-empty { display:none; color: #444; padding: 50px; text-align:center; font-size: 18px;}
+.results-done { display:none; padding: 20px 15px; color: #999; }
 
 
 .on {color: green;}
