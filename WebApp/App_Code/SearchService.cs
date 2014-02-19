@@ -1015,6 +1015,12 @@ namespace TSWebServices
           }
           job.Execute();
 
+          if (searchTerm == "xfirstword")
+          {
+            job.Results.Sort(SortFlags.dtsSortByField, "Name");
+          }
+
+
           int topLimit = from + to;
           if (topLimit > job.Results.Count)
           {
