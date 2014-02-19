@@ -846,7 +846,7 @@ $(document).ready(function () {
         });
       }
       else if (result.indexOf("The company you have specified is invalid") !== -1) {
-        if (top.Ts.Services.Users.CanCreateCompany || top.Ts.Services.Users.IsSystemAdmin) {
+        if (top.Ts.Services.User.CanCreateCompany || top.Ts.Services.User.IsSystemAdmin) {
           if (confirm('Unknown company, would you like to create it?')) {
             top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, true, function (result) {
               top.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
