@@ -14,6 +14,7 @@ var organizationID = null;
 $(document).ready(function () {
     customerDetailPage = new CustomerDetailPage();
     customerDetailPage.refresh();
+    $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
 
     $('input, textarea').placeholder();
     $('body').layout({
@@ -946,7 +947,7 @@ $(document).ready(function () {
         if (result)
             $('#customerSubscribe').html('Unsubscribe');
         else
-            $('#customerSubscribe').html('Subscribe');
+            $('#customerSubscribe').html('<i class="fa fa-rss"></i>');
     }
 
     $('#customerSubscribe').click(function (e) {

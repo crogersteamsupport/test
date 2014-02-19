@@ -12,6 +12,8 @@ var userID = null;
 $(document).ready(function () {
     userID = top.Ts.Utils.getQueryValue("user", window);
     noteID = top.Ts.Utils.getQueryValue("noteid", window);
+    $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
+
     var _isAdmin = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.IsAdminOnlyCustomers;
     var historyLoaded = 0;
     $('input, textarea').placeholder();
