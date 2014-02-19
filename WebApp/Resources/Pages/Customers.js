@@ -117,7 +117,7 @@ $(document).ready(function () {
         delay(function () {
             if ($('.customers-filter-all').parent().hasClass('active')) {
                 top.Ts.Services.Customers.GetSearchResults($('#searchString').val(), 0, function (resultHtml) {
-                    $('.maincontainer').animate({ scrollTop: 0 }, 600);
+                    $('.frame-container').animate({ scrollTop: 0 }, 600);
                     $('.searchresults').empty();
                     $('.searchresults').html(resultHtml);
                 });
@@ -126,7 +126,7 @@ $(document).ready(function () {
 
             if ($('.customers-filter-customers').parent().hasClass('active')) {
                 top.Ts.Services.Customers.GetCompanies($('#searchString').val(), 0 , function (resultHtml) {
-                    $('.maincontainer').animate({ scrollTop: 1 }, 600);
+                    $('.frame-container').animate({ scrollTop: 1 }, 600);
                     $('.searchresults').empty();
                     $('.searchresults').html(resultHtml);
                     
@@ -135,7 +135,7 @@ $(document).ready(function () {
 
             if ($('.customers-filter-contacts').parent().hasClass('active')) {
                 top.Ts.Services.Customers.GetContacts($('#searchString').val(), 0 , function (resultHtml) {
-                    $('.maincontainer').animate({ scrollTop: 1 }, 600);
+                    $('.frame-container').animate({ scrollTop: 1 }, 600);
                     $('.searchresults').empty();
                     $('.searchresults').html(resultHtml);
                     
@@ -163,7 +163,7 @@ $(document).ready(function () {
     });
 
     $('.scrollup').click(function () {
-        $('.maincontainer').animate({ scrollTop: 0 }, 600);
+        $('.frame-container').animate({ scrollTop: 0 }, 600);
         return false;
     });
 
