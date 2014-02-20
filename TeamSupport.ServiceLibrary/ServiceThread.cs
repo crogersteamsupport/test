@@ -144,7 +144,6 @@ namespace TeamSupport.ServiceLibrary
       try
       {
         DateTime lastTime = DateTime.Now;
-
         while (true)
         {
           Service service = Services.GetService(_loginUser, ServiceName);

@@ -89,6 +89,12 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
+    public override void Start()
+    {
+      SqlExecutor.ExecuteNonQuery(LoginUser, "UPDATE Organizations SET IsIndexLocked = 0 WHERE IsIndexLocked=1");
+      base.Start();
+
+    }
 
     private void ProcessIndex(Organization organization, ReferenceType referenceType, bool isRebuilder)
     {
@@ -315,7 +321,6 @@ namespace TeamSupport.ServiceLibrary
         throw;
       }
     }
-
 
     private void LockIndex(int organizationID, bool value)
     {
