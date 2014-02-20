@@ -116,7 +116,7 @@ $(document).ready(function () {
                 if (window.parent.document.getElementById('iframe-mniCustomers'))
                     window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
                 top.Ts.MainPage.closeNewContactTab(userID);
-                top.Ts.MainPage.closeNewContact(userID);
+                //top.Ts.MainPage.closeNewContact(userID);
             });
 
 
