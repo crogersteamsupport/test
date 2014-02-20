@@ -31,7 +31,7 @@ $(document).ready(function () {
         $('.results-loading').hide();
         $('.results-empty').hide();
         $('.results-done').hide();
-        $('.searchresults').empty();
+        $('.searchresults').empty().fadeTo(0, 1);
         if (html == '') {
             $('.results-empty').show();
         }
@@ -148,9 +148,13 @@ $(document).ready(function () {
         if (_tmrSearch != null) {
             clearTimeout(_tmrSearch);
         }
+        $('.searchresults').fadeTo(200, 0.5);
 
         function getResults() {
-            showLoadingIndicator();
+            _isLoading = true;
+            $('.results-loading').hide();
+            $('.results-empty').hide();
+            $('.results-done').hide();
 
             function loadResults(html) {
                 $('.frame-container').animate({ scrollTop: 1 }, 600);
@@ -166,9 +170,12 @@ $(document).ready(function () {
             else if ($('.customers-filter-contacts').parent().hasClass('active')) {
                 top.Ts.Services.Customers.GetContacts($('#searchString').val(), 0, loadResults);
             }
+            else {
+                _isLoading = false;
+            }
         }
 
-        _tmrSearch = setTimeout(getResults, 250);
+        _tmrSearch = setTimeout(getResults, 500);
 
     });
 
