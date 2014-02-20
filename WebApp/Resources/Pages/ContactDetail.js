@@ -771,6 +771,10 @@ $(document).ready(function () {
                 .data("description", note[i].Description)
                 .appendTo('#tblNotes > tbody:last');
                 //$('#tblNotes > tbody:last').append('<tr id=' + note[i].NoteID + ' class="viewNote"><td><i class="fa fa-edit editNote"></i></td><td><i class="fa fa-trash-o deleteNote"></i></td><td>' + note[i].Title + '</td><td>' + note[i].CreatorName + '</td><td>' + note[i].DateCreated.toDateString() + '</td></tr>').data('description',note[i].Description);
+                if (noteID != null && noteID == note[i].NoteID) {
+                  $('.noteDesc').html("<strong>Description</strong> <p>" + note[i].Description + "</p>");
+                  $('.noteDesc').show();
+                }
             }
         });
     }
