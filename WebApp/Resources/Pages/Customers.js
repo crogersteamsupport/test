@@ -23,9 +23,8 @@ $(document).ready(function () {
     });
 
     function showLoadingIndicator() {
+        _isLoading = true;
         $('.results-loading').show();
-
-
     }
 
     function insertSearchResults(html) {
@@ -39,6 +38,7 @@ $(document).ready(function () {
         else {
             $('.searchresults').html(html);
         }
+        _isLoading = false;
     }
 
     function appendSearchResults(html) {
@@ -50,6 +50,7 @@ $(document).ready(function () {
         } else {
             $('.searchresults').append(html);
         }
+        _isLoading = false;
     }
 
 
@@ -57,7 +58,7 @@ $(document).ready(function () {
         e.preventDefault();
         $(this).parents(':eq(1)').find('li').removeClass('active');
         $(this).parent().addClass('active');
-
+        showLoadingIndicator();
         top.Ts.Services.Customers.GetSearchResults($('#searchString').val(), 0, function (resultHtml) {
             insertSearchResults(resultHtml);
         });
@@ -67,7 +68,7 @@ $(document).ready(function () {
         e.preventDefault();
         $(this).parents(':eq(1)').find('li').removeClass('active');
         $(this).parent().addClass('active');
-
+        showLoadingIndicator();
         top.Ts.Services.Customers.GetCompanies($('#searchString').val(), 0, function (resultHtml) {
             insertSearchResults(resultHtml);
         });
@@ -83,7 +84,7 @@ $(document).ready(function () {
         e.preventDefault();
         $(this).parents(':eq(1)').find('li').removeClass('active');
         $(this).parent().addClass('active');
-
+        showLoadingIndicator();
         top.Ts.Services.Customers.GetContacts($('#searchString').val(), 0, function (resultHtml) {
             insertSearchResults(resultHtml);
         });
@@ -109,7 +110,7 @@ $(document).ready(function () {
         var id = e.target.id.substring(1);
         top.Ts.MainPage.openNewCustomer(id);
     });
-
+    showLoadingIndicator();
     top.Ts.Services.Customers.GetSearchResults("", 0, function (resultHtml) {
         insertSearchResults(resultHtml);
     });
@@ -141,42 +142,45 @@ $(document).ready(function () {
         };
     })();
 
+
+    var _tmrSearch = null;
     $('#searchString').keyup(function () {
-        delay(function () {
+        if (_tmrSearch != null) {
+            clearTimeout(_tmrSearch);
+        }
+
+        function getResults() {
+            showLoadingIndicator();
+
+            function loadResults(html) {
+                $('.frame-container').animate({ scrollTop: 1 }, 600);
+                insertSearchResults(html);
+            }
+
             if ($('.customers-filter-all').parent().hasClass('active')) {
-                top.Ts.Services.Customers.GetSearchResults($('#searchString').val(), 0, function (resultHtml) {
-                    $('.frame-container').animate({ scrollTop: 0 }, 600);
-                    insertSearchResults(resultHtml);
-                });
-
+                top.Ts.Services.Customers.GetSearchResults($('#searchString').val(), 0, loadResults);
             }
-
-            if ($('.customers-filter-customers').parent().hasClass('active')) {
-                top.Ts.Services.Customers.GetCompanies($('#searchString').val(), 0, function (resultHtml) {
-                    $('.frame-container').animate({ scrollTop: 1 }, 600);
-                    insertSearchResults(resultHtml);
-                });
+            else if ($('.customers-filter-customers').parent().hasClass('active')) {
+                top.Ts.Services.Customers.GetCompanies($('#searchString').val(), 0, loadResults);
             }
-
-            if ($('.customers-filter-contacts').parent().hasClass('active')) {
-                top.Ts.Services.Customers.GetContacts($('#searchString').val(), 0, function (resultHtml) {
-                    $('.frame-container').animate({ scrollTop: 1 }, 600);
-                    insertSearchResults(resultHtml);
-                });
+            else if ($('.customers-filter-contacts').parent().hasClass('active')) {
+                top.Ts.Services.Customers.GetContacts($('#searchString').val(), 0, loadResults);
             }
+        }
 
+        _tmrSearch = setTimeout(getResults, 250);
 
-        }, 1000);
     });
 
+    var _isLoading = false;
     $('.frame-container').bind('scroll', function () {
+        if (_isLoading == true) return;
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
             var filterType = getSearchFilter();
 
             showLoadingIndicator();
             top.Ts.Services.Customers.GetMoreResults(filterType, $('#searchString').val(), $('.peopleinfo').length, function (results) {
                 appendSearchResults(results);
-
             });
         }
 

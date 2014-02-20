@@ -4,7 +4,8 @@ background-color: #fff;
 }
 .customers-header button { margin-top: 15px;}
 .customers-search { padding-top: 15px; padding-bottom: 15px;}
-.customers-filter { padding-bottom: 20px;}
+.customers-filter { padding-bottom: 20px; padding-left: 20px;}
+.customers-filter ul {display:inline-block;}
 
 .panel {margin-top: 15px;}
 
