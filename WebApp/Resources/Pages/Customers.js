@@ -59,6 +59,7 @@ $(document).ready(function () {
         $(this).parents(':eq(1)').find('li').removeClass('active');
         $(this).parent().addClass('active');
         showLoadingIndicator();
+        $('.searchresults').fadeTo(200, 0.5);
         top.Ts.Services.Customers.GetSearchResults($('#searchString').val(), 0, function (resultHtml) {
             insertSearchResults(resultHtml);
         });
@@ -69,6 +70,7 @@ $(document).ready(function () {
         $(this).parents(':eq(1)').find('li').removeClass('active');
         $(this).parent().addClass('active');
         showLoadingIndicator();
+        $('.searchresults').fadeTo(200, 0.5);
         top.Ts.Services.Customers.GetCompanies($('#searchString').val(), 0, function (resultHtml) {
             insertSearchResults(resultHtml);
         });
@@ -85,6 +87,7 @@ $(document).ready(function () {
         $(this).parents(':eq(1)').find('li').removeClass('active');
         $(this).parent().addClass('active');
         showLoadingIndicator();
+        $('.searchresults').fadeTo(200, 0.5);
         top.Ts.Services.Customers.GetContacts($('#searchString').val(), 0, function (resultHtml) {
             insertSearchResults(resultHtml);
         });
