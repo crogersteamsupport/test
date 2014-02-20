@@ -95,7 +95,7 @@ namespace TeamSupport.ServiceLibrary
         }
         else
         {
-          DocFields += "SortName\t" + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim()) + "\t";
+          DocFields += "SortName\t" + contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim()) + "\t";
           DocDisplayName = contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim());
         }
         DocCreatedDate = (DateTime)contact.Row["DateCreated"];

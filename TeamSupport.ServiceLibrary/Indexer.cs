@@ -51,12 +51,12 @@ namespace TeamSupport.ServiceLibrary
             }
 
             cnt++;
-            ProcessIndex(org, ReferenceType.Tickets, isRebuilder);
+        /*    ProcessIndex(org, ReferenceType.Tickets, isRebuilder);
             ProcessIndex(org, ReferenceType.Wikis, isRebuilder);
             ProcessIndex(org, ReferenceType.Notes, isRebuilder);
             ProcessIndex(org, ReferenceType.ProductVersions, isRebuilder);
             ProcessIndex(org, ReferenceType.WaterCooler, isRebuilder);
-            ProcessIndex(org, ReferenceType.Organizations, isRebuilder);
+            ProcessIndex(org, ReferenceType.Organizations, isRebuilder);*/
             ProcessIndex(org, ReferenceType.Contacts, isRebuilder);
             if (isRebuilder)
             {
