@@ -328,7 +328,7 @@ $(document).ready(function () {
 
         $('<textarea>')
           .addClass('col-xs-10 form-control')
-          .val($(this).text() == "Empty" ? "" : $(this).text())
+          .val($(this).text() == "Empty" ? "" : $(this).html().replace(/<br\s?\/?>/g, "\n"))
           .appendTo(container1)
           .focus();
 
@@ -373,7 +373,7 @@ $(document).ready(function () {
 
         $('<textarea>')
           .addClass('col-xs-10 form-control')
-          .val($(this).text())
+          .val($(this).html().replace(/<br\s?\/?>/g, "\n"))
           .appendTo(container1)
           .focus();
 
@@ -388,7 +388,7 @@ $(document).ready(function () {
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
-              top.Ts.Services.Customers.SetCompanyInactive(organizationID, $(this).prev().find('input').val(), function (result) {
+              top.Ts.Services.Customers.SetCompanyInactive(organizationID, $(this).prev().find('textarea').val(), function (result) {
                   header.text(result);
                   $('#customerEdit').removeClass("disabled");
               },
@@ -1306,7 +1306,7 @@ $(document).ready(function () {
             $('#fieldSLA').text(result.SLA);
             $('#fieldSLA').data('field', result.orgproxy.SlaLevelID);
             $('#fieldSupportHours').text(result.orgproxy.SupportHoursMonth);
-            $('#fieldDescription').text(result.orgproxy.Description != null && result.orgproxy.Description != ""? result.orgproxy.Description : "Empty");
+            $('#fieldDescription').html(result.orgproxy.Description != null && result.orgproxy.Description != ""? result.orgproxy.Description : "Empty");
             $('#fieldAPIToken').text(result.orgproxy.WebServiceID);
             $('#fieldOrgID').text(result.orgproxy.OrganizationID);
             $('#fieldPrimaryContact').text(result.PrimaryUser);
@@ -1315,7 +1315,7 @@ $(document).ready(function () {
             $('#fieldDefaultUser').data('field', result.orgproxy.DefaultSupportUserID);
             $('#fieldDefaultGroup').text(result.SupportGroup);
             $('#fieldDefaultGroup').data('field', result.orgproxy.DefaultSupportGroupID);
-            $('#fieldInactive').text(result.orgproxy.InActiveReason != null && result.orgproxy.InActiveReason != "" ? result.orgproxy.InActiveReason : "Empty");
+            $('#fieldInactive').html(result.orgproxy.InActiveReason != null && result.orgproxy.InActiveReason != "" ? result.orgproxy.InActiveReason : "Empty");
 
             $('#fieldTimeZone').text(result.orgproxy.TimeZoneID == "" ? "Central Standard Time" : result.orgproxy.TimeZoneID);
             $('#fieldTimeZone').data('field', result.orgproxy.TimeZoneID);
