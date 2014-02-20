@@ -1741,8 +1741,8 @@ namespace TSWebServices
 
             return string.Format(
               boxhtml, 
-              org.OrganizationID, 
-              org.Name, 
+              org.OrganizationID,
+              (string.IsNullOrWhiteSpace(org.Name) ? "Unnamed" : org.Name), 
               phone.IsEmpty || phone[0].Number == "" ? "" : "<li><a href=\"tel:"+ phone[0].Number+"\">" + phone[0].Number + "</a></li>",
               org.HasPortalAccess ? "<p class=\"\">Has portal access</p>" : "<p class=\"\">Does not have portal access</p>", 
               string.IsNullOrWhiteSpace(org.Website) ? "" : "<li><a href=\""+org.Website+" \">"+ org.Website+"</a></li>" , 
@@ -1767,17 +1767,18 @@ namespace TSWebServices
                                   <td>
                                       <div class=""peopleinfo"">
                                       <div class=""pull-right""><p class="""">{7} Open Tickets</p>{6}</div>
-                                      <h4><a class=""contactlink"" id=""u{0}"" href="""">{1} {2} {3}</a></h4>
+                                      <h4><a class=""contactlink"" id=""u{0}"" href="""">{1}{2}{3}</a></h4>
                                       <ul>{8}{4}{5}</ul>
                                   </div>
                                   </td>
                                </tr>";
 
+            
             return string.Format(
               boxhtml, 
-              user.UserID, 
-              user.FirstName, 
-              user.LastName, 
+              user.UserID,
+              (string.IsNullOrWhiteSpace(user.FirstName) && string.IsNullOrWhiteSpace(user.LastName) ? "Unnamed" : user.FirstName + " " + user.LastName), 
+              "", 
               "", 
               "<li><a href='mailto:" + user.Email + "'>" + user.Email + "</a></li>", 
               phone.IsEmpty || phone[0].Number == "" ? "" : "<li><a href=\"tel:" + phone[0].Number + "\">" + phone[0].Number + "</a></li>",
