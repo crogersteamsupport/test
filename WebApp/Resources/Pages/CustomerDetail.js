@@ -14,7 +14,7 @@ var organizationID = null;
 $(document).ready(function () {
     customerDetailPage = new CustomerDetailPage();
     customerDetailPage.refresh();
-    $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
+    $('.customer-tooltip').tooltip({ placement: 'bottom', container: 'body' });
 
     $('input, textarea').placeholder();
     $('body').layout({
