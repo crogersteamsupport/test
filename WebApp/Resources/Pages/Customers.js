@@ -182,6 +182,8 @@ $(document).ready(function () {
     var _isLoading = false;
     $('.frame-container').bind('scroll', function () {
         if (_isLoading == true) return;
+        if ($('.results-done').is(':visible')) return;
+
         if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
             var filterType = getSearchFilter();
 
