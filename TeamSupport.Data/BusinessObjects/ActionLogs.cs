@@ -382,7 +382,7 @@ namespace TeamSupport.Data
                                 LEFT JOIN Actions a ON a.ActionID = al.RefID
                                 LEFT JOIN Tickets t ON t.TicketID = a.TicketID
                                 WHERE (al.RefType = 0) AND (t.UserID = @UserID)
-                                )
+                                ) as temp
                                 where rownum between @start and @end
 								order by rownum asc
                                 ";

@@ -968,9 +968,11 @@ $(document).ready(function () {
     $('#phonePanel').on('click', '.delphone', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this phone number?')) {
-            top.privateServices.DeletePhone($(this).attr('id'));
-            LoadPhoneNumbers(1);
-            $("#phonePanel #editmenu").toggleClass("hiddenmenu");
+            top.privateServices.DeletePhone($(this).attr('id'), function (e) {
+                LoadPhoneNumbers(1);
+                $("#phonePanel #editmenu").toggleClass("hiddenmenu");
+            });
+
         }
     });
 
@@ -988,9 +990,11 @@ $(document).ready(function () {
     $('#addressPanel').on('click', '.deladdress', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this address?')) {
-            top.privateServices.DeleteAddress($(this).attr('id'));
-            LoadAddresses(1);
-            $("#addressPanel #editmenu").toggleClass("hiddenmenu");
+            top.privateServices.DeleteAddress($(this).attr('id'), function (e) {
+                LoadAddresses(1);
+                $("#addressPanel #editmenu").toggleClass("hiddenmenu");
+            });
+
         }
     });
 
@@ -1029,6 +1033,7 @@ $(document).ready(function () {
         phoneInfo.Number = $('#phoneNumber').val();
         phoneInfo.Extension = $('#phoneExt').val();
         phoneInfo.PhoneID = $('#phoneID').val() != "" ? $('#phoneID').val() : "-1";
+        var inEditmode = $('#customerEdit').hasClass("btn-success")
 
         top.Ts.Services.Customers.SavePhoneNumber(top.JSON.stringify(phoneInfo), organizationID, top.Ts.ReferenceTypes.Organizations, function (f) {
             $("#phoneType")[0].selectedIndex = 0;
@@ -1036,7 +1041,10 @@ $(document).ready(function () {
             $('#phoneExt').val('')
             $('#phoneID').val('-1');
             $('#modalPhone').modal('hide');
-            LoadPhoneNumbers(1);
+            if (inEditmode)
+                LoadPhoneNumbers(1);
+            else
+                LoadPhoneNumbers();
         }, function () {
             alert('There was an error saving this phone number.  Please try again.');
         });
@@ -1061,6 +1069,7 @@ $(document).ready(function () {
         addressInfo.Zip = $('#addressZip').val();
         addressInfo.Country = $('#addressCountry').val();
         addressInfo.AddressID = $('#addressID').val();
+        var inEditmode = $('#customerEdit').hasClass("btn-success")
 
         top.Ts.Services.Customers.SaveAddress(top.JSON.stringify(addressInfo), organizationID, top.Ts.ReferenceTypes.Organizations, function (f) {
 
@@ -1074,7 +1083,10 @@ $(document).ready(function () {
             addressInfo.Country = $('#addressCountry').val('');
             addressInfo.AddressID = $('#addressID').val('-1');
             $('#modalAddress').modal('hide');
-            LoadAddresses(1);
+            if (inEditmode)
+                LoadAddresses(1);
+            else
+                LoadAddresses();
         }, function () {
             alert('There was an error saving this address.  Please try again.');
         });
@@ -1108,6 +1120,10 @@ $(document).ready(function () {
     $('#tblNotes').on('click', '.viewNote', function (e) {
         e.preventDefault();
         var desc = $(this).data('description');
+        $('#tblNotes tbody tr').removeClass("active");
+
+        $(this).addClass("active");
+        
         $('.noteDesc').toggle();
         $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
     });
@@ -1357,8 +1373,8 @@ $(document).ready(function () {
                                         </div> \
                                     </div>");
             }
-            //if (reload != undefined)
-            //    $("#addressPanel #editmenu").toggleClass("hiddenmenu");
+            if (reload != undefined)
+                $("#addressPanel #editmenu").toggleClass("hiddenmenu");
         });
     }
 
@@ -1770,7 +1786,7 @@ $(document).ready(function () {
         //    chart.series[0].setData(chartData);
         //}); 
     }
-
+    $("[rel='tooltip']").tooltip();
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         if (e.target.innerHTML == "Tickets")
             $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_CustomerID=" + organizationID);
@@ -1780,6 +1796,10 @@ $(document).ready(function () {
             createTestChart();
         else if (e.target.innerHTML == "Contacts")
             LoadContacts();
+        else if (e.target.innerHTML == "Notes")
+            LoadNotes();
+        else if (e.target.innerHTML == "Files")
+            LoadFiles();
     })
 
     $('#inventoryIframe').attr("src", "../../../Inventory/CustomerInventory.aspx?CustID=" + organizationID);
