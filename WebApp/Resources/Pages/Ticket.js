@@ -1163,7 +1163,7 @@ $(document).ready(function () {
         option.attr('selected', 'selected');
       }
 
-      var creatorAdded = false;
+      var senderAdded = false;
 
       if (_ticketSender != null) {
         var senderSuffix = ' (Sender)';
@@ -1193,8 +1193,11 @@ $(document).ready(function () {
             senderInOfficeComment = ' - ' + sender.InOfficeComment;
           }
           $('<option>').text(sender.Name + senderInOfficeComment + senderSuffix).appendTo(select).data('user', sender);
+          senderAdded = true;
         }
       }
+
+      var creatorAdded = false;
 
       if (_ticketCreator.UserID > 0 && _ticketCreator.Name != $(this).text() && (_ticketSender == null || _ticketCreator.Name != _ticketSender.Name)) {
         var creator = new Object();
@@ -1225,7 +1228,7 @@ $(document).ready(function () {
       if (top.Ts.System.Organization.ShowGroupMembersFirstInTicketAssignmentList && _ticketGroupUsers != null) {
         for (var i = 0; i < _ticketGroupUsers.length; i++) {
           // If it has not been added previously as sender or creator
-          if (_ticketSender === null || (_ticketSender.Name != _ticketGroupUsers[i].Name && (!creatorAdded || _ticketCreator.Name != _ticketGroupUsers[i].Name))) {
+          if ((!senderAdded || _ticketSender.Name != _ticketGroupUsers[i].Name) && (!creatorAdded || _ticketCreator.Name != _ticketGroupUsers[i].Name)) {
             var inOfficeComment = '';
             if (_ticketGroupUsers[i].InOfficeComment) {
               inOfficeComment = ' - ' + _ticketGroupUsers[i].InOfficeComment;
@@ -1241,7 +1244,7 @@ $(document).ready(function () {
 
       for (var i = 0; i < users.length; i++) {
         // If it has not been added previously as sender or creator
-        if (_ticketSender === null || (_ticketSender.Name != users[i].Name && (!creatorAdded || _ticketCreator.Name != users[i].Name))) {
+        if ((!senderAdded || _ticketSender.Name != users[i].Name) && (!creatorAdded || _ticketCreator.Name != users[i].Name)) {
           // If it has not been added previously as group user
           if (_ticketGroupUsers === null || !top.Ts.System.Organization.ShowGroupMembersFirstInTicketAssignmentList || !checkIfUserExistsInArray(users[i], _ticketGroupUsers)) {
             var inOfficeComment = '';
