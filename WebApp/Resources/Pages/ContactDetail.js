@@ -740,13 +740,12 @@ $(document).ready(function () {
             $('.upload-queue .ui-icon-cancel').show();
         },
         stop: function (e, data) {
-            $('.progress-bar').css('width', '100%');
+            //$('.progress-bar').css('width', '100%');
             LoadFiles();
             $('.upload-queue').empty();
             $('#attachmentDescription').val('');
+            $('#fileForm').toggle();
 
-            //if (_doClose != true) top.Ts.MainPage.openTicketByID(_ticketID);
-            //top.Ts.MainPage.closeNewTicketTab();
         }
     });
 

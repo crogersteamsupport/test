@@ -1190,7 +1190,7 @@ $(document).ready(function () {
                 $(o).data('data', data);
             });
         }
-        $('#fileForm').toggle();
+        //$('#fileForm').toggle();
     });
 
     $('.file-upload').fileupload({
@@ -1262,13 +1262,11 @@ $(document).ready(function () {
             $('.upload-queue .ui-icon-cancel').show();
         },
         stop: function (e, data) {
-            $('.progress-bar').css('width', '100%');
+            //data.context.find('.progress-bar').css('width', '100%');
             LoadFiles();
             $('.upload-queue').empty();
             $('#attachmentDescription').val('');
-
-            //if (_doClose != true) top.Ts.MainPage.openTicketByID(_ticketID);
-            //top.Ts.MainPage.closeNewTicketTab();
+            $('#fileForm').toggle();
         }
     });
 
@@ -1554,7 +1552,8 @@ $(document).ready(function () {
         var users = top.Ts.Cache.getUsers();
         if (users != null) {
             for (var i = 0; i < users.length; i++) {
-                $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo('#reminderUsers');
+                var option = $('<option>').attr('value', users[i].UserID).text(users[i].Name).data('o', users[i]).appendTo('#reminderUsers');
+                if (top.Ts.System.User.UserID === users[i].UserID) { option.attr('selected', 'selected'); }
             }
         }
     }
