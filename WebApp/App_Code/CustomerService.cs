@@ -937,10 +937,10 @@ namespace TSWebServices
                 OrganizationCustomProduct test = new OrganizationCustomProduct();
                 test.ProductName = row["ProductName"].ToString();
                 test.VersionNumber = row["VersionNumber"].ToString();
-                test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(TSAuthentication.GetLoginUser(), (DateTime)row["SupportExpiration"]).ToString(GetDateFormat()) : "";
+                test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? ((DateTime)row["SupportExpiration"]).ToShortDateString() : "";
                 test.VersionStatus = row["VersionStatus"].ToString();
                 test.IsReleased = row["IsReleased"].ToString();
-                test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? DataUtils.DateToLocal(TSAuthentication.GetLoginUser(), (DateTime)row["ReleaseDate"]).ToString(GetDateFormat()) : "";
+                test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToShortDateString() : "";
                 test.OrganizationProductID = (int)row["OrganizationProductID"];
                 test.CustomFields = new List<string>();
                 foreach (CustomField field in fields)
@@ -1539,7 +1539,7 @@ namespace TSWebServices
             }
                 
             if(info.SupportExpiration != "")
-                organizationProduct.SupportExpiration = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), DateTime.ParseExact(info.SupportExpiration, GetDateFormat(),null));
+                organizationProduct.SupportExpiration = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), DateTime.Parse(info.SupportExpiration));
 
             organizationProduct.Collection.Save();
 

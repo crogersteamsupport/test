@@ -929,8 +929,10 @@ $(document).ready(function () {
     $('#tblProducts').on('click', '.productDelete', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this product association?')) {
-            top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'));
-            LoadProducts(true);
+            top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), function (e) {
+                LoadProducts(true);
+            });
+            
         }
     });
 
@@ -1528,7 +1530,7 @@ $(document).ready(function () {
                 }
                 else
                 {
-                    html = '<td></td><td></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
+                    html = '<td></td><td></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + top.Ts.Utils.getMsDate(product[i].SupportExpiration) + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
                 }
                 var tr = $('<tr>')
                 .attr('id', product[i].OrganizationProductID)
