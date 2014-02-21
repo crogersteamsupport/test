@@ -88,8 +88,22 @@ namespace TeamSupport.Data
     partial void BeforeRowEdit(Action action)
     {
       action.Description = HtmlUtility.FixScreenRFrame(action.Description);
-      string description = "Modified action '" + action.Name + "' on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
+      string actionNumber = GetActionNumber(action.TicketID, action.ActionID);
+      string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
+    }
+
+    private string GetActionNumber(int ticketID, int actionID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT COUNT(*) FROM Actions WHERE TicketID = @TicketID AND ActionID <= @ActionID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketID", ticketID);
+        command.Parameters.AddWithValue("@ActionID", actionID);
+
+        return ExecuteScalar(command, "Tickets").ToString();
+      }
     }
 
     partial void BeforeRowInsert(Action action)

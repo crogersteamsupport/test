@@ -477,9 +477,9 @@ AND ts.IsClosed = 0";
       if (oldTicketView.IsVisibleOnPortal != ticket.IsVisibleOnPortal)
       {
         if (ticket.IsVisibleOnPortal)
-          description = "Added " + GetTicketLink(ticket) + " to the user portal.";
+          description = "Visible to customers set to true.";
         else
-          description = "Removed " + GetTicketLink(ticket) + " from the user portal.";
+          description = "Visible to customers set to false.";
         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
       }
 
