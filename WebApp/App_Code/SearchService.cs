@@ -986,7 +986,7 @@ namespace TSWebServices
           //In this case we'll sort by most recent else we'll sort by relevance.
           if (searchTerm == "xfirstword")
           {
-            job.SearchFlags = SearchFlags.dtsSearchSelectMostRecent | SearchFlags.dtsSearchDelayDocInfo;
+            job.SearchFlags = SearchFlags.dtsSearchDelayDocInfo;
           }
           else
           {
@@ -995,8 +995,6 @@ namespace TSWebServices
             job.SearchFlags = job.SearchFlags |
               //SearchFlags.dtsSearchFuzzy | 
               //SearchFlags.dtsSearchStemming |
-              SearchFlags.dtsSearchPositionalScoring |
-              SearchFlags.dtsSearchAutoTermWeight | 
               SearchFlags.dtsSearchDelayDocInfo;
           }
 
@@ -1019,7 +1017,12 @@ namespace TSWebServices
 
           if (searchTerm == "xfirstword")
           {
-            job.Results.Sort(SortFlags.dtsSortByField | SortFlags.dtsSortAscending, "Name");
+            job.Results.Sort(SortFlags.dtsSortByName | SortFlags.dtsSortAscending, "");
+          }
+          else
+          {
+            //job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortAscending, "");
+            
           }
 
 

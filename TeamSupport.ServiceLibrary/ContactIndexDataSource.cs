@@ -60,6 +60,17 @@ namespace TeamSupport.ServiceLibrary
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
         DocFields = string.Empty;
+        if (string.IsNullOrWhiteSpace(contact.LastName))
+        {
+          DocFields += "Name\t" + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim()) + "\t";
+          DocDisplayName = string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim();
+        }
+        else
+        {
+          DocFields += "Name\t" + contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim()) + "\t";
+          DocDisplayName = contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim());
+        }
+
         DocFields += "Organization\t" + (string.IsNullOrWhiteSpace(contact.Organization) ? "" : contact.Organization.Trim()) + "\t";
         DocFields += "Email\t" + (string.IsNullOrWhiteSpace(contact.Email) ? "" : contact.Email.Trim()) + "\t";
         ContactItem contactItem = new ContactItem(contact);
@@ -81,16 +92,6 @@ namespace TeamSupport.ServiceLibrary
 
         DocIsFile = false;
         DocName = contact.UserID.ToString();
-        if (string.IsNullOrWhiteSpace(contact.LastName))
-        {
-          DocFields += "Name\t" + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim()) + "\t";
-          DocDisplayName = string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim();
-        }
-        else
-        {
-          DocFields += "Name\t" + contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim()) + "\t";
-          DocDisplayName = contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim());
-        }
         DocCreatedDate = (DateTime)contact.Row["DateCreated"];
         DocModifiedDate = (DateTime)contact.Row["DateModified"];
 

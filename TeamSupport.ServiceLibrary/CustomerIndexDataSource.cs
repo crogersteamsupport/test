@@ -87,7 +87,6 @@ namespace TeamSupport.ServiceLibrary
 
         DocIsFile = false;
         DocName = organization.OrganizationID.ToString();
-        DocFields += "Name\t" + (string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim()) + "\t";
         DocDisplayName = string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim();
         DocCreatedDate = (DateTime)organization.Row["DateCreated"];
         DocModifiedDate = (DateTime)organization.Row["DateModified"];
