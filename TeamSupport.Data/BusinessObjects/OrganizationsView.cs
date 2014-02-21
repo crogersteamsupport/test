@@ -113,5 +113,22 @@ namespace TeamSupport.Data
       }
     }
   }
-  
+  public class CustomerSearchCompany
+  {
+    public CustomerSearchCompany() { }
+    public CustomerSearchCompany(OrganizationsViewItem item)
+    {
+      organizationID = item.OrganizationID;
+      name = item.Name;
+      website = item.Website;
+      isPortal = item.HasPortalAccess;
+    }
+
+    public int organizationID { get; set; }
+    public string name { get; set; }
+    public string website { get; set; }
+    public bool isPortal { get; set; }
+    public int openTicketCount { get; set; }
+    public CustomerSearchPhone[] phones { get; set; }
+  }  
 }

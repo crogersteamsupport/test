@@ -11,6 +11,7 @@ using System.Web.Script.Services;
 using System.Web.Services;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
+using Newtonsoft.Json;
 
 namespace TSWebServices
 {
@@ -966,7 +967,10 @@ namespace TSWebServices
     public string[] SearchCompaniesAndContacts(string searchTerm, int from, int to, bool searchCompanies, bool searchContacts)
     {      
       List<string> resultItems = new List<string>();
-      if (string.IsNullOrWhiteSpace(searchTerm)) searchTerm = "xfirstword";
+      if (string.IsNullOrWhiteSpace(searchTerm))
+      {
+        return GetAllCompaniesAndContacts(from, to, searchCompanies, searchContacts);
+      }
 
       if (searchCompanies || searchContacts)
       {
@@ -978,28 +982,13 @@ namespace TSWebServices
           searchTerm = searchTerm.Trim();
           job.Request = searchTerm;
           job.FieldWeights = "Name:20,Email:10";
-          job.MaxFilesToRetrieve = searchTerm == "xfirstword" ? 0 : 1000;
-          //job.AutoStopLimit = 1000000;
+          job.MaxFilesToRetrieve = 50;
+          job.AutoStopLimit = 10000000;
           job.TimeoutSeconds = 30;
 
-          //xfirstword returns all results and is being received as search term when no term has been given by user.
-          //In this case we'll sort by most recent else we'll sort by relevance.
-          if (searchTerm == "xfirstword")
-          {
-            job.SearchFlags = SearchFlags.dtsSearchDelayDocInfo;
-          }
-          else
-          {
-            job.Fuzziness = 1;
-            job.Request = job.Request + "*";
-            job.SearchFlags = job.SearchFlags |
-              //SearchFlags.dtsSearchFuzzy | 
-              //SearchFlags.dtsSearchStemming |
-              //SearchFlags.dtsSearchPositionalScoring |
-              //SearchFlags.dtsSearchAutoTermWeight | 
-              SearchFlags.dtsSearchDelayDocInfo;
-          }
-
+          job.Fuzziness = 1;
+          job.Request = job.Request + "*";
+          job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchDelayDocInfo;
 
           if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
 
@@ -1017,17 +1006,7 @@ namespace TSWebServices
             job.IndexesToSearch.Add(contactsIndexPath);
           }
           job.Execute();
-
-          if (searchTerm == "xfirstword")
-          {
-            job.Results.Sort(SortFlags.dtsSortByName | SortFlags.dtsSortAscending, "");
-          }
-          else
-          {
-            job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortDescending, "");
-            
-          }
-
+          job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortDescending, "");
 
           int topLimit = from + to;
           if (topLimit > job.Results.Count)
@@ -1047,7 +1026,138 @@ namespace TSWebServices
       return resultItems.ToArray();
     }
 
+    private string[] GetAllCompaniesAndContacts(int from, int to, bool searchCompanies, bool searchContacts)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      List<string> results = new List<string>();
+      SqlCommand command = new SqlCommand();
+
+      string pageQuery = @"
+WITH 
+q AS ({0}),
+r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [NAME] ASC) AS 'RowNum' FROM q)
+SELECT  *, (SELECT COUNT(RowNum) FROM r) AS 'TotalRows' FROM r
+WHERE RowNum BETWEEN @From AND @To";
+
+      string companyQuery = @"
+SELECT 
+  1 AS IsCompany,
+  LTRIM(o.Name) AS Name, 
+  o.OrganizationID, 
+  o.HasPortalAccess AS IsPortal, 
+  (SELECT COUNT(*) FROM TicketsView t LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID WHERE ot.OrganizationID = o.OrganizationID AND t.IsClosed = 0) AS OpenTicketCount,
+  o.Website, 
+  NULL AS UserID,
+  NULL AS FirstName, 
+  NULL AS LastName, 
+  NULL AS Email, 
+  NULL AS Title, 
+  NULL AS Organization
+  FROM OrganizationsView o WHERE o.ParentID = @OrganizationID
+";
+
+      string contactQuery = @"
+SELECT 
+  0 AS IsCompany,
+  LTRIM(c.LastName + ' ' + c.FirstName) AS Name, 
+  c.OrganizationID, 
+  c.IsPortalUser AS IsPortal,
+  (SELECT COUNT(*) FROM TicketsView t LEFT JOIN UserTickets ut ON ut.TicketID = t.TicketID WHERE ut.UserID = c.UserID AND t.IsClosed = 0) AS OpenTicketCount,
+  NULL AS Website, 
+  c.UserID,
+  c.FirstName, 
+  c.LastName, 
+  c.Email, 
+  c.Title, 
+  c.Organization
+  FROM ContactsView c
+  WHERE c.OrganizationParentID = @OrganizationID
+";
+
+      if (searchContacts && searchCompanies)
+      {
+        command.CommandText = string.Format(pageQuery, companyQuery + " UNION " + contactQuery);
+      }
+      else if (searchCompanies) {
+        command.CommandText = string.Format(pageQuery, companyQuery);
+      }
+      else if (searchContacts) {
+        command.CommandText = string.Format(pageQuery, contactQuery);
+      }
+      else
+      {
+        return results.ToArray();
+      }
+
+
+      command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+      command.Parameters.AddWithValue("@From", from);
+      command.Parameters.AddWithValue("@To", to);
+
+      DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
+
+      foreach (DataRow row in table.Rows)
+      {
+        if ((int)row["IsCompany"] == 1)
+        {
+          CustomerSearchCompany company = new CustomerSearchCompany();
+          company.name = (string)row["Name"];
+          company.organizationID = (int)row["OrganizationID"];
+          company.isPortal = (bool)row["IsPortal"];
+          company.openTicketCount = (int)row["OpenTicketCount"];
+          company.website = GetDBString(row["Website"]);
+
+          List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+          PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+          phoneNumbers.LoadByID(company.organizationID, ReferenceType.Organizations);
+          foreach (PhoneNumber number in phoneNumbers)
+          {
+            phones.Add(new CustomerSearchPhone(number));
+          }
+          company.phones = phones.ToArray();
+
+          results.Add(JsonConvert.SerializeObject(company));
+        }
+        else
+        {
+          CustomerSearchContact contact = new CustomerSearchContact();
+          contact.organizationID = (int)row["OrganizationID"];
+          contact.isPortal = (bool)row["IsPortal"];
+          contact.openTicketCount = (int)row["OpenTicketCount"];
+
+          contact.userID = (int)row["UserID"];
+          contact.fName = GetDBString(row["FirstName"]);
+          contact.lName = GetDBString(row["LastName"]);
+          contact.email = GetDBString(row["Email"]);
+          contact.title = GetDBString(row["Title"]);
+          contact.organization = GetDBString(row["Organization"]);
+
+          List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
+          PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
+          phoneNumbers.LoadByID(contact.userID, ReferenceType.Contacts);
+          foreach (PhoneNumber number in phoneNumbers)
+          {
+            phones.Add(new CustomerSearchPhone(number));
+          }
+          contact.phones = phones.ToArray();
+          results.Add(JsonConvert.SerializeObject(contact));
+        }
+        
+      }
+
+      return results.ToArray();
+    
+    }
+
+    public static string GetDBString(object o)
+    {
+      if (o == null || o == DBNull.Value) return "";
+      return o.ToString();
+    }
+
   }
+
+  
 
   [DataContract(Namespace = "http://teamsupport.com/")]
   public class AdvancedSearchOptions

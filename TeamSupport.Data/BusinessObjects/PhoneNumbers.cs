@@ -118,4 +118,18 @@ namespace TeamSupport.Data
     }
 
   }
+
+  public class CustomerSearchPhone
+  {
+    public CustomerSearchPhone() { }
+    public CustomerSearchPhone(PhoneNumber number)
+    {
+      this.type = number.PhoneTypeName;
+      this.number = number.Number;
+      this.ext = number.Extension;
+    }
+    public string type { get; set; }
+    public string number { get; set; }
+    public string ext { get; set; }
+  }
 }

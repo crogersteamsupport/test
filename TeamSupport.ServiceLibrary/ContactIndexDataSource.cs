@@ -33,13 +33,13 @@ namespace TeamSupport.ServiceLibrary
 
         _lastItemID = contact.UserID;
 
-        List<PhoneItem> phones = new List<PhoneItem>();
+        List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
         StringBuilder builder = new StringBuilder();
         PhoneNumbers phoneNumbers = new PhoneNumbers(_loginUser);
         phoneNumbers.LoadByID(contact.UserID, ReferenceType.Contacts);
         foreach (PhoneNumber number in phoneNumbers)
         {
-          phones.Add(new PhoneItem(number));
+          phones.Add(new CustomerSearchPhone(number));
           builder.AppendLine(Regex.Replace(number.Number, "[^0-9]", ""));
         }
 
@@ -73,7 +73,7 @@ namespace TeamSupport.ServiceLibrary
 
         DocFields += "Organization\t" + (string.IsNullOrWhiteSpace(contact.Organization) ? "" : contact.Organization.Trim()) + "\t";
         DocFields += "Email\t" + (string.IsNullOrWhiteSpace(contact.Email) ? "" : contact.Email.Trim()) + "\t";
-        ContactItem contactItem = new ContactItem(contact);
+        CustomerSearchContact contactItem = new CustomerSearchContact(contact);
         contactItem.phones = phones.ToArray();
         TicketsView tickets = new TicketsView(_loginUser);
         contactItem.openTicketCount = tickets.GetUserTicketCount(contact.UserID, 0);
@@ -131,31 +131,6 @@ namespace TeamSupport.ServiceLibrary
     }
   }
 
-  public class ContactItem {
-    public ContactItem() { }
-    public ContactItem(ContactsViewItem item)
-    {
-      userID = item.UserID;
-      organizationID = item.OrganizationID;
-      email = item.Email;
-      title = item.Title;
-      organization = item.Organization;
-      fName = item.FirstName;
-      lName = item.LastName;
-      isPortal = item.IsPortalUser;
-    }
-    
-    public int userID { get; set; }
-    public int organizationID { get; set; }
-    public string email { get; set; }
-    public string title { get; set; }
-    public string organization { get; set; }
-    public string fName { get; set; }
-    public string lName { get; set; }
-    public bool isPortal { get; set; }
-    public int openTicketCount { get; set; }
-    public PhoneItem[] phones { get; set; }
-  }
 
 
 }

@@ -27,11 +27,11 @@ namespace TeamSupport.Data
         command.Transaction = transaction;
         try
         {
-          transaction.Commit();
           using (SqlDataAdapter adapter = new SqlDataAdapter(command))
           {
             adapter.Fill(result);
           }
+          transaction.Commit();
         }
         catch (Exception e)
         {

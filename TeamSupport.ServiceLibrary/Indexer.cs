@@ -404,17 +404,5 @@ namespace TeamSupport.ServiceLibrary
 
   }
 
-  public class PhoneItem
-  {
-    public PhoneItem() { }
-    public PhoneItem(PhoneNumber number)
-    {
-      this.type = number.PhoneTypeName;
-      this.number = number.Number;
-      this.ext = number.Extension;
-    }
-    public string type { get; set; }
-    public string number { get; set; }
-    public string ext { get; set; }
-  }
+
 }

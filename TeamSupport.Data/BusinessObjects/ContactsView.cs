@@ -147,5 +147,32 @@ namespace TeamSupport.Data
       }
     }
   }
+
+  public class CustomerSearchContact
+  {
+    public CustomerSearchContact() { }
+    public CustomerSearchContact(ContactsViewItem item)
+    {
+      userID = item.UserID;
+      organizationID = item.OrganizationID;
+      email = item.Email;
+      title = item.Title;
+      organization = item.Organization;
+      fName = item.FirstName;
+      lName = item.LastName;
+      isPortal = item.IsPortalUser;
+    }
+
+    public int userID { get; set; }
+    public int organizationID { get; set; }
+    public string email { get; set; }
+    public string title { get; set; }
+    public string organization { get; set; }
+    public string fName { get; set; }
+    public string lName { get; set; }
+    public bool isPortal { get; set; }
+    public int openTicketCount { get; set; }
+    public CustomerSearchPhone[] phones { get; set; }
+  }
   
 }

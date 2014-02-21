@@ -35,12 +35,12 @@ namespace TeamSupport.ServiceLibrary
         _lastItemID = organization.OrganizationID;
 
         StringBuilder builder = new StringBuilder();
-        List<PhoneItem> phones = new List<PhoneItem>();
+        List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
         PhoneNumbers phoneNumbers = new PhoneNumbers(_loginUser);
         phoneNumbers.LoadByID(organization.OrganizationID, ReferenceType.Organizations);
         foreach (PhoneNumber number in phoneNumbers)
         {
-          phones.Add(new PhoneItem(number));
+          phones.Add(new CustomerSearchPhone(number));
           builder.AppendLine(Regex.Replace(number.Number, "[^0-9]", ""));
         }
 
@@ -67,7 +67,7 @@ namespace TeamSupport.ServiceLibrary
         DocFields += "Website\t" + (string.IsNullOrWhiteSpace(organization.Website) ? "" : organization.Website.Trim()) + "\t";
         DocFields += "PrimaryContact\t" + (string.IsNullOrWhiteSpace(organization.PrimaryContact) ? "" : organization.PrimaryContact.Trim()) + "\t";
 
-        CompanyItem companyItem = new CompanyItem(organization);
+        CustomerSearchCompany companyItem = new CustomerSearchCompany(organization);
         companyItem.phones = phones.ToArray();
         TicketsView tickets = new TicketsView(_loginUser);
         companyItem.openTicketCount = tickets.GetOrganizationTicketCount(organization.OrganizationID, 0);
@@ -127,22 +127,6 @@ namespace TeamSupport.ServiceLibrary
     }
   }
 
-    public class CompanyItem {
-    public CompanyItem() { }
-    public CompanyItem(OrganizationsViewItem item)
-    {
-      organizationID = item.OrganizationID;
-      name = item.Name;
-      website = item.Website;
-      isPortal = item.HasPortalAccess;
-    }
-    
-    public int organizationID { get; set; }
-    public string name { get; set; }
-    public string website { get; set; }
-    public bool isPortal { get; set; }
-    public int openTicketCount { get; set; }
-    public PhoneItem[] phones { get; set; }
-  }
+
 
 }
