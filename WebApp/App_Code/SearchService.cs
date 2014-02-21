@@ -977,7 +977,7 @@ namespace TSWebServices
 
           searchTerm = searchTerm.Trim();
           job.Request = searchTerm;
-          job.FieldWeights = "Name:1000,Email:100";
+          job.FieldWeights = "Name:20,Email:10";
           job.MaxFilesToRetrieve = 0;
           //job.AutoStopLimit = 1000000;
           job.TimeoutSeconds = 30;
@@ -995,6 +995,8 @@ namespace TSWebServices
             job.SearchFlags = job.SearchFlags |
               //SearchFlags.dtsSearchFuzzy | 
               //SearchFlags.dtsSearchStemming |
+              //SearchFlags.dtsSearchPositionalScoring |
+              //SearchFlags.dtsSearchAutoTermWeight | 
               SearchFlags.dtsSearchDelayDocInfo;
           }
 
@@ -1003,11 +1005,12 @@ namespace TSWebServices
 
           LoginUser loginUser = TSAuthentication.GetLoginUser();
           string companiesIndexPath = DataUtils.GetCompaniesIndexPath(loginUser);
-          if (!System.IO.Directory.Exists(companiesIndexPath)) throw new Exception();
+
           if (searchCompanies)
           {
             job.IndexesToSearch.Add(companiesIndexPath);
           }
+
           string contactsIndexPath = DataUtils.GetContactsIndexPath(loginUser);
           if (searchContacts)
           {
@@ -1021,7 +1024,7 @@ namespace TSWebServices
           }
           else
           {
-            //job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortAscending, "");
+            job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortDescending, "");
             
           }
 
