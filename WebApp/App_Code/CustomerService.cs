@@ -396,9 +396,9 @@ namespace TSWebServices
 
             return form.ToString();
         }
-
+      /*
         [WebMethod]
-        public string GetSearchResults(string filter, int startIndex = 1)
+        public string[] GetSearchResults(string filter, int startIndex = 1)
         {
             StringBuilder builder = new StringBuilder();
             SearchService s = new SearchService();
@@ -530,6 +530,7 @@ namespace TSWebServices
             else
                 return results;
         }
+       */
 
         [WebMethod]
         public string UpdateRecentlyViewed(string viewid)

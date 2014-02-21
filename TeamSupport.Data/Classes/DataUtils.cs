@@ -1596,84 +1596,43 @@ namespace TeamSupport.Data
 
     public static string GetIndexPath(LoginUser loginUser)
     {
-      return Path.Combine(SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\Indexes\\"), loginUser.OrganizationID.ToString());
+      //return Path.Combine(@"C:\TempIndex", loginUser.OrganizationID.ToString());
+      return Path.Combine(SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\"), loginUser.OrganizationID.ToString());
     }
 
     public static string GetTicketIndexPath(LoginUser loginUser)
     {
-      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
-      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Tickets");
-      if (!Directory.Exists(result))
-      {
-        result = Path.Combine(root, "Tickets");
-      }
-      return result;
+      return GetIndexPath(loginUser) + "\\Tickets";
     }
 
     public static string GetWikiIndexPath(LoginUser loginUser)
     {
-      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
-      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Wikis");
-      if (!Directory.Exists(result))
-      {
-        result = Path.Combine(root, "Wikis");
-      }
-      return result;
+      return GetIndexPath(loginUser) + "\\Wikis";
     }
 
     public static string GetNotesIndexPath(LoginUser loginUser)
     {
-      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
-      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Notes");
-      if (!Directory.Exists(result))
-      {
-        result = Path.Combine(root, "Notes");
-      }
-      return result;
+      return GetIndexPath(loginUser) + "\\Notes";
     }
 
     public static string GetProductVersionsIndexPath(LoginUser loginUser)
     {
-      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
-      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\ProductVersions");
-      if (!Directory.Exists(result))
-      {
-        result = Path.Combine(root, "ProductVersions");
-      }
-      return result;
+      return GetIndexPath(loginUser) + "\\ProductVersions";
     }
 
     public static string GetWaterCoolerIndexPath(LoginUser loginUser)
     {
-      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
-      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\WaterCooler");
-      if (!Directory.Exists(result))
-      {
-        result = Path.Combine(root, "WaterCooler");
-      }
-      return result;
+      return GetIndexPath(loginUser) + "\\WaterCooler";
     }
 
     public static string GetCompaniesIndexPath(LoginUser loginUser)
     {
-      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
-      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Customers");
-      if (!Directory.Exists(result))
-      {
-        result = Path.Combine(root, "Customers");
-      }
-      return result;
+      return GetIndexPath(loginUser) + "\\Customers";
     }
 
     public static string GetContactsIndexPath(LoginUser loginUser)
     {
-      string root = SystemSettings.ReadString(loginUser, "IndexerPathTickets", "c:\\TSIndexes\\");
-      string result = Path.Combine(root, loginUser.OrganizationID.ToString() + "\\Contacts");
-      if (!Directory.Exists(result))
-      {
-        result = Path.Combine(root, "Contacts");
-      }
-      return result;
+      return GetIndexPath(loginUser) + "\\Contacts";
     }
 
     public static bool GetIsColumnInBaseCollection(BaseCollection baseCollection, string columnName)

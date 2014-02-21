@@ -963,9 +963,10 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public CompaniesAndContactsSearchResults SearchCompaniesAndContacts(string searchTerm, int from, int to, bool searchCompanies, bool searchContacts)
+    public string[] SearchCompaniesAndContacts(string searchTerm, int from, int to, bool searchCompanies, bool searchContacts)
     {      
-      List<CompanyOrContact> resultItems = new List<CompanyOrContact>();
+      List<string> resultItems = new List<string>();
+      if (string.IsNullOrWhiteSpace(searchTerm)) searchTerm = "xfirstword";
 
       if (searchCompanies || searchContacts)
       {
@@ -976,7 +977,7 @@ namespace TSWebServices
 
           searchTerm = searchTerm.Trim();
           job.Request = searchTerm;
-          job.FieldWeights = "Name:1000,LastName:1000,FirstName:999,Email:998,MiddleName:997";
+          job.FieldWeights = "Name:1000,Email:100";
           job.MaxFilesToRetrieve = 0;
           //job.AutoStopLimit = 1000000;
           job.TimeoutSeconds = 30;
@@ -1004,6 +1005,7 @@ namespace TSWebServices
 
           LoginUser loginUser = TSAuthentication.GetLoginUser();
           string companiesIndexPath = DataUtils.GetCompaniesIndexPath(loginUser);
+          if (!System.IO.Directory.Exists(companiesIndexPath)) throw new Exception();
           if (searchCompanies)
           {
             job.IndexesToSearch.Add(companiesIndexPath);
@@ -1017,7 +1019,7 @@ namespace TSWebServices
 
           if (searchTerm == "xfirstword")
           {
-            job.Results.Sort(SortFlags.dtsSortByField | SortFlags.dtsSortAscending, "SortName");
+            job.Results.Sort(SortFlags.dtsSortByField | SortFlags.dtsSortAscending, "Name");
           }
 
 
@@ -1030,36 +1032,12 @@ namespace TSWebServices
           for (int i = from; i < topLimit; i++)
           {
             job.Results.GetNthDoc(i);
-
-            CompanyOrContact item = new CompanyOrContact();
-            item.Id = int.Parse(job.Results.CurrentItem.Filename);
-            if (job.Results.CurrentItem.IndexRetrievedFrom == companiesIndexPath)
-            {
-              item.ReferenceType = ReferenceType.Organizations;
-              Organization Org = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), item.Id);
-              if (Org != null)
-                  resultItems.Add(item);
-              else
-                  topLimit++;
-            }
-            else
-            {
-              item.ReferenceType = ReferenceType.Contacts;
-                User u = Users.GetUser(TSAuthentication.GetLoginUser(), item.Id);
-                if(!u.MarkDeleted)
-                    resultItems.Add(item);
-            }
+            resultItems.Add(job.Results.CurrentItem.UserFields["JSON"].ToString());
           }
         }
       }
 
-      CompaniesAndContactsSearchResults result = new CompaniesAndContactsSearchResults();
-      result.SearchTerm = searchTerm;
-      result.From = from;
-      result.To = to;
-      result.Items = resultItems.ToArray();
-
-      return result;
+      return resultItems.ToArray();
     }
 
   }

@@ -172,6 +172,20 @@ namespace TeamSupport.Data
         }
     }
 
+    public int GetOrganizationTicketCount(int organizationID, int closed)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT COUNT(*) FROM TicketsView tv LEFT JOIN OrganizationTickets ot ON ot.TicketID = tv.TicketID WHERE ot.OrganizationID = @OrganizationID and tv.IsClosed = @closed";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@closed", closed);
+        object o = ExecuteScalar(command);
+        if (o == null || o == DBNull.Value) return 0;
+        return (int)o;
+      }
+    }
+
     public void LoadByOrganizationID(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())

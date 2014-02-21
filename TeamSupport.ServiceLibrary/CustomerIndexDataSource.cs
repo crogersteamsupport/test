@@ -4,6 +4,7 @@ using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
 using TeamSupport.Data;
+using Newtonsoft.Json;
 
 
 namespace TeamSupport.ServiceLibrary
@@ -34,10 +35,12 @@ namespace TeamSupport.ServiceLibrary
         _lastItemID = organization.OrganizationID;
 
         StringBuilder builder = new StringBuilder();
+        List<PhoneItem> phones = new List<PhoneItem>();
         PhoneNumbers phoneNumbers = new PhoneNumbers(_loginUser);
         phoneNumbers.LoadByID(organization.OrganizationID, ReferenceType.Organizations);
         foreach (PhoneNumber number in phoneNumbers)
         {
+          phones.Add(new PhoneItem(number));
           builder.AppendLine(Regex.Replace(number.Number, "[^0-9]", ""));
         }
 
@@ -57,37 +60,34 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
-        List<string> columnsToIndex = new List<string>();
-        columnsToIndex.Add("OrganizationID");
-        columnsToIndex.Add("Name");
-        columnsToIndex.Add("Description");
-        columnsToIndex.Add("Website");
-        columnsToIndex.Add("PrimaryContact");
-
         DocFields = string.Empty;
-        foreach (DataColumn column in organization.Collection.Table.Columns)
+
+        DocFields += "Name\t" + (string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim()) + "\t";
+        DocFields += "Description\t" + (string.IsNullOrWhiteSpace(organization.Description) ? "" : organization.Description.Trim()) + "\t";
+        DocFields += "Website\t" + (string.IsNullOrWhiteSpace(organization.Website) ? "" : organization.Website.Trim()) + "\t";
+        DocFields += "PrimaryContact\t" + (string.IsNullOrWhiteSpace(organization.PrimaryContact) ? "" : organization.PrimaryContact.Trim()) + "\t";
+
+        CompanyItem companyItem = new CompanyItem(organization);
+        companyItem.phones = phones.ToArray();
+        TicketsView tickets = new TicketsView(_loginUser);
+        companyItem.openTicketCount = tickets.GetOrganizationTicketCount(organization.OrganizationID, 0);
+
+        DocFields += "**JSON\t" + JsonConvert.SerializeObject(companyItem) + "\t";
+
+
+        CustomValues customValues = new CustomValues(_loginUser);
+        customValues.LoadByReferenceType(_organizationID, ReferenceType.Organizations, organization.OrganizationID);
+
+        foreach (CustomValue value in customValues)
         {
-          if (columnsToIndex.Contains(column.ColumnName))
-          {
-            object value = organization.Row[column];
-            string s = value == null || value == DBNull.Value ? "" : value.ToString();
-            DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
-          }
+          object o = value.Row["CustomValue"];
+          string s = o == null || o == DBNull.Value ? "" : o.ToString();
+          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
         }
-
-        //CustomValues customValues = new CustomValues(_loginUser);
-        //customValues.LoadByReferenceType(_organizationID, ReferenceType.Organizations, organization.OrganizationID);
-
-        //foreach (CustomValue value in customValues)
-        //{
-        //  object o = value.Row["CustomValue"];
-        //  string s = o == null || o == DBNull.Value ? "" : o.ToString();
-        //  DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
-        //}
 
         DocIsFile = false;
         DocName = organization.OrganizationID.ToString();
-        DocFields += "SortName\t" + (string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim()) + "\t";
+        DocFields += "Name\t" + (string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim()) + "\t";
         DocDisplayName = string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim();
         DocCreatedDate = (DateTime)organization.Row["DateCreated"];
         DocModifiedDate = (DateTime)organization.Row["DateModified"];
@@ -127,4 +127,23 @@ namespace TeamSupport.ServiceLibrary
       return true;
     }
   }
+
+    public class CompanyItem {
+    public CompanyItem() { }
+    public CompanyItem(OrganizationsViewItem item)
+    {
+      organizationID = item.OrganizationID;
+      name = item.Name;
+      website = item.Website;
+      isPortal = item.HasPortalAccess;
+    }
+    
+    public int organizationID { get; set; }
+    public string name { get; set; }
+    public string website { get; set; }
+    public bool isPortal { get; set; }
+    public int openTicketCount { get; set; }
+    public PhoneItem[] phones { get; set; }
+  }
+
 }

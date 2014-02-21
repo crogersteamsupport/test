@@ -51,11 +51,11 @@ namespace TeamSupport.ServiceLibrary
             }
 
             cnt++;
-            ProcessIndex(org, ReferenceType.Tickets, isRebuilder);
+            /*ProcessIndex(org, ReferenceType.Tickets, isRebuilder);
             ProcessIndex(org, ReferenceType.Wikis, isRebuilder);
             ProcessIndex(org, ReferenceType.Notes, isRebuilder);
             ProcessIndex(org, ReferenceType.ProductVersions, isRebuilder);
-            ProcessIndex(org, ReferenceType.WaterCooler, isRebuilder);
+            ProcessIndex(org, ReferenceType.WaterCooler, isRebuilder);*/
             ProcessIndex(org, ReferenceType.Organizations, isRebuilder);
             ProcessIndex(org, ReferenceType.Contacts, isRebuilder);
             if (isRebuilder)
@@ -150,7 +150,7 @@ namespace TeamSupport.ServiceLibrary
         case ReferenceType.Organizations:
            indexPath                            = "\\Customers";
            deletedIndexItemsFileName            = "DeletedCustomers.txt";
-           storedFields                         = "SortName OrganizationID Name Description Website PrimaryContact";
+           storedFields                         = "Name JSON";
            tableName                            = "Organizations";
            primaryKeyName                       = "OrganizationID";
            indexDataSource = new CustomerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
@@ -158,7 +158,7 @@ namespace TeamSupport.ServiceLibrary
         case ReferenceType.Contacts:
            indexPath                            = "\\Contacts";
            deletedIndexItemsFileName            = "DeletedContacts.txt";
-           storedFields                         = "SortName UserID Email Name FirstName MiddleName LastName OrganizationName";
+           storedFields                         = "Name JSON";
            tableName                            = "Users";
            primaryKeyName                       = "UserID";
            indexDataSource = new ContactIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
@@ -402,5 +402,19 @@ namespace TeamSupport.ServiceLibrary
       Logs.WriteEvent("Finished Removing Old Indexes - OrgID = " + organization.OrganizationID + " - " + referenceType.ToString());
     }
 
+  }
+
+  public class PhoneItem
+  {
+    public PhoneItem() { }
+    public PhoneItem(PhoneNumber number)
+    {
+      this.type = number.PhoneTypeName;
+      this.number = number.Number;
+      this.ext = number.Extension;
+    }
+    public string type { get; set; }
+    public string number { get; set; }
+    public string ext { get; set; }
   }
 }

@@ -4,6 +4,7 @@ using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
 using TeamSupport.Data;
+using Newtonsoft.Json;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -32,11 +33,13 @@ namespace TeamSupport.ServiceLibrary
 
         _lastItemID = contact.UserID;
 
+        List<PhoneItem> phones = new List<PhoneItem>();
         StringBuilder builder = new StringBuilder();
         PhoneNumbers phoneNumbers = new PhoneNumbers(_loginUser);
         phoneNumbers.LoadByID(contact.UserID, ReferenceType.Contacts);
         foreach (PhoneNumber number in phoneNumbers)
         {
+          phones.Add(new PhoneItem(number));
           builder.AppendLine(Regex.Replace(number.Number, "[^0-9]", ""));
         }
 
@@ -56,25 +59,15 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
-        List<string> columnsToIndex = new List<string>();
-        columnsToIndex.Add("UserID");
-        columnsToIndex.Add("Email");
-        columnsToIndex.Add("Name");
-        columnsToIndex.Add("FirstName");
-        columnsToIndex.Add("MiddleName");
-        columnsToIndex.Add("LastName");
-        columnsToIndex.Add("OrganizationName");
-
         DocFields = string.Empty;
-        foreach (DataColumn column in contact.Collection.Table.Columns)
-        {
-          if (columnsToIndex.Contains(column.ColumnName))
-          {
-            object value = contact.Row[column];
-            string s = value == null || value == DBNull.Value ? "" : value.ToString();
-            DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
-          }
-        }
+        DocFields += "Organization\t" + (string.IsNullOrWhiteSpace(contact.Organization) ? "" : contact.Organization.Trim()) + "\t";
+        DocFields += "Email\t" + (string.IsNullOrWhiteSpace(contact.Email) ? "" : contact.Email.Trim()) + "\t";
+        ContactItem contactItem = new ContactItem(contact);
+        contactItem.phones = phones.ToArray();
+        TicketsView tickets = new TicketsView(_loginUser);
+        contactItem.openTicketCount = tickets.GetUserTicketCount(contact.UserID, 0);
+        
+        DocFields += "**JSON\t" + JsonConvert.SerializeObject(contactItem) + "\t";
 
         CustomValues customValues = new CustomValues(_loginUser);
         customValues.LoadByReferenceType(_organizationID, ReferenceType.Contacts, contact.UserID);
@@ -90,12 +83,12 @@ namespace TeamSupport.ServiceLibrary
         DocName = contact.UserID.ToString();
         if (string.IsNullOrWhiteSpace(contact.LastName))
         {
-          DocFields += "SortName\t" + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim()) + "\t";
+          DocFields += "Name\t" + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim()) + "\t";
           DocDisplayName = string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim();
         }
         else
         {
-          DocFields += "SortName\t" + contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim()) + "\t";
+          DocFields += "Name\t" + contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim()) + "\t";
           DocDisplayName = contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim());
         }
         DocCreatedDate = (DateTime)contact.Row["DateCreated"];
@@ -136,4 +129,30 @@ namespace TeamSupport.ServiceLibrary
       return true;
     }
   }
+
+  public class ContactItem {
+    public ContactItem() { }
+    public ContactItem(ContactsViewItem item)
+    {
+      userID = item.UserID;
+      email = item.Email;
+      title = item.Title;
+      organization = item.Organization;
+      fName = item.FirstName;
+      lName = item.LastName;
+      isPortal = item.IsPortalUser;
+    }
+    
+    public int userID { get; set; }
+    public string email { get; set; }
+    public string title { get; set; }
+    public string organization { get; set; }
+    public string fName { get; set; }
+    public string lName { get; set; }
+    public bool isPortal { get; set; }
+    public int openTicketCount { get; set; }
+    public PhoneItem[] phones { get; set; }
+  }
+
+
 }
