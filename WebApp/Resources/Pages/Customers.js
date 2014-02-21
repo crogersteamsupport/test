@@ -215,7 +215,7 @@
         var id = $(this).data('userid');
         top.Ts.MainPage.openNewContact(id);
 
-        top.Ts.Services.Customers.UpdateRecentlyViewed(id, function (resultHtml) {
+        top.Ts.Services.Customers.UpdateRecentlyViewed('u'+id, function (resultHtml) {
             $('.recent-container').empty();
             $('.recent-container').html(resultHtml);
         });
@@ -228,7 +228,7 @@
         var id = $(this).data('organizationid');
         top.Ts.MainPage.openNewCustomer(id);
 
-        top.Ts.Services.Customers.UpdateRecentlyViewed(id, function (resultHtml) {
+        top.Ts.Services.Customers.UpdateRecentlyViewed('o'+id, function (resultHtml) {
             $('.recent-container').empty();
             $('.recent-container').html(resultHtml);
         });

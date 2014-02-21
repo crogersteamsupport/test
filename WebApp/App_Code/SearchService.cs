@@ -1032,7 +1032,8 @@ namespace TSWebServices
           for (int i = from; i < topLimit; i++)
           {
             job.Results.GetNthDoc(i);
-            resultItems.Add(job.Results.CurrentItem.UserFields["JSON"].ToString());
+            if (job.Results.CurrentItem.UserFields["JSON"] != null)
+              resultItems.Add(job.Results.CurrentItem.UserFields["JSON"].ToString());
           }
         }
       }
