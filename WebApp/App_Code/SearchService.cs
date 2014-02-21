@@ -1036,40 +1036,39 @@ namespace TSWebServices
 WITH 
 q AS ({0}),
 r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [NAME] ASC) AS 'RowNum' FROM q)
-SELECT  *, (SELECT COUNT(RowNum) FROM r) AS 'TotalRows' FROM r
-WHERE RowNum BETWEEN @From AND @To";
+SELECT * INTO #X FROM r
+WHERE RowNum BETWEEN 0 AND 200
+
+SELECT 
+	o.Name AS Organization, 
+	o.OrganizationID, 
+	u.UserID, 
+	o.Website, 
+	u.IsPortalUser, 
+	o.HasPortalAccess, 
+	u.FirstName, 
+	u.LastName, 
+	u.Email, 
+	u.Title,
+	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID WHERE ot.OrganizationID = o.OrganizationID AND t.IsClosed = 0) AS OrgOpenTickets,
+	(SELECT COUNT(*) FROM TicketsView t LEFT JOIN UserTickets ut ON ut.TicketID = t.TicketID WHERE ut.UserID = u.UserID AND t.IsClosed = 0) AS ContactOpenTickets
+FROM #X AS x
+LEFT JOIN Organizations o ON o.OrganizationID = x.OrganizationID
+LEFT JOIN Users u ON u.UserID = x.UserID";
 
       string companyQuery = @"
 SELECT 
-  1 AS IsCompany,
   LTRIM(o.Name) AS Name, 
-  o.OrganizationID, 
-  o.HasPortalAccess AS IsPortal, 
-  (SELECT COUNT(*) FROM TicketsView t LEFT JOIN OrganizationTickets ot ON ot.TicketID = t.TicketID WHERE ot.OrganizationID = o.OrganizationID AND t.IsClosed = 0) AS OpenTicketCount,
-  o.Website, 
-  NULL AS UserID,
-  NULL AS FirstName, 
-  NULL AS LastName, 
-  NULL AS Email, 
-  NULL AS Title, 
-  NULL AS Organization
+  o.OrganizationID,
+  NULL AS UserID
   FROM Organizations o WHERE o.ParentID = @OrganizationID
 ";
 
       string contactQuery = @"
 SELECT 
-  0 AS IsCompany,
   LTRIM(u.LastName + ' ' + u.FirstName) AS Name, 
-  u.OrganizationID, 
-  u.IsPortalUser AS IsPortal,
- (SELECT COUNT(*) FROM TicketsView t LEFT JOIN UserTickets ut ON ut.TicketID = t.TicketID WHERE ut.UserID = u.UserID AND t.IsClosed = 0) AS OpenTicketCount,
-  NULL AS Website, 
-  u.UserID,
-  u.FirstName, 
-  u.LastName, 
-  u.Email, 
-  u.Title, 
-  o.Name AS Organization
+  u.OrganizationID,
+  u.UserID
   FROM Users u
   LEFT JOIN Organizations o ON u.OrganizationID = o.OrganizationID
   WHERE o.ParentID = @OrganizationID
@@ -1099,13 +1098,13 @@ SELECT
 
       foreach (DataRow row in table.Rows)
       {
-        if ((int)row["IsCompany"] == 1)
+        if (row["UserID"] == DBNull.Value)
         {
           CustomerSearchCompany company = new CustomerSearchCompany();
-          company.name = (string)row["Name"];
+          company.name = (string)row["Organization"];
           company.organizationID = (int)row["OrganizationID"];
-          company.isPortal = (bool)row["IsPortal"];
-          company.openTicketCount = (int)row["OpenTicketCount"];
+          company.isPortal = (bool)row["HasPortalAccess"];
+          company.openTicketCount = (int)row["OrgOpenTickets"];
           company.website = GetDBString(row["Website"]);
 
           List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
@@ -1123,8 +1122,8 @@ SELECT
         {
           CustomerSearchContact contact = new CustomerSearchContact();
           contact.organizationID = (int)row["OrganizationID"];
-          contact.isPortal = (bool)row["IsPortal"];
-          contact.openTicketCount = (int)row["OpenTicketCount"];
+          contact.isPortal = (bool)row["IsPortalUser"];
+          contact.openTicketCount = (int)row["ContactOpenTickets"];
 
           contact.userID = (int)row["UserID"];
           contact.fName = GetDBString(row["FirstName"]);
