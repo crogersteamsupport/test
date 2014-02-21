@@ -1053,25 +1053,26 @@ SELECT
   NULL AS Email, 
   NULL AS Title, 
   NULL AS Organization
-  FROM OrganizationsView o WHERE o.ParentID = @OrganizationID
+  FROM Organizations o WHERE o.ParentID = @OrganizationID
 ";
 
       string contactQuery = @"
 SELECT 
   0 AS IsCompany,
-  LTRIM(c.LastName + ' ' + c.FirstName) AS Name, 
-  c.OrganizationID, 
-  c.IsPortalUser AS IsPortal,
-  (SELECT COUNT(*) FROM TicketsView t LEFT JOIN UserTickets ut ON ut.TicketID = t.TicketID WHERE ut.UserID = c.UserID AND t.IsClosed = 0) AS OpenTicketCount,
+  LTRIM(u.LastName + ' ' + u.FirstName) AS Name, 
+  u.OrganizationID, 
+  u.IsPortalUser AS IsPortal,
+ (SELECT COUNT(*) FROM TicketsView t LEFT JOIN UserTickets ut ON ut.TicketID = t.TicketID WHERE ut.UserID = u.UserID AND t.IsClosed = 0) AS OpenTicketCount,
   NULL AS Website, 
-  c.UserID,
-  c.FirstName, 
-  c.LastName, 
-  c.Email, 
-  c.Title, 
-  c.Organization
-  FROM ContactsView c
-  WHERE c.OrganizationParentID = @OrganizationID
+  u.UserID,
+  u.FirstName, 
+  u.LastName, 
+  u.Email, 
+  u.Title, 
+  o.Name AS Organization
+  FROM Users u
+  LEFT JOIN Organizations o ON u.OrganizationID = o.OrganizationID
+  WHERE o.ParentID = @OrganizationID
 ";
 
       if (searchContacts && searchCompanies)
