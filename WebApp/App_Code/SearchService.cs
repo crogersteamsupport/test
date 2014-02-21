@@ -978,7 +978,7 @@ namespace TSWebServices
           searchTerm = searchTerm.Trim();
           job.Request = searchTerm;
           job.FieldWeights = "Name:20,Email:10";
-          job.MaxFilesToRetrieve = 0;
+          job.MaxFilesToRetrieve = searchTerm == "xfirstword" ? 0 : 1000;
           //job.AutoStopLimit = 1000000;
           job.TimeoutSeconds = 30;
 

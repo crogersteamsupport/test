@@ -59,7 +59,7 @@ color: #666;
 .recent-info ul li { line-height: 18px; }
 .recent-info ul li span { line-height: 18px; }
 .recent-info {word-wrap:break-word; font-size: 12px;}
-.recent-info span.fa { padding-right: 10px;}
+.recent-info i.fa { padding-right: 10px;}
 .recent-info li a { color: #999;}
 
 .results-wrapper { padding: 5px 5px;}
