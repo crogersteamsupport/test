@@ -1870,7 +1870,7 @@ OR EXISTS (
             WHERE o.ParentID = 1 
             AND o.IsActive = 1
             AND DATEDIFF(day, o.LastIndexRebuilt, GETUTCDATE()) > 14
-            AND ISNULL((SELECT MAX(u.LastActivity) FROM Users u WHERE u.OrganizationID = o.OrganizationID),'1999-01-01 00:00:00.000') < DATEADD(hour, -2, GETUTCDATE())
+            AND ISNULL((SELECT MAX(u.LastActivity) FROM Users u WHERE u.OrganizationID = o.OrganizationID),'1999-01-01 00:00:00.000') < DATEADD(minute, -15, GETUTCDATE())
             ORDER BY o.LastIndexRebuilt ASC";
         command.CommandType = CommandType.Text;
         Fill(command);

@@ -1037,7 +1037,7 @@ WITH
 q AS ({0}),
 r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [NAME] ASC) AS 'RowNum' FROM q)
 SELECT * INTO #X FROM r
-WHERE RowNum BETWEEN 0 AND 200
+WHERE RowNum BETWEEN @From AND @To
 
 SELECT 
 	o.Name AS Organization, 
