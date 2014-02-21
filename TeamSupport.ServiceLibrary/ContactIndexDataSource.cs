@@ -135,6 +135,7 @@ namespace TeamSupport.ServiceLibrary
     public ContactItem(ContactsViewItem item)
     {
       userID = item.UserID;
+      organizationID = item.OrganizationID;
       email = item.Email;
       title = item.Title;
       organization = item.Organization;
@@ -144,6 +145,7 @@ namespace TeamSupport.ServiceLibrary
     }
     
     public int userID { get; set; }
+    public int organizationID { get; set; }
     public string email { get; set; }
     public string title { get; set; }
     public string organization { get; set; }

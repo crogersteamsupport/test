@@ -90,35 +90,36 @@
 
         $('<td>').append(div).appendTo(el);
 
-        if (item.organizationID) {
-            circle.addClass('color-green');
-            icon.addClass('fa-building-o');
-            appendCompany(div, item);
-        }
-        else {
+        if (item.userID) {
             circle.addClass('color-orange');
             icon.addClass('fa-user');
             appendContact(div, item);
+        }
+        else {
+            circle.addClass('color-green');
+            icon.addClass('fa-building-o');
+            appendCompany(div, item);
         }
         el.appendTo(container);
     }
 
     function appendCompany(el, item) {
-        
+
 
         $('<a>')
           .attr('href', '#')
           .addClass('companylink')
-          .data('id', item.organizationID)
+          .data('organizationid', item.organizationID)
           .text(!isNullOrWhiteSpace(item.name) ? item.name : 'Unnamed Company')
           .appendTo($('<h4>').appendTo(el));
 
         var list = $('<ul>').appendTo(el);
-        // check http
-        if (item.website && item.website != '') {
+
+        if (!isNullOrWhiteSpace(item.website)) {
+            var site = item.website.indexOf('http') != 0 ? 'http://' + item.website : item.website;
             $('<a>')
                 .attr('target', '_blank')
-                .attr('href', item.website)
+                .attr('href', site)
                 .text(item.website)
                 .appendTo($('<li>').appendTo(list));
         }
@@ -133,13 +134,45 @@
           .attr('href', '#')
           .addClass('contactlink')
           .text(isNullOrWhiteSpace(item.fName) && isNullOrWhiteSpace(item.lName) ? 'Unnamed Contact' : item.fName + ' ' + item.lName)
-          .data('id', item.userID)
+          .data('userid', item.userID)
           .appendTo($('<h4>').appendTo(el));
+        var list = $('<ul>').appendTo(el);
 
+
+        if (item.organization == '_Unknown Company') {
+            if (!isNullOrWhiteSpace(item.title)) {
+                $('<li>').text(item.title).appendTo(list);
+            }
+        }
+        else {
+            var li = $('<li>').appendTo(list);
+
+            if (!isNullOrWhiteSpace(item.title)) {
+                $('<span>').text(item.title + ' at ').appendTo(li);
+            }
+
+            $('<a>')
+              .attr('href', '#')
+              .addClass('companylink')
+              .data('organizationid', item.organizationID)
+              .text(item.organization)
+              .appendTo(li);
+        }
+
+        if (!isNullOrWhiteSpace(item.email)) {
+            $('<a>')
+                .attr('target', '_blank')
+                .attr('href', 'mailto:' + item.email)
+                .text(item.email)
+                .appendTo($('<li>').appendTo(list));
+        }
+
+        var phones = $('<li>');
+        appendPhones(phones, item);
+        phones.appendTo(list);
     }
 
     function appendPhones(el, item) {
-        //type number ext 
         for (var i = 0; i < item.phones.length; i++) {
             var phone = item.phones[i];
             if (!isNullOrWhiteSpace(phone.number)) {
@@ -179,40 +212,33 @@
     $('.searchresults, .recent-container').on('click', '.contactlink', function (e) {
         e.preventDefault();
 
-        var id = e.target.id.substring(1);
+        var id = $(this).data('userid');
         top.Ts.MainPage.openNewContact(id);
-    });
 
-    $('.searchresults').on('click', '.viewOrg', function (e) {
-        e.preventDefault();
+        top.Ts.Services.Customers.UpdateRecentlyViewed(id, function (resultHtml) {
+            $('.recent-container').empty();
+            $('.recent-container').html(resultHtml);
+        });
 
-        var id = e.target.id;
-        top.Ts.MainPage.openNewCustomer(id);
     });
 
     $('.searchresults, .recent-container').on('click', '.companylink', function (e) {
         e.preventDefault();
 
-        var id = e.target.id.substring(1);
+        var id = $(this).data('organizationid');
         top.Ts.MainPage.openNewCustomer(id);
+
+        top.Ts.Services.Customers.UpdateRecentlyViewed(id, function (resultHtml) {
+            $('.recent-container').empty();
+            $('.recent-container').html(resultHtml);
+        });
+
     });
 
     top.Ts.Services.Customers.GetRecentlyViewed(function (resultHtml) {
         $('.recent-container').empty();
         $('.recent-container').html(resultHtml);
     });
-
-    $('.searchresults')
-        .click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            if ($(e.target).is('a.contactlink') || $(e.target).is('a.companylink')) {
-                top.Ts.Services.Customers.UpdateRecentlyViewed(e.target.id, function (resultHtml) {
-                    $('.recent-container').empty();
-                    $('.recent-container').html(resultHtml);
-                });
-            }
-        });
 
 
     var _tmrSearch = null;

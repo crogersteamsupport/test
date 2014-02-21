@@ -1802,7 +1802,7 @@ namespace TSWebServices
                 recentHTML = @" 
                 <li>
                         <div class=""recent-info"">
-                            <h4><a class=""contactlink"" id=""u{3}"" href=""""><span class=""fa fa-user""></span>{0}</a></h4>
+                            <h4><a class=""contactlink"" data-userid=""{3}"" href=""""><span class=""fa fa-user""></span>{0}</a></h4>
                             <ul>
                                 <li><a href=""mailto:{1}"" target=""_blank"">{1}</a></li>{2}
                             </ul>
@@ -1820,7 +1820,7 @@ namespace TSWebServices
                 recentHTML = @" 
                 <li>
                         <div class=""recent-info"">
-                            <h4><a class=""companylink"" id=""o{2}"" href=""""><span class=""fa fa-building-o""></span>{0}</a></h4>{1}
+                            <h4><a class=""companylink"" data-organizationid=""{2}"" href=""""><span class=""fa fa-building-o""></span>{0}</a></h4>{1}
                         </div>
                 </li>";
                 phoneStr = phone.IsEmpty ? "" : string.Format("<ul><li><a href=\"tel:{0}\" target=\"_blank\">{0}</a></li></ul>", phone[0].Number);
