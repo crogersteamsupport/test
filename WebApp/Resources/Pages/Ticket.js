@@ -1127,7 +1127,7 @@ $(document).ready(function () {
           var category = $(ui.item).data('o');
           var categoryString = $(ui.item).data('c');
           top.Ts.System.logAction('Ticket - Community Changed');
-          top.Ts.Services.Tickets.SetTicketCommunity(_ticketID, category == null ? null : category.CategoryID, function (result) {
+          top.Ts.Services.Tickets.SetTicketCommunity(_ticketID, category == null ? null : category.CategoryID, $('#ticketCommunity').text(), category == null ? 'Unassigned' : categoryString, function (result) {
             $('#ticketCommunity').text(result == null ? 'Unassigned' : categoryString);
             parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
             window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecommunity", userFullName);

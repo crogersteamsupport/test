@@ -1164,10 +1164,13 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public ForumCategoryProxy SetTicketCommunity(int ticketID, int? categoryID)
+    public ForumCategoryProxy SetTicketCommunity(int ticketID, int? categoryID, string oldCommunityName, string newCommunityName)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (!CanEditTicket(ticket)) return  null;
+      string description = "Changed community from '" + oldCommunityName + "' to '" + newCommunityName + "'.";
+      ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketID, description);
+
       if (categoryID == null)
       {
         ticket.RemoveCommunityTicket();
