@@ -964,12 +964,12 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public string[] SearchCompaniesAndContacts(string searchTerm, int from, int to, bool searchCompanies, bool searchContacts)
+    public string[] SearchCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts)
     {      
       List<string> resultItems = new List<string>();
       if (string.IsNullOrWhiteSpace(searchTerm))
       {
-        return GetAllCompaniesAndContacts(from, to, searchCompanies, searchContacts);
+        return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts);
       }
 
       if (searchCompanies || searchContacts)
@@ -1008,7 +1008,7 @@ namespace TSWebServices
           job.Execute();
           job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortDescending, "");
 
-          int topLimit = from + to;
+          int topLimit = from + count;
           if (topLimit > job.Results.Count)
           {
             topLimit = job.Results.Count;
@@ -1026,7 +1026,7 @@ namespace TSWebServices
       return resultItems.ToArray();
     }
 
-    private string[] GetAllCompaniesAndContacts(int from, int to, bool searchCompanies, bool searchContacts)
+    private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       List<string> results = new List<string>();
@@ -1076,7 +1076,7 @@ SELECT
 
       if (searchContacts && searchCompanies)
       {
-        command.CommandText = string.Format(pageQuery, companyQuery + " UNION " + contactQuery);
+        command.CommandText = string.Format(pageQuery, companyQuery + " UNION ALL " + contactQuery);
       }
       else if (searchCompanies) {
         command.CommandText = string.Format(pageQuery, companyQuery);
@@ -1091,8 +1091,8 @@ SELECT
 
 
       command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
-      command.Parameters.AddWithValue("@From", from);
-      command.Parameters.AddWithValue("@To", to);
+      command.Parameters.AddWithValue("@From", from+1);
+      command.Parameters.AddWithValue("@To", from+count);
 
       DataTable table = SqlExecutor.ExecuteQuery(loginUser, command);
 
@@ -1109,7 +1109,7 @@ SELECT
 
           List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
           PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
-          phoneNumbers.LoadByID(company.organizationID, ReferenceType.Organizations);
+          //phoneNumbers.LoadByID(company.organizationID, ReferenceType.Organizations);
           foreach (PhoneNumber number in phoneNumbers)
           {
             phones.Add(new CustomerSearchPhone(number));
@@ -1134,7 +1134,7 @@ SELECT
 
           List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
           PhoneNumbers phoneNumbers = new PhoneNumbers(loginUser);
-          phoneNumbers.LoadByID(contact.userID, ReferenceType.Contacts);
+          //phoneNumbers.LoadByID(contact.userID, ReferenceType.Contacts);
           foreach (PhoneNumber number in phoneNumbers)
           {
             phones.Add(new CustomerSearchPhone(number));
