@@ -27,7 +27,8 @@ namespace TeamSupport.ServiceLibrary
         {
           int daysSinceLastRebuild = ConfigurationManager.AppSettings["DaysSinceLastRebuild"] == null ? 14 : int.Parse(ConfigurationManager.AppSettings["DaysSinceLastRebuild"]);
           int minutesSinceLastActive = ConfigurationManager.AppSettings["MinutesSinceLastActive"] == null ? 30 : int.Parse(ConfigurationManager.AppSettings["MinutesSinceLastActive"]);
-          orgs.LoadByNeedsIndexRebuilt(minutesSinceLastActive, daysSinceLastRebuild); 
+          orgs.LoadByNeedsIndexRebuilt(minutesSinceLastActive, daysSinceLastRebuild);
+          Logs.WriteEvent(string.Format("Running in rebuilding mode.  Days since last rebuild: {0}, Minutes Since Last Active: {1}", daysSinceLastRebuild.ToString(), minutesSinceLastActive.ToString()));
         }
         int cnt = 0;
         foreach (Organization org in orgs)
