@@ -662,7 +662,7 @@ $(document).ready(function () {
         if ($('.upload-queue li').length > 0) {
             $('.upload-queue li').each(function (i, o) {
                 var data = $(o).data('data');
-                data.formData = { description: $('#attachmentDescription').val() };
+                data.formData = { description: $('#attachmentDescription').val().replace(/<br\s?\/?>/g, "\n") };
                 data.url = '../../../Upload/UserAttachments/' + userID;
                 data.jqXHR = data.submit();
                 $(o).data('data', data);
@@ -990,7 +990,7 @@ $(document).ready(function () {
                 .appendTo('#tblHistory > tbody:last');
                 //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
             }
-            if (history.length == 20)
+            if (history.length == 50)
                 $('<button>').text("Load More").addClass('btn-link')
                 .click(function (e) {
                     LoadHistory($('#tblHistory tbody > tr').length + 1);

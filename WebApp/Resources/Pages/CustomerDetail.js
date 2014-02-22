@@ -872,6 +872,7 @@ $(document).ready(function () {
         $('.datepicker').attr("data-format", dateformat);
         $('.datepicker').datetimepicker({ pickTime: false });
 
+        $('#productExpiration').attr("data-format", dateformat);
         $('.datetimepicker').datetimepicker({ });
     });
 
@@ -1186,7 +1187,7 @@ $(document).ready(function () {
         if ($('.upload-queue li').length > 0) {
             $('.upload-queue li').each(function (i, o) {
                 var data = $(o).data('data');
-                data.formData = { description: $('#attachmentDescription').val() };
+                data.formData = { description: $('#attachmentDescription').val().replace(/<br\s?\/?>/g, "\n") };
                 data.url = '../../../Upload/OrganizationAttachments/' + organizationID;
                 data.jqXHR = data.submit();
                 $(o).data('data', data);
@@ -1413,7 +1414,7 @@ $(document).ready(function () {
                     .appendTo('#tblHistory > tbody:last');
                     //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
                 }
-                if(history.length == 10)
+                if(history.length == 50)
                     $('<button>').text("Load More").addClass('btn-link')
                     .click(function (e){
                         LoadHistory($('#tblHistory tbody > tr').length+1);

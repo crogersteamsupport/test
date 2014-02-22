@@ -100,7 +100,7 @@ namespace TeamSupport.Handlers
             attachment.FileType = files[i].ContentType;
             attachment.FileSize = files[i].ContentLength;
             if (context.Request.Form["description"] != null)
-                attachment.Description = context.Request.Form["description"];
+                attachment.Description = context.Request.Form["description"].Replace("\n","<br />");
 
             result.Add(new UploadResult(fileName, attachment.FileType, attachment.FileSize));
             attachment.Collection.Save();

@@ -1537,9 +1537,9 @@ namespace TSWebServices
             {
                 organizationProduct.ProductVersionID = null;
             }
-                
-            if(info.SupportExpiration != "")
-                organizationProduct.SupportExpiration = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), DateTime.Parse(info.SupportExpiration));
+
+            if (info.SupportExpiration != null)
+                organizationProduct.SupportExpiration =  DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), DateTime.ParseExact(info.SupportExpiration, GetDateFormatNormal(), null));
 
             organizationProduct.Collection.Save();
 
@@ -1658,6 +1658,12 @@ namespace TSWebServices
                 return us.DateTimeFormat.ShortDatePattern.ToLower();
             else
                 return us.DateTimeFormat.ShortDatePattern.ToUpper();
+        }
+
+        public string GetDateFormatNormal()
+        {
+            CultureInfo us = new CultureInfo(TSAuthentication.GetLoginUser().CultureInfo.ToString());
+                return us.DateTimeFormat.ShortDatePattern;
         }
 
         [WebMethod]
