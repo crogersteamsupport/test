@@ -1860,7 +1860,7 @@ OR EXISTS (
       }
     }
 
-    public void LoadByNeedsIndexRebuilt()
+    public void LoadByNeedsIndexRebuilt(int minutesSinceLastActive, int daysSinceLastRebuild)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -1869,10 +1869,12 @@ OR EXISTS (
             SELECT TOP 1 * FROM Organizations o  
             WHERE o.ParentID = 1 
             AND o.IsActive = 1
-            AND DATEDIFF(day, o.LastIndexRebuilt, GETUTCDATE()) > 14
-            AND ISNULL((SELECT MAX(u.LastActivity) FROM Users u WHERE u.OrganizationID = o.OrganizationID),'1999-01-01 00:00:00.000') < DATEADD(minute, -15, GETUTCDATE())
+            AND DATEDIFF(day, o.LastIndexRebuilt, GETUTCDATE()) > @DaysOld
+            AND ISNULL((SELECT MAX(u.LastActivity) FROM Users u WHERE u.OrganizationID = o.OrganizationID),'1999-01-01 00:00:00.000') < DATEADD(minute, @LastActive, GETUTCDATE())
             ORDER BY o.LastIndexRebuilt ASC";
         command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@DaysOld", daysSinceLastRebuild);
+        command.Parameters.AddWithValue("@LastActive", (minutesSinceLastActive * -1));
         Fill(command);
       }
     }

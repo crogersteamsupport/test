@@ -18,9 +18,17 @@ namespace TeamSupport.ServiceLibrary
       try
       {
         bool isRebuilder = ConfigurationManager.AppSettings["RebuilderMode"] != null && ConfigurationManager.AppSettings["RebuilderMode"] == "1";
-
         Organizations orgs = new Organizations(LoginUser);
-        if (!isRebuilder) orgs.LoadByNeedsIndexing(); else orgs.LoadByNeedsIndexRebuilt();
+        if (!isRebuilder)
+        {
+          orgs.LoadByNeedsIndexing();
+        }
+        else 
+        {
+          int daysSinceLastRebuild = ConfigurationManager.AppSettings["DaysSinceLastRebuild"] == null ? 14 : int.Parse(ConfigurationManager.AppSettings["DaysSinceLastRebuild"]);
+          int minutesSinceLastActive = ConfigurationManager.AppSettings["MinutesSinceLastActive"] == null ? 30 : int.Parse(ConfigurationManager.AppSettings["MinutesSinceLastActive"]);
+          orgs.LoadByNeedsIndexRebuilt(minutesSinceLastActive, daysSinceLastRebuild); 
+        }
         int cnt = 0;
         foreach (Organization org in orgs)
         {
