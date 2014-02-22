@@ -365,12 +365,21 @@ namespace TeamSupport.ServiceLibrary
       , string deletedIndexItemsFileName
     )
     {
-      if (!Directory.Exists(indexPath)) return;
+      Logs.WriteEvent("Removing deleted items:  " + referenceType.ToString());
+      if (!Directory.Exists(indexPath))
+      {
+        Logs.WriteEvent("Path does not exist:  " + indexPath);
+        return;
+      }
       DeletedIndexItems items = new DeletedIndexItems(loginUser);
       items.LoadByReferenceType(referenceType, organization.OrganizationID);
-      if (items.IsEmpty) return;
-      if (!Directory.Exists(indexPath)) return;
+      if (items.IsEmpty)
+      {
+        Logs.WriteEvent("No Items to delete");
+        return;
+      }
 
+      
       StringBuilder builder = new StringBuilder();
       foreach (DeletedIndexItem item in items)
       {
@@ -381,10 +390,12 @@ namespace TeamSupport.ServiceLibrary
       if (File.Exists(fileName)) File.Delete(fileName);
       using (StreamWriter writer = new StreamWriter(fileName))
       {
+        Logs.WriteEvent("Adding IDs to delete file: " + builder.ToString());
         writer.Write(builder.ToString());
       }
 
 
+      Logs.WriteEvent("Deleting Items");
       using (IndexJob job = new IndexJob())
       {
         job.IndexPath = indexPath;
@@ -396,6 +407,7 @@ namespace TeamSupport.ServiceLibrary
         job.Execute();
       }
 
+      Logs.WriteEvent("Items deleted");
       UpdateHealth();
       items.DeleteAll();
       items.Save();
