@@ -1071,7 +1071,7 @@ SELECT
   u.UserID
   FROM Users u
   LEFT JOIN Organizations o ON u.OrganizationID = o.OrganizationID
-  WHERE o.ParentID = @OrganizationID
+  WHERE o.ParentID = @OrganizationID AND u.MarkDeleted=0
 ";
 
       if (searchContacts && searchCompanies)
