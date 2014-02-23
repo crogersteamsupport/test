@@ -355,7 +355,7 @@ namespace TeamSupport.ServiceLibrary
       UpdateHealth();
 
       if (dataSource.UpdatedItems.Count < 1) return;
-
+      
       string updateSql = "UPDATE " + tableName + " SET NeedsIndexing = 0 WHERE " + primaryKeyName + " IN (" + DataUtils.IntArrayToCommaString(dataSource.UpdatedItems.ToArray()) + ")";
       Logs.WriteEvent(updateSql);
       SqlCommand command = new SqlCommand();
@@ -381,6 +381,7 @@ namespace TeamSupport.ServiceLibrary
         return;
       }
       DeletedIndexItems items = new DeletedIndexItems(loginUser);
+      Logs.WriteEvent(string.Format("Retrieving deleted items:  RefType: {0}, OrgID: {1}", referenceType.ToString(), organization.OrganizationID.ToString()));
       items.LoadByReferenceType(referenceType, organization.OrganizationID);
       if (items.IsEmpty)
       {
