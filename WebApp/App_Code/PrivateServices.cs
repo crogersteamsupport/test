@@ -708,7 +708,6 @@ namespace TeamSupport.Services
       if (!UserSession.CurrentUser.IsSystemAdmin) return;
       Users.MarkUserDeleted(UserSession.LoginUser, userID);
       User user = Users.GetUser(UserSession.LoginUser, userID);
-      if (user.IsActive) user.EmailCountToMuroc(false);
 
       string description = String.Format("{0} deleted user {1} ", UserSession.CurrentUser.FirstLastName, user.FirstLastName);
       ActionLogs.AddActionLog(UserSession.LoginUser, ActionLogType.Delete, ReferenceType.Organizations, user.OrganizationID, description);
@@ -719,6 +718,9 @@ namespace TeamSupport.Services
           org.DefaultSupportUserID = null;
           org.Collection.Save();
       }
+
+      
+      if (user.IsActive && org.ParentID == 1) user.EmailCountToMuroc(false);
 
     }
 
