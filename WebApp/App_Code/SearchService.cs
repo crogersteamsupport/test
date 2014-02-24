@@ -987,7 +987,7 @@ namespace TSWebServices
           job.TimeoutSeconds = 30;
 
           job.Fuzziness = 1;
-          job.Request = job.Request + "*";
+          job.Request = "*" + job.Request + "*";
           job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchDelayDocInfo;
 
           if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
