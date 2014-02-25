@@ -565,21 +565,25 @@ AND ts.IsClosed = 0";
         bool newClosed = ticketStatus.IsClosed;
         if (newClosed)
         {
-          description = "Closed " + GetTicketLink(ticket);
-          ticket.CloserID = LoginUser.UserID;
-          ticket.DateClosed = DateTime.UtcNow;
+          if (!oldClosed)
+          {
+            description = "Closed " + GetTicketLink(ticket);
+            ticket.CloserID = LoginUser.UserID;
+            ticket.DateClosed = DateTime.UtcNow;
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+          }
         }
         else
         {
-          description = "Reopened " + GetTicketLink(ticket);
-          ticket.CloserID = null;
-          ticket.DateClosed = null;
+          if (oldClosed)
+          {
+            description = "Reopened " + GetTicketLink(ticket);
+            ticket.CloserID = null;
+            ticket.DateClosed = null;
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+          }
         }
-
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
       }
-
-
     }
 
     public int GetMaxTicketNumber(int organizationID)
