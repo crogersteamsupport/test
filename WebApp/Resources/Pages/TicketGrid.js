@@ -123,33 +123,128 @@ TicketGrid = function () {
         top.Ts.System.logAction('Ticket Grid - Queued');
         top.Ts.System.logAction('Queued');
     });
+
     $('.tickets-own').click(function (e) {
         e.preventDefault();
-        var ticket = getActiveTicket();
-        top.Ts.Services.Tickets.TakeOwnership(ticket.TicketID, function () { self.refresh(); });
-        top.Ts.System.logAction('Ticket Grid - Take Ownership');
+
+        var ids = getSelectedIDs();
+        if (ids.length > 1) {
+            top.Ts.Services.Tickets.TakeOwnerships(JSON.stringify(ids), function () { self.refresh(); });
+            top.Ts.System.logAction('Ticket Grid - Take Ownership');
+        }
+        else {
+            var ticket = getActiveTicket();
+            top.Ts.Services.Tickets.TakeOwnership(ticket.TicketID, function () { self.refresh(); });
+            top.Ts.System.logAction('Ticket Grid - Take Ownership');
+        }
     });
     $('.tickets-request').click(function (e) {
         e.preventDefault();
-        var ticket = getActiveTicket();
-        top.Ts.Services.Tickets.RequestUpdate(ticket.TicketID, function () { alert('You have requested an update for Ticket ' + ticket.TicketNumber + '.'); });
-        top.Ts.System.logAction('Ticket Grid - Request Update');
+
+        var ids = getSelectedIDs();
+        if (ids.length > 1) {
+            top.Ts.Services.Tickets.RequestUpdate(JSON.stringify(ids), function () { alert('You have requested an update for ' + ids.length + ' selected tickets.'); });
+            top.Ts.System.logAction('Ticket Grid - Request Update');
+        }
+        else {
+            var ticket = getActiveTicket();
+            top.Ts.Services.Tickets.RequestUpdate(ticket.TicketID, function () { alert('You have requested an update for Ticket ' + ticket.TicketNumber + '.'); });
+            top.Ts.System.logAction('Ticket Grid - Request Update');
+        }
     });
+
+
+    $('.ticket-menu-actions li > a').click(function (e) {
+        e.preventDefault();
+        var el = $(this);
+
+        var ids = getSelectedIDs();
+        if (ids.length < 1) return;
+        var data = JSON.stringify(ids);
+
+        if (el.hasClass('ticket-action-read')) {
+            top.Ts.Services.Tickets.SetTicketReads(data, true, function () { self.refresh(); });
+            top.Ts.System.logAction('Ticket Grid - Mark Read');
+        }
+        else if (el.hasClass('ticket-action-unread')) {
+            top.Ts.Services.Tickets.SetTicketReads(data, false, function () { self.refresh(); });
+            top.Ts.System.logAction('Ticket Grid - Mark Unread');
+        }
+        else if (el.hasClass('ticket-action-reassign')) {
+
+        }
+        else if (el.hasClass('ticket-action-status')) {
+
+        }
+        else if (el.hasClass('ticket-action-flag')) {
+            top.Ts.Services.Tickets.SetTicketFlags(data, true, function () { self.refresh(); });
+            top.Ts.System.logAction('Ticket Grid - Mark Flagged');
+        }
+        else if (el.hasClass('ticket-action-unflag')) {
+            top.Ts.Services.Tickets.SetTicketFlags(data, false, function () { self.refresh(); });
+            top.Ts.System.logAction('Ticket Grid - Mark Unflagged');
+        }
+        else if (el.hasClass('ticket-action-subscribe')) {
+            top.Ts.Services.Tickets.SetTicketSubcribes(data, true, function () { self.refresh(); });
+            top.Ts.System.logAction('Ticket Grid - Subscribed');
+        }
+        else if (el.hasClass('ticket-action-unsubscribe')) {
+            top.Ts.Services.Tickets.SetTicketSubcribes(data, false, function () { self.refresh(); });
+            top.Ts.System.logAction('Ticket Grid - Unsubscribed');
+        }
+        else if (el.hasClass('ticket-action-enqueue')) {
+            top.Ts.Services.Tickets.SetUserQueues(data, true, function () { self.refresh(); });
+            top.Ts.System.logAction('Ticket Grid - Enqueued');
+        }
+        else if (el.hasClass('ticket-action-dequeue')) {
+            top.Ts.Services.Tickets.SetUserQueues(data, false, function () { self.refresh(); });
+            top.Ts.System.logAction('Ticket Grid - Dequeued');
+        }
+    });
+
+
+
+
+
     $('.tickets-export').click(function (e) {
         e.preventDefault();
         var s = JSON.stringify(ticketLoadFilter);
         window.open('../../../dc/1078/ticketexport?filter=' + encodeURIComponent(s));
         top.Ts.System.logAction('Ticket Grid - Export');
     });
+
     $('.tickets-delete').click(function (e) {
         e.preventDefault();
-        var ticket = getActiveTicket();
-        if (confirm('Are you sure you would like to delete Ticket ' + ticket.TicketNumber + '?')) {
-            top.Ts.System.logAction('Ticket Grid - Delete Ticket');
-            top.top.Ts.Services.Tickets.DeleteTicket(ticket.TicketID, function () { self.refresh(); });
+        var ids = getSelectedIDs();
+        if (ids.length > 1) {
+            if (confirm('Are you sure you would like to delete ' + ids.length + ' selected tickets?')) {
+                top.Ts.System.logAction('Ticket Grid - Delete Tickets');
+                top.top.Ts.Services.Tickets.DeleteTickets(JSON.stringify(ids), function () {
+                    self.refresh();
+                    grid.setSelectedRows([]);
+                });
+            }
         }
-
+        else {
+            var ticket = getActiveTicket();
+            if (confirm('Are you sure you would like to delete Ticket ' + ticket.TicketNumber + '?')) {
+                top.Ts.System.logAction('Ticket Grid - Delete Ticket');
+                top.top.Ts.Services.Tickets.DeleteTicket(ticket.TicketID, function () { self.refresh(); });
+            }
+        }
     });
+
+    function getSelectedIDs() {
+        selectedRowIds = [];
+        var rows = grid.getSelectedRows();
+        for (var i = 0, l = rows.length; i < l; i++) {
+            var ticket = loader.data[rows[i]];
+            if (ticket) selectedRowIds.push(ticket.TicketID);
+        }
+        console.log(selectedRowIds);
+        return selectedRowIds;
+
+    }
 
     $('.tickets-refresh').click(function (e) {
         e.preventDefault();

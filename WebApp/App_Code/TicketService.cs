@@ -20,6 +20,7 @@ using System.IO;
 using TidyNet;
 using ImageResizer;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace TSWebServices
 {
@@ -1033,6 +1034,72 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void DeleteTickets(string ticketIDs)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      foreach (int id in ids)
+      {
+        DeleteTicket(id);
+      }
+    }
+
+    [WebMethod]
+    public void RequestUpdates(string ticketIDs)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      foreach (int id in ids)
+      {
+        RequestUpdate(id);
+      }
+    }
+
+    [WebMethod]
+    public void TakeOwnerships(string ticketIDs)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      foreach (int id in ids)
+      {
+        TakeOwnership(id);
+      }
+    }
+
+    [WebMethod]
+    public ActionInfo RequestUpdate(int ticketID)
+    {
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticket == null) return null;
+      EmailPosts.SendTicketUpdateRequest(TSAuthentication.GetLoginUser(), ticketID);
+      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      TeamSupport.Data.Action action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
+      action.ActionTypeID = null;
+      action.Name = "Update Requested";
+      action.ActionSource = "UpdateRequest";
+      action.SystemActionTypeID = SystemActionType.UpdateRequest;
+      action.Description = String.Format("<p>{0} requested an update for this ticket.</p>", user.FirstName);
+      action.IsVisibleOnPortal = false;
+      action.IsKnowledgeBase = false;
+      action.TicketID = ticket.TicketID;
+      action.Collection.Save();
+
+
+      string description = String.Format("{0} requested an update from {1} for {2}", user.FirstLastName, ticket.UserName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), ticketID));
+      ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
+
+      return GetActionInfo(action.ActionID);
+    }
+
+    [WebMethod]
+    public void TakeOwnership(int ticketID)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return;
+      ticket.UserID = TSAuthentication.UserID;
+      ticket.Collection.Save();
+    }
+
+
+
+    [WebMethod]
     public void DeleteAction(int actionID)
     {
       TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
@@ -1427,6 +1494,16 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void SetUserQueues(string ticketIDs, bool value)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      foreach (int id in ids)
+      {
+        SetUserQueue(id, value);
+      }
+    }
+
+    [WebMethod]
     public void Enqueue(int ticketID)
     {
       SetUserQueue(ticketID, true);
@@ -1436,40 +1513,6 @@ namespace TSWebServices
     public void Dequeue(int ticketID)
     {
       SetUserQueue(ticketID, false);
-    }
-
-    [WebMethod]
-    public void TakeOwnership(int ticketID)
-    {
-      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return;
-      ticket.UserID = TSAuthentication.UserID;
-      ticket.Collection.Save();
-    }
-
-    [WebMethod]
-    public ActionInfo RequestUpdate(int ticketID)
-    {
-      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(TSAuthentication.GetLoginUser(), ticketID);
-      if (ticket == null) return null;
-      EmailPosts.SendTicketUpdateRequest(TSAuthentication.GetLoginUser(), ticketID);
-      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
-      TeamSupport.Data.Action action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
-      action.ActionTypeID = null;
-      action.Name = "Update Requested";
-      action.ActionSource = "UpdateRequest";
-      action.SystemActionTypeID = SystemActionType.UpdateRequest;
-      action.Description = String.Format("<p>{0} requested an update for this ticket.</p>", user.FirstName);
-      action.IsVisibleOnPortal = false;
-      action.IsKnowledgeBase = false;
-      action.TicketID = ticket.TicketID;
-      action.Collection.Save();
-
-
-      string description = String.Format("{0} requested an update from {1} for {2}", user.FirstLastName, ticket.UserName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), ticketID));
-      ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
-
-      return GetActionInfo(action.ActionID);
     }
 
     [WebMethod]
@@ -1679,6 +1722,16 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void SetTicketReads(string ticketIDs, bool value)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      foreach (int id in ids)
+      {
+        SetTicketRead(id, value);
+      }
+    }
+
+    [WebMethod]
     public void SetTicketRead(int ticketID, bool value)
     {
       UserTicketStatus uts = UserTicketStatuses.GetUserTicketStatus(TSAuthentication.GetLoginUser(), TSAuthentication.UserID, ticketID);
@@ -1696,6 +1749,26 @@ namespace TSWebServices
       if (ticket.OrganizationID != TSAuthentication.OrganizationID) return;
       uts.IsFlagged = value;
       uts.Collection.Save();
+    }
+
+    [WebMethod]
+    public void SetTicketFlags(string ticketIDs, bool value)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      foreach (int id in ids)
+      {
+        SetTicketFlag(id, value);
+      }
+    }
+
+    [WebMethod]
+    public void SetTicketSubcribes(string ticketIDs, bool value)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      foreach (int id in ids)
+      {
+        SetSubscribed(id, value, null);
+      }
     }
 
     [WebMethod]
