@@ -86,9 +86,6 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 
 .color-white { color: #FFFFFF; }
 .color-black { color: #000000; }
-.color-lightgray { color: #e5e5e5; }
-.color-gray { color: #999; }
-.color-darkgray { color: #777; }
 .color-blue { color: #3276B1; }
 .color-yellow { color: #FFC312; }
 .color-orange { color: #F0AD4E; }
@@ -99,14 +96,11 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 
 .bgcolor-white { background-color: #FFFFFF; }
 .bgcolor-black { background-color: #000000; }
-.bgcolor-lightgray { background-color: #e5e5e5; }
-.bgcolor-darkgray { background-color: #777; }
-.bgcolor-gray { background-color: #999; }
 .bgcolor-blue { background-color: #3276B1; }
 .bgcolor-yellow { background-color: #FFC312; }
 .bgcolor-orange { background-color: #F0AD4E; }
 .bgcolor-red { background-color: #D9534F; }
-.bgcolor-green { background-color: #5CB85C; }
+.bgcolor-green { background-color: #5CB85C ; }
 .bgcolor-teal { background-color: #008080; }
 .bgcolor-magenta { background-color: #BA55D3; }
 
