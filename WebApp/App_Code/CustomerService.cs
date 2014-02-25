@@ -1543,7 +1543,7 @@ namespace TSWebServices
                 organizationProduct.ProductVersionID = null;
             }
 
-            if (info.SupportExpiration != null || info.SupportExpiration != "")
+            if (info.SupportExpiration != null && info.SupportExpiration != "")
                 organizationProduct.SupportExpiration =  DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), DateTime.ParseExact(info.SupportExpiration, GetDateFormatNormal(), null));
 
             organizationProduct.Collection.Save();
