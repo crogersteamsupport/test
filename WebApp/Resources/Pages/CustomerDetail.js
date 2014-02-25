@@ -1471,6 +1471,7 @@ $(document).ready(function () {
     }
 
     function LoadProductTypes() {
+        $('#productProduct').empty();
         top.Ts.Services.Customers.LoadProductTypes(function (pt) {
             for (var i = 0; i < pt.length; i++) {
                 if (i == 0)
