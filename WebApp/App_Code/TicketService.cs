@@ -1416,19 +1416,26 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void Enqueue(int ticketID)
+    public void SetUserQueue(int ticketID, bool value)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (ticket.OrganizationID != TSAuthentication.OrganizationID) return;
-      TicketQueue.Enqueue(TSAuthentication.GetLoginUser(), ticketID, TSAuthentication.UserID);
+      if (value)
+        TicketQueue.Enqueue(TSAuthentication.GetLoginUser(), ticketID, TSAuthentication.UserID);
+      else
+        TicketQueue.Dequeue(TSAuthentication.GetLoginUser(), ticketID, TSAuthentication.UserID);
+    }
+
+    [WebMethod]
+    public void Enqueue(int ticketID)
+    {
+      SetUserQueue(ticketID, true);
     }
 
     [WebMethod]
     public void Dequeue(int ticketID)
     {
-      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-      if (ticket.OrganizationID != TSAuthentication.OrganizationID) return;
-      TicketQueue.Dequeue(TSAuthentication.GetLoginUser(), ticketID, TSAuthentication.UserID);
+      SetUserQueue(ticketID, false);
     }
 
     [WebMethod]

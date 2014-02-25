@@ -84,15 +84,21 @@ namespace TeamSupport.Data
     public static void Dequeue(LoginUser loginUser, int ticketQueueID)
     {
       TicketQueueItem item = TicketQueue.GetTicketQueueItem(loginUser, ticketQueueID);
-      item.Delete();
-      item.Collection.Save();
+      if (item != null)
+      {
+        item.Delete();
+        item.Collection.Save();
+      }
     }
 
     public static void Dequeue(LoginUser loginUser, int ticketID, int userID)
     {
       TicketQueueItem item = TicketQueue.GetTicketQueueItem(loginUser, ticketID, userID);
-      item.Delete();
-      item.Collection.Save();
+      if (item != null)
+      {
+        item.Delete();
+        item.Collection.Save();
+      }
     }
 
     public static TicketQueueItem GetTicketQueueItem(LoginUser loginUser, int ticketID, int userID)
