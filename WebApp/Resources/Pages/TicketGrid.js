@@ -1,5 +1,6 @@
 ﻿var ticketGrid = null;
 $(document).ready(function () {
+    $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
 
     ticketGrid = new TicketGrid();
 
@@ -101,6 +102,7 @@ TicketGrid = function () {
             loader.ensureData(vp.top, vp.bottom + 50, function () {
                 if (t > 10) grid.scrollRowIntoView(t + 10, false);
                 grid.resizeCanvas();
+                self.hideLoadingIndicator();
             });
         } catch (e) {
             alert(e.message);
@@ -332,7 +334,7 @@ TicketGrid = function () {
 
     grid.onViewportChanged.subscribe(function (e, args) {
         var vp = grid.getViewport();
-        loader.ensureData(vp.top, vp.bottom);
+        loader.ensureData(vp.top, vp.bottom, self.hideLoadingIndicator);
     });
 
     grid.onColumnsReordered.subscribe(function (e, args) { saveColumns(); });
@@ -425,7 +427,7 @@ TicketGrid = function () {
         top.Ts.Services.Settings.WriteUserSetting('TicketGrid-sort-' + window.location.search, sortCol.field + '|' + sortAsc);
         loader.setSort(sortCol.field, sortAsc);
         var vp = grid.getViewport();
-        loader.ensureData(vp.top, vp.bottom);
+        loader.ensureData(vp.top, vp.bottom, self.hideLoadingIndicator);
     });
 
     grid.onDblClick.subscribe(function (e, args) {
@@ -436,7 +438,7 @@ TicketGrid = function () {
         var ticket = loader.data[o.row];
         if (!ticket) {
             var vp = grid.getViewport();
-            loader.ensureData(vp.top, vp.bottom);
+            loader.ensureData(vp.top, vp.bottom, self.hideLoadingIndicator);
             clearPreview();
         }
         else {
@@ -456,18 +458,18 @@ TicketGrid = function () {
         /*
         var rows = grid.getSelectedRows();
         if (rows.length > 0) {
-            var ticket = loader.data[rows[0]];
-            if (!ticket) {
-                var vp = grid.getViewport();
-                loader.ensureData(vp.top, vp.bottom);
-                clearPreview();
-            }
-            else {
-                previewTicket(ticket);
-            }
+        var ticket = loader.data[rows[0]];
+        if (!ticket) {
+        var vp = grid.getViewport();
+        loader.ensureData(vp.top, vp.bottom);
+        clearPreview();
         }
         else {
-            clearPreview();
+        previewTicket(ticket);
+        }
+        }
+        else {
+        clearPreview();
         }
         */
     });
@@ -717,10 +719,10 @@ TicketGridModel = function (ticketLoadFilter) {
         data.getItemMetadata = getItemMetadata;
     }
 
-    function reloadData(from, to) {
+    function reloadData(from, to, callback) {
         for (var i = from; i <= to; i++)
             delete data[i];
-        ensureData(from, to);
+        ensureData(from, to, callback);
     }
 
     function ensureData(from, to, loadedCallback) {
@@ -736,7 +738,10 @@ TicketGridModel = function (ticketLoadFilter) {
 
         while (data[from] !== undefined && from < to) { from++; }
         while (data[to] !== undefined && from < to) { to--; }
-        if (from >= to) { return; }
+        if (from >= to) {
+            if (loadedCallback) loadedCallback();
+            return;
+        }
 
 
         if (h_request != null)

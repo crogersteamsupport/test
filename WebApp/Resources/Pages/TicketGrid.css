@@ -36,7 +36,7 @@ body { background-color: #fff;}
 .active .slick-cell.selected { background-color:#ffffcc;}
 .slick-cell.selected i.fa-square-o:before { content: "\f046"; }
 .slick-cell i.fa-square-o { color: #999 !important; }
-
+.grid-ticket-layout .ui-layout-resizer { background:#dadada; }
 
 .grid-loading { display: inline-block; z-index: 9999; background: transparent url('../images/loading/loading.gif') no-repeat; height: 100px; width: 100px; }
 .slick-header-column, .slick-header-column:before, .slick-header-column:after { -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; }
