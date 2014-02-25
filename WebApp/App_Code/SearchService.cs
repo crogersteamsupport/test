@@ -966,6 +966,8 @@ namespace TSWebServices
     [WebMethod]
     public string[] SearchCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts)
     {      
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      User user = Users.GetUser(loginUser, loginUser.UserID);
       List<string> resultItems = new List<string>();
       if (string.IsNullOrWhiteSpace(searchTerm))
       {
@@ -988,11 +990,26 @@ namespace TSWebServices
 
           job.Fuzziness = 1;
           job.Request = "*" + job.Request + "*";
+
+          if (user.TicketRights == TicketRightType.Customers)
+          {
+            StringBuilder conditions = new StringBuilder();
+            Organizations orgs = new Organizations(loginUser);
+            orgs.LoadByUserRights(user.UserID);
+
+            for (int i = 0; i < orgs.Count; i++)
+            {
+              if (i > 0) conditions.Append(" OR ");
+              conditions.Append("(OrganizationID::" + orgs[i].OrganizationID.ToString() + ") ");
+            }
+
+            job.BooleanConditions = conditions.ToString();
+          }
+
           job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchDelayDocInfo;
 
           if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
 
-          LoginUser loginUser = TSAuthentication.GetLoginUser();
           string companiesIndexPath = DataUtils.GetCompaniesIndexPath(loginUser);
 
           if (searchCompanies)
@@ -1073,6 +1090,12 @@ SELECT
   LEFT JOIN Organizations o ON u.OrganizationID = o.OrganizationID
   WHERE o.ParentID = @OrganizationID AND u.MarkDeleted=0
 ";
+      User user = Users.GetUser(loginUser, loginUser.UserID);
+      if (user.TicketRights == TicketRightType.Customers)
+      {
+        companyQuery = companyQuery + " AND o.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+        contactQuery = contactQuery + " AND u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+      }
 
       if (searchContacts && searchCompanies)
       {
