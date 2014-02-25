@@ -440,7 +440,7 @@ $(document).ready(function () {
               //var value = top.Ts.Utils.getMsDate($(this).prev().find('input').val());
               top.Ts.Services.Customers.SetCompanySAE(organizationID, $(this).prev().find('input').val(), function (result) {
                   //var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-                  header.text(result);
+                  header.text(result == "" ? "[None]" : result);
                   $('#customerEdit').removeClass("disabled");
               },
                             function (error) {
