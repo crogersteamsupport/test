@@ -1269,7 +1269,7 @@ namespace TSWebServices
             else
                 newOrgID = Organizations.GetUnknownCompanyID(TSAuthentication.GetLoginUser());
 
-            if (!users.IsEmailValid(info.Email, -1, newOrgID))
+            if (info.Email != "" && !users.IsEmailValid(info.Email, -1, newOrgID))
             {
                 return -1;
             }
