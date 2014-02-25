@@ -310,21 +310,24 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string LoadContactProperties(int userID)
+        public string[] LoadContactProperties(int userID)
         {
             StringBuilder html = new StringBuilder("");
+            StringBuilder contactInfo = new StringBuilder("");
+            string[] contact = new string[2];
+
             Users users = new Users(TSAuthentication.GetLoginUser());
             users.LoadByUserID(userID);
             User user = users[0];
 
-            html.AppendLine(CreateFormElement("Name", user.FirstLastName, "editable"));
-            html.AppendLine(CreateFormElement("Email", user.Email, "editable"));
-            html.AppendLine(CreateFormElement("Title", user.Title, "editable"));
+            contactInfo.AppendLine(CreateFormElement("Name", user.FirstLastName, "editable"));
+            contactInfo.AppendLine(CreateFormElement("Email", user.Email, "editable"));
+            contactInfo.AppendLine(CreateFormElement("Title", user.Title, "editable"));
+            Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), user.OrganizationID);
+            contactInfo.AppendLine(CreateFormElement("Company", organization.Name, "editable"));
+
             html.AppendLine(CreateFormElement("Active", user.IsActive, "editable"));
             html.AppendLine(CreateFormElement("Portal User", user.IsPortalUser, "editable"));
-
-            Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), user.OrganizationID);
-            html.AppendLine(CreateFormElement("Company", organization.Name, "editable"));
             html.AppendLine(CreateFormElement("Prevent email from creating tickets", user.BlockInboundEmail, "editable"));
 
             if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null)
@@ -361,8 +364,10 @@ namespace TSWebServices
             }
 
 
-
-            return html.ToString();
+            contact[0] = contactInfo.ToString();
+            contact[1] = html.ToString();
+            
+            return contact;
 
         }
 
@@ -1538,7 +1543,7 @@ namespace TSWebServices
                 organizationProduct.ProductVersionID = null;
             }
 
-            if (info.SupportExpiration != null)
+            if (info.SupportExpiration != null || info.SupportExpiration != "")
                 organizationProduct.SupportExpiration =  DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), DateTime.ParseExact(info.SupportExpiration, GetDateFormatNormal(), null));
 
             organizationProduct.Collection.Save();

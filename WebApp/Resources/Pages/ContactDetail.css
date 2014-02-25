@@ -13,7 +13,7 @@
 .pageheader .btn-toolbar { margin: 10px 20px 0 0; }
 .main-nav { margin-top: 0; }
 
-#userProperties .fa-external-link { margin-left: 10px; }
+.userProperties .fa-external-link { margin-left: 10px; }
 
 #tblNotes, #tblFiles i {cursor:pointer;}
 .note-list{
@@ -65,7 +65,7 @@
     padding-left: 15px;
 }
 
-#userProperties i, #customProperties i{line-height: 2em;cursor:pointer}
+.userProperties i, #customProperties i{line-height: 2em;cursor:pointer}
 
 .form-inline .form-group input {
 	width:140px;
@@ -81,3 +81,8 @@
 .viewFile {cursor:pointer}
 
 .db{display:block;}
+
+.form-horizontal .control-label {
+    color: #888888;
+    font-weight: normal;
+}

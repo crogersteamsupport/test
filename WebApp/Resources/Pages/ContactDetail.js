@@ -53,17 +53,17 @@ $(document).ready(function () {
     }));
 
     $('#contactEdit').click(function (e) {
-        $('#userProperties p').toggleClass("editable");
+        $('.userProperties p').toggleClass("editable");
         $('#customProperties p').toggleClass("editable");
         $("#phonePanel #editmenu").toggleClass("hiddenmenu");
         $("#addressPanel #editmenu").toggleClass("hiddenmenu");
 
-        if ($("#userProperties #fieldName").hasClass('editable'))
-            $("#userProperties #fieldEmail").removeClass("link");
-        else if ($("#userProperties #fieldEmail").text() != "Empty")
-            $("#userProperties #fieldEmail").addClass("link");
+        if ($(".userProperties #fieldName").hasClass('editable'))
+            $(".userProperties #fieldEmail").removeClass("link");
+        else if ($(".userProperties #fieldEmail").text() != "Empty")
+            $(".userProperties #fieldEmail").addClass("link");
 
-        $("#userProperties #fieldCompany").toggleClass("link");
+        $(".userProperties #fieldCompany").toggleClass("link");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
         //$('#contactName').toggleClass("editable");
@@ -127,10 +127,10 @@ $(document).ready(function () {
         top.Ts.Services.Customers.GetUser(userID, function (user) {
             var firstLast = user.FirstName + " " + user.LastName;
             $('#contactName').text(user.FirstName + " " + user.LastName);
-            $('#userProperties #fieldName').text(firstLast.length > 1 ? user.FirstName + " " + user.LastName : "Unassigned");
-            $('#userProperties #fieldName').attr("first", user.FirstName);
-            $('#userProperties #fieldName').attr("middle", user.MiddleName);
-            $('#userProperties #fieldName').attr("last", user.LastName);
+            $('.userProperties #fieldName').text(firstLast.length > 1 ? user.FirstName + " " + user.LastName : "Unassigned");
+            $('.userProperties #fieldName').attr("first", user.FirstName);
+            $('.userProperties #fieldName').attr("middle", user.MiddleName);
+            $('.userProperties #fieldName').attr("last", user.LastName);
             top.privateServices.SetUserSetting('SelectedOrganizationID', user.OrganizationID);
             top.privateServices.SetUserSetting('SelectedContactID', user.UserID);
         });
@@ -146,7 +146,7 @@ $(document).ready(function () {
     }
 
     //$('#contactName').click(function (e) {
-    $('#userProperties').on('click', '#fieldName', function (e) {
+    $('.userProperties').on('click', '#fieldName', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
         else{
@@ -218,7 +218,7 @@ $(document).ready(function () {
         }
 
     });
-    $('#userProperties').on('click', '#fieldEmail', function (e) {
+    $('.userProperties').on('click', '#fieldEmail', function (e) {
         if ($(this).hasClass('link')) {
             window.location.href = "mailto:" + $('#fieldEmail').text();
             return;
@@ -268,7 +268,7 @@ $(document).ready(function () {
             $('#contactEdit').addClass("disabled");
         }
     });
-    $('#userProperties').on('click', '#fieldTitle', function (e) {
+    $('.userProperties').on('click', '#fieldTitle', function (e) {
         e.preventDefault();
         if (!$(this).hasClass('editable'))
             return false;
@@ -314,7 +314,7 @@ $(document).ready(function () {
 
 
     });
-    $('#userProperties').on('click', '#fieldActive', function (e) {
+    $('.userProperties').on('click', '#fieldActive', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
         top.Ts.Services.Customers.SetContactActive(userID, ($(this).text() !== 'Yes'), function (result) {
@@ -325,7 +325,7 @@ $(document).ready(function () {
             alert('There was an error saving the customer active.');
         });
     });
-    $('#userProperties').on('click', '#fieldPortalUser', function (e) {
+    $('.userProperties').on('click', '#fieldPortalUser', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
         top.Ts.Services.Customers.SetContactPortalUser(userID, ($(this).text() !== 'Yes'), function (result) {
@@ -340,7 +340,7 @@ $(document).ready(function () {
             alert('There was an error saving the customer portal user status.');
         });
     });
-    $('#userProperties').on('click', '#fieldCompany', function (e) {
+    $('.userProperties').on('click', '#fieldCompany', function (e) {
         if ($(this).hasClass('link')) {
             top.Ts.MainPage.openNewCustomer($(this).attr('orgID'));
             return;
@@ -404,7 +404,7 @@ $(document).ready(function () {
             $('#contactEdit').addClass("disabled");
         }
     });
-    $('#userProperties').on('click', '#fieldPreventemailfromcreatingtickets', function (e) {
+    $('.userProperties').on('click', '#fieldPreventemailfromcreatingtickets', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
         top.Ts.Services.Customers.SetContactPreventEmail(userID, ($(this).text() !== 'Yes'), function (result) {
@@ -415,7 +415,7 @@ $(document).ready(function () {
             alert('There was an error saving the customer block email status.');
         });
     });
-    $('#userProperties').on('click', '#fieldSystemAdministrator', function (e) {
+    $('.userProperties').on('click', '#fieldSystemAdministrator', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
         top.Ts.Services.Customers.SetContactSystemAdmin(userID, ($(this).text() !== 'Yes'), function (result) {
@@ -426,7 +426,7 @@ $(document).ready(function () {
             alert('There was an error saving the customer system admin status.');
         });
     });
-    $('#userProperties').on('click', '#fieldFinancialAdministrator', function (e) {
+    $('.userProperties').on('click', '#fieldFinancialAdministrator', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
         top.Ts.Services.Customers.SetContactFinancialAdmin(userID, ($(this).text() !== 'Yes'), function (result) {
@@ -590,6 +590,7 @@ $(document).ready(function () {
 
     $('#tblNotes').on('click', '.editNote', function (e) {
         e.stopPropagation();
+        $(this).prop('disabled', true);
         top.Ts.Services.Customers.LoadNote($(this).parent().parent().attr('id'), function (note) {
             $('#fieldNoteTitle').val(note.Title);
             var desc = note.Description;
@@ -633,6 +634,7 @@ $(document).ready(function () {
 
     $("#btnNotesSave").click(function (e) {
         e.preventDefault();
+
         var title = $('#fieldNoteTitle').val();
         var description = $('#fieldNoteDesc').val();
         var noteID = $('#fieldNoteID').val();
@@ -640,7 +642,7 @@ $(document).ready(function () {
             alert("Please fill in all the required information");
             return;
         }
-
+        $(this).prop('disabled', true);
         top.Ts.Services.Customers.SaveNote(title, description, noteID, userID, top.Ts.ReferenceTypes.Users, function (note) {
             $('#fieldNoteTitle').val('');
             $('#fieldNoteDesc').val('');
@@ -648,6 +650,7 @@ $(document).ready(function () {
             $('#btnNotesSave').text("Save Note");
             LoadNotes();
             $('#noteForm').toggle();
+            $(this).prop('disabled', false);
         });
     });
 
@@ -658,7 +661,7 @@ $(document).ready(function () {
     });
 
     $('#btnFilesSave').click(function (e) {
-
+        $(this).prop('disabled', true);
         if ($('.upload-queue li').length > 0) {
             $('.upload-queue li').each(function (i, o) {
                 var data = $(o).data('data');
@@ -668,7 +671,7 @@ $(document).ready(function () {
                 $(o).data('data', data);
             });
         }
-        $('#fileForm').toggle();
+        //$('#fileForm').toggle();
     });
 
     $('.file-upload').fileupload({
@@ -745,7 +748,7 @@ $(document).ready(function () {
             $('.upload-queue').empty();
             $('#attachmentDescription').val('');
             $('#fileForm').toggle();
-
+            $('#btnFilesSave').prop('disabled', true);
         }
     });
 
@@ -828,7 +831,7 @@ $(document).ready(function () {
         top.Ts.Services.Customers.LoadPhoneNumbers(userID,top.Ts.ReferenceTypes.Users, function (phone) {
             for (var i = 0; i < phone.length; i++) {
                 $('#phonePanel').append("<div class='form-group content'> \
-                                        <label for='inputName' class='col-md-2 control-label'>" + phone[i].PhoneTypeName + "</label> \
+                                        <label for='inputName' class='col-xs-4 control-label'>" + phone[i].PhoneTypeName + "</label> \
                                         <div class='col-md-5 '> \
                                             <p class='form-control-static '>" + phone[i].Number + ((phone[i].Extension != null && phone[i].Extension != '') ? ' Ext:' + phone[i].Extension : '') + "</p> \
                                         </div> \
@@ -850,7 +853,7 @@ $(document).ready(function () {
         top.Ts.Services.Customers.LoadAddresses(userID, top.Ts.ReferenceTypes.Users, function (address) {
             for (var i = 0; i < address.length; i++) {
                 $('#addressPanel').append("<div class='form-group content'> \
-                                        <label for='inputName' class='col-md-2 control-label'>" + address[i].Description + "</label> \
+                                        <label for='inputName' class='col-xs-4 control-label'>" + address[i].Description + "</label> \
                                         <div class='col-md-5'> \
                                             " + ((address[i].Addr1.length > 0) ? "<p class='form-control-static'><a href='" + address[i].MapLink + "' target='_blank' id='" + address[i].AddressID + "' class='mapphone'><span class='fa fa-map-marker'></span></a> " + address[i].Addr1 + "</p>" : "") + " \
                                             " + ((address[i].Addr2.length > 0) ? "<p class='form-control-static pt0'>" + address[i].Addr2 + "</p>" : "") + " \
@@ -880,20 +883,23 @@ $(document).ready(function () {
     function LoadProperties()
     {
         top.Ts.Services.Customers.LoadContactProperties(userID, function (user) {
-            $('#userProperties').html(user);
-            $('#userProperties p').toggleClass("editable");
+
+            $('#userInfo').html(user[0]);
+            $('#userProp').html(user[1]);
+
+            $('.userProperties p').toggleClass("editable");
             if ($('#fieldPortalUser').text() == "No" || !_isAdmin)
                 $('#btnSendNewPW').hide();
 
             if($('#fieldEmail').text() != "Empty")
             {
-                $('#userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
-                $('#userProperties #fieldEmail').addClass("link");
+                $('.userProperties #fieldEmail').attr('mailto', $('#fieldEmail').text());
+                $('.userProperties #fieldEmail').addClass("link");
             }
 
             top.Ts.Services.Customers.GetUser(userID, function (user1) {
-                $('#userProperties #fieldCompany').attr('orgID', user1.OrganizationID);
-                $('#userProperties #fieldCompany').addClass("link");
+                $('.userProperties #fieldCompany').attr('orgID', user1.OrganizationID);
+                $('.userProperties #fieldCompany').addClass("link");
             });
         });
 
@@ -1121,7 +1127,7 @@ $(document).ready(function () {
             }
         });
     }
-    $('#userProperties p').toggleClass("editable");
+    $('.userProperties p').toggleClass("editable");
     
 
 });
