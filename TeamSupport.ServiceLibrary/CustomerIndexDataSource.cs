@@ -61,7 +61,7 @@ namespace TeamSupport.ServiceLibrary
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
         DocFields = string.Empty;
-
+        DocFields += "OrganizationID\t" + organization.OrganizationID.ToString() + "\t";
         DocFields += "Name\t" + (string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim()) + "\t";
         DocFields += "Description\t" + (string.IsNullOrWhiteSpace(organization.Description) ? "" : organization.Description.Trim()) + "\t";
         DocFields += "Website\t" + (string.IsNullOrWhiteSpace(organization.Website) ? "" : organization.Website.Trim()) + "\t";

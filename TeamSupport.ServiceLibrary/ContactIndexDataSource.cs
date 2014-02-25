@@ -60,6 +60,10 @@ namespace TeamSupport.ServiceLibrary
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
         DocFields = string.Empty;
+
+        DocFields += "UserID\t" + contact.UserID.ToString() + "\t";
+        DocFields += "OrganizationID\t" + contact.OrganizationID.ToString() + "\t";
+        
         if (string.IsNullOrWhiteSpace(contact.LastName))
         {
           DocFields += "Name\t" + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim()) + "\t";
