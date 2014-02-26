@@ -100,7 +100,8 @@ namespace TeamSupport.ServiceLibrary
 
     public override void Start()
     {
-      SqlExecutor.ExecuteNonQuery(LoginUser, "UPDATE Organizations SET IsIndexLocked = 0 WHERE IsIndexLocked=1");
+      bool isRebuilder = ConfigurationManager.AppSettings["RebuilderMode"] != null && ConfigurationManager.AppSettings["RebuilderMode"] == "1";
+      if (isRebuilder) SqlExecutor.ExecuteNonQuery(LoginUser, "UPDATE Organizations SET IsIndexLocked = 0 WHERE IsIndexLocked=1");
       base.Start();
 
     }
@@ -240,9 +241,9 @@ namespace TeamSupport.ServiceLibrary
           throw;
         }
 
-        if (!isRebuilder && !organization.IsRebuildingIndex)
+        if (!isRebuilder)
         {
-          UpdateItems(indexDataSource, tableName, primaryKeyName);
+          if (!organization.IsRebuildingIndex) UpdateItems(indexDataSource, tableName, primaryKeyName);
         }
         else
         {
