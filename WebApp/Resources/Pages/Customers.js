@@ -47,6 +47,8 @@
         $('.searchresults').empty();
 
         if (items.length < 1) {
+            $('.results-loading').hide();
+            $('.results-done').hide();
             $('.results-empty').show();
         } else {
             appendSearchResults(items);
