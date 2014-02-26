@@ -72,12 +72,13 @@
             <telerik:RadTextBox ID="textDomains" runat="server" Width="200px"></telerik:RadTextBox>
           </td>
           <td class="labelColTD" colspan="2">
-            <asp:CheckBox ID="cbTimeRequired" runat="server" Text="Require Time Spent on Timed Actions"/>
+            <%--<asp:CheckBox ID="cbTimeRequired" runat="server" Text="Require Time Spent on Timed Actions"/>--%>
           </td>
         </tr>
         <tr>
           <td class="labelColTD" colspan="2">
-            <asp:CheckBox ID="cbAdminCustomers" runat="server" Text="Only Admin Can Modify Customers"/>
+            <%--<asp:CheckBox ID="cbAdminCustomers" runat="server" Text="Only Admin Can Modify Customers"/>--%>
+            <asp:CheckBox ID="cbTimeRequired" runat="server" Text="Require Time Spent on Timed Actions"/>
           </td>
           <td class="labelColTD" colspan="2">
             <asp:CheckBox ID="cbAdminReports" runat="server" Text="Only Admin Can View Reports"/>

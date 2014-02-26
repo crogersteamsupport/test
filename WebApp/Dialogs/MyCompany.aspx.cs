@@ -160,7 +160,7 @@ public partial class Dialogs_Organization : BaseDialogPage
 
    // cbCommunity.Checked = organization.UseForums;
     cbRequireCustomer.Checked = Settings.OrganizationDB.ReadBool("RequireNewTicketCustomer", false);
-    cbAdminCustomers.Checked = organization.AdminOnlyCustomers;
+    //cbAdminCustomers.Checked = organization.AdminOnlyCustomers;
     cbTimeRequired.Checked = organization.TimedActionsRequired;
     cbAdminReports.Checked = organization.AdminOnlyReports;
     cmbUsers.SelectedValue = organization.PrimaryUserID.ToString();
@@ -238,7 +238,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     organization.ShowGroupMembersFirstInTicketAssignmentList = cbShowGroupMembersFirstInTicketAssignmentList.Checked;
     //organization.UseForums = cbCommunity.Checked;
     Settings.OrganizationDB.WriteBool("RequireNewTicketCustomer", cbRequireCustomer.Checked);
-    organization.AdminOnlyCustomers = cbAdminCustomers.Checked;
+    //organization.AdminOnlyCustomers = cbAdminCustomers.Checked;
     organization.TimedActionsRequired = cbTimeRequired.Checked;
     organization.AdminOnlyReports = cbAdminReports.Checked;
     organization.Website = textWebSite.Text;

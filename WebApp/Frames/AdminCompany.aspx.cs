@@ -164,7 +164,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Default Wiki Article:", defArticle == null ? "[None Assigned]" : defArticle.ArticleName });
     
     
-    table.Rows.Add(new string[] { "Only Admin Can Modify Customers:", organization.AdminOnlyCustomers.ToString() });
+    //table.Rows.Add(new string[] { "Only Admin Can Modify Customers:", organization.AdminOnlyCustomers.ToString() });
     table.Rows.Add(new string[] { "Only Admin Can View Reports:", organization.AdminOnlyReports.ToString() });
 
     SlaLevel level = organization.InternalSlaLevelID != null  ? SlaLevels.GetSlaLevel(UserSession.LoginUser, (int)organization.InternalSlaLevelID) : null;
