@@ -931,7 +931,7 @@ $(document).ready(function () {
         }
     }
 
-    $('.number').on('keydown', function (event) {
+    $('#customProperties').on('keydown', '.number', function (event) {
         // Allow only backspace and delete
         if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 190) {
             // let it happen, don't do anything
@@ -1250,6 +1250,15 @@ var appendCustomEditCombo = function (field, element) {
               if (fieldValue === items[i]) { option.attr('selected', 'selected'); }
           }
 
+          $('<i>')
+            .addClass('col-xs-1 fa fa-times')
+            .click(function (e) {
+                $(this).closest('div').remove();
+                parent.show();
+                $('#customerEdit').removeClass("disabled");
+            })
+            .insertAfter(container1);
+
           $('#' + field.Name.replace(/\s/g, '')).on('change', function () {
               var value = $(this).val();
               container.remove();
@@ -1306,7 +1315,6 @@ var appendCustomEditNumber = function (field, element) {
             .addClass('col-md-10 form-control number')
             .val(fieldValue)
             .appendTo(container1)
-            .numeric()
             .focus();
 
           $('<i>')

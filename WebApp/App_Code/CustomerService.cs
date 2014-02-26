@@ -976,7 +976,7 @@ namespace TSWebServices
             custProd.VersionNumber = organizationProduct.ProductVersionID.HasValue ? organizationProduct.ProductVersionID.ToString() : "-1";
 
             if (organizationProduct.SupportExpiration.HasValue)
-                custProd.SupportExpiration = ((DateTime)organizationProduct.SupportExpiration).ToString(GetDateFormat());
+                custProd.SupportExpiration = ((DateTime)organizationProduct.SupportExpiration).ToString(GetDateFormatNormal());
             else
                 custProd.SupportExpiration = "";
 
@@ -1547,7 +1547,9 @@ namespace TSWebServices
             }
 
             if (info.SupportExpiration != null && info.SupportExpiration != "")
-                organizationProduct.SupportExpiration =  DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), DateTime.ParseExact(info.SupportExpiration, GetDateFormatNormal(), null));
+                organizationProduct.SupportExpiration = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), DateTime.ParseExact(info.SupportExpiration, GetDateFormatNormal(), null));
+            else
+                organizationProduct.SupportExpiration = null;
 
             organizationProduct.Collection.Save();
 
