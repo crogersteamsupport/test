@@ -295,7 +295,7 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent("Index Locked, trying again...");
         count++;
         System.Threading.Thread.Sleep(5000);
-        if (count > 20)
+        if (count > 100)
         {
           break;
           /*Exception ex = new Exception("Could not obain index lock to move rebuilt index");
