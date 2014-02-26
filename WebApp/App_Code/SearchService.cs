@@ -994,7 +994,7 @@ namespace TSWebServices
 				{
 			
 					// This sets up FileConverter with the input file, index location, and hits
-          fc.SetInputItem(results, 0);
+          fc.SetInputItem(results, i);
 					
 					fc.OutputToString = true;
 					fc.OutputStringMaxSize = 2000000;
