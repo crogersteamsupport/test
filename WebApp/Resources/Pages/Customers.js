@@ -178,7 +178,7 @@
         for (var i = 0; i < item.phones.length; i++) {
             var phone = item.phones[i];
             if (!isNullOrWhiteSpace(phone.number)) {
-                $('<span>').text(phone.type + " ").appendTo(el);
+                $('<span>').text(" " + phone.type + " ").appendTo(el);
                 $('<a>')
                     .attr('href', 'tel:' + phone.number)
                     .attr('target', '_blank')
