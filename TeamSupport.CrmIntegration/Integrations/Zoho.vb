@@ -78,7 +78,7 @@ Namespace TeamSupport
                     Log.Write("exception: " & ex.Message & ": " & ex.StackTrace)
                     Success = False
                 Finally
-                    Logout()
+                    'Logout()
                 End Try
 
                 Return Success
@@ -613,7 +613,7 @@ Namespace TeamSupport
                     Log.Write("exception: " & ex.Message & ": " & ex.StackTrace)
                     Success = False
                 Finally
-                    Logout()
+                    'Logout()
                 End Try
 
                 Return Success
