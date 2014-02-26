@@ -224,6 +224,7 @@ namespace TSWebServices
           utils.AddItem(new TsMenuItem("utils", "utils-services", "Services", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_Services.html", "vcr/1_7_0/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-sanitizer", "Sanitizer", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_Sanitizer.html", "vcr/1_7_0/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-ticketsearch", "Ticket Search", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_TicketSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
+          utils.AddItem(new TsMenuItem("utils", "utils-customersearch", "Customer Search", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_CustomerSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-portalsearch", "Portal Search", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_PortalSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-emailsearch", "Email Search", "vcr/1_7_0/images/nav/20/admin.png", string.Format(data, "vcr/1_7_0/Pages/Utils_EmailsSearch.html", "vcr/1_7_0/PaneInfo/Admin.html")));
           if (TSAuthentication.OrganizationID == 1078)

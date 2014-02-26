@@ -295,12 +295,13 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent("Index Locked, trying again...");
         count++;
         System.Threading.Thread.Sleep(5000);
-        if (count > 10)
+        if (count > 20)
         {
-          Exception ex = new Exception("Could not obain index lock to move rebuilt index");
+          break;
+          /*Exception ex = new Exception("Could not obain index lock to move rebuilt index");
           ExceptionLogs.LogException(LoginUser, ex, "Index Rebuilder");
           Logs.WriteException(ex);
-          throw ex;
+          throw ex;*/
         }
       }
       LockIndex(organizationID, true);

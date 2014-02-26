@@ -964,18 +964,108 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public string[] SearchCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts)
-    {      
-      LoginUser loginUser = TSAuthentication.GetLoginUser();
-      User user = Users.GetUser(loginUser, loginUser.UserID);
-      List<string> resultItems = new List<string>();
-      if (string.IsNullOrWhiteSpace(searchTerm))
-      {
-        return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts);
-      }
+    public string[] CustomerSearchTest(string searchTerm, int organizationID)
+    {
+      if (TSAuthentication.OrganizationID != 1078) return null;
+      LoginUser loginUser = new LoginUser(TSAuthentication.GetLoginUser().ConnectionString, TSAuthentication.UserID, organizationID, null);
+      SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, true, true, 50);
 
-      if (searchCompanies || searchContacts)
+      SearchReportJob report = results.NewSearchReportJob();
+      report.SelectAll();
+      report.Flags = ReportFlags.dtsReportStoreInResults | ReportFlags.dtsReportWholeFile | ReportFlags.dtsReportGetFromCache | ReportFlags.dtsReportIncludeAll;
+      report.OutputFormat = OutputFormats.itUnformattedHTML;
+      report.MaxContextBlocks = 3;
+      report.MaxWordsToRead = 50000;
+      report.OutputStringMaxSize = 50000;
+      //report.WordsOfContext = 10;
+      report.BeforeHit = "123456789";// "<strong style=\"color:red;\">";
+      report.AfterHit = "987654321"; //"</strong>";
+      report.OutputToString = true;
+      report.Execute();
+      report.ContextSeparator = "<br/><br/>";
+      List<string> result = new List<string>();
+
+
+      for (int i = 0; i < results.Count; i++)
       {
+        results.GetNthDoc(i);
+
+        using (FileConverter fc = new FileConverter ()) 
+				{
+			
+					// This sets up FileConverter with the input file, index location, and hits
+          fc.SetInputItem(results, 0);
+					
+					fc.OutputToString = true;
+					fc.OutputStringMaxSize = 2000000;
+					fc.OutputFormat = OutputFormats.itHTML;
+
+					//String 	scriptName = Request.ServerVariables.Get ("SCRIPT_NAME");
+					//String virtPath = MakeVirtual (res.get_DocDetailItem("_filename"));
+					//String HitNavSrc = GetVirtualFolder(scriptName) + "HitNav.js";
+					//String HitNavLink =  "\r\n<script language=JavaScript src=\"" + HitNavSrc + "\"></script>\r\n";
+					fc.Header = "<A NAME=hit0></A>"    
+						+ "<TABLE border=0>"  
+						+ "<TR><TD bgcolor=#003399 color=#ffffff>"
+						+ "<font face=verdana color=#ffffff size=2></TD></TR>"
+						+ "<TR><TD bgcolor=#eeeeee color=#000000>"
+						+ "<font face=verdana color=#003399 size=2>"
+            + "<B>" + results.get_DocDetailItem("_shortName") + "   </B><BR>"
+						+ "<font face=verdana color=#000000 size=1>"
+            + results.DocHitCount + " Hits."
+						+ "  <B>Location: </B>  <B>Date: </B>"
+            + results.get_DocDetailItem("_date") + "<BR>"
+						+ "</FONT>"
+						+ "</TD></TR><TR><TD bgcolor=#003399 color=#ffffff>"
+						+"<font face=verdana color=#ffffff size=2></TD></TR></TABLE>";
+
+
+					// Set up additional settings for the file converter
+					fc.BeforeHit = "<span style=\"background-color: #FF0000\">";
+					fc.AfterHit = "</span>";
+					
+					// If the index was built with cached text, get the document from the cache
+					fc.Flags = (fc.Flags | ConvertFlags.dtsConvertGetFromCache);
+
+					// Execute the file conversion
+					fc.Execute ();
+
+          StringBuilder builder = new StringBuilder();
+          //builder.Append("<h1>" + results.CurrentItem.DisplayName + "</h1>");
+          //builder.Append("<p class=\"ui-helper-hiddenx\">" + results.CurrentItem.Synopsis + "</p>");
+          
+          JobErrorInfo errors = fc.Errors;
+          if ((errors.Count > 0) || (fc.OutputString.Length < 2))
+          {
+            builder.AppendLine("<html><h1>Error converting document to HTML</h1>");
+            builder.AppendLine("<p>" + Server.HtmlEncode(fc.InputFile));
+            if (errors.Count > 0)
+            {
+              builder.AppendLine("<p>");
+              builder.AppendLine(Server.HtmlEncode(errors.Message(0)));
+            }
+            builder.AppendLine("<p>Note: To prevent conversion errors when highlighting hits " +
+              "use caching when building the index.  For more information, see " +
+              "<a href=\"http://www.dtsearch.com/index7.html\">http://www.dtsearch.com/index7.html</a> " +
+              "and the dtsIndexCacheOriginalFiles flag in the dtSearch Engine API documentation");
+
+          }
+          else
+          {
+            // Output the result of the file conversion
+            builder.AppendLine(fc.OutputString);
+          }
+          result.Add(builder.ToString());
+				}
+        
+
+
+      }
+      return result.ToArray();
+    }
+
+    public SearchResults GetCustomerSearchResults(LoginUser loginUser, string searchTerm, bool searchCompanies, bool searchContacts, int max)
+    { 
         Options options = new Options();
         options.TextFlags = TextFlags.dtsoTfRecognizeDates;
         using (SearchJob job = new SearchJob())
@@ -984,13 +1074,14 @@ namespace TSWebServices
           searchTerm = searchTerm.Trim();
           job.Request = searchTerm;
           job.FieldWeights = "Name:20,Email:10";
-          job.MaxFilesToRetrieve = 50;
+          job.MaxFilesToRetrieve = max;
           job.AutoStopLimit = 10000000;
           job.TimeoutSeconds = 30;
 
-          job.Fuzziness = 1;
+          job.Fuzziness = 0;
           job.Request = "*" + job.Request + "*";
 
+          User user = Users.GetUser(loginUser, loginUser.UserID);
           if (user.TicketRights == TicketRightType.Customers)
           {
             StringBuilder conditions = new StringBuilder();
@@ -1024,20 +1115,36 @@ namespace TSWebServices
           }
           job.Execute();
           job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortDescending, "");
+          return job.Results;
+        }
+    }
 
+    [WebMethod]
+    public string[] SearchCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts)
+    {      
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      List<string> resultItems = new List<string>();
+      if (string.IsNullOrWhiteSpace(searchTerm))
+      {
+        return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts);
+      }
+
+      if (searchCompanies || searchContacts)
+      {
+          SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0);
           int topLimit = from + count;
-          if (topLimit > job.Results.Count)
+          if (topLimit > results.Count)
           {
-            topLimit = job.Results.Count;
+            topLimit = results.Count;
           }
 
           for (int i = from; i < topLimit; i++)
           {
-            job.Results.GetNthDoc(i);
-            if (job.Results.CurrentItem.UserFields["JSON"] != null)
-              resultItems.Add(job.Results.CurrentItem.UserFields["JSON"].ToString());
+            results.GetNthDoc(i);
+            if (results.CurrentItem.UserFields["JSON"] != null)
+              resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
           }
-        }
+        
       }
 
       return resultItems.ToArray();
