@@ -1,7 +1,8 @@
-﻿.slick-cell i.fa-bars { color: #777; cursor:move; }
-.no-header-name .slick-column-name { display:none; }
-.grid-ticket-layout {height: 100%; margin: 0 auto; width: 100%;}
+﻿.grid-ticket-layout {height: 100%; margin: 0 auto; width: 100%;}
 body { background-color: #fff;}
+
+.slick-cell i.fa-bars { color: #777; cursor:move; }
+.no-header-name .slick-column-name { display:none; }
 .grid-ticket-toolbar { padding: 15px 0 0 15px; position:relative; }
 .grid-count {float:right; padding: 0 15px 15px 0; color: #555; position:absolute; bottom:0; right:0;}
 
