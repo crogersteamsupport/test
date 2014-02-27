@@ -594,9 +594,16 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void ClearExceptionLogs()
+    public void ClearExceptionLogs(bool onlyCrmApi)
     {
-      SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), "TRUNCATE TABLE ExceptionLogs");
+      if (onlyCrmApi)
+      {
+        SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), "DELETE FROM ExceptionLogs WHERE URL = 'CRM Processor' OR URL = 'API'");
+      }
+      else
+      {
+        SqlExecutor.ExecuteNonQuery(TSAuthentication.GetLoginUser(), "TRUNCATE TABLE ExceptionLogs");
+      }
     }
 
     [WebMethod]

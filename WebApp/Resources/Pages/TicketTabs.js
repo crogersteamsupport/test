@@ -146,10 +146,6 @@
             north: {
                 paneSelector: ".tickets-panel-tabs",
                 size: 31
-            },
-            south: {
-                paneSelector: ".tickets-panel-footer",
-                size: 21
             }
         });
         //tabs.getByIndex(0).select();
@@ -164,10 +160,6 @@
 
 
 });
-
-function setGridCount(count) {
-  $('.ticket-grid-count').text(count + ' Tickets');
-}
 
 function onShow() {
   var frame = $('.tickets-grid-iframe:visible')[0];

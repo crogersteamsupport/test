@@ -54,8 +54,14 @@
 
       $('#btnClear').click(function (e) {
         e.preventDefault();
-        top.Ts.Services.System.ClearExceptionLogs(function () { loadTopExceptions(); });
+        top.Ts.Services.System.ClearExceptionLogs(false, function () { loadTopExceptions(); });
       });
+
+      $('#btnClearApi').click(function (e) {
+        e.preventDefault();
+        top.Ts.Services.System.ClearExceptionLogs(true, function () { loadTopExceptions(); });
+      });
+      
 
       $('#btnThrow').click(function (e) {
         e.preventDefault();
@@ -132,6 +138,7 @@
     <div class="ts-toolbar ui-widget-header">
       <button id="btnRefresh">Refresh</button>
       <button id="btnClear">Clear Exceptions</button>
+      <button id="btnClearApi">Clear CRM and API Exceptions</button>
       <button id="btnThrow">Throw Exception</button>
     </div>
     <div class="preview utils-content ui-widget ui-widget-content"></div>

@@ -969,7 +969,11 @@ namespace TSWebServices
       if (TSAuthentication.OrganizationID != 1078) return null;
       LoginUser loginUser = new LoginUser(TSAuthentication.GetLoginUser().ConnectionString, TSAuthentication.UserID, organizationID, null);
       SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, true, true, 50);
+      return GetSearchReport(results);
+    }
 
+    public string[] GetSearchReport(SearchResults results)
+    {
       SearchReportJob report = results.NewSearchReportJob();
       report.SelectAll();
       report.Flags = ReportFlags.dtsReportStoreInResults | ReportFlags.dtsReportWholeFile | ReportFlags.dtsReportGetFromCache | ReportFlags.dtsReportIncludeAll;
@@ -988,80 +992,47 @@ namespace TSWebServices
 
       for (int i = 0; i < results.Count; i++)
       {
-        results.GetNthDoc(i);
-
-        using (FileConverter fc = new FileConverter ()) 
-				{
-			
-					// This sets up FileConverter with the input file, index location, and hits
-          fc.SetInputItem(results, i);
-					
-					fc.OutputToString = true;
-					fc.OutputStringMaxSize = 2000000;
-					fc.OutputFormat = OutputFormats.itHTML;
-
-					//String 	scriptName = Request.ServerVariables.Get ("SCRIPT_NAME");
-					//String virtPath = MakeVirtual (res.get_DocDetailItem("_filename"));
-					//String HitNavSrc = GetVirtualFolder(scriptName) + "HitNav.js";
-					//String HitNavLink =  "\r\n<script language=JavaScript src=\"" + HitNavSrc + "\"></script>\r\n";
-					fc.Header = "<A NAME=hit0></A>"    
-						+ "<TABLE border=0>"  
-						+ "<TR><TD bgcolor=#003399 color=#ffffff>"
-						+ "<font face=verdana color=#ffffff size=2></TD></TR>"
-						+ "<TR><TD bgcolor=#eeeeee color=#000000>"
-						+ "<font face=verdana color=#003399 size=2>"
-            + "<B>" + results.get_DocDetailItem("_shortName") + "   </B><BR>"
-						+ "<font face=verdana color=#000000 size=1>"
-            + results.DocHitCount + " Hits."
-						+ "  <B>Location: </B>  <B>Date: </B>"
-            + results.get_DocDetailItem("_date") + "<BR>"
-						+ "</FONT>"
-						+ "</TD></TR><TR><TD bgcolor=#003399 color=#ffffff>"
-						+"<font face=verdana color=#ffffff size=2></TD></TR></TABLE>";
-
-
-					// Set up additional settings for the file converter
-					fc.BeforeHit = "<span style=\"background-color: #FF0000\">";
-					fc.AfterHit = "</span>";
-					
-					// If the index was built with cached text, get the document from the cache
-					fc.Flags = (fc.Flags | ConvertFlags.dtsConvertGetFromCache);
-
-					// Execute the file conversion
-					fc.Execute ();
-
-          StringBuilder builder = new StringBuilder();
-          //builder.Append("<h1>" + results.CurrentItem.DisplayName + "</h1>");
-          //builder.Append("<p class=\"ui-helper-hiddenx\">" + results.CurrentItem.Synopsis + "</p>");
-          
-          JobErrorInfo errors = fc.Errors;
-          if ((errors.Count > 0) || (fc.OutputString.Length < 2))
-          {
-            builder.AppendLine("<html><h1>Error converting document to HTML</h1>");
-            builder.AppendLine("<p>" + Server.HtmlEncode(fc.InputFile));
-            if (errors.Count > 0)
-            {
-              builder.AppendLine("<p>");
-              builder.AppendLine(Server.HtmlEncode(errors.Message(0)));
-            }
-            builder.AppendLine("<p>Note: To prevent conversion errors when highlighting hits " +
-              "use caching when building the index.  For more information, see " +
-              "<a href=\"http://www.dtsearch.com/index7.html\">http://www.dtsearch.com/index7.html</a> " +
-              "and the dtsIndexCacheOriginalFiles flag in the dtSearch Engine API documentation");
-
-          }
-          else
-          {
-            // Output the result of the file conversion
-            builder.AppendLine(fc.OutputString);
-          }
-          result.Add(builder.ToString());
-				}
-        
-
-
+        result.Add(GetSearchItemReport(results, i));
       }
       return result.ToArray();
+    }
+
+    public string GetSearchItemReport(SearchResults results, int index)
+    {
+      results.GetNthDoc(index);
+
+      using (FileConverter fc = new FileConverter())
+      {
+
+        // This sets up FileConverter with the input file, index location, and hits
+        fc.SetInputItem(results, index);
+
+        fc.OutputToString = true;
+        fc.OutputStringMaxSize = 2000000;
+        fc.OutputFormat = OutputFormats.itHTML;
+
+        fc.Header = "<A NAME=hit0></A>"
+          + "<TABLE border=0>"
+          + "<TR><TD bgcolor=#003399 color=#ffffff>"
+          + "<font face=verdana color=#ffffff size=2></TD></TR>"
+          + "<TR><TD bgcolor=#eeeeee color=#000000>"
+          + "<font face=verdana color=#003399 size=2>"
+          + "<B>" + results.get_DocDetailItem("_shortName") + "   </B><BR>"
+          + "<font face=verdana color=#000000 size=1>"
+          + results.DocHitCount + " Hits."
+          + "  <B>Location: </B>  <B>Date: </B>"
+          + results.get_DocDetailItem("_date") + "<BR>"
+          + "</FONT>"
+          + "</TD></TR><TR><TD bgcolor=#003399 color=#ffffff>"
+          + "<font face=verdana color=#ffffff size=2></TD></TR></TABLE>";
+
+
+        fc.BeforeHit = "<span style=\"background-color: #FF0000\">";
+        fc.AfterHit = "</span>";
+        fc.Flags = (fc.Flags | ConvertFlags.dtsConvertGetFromCache);
+        fc.Execute();
+        return fc.OutputString;
+      }
     }
 
     public SearchResults GetCustomerSearchResults(LoginUser loginUser, string searchTerm, bool searchCompanies, bool searchContacts, int max)

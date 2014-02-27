@@ -743,16 +743,13 @@ TicketGrid = function () {
     });
 
     loader.onDataLoaded.subscribe(function (e, args) {
-        //for (var i = args.from; i <= args.to; i++) { grid.removeRow(i);  }
         for (var i = args.from; i <= args.to; i++) {
             grid.invalidateRow(i);
         }
         grid.updateRowCount();
         grid.render();
 
-        if (parent.setGridCount != null) parent.setGridCount(loader.data.length);
-        //grid.setSortColumn(ticketLoadFilter.SortColumn, ticketLoadFilter.SortAsc);
-        //$(element).parents('.tickets-layout').find('.tickets-panel-footer .ticket-grid-count').text();
+        $('.grid-count').text(args.total + ' Tickets');
         self.hideLoadingIndicator();
         if (self._currentTicket == null) {
             self._currentTicket = getActiveTicket();
@@ -810,7 +807,7 @@ TicketGrid = function () {
         return '<i class="fa fa-bars"></i>'
     };
 
-    
+
 
 
 
