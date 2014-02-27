@@ -749,7 +749,7 @@ TicketGrid = function () {
         grid.updateRowCount();
         grid.render();
 
-        $('.grid-count').text(args.total + ' Tickets');
+        $('.grid-count').text(loader.data.length + ' Tickets');
         self.hideLoadingIndicator();
         if (self._currentTicket == null) {
             self._currentTicket = getActiveTicket();

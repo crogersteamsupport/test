@@ -401,7 +401,7 @@
             for (var i = args.from; i <= args.to; i++) {
                 _grid.invalidateRow(i);
             }
-            $('.reports-count').text(args.total + ' Rows');
+            $('.reports-count').text(datamodel.data.length + ' Rows');
             _grid.updateRowCount();
             _grid.render();
 
