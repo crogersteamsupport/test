@@ -354,9 +354,9 @@ TicketGrid = function () {
     this._loader = new TeamSupport.DataModel(getData, getItemMetadata);
     var loader = this._loader;
 
-    function getData(from, to, sortcol, isasc, callback) {
+    function getData(from, to, sortcol, isdesc, callback) {
         ticketLoadFilter.SortColumn = sortcol;
-        ticketLoadFilter.SortAsc = isasc === true;
+        ticketLoadFilter.SortAsc = isdesc === false;
 
         req = top.Ts.Services.Tickets.GetTicketRange(from, to, ticketLoadFilter, callback);
 
