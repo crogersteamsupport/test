@@ -2,8 +2,32 @@
     var _layout = null;
     var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
     var _grid;
-    var datamodel = new TeamSupport.DataModels.Reports(_reportID, true);
+    var datamodel = new TeamSupport.DataModel(getReportData);
     var _report = null;
+
+    function getReportData(from, to, sortcol, isdesc, callback) {
+        var params = { "reportID":
+        _reportID,
+            "from": from,
+            "to": to,
+            "sortField": sortcol,
+            "isDesc": isdesc,
+            "useUserFilter": true
+        };
+
+        //console.log('REQUEST: From: ' + fromPage * PAGESIZE + ', To: ' + ((fromPage * PAGESIZE) + PAGESIZE-1) + "  Page: " + fromPage);
+        req = $.ajax({
+            type: "POST",
+            url: "/Services/ReportService.asmx/GetReportData",
+            data: JSON.stringify(params),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: callback
+        });
+
+        return req;
+
+    }
 
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
 

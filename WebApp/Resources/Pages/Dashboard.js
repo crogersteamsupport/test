@@ -276,7 +276,32 @@ Grid = function (element, report) {
     this.element = $(element);
     if (!this.report.Def) { this.report.Def = JSON.parse(this.report.ReportDef); }
     this.report.Settings = this.report.UserSettings == '' ? new Object() : JSON.parse(this.report.UserSettings);
-    this.datamodel = new TeamSupport.DataModels.Reports(this.report.ReportID, true);
+    this.datamodel = new TeamSupport.DataModel(getReportData);
+    var reportID = this.report.ReportID;
+    
+    function getReportData(from, to, sortcol, isdesc, callback) {
+        var params = { "reportID": reportID,
+            "from": from,
+            "to": to,
+            "sortField": sortcol,
+            "isDesc": isdesc,
+            "useUserFilter": true
+        };
+
+        //console.log('REQUEST: From: ' + fromPage * PAGESIZE + ', To: ' + ((fromPage * PAGESIZE) + PAGESIZE-1) + "  Page: " + fromPage);
+        req = $.ajax({
+            type: "POST",
+            url: "/Services/ReportService.asmx/GetReportData",
+            data: JSON.stringify(params),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: callback
+        });
+
+        return req;
+
+    }
+
 }
 
 Grid.prototype = {

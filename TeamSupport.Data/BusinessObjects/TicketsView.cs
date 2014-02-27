@@ -508,6 +508,12 @@ namespace TeamSupport.Data
           break;
       }
 
+      if (filter.IsEnqueued == true)
+      {
+        sort = "QueuePosition ASC";
+        //from = 0;
+        //to = 10000;
+      }
 
       string fields =
         @"
@@ -564,6 +570,7 @@ namespace TeamSupport.Data
         ,tv.ViewerID
         ,tv.IsSubscribed
         ,tv.IsEnqueued
+        ,tv.QueuePosition
         ,tv.IsRead
         ,tv.IsFlagged
         ,tv.KnowledgeBaseCategoryID

@@ -1691,6 +1691,7 @@ WHERE RowNum BETWEEN @From AND @To";
       GridResult result = new GridResult();
       result.From = --from;
       result.To = --to;
+      result.Total = table.Rows.Count > 0 ? (int)table.Rows[0]["TotalRows"] : 0;
       result.Data = JsonConvert.SerializeObject(table);
       return result;
     }
@@ -1737,6 +1738,7 @@ WHERE RowNum BETWEEN @From AND @To";
       GridResult result = new GridResult();
       result.From = 0;
       result.To = table.Rows.Count - 1;
+      result.Total = table.Rows.Count;
       result.Data = JsonConvert.SerializeObject(table);
       return result;
 
@@ -2196,7 +2198,8 @@ IF @@ROWCOUNT=0
         public GridResult() { }
         [DataMember] public int From { get; set; }
         [DataMember] public int To { get; set; }
-        [DataMember] public string Data { get; set; }
+        [DataMember] public int Total { get; set; }
+        [DataMember] public object Data { get; set; }
       }
 
   public class CalculatedClauseItem

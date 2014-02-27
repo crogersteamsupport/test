@@ -47,14 +47,21 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public TicketRange GetTicketRange(int from, int to, TicketLoadFilter filter)
+    public GridResult GetTicketRange(int from, int to, TicketLoadFilter filter)
     {
       try
       {
         TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
         if (filter == null) filter = new TicketLoadFilter();
         tickets.LoadByRange(from, to, filter);
-        return new TicketRange(from, to, tickets.GetFilterCount(filter), tickets.GetTicketsViewItemProxies(), filter);
+        GridResult result = new GridResult();
+
+        result.From = from;
+        result.To = to;
+        result.Total = tickets.GetFilterCount(filter);
+        result.Data = tickets.GetTicketsViewItemProxies();
+        return result;
+        //return new TicketRange(from, to, tickets.GetFilterCount(filter), tickets.GetTicketsViewItemProxies(), filter);
       }
       catch (Exception e)
       {
@@ -1505,6 +1512,42 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void MoveUserQueueTickets(string ticketIDs, int insertBeforeTicketID, int userID)
+    {
+      List<int> ids = new List<int>(JsonConvert.DeserializeObject<int[]>(ticketIDs));
+
+      
+      TicketQueue queue = new TicketQueue(TSAuthentication.GetLoginUser());
+      queue.LoadByUser(userID);
+      int pos = 0;
+      int newPos = 0;
+      foreach (TicketQueueItem item in queue)
+      {
+        if (ids.IndexOf(item.TicketID) < 0)
+        {
+          if (item.TicketID == insertBeforeTicketID)
+          {
+            newPos = pos;
+            pos += ids.Count;
+          }
+          item.Position = pos;
+          pos++;
+        }
+      }
+
+      foreach (TicketQueueItem item in queue)
+      {
+        if (ids.IndexOf(item.TicketID) > -1)
+        {
+          item.Position = newPos;
+          newPos++;
+        }
+      }
+
+      queue.Save();
+    }
+
+    [WebMethod]
     public void Enqueue(int ticketID)
     {
       SetUserQueue(ticketID, true);
@@ -2755,30 +2798,6 @@ namespace TSWebServices
   }
 
 
-
-  [DataContract]
-  public class TicketRange
-  {
-    public TicketRange(int from, int to, int total, TicketsViewItemProxy[] tickets, TicketLoadFilter filter)
-    {
-      From = from;
-      To = to;
-      Total = total;
-      Tickets = tickets;
-      Filter = filter;
-    }
-    [DataMember]
-    public int From { get; set; }
-    [DataMember]
-    public int To { get; set; }
-    [DataMember]
-    public int Total { get; set; }
-    [DataMember]
-    public TicketsViewItemProxy[] Tickets { get; set; }
-    [DataMember]
-    public TicketLoadFilter Filter { get; set; }
-
-  }
 
   [DataContract]
   public class TicketPage

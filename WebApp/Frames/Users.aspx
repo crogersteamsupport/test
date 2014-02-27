@@ -85,7 +85,7 @@
                   <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_UserID=" Text="Open"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_IsClosed=true&tf_UserID=" Text="Closed"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_UserID=" Text="All Tickets"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="TicketQueue.aspx?UserID=" Text="Ticket Queue"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_7_0/Pages/TicketGrid.html?tf_IsEnqueued=true&tf_UserID=" Text="Ticket Queue"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="History.aspx?RefType=22&RefID=" Text="History" Visible="false"></telerik:RadTab>
                 </Tabs>
               </telerik:RadTabStrip>
