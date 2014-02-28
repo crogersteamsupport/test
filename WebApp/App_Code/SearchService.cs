@@ -12,6 +12,7 @@ using System.Web.Services;
 using TeamSupport.Data;
 using TeamSupport.WebUtils;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace TSWebServices
 {
@@ -1042,7 +1043,7 @@ namespace TSWebServices
         using (SearchJob job = new SearchJob())
         {
 
-          searchTerm = searchTerm.Trim();
+          searchTerm = Regex.Replace(searchTerm.Trim(), @"[()-.]", "", RegexOptions.IgnoreCase);
           job.Request = searchTerm;
           job.FieldWeights = "Name:20,Email:10";
           job.MaxFilesToRetrieve = max;
