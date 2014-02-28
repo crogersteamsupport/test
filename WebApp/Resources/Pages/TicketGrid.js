@@ -285,6 +285,7 @@ TicketGrid = function () {
 
     function addDialogColumn(column, isChecked) {
         if (column.name == 'checked') return;
+        if (column.name == 'move') return;
         var label = $('<label>').html('&nbsp;' + column.name);
         $('<input>').attr('type', 'checkbox').prop('checked', isChecked).data('o', column).data('col-no', _lastDialogColumnNo).prependTo(label);
         var div = $('<div>').addClass('checkbox').append(label)
@@ -318,7 +319,7 @@ TicketGrid = function () {
 
         saveColumns();
         $('#dialog-columns').modal('hide');
-
+        self.refresh();
     });
 
     $('.tickets-default-columns').click(function (e) {
@@ -383,6 +384,54 @@ TicketGrid = function () {
     }
 
 
+    var slaTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
+        var min = dataContext["SlaViolationTime"];
+        if (min) {
+            if (min < 0)
+                return '<span class="ticket-grid-cell-sla-text">' + Math.round(min / 60) + ' hours</span>';
+            else
+                return Math.round(min / 60) + ' hours';
+        }
+        return "";
+    };
+
+
+    var openTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
+        return '<i class="fa fa-external-link-square color-green" title="Click to open this ticket"></i>';
+    };
+
+    var isReadColumnFormatter = function (row, cell, value, columnDef, ticket) {
+        return value == false ? '<i class="fa fa-circle color-blue" title="Click to mark this ticket as read"></i>' : '<i class="fa fa-circle color-lightgray" title="Click to mark this ticket as unread"></i>'
+    };
+
+    var isFlaggedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
+        return value == false ? '<i class="fa fa-flag color-lightgray" title="Click to flag this ticket for follow up"></i>' : '<i class="fa fa-flag color-red" title="Click to unflag this ticket"></i>'
+    };
+
+    var isEnqueuedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
+        return value == false ? '<i class="fa fa-list-ol color-lightgray" title="Click to add this ticket to your queue"></i>' : '<i class="fa fa-list-ol color-darkgray" title="Click to remove this ticket from your queue"></i>'
+    };
+
+    var isSubscribedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
+        return value == false ? '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>' : '<i class="fa fa-rss color-orange" title="Click to unsubscribe to this ticket"></i>'
+    };
+
+    var dateTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
+        return dataContext[columnDef.id].localeFormat(top.Ts.Utils.getDateTimePattern());
+    };
+
+    var ticketSourceColumnFormatter = function (row, cell, value, columnDef, ticket) {
+        var style = "background: transparent url('../" + top.Ts.Utils.getTicketSourceIcon(value) + "');"
+        return '<span class="ts-icon" style="' + style + '" title="Ticket Source: ' + value + '"></span>'
+    };
+
+    var checkedFormatter = function (row, cell, value, columnDef, ticket) {
+        return '<i class="fa fa-square-o"></i>'
+    };
+
+    var moveFormatter = function (row, cell, value, columnDef, ticket) {
+        return '<i class="fa fa-bars"></i>'
+    };
 
 
     function getAllColumns() {
@@ -418,25 +467,14 @@ TicketGrid = function () {
     this.getAllColumns = getAllColumns;
 
     function getDefaultColumns() {
-        return [
-  	{ id: "openButton", name: "Open Ticket", maxWidth: 24, formatter: openTicketColumnFormatter, unselectable: true, resizable: false, sortable: false, cssClass: 'ticket-grid-cell-sla', headerCssClass: 'no-header-name' },
-    { id: "IsRead", name: "Read", field: "IsRead", maxWidth: 24, sortable: true, formatter: isReadColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "IsFlagged", name: "Flagged", field: "IsFlagged", maxWidth: 24, sortable: true, formatter: isFlaggedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "IsSubscribed", name: "Subscribed", field: "IsSubscribed", maxWidth: 24, sortable: true, formatter: isSubscribedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "IsEnqueued", name: "Enqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "TicketNumber", name: "Number", field: "TicketNumber", width: 75, sortable: true, cssClass: 'ticket-grid-cell-ticketnumber' },
-    { id: "TicketTypeName", name: "Type", field: "TicketTypeName", width: 125, sortable: true },
-    { id: "Name", name: "Name", field: "Name", width: 200, sortable: true },
-    { id: "UserName", name: "Assigned To", field: "UserName", width: 125, sortable: true },
-    { id: "Status", name: "Status", field: "Status", width: 125, sortable: true },
-    { id: "Severity", name: "Severity", field: "Severity", width: 125, sortable: true },
-    { id: "DueDate", name: "DueDate", field: "Due Date", width: 125, sortable: true },
-    { id: "Customers", name: "Customers", field: "Customers", width: 125, sortable: true },
-    { id: "Contacts", name: "Contacts", field: "Contacts", width: 125, sortable: true },
-    { id: "GroupName", name: "Group", field: "GroupName", width: 125, sortable: true },
-    { id: "DateModified", name: "Last Modified", field: "DateModified", width: 150, sortable: true, formatter: dateTicketColumnFormatter },
-    { id: "DaysOpened", name: "Days Opened", field: "DaysOpened", width: 100, sortable: true }
-	];
+        var cols = getAllColumns();
+        var result = [];
+        var defaults = ["openButton", "IsRead", "IsFlagged", "IsSubscribed", "IsEnqueued", "TicketNumber", "TicketTypeName", "Name", "UserName", "Status",
+        "Severity", "Customers", "Contacts", "GroupName", "DateModified", "DaysOpened"];
+        for (var i = 0; i < cols.length; i++) {
+            if (defaults.indexOf(cols[i].id)) { result.push(cols[i]); }
+        }
+        return result;
     }
 
     function addManColumns(columns) {
@@ -477,6 +515,8 @@ TicketGrid = function () {
     this._grid = new Slick.Grid(layout.panes.center, loader.data, removeViewColumns(addManColumns(getDefaultColumns())), options);
     grid = this._grid;
     grid.setSelectionModel(new Slick.RowSelectionModel());
+
+    if (ticketLoadFilter.IsClosed && ticketLoadFilter.IsClosed == 'true') { $('.grid-ticket').addClass('grid-closed'); } else { $('.grid-ticket').addClass('grid-notclosed'); }
 
     if (ticketLoadFilter.IsEnqueued) {
         $('.grid-ticket').addClass('grid-queue');
@@ -541,7 +581,7 @@ TicketGrid = function () {
             item.width = columns[i].width;
             info.columns.push(item);
         }
-
+        info.version = 1;
         top.Ts.Services.Settings.WriteUserSetting('TicketGrid-Columns', JSON.stringify(info));
     }
 
@@ -565,42 +605,52 @@ TicketGrid = function () {
                 grid.updateRow(row);
                 grid.render();
                 top.Ts.System.logAction('Ticket Grid - Changed Read Status');
+                e.stopPropagation();
+                e.stopImmediatePropagation();
 
                 return true;
             case "IsFlagged":
                 var ticket = loader.data[row];
                 ticket.IsFlagged = !ticket.IsFlagged;
-                top.Ts.Services.Tickets.SetTicketFlag(ticket.TicketID, ticket.IsFlagged);
+                top.Ts.Services.Tickets.SetTicketFlag(ticket.TicketID, ticket.IsFlagged, function () { self.refresh(); });
                 grid.invalidateRow(row);
                 grid.updateRow(row);
                 grid.render();
                 top.Ts.System.logAction('Ticket Grid - Changed Flagged Status');
+                e.stopPropagation();
+                e.stopImmediatePropagation();
                 return true;
             case "IsEnqueued":
                 var ticket = loader.data[row];
                 ticket.IsEnqueued = !ticket.IsEnqueued;
-                top.Ts.Services.Tickets.SetUserQueue(ticket.TicketID, ticket.IsEnqueued, function () { });
+                top.Ts.Services.Tickets.SetUserQueue(ticket.TicketID, ticket.IsEnqueued, function () { self.refresh(); });
                 grid.invalidateRow(row);
                 grid.updateRow(row);
                 grid.render();
                 top.Ts.System.logAction('Ticket Grid - Changed Queue Status');
                 top.Ts.System.logAction('Ticket Grid - Queued');
                 top.Ts.System.logAction('Queued');
+                e.stopPropagation();
+                e.stopImmediatePropagation();
                 return true;
             case "IsSubscribed":
                 var ticket = loader.data[row];
                 ticket.IsSubscribed = !ticket.IsSubscribed;
-                top.Ts.Services.Tickets.SetSubscribed(ticket.TicketID, ticket.IsSubscribed, null);
+                top.Ts.Services.Tickets.SetSubscribed(ticket.TicketID, ticket.IsSubscribed, null, function () { self.refresh(); });
                 grid.invalidateRow(row);
                 grid.updateRow(row);
                 grid.render();
                 top.Ts.System.logAction('Ticket Grid - Changed Subscribed Status');
+                e.stopPropagation();
+                e.stopImmediatePropagation();
                 return true;
             case "openButton":
                 top.Ts.MainPage.openTicket(loader.data[row].TicketNumber);
                 grid.invalidateRow(row);
                 grid.updateRow(row);
                 grid.render();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
                 return true;
             case "checked":
                 var rows = grid.getSelectedRows();
@@ -765,59 +815,6 @@ TicketGrid = function () {
         }
     });
 
-    var slaTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        var min = dataContext["SlaViolationTime"];
-        if (min) {
-            if (min < 0)
-                return '<span class="ticket-grid-cell-sla-text">' + Math.round(min / 60) + ' hours</span>';
-            else
-                return Math.round(min / 60) + ' hours';
-        }
-        return "";
-    };
-
-
-    var openTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return '<i class="fa fa-external-link-square color-green" title="Click to open this ticket"></i>';
-    };
-
-    var isReadColumnFormatter = function (row, cell, value, columnDef, ticket) {
-        return value == false ? '<i class="fa fa-circle color-blue" title="Click to mark this ticket as read"></i>' : '<i class="fa fa-circle color-lightgray" title="Click to mark this ticket as unread"></i>'
-    };
-
-    var isFlaggedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-flag color-lightgray" title="Click to flag this ticket for follow up"></i>' : '<i class="fa fa-flag color-red" title="Click to unflag this ticket"></i>'
-    };
-
-    var isEnqueuedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-list-ol color-lightgray" title="Click to add this ticket to your queue"></i>' : '<i class="fa fa-list-ol color-darkgray" title="Click to remove this ticket from your queue"></i>'
-    };
-
-    var isSubscribedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>' : '<i class="fa fa-rss color-orange" title="Click to unsubscribe to this ticket"></i>'
-    };
-
-    var dateTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return dataContext[columnDef.id].localeFormat(top.Ts.Utils.getDateTimePattern());
-    };
-
-    var ticketSourceColumnFormatter = function (row, cell, value, columnDef, ticket) {
-        var style = "background: transparent url('../" + top.Ts.Utils.getTicketSourceIcon(value) + "');"
-        return '<span class="ts-icon" style="' + style + '" title="Ticket Source: ' + value + '"></span>'
-    };
-
-    var checkedFormatter = function (row, cell, value, columnDef, ticket) {
-        return '<i class="fa fa-square-o"></i>'
-    };
-
-    var moveFormatter = function (row, cell, value, columnDef, ticket) {
-        return '<i class="fa fa-bars"></i>'
-    };
-
-
-
-
-
 };
 
 
@@ -838,13 +835,22 @@ TicketGrid.prototype = {
 
                 var newColumns = [];
                 var allColumns = self.getAllColumns();
+                var qCol = null;
+                var hasQ = false;
                 for (var i = 0; i < columnInfo.columns.length; i++) {
+                    if (columnInfo.columns[i].id == 'IsEnqueued') { hasQ = true; }
                     for (var j = 0; j < allColumns.length; j++) {
                         if (columnInfo.columns[i].id == allColumns[j].id) {
                             if (allColumns[j].width && allColumns[j].width != null) { allColumns[j].width = columnInfo.columns[i].width; }
                             newColumns.push(allColumns[j]);
                         }
+
+                        if (allColumns[j].id == 'IsEnqueued' && qCol == null) { qCol = allColumns[j]; }
                     }
+                }
+
+                if (!columnInfo.version && !hasQ) {
+                    newColumns.unshift(qCol);
                 }
 
                 if (newColumns.length > 0) self.setTicketColumns(newColumns);
