@@ -481,6 +481,9 @@ TicketGrid = function () {
         columns.unshift({ id: "checked", name: "checked", maxWidth: 24, formatter: checkedFormatter, unselectable: true, resizable: false, sortable: false, headerCssClass: 'no-header-name' });
         if (ticketLoadFilter.IsEnqueued) {
             columns.unshift({ id: "move", name: "move", behavior: "selectAndMove", maxWidth: 24, formatter: moveFormatter, unselectable: true, resizable: false, sortable: false, headerCssClass: 'no-header-name' });
+            for (var i = 0; i < columns.length; i++) {
+                columns[i].sortable = false;
+            }
         }
         return columns;
     }
