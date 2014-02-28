@@ -34,16 +34,16 @@
             <button class="btn btn-primary tickets-new" type="button" data-toggle="tooltip" title="Create a new ticket">New Ticket</button>
           </div>
           <div class="btn-group">
-            <button class="btn btn-default tickets-own" type="button" data-toggle="tooltip" title="Take ownership"><i class="fa fa-anchor"></i></button>
-            <button class="btn btn-default tickets-request" type="button" data-toggle="tooltip" title="Request update"><i class="fa fa-bullhorn"></i></button>
+            <button class="btn btn-default ticket-action tickets-own" disabled="disabled" type="button" data-toggle="tooltip" title="Take ownership"><i class="fa fa-anchor"></i></button>
+            <button class="btn btn-default ticket-action tickets-request" disabled="disabled" type="button" data-toggle="tooltip" title="Request update"><i class="fa fa-bullhorn"></i></button>
+            <button class="btn btn-default ticket-action tickets-delete" disabled="disabled" type="button" data-toggle="tooltip" title="Delete Ticket"><i class="fa fa-trash-o"></i></button>
             <button class="btn btn-default tickets-export" type="button" data-toggle="tooltip" title="Export Tickets"><i class="fa fa-download"></i></button>
-            <button class="btn btn-default tickets-delete" type="button" data-toggle="tooltip" title="Delete Ticket"><i class="fa fa-trash-o"></i></button>
             <button class="btn btn-default tickets-columns" type="button" data-toggle="tooltip" title="Select columns"><i class="fa fa-th-list"></i></button>
             <button class="btn btn-default tickets-refresh" type="button" data-toggle="tooltip" title="Refresh"><i class="fa fa-refresh"></i></button>
           </div>
 
         <div class="btn-group">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">More&nbsp;<span class="caret"></span></button>
+          <button type="button" class="btn btn-default ticket-action dropdown-toggle" disabled="disabled" data-toggle="dropdown">More&nbsp;<span class="caret"></span></button>
           <ul class="dropdown-menu ticket-menu-actions" role="menu">
             <li><a class="ticket-action-read" href="#">Mark as read</a></li>
             <li><a class="ticket-action-unread" href="#">Mark as unread</a></li>

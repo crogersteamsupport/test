@@ -364,17 +364,20 @@ TicketGrid = function () {
 
     function getItemMetadata(index, data) {
         if (data[index] == null) return;
-        var row = data[index];
+        var ticket = data[index];
 
         var result = 'ticket-grid-row';
-        if (row) {
-            if (row['SlaWarningTime'] && row['SlaWarningTime'] < 0) {
+        if (ticket) {
+            if (ticket['SlaWarningTime'] && ticket['SlaWarningTime'] < 0) {
                 result = result + ' ticket-grid-row-violated';
             }
-            else if (row['SlaViolationTime'] && row['SlaViolationTime'] < 0) {
+            else if (ticket['SlaViolationTime'] && ticket['SlaViolationTime'] < 0) {
                 result = result + ' ticket-grid-row-warning';
             }
-            if (row['IsRead'] && row['IsRead'] === true) result = result + ' ticket-grid-row-read';
+            if (ticket['IsRead'] && ticket['IsRead'] === true) { result = result + ' ticket-grid-row-read'; } else { result = result + ' ticket-grid-row-unread'; }
+            if (ticket['UserID'] == top.Ts.System.User.UserID) { result = result + ' ticket-grid-row-mine'; } else { result = result + ' ticket-grid-row-notmine'; }
+            if (ticket['IsClosed'] == true) { result = result + ' ticket-grid-row-closed'; } else { result = result + ' ticket-grid-row-open'; }
+
         }
         return { cssClasses: result };
     }
@@ -440,7 +443,6 @@ TicketGrid = function () {
         columns.unshift({ id: "checked", name: "checked", maxWidth: 24, formatter: checkedFormatter, unselectable: true, resizable: false, sortable: false, headerCssClass: 'no-header-name' });
         if (ticketLoadFilter.IsEnqueued) {
             columns.unshift({ id: "move", name: "move", behavior: "selectAndMove", maxWidth: 24, formatter: moveFormatter, unselectable: true, resizable: false, sortable: false, headerCssClass: 'no-header-name' });
-
         }
         return columns;
     }
@@ -477,6 +479,8 @@ TicketGrid = function () {
     grid.setSelectionModel(new Slick.RowSelectionModel());
 
     if (ticketLoadFilter.IsEnqueued) {
+        $('.grid-ticket').addClass('grid-queue');
+
         var moveRowsPlugin = new Slick.RowMoveManager({
             cancelEditOnDrag: true
         });
@@ -649,6 +653,18 @@ TicketGrid = function () {
 
     });
 
+    grid.onSelectedRowsChanged.subscribe(function (e, args) {
+        var ticket = getActiveTicket();
+        if (!ticket) {
+            var vp = grid.getViewport();
+            loader.ensureData(vp.top, vp.bottom, self.hideLoadingIndicator);
+            clearPreview();
+        }
+        else {
+            previewTicket(ticket);
+        }
+    });
+
     function getActiveTicket() {
         var cell = grid.getActiveCell();
         if (cell) {
@@ -664,8 +680,11 @@ TicketGrid = function () {
     function previewTicket(ticket) {
         if (ticket == null) {
             clearPreview();
+            $('.ticket-action').prop('disabled', true);
             return;
         }
+        $('.ticket-action').prop('disabled', false);
+        $('.tickets-delete').prop('disabled', ticket.CreatorID != top.Ts.System.User.UserID && !top.Ts.System.User.IsSystemAdmin);
 
         function writeProp(name, val, colSpan) {
             if (val == null || val == '') val = '[Unassigned]';
