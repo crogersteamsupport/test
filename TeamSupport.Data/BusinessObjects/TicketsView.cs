@@ -871,7 +871,7 @@ namespace TeamSupport.Data
 
         foreach (Organization org in orgs)
         {
-          conditions.Append("OR (Customers::" + org.Name + ") ");
+          conditions.Append("OR (Customers::\"" + org.Name + "\") ");
         }
 
         conditions.Append(") ");
