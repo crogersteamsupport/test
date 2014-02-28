@@ -446,7 +446,7 @@ TicketGrid = function () {
     }
 
     function removeViewColumns(columns) {
-        if (ticketLoadFilter.ViewerID != top.Ts.System.User.UserID) {
+        if (ticketLoadFilter.ViewerID && ticketLoadFilter.ViewerID != top.Ts.System.User.UserID) {
             for (var i = 0; i < columns.length; i++) {
                 if (columns[i].id == 'IsRead' || columns[i].id == 'IsFlagged' || columns[i].id == 'IsSubscribed' || columns[i].id == 'IsEnqueued') {
                     columns.splice(i, 1);
