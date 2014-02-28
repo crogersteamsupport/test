@@ -670,8 +670,10 @@ TicketGrid = function () {
 
                 rows.push(row);
                 grid.setSelectedRows(rows);
-                e.stopPropagation();
-                e.stopImmediatePropagation();
+                if (getActiveTicket() != null) {
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                }
                 return true;
             default:
 
