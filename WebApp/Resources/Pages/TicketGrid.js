@@ -303,7 +303,7 @@ TicketGrid = function () {
         var columns = [];
         var list = $('.dialog-columns-list input:checked');
         list.sort(function (a, b) {
-            return $(a).data('col-no') > $(b).data('col-no');
+            return $(a).data('col-no') - $(b).data('col-no');
         });
         var i = 0;
         list.each(function () {
