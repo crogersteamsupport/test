@@ -130,7 +130,7 @@ TicketGrid = function () {
 
         var ids = getSelectedIDs();
         if (ids.length > 1) {
-            top.Ts.Services.Tickets.TakeOwnerships(JSON.stringify(ids), function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.TakeOwnerships(JSON.stringify(ids), function () { self.refresh(); });
             top.Ts.System.logAction('Ticket Grid - Take Ownership');
         }
         else {
@@ -164,11 +164,11 @@ TicketGrid = function () {
         var data = JSON.stringify(ids);
 
         if (el.hasClass('ticket-action-read')) {
-            top.Ts.Services.Tickets.SetTicketReads(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketReads(data, true, function () { self.refresh(); });
             top.Ts.System.logAction('Ticket Grid - Mark Read');
         }
         else if (el.hasClass('ticket-action-unread')) {
-            top.Ts.Services.Tickets.SetTicketReads(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketReads(data, false, function () { self.refresh(); });
             top.Ts.System.logAction('Ticket Grid - Mark Unread');
         }
         else if (el.hasClass('ticket-action-reassign')) {
@@ -178,27 +178,27 @@ TicketGrid = function () {
 
         }
         else if (el.hasClass('ticket-action-flag')) {
-            top.Ts.Services.Tickets.SetTicketFlags(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketFlags(data, true, function () { self.refresh(); });
             top.Ts.System.logAction('Ticket Grid - Mark Flagged');
         }
         else if (el.hasClass('ticket-action-unflag')) {
-            top.Ts.Services.Tickets.SetTicketFlags(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketFlags(data, false, function () { self.refresh(); });
             top.Ts.System.logAction('Ticket Grid - Mark Unflagged');
         }
         else if (el.hasClass('ticket-action-subscribe')) {
-            top.Ts.Services.Tickets.SetTicketSubcribes(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketSubcribes(data, true, function () { self.refresh(); });
             top.Ts.System.logAction('Ticket Grid - Subscribed');
         }
         else if (el.hasClass('ticket-action-unsubscribe')) {
-            top.Ts.Services.Tickets.SetTicketSubcribes(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketSubcribes(data, false, function () { self.refresh(); });
             top.Ts.System.logAction('Ticket Grid - Unsubscribed');
         }
         else if (el.hasClass('ticket-action-enqueue')) {
-            top.Ts.Services.Tickets.SetUserQueues(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetUserQueues(data, true, function () { self.refresh(); });
             top.Ts.System.logAction('Ticket Grid - Enqueued');
         }
         else if (el.hasClass('ticket-action-dequeue')) {
-            top.Ts.Services.Tickets.SetUserQueues(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetUserQueues(data, false, function () { self.refresh(); });
             top.Ts.System.logAction('Ticket Grid - Dequeued');
         }
     });
@@ -787,7 +787,7 @@ TicketGrid = function () {
     };
 
     var isSubscribedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>' : '<i class="fa fa-rss color-yellow" title="Click to unsubscribe to this ticket"></i>'
+        return value == false ? '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>' : '<i class="fa fa-rss color-orange" title="Click to unsubscribe to this ticket"></i>'
     };
 
     var dateTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {

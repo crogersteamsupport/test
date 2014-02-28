@@ -90,7 +90,7 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 .color-gray { color: #999; }
 .color-darkgray { color: #777; }
 .color-blue { color: #3276B1; }
-.color-yellow { color: #FFC312; }
+.color-yellow { color: #ff9; }
 .color-orange { color: #F0AD4E; }
 .color-red { color: #D9534F; }
 .color-green { color: #5CB85C ; }
@@ -103,7 +103,7 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 .bgcolor-darkgray { background-color: #777; }
 .bgcolor-gray { background-color: #999; }
 .bgcolor-blue { background-color: #3276B1; }
-.bgcolor-yellow { background-color: #FFC312; }
+.bgcolor-yellow { background-color: #ff9; }
 .bgcolor-orange { background-color: #F0AD4E; }
 .bgcolor-red { background-color: #D9534F; }
 .bgcolor-green { background-color: #5CB85C; }
