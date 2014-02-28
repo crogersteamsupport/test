@@ -59,7 +59,7 @@
         tabs.add(true, 'tickettab', 'all', 'All', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(filter));
         var queueFilter = new top.TeamSupport.Data.TicketLoadFilter();
         queueFilter.IsEnqueued = true;
-        queueFilter.UserID = userID;
+        queueFilter.ViewerID = userID;
         tabs.add(true, 'tickettab', 'queue', 'Queue', false, false, false, '', '', url + top.Ts.Utils.ticketFilterToQuery(queueFilter));
         tabs.add(true, 'tickettab', 'reminders', 'Reminders', false, false, false, '', '', 'Reminders.html?UserID=' + userID);
         loggingSection = 'My Tickets';

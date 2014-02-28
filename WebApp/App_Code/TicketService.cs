@@ -1520,7 +1520,7 @@ namespace TSWebServices
       TicketQueue queue = new TicketQueue(TSAuthentication.GetLoginUser());
       queue.LoadByUser(userID);
       int pos = 0;
-      int newPos = 0;
+      int newPos = -1;
       foreach (TicketQueueItem item in queue)
       {
         if (ids.IndexOf(item.TicketID) < 0)
@@ -1534,7 +1534,7 @@ namespace TSWebServices
           pos++;
         }
       }
-
+      if (newPos < 0) newPos = pos;
       foreach (TicketQueueItem item in queue)
       {
         if (ids.IndexOf(item.TicketID) > -1)

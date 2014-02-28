@@ -32,9 +32,6 @@ TicketGrid = function () {
     var tmrDelayIndicator = null;
     var tmrHideLoading = null;
 
-    this.setTicketColumns = function (columns) {
-        grid.setColumns(addManColumns(columns));
-    }
 
     this.showLoadingIndicator = function (delay) {
         if (!delay) {
@@ -130,7 +127,7 @@ TicketGrid = function () {
 
         var ids = getSelectedIDs();
         if (ids.length > 1) {
-            top.Ts.Services.Tickets.TakeOwnerships(JSON.stringify(ids), function () { self.refresh(); });
+            top.Ts.Services.Tickets.TakeOwnerships(JSON.stringify(ids), function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Take Ownership');
         }
         else {
@@ -164,11 +161,11 @@ TicketGrid = function () {
         var data = JSON.stringify(ids);
 
         if (el.hasClass('ticket-action-read')) {
-            top.Ts.Services.Tickets.SetTicketReads(data, true, function () { self.refresh(); });
+            top.Ts.Services.Tickets.SetTicketReads(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Mark Read');
         }
         else if (el.hasClass('ticket-action-unread')) {
-            top.Ts.Services.Tickets.SetTicketReads(data, false, function () { self.refresh(); });
+            top.Ts.Services.Tickets.SetTicketReads(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Mark Unread');
         }
         else if (el.hasClass('ticket-action-reassign')) {
@@ -178,27 +175,27 @@ TicketGrid = function () {
 
         }
         else if (el.hasClass('ticket-action-flag')) {
-            top.Ts.Services.Tickets.SetTicketFlags(data, true, function () { self.refresh(); });
+            top.Ts.Services.Tickets.SetTicketFlags(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Mark Flagged');
         }
         else if (el.hasClass('ticket-action-unflag')) {
-            top.Ts.Services.Tickets.SetTicketFlags(data, false, function () { self.refresh(); });
+            top.Ts.Services.Tickets.SetTicketFlags(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Mark Unflagged');
         }
         else if (el.hasClass('ticket-action-subscribe')) {
-            top.Ts.Services.Tickets.SetTicketSubcribes(data, true, function () { self.refresh(); });
+            top.Ts.Services.Tickets.SetTicketSubcribes(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Subscribed');
         }
         else if (el.hasClass('ticket-action-unsubscribe')) {
-            top.Ts.Services.Tickets.SetTicketSubcribes(data, false, function () { self.refresh(); });
+            top.Ts.Services.Tickets.SetTicketSubcribes(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Unsubscribed');
         }
         else if (el.hasClass('ticket-action-enqueue')) {
-            top.Ts.Services.Tickets.SetUserQueues(data, true, function () { self.refresh(); });
+            top.Ts.Services.Tickets.SetUserQueues(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Enqueued');
         }
         else if (el.hasClass('ticket-action-dequeue')) {
-            top.Ts.Services.Tickets.SetUserQueues(data, false, function () { self.refresh(); });
+            top.Ts.Services.Tickets.SetUserQueues(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Dequeued');
         }
     });
@@ -310,7 +307,7 @@ TicketGrid = function () {
 
         });
 
-        grid.setColumns(addManColumns(columns));
+        self.setTicketColumns(columns);
 
         if ($('.dialog-columns-forcefit input').prop('checked') == true) {
             grid.setOptions({ forceFitColumns: true });
@@ -392,7 +389,7 @@ TicketGrid = function () {
     { id: "IsRead", name: "Read", field: "IsRead", maxWidth: 24, sortable: true, formatter: isReadColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "IsFlagged", name: "Flagged", field: "IsFlagged", maxWidth: 24, sortable: true, formatter: isFlaggedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "IsSubscribed", name: "Subscribed", field: "IsSubscribed", maxWidth: 24, sortable: true, formatter: isSubscribedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "IsEnqueued", name: "IsEnqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
+    { id: "IsEnqueued", name: "Enqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "TicketNumber", name: "Number", field: "TicketNumber", width: 75, sortable: true, cssClass: 'ticket-grid-cell-ticketnumber' },
     { id: "TicketTypeName", name: "Type", field: "TicketTypeName", width: 125, sortable: true },
     { id: "Name", name: "Name", field: "Name", width: 200, sortable: true },
@@ -423,7 +420,7 @@ TicketGrid = function () {
     { id: "IsRead", name: "Read", field: "IsRead", maxWidth: 24, sortable: true, formatter: isReadColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "IsFlagged", name: "Flagged", field: "IsFlagged", maxWidth: 24, sortable: true, formatter: isFlaggedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "IsSubscribed", name: "Subscribed", field: "IsSubscribed", maxWidth: 24, sortable: true, formatter: isSubscribedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "IsEnqueued", name: "IsEnqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
+    { id: "IsEnqueued", name: "Enqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "TicketNumber", name: "Number", field: "TicketNumber", width: 75, sortable: true, cssClass: 'ticket-grid-cell-ticketnumber' },
     { id: "TicketTypeName", name: "Type", field: "TicketTypeName", width: 125, sortable: true },
     { id: "Name", name: "Name", field: "Name", width: 200, sortable: true },
@@ -448,6 +445,23 @@ TicketGrid = function () {
         return columns;
     }
 
+    function removeViewColumns(columns) {
+        if (ticketLoadFilter.ViewerID != top.Ts.System.User.UserID) {
+            for (var i = 0; i < columns.length; i++) {
+                if (columns[i].id == 'IsRead' || columns[i].id == 'IsFlagged' || columns[i].id == 'IsSubscribed' || columns[i].id == 'IsEnqueued') {
+                    columns.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+        return columns;
+    }
+
+    this.setTicketColumns = function (columns) {
+        grid.setColumns(removeViewColumns(addManColumns(columns)));
+    }
+
+
     var options = {
         rowHeight: 32,
         editable: false,
@@ -458,7 +472,7 @@ TicketGrid = function () {
     };
 
     $(layout.panes.center).disableSelection();
-    this._grid = new Slick.Grid(layout.panes.center, loader.data, addManColumns(getDefaultColumns()), options);
+    this._grid = new Slick.Grid(layout.panes.center, loader.data, removeViewColumns(addManColumns(getDefaultColumns())), options);
     grid = this._grid;
     grid.setSelectionModel(new Slick.RowSelectionModel());
 
@@ -469,8 +483,7 @@ TicketGrid = function () {
 
         moveRowsPlugin.onBeforeMoveRows.subscribe(function (e, data) {
             for (var i = 0; i < data.rows.length; i++) {
-                // no point in moving before or after itself
-                if (data.rows[i] == data.insertBefore || data.rows[i] == data.insertBefore - 1) {
+                if (data.rows[i] == data.insertBefore) {
                     e.stopPropagation();
                     return false;
                 }
@@ -485,7 +498,7 @@ TicketGrid = function () {
                 ids.push(loader.data[rows[i]].TicketID);
             }
 
-            top.Ts.Services.Tickets.MoveUserQueueTickets(JSON.stringify(ids), loader.data[args.insertBefore].TicketID, ticketLoadFilter.UserID, function () {
+            top.Ts.Services.Tickets.MoveUserQueueTickets(JSON.stringify(ids), loader.data.length == args.insertBefore ? -1 : loader.data[args.insertBefore].TicketID, ticketLoadFilter.ViewerID, function () {
                 self.refresh();
                 grid.setSelectedRows([]);
 
@@ -634,33 +647,6 @@ TicketGrid = function () {
             previewTicket(ticket);
         }
 
-    });
-
-    grid.onSelectedRowsChanged.subscribe(function (e, args) {
-        //    selectedRowIds = [];
-        //    var rows = grid.getSelectedRows();
-        //    for (var i = 0, l = rows.length; i < l; i++) {
-        //    var ticket = loader.data[rows[i]];
-        //    alert(item);
-        //    if (item) selectedRowIds.push(item.id);
-        //    }
-        /*
-        var rows = grid.getSelectedRows();
-        if (rows.length > 0) {
-        var ticket = loader.data[rows[0]];
-        if (!ticket) {
-        var vp = grid.getViewport();
-        loader.ensureData(vp.top, vp.bottom);
-        clearPreview();
-        }
-        else {
-        previewTicket(ticket);
-        }
-        }
-        else {
-        clearPreview();
-        }
-        */
     });
 
     function getActiveTicket() {
@@ -850,168 +836,12 @@ TicketGrid.prototype = {
             }
 
             self._currentTicket = null;
-            //this._loader.clear();
             self._layout.resizeAll();
-            //this._grid.resizeCanvas();
-            //this._grid.onViewportChanged();
         });
     }
 
 };
 
-TicketGridModel = function (ticketLoadFilter) {
-    // private
-    var data = { length: 0 };
-    var total = -1;
-    var h_request = null;
-    var req = null; // ajax request
-    var req_page;
-    // events
-    var onDataLoading = new top.Ts.Utils.EventHandler();
-    var onDataLoaded = new top.Ts.Utils.EventHandler();
-
-
-    function init() {
-    }
-
-    function getItemMetadata(index) {
-        if (data[index] == null) return;
-        var row = data[index];
-
-        var result = 'ticket-grid-row';
-        if (row) {
-            if (row['SlaWarningTime'] && row['SlaWarningTime'] < 0) {
-                result = result + ' ticket-grid-row-violated';
-            }
-            else if (row['SlaViolationTime'] && row['SlaViolationTime'] < 0) {
-                result = result + ' ticket-grid-row-warning';
-            }
-            if (row['IsRead'] && row['IsRead'] === true) result = result + ' ticket-grid-row-read';
-        }
-        return { cssClasses: result };
-    }
-
-    data.getItemMetadata = getItemMetadata;
-
-    function isDataLoaded(from, to) {
-        for (var i = from; i <= to; i++) {
-            if (data[i] == undefined || data[i] == null)
-                return false;
-        }
-        return true;
-    }
-
-
-    function clear() {
-        for (var key in data) {
-            delete data[key];
-        }
-        data.length = 0;
-        data.getItemMetadata = getItemMetadata;
-    }
-
-    function reloadData(from, to, callback) {
-        for (var i = from; i <= to; i++)
-            delete data[i];
-        ensureData(from, to, callback);
-    }
-
-    function ensureData(from, to, loadedCallback) {
-        if (req) {
-            req.get_executor().abort();
-            for (var i = req.from; i <= req.to; i++)
-                data[i] = undefined;
-        }
-
-        to = to + 10;
-        from = from - 10;
-        if (from < 0) { from = 0; }
-
-        while (data[from] !== undefined && from < to) { from++; }
-        while (data[to] !== undefined && from < to) { to--; }
-        if (from >= to) {
-            if (loadedCallback) loadedCallback();
-            return;
-        }
-
-
-        if (h_request != null)
-            clearTimeout(h_request);
-
-        h_request = setTimeout(function () {
-            for (var i = from; i < to - 1; i++) data[i] = null; // null indicates a 'requested but not available yet'
-
-            onDataLoading.notify({ from: from, to: to });
-            req = top.Ts.Services.Tickets.GetTicketRange(from, to, ticketLoadFilter, function (ticketRange) {
-                onSuccess(ticketRange);
-                if (loadedCallback) loadedCallback();
-            },
-      function (error) {
-          onError(error);
-          if (loadedCallback) loadedCallback();
-      });
-            req.from = from;
-            req.to = to;
-
-        }, 100);
-    }
-
-
-    function onError(error) {
-        //alert(error.get_message());
-    }
-
-    function onSuccess(ticketRange) {
-        if (total > -1 && total != ticketRange.Total) {
-            clear();
-        } else {
-            total = ticketRange.Total;
-        }
-        data.length = parseInt(ticketRange.Total);
-        for (var i = 0; i < ticketRange.Tickets.length; i++) {
-            data[ticketRange.From + i] = ticketRange.Tickets[i];
-            data[ticketRange.From + i].index = ticketRange.From + i;
-        }
-
-        req = null;
-
-        onDataLoaded.notify({ from: ticketRange.From, to: (ticketRange.From + ticketRange.Tickets.length) });
-    }
-
-
-
-
-    function setSort(column, asc) {
-        ticketLoadFilter.SortColumn = column;
-        ticketLoadFilter.SortAsc = asc;
-        clear();
-    }
-
-    function setSearch(str) {
-        searchstr = str;
-        clear();
-    }
-
-
-    init();
-
-    return {
-        // properties
-        "data": data,
-
-        // methods
-        "clear": clear,
-        "isDataLoaded": isDataLoaded,
-        "ensureData": ensureData,
-        "reloadData": reloadData,
-        "setSort": setSort,
-        "setSearch": setSearch,
-
-        // events
-        "onDataLoading": onDataLoading,
-        "onDataLoaded": onDataLoaded
-    };
-}
 
 
 

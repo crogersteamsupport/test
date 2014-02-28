@@ -51,6 +51,7 @@ namespace TeamSupport.Data
     [DataMember] public bool? IsFlagged { get; set; }
     [DataMember] public bool? IsEnqueued { get; set; }
     [DataMember] public int? KnowledgeBaseCategoryID { get; set; }
+    [DataMember] public int? ViewerID { get; set; }
     
   }
 
@@ -512,8 +513,6 @@ namespace TeamSupport.Data
       if (filter.IsEnqueued == true)
       {
         sort = "QueuePosition ASC";
-        //from = 0;
-        //to = 10000;
       }
 
       string fields =
@@ -641,7 +640,7 @@ namespace TeamSupport.Data
       AddTicketParameter("DateCreated", "DateCreatedEnd", filter.DateCreatedEnd, "<=", builder, command);
       AddTicketParameter("DateModified", "DateModifiedBegin", filter.DateModifiedBegin, ">=", builder, command);
       AddTicketParameter("DateModified", "DateModifiedEnd", filter.DateModifiedEnd, "<=", builder, command);
-      AddTicketParameter("ViewerID", loginUser.UserID, false, builder, command);
+      AddTicketParameter("ViewerID", filter.ViewerID != null ? filter.ViewerID : loginUser.UserID, false, builder, command);
 
       if (filter.ForumCategoryID != null && filter.ForumCategoryID == -1)
       {
