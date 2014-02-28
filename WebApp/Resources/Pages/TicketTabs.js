@@ -136,6 +136,7 @@
         $('.ts-loading').hide().next().show();
         $('.tickets-layout').layout({
             resizeNestedLayout: true,
+            maskIframesOnResize: true,
             defaults: {
                 spacing_open: 0,
                 closable: false

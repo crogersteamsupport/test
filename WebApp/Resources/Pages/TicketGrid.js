@@ -64,8 +64,8 @@ TicketGrid = function () {
     $('head').append(top.Ts.MainPage.getCalcStyle());
 
     this._layout = $('.grid-ticket-layout').layout({
-        //resizeNestedLayout: true,
-        //maskIframesOnResize: true,
+        resizeNestedLayout: true,
+        maskIframesOnResize: true,
         defaults: {
             spacing_open: 5,
             closable: false
