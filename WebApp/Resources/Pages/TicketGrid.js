@@ -289,6 +289,7 @@ TicketGrid = function () {
 
     function addDialogColumn(column, isChecked) {
         if (column.name == 'checked') return;
+        console.log(column.name + ": " + _lastDialogColumnNo);
         var label = $('<label>').html('&nbsp;' + column.name);
         $('<input>').attr('type', 'checkbox').prop('checked', isChecked).data('o', column).data('col-no', _lastDialogColumnNo).prependTo(label);
         var div = $('<div>').addClass('checkbox').append(label)
@@ -304,8 +305,12 @@ TicketGrid = function () {
         list.sort(function (a, b) {
             return $(a).data('col-no') > $(b).data('col-no');
         });
+        var i = 0;
         list.each(function () {
             columns.push($(this).data('o'));
+            console.log($(this).data('o').id + ": X " + i);
+            i++;
+
         });
 
         grid.setColumns(addManColumns(columns));
