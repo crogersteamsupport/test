@@ -242,7 +242,6 @@ TicketGrid = function () {
             var ticket = loader.data[rows[i]];
             if (ticket) selectedRowIds.push(ticket.TicketID);
         }
-        console.log(selectedRowIds);
         return selectedRowIds;
 
     }
@@ -289,7 +288,6 @@ TicketGrid = function () {
 
     function addDialogColumn(column, isChecked) {
         if (column.name == 'checked') return;
-        console.log(column.name + ": " + _lastDialogColumnNo);
         var label = $('<label>').html('&nbsp;' + column.name);
         $('<input>').attr('type', 'checkbox').prop('checked', isChecked).data('o', column).data('col-no', _lastDialogColumnNo).prependTo(label);
         var div = $('<div>').addClass('checkbox').append(label)
@@ -308,7 +306,6 @@ TicketGrid = function () {
         var i = 0;
         list.each(function () {
             columns.push($(this).data('o'));
-            console.log($(this).data('o').id + ": X " + i);
             i++;
 
         });

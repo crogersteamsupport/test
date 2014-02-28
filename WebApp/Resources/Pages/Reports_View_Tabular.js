@@ -248,8 +248,8 @@
     });
 
     _layout = $('#reports-tabview-layout').layout({
-        //resizeNestedLayout: true,
-        //maskIframesOnResize: true,
+        resizeNestedLayout: true,
+        maskIframesOnResize: true,
         defaults: {
             spacing_open: 5,
             closable: false

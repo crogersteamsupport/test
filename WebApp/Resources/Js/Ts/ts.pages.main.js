@@ -379,6 +379,7 @@ Ts.Pages.Main.prototype = {
 
         this.MainLayout = $('.main-container').layout({
             resizeNestedLayout: true,
+            maskIframesOnResize: true,
             fxName: "slide",
             fxSpeed: "slow",
             center: {
