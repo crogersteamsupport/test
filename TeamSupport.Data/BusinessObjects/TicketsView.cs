@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using dtSearch.Engine;
+using System.Text.RegularExpressions;
 
 namespace TeamSupport.Data
 {
@@ -801,7 +802,7 @@ namespace TeamSupport.Data
       using (SearchJob job = new SearchJob())
       {
 
-        searchTerm = searchTerm.Trim();
+        searchTerm = Regex.Replace(searchTerm.Trim(), @"[()-.]", "", RegexOptions.IgnoreCase); 
         job.Request = searchTerm;
         job.FieldWeights = "Name: 1000";
 
@@ -871,7 +872,7 @@ namespace TeamSupport.Data
 
         foreach (Organization org in orgs)
         {
-          conditions.Append("OR (Customers::\"" + org.Name + "\") ");
+          conditions.Append("OR (Customers::" + Regex.Replace(org.Name, @"[()]", "", RegexOptions.IgnoreCase) + ") ");
         }
 
         conditions.Append(") ");
