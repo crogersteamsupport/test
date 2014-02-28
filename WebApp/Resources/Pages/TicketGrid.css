@@ -36,4 +36,5 @@ body { background-color: #fff;}
 .slick-sort-indicator { font-family: FontAwesome; font-style: normal; font-weight: normal; line-height: 1; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background: none; padding-left: 5px; font-size:12px; margin-top: 5px; }
 .slick-sort-indicator.slick-sort-indicator-desc:before { content: "\f107"; }
 .slick-sort-indicator.slick-sort-indicator-asc:before { content: "\f106"; }
+.slick-row.odd { background-color: #f9f9f9; }
 .slick-column-name, .slick-sort-indicator { display: inline-block; float: left; margin-bottom: 100px; }
