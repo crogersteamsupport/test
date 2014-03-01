@@ -8,26 +8,26 @@
 <head id="Head1" runat="server">
   <title>Team Support</title>
    <link rel="SHORTCUT ICON" href="~/favicon.ico" />
-  <link href="vcr/1_7_9/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/1_7_9/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/1_7_9/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/1_7_9/Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/1_7_9/Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/1_7_9/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="vcr/1_7_9/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_7_9/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
-  <link href="vcr/1_7_9/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/1_7_9/Css/chat.css" rel="stylesheet" type="text/css" />
-  <link href="vcr/1_7_9/Css/jquery.pnotify.default.icons.css" rel="stylesheet" />
-  <link href="vcr/1_7_9/Css/jquery.pnotify.default.css" rel="stylesheet" />
+  <link href="vcr/1_8_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_8_0/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_8_0/Css/jquery.jgrowl.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_8_0/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_8_0/Css/jquery.ui.combobox.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_8_0/Css/jquery.ui.timepicker.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="vcr/1_8_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="vcr/1_8_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <link href="vcr/1_8_0/Css/ts.mainpage.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_8_0/Css/chat.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_8_0/Css/jquery.pnotify.default.icons.css" rel="stylesheet" />
+  <link href="vcr/1_8_0/Css/jquery.pnotify.default.css" rel="stylesheet" />
 
-  <script src="vcr/1_7_9/Js/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="vcr/1_7_9/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
-  <script src="vcr/1_7_9/Js/chat.js" type="text/javascript"></script>
-  <script src="vcr/1_7_9/Js/json2.min.js" type="text/javascript"></script>
-  <script src="vcr/1_7_9/Js/browser.js" type="text/javascript"></script>
-  <script src="vcr/1_7_9/Js/jquery.signalR-1.1.1.min.js" type="text/javascript"></script>
-  <script src="vcr/1_7_9/Js/jquery.jplayer.min.js" type="text/javascript"></script>
-  <script src="vcr/1_7_9/Js/jquery.pnotify.min.js" type="text/javascript"></script>
+  <script src="vcr/1_8_0/Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="vcr/1_8_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+  <script src="vcr/1_8_0/Js/chat.js" type="text/javascript"></script>
+  <script src="vcr/1_8_0/Js/json2.min.js" type="text/javascript"></script>
+  <script src="vcr/1_8_0/Js/browser.js" type="text/javascript"></script>
+  <script src="vcr/1_8_0/Js/jquery.signalR-1.1.1.min.js" type="text/javascript"></script>
+  <script src="vcr/1_8_0/Js/jquery.jplayer.min.js" type="text/javascript"></script>
+  <script src="vcr/1_8_0/Js/jquery.pnotify.min.js" type="text/javascript"></script>
 
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
@@ -65,7 +65,7 @@
       if (BrowserDetect.browser != 'Safari' || BrowserDetect.isMobile != 1) {
         try {
           $.getScript("signalr/signalr/hubs", function (data, textStatus, jqxhr) {
-            $.getScript("vcr/1_7_9/Js/ts/ts.wc.signalr.js", function (data, textStatus, jqxhr) {
+            $.getScript("vcr/1_8_0/Js/ts/ts.wc.signalr.js", function (data, textStatus, jqxhr) {
               if (loadSignalR) { loadSignalR(); }
 
             });
@@ -102,18 +102,18 @@
       </services>
     <scripts>
     
-          <asp:ScriptReference Path="vcr/1_7_9/Js/json2.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/jquery.layout.min.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/jquery.jgrowl_minimized.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/jquery.editlabel.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/jquery.ui.combobox.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/jquery.ui.timepicker.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/ts/ts.system.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/ts/ts.utils.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/ts/ts.cache.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/ts/ts.ui.tabs.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/ts/ts.ui.menutree.js" />
-          <asp:ScriptReference Path="vcr/1_7_9/Js/ts/ts.pages.main.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/json2.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/jquery.layout.min.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/jquery.jgrowl_minimized.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/jquery.editlabel.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/jquery.ui.combobox.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/jquery.ui.timepicker.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/ts/ts.system.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/ts/ts.utils.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/ts/ts.cache.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/ts/ts.ui.tabs.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/ts/ts.ui.menutree.js" />
+          <asp:ScriptReference Path="vcr/1_8_0/Js/ts/ts.pages.main.js" />
           <asp:ScriptReference Path="js_5/dialogs.js" />
 
       </scripts>

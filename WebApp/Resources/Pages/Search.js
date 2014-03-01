@@ -581,44 +581,44 @@ function showSearchResults(results) {
     var subText = "";
     switch (results.Items[i].TypeID) {
       case 1: //Tickets
-        iconPath = "/vcr/1_7_9/images/nav/16/tickets.png";
+        iconPath = "/vcr/1_8_0/images/nav/16/tickets.png";
         onClickHandler = "top.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
         subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
                 '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
         break;
       case 2: //KnowledgeBase
-        iconPath = "/vcr/1_7_9/images/nav/16/knowledge.png";
+        iconPath = "/vcr/1_8_0/images/nav/16/knowledge.png";
         onClickHandler = "top.Ts.MainPage.openTicket(" + results.Items[i].Number + ", true)";
         subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
                 '<h2>Severity: ' + results.Items[i].Severity + '</h2>';
         break;
       case 3: //Wikis
-        iconPath = "/vcr/1_7_9/images/nav/16/wiki.png";
+        iconPath = "/vcr/1_8_0/images/nav/16/wiki.png";
         onClickHandler = "top.Ts.MainPage.openWiki(" + results.Items[i].ID + ", true)";
         subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Modified by: ' + results.Items[i].Modifier + '</h2>';
         break;
       case 4: //CustomerNotes
-        iconPath = "/vcr/1_7_9/images/nav/16/customers.png";
+        iconPath = "/vcr/1_8_0/images/nav/16/customers.png";
           //onClickHandler = "top.Ts.MainPage.openCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ", true)";
         onClickHandler = "top.Ts.MainPage.openNewCustomerNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
         subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
         break;
       case 5: //ProductVersions
-        iconPath = "/vcr/1_7_9/images/nav/16/products.png";
+        iconPath = "/vcr/1_8_0/images/nav/16/products.png";
         onClickHandler = "top.Ts.MainPage.openProductVersion(" + results.Items[i].ProductID + ", " + results.Items[i].ID + ", true)";
         subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
                 '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
         break;
       case 6: //WaterCooler
-        iconPath = "/vcr/1_7_9/images/nav/16/watercooler.png";
+        iconPath = "/vcr/1_8_0/images/nav/16/watercooler.png";
         onClickHandler = "top.Ts.MainPage.openWaterCoolerInstance(" + results.Items[i].ID + ", " + results.Items[i].RefType + ", " + results.Items[i].AttachmentID + ")";
         subText = '<h2>Posted by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Posted on: ' + results.Items[i].DateModified + '</h2>';
         break;
       case 7: //ContactNotes
-        iconPath = "/vcr/1_7_9/images/nav/16/customers.png";
+        iconPath = "/vcr/1_8_0/images/nav/16/customers.png";
         onClickHandler = "top.Ts.MainPage.openNewContactNote(" + results.Items[i].CustomerID + ", " + results.Items[i].ID + ")";
         subText = '<h2>Created by: ' + results.Items[i].Creator + ' </h2>' +
                 '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';

@@ -67,10 +67,10 @@
               <telerik:RadTabStrip ID="tsMain" runat="server" SelectedIndex="0" OnClientTabSelected="TabSelected" ShowBaseLine="True" Width="100%" PerTabScrolling="True" ScrollChildren="True">
                 <Tabs>
                   <telerik:RadTab runat="server" Value="GroupInformation.aspx?GroupID=" Selected="True" Text="Group Information"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="../vcr/1_7_9/Pages/TicketGrid.html?tf_IsClosed=false&tf_GroupID=" Text="Open Tickets"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="../vcr/1_7_9/Pages/TicketGrid.html?tf_IsClosed=true&tf_GroupID=" Text="Closed Tickets"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="../vcr/1_7_9/Pages/TicketGrid.html?tf_IsClosed=false&tf_UserID=-2&tf_GroupID=" Text="Unassigned Tickets"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="../vcr/1_7_9/Pages/TicketGrid.html?tf_GroupID=" Text="All Tickets"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_8_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_GroupID=" Text="Open Tickets"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_8_0/Pages/TicketGrid.html?tf_IsClosed=true&tf_GroupID=" Text="Closed Tickets"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_8_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_UserID=-2&tf_GroupID=" Text="Unassigned Tickets"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_8_0/Pages/TicketGrid.html?tf_GroupID=" Text="All Tickets"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="History.aspx?RefType=6&RefID=" Text="Group History"></telerik:RadTab>
                 </Tabs>
               </telerik:RadTabStrip>

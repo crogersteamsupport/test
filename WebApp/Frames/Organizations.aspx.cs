@@ -117,7 +117,7 @@ public partial class Frames_Organizations : BaseFramePage
     if (UserSession.CurrentUser.IsInventoryEnabled)
       tsMain.Tabs.Add(new RadTab("Inventory", "../Inventory/CustomerInventory.aspx?CustID="));
 
-    tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/1_7_9/Pages/Watercooler.html?"));
+    tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/1_8_0/Pages/Watercooler.html?"));
 
     if (!UserSession.CurrentUser.IsTSUser)
     {

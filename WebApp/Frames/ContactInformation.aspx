@@ -3,10 +3,10 @@
 
 <%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
-  <link href="../vcr/1_7_9/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-  <link href="../vcr/1_7_9/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
-  <link href="../vcr/1_7_9/Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <link href="../vcr/1_7_9/Css/jquery.cluetip.css" rel="stylesheet" type="text/css" />
+  <link href="../vcr/1_8_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
+  <link href="../vcr/1_8_0/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
+  <link href="../vcr/1_8_0/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <link href="../vcr/1_8_0/Css/jquery.cluetip.css" rel="stylesheet" type="text/css" />
   <style>
     .tickets { padding: 0 1em 1em 1em;}
     .ticket { padding-top: 1em; lineheight: 16px;}
@@ -14,11 +14,11 @@
     .no-tickets { padding-top: 1em;}
   
   </style>
-  <script src="../vcr/1_7_9/Js/jquery-latest.min.js" type="text/javascript"></script>
-  <script src="../vcr/1_7_9/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
+  <script src="../vcr/1_8_0/Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="../vcr/1_8_0/Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
 
-  <script src="../vcr/1_7_9/Js/jquery.hoverIntent.min.js" type="text/javascript"></script>
-  <script src="../vcr/1_7_9/Js/jquery.cluetip.js" type="text/javascript"></script>
+  <script src="../vcr/1_8_0/Js/jquery.hoverIntent.min.js" type="text/javascript"></script>
+  <script src="../vcr/1_8_0/Js/jquery.cluetip.js" type="text/javascript"></script>
 
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">

@@ -28,7 +28,7 @@ public partial class Frames_Groups : BaseFramePage
       tsMain.SelectedIndex = Settings.UserDB.ReadInt("SelectedGroupTabIndex", 0);
       pangGroupGrid.Width = new Unit(Settings.UserDB.ReadInt("GroupGridWidth", 250), UnitType.Pixel);
 
-      tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/1_7_9/Pages/Watercooler.html?"));
+      tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/1_8_0/Pages/Watercooler.html?"));
     }
 
   }
