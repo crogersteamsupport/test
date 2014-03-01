@@ -1,35 +1,4 @@
-﻿if (!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function (searchElement /*, fromIndex */) {
-        'use strict';
-        if (this == null) {
-            throw new TypeError();
-        }
-        var n, k, t = Object(this),
-        len = t.length >>> 0;
-
-        if (len === 0) {
-            return -1;
-        }
-        n = 0;
-        if (arguments.length > 1) {
-            n = Number(arguments[1]);
-            if (n != n) { // shortcut for verifying if it's NaN
-                n = 0;
-            } else if (n != 0 && n != Infinity && n != -Infinity) {
-                n = (n > 0 || -1) * Math.floor(Math.abs(n));
-            }
-        }
-        if (n >= len) {
-            return -1;
-        }
-        for (k = n >= 0 ? n : Math.max(len - Math.abs(n), 0); k < len; k++) {
-            if (k in t && t[k] === searchElement) {
-                return k;
-            }
-        }
-        return -1;
-    };
-}
+﻿
 
 var ticketGrid = null;
 $(document).ready(function () {
@@ -499,13 +468,28 @@ TicketGrid = function () {
     }
     this.getAllColumns = getAllColumns;
 
+    // fix for missing indexOf in IE8
+    if (!Array.prototype.indexOf) {
+        Array.prototype.indexOf = function (elt /*, from*/) {
+            var len = this.length >>> 0;
+            var from = Number(arguments[1]) || 0;
+            from = (from < 0) ? Math.ceil(from) : Math.floor(from);
+            if (from < 0) from += len;
+
+            for (; from < len; from++) {
+                if (from in this && this[from] === elt) return from;
+            }
+            return -1;
+        };
+    }
+
     function getDefaultColumns() {
         var cols = getAllColumns();
         var result = [];
         var defaults = ["openButton", "IsRead", "IsFlagged", "IsSubscribed", "IsEnqueued", "TicketNumber", "TicketTypeName", "Name", "UserName", "Status",
         "Severity", "Customers", "Contacts", "GroupName", "DateModified", "DaysOpened"];
         for (var i = 0; i < cols.length; i++) {
-            if (defaults.indexOf(cols[i].id)) { result.push(cols[i]); }
+            if (defaults.indexOf(cols[i].id) > -1) { result.push(cols[i]); }
         }
         return result;
     }
