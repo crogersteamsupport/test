@@ -4,9 +4,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
   <title></title>
-  <link href="../vcr/1_7_0/Css/frame.css" rel="stylesheet" type="text/css" />
-  <link href="../vcr/1_7_0/Css/ts.ui.css" rel="stylesheet" type="text/css" />
-  <!--[if IE 7]><link href="../vcr/1_7_0/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="../vcr/1_7_0/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <link href="../vcr/1_7_9/Css/frame.css" rel="stylesheet" type="text/css" />
+  <link href="../vcr/1_7_9/Css/ts.ui.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]><link href="../vcr/1_7_9/Css/ts.ui.ie7.css" rel="stylesheet" type="text/css" /><![endif]--><!--[if IE 8]><link href="../vcr/1_7_9/Css/ts.ui.ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
   <link href="../css_5/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <script src="../js_5/jquery-1.4.2.min.js" type="text/javascript"></script>
   <script src="../js_5/jquery-ui-1.8.14.custom.min.js" type="text/javascript"></script>

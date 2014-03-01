@@ -493,7 +493,7 @@ $(document).ready(function () {
         }
 
         function closeReport(report) {
-            var result = '/vcr/1_7_0/pages/';
+            var result = '/vcr/1_7_9/pages/';
 
             function getReportUrl(r) {
                 switch (r.ReportType) {

@@ -11,11 +11,11 @@
   <meta name="author" content="">
   <title>TeamSupport - Sign Up</title>
   <link rel="SHORTCUT ICON" href="~/favicon.ico" />
-  <link href="vcr/1_7_0/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
+  <link href="vcr/1_7_9/Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
 
-  <script src="vcr/1_7_0/Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="vcr/1_7_9/Js/jquery-latest.min.js" type="text/javascript"></script>
 
-  <script src="vcr/1_7_0/Js/bootstrap3.min.js" type="text/javascript"></script>
+  <script src="vcr/1_7_9/Js/bootstrap3.min.js" type="text/javascript"></script>
 
   <style type="text/css">
     .callout { background-color: #f4f8fa; padding: 20px; }

@@ -104,7 +104,7 @@ public partial class Frames_Products : BaseFramePage
       if (versionID < 0)
         url = "ProductVersions.aspx?ProductID=" + productID.ToString();
       else
-        url = "../vcr/1_7_0/Pages/ProductVersion.html?VersionID=" + versionID.ToString();
+        url = "../vcr/1_7_9/Pages/ProductVersion.html?VersionID=" + versionID.ToString();
     }
     else if (tsMain.SelectedIndex == 3)
     {
@@ -293,12 +293,12 @@ public partial class Frames_Products : BaseFramePage
     tsMain.Tabs.Clear();
 
     tsMain.Tabs.Add(new RadTab("Product Information", "ProductInformation.aspx?"));
-    tsMain.Tabs.Add(new RadTab("Version Information", "../vcr/1_7_0/Pages/ProductVersion.html?"));
+    tsMain.Tabs.Add(new RadTab("Version Information", "../vcr/1_7_9/Pages/ProductVersion.html?"));
     tsMain.Tabs.Add(new RadTab("Customers", "ProductOrganizations.aspx?"));
 
     RadTab tab = new RadTab("History", "History.aspx?");
     tsMain.Tabs.Add(tab);
-    tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/1_7_0/Pages/Watercooler.html?"));
+    tsMain.Tabs.Add(new RadTab("Water Cooler", "../vcr/1_7_9/Pages/Watercooler.html?"));
     tsMain.Tabs.Add(new RadTab("All Tickets", "TicketTabsAll.aspx?"));
 
     TicketTypes ticketTypes = new TicketTypes(UserSession.LoginUser);
@@ -307,7 +307,7 @@ public partial class Frames_Products : BaseFramePage
     {
       tsMain.Tabs.Add(new RadTab(ticketType.Name, "TicketTabsProduct.aspx?tf_TicketTypeID=" + ticketType.TicketTypeID.ToString() + "&"));
     }
-    tsMain.Tabs.Add(new RadTab("Knowledge Base", "../vcr/1_7_0/Pages/TicketGrid.html?tf_IsKnowledgeBase=true&"));
+    tsMain.Tabs.Add(new RadTab("Knowledge Base", "../vcr/1_7_9/Pages/TicketGrid.html?tf_IsKnowledgeBase=true&"));
 
   }
 

@@ -376,7 +376,7 @@
       </authorization>
     </system.web>
   </location>
-  <location path="vcr/1_7_0/js">
+  <location path="vcr/1_7_9/js">
     <system.web>
       <authorization>
         <allow users="*" />
