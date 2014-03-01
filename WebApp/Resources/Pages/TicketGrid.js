@@ -116,13 +116,6 @@ TicketGrid = function () {
         top.Ts.System.logAction('Ticket Grid - New Ticket');
     });
 
-    $('.tickets-queue').click(function (e) {
-        e.preventDefault();
-        var ticket = getActiveTicket();
-        top.Ts.Services.Tickets.Enqueue(ticket.TicketID, function () { });
-        top.Ts.System.logAction('Ticket Grid - Queued');
-        top.Ts.System.logAction('Queued');
-    });
 
     $('.tickets-own').click(function (e) {
         e.preventDefault();
@@ -156,7 +149,6 @@ TicketGrid = function () {
 
     $('.ticket-menu-actions li > a').click(function (e) {
         e.preventDefault();
-        var el = $(this);
 
         var ids = getSelectedIDs();
         if (ids.length < 1) return;
@@ -608,58 +600,83 @@ TicketGrid = function () {
     grid.onClick.subscribe(function (e, args) {
         var cell = args.cell;
         var row = args.row;
+        var ticket = loader.data[row];
+        var ids = getSelectedIDs();
+        var data = JSON.stringify(ids);
+
         switch (grid.getColumns()[cell].id) {
             case "IsRead":
-                var ticket = loader.data[row];
-                ticket.IsRead = !ticket.IsRead;
-                top.Ts.Services.Tickets.SetTicketRead(ticket.TicketID, ticket.IsRead, function () {
-                    top.Ts.MainPage.updateMyOpenTicketReadCount();
-                });
-                if (ticket.IsRead) {
-                    $('.slick-row[row="' + row + '"]').addClass('ticket-grid-row-read');
+                var setRead = !ticket.IsRead;
+                if (ids.length > 1) {
+                    top.Ts.Services.Tickets.SetTicketReads(data, setRead, function () { self.refresh(); grid.setSelectedRows([]); });
                 }
                 else {
-                    $('.slick-row[row="' + row + '"]').removeClass('ticket-grid-row-read');
+                    ticket.IsRead = setRead;
+                    top.Ts.Services.Tickets.SetTicketRead(ticket.TicketID, ticket.IsRead, function () {
+                        top.Ts.MainPage.updateMyOpenTicketReadCount();
+                    });
+                    if (ticket.IsRead) {
+                        $('.slick-row[row="' + row + '"]').addClass('ticket-grid-row-read');
+                    }
+                    else {
+                        $('.slick-row[row="' + row + '"]').removeClass('ticket-grid-row-read');
+                    }
+                    grid.invalidateRow(row);
+                    grid.updateRow(row);
+                    grid.render();
+
                 }
-                grid.invalidateRow(row);
-                grid.updateRow(row);
-                grid.render();
+
                 top.Ts.System.logAction('Ticket Grid - Changed Read Status');
                 e.stopPropagation();
                 e.stopImmediatePropagation();
 
                 return true;
             case "IsFlagged":
-                var ticket = loader.data[row];
-                ticket.IsFlagged = !ticket.IsFlagged;
-                top.Ts.Services.Tickets.SetTicketFlag(ticket.TicketID, ticket.IsFlagged, function () { self.refresh(); });
-                grid.invalidateRow(row);
-                grid.updateRow(row);
-                grid.render();
+                var setIsFlagged = !ticket.IsFlagged;
+                if (ids.length > 1) {
+                    top.Ts.Services.Tickets.SetTicketFlags(data, setIsFlagged, function () { self.refresh(); grid.setSelectedRows([]); });
+                }
+                else {
+                    ticket.IsFlagged = setIsFlagged;
+                    top.Ts.Services.Tickets.SetTicketFlag(ticket.TicketID, ticket.IsFlagged, function () { self.refresh(); });
+                    grid.invalidateRow(row);
+                    grid.updateRow(row);
+                    grid.render();
+                }
+
                 top.Ts.System.logAction('Ticket Grid - Changed Flagged Status');
                 e.stopPropagation();
                 e.stopImmediatePropagation();
                 return true;
             case "IsEnqueued":
-                var ticket = loader.data[row];
-                ticket.IsEnqueued = !ticket.IsEnqueued;
-                top.Ts.Services.Tickets.SetUserQueue(ticket.TicketID, ticket.IsEnqueued, function () { self.refresh(); });
-                grid.invalidateRow(row);
-                grid.updateRow(row);
-                grid.render();
+                var setIsEnqueued = !ticket.IsEnqueued;
+                if (ids.length > 1) {
+                    top.Ts.Services.Tickets.SetUserQueues(data, setIsEnqueued, function () { self.refresh(); grid.setSelectedRows([]); });
+                }
+                else {
+                    ticket.IsEnqueued = setIsEnqueued;
+                    top.Ts.Services.Tickets.SetUserQueue(ticket.TicketID, setIsEnqueued, function () { self.refresh(); });
+                    grid.invalidateRow(row);
+                    grid.updateRow(row);
+                    grid.render();
+                }
                 top.Ts.System.logAction('Ticket Grid - Changed Queue Status');
-                top.Ts.System.logAction('Ticket Grid - Queued');
-                top.Ts.System.logAction('Queued');
                 e.stopPropagation();
                 e.stopImmediatePropagation();
                 return true;
             case "IsSubscribed":
-                var ticket = loader.data[row];
-                ticket.IsSubscribed = !ticket.IsSubscribed;
-                top.Ts.Services.Tickets.SetSubscribed(ticket.TicketID, ticket.IsSubscribed, null, function () { self.refresh(); });
-                grid.invalidateRow(row);
-                grid.updateRow(row);
-                grid.render();
+                var setIsSubscribed = !ticket.IsSubscribed;
+                if (ids.length > 1) {
+                    top.Ts.Services.Tickets.SetTicketSubcribes(data, setIsSubscribed, function () { self.refresh(); grid.setSelectedRows([]); });
+                }
+                else {
+                    ticket.IsSubscribed = setIsSubscribed;
+                    top.Ts.Services.Tickets.SetSubscribed(ticket.TicketID, ticket.IsSubscribed, null, function () { self.refresh(); });
+                    grid.invalidateRow(row);
+                    grid.updateRow(row);
+                    grid.render();
+                }
                 top.Ts.System.logAction('Ticket Grid - Changed Subscribed Status');
                 e.stopPropagation();
                 e.stopImmediatePropagation();
