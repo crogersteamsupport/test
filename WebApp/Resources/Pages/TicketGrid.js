@@ -137,7 +137,6 @@ TicketGrid = function () {
 
         var ids = getSelectedIDs();
         if (ids.length > 1) {
-            self.showLoadingIndicator();
             top.Ts.Services.Tickets.RequestUpdate(JSON.stringify(ids), function () { alert('You have requested an update for ' + ids.length + ' selected tickets.'); });
             top.Ts.System.logAction('Ticket Grid - Request Update');
         }
