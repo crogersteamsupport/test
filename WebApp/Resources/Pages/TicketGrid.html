@@ -45,15 +45,20 @@
         <div class="btn-group">
           <button type="button" class="btn btn-default ticket-action dropdown-toggle" disabled="disabled" data-toggle="dropdown">More&nbsp;<span class="caret"></span></button>
           <ul class="dropdown-menu ticket-menu-actions" role="menu">
+          <!---
+            <li><a class="ticket-action-user" href="#">Assign user</a></li>
+            <li><a class="ticket-action-group" href="#">Assign group</a></li>
+            <li><a class="ticket-action-status" href="#">Change status</a></li>
+            <li><a class="ticket-action-severity" href="#">Change severity</a></li>
+            <li><a class="ticket-action-product" href="#">Assign product</a></li>
+            <li class="divider"></li>
+            --->
             <li><a class="ticket-action-read" href="#">Mark as read</a></li>
             <li><a class="ticket-action-unread" href="#">Mark as unread</a></li>
-            <li class="divider"></li>
             <li><a class="ticket-action-flag" href="#">Flag</a></li>
             <li><a class="ticket-action-unflag" href="#">Remove flag</a></li>
-            <li class="divider"></li>
             <li><a class="ticket-action-subscribe" href="#">Subscribe</a></li>
             <li><a class="ticket-action-unsubscribe" href="#">Unsubscribe</a></li>
-            <li class="divider"></li>
             <li><a class="ticket-action-enqueue" href="#">Enqueue</a></li>
             <li><a class="ticket-action-dequeue" href="#">Dequeue</a></li>
           </ul>
@@ -61,9 +66,6 @@
         </div>
         <div class="grid-count"></div>
     </div>
-<!---            <li class="divider"></li>
-            <li><a class="ticket-action-reassign" href="#">Reassign</a></li>
-            <li><a class="ticket-action-status" href="#">Change status</a></li> -->
     <div class="grid-ticket-preview">
       <iframe class="pane" height="100%" width="100%" frameborder="0" scrolling="no" src="TicketPreview.html">
       </iframe>
@@ -104,5 +106,100 @@
   </div>
 </div>
 
+<div class="modal fade" id="dialog-user" tabindex="-1" role="dialog" aria-labelledby="dialog-user-title" aria-hidden="true">
+  <div class="modal-dialog modal-lgx">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="dialog-user-title">Assign User</h4>
+      </div>
+      <div class="modal-body">
+        Pick a user...
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary tickets-save-user">Assign User</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dialog-group" tabindex="-1" role="dialog" aria-labelledby="dialog-group-title" aria-hidden="true">
+  <div class="modal-dialog modal-lgx">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="dialog-group-title">Assign Group</h4>
+      </div>
+      <div class="modal-body">
+        Pick a group...
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary tickets-save-group">Assign Group</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dialog-severity" tabindex="-1" role="dialog" aria-labelledby="dialog-severity-title" aria-hidden="true">
+  <div class="modal-dialog modal-lgx">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="dialog-severity-title">Change Severity</h4>
+      </div>
+      <div class="modal-body">
+        Pick a severity...
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary tickets-save-severity">Change Severity</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dialog-product" tabindex="-1" role="dialog" aria-labelledby="dialog-product-title" aria-hidden="true">
+  <div class="modal-dialog modal-lgx">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="product-title">Assign Product</h4>
+      </div>
+      <div class="modal-body">
+        Pick a product...
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary tickets-save-product">Assign Product</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="dialog-status" tabindex="-1" role="dialog" aria-labelledby="dialog-status-title" aria-hidden="true">
+  <div class="modal-dialog modal-lgx">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="dialog-status-title">Change Status</h4>
+      </div>
+      <div class="modal-body">
+        Pick a status...
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary tickets-save-status">Chang Status</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

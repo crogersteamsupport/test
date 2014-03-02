@@ -123,7 +123,7 @@ TicketGrid = function () {
         var ids = getSelectedIDs();
         if (ids.length > 1) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.TakeOwnerships(JSON.stringify(ids), function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.TakeOwnerships(JSON.stringify(ids), function () { self.refresh(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Take Ownership');
         }
         else {
@@ -150,61 +150,116 @@ TicketGrid = function () {
 
     $('.ticket-menu-actions li > a').click(function (e) {
         e.preventDefault();
-
+        var el = $(this);
         var ids = getSelectedIDs();
         if (ids.length < 1) return;
         var data = JSON.stringify(ids);
 
         if (el.hasClass('ticket-action-read')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketReads(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketReads(data, true, function () { self.refresh(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Mark Read');
         }
         else if (el.hasClass('ticket-action-unread')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketReads(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketReads(data, false, function () { self.refresh(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Mark Unread');
         }
-        else if (el.hasClass('ticket-action-reassign')) {
-
+        else if (el.hasClass('ticket-action-user')) {
+            $('#dialog-user').modal('show');
+        }
+        else if (el.hasClass('ticket-action-group')) {
+            $('#dialog-group').modal('show');
         }
         else if (el.hasClass('ticket-action-status')) {
-
+            $('#dialog-status').modal('show');
+        }
+        else if (el.hasClass('ticket-action-severity')) {
+            $('#dialog-severity').modal('show');
+        }
+        else if (el.hasClass('ticket-action-product')) {
+            $('#dialog-product').modal('show');
         }
         else if (el.hasClass('ticket-action-flag')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketFlags(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketFlags(data, true, function () { self.refresh(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Mark Flagged');
         }
         else if (el.hasClass('ticket-action-unflag')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketFlags(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketFlags(data, false, function () { self.refresh(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Mark Unflagged');
         }
         else if (el.hasClass('ticket-action-subscribe')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketSubcribes(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketSubcribes(data, true, function () { self.refresh(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Subscribed');
         }
         else if (el.hasClass('ticket-action-unsubscribe')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketSubcribes(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetTicketSubcribes(data, false, function () { self.refresh(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Unsubscribed');
         }
         else if (el.hasClass('ticket-action-enqueue')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetUserQueues(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetUserQueues(data, true, function () { self.refresh(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Enqueued');
         }
         else if (el.hasClass('ticket-action-dequeue')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetUserQueues(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
+            top.Ts.Services.Tickets.SetUserQueues(data, false, function () { self.refresh(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Dequeued');
         }
     });
 
+    $('.tickets-save-user').click(function (e) {
+        e.preventDefault();
+        $('#dialog-user').modal('hide');
+        self.showLoadingIndicator();
+        self.refresh();
+        deselectRows();
+    });
 
+    $('.tickets-save-group').click(function (e) {
+        e.preventDefault();
+        $('#dialog-group').modal('hide');
+        self.showLoadingIndicator();
+        self.refresh();
+        deselectRows();
+    });
+    $('.tickets-save-severity').click(function (e) {
+        e.preventDefault();
+        $('#dialog-severity').modal('hide');
+        self.showLoadingIndicator();
+        self.refresh();
+        deselectRows();
+    });
+    $('.tickets-save-product').click(function (e) {
+        e.preventDefault();
+        $('#dialog-product').modal('hide');
+        self.showLoadingIndicator();
+        self.refresh();
+        deselectRows();
+    });
+    $('.tickets-save-status').click(function (e) {
+        e.preventDefault();
+        $('#dialog-status').modal('hide');
+        self.showLoadingIndicator();
+        self.refresh();
+        deselectRows();
+    });
 
+    function deselectRows() {
+        var cell = grid.getActiveCell();
+        if (cell) {
+            grid.setSelectedRows([cell.row]);
+        }
+        else {
+            grid.setSelectedRows([]);
+        }
+
+        previewActiveTicket();
+    }
 
 
     $('.tickets-export').click(function (e) {
@@ -223,7 +278,7 @@ TicketGrid = function () {
                 self.showLoadingIndicator();
                 top.top.Ts.Services.Tickets.DeleteTickets(JSON.stringify(ids), function () {
                     self.refresh();
-                    grid.setSelectedRows([]);
+                    deselectRows();
                 });
             }
         }
@@ -255,6 +310,7 @@ TicketGrid = function () {
 
 
     $('#dialog-columns').modal({ show: false });
+    $('#dialog-user').modal({ show: false });
 
     var _lastDialogColumnNo = 0;
 
@@ -566,7 +622,7 @@ TicketGrid = function () {
 
             top.Ts.Services.Tickets.MoveUserQueueTickets(JSON.stringify(ids), loader.data.length == args.insertBefore ? -1 : loader.data[args.insertBefore].TicketID, ticketLoadFilter.ViewerID, function () {
                 self.refresh();
-                grid.setSelectedRows([]);
+                deselectRows();
 
             });
         });
@@ -619,7 +675,7 @@ TicketGrid = function () {
                 var setRead = !ticket.IsRead;
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
-                    top.Ts.Services.Tickets.SetTicketReads(data, setRead, function () { self.refresh(); grid.setSelectedRows([]); });
+                    top.Ts.Services.Tickets.SetTicketReads(data, setRead, function () { self.refresh(); deselectRows(); });
                 }
                 else {
                     ticket.IsRead = setRead;
@@ -647,7 +703,7 @@ TicketGrid = function () {
                 var setIsFlagged = !ticket.IsFlagged;
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
-                    top.Ts.Services.Tickets.SetTicketFlags(data, setIsFlagged, function () { self.refresh(); grid.setSelectedRows([]); });
+                    top.Ts.Services.Tickets.SetTicketFlags(data, setIsFlagged, function () { self.refresh(); deselectRows(); });
                 }
                 else {
                     ticket.IsFlagged = setIsFlagged;
@@ -665,7 +721,7 @@ TicketGrid = function () {
                 var setIsEnqueued = !ticket.IsEnqueued;
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
-                    top.Ts.Services.Tickets.SetUserQueues(data, setIsEnqueued, function () { self.refresh(); grid.setSelectedRows([]); });
+                    top.Ts.Services.Tickets.SetUserQueues(data, setIsEnqueued, function () { self.refresh(); deselectRows(); });
                 }
                 else {
                     ticket.IsEnqueued = setIsEnqueued;
@@ -682,7 +738,7 @@ TicketGrid = function () {
                 var setIsSubscribed = !ticket.IsSubscribed;
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
-                    top.Ts.Services.Tickets.SetTicketSubcribes(data, setIsSubscribed, function () { self.refresh(); grid.setSelectedRows([]); });
+                    top.Ts.Services.Tickets.SetTicketSubcribes(data, setIsSubscribed, function () { self.refresh(); deselectRows(); });
                 }
                 else {
                     ticket.IsSubscribed = setIsSubscribed;
@@ -757,6 +813,10 @@ TicketGrid = function () {
     });
 
     grid.onSelectedRowsChanged.subscribe(function (e, args) {
+        previewActiveTicket();
+    });
+
+    function previewActiveTicket() {
         var ticket = getActiveTicket();
         if (!ticket) {
             var vp = grid.getViewport();
@@ -766,7 +826,7 @@ TicketGrid = function () {
         else {
             previewTicket(ticket);
         }
-    });
+    }
 
     function getActiveTicket() {
         var cell = grid.getActiveCell();
@@ -839,7 +899,7 @@ TicketGrid = function () {
                     html = html + '</div>';
                 }
                 html = html + '</div></div></div>';
-                preview[0].contentWindow.writeHtml(html);
+                if (preview[0].contentWindow.writeHtml) preview[0].contentWindow.writeHtml(html);
 
             });
 
