@@ -1,4 +1,8 @@
-﻿    .ui-popup { position: absolute; z-index: 5000; }
+﻿    .ts-toolbar .ts-toolbar-button .ts-toolbar-caption { float:none; margin:0; padding-left:5px; }
+    .ts-toolbar { padding-left: 10px;}
+    .ts-toolbar .ts-toolbar-button { border-left: 1px solid transparent; border-right: 1px solid transparent;}
+    .ts-toolbar .ts-toolbar-button, .ts-toolbar a.ui-state-hover { margin: 0; padding: 0 5px;}
+    .ui-popup { position: absolute; z-index: 5000; }
     .ticket-panel-toolbar { border-top: none; }
     .ticket-panel-content { overflow-x: hidden; overflow-y: auto; border: none; height:100%; position:relative;}
     

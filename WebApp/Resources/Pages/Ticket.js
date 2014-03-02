@@ -1549,11 +1549,11 @@ $(document).ready(function () {
 
 
   function addToolbarButton(id, icon, caption, callback) {
-    var html = '<a href="#" id="' + id + '" class="ts-toolbar-button ui-corner-all"><span class="ts-toolbar-icon ts-icon ' + icon + '"></span><span class="ts-toolbar-caption">' + caption + '</span></a>';
+    var html = '<a href="#" id="' + id + '" class="ts-toolbar-button ui-corner-all"><i class="fa ' + icon + '"></i><span class="ts-toolbar-caption">' + caption + '</span></a>';
     $('.ticket-panel-toolbar').append(html).find('#' + id).click(callback).hover(function () { $(this).addClass('ui-state-hover'); }, function () { $(this).removeClass('ui-state-hover'); });
   }
 
-  addToolbarButton('btnRefresh', 'ts-icon-refresh', 'Refresh', function (e) {
+  addToolbarButton('btnRefresh', 'fa-refresh', 'Refresh', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Refreshed');
@@ -1579,7 +1579,7 @@ $(document).ready(function () {
   }
 
 
-  addToolbarButton('btnOwn', 'ts-icon-takeownership', 'Take Ownership', function (e) {
+addToolbarButton('btnOwn', 'fa-anchor', 'Take Ownership', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Take Ownership');
@@ -1591,7 +1591,7 @@ $(document).ready(function () {
 
     });
   });
-  addToolbarButton('btnUpdate', 'ts-icon-request', 'Get Update', function (e) {
+addToolbarButton('btnUpdate', 'fa-bullhorn', 'Get Update', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Request Update');
@@ -1605,7 +1605,7 @@ $(document).ready(function () {
 
   });
 
-  addToolbarButton('btnSubscribe', 'ts-icon-subscribed', 'Subscribe', function (e) {
+  addToolbarButton('btnSubscribe', 'fa-rss', 'Subscribe', function (e) {
     e.preventDefault();
     e.stopPropagation();
     var caption = $(this).find('.ts-toolbar-caption');
@@ -1619,7 +1619,7 @@ $(document).ready(function () {
     });
   });
 
-  addToolbarButton('btnEnqueue', 'ts-icon-enqueue', 'Enqueue', function (e) {
+addToolbarButton('btnEnqueue', 'fa-list-ol', 'Enqueue', function (e) {
     e.preventDefault();
     e.stopPropagation();
     var caption = $(this).find('.ts-toolbar-caption');
@@ -1634,7 +1634,7 @@ $(document).ready(function () {
     });
   });
 
-  addToolbarButton('btnFlag', 'ts-icon-flagged', 'Flag', function (e) {
+addToolbarButton('btnFlag', 'fa-flag', 'Flag', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Flagged');
@@ -1655,28 +1655,28 @@ $(document).ready(function () {
     }
   });
 
-  addToolbarButton('btnPrint', 'ts-icon-print', 'Print', function (e) {
+  addToolbarButton('btnPrint', 'fa-print', 'Print', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Printed');
     window.open('../../../TicketPrint.aspx?ticketid=' + _ticketID, 'TSPrint' + _ticketID);
   });
 
-  addToolbarButton('btnEmail', 'ts-icon-compose-email', 'Email', function (e) {
+  addToolbarButton('btnEmail', 'fa-envelope', 'Email', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Emailed');
     $(".dialog-emailinput").dialog('open');
   });
 
-  addToolbarButton('btnUrl', 'ts-icon-light', 'Url', function (e) {
+  addToolbarButton('btnUrl', 'fa-lightbulb-o', 'Url', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Shown URL');
     $('.ticket-url').toggle();
   });
 
-  addToolbarButton('btnMerge', 'ts-icon-merge', 'Merge', function (e) {
+  addToolbarButton('btnMerge', 'fa-exchange', 'Merge', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Merge');
@@ -1686,7 +1686,7 @@ $(document).ready(function () {
   });
 
   if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === _ticketCreator.UserID) {
-    addToolbarButton('btnDelete', 'ts-icon-delete', 'Delete', function (e) {
+    addToolbarButton('btnDelete', 'fa-trash-o', 'Delete', function (e) {
       e.preventDefault();
       e.stopPropagation();
       if (confirm('Are you sure you would like to delete this ticket?')) {
