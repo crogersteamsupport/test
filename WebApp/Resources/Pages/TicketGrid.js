@@ -155,10 +155,12 @@ TicketGrid = function () {
         var data = JSON.stringify(ids);
 
         if (el.hasClass('ticket-action-read')) {
+            self.showLoadingIndicator();
             top.Ts.Services.Tickets.SetTicketReads(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Mark Read');
         }
         else if (el.hasClass('ticket-action-unread')) {
+            self.showLoadingIndicator();
             top.Ts.Services.Tickets.SetTicketReads(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Mark Unread');
         }
@@ -169,26 +171,32 @@ TicketGrid = function () {
 
         }
         else if (el.hasClass('ticket-action-flag')) {
+            self.showLoadingIndicator();
             top.Ts.Services.Tickets.SetTicketFlags(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Mark Flagged');
         }
         else if (el.hasClass('ticket-action-unflag')) {
+            self.showLoadingIndicator();
             top.Ts.Services.Tickets.SetTicketFlags(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Mark Unflagged');
         }
         else if (el.hasClass('ticket-action-subscribe')) {
+            self.showLoadingIndicator();
             top.Ts.Services.Tickets.SetTicketSubcribes(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Subscribed');
         }
         else if (el.hasClass('ticket-action-unsubscribe')) {
+            self.showLoadingIndicator();
             top.Ts.Services.Tickets.SetTicketSubcribes(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Unsubscribed');
         }
         else if (el.hasClass('ticket-action-enqueue')) {
+            self.showLoadingIndicator();
             top.Ts.Services.Tickets.SetUserQueues(data, true, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Enqueued');
         }
         else if (el.hasClass('ticket-action-dequeue')) {
+            self.showLoadingIndicator();
             top.Ts.Services.Tickets.SetUserQueues(data, false, function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Dequeued');
         }
@@ -608,6 +616,7 @@ TicketGrid = function () {
             case "IsRead":
                 var setRead = !ticket.IsRead;
                 if (ids.length > 1) {
+                    self.showLoadingIndicator();
                     top.Ts.Services.Tickets.SetTicketReads(data, setRead, function () { self.refresh(); grid.setSelectedRows([]); });
                 }
                 else {
@@ -635,6 +644,7 @@ TicketGrid = function () {
             case "IsFlagged":
                 var setIsFlagged = !ticket.IsFlagged;
                 if (ids.length > 1) {
+                    self.showLoadingIndicator();
                     top.Ts.Services.Tickets.SetTicketFlags(data, setIsFlagged, function () { self.refresh(); grid.setSelectedRows([]); });
                 }
                 else {
@@ -652,6 +662,7 @@ TicketGrid = function () {
             case "IsEnqueued":
                 var setIsEnqueued = !ticket.IsEnqueued;
                 if (ids.length > 1) {
+                    self.showLoadingIndicator();
                     top.Ts.Services.Tickets.SetUserQueues(data, setIsEnqueued, function () { self.refresh(); grid.setSelectedRows([]); });
                 }
                 else {
@@ -668,6 +679,7 @@ TicketGrid = function () {
             case "IsSubscribed":
                 var setIsSubscribed = !ticket.IsSubscribed;
                 if (ids.length > 1) {
+                    self.showLoadingIndicator();
                     top.Ts.Services.Tickets.SetTicketSubcribes(data, setIsSubscribed, function () { self.refresh(); grid.setSelectedRows([]); });
                 }
                 else {
