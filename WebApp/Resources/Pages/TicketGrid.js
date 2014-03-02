@@ -122,6 +122,7 @@ TicketGrid = function () {
 
         var ids = getSelectedIDs();
         if (ids.length > 1) {
+            self.showLoadingIndicator();
             top.Ts.Services.Tickets.TakeOwnerships(JSON.stringify(ids), function () { self.refresh(); grid.setSelectedRows([]); });
             top.Ts.System.logAction('Ticket Grid - Take Ownership');
         }
@@ -136,6 +137,7 @@ TicketGrid = function () {
 
         var ids = getSelectedIDs();
         if (ids.length > 1) {
+            self.showLoadingIndicator();
             top.Ts.Services.Tickets.RequestUpdate(JSON.stringify(ids), function () { alert('You have requested an update for ' + ids.length + ' selected tickets.'); });
             top.Ts.System.logAction('Ticket Grid - Request Update');
         }
@@ -219,6 +221,7 @@ TicketGrid = function () {
         if (ids.length > 1) {
             if (confirm('Are you sure you would like to delete ' + ids.length + ' selected tickets?')) {
                 top.Ts.System.logAction('Ticket Grid - Delete Tickets');
+                self.showLoadingIndicator();
                 top.top.Ts.Services.Tickets.DeleteTickets(JSON.stringify(ids), function () {
                     self.refresh();
                     grid.setSelectedRows([]);
