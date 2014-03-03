@@ -78,6 +78,19 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByStatusIDs(int organizationID, int[] ticketStatusIDs)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        string ids = DataUtils.IntArrayToCommaString(ticketStatusIDs);
+
+        command.CommandText = "SELECT * FROM TicketStatuses WHERE OrganizationID = @OrganizationID AND TicketStatusID IN (" + ids + ")";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
     public void LoadTopOne(int ticketTypeID)
     {
       using (SqlCommand command = new SqlCommand())

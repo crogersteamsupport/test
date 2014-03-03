@@ -1632,7 +1632,19 @@ AND u.OrganizationID = @OrganizationID
         command.Parameters.AddWithValue("@TicketNumber", ticketNumber);
         Fill(command, "TicketGridView");
       }    
-    
+    }
+
+    public void LoadByTicketIDs(int organizationID, int[] ticketIDs)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        string ids = DataUtils.IntArrayToCommaString(ticketIDs);
+
+        command.CommandText = "SELECT * FROM Tickets WHERE OrganizationID = @OrganizationID AND TicketID IN (" + ids + ")";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
     }
 
     public void ReplaceTicketType(int oldID, int newID)

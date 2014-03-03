@@ -1,42 +1,15 @@
 ﻿/* TeamSupport Colors Light Blue: #F8FAFE  Background: #EAF1F8  Header Blue: #2882CC  */
 
-
 @font-face {
     font-family: 'Roboto';
-    src: url('../fonts/roboto/Roboto-Regular-webfont.eot');
-    src: url('../fonts/roboto/Roboto-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/roboto/Roboto-Regular-webfont.woff') format('woff'),
-         url('../fonts/roboto/Roboto-Regular-webfont.ttf') format('truetype'),
-         url('../fonts/roboto/Roboto-Regular-webfont.svg#robotoregular') format('svg');
-    font-weight: normal;
+    src: url('../fonts/roboto/Roboto-Thin-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Thin-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/roboto/Roboto-Thin-webfont.woff') format('woff'),
+         url('../fonts/roboto/Roboto-Thin-webfont.ttf') format('truetype'),
+         url('../fonts/roboto/Roboto-Thin-webfont.svg#robotoregular') format('svg');
+    font-weight: 300;
     font-style: normal;
 }
-
-@font-face {
-    font-family: 'Roboto';
-    src: url('../fonts/roboto/Roboto-Medium-webfont.eot');
-    src: url('../fonts/roboto/Roboto-Medium-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/roboto/Roboto-Medium-webfont.woff') format('woff'),
-         url('../fonts/roboto/Roboto-Medium-webfont.ttf') format('truetype'),
-         url('../fonts/roboto/Roboto-Medium-webfont.svg#robotomedium') format('svg');
-    font-weight: 500;
-    font-style: normal;
-}
-
-
-@font-face {
-    font-family: 'Roboto';
-    src: url('../fonts/roboto/Roboto-Bold-webfont.eot');
-    src: url('../fonts/roboto/Roboto-Bold-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/roboto/Roboto-Bold-webfont.woff') format('woff'),
-         url('../fonts/roboto/Roboto-Bold-webfont.ttf') format('truetype'),
-         url('../fonts/roboto/Roboto-Bold-webfont.svg#robotoregular') format('svg');
-    font-weight: bold;
-    font-style: normal;
-}
-
-
-
 
 
 @font-face {
@@ -46,12 +19,43 @@
          url('../fonts/roboto/Roboto-Light-webfont.woff') format('woff'),
          url('../fonts/roboto/Roboto-Light-webfont.ttf') format('truetype'),
          url('../fonts/roboto/Roboto-Light-webfont.svg#robotolight') format('svg');
-    font-weight: 300;
+    font-weight: normal;
     font-style: normal;
 }
 
 
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Regular-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/roboto/Roboto-Regular-webfont.woff') format('woff'),
+         url('../fonts/roboto/Roboto-Regular-webfont.ttf') format('truetype'),
+         url('../fonts/roboto/Roboto-Regular-webfont.svg#robotoregular') format('svg');
+    font-weight: 500;
+    font-style: normal;
+}
 
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Medium-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Medium-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/roboto/Roboto-Medium-webfont.woff') format('woff'),
+         url('../fonts/roboto/Roboto-Medium-webfont.ttf') format('truetype'),
+         url('../fonts/roboto/Roboto-Medium-webfont.svg#robotoregular') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Bold-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/roboto/Roboto-Bold-webfont.woff') format('woff'),
+         url('../fonts/roboto/Roboto-Bold-webfont.ttf') format('truetype'),
+         url('../fonts/roboto/Roboto-Bold-webfont.svg#robotoregular') format('svg');
+    font-weight: 900;
+    font-style: normal;
+}
 
 
 body, html { font-family: Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif; }
@@ -61,6 +65,8 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-weight: 500;
     line-height: 1.1;
 }
+
+.btn { font-weight:bold;s}
 
 body { background-color: #d5e5f7; }
 
@@ -77,7 +83,7 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 /* Box styles */
 .box { margin-top: 15px; background-color:#fff; border: 1px solid #fff;   border-top: 5px solid #fff; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }
 .box .box-header { padding: 15px 15px 0 15px;text-shadowx: 0 1px 0 #1E7DCC; }
-.box .box-header h3 { color: #444; display: inline-block; line-height: 18px; margin: 0; font-size: 18px; font-weight:300;  }
+.box .box-header h3 { color: #444; display: inline-block; line-height: 18px; margin: 0; font-size: 18px; font-weight:500;  }
 .box .box-header h3 > i { margin-right: 10px; }
 .box .box-content { background: none repeat scroll 0 0 #FFFFFF; padding: 15px; }
 .box form { margin: 0; }
@@ -102,8 +108,8 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 .color-gray { color: #999; }
 .color-darkgray { color: #777; }
 .color-blue { color: #3276B1; }
-.color-yellow { color: #ff9; }
-.color-orange { color: #F0AD4E; }
+.color-yellow { color: #FEC21E; }
+.color-orange { color: #E47A3B; }
 .color-red { color: #D9534F; }
 .color-green { color: #5CB85C ; }
 .color-teal { color: #008080; }
@@ -115,8 +121,8 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 .bgcolor-darkgray { background-color: #777; }
 .bgcolor-gray { background-color: #999; }
 .bgcolor-blue { background-color: #3276B1; }
-.bgcolor-yellow { background-color: #ff9; }
-.bgcolor-orange { background-color: #F0AD4E; }
+.bgcolor-yellow { background-color: #FEC21E; }
+.bgcolor-orange { background-color: #E47A3B; }
 .bgcolor-red { background-color: #D9534F; }
 .bgcolor-green { background-color: #5CB85C; }
 .bgcolor-teal { background-color: #008080; }

@@ -1213,12 +1213,46 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void SetTicketsStatus(string ticketIDs, string ticketStatusIDs)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      int[] statusIDs = JsonConvert.DeserializeObject<int[]>(ticketStatusIDs);
+
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      TicketStatuses statuses = new TicketStatuses(loginUser);
+      statuses.LoadByStatusIDs(TSAuthentication.OrganizationID, statusIDs);
+
+      TicketTypes types = new TicketTypes(loginUser);
+      types.LoadByOrganizationID(TSAuthentication.OrganizationID);
+      
+      Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
+      tickets.LoadByTicketIDs(TSAuthentication.OrganizationID, ids);
+
+      foreach (Ticket ticket in tickets)
+      {
+        if (!CanEditTicket(ticket)) continue;
+        foreach (TicketStatus status in statuses)
+        {
+          if (status.OrganizationID != ticket.OrganizationID) continue;
+          if (ticket.TicketTypeID == status.TicketTypeID)
+          {
+            ticket.TicketStatusID = status.TicketStatusID;
+          }
+        }
+      }
+
+      tickets.Save();
+    }
+
+    [WebMethod]
     public TicketStatusProxy SetTicketStatus(int ticketID, int ticketStatusID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (ticketStatusID == ticket.TicketStatusID) return null;
       if (!CanEditTicket(ticket)) return null;
       TicketStatus status = TicketStatuses.GetTicketStatus(ticket.Collection.LoginUser, ticketStatusID);
+      if (status.TicketTypeID != ticket.TicketTypeID) return null;
+
       if (status.OrganizationID != TSAuthentication.OrganizationID) return null;
       ticket.TicketStatusID = ticketStatusID;
       ticket.Collection.Save();
@@ -1228,21 +1262,28 @@ namespace TSWebServices
     [WebMethod]
     public void SetTicketsSeverity(string ticketIDs, int ticketSeverityID)
     {
+      TicketSeverity severity = TicketSeverities.GetTicketSeverity(TSAuthentication.GetLoginUser(), ticketSeverityID);
+      if (severity.OrganizationID != TSAuthentication.OrganizationID) return;
+
+      Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
       int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
-      foreach (int id in ids)
+      tickets.LoadByTicketIDs(TSAuthentication.OrganizationID, ids);
+
+      foreach (Ticket ticket in tickets)
       {
-        SetTicketSeverity(id, ticketSeverityID);
+        if (ticketSeverityID == ticket.TicketSeverityID || !CanEditTicket(ticket)) continue;
+        ticket.TicketSeverityID = ticketSeverityID;
       }
+      tickets.Save();
     }
 
     [WebMethod]
     public TicketSeverityProxy SetTicketSeverity(int ticketID, int ticketSeverityID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-      if (ticketSeverityID == ticket.TicketSeverityID) return null;
-      if (!CanEditTicket(ticket)) return null;
       TicketSeverity severity = TicketSeverities.GetTicketSeverity(ticket.Collection.LoginUser, ticketSeverityID);
       if (severity.OrganizationID != TSAuthentication.OrganizationID) return null;
+      if (ticketSeverityID == ticket.TicketSeverityID || !CanEditTicket(ticket)) return null;
       ticket.TicketSeverityID = ticketSeverityID;
       ticket.Collection.Save();
       return severity.GetProxy();
@@ -1285,11 +1326,20 @@ namespace TSWebServices
     [WebMethod]
     public void SetTicketsUser(string ticketIDs, int? userID)
     {
+      UsersViewItem user = userID != null ? UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)userID) : null;
+      if (user != null && user.OrganizationID != TSAuthentication.OrganizationID) return;
+
+
+      Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
       int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
-      foreach (int id in ids)
+      tickets.LoadByTicketIDs(TSAuthentication.OrganizationID, ids);
+
+      foreach (Ticket ticket in tickets)
       {
-        SetTicketUser(id, userID);
+        if (!CanEditTicket(ticket)) continue;
+        ticket.UserID = userID;
       }
+      tickets.Save();
     }
 
     [WebMethod]
@@ -1299,7 +1349,6 @@ namespace TSWebServices
       if (!CanEditTicket(ticket)) return null;
 
       UsersViewItem user = userID != null ? UsersView.GetUsersViewItem(TSAuthentication.GetLoginUser(), (int)userID) : null;
-      //if (userID == ticket.UserID) return new UserInfo(user);
       if (user != null && user.OrganizationID != TSAuthentication.OrganizationID) return null;
       ticket.UserID = userID;
       ticket.Collection.Save();
@@ -1309,11 +1358,20 @@ namespace TSWebServices
     [WebMethod]
     public void SetTicketsGroup(string ticketIDs, int? groupID)
     {
+      Group group = groupID != null ? Groups.GetGroup(TSAuthentication.GetLoginUser(), (int)groupID) : null;
+      if (group != null && group.OrganizationID != TSAuthentication.OrganizationID) return;
+
+
+      Tickets tickets = new Tickets(TSAuthentication.GetLoginUser());
       int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
-      foreach (int id in ids)
+      tickets.LoadByTicketIDs(TSAuthentication.OrganizationID, ids);
+
+      foreach (Ticket ticket in tickets)
       {
-        SetTicketGroup(id, groupID);
+        if (!CanEditTicket(ticket)) continue;
+        ticket.GroupID = groupID;
       }
+      tickets.Save();
     }
 
     [WebMethod]
@@ -1784,6 +1842,29 @@ namespace TSWebServices
       }
       actions.Save();
     }
+    /*
+    public void UpdateUserTicketStatusIsFlagged(LoginUser loginUser, int[] ticketIDs, int userID, bool value)
+    {
+      UserTicketStatuses statuses = new UserTicketStatuses(loginUser);
+      statuses.LoadByTicketIDs(userID, ticketIDs);
+      foreach (UserTicketStatus status in statuses)
+      {
+        status.IsFlagged = value;
+      }
+      statuses.Save();
+    }
+
+    public void UpdateUserTicketStatusDateRead(LoginUser loginUser, int[] ticketIDs, int userID, DateTime dateRead)
+    {
+      UserTicketStatuses statuses = new UserTicketStatuses(loginUser);
+      statuses.LoadByTicketIDs(userID, ticketIDs);
+      foreach (UserTicketStatus status in statuses)
+      {
+        status.DateRead = dateRead;
+      }
+      statuses.Save();
+    }
+       */
 
     [WebMethod]
     public void MarkTicketAsRead(int ticketID)

@@ -7,15 +7,16 @@ $(document).ready(function () {
     top.Ts.Services.Settings.ReadUserSetting('TicketGrid-Settings', '', function (result) {
         var options = result == '' ? new Object() : JSON.parse(result);
         ticketGrid = new TicketGrid(options);
+
+        top.Ts.Services.Settings.ReadUserSetting('TicketGrid-sort-' + window.location.search, 'DateModified|false', function (result) {
+            var values = result.split('|');
+            ticketGrid._loader.setSort(values[0], values[1] === "true");
+            ticketGrid._grid.setSortColumn(values[0], values[1] === "true");
+            ticketGrid.refresh();
+        });
     });
 
     
-    top.Ts.Services.Settings.ReadUserSetting('TicketGrid-sort-' + window.location.search, 'DateModified|false', function (result) {
-        var values = result.split('|');
-        ticketGrid._loader.setSort(values[0], values[1] === "true");
-        ticketGrid._grid.setSortColumn(values[0], values[1] === "true");
-        ticketGrid.refresh();
-    });
 
 });
 
@@ -37,8 +38,8 @@ TicketGrid = function (options) {
     var loadingIndicator = null;
     var tmrDelayIndicator = null;
     var tmrHideLoading = null;
-    var defaults = { "isCompact": false };
-    this.options = $.extend({}, defaults, options);
+    this.defaults = { "isCompact": true };
+    this.options = $.extend({}, this.defaults, options);
 
     function saveOptions() {
         top.Ts.Services.Settings.WriteUserSetting('TicketGrid-Settings', JSON.stringify(self.options));
@@ -229,6 +230,58 @@ TicketGrid = function (options) {
             $('#dialog-severity').modal('show');
         }
         else if (el.hasClass('ticket-action-status')) {
+            var form = $('#dialog-status .modal-body form');
+            if (form.find('select').length < 1) {
+                var ticketTypes = top.Ts.Cache.getTicketTypes();
+                var statuses = top.Ts.Cache.getTicketStatuses();
+
+                for (var i = 0; i < ticketTypes.length; i++) {
+                    var ticketTypeID = ticketTypes[i].TicketTypeID;
+                    var div = $('<div>')
+                      .attr('data-tickettypeid', ticketTypeID)
+                      .addClass('form-group');
+
+                    $('<label>')
+                      .text('Ticket status for ' + ticketTypes[i].Name)
+                      .attr('for', 'ticketTypeStatus-' + ticketTypeID)
+                      .appendTo(div);
+
+                    var select = $('<select>')
+                      .addClass('form-control')
+                      .attr('id', 'ticketTypeStatus-' + ticketTypeID)
+                      .data('tickettypeid', ticketTypeID)
+                      .appendTo(div);
+
+                    for (var j = 0; j < statuses.length; j++) {
+                        if (statuses[j].TicketTypeID == ticketTypeID) {
+                            $('<option>')
+                              .text(statuses[j].Name)
+                              .attr('value', statuses[j].TicketStatusID)
+                              .appendTo(select);
+                        }
+                    }
+
+                    form.append(div);
+                }
+            }
+
+            form.find('.form-group').hide();
+            ticketTypes = [];
+            var rows = grid.getSelectedRows();
+            for (var i = 0, l = rows.length; i < l; i++) {
+                var ticket = loader.data[rows[i]];
+                if (ticket) {
+                    if (ticketTypes.indexOf(ticket.TicketTypeID) < 0) {
+                        ticketTypes.push(ticket.TicketTypeID);
+                    }
+                }
+            }
+
+            for (var i = 0; i < ticketTypes.length; i++) {
+                form.find('.form-group[data-tickettypeid="' + ticketTypes[i] + '"]').show();
+            }
+
+
             $('#dialog-status').modal('show');
         }
         else if (el.hasClass('ticket-action-flag')) {
@@ -267,7 +320,12 @@ TicketGrid = function (options) {
         e.preventDefault();
         $('#dialog-user').modal('hide');
         self.showLoadingIndicator();
-        self.refresh();
+        var ids = getSelectedIDs();
+        var val = $('#assignUser').val() == -1 ? null : $('#assignUser').val();
+        top.Ts.Services.Tickets.SetTicketsUser(JSON.stringify(ids), val, function () {
+            top.Ts.System.logAction('Ticket Grid - Updated user');
+            self.refresh();
+        });
         deselectRows();
     });
 
@@ -275,24 +333,41 @@ TicketGrid = function (options) {
         e.preventDefault();
         $('#dialog-group').modal('hide');
         self.showLoadingIndicator();
-        self.refresh();
+        var ids = getSelectedIDs();
+        var val = $('#assignGroup').val() == -1 ? null : $('#assignGroup').val();
+        top.Ts.Services.Tickets.SetTicketsGroup(JSON.stringify(ids), val, function () {
+            top.Ts.System.logAction('Ticket Grid - Updated group');
+            self.refresh();
+        });
         deselectRows();
     });
+
     $('.tickets-save-severity').click(function (e) {
         e.preventDefault();
         $('#dialog-severity').modal('hide');
         self.showLoadingIndicator();
         var ids = getSelectedIDs();
-        //top.Ts.Services.Tickets.SetTicketsSeverity(JSON.stringify(ids), );
-        top.Ts.System.logAction('Ticket Grid - Request Update');
-        self.refresh();
+        top.Ts.Services.Tickets.SetTicketsSeverity(JSON.stringify(ids), $('#assignSeverity').val(), function () {
+            top.Ts.System.logAction('Ticket Grid - Updated severity');
+            self.refresh();
+        });
         deselectRows();
     });
+
     $('.tickets-save-status').click(function (e) {
         e.preventDefault();
         $('#dialog-status').modal('hide');
         self.showLoadingIndicator();
-        self.refresh();
+        var ids = getSelectedIDs();
+        var statuses = [];
+
+        $('#dialog-status .modal-body form select').each(function () {
+            statuses.push($(this).val());
+        });
+        top.Ts.Services.Tickets.SetTicketsStatus(JSON.stringify(ids), JSON.stringify(statuses), function () {
+            top.Ts.System.logAction('Ticket Grid - Updated statuses');
+            self.refresh();
+        });
         deselectRows();
     });
 
@@ -537,6 +612,9 @@ TicketGrid = function (options) {
         return '<i class="fa fa-bars"></i>'
     };
 
+    var linkFormatter = function (row, cell, value, columnDef, ticket) {
+        return '<a href="#">' + ticket[columnDef.id] + '</a>'
+    };
 
     function getAllColumns() {
         return [
@@ -546,9 +624,9 @@ TicketGrid = function (options) {
     { id: "IsFlagged", name: "Flagged", field: "IsFlagged", maxWidth: 24, sortable: true, formatter: isFlaggedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "IsSubscribed", name: "Subscribed", field: "IsSubscribed", maxWidth: 24, sortable: true, formatter: isSubscribedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "IsEnqueued", name: "Enqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "TicketNumber", name: "Number", field: "TicketNumber", width: 75, sortable: true, cssClass: 'ticket-grid-cell-ticketnumber' },
+    { id: "TicketNumber", name: "Number", field: "TicketNumber", width: 75, sortable: true, cssClass: 'ticket-grid-cell-ticketnumber ticket-grid-cell-sla', formatter: linkFormatter },
     { id: "TicketTypeName", name: "Type", field: "TicketTypeName", width: 125, sortable: true },
-    { id: "Name", name: "Name", field: "Name", width: 200, sortable: true },
+    { id: "Name", name: "Name", field: "Name", width: 200, sortable: true, formatter: linkFormatter, cssClass: 'ticket-grid-cell-sla' },
     { id: "UserName", name: "Assigned To", field: "UserName", width: 125, sortable: true },
     { id: "Status", name: "Status", field: "Status", width: 125, sortable: true },
     { id: "Severity", name: "Severity", field: "Severity", width: 125, sortable: true },
@@ -569,21 +647,6 @@ TicketGrid = function (options) {
 	];
     }
     this.getAllColumns = getAllColumns;
-
-    // fix for missing indexOf in IE8
-    if (!Array.prototype.indexOf) {
-        Array.prototype.indexOf = function (elt /*, from*/) {
-            var len = this.length >>> 0;
-            var from = Number(arguments[1]) || 0;
-            from = (from < 0) ? Math.ceil(from) : Math.floor(from);
-            if (from < 0) from += len;
-
-            for (; from < len; from++) {
-                if (from in this && this[from] === elt) return from;
-            }
-            return -1;
-        };
-    }
 
     function getDefaultColumns() {
         var cols = getAllColumns();
@@ -717,6 +780,15 @@ TicketGrid = function (options) {
         var data = JSON.stringify(ids);
 
         switch (grid.getColumns()[cell].id) {
+            case "TicketNumber":
+            case "Name":
+                top.Ts.MainPage.openTicket(ticket.TicketNumber)
+                grid.invalidateRow(row);
+                grid.updateRow(row);
+                grid.render();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                break;
             case "IsRead":
                 var setRead = !ticket.IsRead;
                 if (ids.length > 1) {
@@ -1030,3 +1102,17 @@ TicketGrid.prototype = {
 
 
 
+// fix for missing indexOf in IE8
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function (elt /*, from*/) {
+        var len = this.length >>> 0;
+        var from = Number(arguments[1]) || 0;
+        from = (from < 0) ? Math.ceil(from) : Math.floor(from);
+        if (from < 0) from += len;
+
+        for (; from < len; from++) {
+            if (from in this && this[from] === elt) return from;
+        }
+        return -1;
+    };
+}
