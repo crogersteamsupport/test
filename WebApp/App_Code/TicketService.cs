@@ -1226,6 +1226,16 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void SetTicketsSeverity(string ticketIDs, int ticketSeverityID)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      foreach (int id in ids)
+      {
+        SetTicketSeverity(id, ticketSeverityID);
+      }
+    }
+
+    [WebMethod]
     public TicketSeverityProxy SetTicketSeverity(int ticketID, int ticketSeverityID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -1273,6 +1283,16 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void SetTicketsUser(string ticketIDs, int? userID)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      foreach (int id in ids)
+      {
+        SetTicketUser(id, userID);
+      }
+    }
+
+    [WebMethod]
     public UserInfo SetTicketUser(int ticketID, int? userID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -1284,6 +1304,16 @@ namespace TSWebServices
       ticket.UserID = userID;
       ticket.Collection.Save();
       return user == null ? null : new UserInfo(user);
+    }
+
+    [WebMethod]
+    public void SetTicketsGroup(string ticketIDs, int? groupID)
+    {
+      int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
+      foreach (int id in ids)
+      {
+        SetTicketGroup(id, groupID);
+      }
     }
 
     [WebMethod]

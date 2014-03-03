@@ -4,8 +4,12 @@ var ticketGrid = null;
 $(document).ready(function () {
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.grid-ticket-toolbar', animation: false });
 
-    ticketGrid = new TicketGrid();
+    top.Ts.Services.Settings.ReadUserSetting('TicketGrid-Settings', '', function (result) {
+        var options = result == '' ? new Object() : JSON.parse(result);
+        ticketGrid = new TicketGrid(options);
+    });
 
+    
     top.Ts.Services.Settings.ReadUserSetting('TicketGrid-sort-' + window.location.search, 'DateModified|false', function (result) {
         var values = result.split('|');
         ticketGrid._loader.setSort(values[0], values[1] === "true");
@@ -22,7 +26,7 @@ function onShow() {
 
 
 
-TicketGrid = function () {
+TicketGrid = function (options) {
     var ticketLoadFilter = top.Ts.Utils.queryToTicketFilter(window);
     var self = this;
     var grid = null;
@@ -33,7 +37,12 @@ TicketGrid = function () {
     var loadingIndicator = null;
     var tmrDelayIndicator = null;
     var tmrHideLoading = null;
+    var defaults = { "isCompact": false };
+    this.options = $.extend({}, defaults, options);
 
+    function saveOptions() {
+        top.Ts.Services.Settings.WriteUserSetting('TicketGrid-Settings', JSON.stringify(self.options));
+    }
 
     this.showLoadingIndicator = function (delay) {
         if (!delay) {
@@ -41,7 +50,7 @@ TicketGrid = function () {
                 loadingIndicator = $("<div class='grid-loading'><label></div>").appendTo(document.body);
                 loadingIndicator.position({ my: "center center", at: "center center", of: layout.panes.center, collision: "none" });
             }
-            loadingIndicator.show();
+            if (loadingIndicator.is(':visible') != true) { loadingIndicator.show(); }
         }
         else {
             if (tmrDelayIndicator) clearTimeout(tmrDelayIndicator);
@@ -166,19 +175,61 @@ TicketGrid = function () {
             top.Ts.System.logAction('Ticket Grid - Mark Unread');
         }
         else if (el.hasClass('ticket-action-user')) {
+            var select = $('#assignUser');
+            if (select.find('option').length < 1) {
+
+                $('<option>')
+                      .text('Unassigned')
+                      .attr('value', -1)
+                      .appendTo(select);
+
+                var users = top.Ts.Cache.getUsers();
+
+                for (var i = 0; i < users.length; i++) {
+                    $('<option>')
+                      .text(users[i].Name)
+                      .attr('value', users[i].UserID)
+                      .appendTo(select)
+                }
+            }
+
+
             $('#dialog-user').modal('show');
         }
         else if (el.hasClass('ticket-action-group')) {
+            var select = $('#assignGroup');
+            if (select.find('option').length < 1) {
+
+                $('<option>')
+                      .text('Unassigned')
+                      .attr('value', -1)
+                      .appendTo(select);
+                var groups = top.Ts.Cache.getGroups();
+                for (var i = 0; i < groups.length; i++) {
+                    $('<option>')
+                      .text(groups[i].Name)
+                      .attr('value', groups[i].GroupID)
+                      .appendTo(select)
+                }
+            }
             $('#dialog-group').modal('show');
+        }
+        else if (el.hasClass('ticket-action-severity')) {
+            var select = $('#assignSeverity');
+            if (select.find('option').length < 1) {
+                var severities = top.Ts.Cache.getTicketSeverities();
+
+                for (var i = 0; i < severities.length; i++) {
+                    $('<option>')
+                      .text(severities[i].Name)
+                      .attr('value', severities[i].TicketSeverityID)
+                      .appendTo(select)
+                }
+            }
+            $('#dialog-severity').modal('show');
         }
         else if (el.hasClass('ticket-action-status')) {
             $('#dialog-status').modal('show');
-        }
-        else if (el.hasClass('ticket-action-severity')) {
-            $('#dialog-severity').modal('show');
-        }
-        else if (el.hasClass('ticket-action-product')) {
-            $('#dialog-product').modal('show');
         }
         else if (el.hasClass('ticket-action-flag')) {
             self.showLoadingIndicator();
@@ -231,13 +282,9 @@ TicketGrid = function () {
         e.preventDefault();
         $('#dialog-severity').modal('hide');
         self.showLoadingIndicator();
-        self.refresh();
-        deselectRows();
-    });
-    $('.tickets-save-product').click(function (e) {
-        e.preventDefault();
-        $('#dialog-product').modal('hide');
-        self.showLoadingIndicator();
+        var ids = getSelectedIDs();
+        //top.Ts.Services.Tickets.SetTicketsSeverity(JSON.stringify(ids), );
+        top.Ts.System.logAction('Ticket Grid - Request Update');
         self.refresh();
         deselectRows();
     });
@@ -318,13 +365,8 @@ TicketGrid = function () {
         e.preventDefault();
         _lastDialogColumnNo = 0;
         $('#dialog-columns').modal('show');
-        if (grid.getOptions().forceFitColumns) {
-            $('.dialog-columns-forcefit input').prop('checked', true);
-        }
-        else {
-            $('.dialog-columns-forcefit input').prop('checked', false);
-        }
-
+        $('.dialog-columns-forcefit input').prop('checked', grid.getOptions().forceFitColumns);
+        $('.dialog-columns-compact input').prop('checked', self.options.isCompact && self.options.isCompact == true);
         $('.dialog-columns-list div.checkbox').remove();
 
         var gridColumns = grid.getColumns();
@@ -377,6 +419,8 @@ TicketGrid = function () {
             grid.setOptions({ forceFitColumns: false });
         }
 
+        self.options.isCompact = $('.dialog-columns-compact input').prop('checked') == true;
+        saveOptions();
         saveColumns();
         $('#dialog-columns').modal('hide');
         self.refresh();
@@ -580,8 +624,8 @@ TicketGrid = function () {
     }
 
 
-    var options = {
-        rowHeight: 32,
+    var gridOptions = {
+        rowHeight: (self.options.isCompact == true ? 24 : 32),
         editable: false,
         enableAddRow: false,
         enableCellNavigation: true,
@@ -589,8 +633,10 @@ TicketGrid = function () {
         enableColumnReorder: true
     };
 
+    $('.grid-ticket').toggleClass('grid-compact', self.options.isCompact == true);
+
     $(layout.panes.center).disableSelection();
-    this._grid = new Slick.Grid(layout.panes.center, loader.data, removeViewColumns(addManColumns(getDefaultColumns())), options);
+    this._grid = new Slick.Grid(layout.panes.center, loader.data, removeViewColumns(addManColumns(getDefaultColumns())), gridOptions);
     grid = this._grid;
     grid.setSelectionModel(new Slick.RowSelectionModel());
 
@@ -785,7 +831,6 @@ TicketGrid = function () {
         return false;
     });
 
-
     grid.onSort.subscribe(function (e, args) {
         var sortCol = args.sortCol;
         var sortAsc = args.sortAsc;
@@ -809,7 +854,6 @@ TicketGrid = function () {
         else {
             previewTicket(ticket);
         }
-
     });
 
     grid.onSelectedRowsChanged.subscribe(function (e, args) {
@@ -906,8 +950,6 @@ TicketGrid = function () {
         });
     }
 
-
-
     loader.onDataLoading.subscribe(function () {
         self.showLoadingIndicator(250);
     });
@@ -945,6 +987,11 @@ TicketGrid.prototype = {
                 } else {
                     self._grid.setOptions({ forceFitColumns: false });
                 }
+
+
+                $('.grid-ticket').toggleClass('grid-compact', self.options.isCompact == true);
+                self._grid.setOptions({ rowHeight: (self.options.isCompact == true ? 24 : 32) });
+                
 
                 var newColumns = [];
                 var allColumns = self.getAllColumns();

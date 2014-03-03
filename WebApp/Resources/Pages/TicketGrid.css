@@ -11,6 +11,7 @@ body { background-color: #fff;}
 .ticket-grid-row-violated .ticket-grid-cell-sla i.fa { color:#D9534F; }
 .ticket-grid-row-warning .ticket-grid-cell-sla i.fa { color:#FFC312; }
 .grid-queue .ticket-grid-row-notmine .slick-cell { font-style:italic; }
+.grid-compact .slick-cell { line-height: 18px; }
 .grid-notclosed .ticket-grid-row-closed .slick-cell { text-decoration:line-through; }
 .slick-viewport .ticket-grid-row-read { font-weight:normal;}
 .ticket-grid-row { font-weight: bold;}

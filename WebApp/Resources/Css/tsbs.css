@@ -19,10 +19,22 @@
          url('../fonts/roboto/Roboto-Medium-webfont.woff') format('woff'),
          url('../fonts/roboto/Roboto-Medium-webfont.ttf') format('truetype'),
          url('../fonts/roboto/Roboto-Medium-webfont.svg#robotomedium') format('svg');
+    font-weight: 500;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto/Roboto-Bold-webfont.eot');
+    src: url('../fonts/roboto/Roboto-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/roboto/Roboto-Bold-webfont.woff') format('woff'),
+         url('../fonts/roboto/Roboto-Bold-webfont.ttf') format('truetype'),
+         url('../fonts/roboto/Roboto-Bold-webfont.svg#robotoregular') format('svg');
     font-weight: bold;
     font-style: normal;
-
 }
+
 
 
 
