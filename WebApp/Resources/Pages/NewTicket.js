@@ -1697,9 +1697,12 @@ $(document).ready(function () {
   $('.newticket-save').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    isFormValid(function (isValid) {
-      if (isValid == false) return;
       $('.new-ticket-save-buttons').addClass('saving');
+    isFormValid(function (isValid) {
+      if (isValid == false) {
+        $('.new-ticket-save-buttons').removeClass('saving');
+        return;
+      }
       //setTimeout(function () { $('.new-ticket-save-buttons').removeClass('saving'); }, 2000); return;
 
       var info = new Object();
