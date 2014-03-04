@@ -588,7 +588,7 @@ TicketGrid = function (options) {
     };
 
     var isEnqueuedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-list-ol color-lightgray" title="Click to add this ticket to your queue"></i>' : '<i class="fa fa-list-ol color-green" title="Click to remove this ticket from your queue"></i>'
+        return value == false ? '<i class="ts-text-icon bgcolor-lightgray color-white">Q</i>' : '<i class="ts-text-icon bgcolor-green color-white">Q</i>';
     };
 
     var isSubscribedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -835,10 +835,11 @@ TicketGrid = function (options) {
                 }
                 else {
                     ticket.IsFlagged = setIsFlagged;
-                    top.Ts.Services.Tickets.SetTicketFlag(ticket.TicketID, ticket.IsFlagged, function () { self.refresh(); });
-                    grid.invalidateRow(row);
-                    grid.updateRow(row);
-                    grid.render();
+                    top.Ts.Services.Tickets.SetTicketFlag(ticket.TicketID, ticket.IsFlagged, function () {
+                        grid.invalidateRow(row);
+                        grid.updateRow(row);
+                        grid.render();
+                    });
                 }
 
                 top.Ts.System.logAction('Ticket Grid - Changed Flagged Status');
@@ -853,10 +854,11 @@ TicketGrid = function (options) {
                 }
                 else {
                     ticket.IsEnqueued = setIsEnqueued;
-                    top.Ts.Services.Tickets.SetUserQueue(ticket.TicketID, setIsEnqueued, function () { self.refresh(); });
-                    grid.invalidateRow(row);
-                    grid.updateRow(row);
-                    grid.render();
+                    top.Ts.Services.Tickets.SetUserQueue(ticket.TicketID, setIsEnqueued, function () {
+                        grid.invalidateRow(row);
+                        grid.updateRow(row);
+                        grid.render();
+                    });
                 }
                 top.Ts.System.logAction('Ticket Grid - Changed Queue Status');
                 e.stopPropagation();
@@ -870,10 +872,11 @@ TicketGrid = function (options) {
                 }
                 else {
                     ticket.IsSubscribed = setIsSubscribed;
-                    top.Ts.Services.Tickets.SetSubscribed(ticket.TicketID, ticket.IsSubscribed, null, function () { self.refresh(); });
-                    grid.invalidateRow(row);
-                    grid.updateRow(row);
-                    grid.render();
+                    top.Ts.Services.Tickets.SetSubscribed(ticket.TicketID, ticket.IsSubscribed, null, function () {
+                        grid.invalidateRow(row);
+                        grid.updateRow(row);
+                        grid.render();
+                    });
                 }
                 top.Ts.System.logAction('Ticket Grid - Changed Subscribed Status');
                 e.stopPropagation();

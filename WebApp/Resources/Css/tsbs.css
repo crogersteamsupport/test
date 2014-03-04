@@ -99,6 +99,7 @@ html, body { height: 100%; margin: 0px; padding: 0px; overflow: hidden; }
 .box .form-horizontal .form-actions { padding-left: 190px; }
 .box .form-actions { background-color: #F5F5F5; border-top: 1px solid #E5E5E5; margin-bottom: 20px; margin-top: 20px; padding: 19px 20px 20px; }
 
+.ts-text-icon { border-radius: 2px; display: inline-block; font-style: normal; font-weight: normal; line-height: 1; padding:  0 2px; }
 
 .color-white { color: #FFFFFF; }
 .color-black { color: #000000; }

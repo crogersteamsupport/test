@@ -1880,10 +1880,25 @@ namespace TSWebServices
     public void SetTicketReads(string ticketIDs, bool value)
     {
       int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
-      foreach (int id in ids)
+      UserTicketStatuses statuses = new UserTicketStatuses(TSAuthentication.GetLoginUser());
+      statuses.LoadByTicketIDs(TSAuthentication.UserID, ids);
+      List<int> leftOvers = new List<int>(ids);
+      foreach (UserTicketStatus status in statuses)
       {
-        SetTicketRead(id, value);
+        status.DateRead = value ? DateTime.UtcNow : new DateTime(2000, 1, 1);
+        leftOvers.Remove(status.TicketID);
       }
+
+      foreach (int id in leftOvers)
+      {
+        UserTicketStatus status = statuses.AddNewUserTicketStatus();
+        status.DateRead = value ? DateTime.UtcNow : new DateTime(2000, 1, 1);
+        status.IsFlagged = false;
+        status.UserID = TSAuthentication.UserID;
+        status.TicketID = id;
+      }
+
+      statuses.Save();
     }
 
     [WebMethod]
@@ -1910,10 +1925,25 @@ namespace TSWebServices
     public void SetTicketFlags(string ticketIDs, bool value)
     {
       int[] ids = JsonConvert.DeserializeObject<int[]>(ticketIDs);
-      foreach (int id in ids)
+      UserTicketStatuses statuses = new UserTicketStatuses(TSAuthentication.GetLoginUser());
+      statuses.LoadByTicketIDs(TSAuthentication.UserID, ids);
+      List<int> leftOvers = new List<int>(ids);
+      foreach (UserTicketStatus status in statuses)
       {
-        SetTicketFlag(id, value);
+        status.IsFlagged = value;
+        leftOvers.Remove(status.TicketID);
       }
+
+      foreach (int id in leftOvers)
+      {
+        UserTicketStatus status = statuses.AddNewUserTicketStatus();
+        status.DateRead = new DateTime(2000, 1, 1);
+        status.IsFlagged = value;
+        status.UserID = TSAuthentication.UserID;
+        status.TicketID = id;
+      }
+
+      statuses.Save();
     }
 
     [WebMethod]
