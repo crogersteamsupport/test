@@ -38,7 +38,7 @@ TicketGrid = function (options) {
     var loadingIndicator = null;
     var tmrDelayIndicator = null;
     var tmrHideLoading = null;
-    this.defaults = { "isCompact": true };
+    this.defaults = { "isCompact": false };
     this.options = $.extend({}, this.defaults, options);
 
     function saveOptions() {
