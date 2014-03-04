@@ -592,7 +592,7 @@ TicketGrid = function (options) {
     };
 
     var isSubscribedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>' : '<i class="fa fa-rss color-orange" title="Click to unsubscribe to this ticket"></i>'
+        return value == false ? '<i class="fa fa-rss color-lightgray" title="Click to subscribe to this ticket"></i>' : '<i class="fa fa-rss color-yellow" title="Click to unsubscribe to this ticket"></i>'
     };
 
     var dateTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
