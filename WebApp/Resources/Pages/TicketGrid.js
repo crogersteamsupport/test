@@ -773,7 +773,6 @@ TicketGrid = function (options) {
     }
 
     $('.grid-ticket').on('click', 'a.cell-link', function (e) {
-        alert('click');
         var column = $(this).data('id');
         var row = $(this).data('row');
         var ticket = loader.data[row];
@@ -783,16 +782,13 @@ TicketGrid = function (options) {
             case "Name":
                 e.preventDefault();
                 e.stopPropagation();
+                top.Ts.MainPage.openTicket(ticket.TicketNumber)
+                grid.invalidateRow(row);
+                grid.updateRow(row);
+                grid.render();
                 break;
-            
             default:
-
         }
-
-        top.Ts.MainPage.openTicket(ticket.TicketNumber)
-        grid.invalidateRow(row);
-        grid.updateRow(row);
-        grid.render();
     });
 
     grid.onClick.subscribe(function (e, args) {
