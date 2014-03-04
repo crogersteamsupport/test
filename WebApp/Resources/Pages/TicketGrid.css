@@ -19,7 +19,9 @@ body { background-color: #fff;}
 .slick-viewport .ticket-grid-row-read { font-weight:normal;}
 .ticket-grid-row { font-weight: bold;}
 .ticket-grid-cell-sla-text { color: Red;}
+
 .ts-icon { margin-top: 6px; display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat;width: 16px; height: 16px; background-image: url(../images/ts_icons_normal.png); }
+.grid-compact .ts-icon { margin-top: 2px;  }
 .slick-cell i { cursor:pointer;}
 .slick-cell.selected { background-color:#ffffcc;}
 .active .slick-cell.selected { background-color:#ffffcc;}
