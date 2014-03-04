@@ -588,7 +588,7 @@ TicketGrid = function (options) {
     };
 
     var isEnqueuedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="fa fa-list-ol color-lightgray" title="Click to add this ticket to your queue"></i>' : '<i class="fa fa-list-ol color-darkgray" title="Click to remove this ticket from your queue"></i>'
+        return value == false ? '<i class="fa fa-list-ol color-lightgray" title="Click to add this ticket to your queue"></i>' : '<i class="fa fa-list-ol color-green" title="Click to remove this ticket from your queue"></i>'
     };
 
     var isSubscribedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
