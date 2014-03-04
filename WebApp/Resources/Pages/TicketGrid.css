@@ -9,7 +9,7 @@ body { background-color: #fff;}
 .grid-ticket-toolbar { padding: 15px 0 0 15px; position:relative; }
 .grid-count {float:right; padding: 0 15px 15px 0; color: #555; position:absolute; bottom:0; right:0;}
 
-.slick-cell, .slick-cell a { color: #676767; }
+.slick-cell a { color: #333; }
 .ticket-grid-row-violated .ticket-grid-cell-sla i.fa, .ticket-grid-row-violated .ticket-grid-cell-slax a { color:#D9534F; }
 .ticket-grid-row-warning .ticket-grid-cell-sla i.fa, .ticket-grid-row-warning .ticket-grid-cell-slax a { color:#FFC312; }
 
