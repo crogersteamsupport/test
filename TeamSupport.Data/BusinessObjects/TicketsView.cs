@@ -722,8 +722,7 @@ namespace TeamSupport.Data
           builder.Append(" AND (tv.UserID=" + loginUser.UserID.ToString() + " OR tv.IsKnowledgeBase=1) ");
           break;
         case TicketRightType.Groups:
-          rightsClause = @" AND (
-              (tv.GroupID IN ({0})) OR
+          rightsClause = @" AND ({0}
               (tv.UserID = {1}) OR
               (tv.IsKnowledgeBase = 1) OR
               (tv.UserID IS NULL AND tv.GroupID IS NULL)) ";
@@ -734,7 +733,8 @@ namespace TeamSupport.Data
 	        {
             groupList.Add(group.GroupID);
 	        }
-          builder.Append(string.Format(rightsClause, DataUtils.IntArrayToCommaString(groupList.ToArray()), loginUser.UserID.ToString()));
+          string groupString = groupList.Count < 1 ? "" : string.Format("(tv.GroupID IN ({0})) OR ", DataUtils.IntArrayToCommaString(groupList.ToArray()));
+          builder.Append(string.Format(rightsClause, groupString, loginUser.UserID.ToString()));
           break;
         case TicketRightType.Customers:
           rightsClause = @" AND (TicketID in (
