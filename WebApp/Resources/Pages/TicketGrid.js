@@ -613,7 +613,7 @@ TicketGrid = function (options) {
     };
 
     var linkFormatter = function (row, cell, value, columnDef, ticket) {
-        return '<a href="#">' + ticket[columnDef.id] + '</a>'
+        return '<a href="#" class="cell-link" data-id="' + columnDef.id + '" data-row="' + row + '">' + ticket[columnDef.id] + '</a>'
     };
 
     function getAllColumns() {
@@ -624,9 +624,9 @@ TicketGrid = function (options) {
     { id: "IsFlagged", name: "Flagged", field: "IsFlagged", maxWidth: 24, sortable: true, formatter: isFlaggedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "IsSubscribed", name: "Subscribed", field: "IsSubscribed", maxWidth: 24, sortable: true, formatter: isSubscribedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "IsEnqueued", name: "Enqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
-    { id: "TicketNumber", name: "Number", field: "TicketNumber", width: 75, sortable: true, cssClass: 'ticket-grid-cell-ticketnumber ticket-grid-cell-sla', formatter: linkFormatter },
+    { id: "TicketNumber", name: "Number", field: "TicketNumber", width: 75, sortable: true, cssClass: 'ticket-grid-cell-ticketnumber', formatter: linkFormatter },
     { id: "TicketTypeName", name: "Type", field: "TicketTypeName", width: 125, sortable: true },
-    { id: "Name", name: "Name", field: "Name", width: 200, sortable: true, formatter: linkFormatter, cssClass: 'ticket-grid-cell-sla' },
+    { id: "Name", name: "Name", field: "Name", width: 200, sortable: true, formatter: linkFormatter },
     { id: "UserName", name: "Assigned To", field: "UserName", width: 125, sortable: true },
     { id: "Status", name: "Status", field: "Status", width: 125, sortable: true },
     { id: "Severity", name: "Severity", field: "Severity", width: 125, sortable: true },
@@ -651,7 +651,7 @@ TicketGrid = function (options) {
     function getDefaultColumns() {
         var cols = getAllColumns();
         var result = [];
-        var defaults = ["openButton", "IsRead", "IsFlagged", "IsSubscribed", "IsEnqueued", "TicketNumber", "TicketTypeName", "Name", "UserName", "Status",
+        var defaults = ["IsRead", "IsFlagged", "IsSubscribed", "IsEnqueued", "TicketNumber", "TicketTypeName", "Name", "UserName", "Status",
         "Severity", "Customers", "Contacts", "GroupName", "DateModified", "DaysOpened"];
         for (var i = 0; i < cols.length; i++) {
             if (defaults.indexOf(cols[i].id) > -1) { result.push(cols[i]); }
@@ -772,6 +772,29 @@ TicketGrid = function (options) {
         top.Ts.Services.Settings.WriteUserSetting('TicketGrid-Columns', JSON.stringify(info));
     }
 
+    $('.grid-ticket').on('click', 'a.cell-link', function (e) {
+        alert('click');
+        var column = $(this).data('id');
+        var row = $(this).data('row');
+        var ticket = loader.data[row];
+
+        switch (column) {
+            case "TicketNumber":
+            case "Name":
+                e.preventDefault();
+                e.stopPropagation();
+                break;
+            
+            default:
+
+        }
+
+        top.Ts.MainPage.openTicket(ticket.TicketNumber)
+        grid.invalidateRow(row);
+        grid.updateRow(row);
+        grid.render();
+    });
+
     grid.onClick.subscribe(function (e, args) {
         var cell = args.cell;
         var row = args.row;
@@ -780,15 +803,6 @@ TicketGrid = function (options) {
         var data = JSON.stringify(ids);
 
         switch (grid.getColumns()[cell].id) {
-            case "TicketNumber":
-            case "Name":
-                top.Ts.MainPage.openTicket(ticket.TicketNumber)
-                grid.invalidateRow(row);
-                grid.updateRow(row);
-                grid.render();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                break;
             case "IsRead":
                 var setRead = !ticket.IsRead;
                 if (ids.length > 1) {

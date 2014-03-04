@@ -8,9 +8,10 @@ body { background-color: #fff;}
 .grid-ticket-toolbar { padding: 15px 0 0 15px; position:relative; }
 .grid-count {float:right; padding: 0 15px 15px 0; color: #555; position:absolute; bottom:0; right:0;}
 
-.slick-cellx a { color: #333; }
-.ticket-grid-row-violated .ticket-grid-cell-sla i.fa, .ticket-grid-row-violated .ticket-grid-cell-sla a { color:#D9534F; }
-.ticket-grid-row-warning .ticket-grid-cell-sla i.fa, .ticket-grid-row-warning .ticket-grid-cell-sla a { color:#FFC312; }
+.slick-cell a { color: #333; }
+.ticket-grid-row-violated .ticket-grid-cell-sla i.fa, .ticket-grid-row-violated .ticket-grid-cell-slax a { color:#D9534F; }
+.ticket-grid-row-warning .ticket-grid-cell-sla i.fa, .ticket-grid-row-warning .ticket-grid-cell-slax a { color:#FFC312; }
+
 .grid-queue .ticket-grid-row-notmine .slick-cell { font-style:italic; }
 .grid-compact .slick-cell { line-height: 18px; }
 .grid-notclosed .ticket-grid-row-closed .slick-cell { text-decoration:line-through; }
