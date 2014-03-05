@@ -1521,6 +1521,45 @@ $(document).ready(function () {
             }
           });
 
+          if ($('.newticket-status option:selected').data('o').IsClosed) {
+            $('.newticket-custom-field:visible').each(function () {
+              var field = $(this).data('o');
+              if (field.IsRequiredToClose) {
+                switch (field.FieldType) {
+                  case top.Ts.CustomFieldType.Text:
+                    if ($.trim($(this).find('input').val()) == '') {
+                      $(this).addClass('ui-state-error-to-close-custom ui-corner-all');
+                      result = false;
+                    }
+                    break;
+                  case top.Ts.CustomFieldType.Date:
+                  case top.Ts.CustomFieldType.Time:
+                  case top.Ts.CustomFieldType.DateTime:
+                    if ($.trim($(this).find('input').val()) == '') {
+                      $(this).addClass('ui-state-error-to-close-custom ui-corner-all');
+                      result = false;
+                    }
+                    break;
+                  case top.Ts.CustomFieldType.Number:
+                    if ($.trim($(this).find('input').val()) == '') {
+                      $(this).addClass('ui-state-error-to-close-custom ui-corner-all');
+                      result = false;
+                    }
+                    break;
+                  case top.Ts.CustomFieldType.PickList:
+                    if (field.IsFirstIndexSelect == true && $(this).find('select option:selected').index() < 1) {
+                      $(this).addClass('ui-state-error-to-close-custom ui-corner-all');
+                      result = false;
+                    }
+                    break;
+                  default:
+                }
+              }
+            });
+          }
+          else {
+            $('.ui-state-error-to-close-custom').removeClass('ui-state-error-to-close-custom');
+          }
           $('.ticket-widget-customers').removeClass('ui-corner-all ui-state-error');
           if (requireNewTicketCustomer == "True" && $('.newticket-kb').prop('checked') == false) {
             var customerCount = $('.ticket-customer-company').length + $('.ticket-customer-contact').length;
@@ -1697,7 +1736,7 @@ $(document).ready(function () {
   $('.newticket-save').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-      $('.new-ticket-save-buttons').addClass('saving');
+    $('.new-ticket-save-buttons').addClass('saving');
     isFormValid(function (isValid) {
       if (isValid == false) {
         $('.new-ticket-save-buttons').removeClass('saving');
