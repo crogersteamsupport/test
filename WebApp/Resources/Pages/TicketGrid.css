@@ -25,8 +25,8 @@ body { background-color: #fff;}
 .slick-cell i { cursor:pointer;}
 .slick-cell.selected { background-color:#ffffcc;}
 .active .slick-cell.selected { background-color:#ffffcc;}
-.slick-row .slick-cell.selected i.fa-square-o:before { content: "\f046"; }
-.slick-row .slick-cell.selected i.fa-square-o {color: #333; }
+.slick-row .slick-cell.selected i.fa-square-o:before, .slick-row .active i.fa-square-o:before { content: "\f046"; }
+.slick-row .slick-cell.selected i.fa-square-o,.slick-row .active i.fa-square-o {color: #333; }
 .slick-row .slick-cell i.fa-square-o { color: #999; }
 .grid-ticket-layout .ui-layout-resizer { background:#dadada; }
 .slick-reorder-proxy { display: inline-block; background: #5CB85C; opacity: 0.15; filter: alpha(opacity = 75); cursor: move; }

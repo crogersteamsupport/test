@@ -895,20 +895,30 @@ TicketGrid = function (options) {
 
                 for (var i = 0; i < rows.length; i++) {
                     if (rows[i] == row) {
+                        if (rows.length == 1) return;
                         rows.splice(i, 1);
                         grid.setSelectedRows(rows);
+
+                        var activeCell = grid.getActiveCell();
+                        if (activeCell && activeCell.row == row) {
+                            grid.setActiveCell(rows[0], 0);
+                            grid.setSelectedRows(rows);
+                        }
+                        grid.invalidateRow(row);
+                        grid.updateRow(row);
+                        grid.render();
+
                         e.stopPropagation();
                         e.stopImmediatePropagation();
+
                         return true;
                     }
                 }
 
                 rows.push(row);
                 grid.setSelectedRows(rows);
-                if (getActiveTicket() != null) {
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                }
+                e.stopPropagation();
+                e.stopImmediatePropagation();
                 return true;
             default:
 
