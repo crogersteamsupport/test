@@ -861,6 +861,18 @@ $(document).ready(function () {
         top.Ts.Services.Customers.SaveProduct(top.JSON.stringify(productInfo), function (prod) {
             LoadProducts(true);
             $('#btnProductSave').text("Save Product");
+            $('#productExpiration').val('');
+            $('#fieldProductID').val('-1');
+            $('#btnProductSave').text("Associate Product");
+            $('.customField:visible').each(function () {
+                switch ($(this).attr("type")) {
+                    case "checkbox":
+                        $(this).prop('checked', false);
+                        break;
+                    default:
+                        $(this).val('');
+                }
+            });
             $('#productForm').toggle();
         }, function () {
             alert('There was an error saving this product association. Please try again.');
@@ -1944,7 +1956,7 @@ var appendCustomEditCombo = function (field, element) {
           .appendTo(container);
 
           var fieldValue = parent.closest('.form-group').data('field').Value;
-          var select = $('<select>').addClass('form-control').attr('id', field.Name.replace(/\s/g, '')).appendTo(container1);
+          var select = $('<select>').addClass('form-control').attr('id', field.Name.replace(/\W/g, '')).appendTo(container1);
 
           var items = field.ListValues.split('|');
           for (var i = 0; i < items.length; i++) {
@@ -1961,7 +1973,7 @@ var appendCustomEditCombo = function (field, element) {
             })
             .insertAfter(container1);
 
-          $('#' + field.Name.replace(/\s/g, '')).on('change', function () {
+          $('#' + field.Name.replace(/\W/g, '')).on('change', function () {
               var value = $(this).val();
               container.remove();
 
