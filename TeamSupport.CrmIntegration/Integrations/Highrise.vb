@@ -279,8 +279,12 @@ Namespace TeamSupport
                 End Using
 
                 Dim description As Action = Actions.GetTicketDescription(User, thisTicket.TicketID)
+                Dim descriptionString = String.Empty
+                If description IsNot Nothing Then
+                  descriptionString = HtmlUtility.StripHTML(description.Description)
+                End If
                 Dim NoteBody As String = String.Format("A ticket has been created for this organization entitled ""{0}"".{3}{2}{3}Click here to access the ticket information: https://app.teamsupport.com/Ticket.aspx?ticketid={1}{3}{4}", _
-                                                                    thisTicket.Name, thisTicket.TicketID, HtmlUtility.StripHTML(description.Description), Environment.NewLine, IIf(authorName IsNot Nothing, "Created by " & authorName, ""))
+                                                                    thisTicket.Name, thisTicket.TicketID, descriptionString, Environment.NewLine, IIf(authorName IsNot Nothing, "Created by " & authorName, ""))
 
                 Try
                     Dim urlPost As String
