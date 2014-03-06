@@ -626,7 +626,7 @@ TicketGrid = function (options) {
     { id: "IsEnqueued", name: "Enqueued", field: "IsEnqueued", maxWidth: 24, sortable: true, formatter: isEnqueuedColumnFormatter, unselectable: true, resizeable: false, headerCssClass: 'no-header-name' },
     { id: "TicketNumber", name: "Number", field: "TicketNumber", width: 75, sortable: true, cssClass: 'ticket-grid-cell-ticketnumber', formatter: linkFormatter },
     { id: "TicketTypeName", name: "Type", field: "TicketTypeName", width: 125, sortable: true },
-    { id: "Name", name: "Name", field: "Name", width: 200, sortable: true, formatter: linkFormatter },
+    { id: "Name", name: "Name", field: "Name", width: 200, sortable: true },
     { id: "UserName", name: "Assigned To", field: "UserName", width: 125, sortable: true },
     { id: "Status", name: "Status", field: "Status", width: 125, sortable: true },
     { id: "Severity", name: "Severity", field: "Severity", width: 125, sortable: true },
