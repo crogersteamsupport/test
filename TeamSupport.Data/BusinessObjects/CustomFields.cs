@@ -155,12 +155,12 @@ namespace TeamSupport.Data
     
     }
 
-    public void LoadByReferenceType(int organizationID, ReferenceType refType, int? auxID)
+    public void LoadByReferenceType(int organizationID, ReferenceType refType, int? auxID, string orderBy = "Position")
     {
       if (auxID == null) auxID = -1;
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM CustomFields WHERE (OrganizationID = @OrganizationID) AND (RefType = @RefType) AND (AuxID = @AuxID OR @AuxID < 0) ORDER BY Position";
+        command.CommandText = "SELECT * FROM CustomFields WHERE (OrganizationID = @OrganizationID) AND (RefType = @RefType) AND (AuxID = @AuxID OR @AuxID < 0) ORDER BY " + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@RefType", (int)refType);

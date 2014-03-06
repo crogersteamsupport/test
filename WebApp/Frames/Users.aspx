@@ -81,11 +81,11 @@
             
               <telerik:RadTabStrip ID="tsMain" runat="server" SelectedIndex="0" OnClientTabSelected="TabSelected">
                 <Tabs>
-                  <telerik:RadTab runat="server" Value="../vcr/1_8_0/Pages/User.html?UserID=" Selected="True" Text="User Information"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="../vcr/1_8_0/Pages/TicketGrid.html?tf_IsClosed=false&tf_UserID=" Text="Open"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="../vcr/1_8_0/Pages/TicketGrid.html?tf_IsClosed=true&tf_UserID=" Text="Closed"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="../vcr/1_8_0/Pages/TicketGrid.html?tf_UserID=" Text="All Tickets"></telerik:RadTab>
-                  <telerik:RadTab runat="server" Value="../vcr/1_8_0/Pages/TicketGrid.html?tf_IsEnqueued=true&tf_ViewerID=" Text="Ticket Queue"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_8_2/Pages/User.html?UserID=" Selected="True" Text="User Information"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_8_2/Pages/TicketGrid.html?tf_IsClosed=false&tf_UserID=" Text="Open"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_8_2/Pages/TicketGrid.html?tf_IsClosed=true&tf_UserID=" Text="Closed"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_8_2/Pages/TicketGrid.html?tf_UserID=" Text="All Tickets"></telerik:RadTab>
+                  <telerik:RadTab runat="server" Value="../vcr/1_8_2/Pages/TicketGrid.html?tf_IsEnqueued=true&tf_ViewerID=" Text="Ticket Queue"></telerik:RadTab>
                   <telerik:RadTab runat="server" Value="History.aspx?RefType=22&RefID=" Text="History" Visible="false"></telerik:RadTab>
                 </Tabs>
               </telerik:RadTabStrip>

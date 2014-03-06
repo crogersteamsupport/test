@@ -372,7 +372,7 @@ namespace TSWebServices
         if (primaryTable.CustomFieldRefType != ReferenceType.None)
         {
           CustomFields customFields = new CustomFields(loginUser);
-          customFields.LoadByReferenceType(loginUser.OrganizationID, primaryTable.CustomFieldRefType);
+          customFields.LoadByReferenceType(loginUser.OrganizationID, primaryTable.CustomFieldRefType, null, "Name");
 
           foreach (CustomField customField in customFields)
           {
@@ -403,7 +403,7 @@ namespace TSWebServices
           if (subTable.CustomFieldRefType != ReferenceType.None)
           {
             CustomFields customFields = new CustomFields(loginUser);
-            customFields.LoadByReferenceType(loginUser.OrganizationID, subTable.CustomFieldRefType);
+            customFields.LoadByReferenceType(loginUser.OrganizationID, subTable.CustomFieldRefType, null, "Name");
 
             foreach (CustomField customField in customFields)
             {

@@ -203,7 +203,7 @@
             url = 'ProductVersions.aspx?ProductID=' + productNode.get_value();
           }
           else {
-            url = '../vcr/1_8_0/Pages/ProductVersion.html?VersionID=' + versionNode.get_value();
+            url = '../vcr/1_8_2/Pages/ProductVersion.html?VersionID=' + versionNode.get_value();
           }
         }
         else if (index == 3) {

@@ -776,7 +776,7 @@ Ts.Pages.Main.prototype = {
               .attr('scrolling', 'no')
               .addClass('ticketIframe')
               .appendTo(div)
-                        .attr('src', 'vcr/1_8_1/Pages/Ticket.html?TicketNumber=' + ticketID);
+                        .attr('src', 'vcr/1_8_2/Pages/Ticket.html?TicketNumber=' + ticketID);
                     } else {
                         div.show();
 
@@ -784,7 +784,7 @@ Ts.Pages.Main.prototype = {
                             if (parent.ticketSocket.server.getTicketViewing) parent.ticketSocket.server.getTicketViewing(ticketID);
                         } catch (err) { }
                     }
-                    $('.main-info-content').load('vcr/1_8_1/PaneInfo/ticket.html');
+                    $('.main-info-content').load('vcr/1_8_2/PaneInfo/ticket.html');
 
                     break;
 
@@ -802,7 +802,7 @@ Ts.Pages.Main.prototype = {
               .attr('frameborder', 0)
               .attr('scrolling', 'no')
               .appendTo(div)
-              .attr('src', 'vcr/1_8_1/Pages/NewTicket.html' + query);
+              .attr('src', 'vcr/1_8_2/Pages/NewTicket.html' + query);
             //.attr('src', 'frames/newticket.aspx' + query);
                     } else {
                         div.show();
@@ -810,7 +810,7 @@ Ts.Pages.Main.prototype = {
                     try {
                         if (parent.ticketSocket.server.ticketViewingRemove) parent.ticketSocket.server.ticketViewingRemove(top.Ts.System.User.UserID);
                     } catch (err) { }
-          $('.main-info-content').load('vcr/1_8_1/PaneInfo/newticket.html');
+          $('.main-info-content').load('vcr/1_8_2/PaneInfo/newticket.html');
           break;
 
           case Ts.Ui.Tabs.Tab.Type.NewCompany:
@@ -826,12 +826,12 @@ Ts.Pages.Main.prototype = {
                     .attr('frameborder', 0)
                     .attr('scrolling', 'no')
                     .appendTo(div)
-                    .attr('src', 'vcr/1_8_1/Pages/NewCustomer.html' + query);
+                    .attr('src', 'vcr/1_8_2/Pages/NewCustomer.html' + query);
               }
               else {
                   div.show();
               }
-              $('.main-info-content').load('vcr/1_8_1/PaneInfo/customers.html');
+              $('.main-info-content').load('vcr/1_8_2/PaneInfo/customers.html');
               break;
           case Ts.Ui.Tabs.Tab.Type.Company:
               var OrgID = tab.getId();
@@ -848,14 +848,14 @@ Ts.Pages.Main.prototype = {
                     .attr('scrolling', 'no')
                     .attr('id', 'iframe-o-' + OrgID)
                     .appendTo(div)
-                    .attr('src', 'vcr/1_8_1/Pages/CustomerDetail.html' + query);
+                    .attr('src', 'vcr/1_8_2/Pages/CustomerDetail.html' + query);
               }
               else {
                   top.privateServices.SetUserSetting('SelectedOrganizationID', OrgID);
                   top.privateServices.SetUserSetting('SelectedContactID', -1);
                   div.show();
               }
-              $('.main-info-content').load('vcr/1_8_1/PaneInfo/customers.html');
+              $('.main-info-content').load('vcr/1_8_2/PaneInfo/customers.html');
               break;
           case Ts.Ui.Tabs.Tab.Type.Contact:
               var contactID = tab.getId();
@@ -872,7 +872,7 @@ Ts.Pages.Main.prototype = {
                     .attr('scrolling', 'no')
                     .attr('id', 'iframe-u-' + contactID)
                     .appendTo(div)
-                    .attr('src', 'vcr/1_8_1/Pages/ContactDetail.html' + query);
+                    .attr('src', 'vcr/1_8_2/Pages/ContactDetail.html' + query);
               }
               else {
                   top.Ts.Services.Customers.GetUser(contactID, function (user) {
@@ -881,7 +881,7 @@ Ts.Pages.Main.prototype = {
                   });
                   div.show();
               }
-              $('.main-info-content').load('vcr/1_8_1/PaneInfo/customers.html');
+              $('.main-info-content').load('vcr/1_8_2/PaneInfo/customers.html');
               break;
                 case Ts.Ui.Tabs.Tab.Type.Report:
                     var reportID = tab.getId();
@@ -892,7 +892,7 @@ Ts.Pages.Main.prototype = {
                         .addClass('main-tab-content-item main-tab-report main-report-' + reportID)
                         .appendTo('.main-tab-content');
 
-                        var reportUrl = 'vcr/1_8_1/Pages/';
+                        var reportUrl = 'vcr/1_8_2/Pages/';
                         switch (report.ReportType) {
                             case 1: reportUrl = reportUrl + 'Reports_View_Chart.html?ReportID=' + reportID; break;
                             case 2: reportUrl = reportUrl + 'Reports_View_External.html?ReportID=' + reportID; break;
@@ -910,7 +910,7 @@ Ts.Pages.Main.prototype = {
                     } else {
                         div.show();
                     }
-                    $('.main-info-content').load('vcr/1_8_1/PaneInfo/report.html');
+                    $('.main-info-content').load('vcr/1_8_2/PaneInfo/report.html');
 
                     break;
         default:
@@ -1418,7 +1418,7 @@ Ts.Pages.Main.prototype = {
       top.Ts.Services.Organizations.GetShortNameFromID(customerID, function (result) {
         this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Company, customerID, result, true, true, false, null, null, query, null);
         var element = $('.main-tab-content-item:visible');
-        $(element).children('iframe').attr('src', 'vcr/1_8_1/Pages/CustomerDetail.html' + query);
+        $(element).children('iframe').attr('src', 'vcr/1_8_2/Pages/CustomerDetail.html' + query);
       });
   },
   openNewContactNote: function (contactID, noteID) {
@@ -1427,7 +1427,7 @@ Ts.Pages.Main.prototype = {
       top.Ts.Services.Users.GetShortNameFromID(contactID, function (result) {
         this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Contact, contactID, result, true, true, false, null, null, query, null);
         var element = $('.main-tab-content-item:visible');
-        $(element).children('iframe').attr('src', 'vcr/1_8_1/Pages/ContactDetail.html' + query);
+        $(element).children('iframe').attr('src', 'vcr/1_8_2/Pages/ContactDetail.html' + query);
       });
   },
   closeNewCustomer: function (customerID){

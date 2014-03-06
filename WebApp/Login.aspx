@@ -3,7 +3,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
 
-  <script src="vcr/1_8_0/Js/browser.js" type="text/javascript"></script>
+  <script src="vcr/1_8_2/Js/browser.js" type="text/javascript"></script>
   <style type="text/css">
     select, input.text { width: 250px; }
     a.login-link { font-size: 1em; color: #6D8093; display:block; margin-bottom: .5em;}

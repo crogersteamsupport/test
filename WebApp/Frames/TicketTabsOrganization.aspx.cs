@@ -53,17 +53,17 @@ public partial class Frames_TicketTabsOrganization : BaseFramePage
   {
     tsMain.Tabs.Clear();
 
-    string ticketUrl = string.Format("../vcr/1_8_0/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_UserID={1:0}&tf_IsClosed=false", _organizationID, ticketType.TicketTypeID, UserSession.LoginUser.UserID);
+    string ticketUrl = string.Format("../vcr/1_8_2/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_UserID={1:0}&tf_IsClosed=false", _organizationID, ticketType.TicketTypeID, UserSession.LoginUser.UserID);
     tsMain.Tabs.Add(CreateTab(ticketType, "My Tickets", ticketUrl));
 
-    ticketUrl = string.Format("../vcr/1_8_0/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_IsClosed=false", _organizationID, ticketType.TicketTypeID);
+    ticketUrl = string.Format("../vcr/1_8_2/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_IsClosed=false", _organizationID, ticketType.TicketTypeID);
     tsMain.Tabs.Add(CreateTab(ticketType, "Open Tickets", ticketUrl));
 
-    ticketUrl = string.Format("../vcr/1_8_0/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_IsClosed=true", _organizationID, ticketType.TicketTypeID);
+    ticketUrl = string.Format("../vcr/1_8_2/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_IsClosed=true", _organizationID, ticketType.TicketTypeID);
     tsMain.Tabs.Add(CreateTab(ticketType, "Closed Tickets", ticketUrl));
 
 
-    ticketUrl = string.Format("../vcr/1_8_0/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_IsClosed=true&tf_UserID=-2", _organizationID, ticketType.TicketTypeID);
+    ticketUrl = string.Format("../vcr/1_8_2/pages/ticketgrid.html?tf_CustomerID={0:0}&tf_TicketTypeID={1:0}&tf_IsClosed=true&tf_UserID=-2", _organizationID, ticketType.TicketTypeID);
     tsMain.Tabs.Add(CreateTab(ticketType, "Unassigned Tickets", ticketUrl));
   }
 
