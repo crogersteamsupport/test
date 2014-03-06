@@ -100,3 +100,8 @@
 .db{display:block;}
 
 .w-wrap{word-wrap:break-word;}
+
+.userProperties p, .customProperties p{word-wrap:break-word;}
+.list-group-item-text a{
+    word-wrap:break-word;
+}
