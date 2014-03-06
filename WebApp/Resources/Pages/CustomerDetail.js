@@ -1177,7 +1177,7 @@ $(document).ready(function () {
             alert("Please fill in all the required information");
             return;
         }
-
+        $(this).prop('disabled', true);
         top.Ts.Services.Customers.SaveNote(title, description, noteID, organizationID, top.Ts.ReferenceTypes.Organizations, function (note) {
             $('#fieldNoteTitle').val('');
             $('#fieldNoteDesc').val('');
@@ -1185,6 +1185,7 @@ $(document).ready(function () {
             $('#btnNotesSave').text("Save Note");
             LoadNotes();
             $('#noteForm').toggle();
+            $(this).prop('disabled', false);
         });
     });
 
