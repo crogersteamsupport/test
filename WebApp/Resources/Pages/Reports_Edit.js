@@ -495,31 +495,31 @@ $(document).ready(function () {
         function closeReport(report) {
             var result = '/vcr/1_8_1/pages/';
 
-            function getReportUrl(r) {
-                switch (r.ReportType) {
+            function getReportUrl() {
+                switch (_reportType) {
                     case 0:
-                        return 'Reports_View_Tabular.html?ReportID=' + r.ReportID;
+                        return 'Reports_View_Tabular.html?ReportID=' + _reportID;
                     case 1:
-                        return 'Reports_View_Chart.html?ReportID=' + r.ReportID;
+                        return 'Reports_View_Chart.html?ReportID=' + _reportID;
                     case 2:
-                        return 'Reports_View_External.html?ReportID=' + r.ReportID;
+                        return 'Reports_View_External.html?ReportID=' + _reportID;
                     case 4:
-                        return 'Reports_View_Tabular.html?ReportID=' + r.ReportID;
+                        return 'Reports_View_Tabular.html?ReportID=' + _reportID;
                 }
             }
 
             if (!report) // canceled
             {
-                if (_report) // go back to report
+                if (_reportID) // go back to report
                 {
-                    result = result + getReportUrl(_report);
+                    result = result + getReportUrl();
                 } else { // go back to list
                     result = result + 'reports.html';
                 }
             } else { // saved
-                if (_report) // go back to report
+                if (_reportID) // go back to report
                 {
-                    result = result + getReportUrl(report);
+                    result = result + getReportUrl();
                 } else { // go back to list AND open tab
                     result = result + 'reports.html';
                     top.Ts.MainPage.openReport(report);
