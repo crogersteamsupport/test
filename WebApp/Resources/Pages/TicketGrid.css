@@ -6,7 +6,7 @@ body { background-color: #fff;}
 
 .slick-cell i.fa-bars { color: #777; cursor:move; }
 .no-header-name .slick-column-name { display:none; }
-.grid-ticket-toolbar { padding: 15px 0 0 15px; position:relative; }
+.grid-ticket-toolbar { padding: 15px 0 0 15px; position:relative; z-index:100 !important;}
 .grid-count {float:right; padding: 0 15px 15px 0; color: #555; position:absolute; bottom:0; right:0;}
 
 .slick-cell, .slick-cell a { color: #676767; }

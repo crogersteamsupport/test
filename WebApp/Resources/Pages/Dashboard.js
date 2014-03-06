@@ -554,7 +554,7 @@ Grid.prototype = {
                 self.grid.resizeCanvas();
             });
         } catch (e) {
-            alert(e.message);
+            console.log(message);
         }
 
     }

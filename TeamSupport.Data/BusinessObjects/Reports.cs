@@ -389,6 +389,8 @@ namespace TeamSupport.Data
       ReportTableFields tableFields = new ReportTableFields(loginUser);
       tableFields.LoadAll();
       TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
+      TicketTypes ticketTypes = new TicketTypes(loginUser);
+      ticketTypes.LoadByOrganizationID(loginUser.OrganizationID);
 
       foreach (ReportSelectedField field in tabularReport.Fields)
       {
@@ -410,15 +412,24 @@ namespace TeamSupport.Data
               Math.Abs(offset.Minutes));
             }
 
-            if (builder.Length < 1)
+            builder.Append(builder.Length < 1 ? "SELECT " : ", ");
+
+            if (customField.AuxID > 0 && customField.RefType == ReferenceType.Tickets)
             {
-              builder.Append(string.Format("SELECT {0} AS [{1}]", fieldName, customField.Name));
+              TicketType ticketType = ticketTypes.FindByTicketTypeID(customField.AuxID);
+              if (ticketType != null && ticketType.OrganizationID == customField.OrganizationID)
+              {
+                builder.Append(string.Format("{0} AS [{1} ({2})]", fieldName, customField.Name, ticketType.Name)); 
+              }
+              else
+              {
+                builder.Append(string.Format("{0} AS [{1}]", fieldName, customField.Name));
+              }
             }
             else
             {
-              builder.Append(string.Format(", {0} AS [{1}]", fieldName, customField.Name));
+              builder.Append(string.Format("{0} AS [{1}]", fieldName, customField.Name));
             }
-
           }
 
         }
@@ -557,10 +568,10 @@ namespace TeamSupport.Data
               builder.Append(string.Format("{0} <> @{1}", fieldName, paramName));
               command.Parameters.Add(paramName, SqlDbType.Float).Value = float.Parse(condition.Value1);
               break;
-            case "LESS THAN": builder.Append(string.Format("{0} < @{2}", fieldName, paramName));
+            case "LESS THAN": builder.Append(string.Format("{0} < @{1}", fieldName, paramName));
               command.Parameters.AddWithValue(paramName, float.Parse(condition.Value1));
               break;
-            case "GREATER THAN": builder.Append(string.Format("{0} > @{2}", fieldName, paramName));
+            case "GREATER THAN": builder.Append(string.Format("{0} > @{1}", fieldName, paramName));
               command.Parameters.AddWithValue(paramName, float.Parse(condition.Value1));
               break;
             case "IS EMPTY":
@@ -584,10 +595,10 @@ namespace TeamSupport.Data
               builder.Append(string.Format("{0} <> @{1}", fieldName, paramName));
               command.Parameters.Add(paramName, SqlDbType.Int).Value = int.Parse(condition.Value1);
               break;
-            case "LESS THAN": builder.Append(string.Format("{0} < @{2}", fieldName, paramName));
+            case "LESS THAN": builder.Append(string.Format("{0} < @{1}", fieldName, paramName));
               command.Parameters.AddWithValue(paramName, int.Parse(condition.Value1));
               break;
-            case "GREATER THAN": builder.Append(string.Format("{0} > @{2}", fieldName, paramName));
+            case "GREATER THAN": builder.Append(string.Format("{0} > @{1}", fieldName, paramName));
               command.Parameters.AddWithValue(paramName, int.Parse(condition.Value1));
               break;
             case "IS EMPTY":
