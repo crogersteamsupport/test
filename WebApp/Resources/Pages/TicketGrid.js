@@ -588,7 +588,7 @@ TicketGrid = function (options) {
     };
 
     var isEnqueuedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return value == false ? '<i class="ts-text-icon bgcolor-lightgray color-white">Q</i>' : '<i class="ts-text-icon bgcolor-green color-white">Q</i>';
+        return value == false ? '<i class="ts-text-icon bgcolor-lightgray color-white" title="Click to add this ticket to your queue">Q</i>' : '<i class="ts-text-icon bgcolor-green color-white" title="Click to remove this ticket from your queue">Q</i>';
     };
 
     var isSubscribedColumnFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -651,7 +651,7 @@ TicketGrid = function (options) {
     function getDefaultColumns() {
         var cols = getAllColumns();
         var result = [];
-        var defaults = ["IsRead", "IsFlagged", "IsSubscribed", "IsEnqueued", "TicketNumber", "TicketTypeName", "Name", "UserName", "Status",
+        var defaults = ["openButton", "IsRead", "IsFlagged", "IsSubscribed", "IsEnqueued", "TicketNumber", "TicketTypeName", "Name", "UserName", "Status",
         "Severity", "Customers", "Contacts", "GroupName", "DateModified", "DaysOpened"];
         for (var i = 0; i < cols.length; i++) {
             if (defaults.indexOf(cols[i].id) > -1) { result.push(cols[i]); }
