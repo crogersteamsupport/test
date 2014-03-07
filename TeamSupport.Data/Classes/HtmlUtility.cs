@@ -345,7 +345,7 @@ namespace TeamSupport.Data
               node.Attributes.Remove("onFocus");
               node.Attributes.Remove("onBlur");
               //added handler to keep onclick events for ticket links to open new tab instead of new window
-              if (!node.Attributes["onClick"].Value.Contains("top.Ts"))
+              if (node.Attributes["onClick"] != null && !node.Attributes["onClick"].Value.Contains("top.Ts"))
               {
                   node.Attributes.Remove("onClick");
               }
