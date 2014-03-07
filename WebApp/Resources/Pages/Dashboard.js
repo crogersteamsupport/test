@@ -191,7 +191,7 @@ Dashboard.prototype = {
                     item.addClass('ht3');
                 }
 
-                _pckry.prepended(item);
+                _pckry.appended(item);
                 $('.report-modal-add').modal('hide');
 
                 var $itemElems = $($container.packery('getItemElements'));
