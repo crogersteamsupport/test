@@ -402,10 +402,12 @@ AND ts.IsClosed = 0";
       return cnt;      
     }
 
+    private bool _updateChildTickets = true;
     public void UpdateChildTickets(Ticket ticket)
     { 
       Tickets tickets = new Tickets(LoginUser);
       tickets.LoadChildren(ticket.TicketID);
+      tickets._updateChildTickets = false;
 
       foreach (Ticket item in tickets)
 	    {
@@ -417,8 +419,8 @@ AND ts.IsClosed = 0";
     }
     
     partial void AfterRowEdit(Ticket ticket)
-    {
-      UpdateChildTickets(ticket);
+    { 
+      if (_updateChildTickets) UpdateChildTickets(ticket);
     }
 
     partial void BeforeRowDelete(int ticketID)

@@ -54,6 +54,7 @@
             if (from < 0) { from = 0; }
 
             if (data.length > 0) { to = Math.min(to, data.length - 1); }
+            //console.log("From: " + from + ", To: " + to);
 
             var fromPage = Math.floor(from / PAGESIZE);
             var toPage = Math.floor(to / PAGESIZE);
@@ -79,6 +80,8 @@
                     data[i * PAGESIZE] = null; // null indicates a 'requested but not available yet'
 
                 onDataLoading.notify({ from: from, to: to });
+                //console.log("FromPage: " + fromPage + ", ToPage: " + toPage, ", From: " + (fromPage * PAGESIZE) + ", To: " + ((toPage * PAGESIZE) + PAGESIZE - 1));
+
                 req = getData(fromPage * PAGESIZE, (toPage * PAGESIZE) + PAGESIZE - 1, sortcol, (sortdir < 1),
                 function (resp) {
                     onSuccess(resp);

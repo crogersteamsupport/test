@@ -63,6 +63,7 @@ namespace TeamSupport.Data
 
   public partial class Actions
   {
+    private bool _updateChildTickets = true;
 
     private string _actionLogInstantMessage = null;
 
@@ -119,7 +120,7 @@ namespace TeamSupport.Data
         description = _actionLogInstantMessage;
       }
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, description + action.Name + " to " + Tickets.GetTicketLink(LoginUser, action.TicketID));
-      AddChildActions(action);
+      if (_updateChildTickets) AddChildActions(action);
     }
 
 
@@ -128,6 +129,7 @@ namespace TeamSupport.Data
       Tickets tickets = new Tickets(LoginUser);
       tickets.LoadChildren(action.TicketID);
       Actions actions = new Actions(LoginUser);
+      actions._updateChildTickets = false;
       foreach (Ticket ticket in tickets)
       {
         Action newAction = actions.AddNewAction();
@@ -143,7 +145,6 @@ namespace TeamSupport.Data
         newAction.ImportID = action.ImportID;
         newAction.TicketID = ticket.TicketID;
       }
-
       actions.Save();
 
     }
