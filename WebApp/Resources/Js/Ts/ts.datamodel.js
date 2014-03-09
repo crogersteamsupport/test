@@ -47,37 +47,46 @@
         function ensureData(from, to, loadedCallback) {
             if (req) {
                 if (req.get_executor()) req.get_executor().abort(); else req.abort();
-                for (var i = req.from; i <= req.to; i++)
-                    data[i] = undefined;
+                for (var i = req.fromPage; i <= req.toPage; i++)
+                    data[i * PAGESIZE] = undefined;
             }
 
-            to = to + 2;
-            from = from - 2;
             if (from < 0) { from = 0; }
 
-            while (data[from] !== undefined && from < to) { from++; }
-            while (data[to] !== undefined && from < to) { to--; }
-            if (from >= to) { return; }
+            if (data.length > 0) { to = Math.min(to, data.length - 1); }
 
+            var fromPage = Math.floor(from / PAGESIZE);
+            var toPage = Math.floor(to / PAGESIZE);
+
+            while (data[fromPage * PAGESIZE] !== undefined && fromPage < toPage)
+                fromPage++;
+
+            while (data[toPage * PAGESIZE] !== undefined && fromPage < toPage)
+                toPage--;
+
+            if (fromPage > toPage || ((fromPage == toPage) && data[fromPage * PAGESIZE] !== undefined)) {
+                // TODO:  look-ahead
+                onDataLoaded.notify({ from: from, to: to });
+                return;
+            }
 
             if (h_request != null) {
                 clearTimeout(h_request);
             }
 
             h_request = setTimeout(function () {
-                for (var i = from; i < to - 1; i++) data[i] = null; // null indicates a 'requested but not available yet'
+                for (var i = fromPage; i <= toPage; i++)
+                    data[i * PAGESIZE] = null; // null indicates a 'requested but not available yet'
 
                 onDataLoading.notify({ from: from, to: to });
-                //console.log("FromReq: " + from + ", ToReq: " + to);
-
-                req = getData(from, to, sortcol, (sortdir < 1),
+                req = getData(fromPage * PAGESIZE, (toPage * PAGESIZE) + PAGESIZE - 1, sortcol, (sortdir < 1),
                 function (resp) {
                     onSuccess(resp);
                     if (loadedCallback) loadedCallback();
 
                 });
-                req.from = from;
-                req.to = to;
+                req.fromPage = fromPage;
+                req.toPage = toPage;
             }, 100);
         }
 
