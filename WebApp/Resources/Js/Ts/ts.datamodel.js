@@ -51,8 +51,8 @@
                     data[i] = undefined;
             }
 
-            to = to + 10;
-            from = from - 10;
+            to = to + 2;
+            from = from - 2;
             if (from < 0) { from = 0; }
 
             while (data[from] !== undefined && from < to) { from++; }
@@ -68,7 +68,7 @@
                 for (var i = from; i < to - 1; i++) data[i] = null; // null indicates a 'requested but not available yet'
 
                 onDataLoading.notify({ from: from, to: to });
-                console.log("FromReq: " + from + ", ToReq: " + to);
+                //console.log("FromReq: " + from + ", ToReq: " + to);
 
                 req = getData(from, to, sortcol, (sortdir < 1),
                 function (resp) {
