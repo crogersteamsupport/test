@@ -604,10 +604,11 @@ namespace TeamSupport.Data
           SELECT  * FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
         )
 
-        SELECT {3}
+        SELECT PageQuery.RowNum, {3}
         FROM PageQuery
         INNER JOIN UserTicketsView tv ON tv.TicketID = PageQuery.TicketID 
         WHERE tv.ViewerID = @ViewerID
+        ORDER BY PageQuery.RowNum ASC
         ";
 
       command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields);

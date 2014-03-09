@@ -119,6 +119,19 @@ TicketGrid = function (options) {
         }
     }
 
+    function refreshGrid() {
+        if (loadingIndicator) {
+            loadingIndicator.remove();
+            loadingIndicator = null;
+        }
+
+        var vp = grid.getViewport();
+        loader.clear();
+        loader.ensureData(vp.top, vp.bottom, function () {
+            self.hideLoadingIndicator();
+        });
+    }
+
 
     $('.tickets-new').click(function (e) {
         e.preventDefault();
@@ -133,12 +146,12 @@ TicketGrid = function (options) {
         var ids = getSelectedIDs();
         if (ids.length > 1) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.TakeOwnerships(JSON.stringify(ids), function () { self.refresh(); deselectRows(); });
+            top.Ts.Services.Tickets.TakeOwnerships(JSON.stringify(ids), function () { refreshGrid(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Take Ownership');
         }
         else {
             var ticket = getActiveTicket();
-            top.Ts.Services.Tickets.TakeOwnership(ticket.TicketID, function () { self.refresh(); });
+            top.Ts.Services.Tickets.TakeOwnership(ticket.TicketID, function () { refreshGrid(); });
             top.Ts.System.logAction('Ticket Grid - Take Ownership');
         }
     });
@@ -167,12 +180,12 @@ TicketGrid = function (options) {
 
         if (el.hasClass('ticket-action-read')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketReads(data, true, function () { self.refresh(); deselectRows(); });
+            top.Ts.Services.Tickets.SetTicketReads(data, true, function () { refreshGrid(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Mark Read');
         }
         else if (el.hasClass('ticket-action-unread')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketReads(data, false, function () { self.refresh(); deselectRows(); });
+            top.Ts.Services.Tickets.SetTicketReads(data, false, function () { refreshGrid(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Mark Unread');
         }
         else if (el.hasClass('ticket-action-user')) {
@@ -286,32 +299,32 @@ TicketGrid = function (options) {
         }
         else if (el.hasClass('ticket-action-flag')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketFlags(data, true, function () { self.refresh(); deselectRows(); });
+            top.Ts.Services.Tickets.SetTicketFlags(data, true, function () { refreshGrid(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Mark Flagged');
         }
         else if (el.hasClass('ticket-action-unflag')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketFlags(data, false, function () { self.refresh(); deselectRows(); });
+            top.Ts.Services.Tickets.SetTicketFlags(data, false, function () { refreshGrid(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Mark Unflagged');
         }
         else if (el.hasClass('ticket-action-subscribe')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketSubcribes(data, true, function () { self.refresh(); deselectRows(); });
+            top.Ts.Services.Tickets.SetTicketSubcribes(data, true, function () { refreshGrid(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Subscribed');
         }
         else if (el.hasClass('ticket-action-unsubscribe')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetTicketSubcribes(data, false, function () { self.refresh(); deselectRows(); });
+            top.Ts.Services.Tickets.SetTicketSubcribes(data, false, function () { refreshGrid(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Unsubscribed');
         }
         else if (el.hasClass('ticket-action-enqueue')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetUserQueues(data, true, function () { self.refresh(); deselectRows(); });
+            top.Ts.Services.Tickets.SetUserQueues(data, true, function () { refreshGrid(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Enqueued');
         }
         else if (el.hasClass('ticket-action-dequeue')) {
             self.showLoadingIndicator();
-            top.Ts.Services.Tickets.SetUserQueues(data, false, function () { self.refresh(); deselectRows(); });
+            top.Ts.Services.Tickets.SetUserQueues(data, false, function () { refreshGrid(); deselectRows(); });
             top.Ts.System.logAction('Ticket Grid - Dequeued');
         }
     });
@@ -324,7 +337,7 @@ TicketGrid = function (options) {
         var val = $('#assignUser').val() == -1 ? null : $('#assignUser').val();
         top.Ts.Services.Tickets.SetTicketsUser(JSON.stringify(ids), val, function () {
             top.Ts.System.logAction('Ticket Grid - Updated user');
-            self.refresh();
+            refreshGrid();
         });
         deselectRows();
     });
@@ -337,7 +350,7 @@ TicketGrid = function (options) {
         var val = $('#assignGroup').val() == -1 ? null : $('#assignGroup').val();
         top.Ts.Services.Tickets.SetTicketsGroup(JSON.stringify(ids), val, function () {
             top.Ts.System.logAction('Ticket Grid - Updated group');
-            self.refresh();
+            refreshGrid();
         });
         deselectRows();
     });
@@ -349,7 +362,7 @@ TicketGrid = function (options) {
         var ids = getSelectedIDs();
         top.Ts.Services.Tickets.SetTicketsSeverity(JSON.stringify(ids), $('#assignSeverity').val(), function () {
             top.Ts.System.logAction('Ticket Grid - Updated severity');
-            self.refresh();
+            refreshGrid();
         });
         deselectRows();
     });
@@ -366,7 +379,7 @@ TicketGrid = function (options) {
         });
         top.Ts.Services.Tickets.SetTicketsStatus(JSON.stringify(ids), JSON.stringify(statuses), function () {
             top.Ts.System.logAction('Ticket Grid - Updated statuses');
-            self.refresh();
+            refreshGrid();
         });
         deselectRows();
     });
@@ -399,7 +412,7 @@ TicketGrid = function (options) {
                 top.Ts.System.logAction('Ticket Grid - Delete Tickets');
                 self.showLoadingIndicator();
                 top.top.Ts.Services.Tickets.DeleteTickets(JSON.stringify(ids), function () {
-                    self.refresh();
+                    refreshGrid();
                     deselectRows();
                 });
             }
@@ -408,7 +421,7 @@ TicketGrid = function (options) {
             var ticket = getActiveTicket();
             if (confirm('Are you sure you would like to delete Ticket ' + ticket.TicketNumber + '?')) {
                 top.Ts.System.logAction('Ticket Grid - Delete Ticket');
-                top.top.Ts.Services.Tickets.DeleteTicket(ticket.TicketID, function () { self.refresh(); });
+                top.top.Ts.Services.Tickets.DeleteTicket(ticket.TicketID, function () { refreshGrid(); });
             }
         }
     });
@@ -426,7 +439,7 @@ TicketGrid = function (options) {
 
     $('.tickets-refresh').click(function (e) {
         e.preventDefault();
-        self.refresh();
+        refreshGrid();
         top.Ts.System.logAction('Ticket Grid - Refreshed');
     });
 
@@ -498,7 +511,7 @@ TicketGrid = function (options) {
         saveOptions();
         saveColumns();
         $('#dialog-columns').modal('hide');
-        self.refresh();
+        refreshGrid();
     });
 
     $('.tickets-default-columns').click(function (e) {
@@ -730,7 +743,7 @@ TicketGrid = function (options) {
             }
 
             top.Ts.Services.Tickets.MoveUserQueueTickets(JSON.stringify(ids), loader.data.length == args.insertBefore ? -1 : loader.data[args.insertBefore].TicketID, ticketLoadFilter.ViewerID, function () {
-                self.refresh();
+                refreshGrid();
                 deselectRows();
 
             });
@@ -803,7 +816,7 @@ TicketGrid = function (options) {
                 var setRead = !ticket.IsRead;
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
-                    top.Ts.Services.Tickets.SetTicketReads(data, setRead, function () { self.refresh(); deselectRows(); });
+                    top.Ts.Services.Tickets.SetTicketReads(data, setRead, function () { refreshGrid(); deselectRows(); });
                 }
                 else {
                     ticket.IsRead = setRead;
@@ -831,7 +844,7 @@ TicketGrid = function (options) {
                 var setIsFlagged = !ticket.IsFlagged;
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
-                    top.Ts.Services.Tickets.SetTicketFlags(data, setIsFlagged, function () { self.refresh(); deselectRows(); });
+                    top.Ts.Services.Tickets.SetTicketFlags(data, setIsFlagged, function () { refreshGrid(); deselectRows(); });
                 }
                 else {
                     ticket.IsFlagged = setIsFlagged;
@@ -850,7 +863,7 @@ TicketGrid = function (options) {
                 var setIsEnqueued = !ticket.IsEnqueued;
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
-                    top.Ts.Services.Tickets.SetUserQueues(data, setIsEnqueued, function () { self.refresh(); deselectRows(); });
+                    top.Ts.Services.Tickets.SetUserQueues(data, setIsEnqueued, function () { refreshGrid(); deselectRows(); });
                 }
                 else {
                     ticket.IsEnqueued = setIsEnqueued;
@@ -868,7 +881,7 @@ TicketGrid = function (options) {
                 var setIsSubscribed = !ticket.IsSubscribed;
                 if (ids.length > 1) {
                     self.showLoadingIndicator();
-                    top.Ts.Services.Tickets.SetTicketSubcribes(data, setIsSubscribed, function () { self.refresh(); deselectRows(); });
+                    top.Ts.Services.Tickets.SetTicketSubcribes(data, setIsSubscribed, function () { refreshGrid(); deselectRows(); });
                 }
                 else {
                     ticket.IsSubscribed = setIsSubscribed;
