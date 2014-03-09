@@ -511,7 +511,7 @@ TicketGrid = function (options) {
         saveOptions();
         saveColumns();
         $('#dialog-columns').modal('hide');
-        refreshGrid();
+        self.refresh();
     });
 
     $('.tickets-default-columns').click(function (e) {
