@@ -501,18 +501,27 @@ namespace TeamSupport.Data
       SqlCommand command = new SqlCommand();
 
       string sort = filter.SortColumn.Trim();
+      string sortFields;
       switch (sort)
       {
-        case "Severity": sort = string.Format("[SeverityPosition] {0}", (filter.SortAsc ? "ASC" : "DESC")); break;
-        case "Status": sort = string.Format("[StatusPosition] {0}, [Status] {0}, [TicketTypeName] {0}", (filter.SortAsc ? "ASC" : "DESC")); break;
+        case "Severity": 
+          sortFields = "[SeverityPosition]";
+          sort = string.Format("[SeverityPosition] {0}", (filter.SortAsc ? "ASC" : "DESC"));
+          break;
+        case "Status": 
+          sortFields = "[StatusPosition], [Status], [TicketTypeName]";
+          sort = string.Format("[StatusPosition] {0}, [Status] {0}, [TicketTypeName] {0}", (filter.SortAsc ? "ASC" : "DESC"));
+          break;
         default: 
+          sortFields = string.Format("[{0}]", sort);
           sort = string.Format("[{0}] {1}", sort, (filter.SortAsc ? "ASC" : "DESC"));
           break;
       }
 
       if (filter.IsEnqueued == true)
       {
-        sort = "QueuePosition ASC";
+        sort = "[QueuePosition] ASC";
+        sortFields = "[QueuePosition]";
       }
 
       string fields =
@@ -581,20 +590,27 @@ namespace TeamSupport.Data
       GetFilterWhereClause(loginUser, filter, command, where);
 
       string query = @"
-        DECLARE @TempItems TABLE( ID int IDENTITY, TicketID int )
-        INSERT INTO @TempItems (TicketID)
-        SELECT tv.TicketID {0}
-        ORDER BY {1}
 
-        SELECT {2}
-        FROM @TempItems ti INNER JOIN UserTicketsView tv ON tv.TicketID = ti.TicketID
-        WHERE ID BETWEEN @FromIndex AND @toIndex
-        AND tv.ViewerID = @ViewerID
+        WITH
+        BaseQuery AS(
+          SELECT tv.TicketID, {1} {0}
+        ),
 
-        ORDER BY ti.ID
+        RowQuery AS (
+          SELECT BaseQuery.*, ROW_NUMBER() OVER (ORDER BY {2}) AS 'RowNum' FROM BaseQuery
+        ),
+
+        PageQuery AS (
+          SELECT  * FROM RowQuery WHERE RowNum BETWEEN  @FromIndex AND @ToIndex
+        )
+
+        SELECT {3}
+        FROM PageQuery
+        INNER JOIN UserTicketsView tv ON tv.TicketID = PageQuery.TicketID 
+        WHERE tv.ViewerID = @ViewerID
         ";
 
-      command.CommandText = string.Format(query, where.ToString(), sort, fields);
+      command.CommandText = string.Format(query, where.ToString(), sortFields, sort, fields);
       command.CommandType = CommandType.Text;
       command.Parameters.AddWithValue("@FromIndex", from+1);
       command.Parameters.AddWithValue("@ToIndex", to+1);
