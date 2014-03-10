@@ -383,6 +383,7 @@ namespace TSWebServices
           else
           {
           }
+          reader.Close();
         }
 
         //update.RefreshID = int.Parse(SystemSettings.ReadString(loginUser, "RefreshID", "-1"));

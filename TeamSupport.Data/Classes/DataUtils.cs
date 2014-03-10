@@ -1034,6 +1034,7 @@ namespace TeamSupport.Data
             builder.Append(ascii.GetString(ascii.GetBytes(value)));
           }
         }
+        reader.Close();
         return builder.ToString();
       }
     }

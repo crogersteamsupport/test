@@ -381,77 +381,7 @@ namespace TeamSupport.Data
     }
 
     public void LoadByFilter(int pageIndex, int pageSize, TicketLoadFilter filter)
-    {/*
-      using (SqlCommand command = new SqlCommand())
-      {
-        string sort = filter.SortColumn.Trim();
-        switch (sort)
-        {
-          case "Severity": sort = "SeverityPosition"; break;
-          case "Status": sort = "StatusPosition"; break;
-          default: break;
-        }
-        StringBuilder builder = new StringBuilder();
-        builder.Append("WITH TicketRows AS (SELECT ROW_NUMBER() OVER (ORDER BY tv.");
-        builder.Append(sort);
-        if (filter.SortAsc) builder.Append(" ASC"); else builder.Append(" DESC");
-        builder.Append(
-              @") AS RowNumber
-              ,tv.[TicketID]
-              ,tv.[ProductName]
-              ,tv.[ReportedVersion]
-              ,tv.[SolvedVersion]
-              ,tv.[GroupName]
-              ,tv.[TicketTypeName]
-              ,tv.[UserName]
-              ,tv.[Status]
-              ,tv.[StatusPosition]
-              ,tv.[SeverityPosition]
-              ,tv.[IsClosed]
-              ,tv.[Severity]
-              ,tv.[TicketNumber]
-              ,tv.[IsVisibleOnPortal]
-              ,tv.[IsKnowledgeBase]
-              ,tv.[ReportedVersionID]
-              ,tv.[SolvedVersionID]
-              ,tv.[ProductID]
-              ,tv.[GroupID]
-              ,tv.[UserID]
-              ,tv.[TicketStatusID]
-              ,tv.[TicketTypeID]
-              ,tv.[TicketSeverityID]
-              ,tv.[OrganizationID]
-              ,tv.[Name]
-              ,tv.[ParentID]
-              ,tv.[ModifierID]
-              ,tv.[CreatorID]
-              ,tv.[DateModified]
-              ,tv.[DateCreated]
-              ,tv.[DateClosed]
-              ,tv.[CloserID]
-              ,tv.[DaysClosed]
-              ,tv.[DaysOpened]
-              ,tv.[CloserName]
-              ,tv.[CreatorName]
-              ,tv.[ModifierName]
-              ,tv.[HoursSpent]
-              ,tv.[Tags]
-              ,0 AS [SlaViolationTime]
-              ,0 AS [SlaWarningTime]
-              ,CAST(0 AS dec(24,6)) AS [SlaViolationHours]
-              ,CAST(0 AS dec(24,6)) AS [SlaWarningHours]"
-              );
-
-        GetFilterWhereClause(filter, command, builder);
-        builder.Append(") SELECT * FROM TicketRows  WHERE RowNumber BETWEEN @PageIndex*@PageSize+1 AND @PageIndex*@PageSize+@PageSize ORDER BY RowNumber ASC");
-        command.CommandText = builder.ToString().Replace(Environment.NewLine, " ");
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@PageIndex", pageIndex);
-        command.Parameters.AddWithValue("@PageSize", pageSize);
-        command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
-        Fill(command);
-      }
-      */
+    {
       LoadByRange(pageIndex * pageSize, pageIndex * pageSize + pageSize, filter);
     }
 
@@ -460,6 +390,7 @@ namespace TeamSupport.Data
       SqlCommand command = GetLoadRangeCommand(LoginUser, from, to, filter);
       Fill(command);
     }
+
 
     public static SqlCommand GetLoadExportCommand(LoginUser loginUser, TicketLoadFilter filter)
     {
@@ -622,15 +553,20 @@ namespace TeamSupport.Data
 
     public int GetFilterCount(TicketLoadFilter filter)
     {
+      return GetFilterCount(LoginUser, filter);
+    }
+
+    public static int GetFilterCount(LoginUser loginUser, TicketLoadFilter filter)
+    {
       using (SqlCommand command = new SqlCommand())
       {
         StringBuilder builder = new StringBuilder();
         builder.Append("SELECT COUNT(*) ");
-        GetFilterWhereClause(LoginUser, filter, command, builder);
+        GetFilterWhereClause(loginUser, filter, command, builder);
         command.CommandText = builder.ToString().Replace(Environment.NewLine, " ");
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
-        object o = ExecuteScalar(command);
+        command.Parameters.AddWithValue("@OrganizationID", loginUser.OrganizationID);
+        object o = SqlExecutor.ExecuteScalar(loginUser, command);
         if (o == null || o == DBNull.Value) return 0;
         return (int)o;
       }

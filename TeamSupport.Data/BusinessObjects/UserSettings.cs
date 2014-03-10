@@ -34,7 +34,7 @@ namespace TeamSupport.Data
         {
           result = (string)reader[0];
         }
-
+        reader.Close();
         connection.Close();
       }
 
