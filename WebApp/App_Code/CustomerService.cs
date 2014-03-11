@@ -40,7 +40,7 @@ namespace TSWebServices
             o.Collection.Save();
             string description = String.Format("{0} set company name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
-            return value;
+            return value != "" ? value : "Empty";
         }
         [WebMethod]
         public string SetCompanyTimezone(int orgID, string value)
@@ -61,7 +61,7 @@ namespace TSWebServices
             o.Collection.Save();
             string description = String.Format("{0} set company website to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
-            return value;
+            return value != "" ? value : "Empty";
         }
         [WebMethod]
         public int SetCompanyPrimaryContact(int orgID, int value)
@@ -115,7 +115,7 @@ namespace TSWebServices
             o.Collection.Save();
             string description = String.Format("{0} set company domain to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
-            return value;
+            return value != "" ? value : "Empty";
         }
         [WebMethod]
         public bool SetCompanyActive(int orgID, bool value)
@@ -189,7 +189,7 @@ namespace TSWebServices
             o.Collection.Save();
             string description = String.Format("{0} set company description to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
-            return value;
+            return value != "" ? value : "Empty";
         }
         [WebMethod]
         public string SetCompanyInactive(int orgID, string value)
@@ -210,7 +210,7 @@ namespace TSWebServices
             u.Collection.Save();
             string description = String.Format("{0} set contact email to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, email);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
-            return email != "" ? email : "Empty"; ;
+            return email != "" ? email : "Empty";
         }
         [WebMethod]
         public string SetContactName(int userID, string fname, string mname, string lname)

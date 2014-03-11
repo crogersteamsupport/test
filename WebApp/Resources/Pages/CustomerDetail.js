@@ -298,7 +298,8 @@ $(document).ready(function () {
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
-              top.Ts.Services.Customers.SetCompanySupportHours(organizationID, $(this).prev().find('input').val(), function (result) {
+              var value = $(this).prev().find('input').val();
+              top.Ts.Services.Customers.SetCompanySupportHours(organizationID, value != "" ? value : 0 , function (result) {
                   header.text(result);
                   $('#customerEdit').removeClass("disabled");
               },
