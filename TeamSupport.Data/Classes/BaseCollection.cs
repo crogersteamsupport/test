@@ -143,6 +143,18 @@ namespace TeamSupport.Data
           writer.WriteElementString(item.PublicName, escape);
         }
       }
+      
+      // Ticket 15640
+      if (_baseCollection.LoginUser.OrganizationID == 566596 && _baseCollection.TableName == "TicketsView")
+      {
+        Organizations customers = new Organizations(_baseCollection.LoginUser);
+        customers.LoadByTicketIDOrderedByDateCreated((int)Row["TicketID"]);
+        if (customers.Count > 0)
+        {
+          writer.WriteElementString("CustomerID", customers[0].OrganizationID.ToString());
+        }
+      }
+
       if (includeCustomFields)
       {
         foreach (CustomField field in CustomFields)
