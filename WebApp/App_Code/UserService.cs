@@ -475,6 +475,18 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool SetRestrictUserFromEditingAnyActions(int userID, bool value)
+        {
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+          if (!TSAuthentication.IsSystemAdmin) return !value;
+
+          user.RestrictUserFromEditingAnyActions = value;
+          user.Collection.Save();
+          return user.RestrictUserFromEditingAnyActions;
+        }
+
+        [WebMethod]
         public bool SetChangeTicketVisibility(int userID, bool value)
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);

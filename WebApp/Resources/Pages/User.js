@@ -98,6 +98,7 @@ UserPage = function () {
     $('#userTimeZone').html(user.timeZoneDisplay);
     $('#userFontFamily').html(user.FontFamilyDescription);
     $('#userFontSize').html(user.FontSizeDescription);
+    $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Yes' : 'No'));
     $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
     $('#userCanCreateCompany').html((user.CanCreateCompany == true ? 'Yes' : 'No'));
     $('#userCanEditCompany').html((user.CanEditCompany == true ? 'Yes' : 'No'));
@@ -231,6 +232,8 @@ UserPage = function () {
       $('#chatUser').addClass('disabledlink');
       $('#userTicketVisibility').removeClass('ui-state-default ts-link');
       $('#userTicketVisibility').addClass('disabledlink');
+      $('#userRestrictFromEditingAnyActions').removeClass('ui-state-default ts-link');
+      $('#userRestrictFromEditingAnyActions').addClass('disabledlink');
       $('#userCanCreateCompany').removeClass('ui-state-default ts-link');
       $('#userCanCreateCompany').addClass('disabledlink');
       $('#userCanEditCompany').removeClass('ui-state-default ts-link');
@@ -702,7 +705,26 @@ UserPage = function () {
       });
 
 
-    $('#userTicketVisibility')
+      $('#userRestrictFromEditingAnyActions')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetRestrictUserFromEditingAnyActions(_user.UserID, (item.text() !== 'Yes'),
+              function (result) {
+                top.Ts.System.logAction('User Info - User Change Restrict User From Editing Any Actions Changed');
+                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+              },
+              function (error) {
+                alert('There was an error saving the user change restrict user from editing any actions.');
+                item.next().hide();
+              });
+        }
+      });
+
+      $('#userTicketVisibility')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
         e.preventDefault();
@@ -1146,6 +1168,8 @@ UserPage = function () {
     $('#userTitle').addClass('disabledlink');
     $('#userTimeZone').removeClass('ui-state-default ts-link');
     $('#userTimeZone').addClass('disabledlink');
+    $('#userRestrictFromEditingAnyActions').removeClass('ui-state-default ts-link');
+    $('#userRestrictFromEditingAnyActions').addClass('disabledlink');
     $('#userTicketVisibility').removeClass('ui-state-default ts-link');
     $('#userTicketVisibility').addClass('disabledlink');
     $('#userKBVisibility').removeClass('ui-state-default ts-link');

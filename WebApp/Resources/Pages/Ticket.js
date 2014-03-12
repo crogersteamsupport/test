@@ -2586,17 +2586,17 @@ var saveAction = function (form, oldAction, callback) {
 }
 
 var createActionElement = function () {
-    return $('<div>')
+  return $('<div>')
       .addClass('ticket-action ui-widget-content ui-corner-all ticket-content-section')
       .html($('#divActionDisplay').html())
       .hover(function (e) {
-          e.preventDefault();
-          $(this).find('.ticket-action-edit').show();
-          $(this).find('.ticket-action-delete').show();
+        e.preventDefault();
+        $(this).find('.ticket-action-edit').show();
+        $(this).find('.ticket-action-delete').show();
       }, function (e) {
-          e.preventDefault();
-          $('.ticket-action-edit').hide();
-          $('.ticket-action-delete').hide();
+        e.preventDefault();
+        $('.ticket-action-edit').hide();
+        $('.ticket-action-delete').hide();
 
       });
 }
@@ -2628,10 +2628,16 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
     var attachments = actionInfo.Attachments;
     var creator = actionInfo.Creator;
     var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === action.CreatorID;
+    var restrictedFromEditingAnyActions = !top.Ts.System.User.IsSystemAdmin && top.Ts.System.User.RestrictUserFromEditingAnyActions;
 
-    if (!canEdit) {
+    if (!canEdit || restrictedFromEditingAnyActions) {
         element.find('.ticket-action-edit').remove();
         element.find('.ticket-action-delete').remove();
+
+        if (restrictedFromEditingAnyActions) {
+          element.find('.ticket-action-kb').remove();
+          element.find('.ticket-action-portal').remove();
+        }
     }
 
     if (action.SystemActionTypeID === top.Ts.SystemActionTypes.Description) {

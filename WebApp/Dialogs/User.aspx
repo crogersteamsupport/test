@@ -112,6 +112,14 @@
         </tr>
         <tr>
           <td class="labelColTD">
+           Restrict User From Editing Any Actions:
+          </td>
+          <td class="inputColTD">
+            <asp:CheckBox ID="cbRestrictUserFromEditingAnyActions" runat="server" Text=""/>
+          </td>
+        </tr>
+        <tr>
+          <td class="labelColTD">
             Time Zone:
           </td>
           <td class="inputColTD">
