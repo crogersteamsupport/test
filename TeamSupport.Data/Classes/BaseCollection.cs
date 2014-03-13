@@ -149,10 +149,17 @@ namespace TeamSupport.Data
       {
         Organizations customers = new Organizations(_baseCollection.LoginUser);
         customers.LoadByTicketIDOrderedByDateCreated((int)Row["TicketID"]);
-        if (customers.Count > 0)
+        string customerID = string.Empty;
+        for (int i = 0; i < customers.Count; i++)
         {
-          writer.WriteElementString("CustomerID", customers[0].OrganizationID.ToString());
+          // Per a skype conversation with Jesus their _Unknown Company needs to be excluded. 
+          if (customers[i].OrganizationID != 624447)
+          {
+            customerID = customers[i].OrganizationID.ToString();
+            break;
+          }
         }
+        writer.WriteElementString("CustomerID", customerID);
       }
 
       if (includeCustomFields)
