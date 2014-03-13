@@ -73,7 +73,8 @@ AS
     [CanEditCompany],
     [CanCreateContact],
     [CanEditContact],
-    [RestrictUserFromEditingAnyActions]
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -148,6 +149,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @CanCreateContact bit,
   @CanEditContact bit,
   @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
   @Identity int OUT
 )
 AS
@@ -217,7 +219,8 @@ AS
     [CanEditCompany],
     [CanCreateContact],
     [CanEditContact],
-    [RestrictUserFromEditingAnyActions])
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction])
   VALUES (
     @Email,
     @FirstName,
@@ -282,7 +285,8 @@ AS
     @CanEditCompany,
     @CanCreateContact,
     @CanEditContact,
-    @RestrictUserFromEditingAnyActions)
+    @RestrictUserFromEditingAnyActions,
+    @AllowUserToEditAnyAction)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -355,7 +359,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @CanEditCompany bit,
   @CanCreateContact bit,
   @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit
 )
 AS
   SET NOCOUNT OFF;
@@ -422,7 +427,8 @@ AS
     [CanEditCompany] = @CanEditCompany,
     [CanCreateContact] = @CanCreateContact,
     [CanEditContact] = @CanEditContact,
-    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions
+    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
+    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction
   WHERE ([UserID] = @UserID)
 GO
 
@@ -516,7 +522,8 @@ AS
     [CanEditCompany],
     [CanCreateContact],
     [CanEditContact],
-    [RestrictUserFromEditingAnyActions]
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -591,6 +598,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @CanCreateContact bit,
   @CanEditContact bit,
   @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
   @Identity int OUT
 )
 AS
@@ -660,7 +668,8 @@ AS
     [CanEditCompany],
     [CanCreateContact],
     [CanEditContact],
-    [RestrictUserFromEditingAnyActions])
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction])
   VALUES (
     @Email,
     @FirstName,
@@ -725,7 +734,8 @@ AS
     @CanEditCompany,
     @CanCreateContact,
     @CanEditContact,
-    @RestrictUserFromEditingAnyActions)
+    @RestrictUserFromEditingAnyActions,
+    @AllowUserToEditAnyAction)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -798,7 +808,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @CanEditCompany bit,
   @CanCreateContact bit,
   @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit
 )
 AS
   SET NOCOUNT OFF;
@@ -865,7 +876,8 @@ AS
     [CanEditCompany] = @CanEditCompany,
     [CanCreateContact] = @CanCreateContact,
     [CanEditContact] = @CanEditContact,
-    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions
+    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
+    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction
   WHERE ([UserID] = @UserID)
 GO
 
@@ -959,7 +971,8 @@ AS
     [CanEditCompany],
     [CanCreateContact],
     [CanEditContact],
-    [RestrictUserFromEditingAnyActions]
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -1034,6 +1047,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @CanCreateContact bit,
   @CanEditContact bit,
   @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
   @Identity int OUT
 )
 AS
@@ -1103,7 +1117,8 @@ AS
     [CanEditCompany],
     [CanCreateContact],
     [CanEditContact],
-    [RestrictUserFromEditingAnyActions])
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction])
   VALUES (
     @Email,
     @FirstName,
@@ -1168,7 +1183,8 @@ AS
     @CanEditCompany,
     @CanCreateContact,
     @CanEditContact,
-    @RestrictUserFromEditingAnyActions)
+    @RestrictUserFromEditingAnyActions,
+    @AllowUserToEditAnyAction)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1241,7 +1257,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @CanEditCompany bit,
   @CanCreateContact bit,
   @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit
 )
 AS
   SET NOCOUNT OFF;
@@ -1308,7 +1325,8 @@ AS
     [CanEditCompany] = @CanEditCompany,
     [CanCreateContact] = @CanCreateContact,
     [CanEditContact] = @CanEditContact,
-    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions
+    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
+    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction
   WHERE ([UserID] = @UserID)
 GO
 
@@ -1402,7 +1420,8 @@ AS
     [CanEditCompany],
     [CanCreateContact],
     [CanEditContact],
-    [RestrictUserFromEditingAnyActions]
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -1477,6 +1496,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @CanCreateContact bit,
   @CanEditContact bit,
   @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
   @Identity int OUT
 )
 AS
@@ -1546,7 +1566,8 @@ AS
     [CanEditCompany],
     [CanCreateContact],
     [CanEditContact],
-    [RestrictUserFromEditingAnyActions])
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction])
   VALUES (
     @Email,
     @FirstName,
@@ -1611,7 +1632,8 @@ AS
     @CanEditCompany,
     @CanCreateContact,
     @CanEditContact,
-    @RestrictUserFromEditingAnyActions)
+    @RestrictUserFromEditingAnyActions,
+    @AllowUserToEditAnyAction)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1684,7 +1706,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @CanEditCompany bit,
   @CanCreateContact bit,
   @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit
 )
 AS
   SET NOCOUNT OFF;
@@ -1751,7 +1774,8 @@ AS
     [CanEditCompany] = @CanEditCompany,
     [CanCreateContact] = @CanCreateContact,
     [CanEditContact] = @CanEditContact,
-    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions
+    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
+    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction
   WHERE ([UserID] = @UserID)
 GO
 
@@ -1845,7 +1869,8 @@ AS
     [CanEditCompany],
     [CanCreateContact],
     [CanEditContact],
-    [RestrictUserFromEditingAnyActions]
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -1920,6 +1945,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @CanCreateContact bit,
   @CanEditContact bit,
   @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit,
   @Identity int OUT
 )
 AS
@@ -1989,7 +2015,8 @@ AS
     [CanEditCompany],
     [CanCreateContact],
     [CanEditContact],
-    [RestrictUserFromEditingAnyActions])
+    [RestrictUserFromEditingAnyActions],
+    [AllowUserToEditAnyAction])
   VALUES (
     @Email,
     @FirstName,
@@ -2054,7 +2081,8 @@ AS
     @CanEditCompany,
     @CanCreateContact,
     @CanEditContact,
-    @RestrictUserFromEditingAnyActions)
+    @RestrictUserFromEditingAnyActions,
+    @AllowUserToEditAnyAction)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -2127,7 +2155,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @CanEditCompany bit,
   @CanCreateContact bit,
   @CanEditContact bit,
-  @RestrictUserFromEditingAnyActions bit
+  @RestrictUserFromEditingAnyActions bit,
+  @AllowUserToEditAnyAction bit
 )
 AS
   SET NOCOUNT OFF;
@@ -2194,7 +2223,8 @@ AS
     [CanEditCompany] = @CanEditCompany,
     [CanCreateContact] = @CanCreateContact,
     [CanEditContact] = @CanEditContact,
-    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions
+    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,
+    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction
   WHERE ([UserID] = @UserID)
 GO
 

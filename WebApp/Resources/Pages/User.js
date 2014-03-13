@@ -99,6 +99,7 @@ UserPage = function () {
     $('#userFontFamily').html(user.FontFamilyDescription);
     $('#userFontSize').html(user.FontSizeDescription);
     $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Yes' : 'No'));
+    $('#userAllowToEditAnyAction').html((user.userAllowToEditAnyAction == true ? 'Yes' : 'No'));
     $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
     $('#userCanCreateCompany').html((user.CanCreateCompany == true ? 'Yes' : 'No'));
     $('#userCanEditCompany').html((user.CanEditCompany == true ? 'Yes' : 'No'));
@@ -234,6 +235,8 @@ UserPage = function () {
       $('#userTicketVisibility').addClass('disabledlink');
       $('#userRestrictFromEditingAnyActions').removeClass('ui-state-default ts-link');
       $('#userRestrictFromEditingAnyActions').addClass('disabledlink');
+      $('#userAllowToEditAnyAction').removeClass('ui-state-default ts-link');
+      $('#userAllowToEditAnyAction').addClass('disabledlink');
       $('#userCanCreateCompany').removeClass('ui-state-default ts-link');
       $('#userCanCreateCompany').addClass('disabledlink');
       $('#userCanEditCompany').removeClass('ui-state-default ts-link');
@@ -705,7 +708,7 @@ UserPage = function () {
       });
 
 
-      $('#userRestrictFromEditingAnyActions')
+    $('#userRestrictFromEditingAnyActions')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
         e.preventDefault();
@@ -716,6 +719,9 @@ UserPage = function () {
               function (result) {
                 top.Ts.System.logAction('User Info - User Change Restrict User From Editing Any Actions Changed');
                 item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                if (result === true && $('#userAllowToEditAnyAction').text() == 'Yes') {
+                  $('#userAllowToEditAnyAction').click();
+                }
               },
               function (error) {
                 alert('There was an error saving the user change restrict user from editing any actions.');
@@ -724,7 +730,29 @@ UserPage = function () {
         }
       });
 
-      $('#userTicketVisibility')
+    $('#userAllowToEditAnyAction')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetAllowUserToEditAnyAction(_user.UserID, (item.text() !== 'Yes'),
+              function (result) {
+                top.Ts.System.logAction('User Info - User Change Allow User To Edit Any Action Changed');
+                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                if (result === true && $('#userRestrictFromEditingAnyActions').text() == 'Yes') {
+                  $('#userRestrictFromEditingAnyActions').click();
+                }
+              },
+              function (error) {
+                alert('There was an error saving the user change allow user to edit any action.');
+                item.next().hide();
+              });
+        }
+      });
+
+    $('#userTicketVisibility')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
         e.preventDefault();
@@ -743,80 +771,80 @@ UserPage = function () {
         }
       });
 
-      $('#userCanCreateCompany')
+    $('#userCanCreateCompany')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          if (isSysAdmin) {
-              item.next().show();
-              top.Ts.Services.Users.SetChangeCanCreateCompany(_user.UserID, (item.text() !== 'Yes'),
+        e.preventDefault();
+        var item = $(this);
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetChangeCanCreateCompany(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                      top.Ts.System.logAction('User Info - User Change Can Create Company Changed');
-                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    top.Ts.System.logAction('User Info - User Change Can Create Company Changed');
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
-                      alert('There was an error saving the user change to can create company.');
-                      item.next().hide();
+                    alert('There was an error saving the user change to can create company.');
+                    item.next().hide();
                   });
-          }
+        }
       });
 
-      $('#userCanEditCompany')
+    $('#userCanEditCompany')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          if (isSysAdmin) {
-              item.next().show();
-              top.Ts.Services.Users.SetChangeCanEditCompany(_user.UserID, (item.text() !== 'Yes'),
+        e.preventDefault();
+        var item = $(this);
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetChangeCanEditCompany(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                      top.Ts.System.logAction('User Info - User Change Can Edit Company Changed');
-                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    top.Ts.System.logAction('User Info - User Change Can Edit Company Changed');
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
-                      alert('There was an error saving the user change to can edit company.');
-                      item.next().hide();
+                    alert('There was an error saving the user change to can edit company.');
+                    item.next().hide();
                   });
-          }
+        }
       });
 
-      $('#userCanCreateContacts')
+    $('#userCanCreateContacts')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          if (isSysAdmin) {
-              item.next().show();
-              top.Ts.Services.Users.SetChangeCanCreateContacts(_user.UserID, (item.text() !== 'Yes'),
+        e.preventDefault();
+        var item = $(this);
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetChangeCanCreateContacts(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                      top.Ts.System.logAction('User Info - User Change Can Create Contacts Changed');
-                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    top.Ts.System.logAction('User Info - User Change Can Create Contacts Changed');
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
-                      alert('There was an error saving the user change to can create contacts.');
-                      item.next().hide();
+                    alert('There was an error saving the user change to can create contacts.');
+                    item.next().hide();
                   });
-          }
+        }
       });
 
-      $('#userCanEditContacts')
+    $('#userCanEditContacts')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
-          e.preventDefault();
-          var item = $(this);
-          if (isSysAdmin) {
-              item.next().show();
-              top.Ts.Services.Users.SetChangeCanEditContacts(_user.UserID, (item.text() !== 'Yes'),
+        e.preventDefault();
+        var item = $(this);
+        if (isSysAdmin) {
+          item.next().show();
+          top.Ts.Services.Users.SetChangeCanEditContacts(_user.UserID, (item.text() !== 'Yes'),
                   function (result) {
-                      top.Ts.System.logAction('User Info - User Change Can Edit Contacts Changed');
-                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                    top.Ts.System.logAction('User Info - User Change Can Edit Contacts Changed');
+                    item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
                   },
                   function (error) {
-                      alert('There was an error saving the user change to can edit contacts.');
-                      item.next().hide();
+                    alert('There was an error saving the user change to can edit contacts.');
+                    item.next().hide();
                   });
-          }
+        }
       });
 
 
@@ -1802,7 +1830,7 @@ UserPage = function () {
                   .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
                   .appendTo(container)
                   .datepicker()
-                  //.datetimepicker('setDate', top.Ts.Utils.getMsDate(fieldValue))
+            //.datetimepicker('setDate', top.Ts.Utils.getMsDate(fieldValue))
                   .focus();
 
             $('<span>')

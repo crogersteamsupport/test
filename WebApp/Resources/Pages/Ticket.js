@@ -2630,14 +2630,16 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
     var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === action.CreatorID;
     var restrictedFromEditingAnyActions = !top.Ts.System.User.IsSystemAdmin && top.Ts.System.User.RestrictUserFromEditingAnyActions;
 
-    if (!canEdit || restrictedFromEditingAnyActions) {
-        element.find('.ticket-action-edit').remove();
-        element.find('.ticket-action-delete').remove();
+    if (!top.Ts.System.User.AllowUserToEditAnyAction) {
+      if (!canEdit || restrictedFromEditingAnyActions) {
+          element.find('.ticket-action-edit').remove();
+          element.find('.ticket-action-delete').remove();
 
-        if (restrictedFromEditingAnyActions) {
-          element.find('.ticket-action-kb').remove();
-          element.find('.ticket-action-portal').remove();
-        }
+          if (restrictedFromEditingAnyActions) {
+            element.find('.ticket-action-kb').remove();
+            element.find('.ticket-action-portal').remove();
+          }
+      }
     }
 
     if (action.SystemActionTypeID === top.Ts.SystemActionTypes.Description) {

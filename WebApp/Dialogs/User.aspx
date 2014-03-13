@@ -117,6 +117,12 @@
           <td class="inputColTD">
             <asp:CheckBox ID="cbRestrictUserFromEditingAnyActions" runat="server" Text=""/>
           </td>
+          <td class="labelColTD">
+           Allow User To Edit Any Action:
+          </td>
+          <td class="inputColTD">
+            <asp:CheckBox ID="cbAllowUserToEditAnyAction" runat="server" Text=""/>
+          </td>
         </tr>
         <tr>
           <td class="labelColTD">
