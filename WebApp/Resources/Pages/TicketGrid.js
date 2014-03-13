@@ -68,6 +68,8 @@ TicketGrid = function (options) {
         if (tmrDelayIndicator) clearTimeout(tmrDelayIndicator);
         tmrDelayIndicator = null;
         if (loadingIndicator) loadingIndicator.fadeOut();
+        $('.slick-reorder-proxy').remove();
+        $('.slick-reorder-guide').remove();
     }
 
     $('head').append(top.Ts.MainPage.getCalcStyle());
