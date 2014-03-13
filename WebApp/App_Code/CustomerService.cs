@@ -70,7 +70,7 @@ namespace TSWebServices
             o.PrimaryUserID = value;
             o.Collection.Save();
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), value);
-            string description = String.Format("{0} set company name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, u.FirstLastName);
+            string description = String.Format("{0} set company name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, u == null ? "Unassigned" : u.FirstLastName);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
@@ -81,7 +81,7 @@ namespace TSWebServices
             o.DefaultSupportUserID = value;
             o.Collection.Save();
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), value);
-            string description = String.Format("{0} set company default support user to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, u.FirstLastName);
+            string description = String.Format("{0} set company default support user to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, u == null ? "Unassigned" : u.FirstLastName);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
@@ -92,7 +92,7 @@ namespace TSWebServices
             o.DefaultSupportGroupID = value;
             o.Collection.Save();
             Group g = Groups.GetGroup(TSAuthentication.GetLoginUser(), value);
-            string description = String.Format("{0} set company default support group to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, g.Name);
+            string description = String.Format("{0} set company default support group to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, g == null ? "Unassigned" : g.Name);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
@@ -103,7 +103,7 @@ namespace TSWebServices
             o.DefaultPortalGroupID = value;
             o.Collection.Save();
             Group g = Groups.GetGroup(TSAuthentication.GetLoginUser(), value);
-            string description = String.Format("{0} set company default portal group to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, g.Name);
+            string description = String.Format("{0} set company default portal group to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, g == null ? "Unassigned" : g.Name);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
             return value;
         }
@@ -1088,7 +1088,7 @@ namespace TSWebServices
                   orgProp.SLA = level.Name;
             }
             string primaryUser = "Empty";
-            if (organizations[0].PrimaryUserID != null)
+            if (organizations[0].PrimaryUserID != null && organizations[0].PrimaryUserID != -1)
             {
                 users.LoadByUserID((int)organizations[0].PrimaryUserID);
                 primaryUser = users.IsEmpty ? "" : users[0].LastName + ", " + users[0].FirstName;
@@ -1096,7 +1096,7 @@ namespace TSWebServices
             orgProp.PrimaryUser = primaryUser;
             orgProp.orgproxy = organizations[0].GetProxy();
 
-            if (organizations[0].DefaultSupportUserID != null)
+            if (organizations[0].DefaultSupportUserID != null && organizations[0].DefaultSupportUserID != -1)
             {
                 User supportUser = Users.GetUser(TSAuthentication.GetLoginUser(), (int)organizations[0].DefaultSupportUserID);
                 orgProp.DefaultSupportUser = supportUser.FirstLastName;

@@ -86,3 +86,5 @@
     color: #888888;
     font-weight: normal;
 }
+
+.userProperties p, .customProperties p{word-wrap:break-word;}

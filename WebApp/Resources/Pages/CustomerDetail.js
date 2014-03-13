@@ -1340,7 +1340,7 @@ $(document).ready(function () {
             $('#fieldDescription').html(result.orgproxy.Description != null && result.orgproxy.Description != ""? result.orgproxy.Description : "Empty");
             $('#fieldAPIToken').text(result.orgproxy.WebServiceID);
             $('#fieldOrgID').text(result.orgproxy.OrganizationID);
-            $('#fieldPrimaryContact').text(result.PrimaryUser);
+            $('#fieldPrimaryContact').text(result.PrimaryUser == "" ? "Empty" : result.PrimaryUser);
             $('#fieldPrimaryContact').data('field', result.orgproxy.PrimaryUserID);
             $('#fieldDefaultUser').text(result.DefaultSupportUser);
             $('#fieldDefaultUser').data('field', result.orgproxy.DefaultSupportUserID);
@@ -1842,10 +1842,11 @@ $(document).ready(function () {
 var appendCustomValues = function (fields) {
 
     top.Ts.Services.Customers.GetCustomFieldCategories(function (categories) {
-
+        var noCatfields = 0;
         for (var i = 0; i < fields.length; i++) {
 
             if (fields[i].CustomFieldCategoryID == -1) {
+                noCatfields = 1;
                 var item = null;
                 var field = fields[i];
                 var div = $('<div>').addClass('form-group').data('field', field);
@@ -1874,6 +1875,9 @@ var appendCustomValues = function (fields) {
             }
         }
 
+        if (noCatfields == 0) {
+            $('#customPropRow').hide();
+        }
 
         for (var c = 0; c < categories.length; c++)
         {
