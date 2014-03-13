@@ -919,7 +919,7 @@ namespace TeamSupport.Data
                                         CloserName, SlaViolationTime, StatusPosition, SeverityPosition, IsVisibleOnPortal, IsKnowledgeBase, DateClosed,
                                         DaysClosed, CreatorName, ModifierName, HoursSpent, Tags, SlaWarningTime, SlaViolationHours, SlaWarningHours, 
                                         MinsSinceCreated, DaysSinceCreated,
-                                        MinutesToInitialResponse as MinutesToFirstResponse
+                                        (datediff(mi,'1900-01-01',(select top 1 timeinoldstatus from statushistory where ticketid = tv.ticketid and isnull(timeinoldstatus,-99)<>-99 order by statuschangetime))) as MinutesToFirstResponse
                                     FROM TicketsView tv
                                     WHERE OrganizationID = @OrganizationID and DateModified > @LastMod
                                     ORDER BY TicketNumber";
