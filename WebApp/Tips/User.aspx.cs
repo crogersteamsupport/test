@@ -50,11 +50,11 @@ public partial class Tips_User : System.Web.UI.Page
       {
         if (ticketID != null)
         {
-          props.Append(string.Format("<dt>Email</dt><dd><a href=\"{0}\">{1}</a></dd>", DataUtils.GetMailLinkHRef(user.Collection.LoginUser, userID, (int)ticketID), user.Email));
+          props.Append(string.Format("<dt>Email</dt><dd><a href=\"{0}\" target=\"_blank\">{1}</a></dd>", DataUtils.GetMailLinkHRef(user.Collection.LoginUser, userID, (int)ticketID), user.Email));
         }
         else
 	      {
-          props.Append(string.Format("<dt>Email</dt><dd><a href=\"mailto:{0}\">{0}</a></dd>", user.Email));
+          props.Append(string.Format("<dt>Email</dt><dd><a href=\"mailto:{0}\" target=\"_blank\">{0}</a></dd>", user.Email));
 	      }
       }
 
