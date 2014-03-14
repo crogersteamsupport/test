@@ -1969,7 +1969,9 @@ namespace TSWebServices
         status.DateRead = value ? DateTime.UtcNow : new DateTime(2000, 1, 1);
         leftOvers.Remove(status.TicketID);
       }
-
+      statuses.Save();
+      statuses = new UserTicketStatuses(TSAuthentication.GetLoginUser());
+      
       foreach (int id in leftOvers)
       {
         UserTicketStatus status = statuses.AddNewUserTicketStatus();
@@ -1978,8 +1980,8 @@ namespace TSWebServices
         status.UserID = TSAuthentication.UserID;
         status.TicketID = id;
       }
-
       statuses.Save();
+
     }
 
     [WebMethod]
@@ -2014,6 +2016,8 @@ namespace TSWebServices
         status.IsFlagged = value;
         leftOvers.Remove(status.TicketID);
       }
+      statuses.Save();
+      statuses = new UserTicketStatuses(TSAuthentication.GetLoginUser());
 
       foreach (int id in leftOvers)
       {
