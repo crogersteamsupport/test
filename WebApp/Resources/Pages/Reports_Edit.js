@@ -28,6 +28,7 @@ $(document).ready(function () {
             "reportID": _reportID
         }, function (report) {
             _report = report;
+            if (_report.OrganizationID == null) return;
             $('.report-name').val(report.Name);
             initReport();
         });

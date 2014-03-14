@@ -266,8 +266,10 @@
                     table.find('.filter-conds:first').find('.filter-cond').each(function () {
                         var condition = new Object();
                         var field = $(this).find(':selected').data('field');
-                        condition.FieldID = field.ID;
+                        condition.FieldID = field.ID === parseInt(field.ID) ? field.ID : -1;
                         condition.IsCustom = field.IsCustom;
+                        condition.FieldName = field.Name;
+                        condition.DataType = field.DataType == 'number' ? 'float' : field.DataType;
                         var comp = $(this).find('.filter-comp');
                         condition.Comparator = comp.val().toUpperCase();
                         var next = comp.nextAll('input, select');

@@ -38,7 +38,7 @@
         _report.Def = JSON.parse(report.ReportDef);
         _report.Settings = report.UserSettings == '' ? new Object() : JSON.parse(report.UserSettings);
 
-        if (_report.ReportType == 3) $('.btn.reports-filter').remove();
+        //if (_report.ReportType == 3) $('.btn.reports-filter').remove();
 
         if (report.IsFavorite) {
             $('.reports-fav i').removeClass('fa-star-o').addClass('fa-star');
@@ -68,21 +68,47 @@
             $('.reports-filter i').addClass('color-red');
         }
 
-        if ((top.Ts.System.User.IsSystemAdmin == false && report.CreatorID != top.Ts.System.User.UserID) || report.ReportType == 3) {
+        if ((top.Ts.System.User.IsSystemAdmin == false && report.CreatorID != top.Ts.System.User.UserID) || report.ReportType == 3 || report.OrganizationID == null) {
             $('.reports-edit').remove();
-        }
-
-        if (_report.Def.Subcategory) {
-            top.Ts.Services.Reports.GetFields(_report.Def.Subcategory, function (fields) {
-                $('#filter-user').reportFilter({ "fields": fields });
-                $('#filter-global').reportFilter({ "fields": fields });
-            });
         }
 
         top.Ts.Utils.webMethod("ReportService", "GetReportColumns", {
             "reportID": _reportID
         }, function (repCols) {
             //var idx = new Object();idx.id = "index";idx.name = "index";idx.field = "index";columns.push(idx);
+
+            if (report.ReportType == 3) {
+                filterFields = [];
+                for (var i = 0; i < repCols.length; i++) {
+                    filterField = new Object();
+                    filterField.ID = repCols[i].Name;
+                    repCols[i].FieldID = repCols[i].Name;
+                    filterField.Name = repCols[i].Name;
+                    filterField.Table = "Report Fields";
+                    filterField.LookupTableID = null;
+                    filterField.ListValues = []
+                    filterField.IsCustom = false;
+                    filterField.IsPrimary = true;
+                    filterField.AuxName = "";
+                    switch (repCols[i].DataType) {
+                        case "bit": filterField.DataType = "bool"; break;
+                        case "float": filterField.DataType = "number"; break;
+                        case "int": filterField.DataType = "number"; break;
+                        default:
+                            filterField.DataType = repCols[i].DataType;
+                    }
+
+                    filterFields.push(filterField);
+                }
+                $('#filter-user').reportFilter({ "fields": filterFields });
+                $('.global-filter-tab').remove();
+            }
+            else if (_report.Def.Subcategory) {
+                top.Ts.Services.Reports.GetFields(_report.Def.Subcategory, function (fields) {
+                    $('#filter-user').reportFilter({ "fields": fields });
+                    $('#filter-global').reportFilter({ "fields": fields });
+                });
+            }
 
             function findRepCol(id) {
                 for (var i = 0; i < repCols.length; i++) {
@@ -141,6 +167,8 @@
                 addRepCol(repCols[i]);
             }
 
+
+
             initGrid(columns);
         });
 
@@ -154,13 +182,13 @@
     $('.reports-filter').click(function (e) {
         e.preventDefault();
         $('.filter-modal').modal('show');
-        $('#filter-global').reportFilter("loadFilters", _report.Def.Filters);
+        if (_report.ReportType != 3) { $('#filter-global').reportFilter("loadFilters", _report.Def.Filters); }
         if (_report.Settings.Filters) $('#filter-user').reportFilter("loadFilters", _report.Settings.Filters);
     });
 
     $('.filter-save').click(function (e) {
         e.preventDefault();
-        _report.Def.Filters = $('#filter-global').reportFilter('getObject');
+        if (_report.ReportType != 3) { _report.Def.Filters = $('#filter-global').reportFilter('getObject'); }
         _report.Settings.Filters = $('#filter-user').reportFilter('getObject');
         if (_report.Settings.Filters.length == 1) {
             $('.reports-filter i').addClass('color-red');

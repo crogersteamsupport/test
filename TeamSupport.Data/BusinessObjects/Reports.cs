@@ -314,7 +314,7 @@ namespace TeamSupport.Data
           GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, null, false, true);
           break;
         case ReportType.Custom:
-          GetCustomSql(command, isSchemaOnly);
+          GetCustomSql(command, isSchemaOnly, useUserFilter);
           break;
         case ReportType.Summary:
           GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID, useUserFilter, false);
@@ -341,10 +341,45 @@ namespace TeamSupport.Data
       }
     }
 
-    private void GetCustomSql(SqlCommand command, bool isSchemaOnly)
+    private void GetCustomSql(SqlCommand command, bool isSchemaOnly, bool useUserFilter)
     {
-      CustomReport customReport = JsonConvert.DeserializeObject<CustomReport>(ReportDef);
-      command.CommandText = customReport.Query;
+      if (isSchemaOnly)
+      {
+        command.CommandText = string.Format("WITH q AS ({0}) SELECT * FROM q WHERE (0=1)", Query);
+        return;
+      }
+
+      Report report = Reports.GetReport(Collection.LoginUser, ReportID, Collection.LoginUser.UserID);
+      if (report != null && report.Row["Settings"] != DBNull.Value)
+      {
+        try
+        {
+          UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
+          StringBuilder builder = new StringBuilder();
+          if (userFilters.Filters.Length > 0)
+          {
+            GetWhereClause(Collection.LoginUser, command, builder, userFilters.Filters);
+            builder.Remove(0, 4);
+            command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c WHERE {1})", Query, builder.ToString());
+          }
+          else
+          {
+            command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c)", Query);
+          }
+        }
+        catch (Exception ex)
+        {
+          ExceptionLogs.LogException(Collection.LoginUser, ex, "Tabular SQL - User filters");
+          throw;
+        }
+      }
+      else
+      {
+        command.CommandText = string.Format("c AS ({0}), q AS (SELECT * FROM c)", Query);
+
+      }
+
+
     }
 
     private static void GetTabularSql(LoginUser loginUser, SqlCommand command, TabularReport tabularReport, bool inlcudeHiddenFields, bool isSchemaOnly, int? reportID, bool useUserFilter)
@@ -517,35 +552,43 @@ namespace TeamSupport.Data
     {
       string fieldName = "";
       string dataType;
-
-      if (condition.IsCustom)
+      if (condition.FieldID < 0)
       {
-        CustomField customField = TeamSupport.Data.CustomFields.GetCustomField(loginUser, condition.FieldID);
-        if (customField == null) return;
-        fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, DataUtils.GetReportPrimaryKeyFieldName(customField.RefType), true, false);
-        switch (customField.FieldType)
-        {
-          case CustomFieldType.DateTime:
-            dataType = "datetime";
-            break;
-          case CustomFieldType.Boolean:
-            dataType = "bit";
-            break;
-          case CustomFieldType.Number:
-            dataType = "float";
-            break;
-          default:
-            dataType = "text";
-            break;
-        }
-        
+        dataType = condition.DataType;
+        fieldName = condition.FieldName;
       }
       else
       {
-        ReportTableField field = ReportTableFields.GetReportTableField(loginUser, condition.FieldID);
-        ReportTable reportTable = ReportTables.GetReportTable(loginUser, field.ReportTableID);
-        fieldName = reportTable.TableName + ".[" + field.FieldName + "]";
-        dataType = field.DataType;
+
+        if (condition.IsCustom)
+        {
+          CustomField customField = TeamSupport.Data.CustomFields.GetCustomField(loginUser, condition.FieldID);
+          if (customField == null) return;
+          fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, DataUtils.GetReportPrimaryKeyFieldName(customField.RefType), true, false);
+          switch (customField.FieldType)
+          {
+            case CustomFieldType.DateTime:
+              dataType = "datetime";
+              break;
+            case CustomFieldType.Boolean:
+              dataType = "bit";
+              break;
+            case CustomFieldType.Number:
+              dataType = "float";
+              break;
+            default:
+              dataType = "text";
+              break;
+          }
+
+        }
+        else
+        {
+          ReportTableField field = ReportTableFields.GetReportTableField(loginUser, condition.FieldID);
+          ReportTable reportTable = ReportTables.GetReportTable(loginUser, field.ReportTableID);
+          fieldName = reportTable.TableName + ".[" + field.FieldName + "]";
+          dataType = field.DataType;
+        }
       }
 
       string paramName= string.Format("Param{0:D5}", command.Parameters.Count + 1);
@@ -1209,7 +1252,7 @@ namespace TeamSupport.Data
         else if (column.DataType == typeof(System.Boolean)) col.DataType = "bit";
         else if (column.DataType == typeof(System.Int32)) col.DataType = "int";
         else if (column.DataType == typeof(System.Double)) col.DataType = "float";
-        
+        else col.DataType = "text";
         result.Add(col);
 
       }
@@ -1308,6 +1351,7 @@ namespace TeamSupport.Data
       {
         if (!string.IsNullOrWhiteSpace(Query))
         {
+          /*
           ReportDefType = Data.ReportType.Custom;
           CustomReport customReport = new CustomReport();
           customReport.Query = Query;
@@ -1321,6 +1365,7 @@ namespace TeamSupport.Data
 
           customReport.UsePaging = Query.ToLower().IndexOf(" top ") < 0 && Query.ToLower().IndexOf(" group by ") < 0 && Query.ToLower().IndexOf(" distinct ") < 0;
           ReportDef = JsonConvert.SerializeObject(customReport);
+            */
         }
         else if (!string.IsNullOrWhiteSpace(ExternalURL))
         {
@@ -1607,35 +1652,15 @@ namespace TeamSupport.Data
 
       if (report.ReportDefType == ReportType.Custom)
       {
-        CustomReport customReport = JsonConvert.DeserializeObject<CustomReport>(report.ReportDef);
-        if (customReport.UsePaging)
+        try
         {
-          try
-          {
-            return GetReportDataPage(loginUser, report, from, to, sortField, isDesc, useUserFilter);
-          }
-          catch (Exception ex)
-          {
-            customReport.UsePaging = false;
-            report.ReportDef = JsonConvert.SerializeObject(customReport);
-            report.Collection.Save();
-
-            try
-            {
-              return GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
-            }
-            catch (Exception ex2)
-            {
-              ExceptionLogs.LogException(loginUser, ex2, "Custom Report");
-              throw;
-            }
-          }
+          return GetReportDataPage(loginUser, report, from, to, sortField, isDesc, useUserFilter);
         }
-        else
+        catch (Exception ex)
         {
-          return GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
+          ExceptionLogs.LogException(loginUser, ex, "Custom Report");
         }
-
+        return null;
       }
       else if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart) {
         return GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
@@ -1659,6 +1684,16 @@ q AS ({0}),
 r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
 SELECT  *, (SELECT COUNT(RowNum) FROM r) AS 'TotalRows' FROM r
 WHERE RowNum BETWEEN @From AND @To";
+
+      if (report.ReportDefType == ReportType.Custom)
+      {
+        query = @"
+WITH 
+{0}
+,r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
+SELECT  *, (SELECT COUNT(RowNum) FROM r) AS 'TotalRows' FROM r
+WHERE RowNum BETWEEN @From AND @To";
+      }
 
       if (string.IsNullOrWhiteSpace(sortField))
       {
@@ -1693,7 +1728,7 @@ WHERE RowNum BETWEEN @From AND @To";
         catch (Exception ex)
         {
           transaction.Rollback();
-          ExceptionLogs.LogException(loginUser, ex, "Report Data");
+          ExceptionLogs.LogException(loginUser, ex, "Report Data", DataUtils.GetCommandTextSql(command));
           throw;
         }
         connection.Close();
@@ -1787,7 +1822,6 @@ WHERE RowNum BETWEEN @From AND @To";
       }
       return table;
     }
-
 
     public static string[] GetReportColumnNames(LoginUser loginUser, int reportID)
     {
@@ -2117,6 +2151,8 @@ IF @@ROWCOUNT=0
   {
     public ReportFilterCondition() { }
     public int FieldID { get; set; }
+    public string FieldName { get; set; }
+    public string DataType { get; set; }
     public bool IsCustom { get; set; }
     public string Comparator { get; set; }
     public string Value1 { get; set; }
