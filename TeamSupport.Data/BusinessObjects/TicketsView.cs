@@ -914,6 +914,17 @@ namespace TeamSupport.Data
         using (SqlCommand command = new SqlCommand())
         {
             command.CommandText = @"
+            WITH TicketIDs 
+            AS 
+            (
+              SELECT
+                t.TicketID 
+              FROM 
+                Tickets t 
+              WHERE
+                OrganizationID = @OrganizationID 
+                AND DateModified > @LastMod
+            )              
             SELECT
               TicketNumber,
               'https://app.teamsupport.com?ticketid=' + CONVERT(VARCHAR,tv.TicketID) AS 'TicketURL',
@@ -968,9 +979,8 @@ namespace TeamSupport.Data
               ) as MinutesToFirstResponse
             FROM
               TicketsView tv
-            WHERE
-              OrganizationID = @OrganizationID
-              AND DateModified > @LastMod
+              INNER JOIN TicketIDs
+                ON TicketIDs.TicketID = tv.TicketID
             ORDER BY
               TicketNumber";
             command.CommandType = CommandType.Text;
