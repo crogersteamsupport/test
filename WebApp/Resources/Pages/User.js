@@ -99,7 +99,7 @@ UserPage = function () {
     $('#userFontFamily').html(user.FontFamilyDescription);
     $('#userFontSize').html(user.FontSizeDescription);
     $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Yes' : 'No'));
-    $('#userAllowToEditAnyAction').html((user.userAllowToEditAnyAction == true ? 'Yes' : 'No'));
+    $('#userAllowToEditAnyAction').html((user.AllowUserToEditAnyAction == true ? 'Yes' : 'No'));
     $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
     $('#userCanCreateCompany').html((user.CanCreateCompany == true ? 'Yes' : 'No'));
     $('#userCanEditCompany').html((user.CanEditCompany == true ? 'Yes' : 'No'));
@@ -1198,6 +1198,8 @@ UserPage = function () {
     $('#userTimeZone').addClass('disabledlink');
     $('#userRestrictFromEditingAnyActions').removeClass('ui-state-default ts-link');
     $('#userRestrictFromEditingAnyActions').addClass('disabledlink');
+    $('#userAllowToEditAnyAction').removeClass('ui-state-default ts-link');
+    $('#userAllowToEditAnyAction').addClass('disabledlink');
     $('#userTicketVisibility').removeClass('ui-state-default ts-link');
     $('#userTicketVisibility').addClass('disabledlink');
     $('#userKBVisibility').removeClass('ui-state-default ts-link');
