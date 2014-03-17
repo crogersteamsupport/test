@@ -67,7 +67,7 @@ namespace TeamSupport.ServiceLibrary
             ProcessIndex(org, ReferenceType.WaterCooler, isRebuilder);
             ProcessIndex(org, ReferenceType.Organizations, isRebuilder);
             ProcessIndex(org, ReferenceType.Contacts, isRebuilder);
-            if (isRebuilder)
+            if (isRebuilder && !IsStopped)
             {
               org.LastIndexRebuilt = DateTime.UtcNow;
               Logs.WriteEvent("LastIndexRebuilt Updated");
@@ -108,6 +108,7 @@ namespace TeamSupport.ServiceLibrary
 
     private void ProcessIndex(Organization organization, ReferenceType referenceType, bool isRebuilder)
     {
+      if (IsStopped) return;
       string indexPath                            = string.Empty;
       string deletedIndexItemsFileName            = string.Empty;
       string storedFields                         = string.Empty;
@@ -231,7 +232,9 @@ namespace TeamSupport.ServiceLibrary
           IndexProgressInfo status = new IndexProgressInfo();
           while (job.IsThreadDone(1000, status) == false)
           {
-            if (IsStopped) { job.AbortThread(); }
+            if (IsStopped) { 
+              job.AbortThread();
+            }
           }
         }
         catch (Exception ex)
@@ -241,13 +244,16 @@ namespace TeamSupport.ServiceLibrary
           throw;
         }
 
-        if (!isRebuilder)
+        if (!IsStopped)
         {
-          if (!organization.IsRebuildingIndex) UpdateItems(indexDataSource, tableName, primaryKeyName);
-        }
-        else
-        {
-          MoveRebuiltIndex(organization.OrganizationID, mainIndexPath, path);
+          if (!isRebuilder)
+          {
+            if (!organization.IsRebuildingIndex) UpdateItems(indexDataSource, tableName, primaryKeyName);
+          }
+          else
+          {
+            MoveRebuiltIndex(organization.OrganizationID, mainIndexPath, path);
+          }
         }
 
         

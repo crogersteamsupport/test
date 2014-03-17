@@ -49,99 +49,126 @@ namespace TSWebServices
     [WebMethod]
     public GridResult GetTicketRange(int from, int to, TicketLoadFilter filter)
     {
-      LoginUser loginUser = TSAuthentication.GetLoginUser();
-      GridResult result = new GridResult();
-      result.From = from;
-      result.To = to;
-      result.Total = TicketsView.GetFilterCount(loginUser, filter);
-      List<TicketsViewItemProxy> list = new List<TicketsViewItemProxy>();
-      using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+      if (true)
       {
-        connection.Open();
-        if (filter == null) filter = new TicketLoadFilter();
-        SqlCommand command = TicketsView.GetLoadRangeCommand(loginUser, from, to, filter);
-        command.Connection = connection;
-        SqlDataReader reader = command.ExecuteReader();
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        GridResult result = new GridResult();
+        result.From = from;
+        result.To = to;
+        result.Total = TicketsView.GetFilterCount(loginUser, filter);
+        List<TicketsViewItemProxy> list = new List<TicketsViewItemProxy>();
+        using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+        {
+          connection.Open();
+          if (filter == null) filter = new TicketLoadFilter();
+          SqlCommand command = TicketsView.GetLoadRangeCommand(loginUser, from, to, filter);
+          command.Connection = connection;
+          SqlDataReader reader = command.ExecuteReader();
 
+          try
+          {
+
+            while (reader.Read())
+            {
+              TicketsViewItemProxy item = new TicketsViewItemProxy();
+              item.SalesForceID = reader["SalesForceID"] as string;
+              item.KnowledgeBaseCategoryName = reader["KnowledgeBaseCategoryName"] as string;
+              item.KnowledgeBaseCategoryID = reader["KnowledgeBaseCategoryID"] as int?;
+              item.CategoryName = reader["CategoryName"] as string;
+              item.ForumCategory = reader["ForumCategory"] as int?;
+              item.TicketSource = reader["TicketSource"] as string;
+              item.Customers = reader["Customers"] as string;
+              item.Contacts = reader["Contacts"] as string;
+              item.SlaWarningHours = reader["SlaWarningHours"] as decimal?;
+              item.SlaViolationHours = reader["SlaViolationHours"] as decimal?;
+              item.SlaWarningTime = reader["SlaWarningTime"] as int?;
+              item.SlaViolationTime = reader["SlaViolationTime"] as int?;
+              item.Tags = reader["Tags"] as string;
+              item.HoursSpent = reader["HoursSpent"] as decimal?;
+              item.ModifierName = reader["ModifierName"] as string;
+              item.CreatorName = reader["CreatorName"] as string;
+              item.CloserName = reader["CloserName"] as string;
+              item.DaysOpened = reader["DaysOpened"] as int?;
+              item.DaysClosed = reader["DaysClosed"] as int? ?? 0;
+              item.CloserID = reader["CloserID"] as int?;
+              item.CreatorID = reader["CreatorID"] as int? ?? -1;
+              item.ModifierID = reader["ModifierID"] as int? ?? -1;
+              item.ParentID = reader["ParentID"] as int?;
+              item.Name = reader["Name"] as string;
+              item.OrganizationID = reader["OrganizationID"] as int? ?? loginUser.OrganizationID;
+              item.TicketSeverityID = reader["TicketSeverityID"] as int? ?? -1;
+              item.TicketTypeID = reader["TicketTypeID"] as int? ?? -1;
+              item.TicketStatusID = reader["TicketStatusID"] as int? ?? -1;
+              item.UserID = reader["UserID"] as int? ?? -1;
+              item.GroupID = reader["GroupID"] as int? ?? -1;
+              item.ProductID = reader["ProductID"] as int? ?? -1;
+              item.SolvedVersionID = reader["SolvedVersionID"] as int?;
+              item.ReportedVersionID = reader["ReportedVersionID"] as int?;
+              item.IsKnowledgeBase = reader["IsKnowledgeBase"] as bool? ?? false;
+              item.IsVisibleOnPortal = reader["IsVisibleOnPortal"] as bool? ?? false;
+              item.TicketNumber = reader["TicketNumber"] as int? ?? -1;
+              item.Severity = reader["Severity"] as string;
+              item.IsClosed = reader["IsClosed"] as bool? ?? false;
+              item.SeverityPosition = reader["SeverityPosition"] as int?;
+              item.StatusPosition = reader["StatusPosition"] as int?;
+              item.Status = reader["Status"] as string;
+              item.UserName = reader["UserName"] as string;
+              item.TicketTypeName = reader["TicketTypeName"] as string;
+              item.GroupName = reader["GroupName"] as string;
+              item.SolvedVersion = reader["SolvedVersion"] as string;
+              item.ReportedVersion = reader["ReportedVersion"] as string;
+              item.ProductName = reader["ProductName"] as string;
+              item.TicketID = reader["TicketID"] as int? ?? -1;
+
+              item.DateModified = DateTime.SpecifyKind(reader["DateModified"] as DateTime? ?? DateTime.MinValue, DateTimeKind.Utc);
+              item.DateCreated = DateTime.SpecifyKind(reader["DateCreated"] as DateTime? ?? DateTime.MinValue, DateTimeKind.Utc);
+
+              item.DateModifiedBySalesForceSync = GetReaderNullableDate(reader["DateModifiedBySalesForceSync"]);
+              item.SlaWarningDate = GetReaderNullableDate(reader["SlaWarningDate"]);
+              item.SlaViolationDate = GetReaderNullableDate(reader["SlaViolationDate"]);
+              item.DateClosed = GetReaderNullableDate(reader["DateClosed"]);
+
+              item.IsRead = reader["IsRead"] as bool? ?? false;
+              item.IsFlagged = reader["IsFlagged"] as bool? ?? false;
+              item.IsSubscribed = reader["IsSubscribed"] as bool? ?? false;
+              item.IsEnqueued = reader["IsEnqueued"] as bool? ?? false;
+              item.ViewerID = reader["ViewerID"] as int?;
+              list.Add(item);
+            }
+          }
+          finally
+          {
+            reader.Close();
+          }
+
+          result.Data = list;
+
+          return result;
+        }
+      
+      }
+      else
+      {
         try
         {
+          TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+          if (filter == null) filter = new TicketLoadFilter();
+          tickets.LoadByRange(from, to, filter);
+          GridResult result = new GridResult();
 
-          while (reader.Read())
-          {
-            TicketsViewItemProxy item = new TicketsViewItemProxy();
-            item.SalesForceID = reader["SalesForceID"] as string;
-            item.KnowledgeBaseCategoryName = reader["KnowledgeBaseCategoryName"] as string;
-            item.KnowledgeBaseCategoryID = reader["KnowledgeBaseCategoryID"] as int?;
-            item.CategoryName = reader["CategoryName"] as string;
-            item.ForumCategory = reader["ForumCategory"] as int?;
-            item.TicketSource = reader["TicketSource"] as string;
-            item.Customers = reader["Customers"] as string;
-            item.Contacts = reader["Contacts"] as string;
-            item.SlaWarningHours = reader["SlaWarningHours"] as decimal?;
-            item.SlaViolationHours = reader["SlaViolationHours"] as decimal?;
-            item.SlaWarningTime = reader["SlaWarningTime"] as int?;
-            item.SlaViolationTime = reader["SlaViolationTime"] as int?;
-            item.Tags = reader["Tags"] as string;
-            item.HoursSpent = reader["HoursSpent"] as decimal?;
-            item.ModifierName = reader["ModifierName"] as string;
-            item.CreatorName = reader["CreatorName"] as string;
-            item.CloserName = reader["CloserName"] as string;
-            item.DaysOpened = reader["DaysOpened"] as int?;
-            item.DaysClosed = reader["DaysClosed"] as int? ?? 0;
-            item.CloserID = reader["CloserID"] as int?;
-            item.CreatorID = reader["CreatorID"] as int? ?? -1;
-            item.ModifierID = reader["ModifierID"] as int? ?? -1;
-            item.ParentID = reader["ParentID"] as int?;
-            item.Name = reader["Name"] as string;
-            item.OrganizationID = reader["OrganizationID"] as int? ?? loginUser.OrganizationID;
-            item.TicketSeverityID = reader["TicketSeverityID"] as int? ?? -1;
-            item.TicketTypeID = reader["TicketTypeID"] as int? ?? -1;
-            item.TicketStatusID = reader["TicketStatusID"] as int? ?? -1;
-            item.UserID = reader["UserID"] as int? ?? -1;
-            item.GroupID = reader["GroupID"] as int? ?? -1;
-            item.ProductID = reader["ProductID"] as int? ?? -1;
-            item.SolvedVersionID = reader["SolvedVersionID"] as int?;
-            item.ReportedVersionID = reader["ReportedVersionID"] as int?;
-            item.IsKnowledgeBase = reader["IsKnowledgeBase"] as bool? ?? false;
-            item.IsVisibleOnPortal = reader["IsVisibleOnPortal"] as bool? ?? false;
-            item.TicketNumber = reader["TicketNumber"] as int? ?? -1;
-            item.Severity = reader["Severity"] as string;
-            item.IsClosed = reader["IsClosed"] as bool? ?? false;
-            item.SeverityPosition = reader["SeverityPosition"] as int?;
-            item.StatusPosition = reader["StatusPosition"] as int?;
-            item.Status = reader["Status"] as string;
-            item.UserName = reader["UserName"] as string;
-            item.TicketTypeName = reader["TicketTypeName"] as string;
-            item.GroupName = reader["GroupName"] as string;
-            item.SolvedVersion = reader["SolvedVersion"] as string;
-            item.ReportedVersion = reader["ReportedVersion"] as string;
-            item.ProductName = reader["ProductName"] as string;
-            item.TicketID = reader["TicketID"] as int? ?? -1;
-
-            item.DateModified = DateTime.SpecifyKind(reader["DateModified"] as DateTime? ?? DateTime.MinValue, DateTimeKind.Utc);
-            item.DateCreated = DateTime.SpecifyKind(reader["DateCreated"] as DateTime? ?? DateTime.MinValue, DateTimeKind.Utc);
-
-            item.DateModifiedBySalesForceSync = GetReaderNullableDate(reader["DateModifiedBySalesForceSync"]);
-            item.SlaWarningDate = GetReaderNullableDate(reader["SlaWarningDate"]);
-            item.SlaViolationDate = GetReaderNullableDate(reader["SlaViolationDate"]);
-            item.DateClosed = GetReaderNullableDate(reader["DateClosed"]);
-
-            item.IsRead = reader["IsRead"] as bool? ?? false;
-            item.IsFlagged = reader["IsFlagged"] as bool? ?? false;
-            item.IsSubscribed = reader["IsSubscribed"] as bool? ?? false;
-            item.IsEnqueued = reader["IsEnqueued"] as bool? ?? false;
-            item.ViewerID = reader["ViewerID"] as int?;
-            list.Add(item);
-          }
+          result.From = from;
+          result.To = to;
+          result.Total = tickets.GetFilterCount(filter);
+          result.Data = tickets.GetTicketsViewItemProxies();
+          return result;
+          //return new TicketRange(from, to, tickets.GetFilterCount(filter), tickets.GetTicketsViewItemProxies(), filter);
         }
-        finally
+        catch (Exception e)
         {
-          reader.Close();
+          ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), e, "Ticket Grid");
+          throw;
         }
 
-        result.Data = list;
-
-        return result;
       }
     }
 
