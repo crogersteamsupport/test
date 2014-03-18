@@ -965,12 +965,7 @@ namespace TeamSupport.Data
 
     }
 
-    public static string TableToCsv(DataTable table)
-    {
-      return TableToCsv(table, false);
-    }
-
-    public static string TableToCsv(DataTable table, bool replaceNewLineWithHtml)
+    public static string TableToCsv(LoginUser loginUser, DataTable table, bool replaceNewLineWithHtml = false)
     {
       StringBuilder builder = new StringBuilder();
       for (int i = 0; i < table.Columns.Count; i++)
@@ -978,6 +973,7 @@ namespace TeamSupport.Data
         if (i > 0) builder.Append(",");
         builder.Append(table.Columns[i].ColumnName);
       }
+      DateTime dateValue;
       foreach (DataRow row in table.Rows)
       {
         builder.AppendLine();
@@ -986,6 +982,10 @@ namespace TeamSupport.Data
           if (i > 0) builder.Append(",");
           string value = row[i].ToString();
           if (value.Length > 8000) value = value.Substring(0, 8000);
+          if (DateTime.TryParse(value, out dateValue))
+          {
+            value = TimeZoneInfo.ConvertTimeFromUtc(dateValue, loginUser.TimeZoneInfo).ToString(loginUser.CultureInfo);
+          }
 
           value = "\"" + value.Replace("\"", "\"\"") + "\"";
           if (replaceNewLineWithHtml) value = value.Replace(Environment.NewLine, "<br />");
@@ -1036,6 +1036,49 @@ namespace TeamSupport.Data
         }
         reader.Close();
         return builder.ToString();
+      }
+    }
+
+    public static DataTable GetTable(LoginUser loginUser, SqlCommand command)
+    {
+      FixCommandParameters(command);
+      DataTable table = new DataTable();
+      using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+      {
+        connection.Open();
+        SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+        command.Connection = connection;
+        command.Transaction = transaction;
+        try
+        {
+          using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+          {
+            adapter.Fill(table);
+          }
+          transaction.Commit();
+        }
+        catch (Exception ex)
+        {
+          transaction.Rollback();
+          ExceptionLogs.LogException(loginUser, ex, "DataUtils GetTable", GetCommandTextSql(command));
+          throw;
+        }
+        connection.Close();
+      }
+
+      return table;
+    
+    }
+
+    public static void FixCommandParameters(SqlCommand command)
+    {
+      foreach (SqlParameter parameter in command.Parameters)
+      {
+        if (parameter.SqlDbType == SqlDbType.NVarChar)
+        {
+          parameter.SqlDbType = SqlDbType.VarChar;
+        }
       }
     }
 

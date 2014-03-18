@@ -22,6 +22,7 @@ using System.Runtime.Serialization.Json;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using System.Web.Security;
+using OfficeOpenXml;
 
 namespace TeamSupport.Handlers
 {
@@ -59,7 +60,7 @@ namespace TeamSupport.Handlers
           {
             case "images": ProcessImages(context, segments.ToArray(), organizationID); break;
             case "chat": ProcessChat(context, segments[2], organizationID); break;
-            case "reports": ProcessReport(context, int.Parse(segments[2])); break;
+            case "reports": ProcessReport(context, int.Parse(segments[2]), (context.Request["Type"] == null ? "CSV" : context.Request["Type"])); break;
             case "ticketexport": ProcessTicketExport(context); break;
             case "attachments": ProcessAttachment(context, int.Parse(segments[2])); break;
             case "avatar": ProcessAvatar(context, segments.ToArray(), organizationID); break;
@@ -70,7 +71,7 @@ namespace TeamSupport.Handlers
         {
           switch (segments[0])
           {
-            case "reports": ProcessReport(context, int.Parse(segments[1])); break;
+            case "reports": ProcessReport(context, int.Parse(segments[1]), (context.Request["Type"] == null ? "CSV" : context.Request["Type"])); break;
             case "ticketexport": ProcessTicketExport(context); break;
             case "attachments": ProcessAttachment(context, int.Parse(segments[1])); break;
             default: context.Response.End(); break;
@@ -274,9 +275,9 @@ namespace TeamSupport.Handlers
       try
       {
         TicketLoadFilter filter = JsonConvert.DeserializeObject<TicketLoadFilter>(value);
-        SqlCommand command = TicketsView.GetLoadExportCommand(UserSession.LoginUser, filter);
+        SqlCommand command = TicketsView.GetLoadExportCommand(TSAuthentication.GetLoginUser(), filter);
 
-        string text = DataUtils.CommandToCsv(UserSession.LoginUser, command, false);
+        string text = DataUtils.CommandToCsv(TSAuthentication.GetLoginUser(), command, false);
         /*
         MemoryStream stream = new MemoryStream();
         ZipOutputStream zip = new ZipOutputStream(stream);
@@ -301,55 +302,104 @@ namespace TeamSupport.Handlers
       {
         context.Response.Write("Error retrieving tickets. <br/><br/>" + ex.Message);
         context.Response.ContentType = "text/html";
-        ExceptionLogs.LogException(UserSession.LoginUser, ex, "Ticket Grid Export");
+        ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), ex, "Ticket Grid Export");
         return;
       }
     }
 
-    private void ProcessReport(HttpContext context, int reportID)
+    private void ProcessReport(HttpContext context, int reportID, string type)
     {
 
       //http://127.0.0.1/tsdev/dc/1078/reports/7401
-      Report report = Reports.GetReport(UserSession.LoginUser, reportID);
+      Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
 
-      if (report == null ||  (report.OrganizationID != UserSession.LoginUser.OrganizationID && report.OrganizationID != null))
+      if (report == null ||  (report.OrganizationID != TSAuthentication.GetLoginUser().OrganizationID && report.OrganizationID != null))
       {
         context.Response.Write("Unauthorized");
         context.Response.ContentType = "text/html";
         return;
       }
+     
 
-      /*
-      SqlCommand command = new SqlCommand();
-      report.GetCommand(command, false);
-      string text = DataUtils.CommandToCsv(UserSession.LoginUser, command, false);
-       */
+      if (false)
+      {
+        string sql = report.GetSqlOld(false);
+        SqlCommand command = new SqlCommand(sql);
+        Report.CreateParameters(TSAuthentication.GetLoginUser(), command, TSAuthentication.GetLoginUser().UserID);
+        string text = DataUtils.CommandToCsv(TSAuthentication.GetLoginUser(), command, false);
 
+        context.Response.Write(text);
+        context.Response.ContentType = "application/octet-stream";
+        context.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + report.Name + ".csv\"");
+        //context.Response.AddHeader("Content-Length", text.Length.ToString());
+      }
+      else
+      {
+        if (type.ToLower() == "excel")
+        {
+          using (ExcelPackage pck = new ExcelPackage())
+          {
+            ExcelWorksheet ws = pck.Workbook.Worksheets.Add(report.Name);
+            
+            DataTable table = Reports.GetReportTable(report.Collection.LoginUser, report.ReportID, 0, 10000000, null, true, true, false);
+            System.Globalization.DateTimeFormatInfo dtfi = TSAuthentication.GetLoginUser().CultureInfo.DateTimeFormat;
+            //ws.Column(0).Style.Numberformat.Format = dtfi.ShortDatePattern + " " + dtfi.ShortTimePattern;
+            ws.Cells["A1"].LoadFromDataTable(table, true);
+            ws.Cells["A1:" + GetExcelColumnName(table.Columns.Count) + "1"].AutoFilter = true;
 
-      string sql = report.GetSqlOld(false);
-      SqlCommand command = new SqlCommand(sql);
-      Report.CreateParameters(UserSession.LoginUser, command, UserSession.LoginUser.UserID);
-      string text = DataUtils.CommandToCsv(UserSession.LoginUser, command, false);
-      /*
-      MemoryStream stream = new MemoryStream();
-      ZipOutputStream zip = new ZipOutputStream(stream);
-      zip.SetLevel(9);
-      zip.PutNextEntry(new ZipEntry(report.Name + ".csv"));
-      Byte[] bytes = Encoding.UTF8.GetBytes(text);
-      zip.Write(bytes, 0, bytes.Length);
-      zip.CloseEntry();
-      zip.Finish();
-      stream.WriteTo(context.Response.OutputStream);
-      //context.Response.ContentType = "application/x-zip-compressed";
-      context.Response.ContentType = "application/octet-stream";
-      context.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + report.Name + ".zip\"");
-      context.Response.AddHeader("Content-Length", stream.Length.ToString());
-      zip.Close();*/
-       
-      context.Response.Write(text);
-      context.Response.ContentType = "application/octet-stream";
-      context.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + report.Name + ".csv\"");
-      //context.Response.AddHeader("Content-Length", text.Length.ToString());
+            int columnCount = table.Columns.Count;
+            int rowCount = table.Rows.Count;
+
+            ExcelRange r;
+
+            // which columns have dates in
+            for (int i = 0; i < columnCount; i++)
+            {
+              // if cell header value matches a date column
+              if (table.Columns[i].DataType == typeof(System.DateTime))
+              {
+                r = ws.Cells[2, i+1, rowCount + 1, i+1];
+                r.AutoFitColumns();
+                r.Style.Numberformat.Format = dtfi.ShortDatePattern + " " + dtfi.ShortTimePattern; 
+              }
+            }
+            // get all data and autofit
+            r = ws.Cells[1, 1, rowCount + 1, columnCount];
+            r.AutoFitColumns();
+ 
+            context.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            context.Response.AddHeader("content-disposition", "attachment;  filename=\"" + report.Name + ".xlsx\"");
+            context.Response.BinaryWrite(pck.GetAsByteArray());
+          }
+
+        }
+        else
+        {
+          DataTable table = Reports.GetReportTable(report.Collection.LoginUser, report.ReportID, 0, 10000000, null, true, true, false);
+          string text = DataUtils.TableToCsv(report.Collection.LoginUser, table);
+          context.Response.Write(text);
+          context.Response.ContentType = "application/octet-stream";
+          context.Response.AddHeader("content-disposition", "attachment; filename=\"" + report.Name + ".csv\"");
+
+        }
+
+      }
+    }
+
+    private string GetExcelColumnName(int columnNumber)
+    {
+      int dividend = columnNumber;
+      string columnName = String.Empty;
+      int modulo;
+
+      while (dividend > 0)
+      {
+        modulo = (dividend - 1) % 26;
+        columnName = Convert.ToChar(65 + modulo).ToString() + columnName;
+        dividend = (int)((dividend - modulo) / 26);
+      }
+
+      return columnName;
     }
 
     private void WriteImage(HttpContext context, string fileName)

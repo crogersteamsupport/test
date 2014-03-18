@@ -29,7 +29,7 @@
 
     }
 
-    $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
+    $('.btn-group .toolitp').tooltip({ placement: 'bottom', container: 'body' });
 
     top.Ts.Utils.webMethod("ReportService", "GetReport", {
         "reportID": _reportID
@@ -269,12 +269,17 @@
         });
     });
 
-    $('.reports-export').click(function (e) {
+    $('.reports-export-excel').click(function (e) {
         e.preventDefault();
         //'../dc/1078/reports/95'
-        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID, 'Report Download');
+        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=EXCEL', 'Report Download');
     });
 
+    $('.reports-export-csv').click(function (e) {
+        e.preventDefault();
+        //'../dc/1078/reports/95'
+        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=CSV', 'Report Download');
+    });
     _layout = $('#reports-tabview-layout').layout({
         resizeNestedLayout: true,
         maskIframesOnResize: true,

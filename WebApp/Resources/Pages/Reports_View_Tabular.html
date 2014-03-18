@@ -39,15 +39,22 @@
       </div>
       <div class="btn-toolbar" role="toolbar">
         <div class="btn-group">
-          <button class="btn btn-default reports-edit" type="button" data-toggle="tooltip"
+          <button class="btn btn-default reports-edit btn-tooltip" type="button" 
             title="Edit"><i class="fa fa-pencil"></i></button>
-          <button class="btn btn-default reports-export" type="button" data-toggle="tooltip"
-            title="Export"><i class="fa fa-download"></i></button>
-          <button class="btn btn-default reports-fav" type="button" data-toggle="tooltip" title="Add to starred">
+
+          <div class="btn-group">
+            <button type="button" class="btn btn-default btn-tooltip dropdown-toggle" data-toggle="dropdown" title="Export"><i class="fa fa-download"></i></button>
+            <ul class="dropdown-menu">
+              <li><a href="#" class="reports-export-csv">Export as Comma Separated Values</a></li>
+              <li><a href="#" class="reports-export-excel">Export as Excel</a></li>
+            </ul>
+          </div>
+ 
+          <button class="btn btn-default reports-fav btn-tooltip" type="button" title="Add to starred">
             <i class="fa fa-star-o"></i></button>
-          <button class="btn btn-default reports-filter" type="button" data-toggle="tooltip"
+          <button class="btn btn-default reports-filter btn-tooltip" type="button" 
             title="Filter"><i class="fa fa-filter"></i></button>
-          <button class="btn btn-default reports-refresh" type="button" data-toggle="tooltip"
+          <button class="btn btn-default reports-refresh btn-tooltip" type="button" 
             title="Refresh"><i class="fa fa-refresh"></i></button>
         </div>
       </div>

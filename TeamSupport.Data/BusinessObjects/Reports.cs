@@ -440,7 +440,7 @@ namespace TeamSupport.Data
             fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
             if (customField.FieldType == CustomFieldType.DateTime)
             {
-              fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+              fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
               fieldName,
               offset < TimeSpan.Zero ? "-" : "+",
               Math.Abs(offset.Hours),
@@ -477,7 +477,7 @@ namespace TeamSupport.Data
             fieldName = "dbo.StripHTML(" + fieldName + ")";
           if (tableField.DataType.Trim().ToLower() == "datetime")
           {
-            fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+            fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
               fieldName,
               offset < TimeSpan.Zero ? "-" : "+",
               Math.Abs(offset.Hours),
@@ -667,7 +667,7 @@ namespace TeamSupport.Data
           break;
         case "datetime":
           TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
-          string datetimeSql = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+          string datetimeSql = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
             fieldName,
             offset < TimeSpan.Zero ? "-" : "+",
             Math.Abs(offset.Hours),
@@ -1024,7 +1024,7 @@ namespace TeamSupport.Data
             
             if (customField.FieldType == CustomFieldType.DateTime)
             {
-              fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+              fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
               fieldName,
               offset < TimeSpan.Zero ? "-" : "+",
               Math.Abs(offset.Hours),
@@ -1044,7 +1044,7 @@ namespace TeamSupport.Data
           string fieldName = table.TableName + "." + tableField.FieldName;
           if (tableField.DataType.Trim().ToLower() == "datetime")
           {
-            fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+            fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
               fieldName,
               offset < TimeSpan.Zero ? "-" : "+",
               Math.Abs(offset.Hours),
@@ -1085,7 +1085,7 @@ namespace TeamSupport.Data
 
             if (customField.FieldType == CustomFieldType.DateTime)
             {
-              fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+              fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
               fieldName,
               offset < TimeSpan.Zero ? "-" : "+",
               Math.Abs(offset.Hours),
@@ -1103,7 +1103,7 @@ namespace TeamSupport.Data
           string fieldName = table.TableName + "." + tableField.FieldName;
           if (tableField.DataType.Trim().ToLower() == "datetime")
           {
-            fieldName = string.Format("SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}')",
+            fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
               fieldName,
               offset < TimeSpan.Zero ? "-" : "+",
               Math.Abs(offset.Hours),
@@ -1248,7 +1248,7 @@ namespace TeamSupport.Data
         col.IsCustomField = false;
         col.FieldID = -1;
         col.OpenField = "";
-        if (column.DataType == typeof(System.DateTime)) col.DataType = "datetime";
+        if (column.DataType == typeof(System.DateTime) || column.DataType == typeof(System.DateTimeOffset)) col.DataType = "datetime";
         else if (column.DataType == typeof(System.Boolean)) col.DataType = "bit";
         else if (column.DataType == typeof(System.Int32)) col.DataType = "int";
         else if (column.DataType == typeof(System.Double)) col.DataType = "float";
@@ -1672,17 +1672,56 @@ namespace TeamSupport.Data
 
     }
 
+    public static DataTable GetReportTable(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+    {
+      Report report = Reports.GetReport(loginUser, reportID);
+
+      if (report.ReportDefType == ReportType.Custom)
+      {
+        try
+        {
+          return GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+        }
+        catch (Exception ex)
+        {
+          ExceptionLogs.LogException(loginUser, ex, "Custom Report Table");
+        }
+        return null;
+      }
+      else if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+      {
+        return GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+      }
+      else
+      {
+        return GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+      }
+
+    }
+
     private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter)
+    {
+      DataTable table = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, true);
+      GridResult result = new GridResult();
+      result.From = from;
+      result.To = to;
+      result.Total = table.Rows.Count > 0 ? (int)table.Rows[0]["TotalRows"] : 0;
+      result.Data = JsonConvert.SerializeObject(table);
+      return result;
+    }
+
+    private static DataTable GetReportTablePage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
     {
       from++;
       to++;
 
       SqlCommand command = new SqlCommand();
-      string query = @"
+      string totalRows = includeHiddenFields ? ", (SELECT COUNT(RowNum) FROM r) AS 'TotalRows'" : "";
+        string query = @"
 WITH 
 q AS ({0}),
 r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
-SELECT  *, (SELECT COUNT(RowNum) FROM r) AS 'TotalRows' FROM r
+SELECT  *{3} FROM r
 WHERE RowNum BETWEEN @From AND @To";
 
       if (report.ReportDefType == ReportType.Custom)
@@ -1691,7 +1730,7 @@ WHERE RowNum BETWEEN @From AND @To";
 WITH 
 {0}
 ,r AS (SELECT q.*, ROW_NUMBER() OVER (ORDER BY [{1}] {2}) AS 'RowNum' FROM q)
-SELECT  *, (SELECT COUNT(RowNum) FROM r) AS 'TotalRows' FROM r
+SELECT  *{3} FROM r
 WHERE RowNum BETWEEN @From AND @To";
       }
 
@@ -1702,8 +1741,8 @@ WHERE RowNum BETWEEN @From AND @To";
       }
       command.Parameters.AddWithValue("@From", from);
       command.Parameters.AddWithValue("@To", to);
-      report.GetCommand(command, true, false, useUserFilter);
-      command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC");
+      report.GetCommand(command, includeHiddenFields, false, useUserFilter);
+      command.CommandText = string.Format(query, command.CommandText, sortField, isDesc ? "DESC" : "ASC", totalRows);
 
       report.LastSqlExecuted = DataUtils.GetCommandTextSql(command);
       report.Collection.Save();
@@ -1734,19 +1773,28 @@ WHERE RowNum BETWEEN @From AND @To";
         connection.Close();
       }
 
-      GridResult result = new GridResult();
-      result.From = --from;
-      result.To = --to;
-      result.Total = table.Rows.Count > 0 ? (int)table.Rows[0]["TotalRows"] : 0;
-      result.Data = JsonConvert.SerializeObject(table);
-      return result;
+      if (!includeHiddenFields) table.Columns.Remove("RowNum");
+
+      return table;
     }
 
     private static GridResult GetReportDataAll(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter)
     {
+      DataTable table = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, true);
+  
+      GridResult result = new GridResult();
+      result.From = 0;
+      result.To = table.Rows.Count - 1;
+      result.Total = table.Rows.Count;
+      result.Data = JsonConvert.SerializeObject(table);
+      return result;
+    }
+
+    private static DataTable GetReportTableAll(LoginUser loginUser, Report report, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
+    {
       SqlCommand command = new SqlCommand();
 
-      report.GetCommand(command, true, false, useUserFilter);
+      report.GetCommand(command, includeHiddenFields, false, useUserFilter);
       if (command.CommandText.ToLower().IndexOf(" order by ") < 0)
       {
         if (string.IsNullOrWhiteSpace(sortField))
@@ -1780,14 +1828,7 @@ WHERE RowNum BETWEEN @From AND @To";
         }
         connection.Close();
       }
-
-      GridResult result = new GridResult();
-      result.From = 0;
-      result.To = table.Rows.Count - 1;
-      result.Total = table.Rows.Count;
-      result.Data = JsonConvert.SerializeObject(table);
-      return result;
-
+      return table;
     }
 
     public static DataTable GetSummaryData(LoginUser loginUser, SummaryReport summaryReport, bool useDefaultOrderBy, Report report = null)
