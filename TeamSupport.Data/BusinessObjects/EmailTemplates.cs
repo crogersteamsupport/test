@@ -112,6 +112,8 @@ namespace TeamSupport.Data
     public EmailTemplate ReplaceParameter(string parameterName, string value)
     {
       value = value ?? "";
+      // Ticket 11256 fix.
+      value = value.Replace("$", "$$");
       parameterName = "{{" + parameterName + "}}";
       Subject = Regex.Replace(Subject, parameterName, value, RegexOptions.IgnoreCase);
       Body = Regex.Replace(Body, parameterName, value, RegexOptions.IgnoreCase);
