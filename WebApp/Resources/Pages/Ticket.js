@@ -2081,7 +2081,7 @@ var appendRelated = function (tickets) {
         .cluetip(clueTipOptions)
         .appendTo(item.find('.ticket-removable-item-title'));
 
-        $('<a>')
+        var relatedTicket = $('<a>')
           .attr('href', '#')
           .text(ellipseString(related.TicketNumber + ': ' + related.Name, 30))
           .data('number', related.TicketNumber)
@@ -2090,6 +2090,13 @@ var appendRelated = function (tickets) {
               top.Ts.MainPage.openTicket($(this).data('number'), true);
           })
             .appendTo(item.find('.ticket-removable-item-description').empty());
+
+        if (related.IsClosed) {
+          relatedTicket.addClass('ticket-closed');
+        }
+        else {
+          relatedTicket.removeClass('ticket-closed');
+        }
 
         $('#divRelated').append(item);
     }

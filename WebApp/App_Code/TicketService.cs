@@ -2553,6 +2553,7 @@ namespace TSWebServices
           relatedTicket.Status = parent.Status;
           relatedTicket.Type = parent.TicketTypeName;
           relatedTicket.IsParent = true;
+          relatedTicket.IsClosed = parent.IsClosed;
           relatedTickets.Add(relatedTicket);
         }
       }
@@ -2570,6 +2571,7 @@ namespace TSWebServices
         relatedTicket.Status = item.Status;
         relatedTicket.Type = item.TicketTypeName;
         relatedTicket.IsParent = false;
+        relatedTicket.IsClosed = item.IsClosed;
         relatedTickets.Add(relatedTicket);
       }
 
@@ -2585,6 +2587,7 @@ namespace TSWebServices
         relatedTicket.Status = item.Status;
         relatedTicket.Type = item.TicketTypeName;
         relatedTicket.IsParent = null;
+        relatedTicket.IsClosed = item.IsClosed;
         relatedTickets.Add(relatedTicket);
       }
 
@@ -3232,6 +3235,8 @@ namespace TSWebServices
     public string Type { get; set; }
     [DataMember]
     public bool? IsParent { get; set; }
+    [DataMember]
+    public bool IsClosed { get; set; }
   }
 
 
