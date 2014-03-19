@@ -1318,7 +1318,7 @@ $(document).ready(function () {
             if (result !== null) {
               $('#ticketGroup').text(result == "" ? 'Unassigned' : result);
               parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
-              //              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changegroup", userFullName);
               _ticketGroupID = group.GroupID;
               if (_ticketGroupID != null) {
                 top.Ts.Services.Users.GetGroupUsers(_ticketGroupID, function (result) {
