@@ -2202,9 +2202,19 @@ namespace TSWebServices
       return logs.GetActionLogProxies();
     }
 
-    [WebMethod]
+    [WebMethod(EnableSession = true)]
     public TicketInfo GetTicketInfo(int ticketNumber)
     {
+        if (Session["isLoggedIn"] == null)
+        {
+            Session["isLoggedIn"] = "true";
+            Session["user"] = UserSession.LoginUser.UserID.ToString();
+            Directory.CreateDirectory("C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images");
+            Session["moxiemanager.filesystem.rootpath"] = "C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
+            Session["moxiemanager.local.wwwroot"] = "C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
+            Session["moxiemanager.local.urlprefix"] = "{proto}://{host}/Wiki/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
+        }
+
       TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
       if (ticket == null) return null;
       if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;

@@ -16,6 +16,11 @@ $(document).ready(function () {
     customerDetailPage.refresh();
     $('.customer-tooltip').tooltip({ placement: 'bottom', container: 'body' });
 
+
+    initEditor($('#fieldNoteDesc'), function (ed) {
+        $('#fieldNoteDesc').tinymce().focus();
+    });
+
     $('input, textarea').placeholder();
     $('body').layout({
         defaults: {
@@ -1115,11 +1120,13 @@ $(document).ready(function () {
             $('#fieldNoteTitle').val(note.Title);
             var desc = note.Description;
             desc = desc.replace(/<br\s?\/?>/g, "\n");
-            $('#fieldNoteDesc').val(desc);
+            //$('#fieldNoteDesc').val(desc);
             $('#fieldNoteID').val(note.NoteID);
             $('#btnNotesSave').text("Edit Note");
             $('#btnNotesCancel').show();
             $('#noteForm').show();
+            $('#fieldNoteDesc').tinymce().setContent(desc);
+            $('#fieldNoteDesc').tinymce().focus();
         });
     });
 
@@ -1186,7 +1193,7 @@ $(document).ready(function () {
             $('#btnNotesSave').text("Save Note");
             LoadNotes();
             $('#noteForm').toggle();
-            $(this).prop('disabled', false);
+            $("#btnNotesSave").removeProp('disabled');
         });
     });
 
@@ -1836,8 +1843,62 @@ $(document).ready(function () {
     });
 
     $('.userProperties p').toggleClass("editable");
-    //$('.customProperties p').toggleClass("editable");
+
+    
+
 });
+
+var initEditor = function (element, init) {
+    top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+        var editorOptions = {
+            plugins: "autoresize paste link code textcolor image moxiemanager",
+            toolbar1: "link unlink | undo redo removeformat | cut copy paste pastetext | code | outdent indent | bullist numlist",
+            toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote",
+            statusbar: false,
+            gecko_spellcheck: true,
+            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
+            content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
+            body_class: "ui-widget ui-widget-content",
+
+            convert_urls: true,
+            remove_script_host: false,
+            relative_urls: false,
+            template_external_list_url: "tinymce/jscripts/template_list.js",
+            external_link_list_url: "tinymce/jscripts/link_list.js",
+            external_image_list_url: "tinymce/jscripts/image_list.js",
+            media_external_list_url: "tinymce/jscripts/media_list.js",
+            menubar: false,
+            moxiemanager_leftpanel: false,
+            moxiemanager_fullscreen: false,
+
+            setup: function (ed) {
+                ed.on('init', function (e) {
+                    top.Ts.System.refreshUser(function () {
+                        if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+                        }
+                        else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+                        }
+
+                        if (top.Ts.System.User.FontSize != "0") {
+                            ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
+                        }
+                        else if (top.Ts.System.Organization.FontSize != "0") {
+                            ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSizeDescription);
+                        }
+                    });
+                });
+
+                ed.on('paste', function (ed, e) {
+                    setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+                });
+            }
+            , oninit: init
+        };
+        $(element).tinymce(editorOptions);
+    });
+}
 
 var appendCustomValues = function (fields) {
 

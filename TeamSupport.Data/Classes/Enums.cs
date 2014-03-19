@@ -265,19 +265,19 @@ namespace TeamSupport.Data
   public enum FontSize
   {
     Unassigned  = 0,
-    [Description("1 (8pt)")]
+    [Description("8pt")]
     One8pt      = 1,
-    [Description("2 (10pt)")]
+    [Description("10pt")]
     Two10pt     = 2,
-    [Description("3 (12pt)")]
+    [Description("12pt")]
     Three12pt   = 3,
-    [Description("4 (14pt)")]
+    [Description("14pt")]
     Four14pt    = 4,
-    [Description("5 (18pt)")]
+    [Description("18pt")]
     Five18pt    = 5,
-    [Description("6 (24pt)")]
+    [Description("24pt")]
     Six24pt     = 6,
-    [Description("7 (36pt)")]
+    [Description("36pt")]
     Seven36pt   = 7
   }
 }
