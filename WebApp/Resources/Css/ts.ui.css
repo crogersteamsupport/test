@@ -251,7 +251,7 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 /* Ts Tabs */
 .ts-tabs { position: relative; padding: 0 .5em; zoom: 1;  border-left: none; border-right:none; border-top:none; overflow:hidden; margin-top:1px;} 
 .ts-tabs li { list-style: none; float: left; position: relative; border-bottom: 0 !important; padding: 0 .33em; white-space: nowrap; height:25px; line-height:25px; margin: 5px .1em 0 0; cursor:pointer;}
-.ts-tabs li a { float: left; text-decoration: none; display:block; margin: 0 0; text-align: center ; min-width: 70px;}
+.ts-tabs li a { float: left; text-decoration: none; display:block; margin: 0 0; text-align: center ; min-width: 80px;}
 .ts-tabs li a:hover { text-decoration:none;}
 .ts-tabs li.ui-state-active a, .ts-tabs li.ui-state-disabled a, .ts-tabs li.ui-state-processing a { cursor: default; }
 .ts-tabs-hide { display: none !important; }

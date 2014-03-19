@@ -2210,9 +2210,11 @@ namespace TSWebServices
             Session["isLoggedIn"] = "true";
             Session["user"] = UserSession.LoginUser.UserID.ToString();
             Directory.CreateDirectory("C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images");
+
+            
             Session["moxiemanager.filesystem.rootpath"] = "C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
-            Session["moxiemanager.local.wwwroot"] = "C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
-            Session["moxiemanager.local.urlprefix"] = "{proto}://{host}/Wiki/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
+            Session["moxiemanager.filesystem.local.wwwroot"] = "C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
+            Session["moxiemanager.filesystem.local.urlprefix"] = "{proto}://{host}/Wiki/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
         }
 
       TicketsViewItem ticket = TicketsView.GetTicketsViewItemByNumber(TSAuthentication.GetLoginUser(), ticketNumber);
