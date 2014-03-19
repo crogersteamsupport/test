@@ -180,7 +180,7 @@ $(document).ready(function () {
       }
       $('.ticket-history-logs').removeClass('ts-loading').append(table);
     }, function () {
-      alert('There was a problem retrieving the historu for the ticket.');
+      alert('There was a problem retrieving the history for the ticket.');
     });
   });
 
