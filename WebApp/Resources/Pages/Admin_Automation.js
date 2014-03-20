@@ -162,17 +162,10 @@ AdminAuto = function () {
 
   function initEditor(id, onEditorInit) {
     $('#' + id).tinymce({
-      theme: "advanced",
-      skin: "o2k7",
-      plugins: "autoresize",
-      theme_advanced_buttons1: "bold,italic,underline,strikethrough,bullist,numlist,fontselect,fontsizeselect,forecolor,backcolor,|,link,unlink,|,code",
-      theme_advanced_buttons2: "",
-      theme_advanced_buttons3: "",
-      theme_advanced_buttons4: "",
-      theme_advanced_toolbar_location: "top",
-      theme_advanced_toolbar_align: "left",
-      theme_advanced_statusbar_location: "none",
-      theme_advanced_resizing: true,
+      plugins: "autoresize link code",
+      toolbar1: "bold italic underline strikethrough bullist numlist fontselect fontsizeselect forecolor backcolor | link unlink | code",
+      statusbar: false,
+      gecko_spellcheck: true,
       convert_urls: true,
       relative_urls: false,
       content_css: "../Css/jquery-ui-latest.custom.css",
@@ -181,7 +174,8 @@ AdminAuto = function () {
       external_link_list_url: "tinymce/jscripts/link_list.js",
       external_image_list_url: "tinymce/jscripts/image_list.js",
       media_external_list_url: "tinymce/jscripts/media_list.js",
-      setup: function (ed) { ed.onChange.add(function (ed, l) { isModified(true); }); },
+      menubar: false,
+      setup: function (ed) { ed.on('change', function (ed, l) { isModified(true); }); },
       oninit: onEditorInit
     });
     /*

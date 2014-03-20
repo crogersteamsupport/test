@@ -518,51 +518,43 @@ $(document).ready(function () {
     top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
 
       var editorOptions = {
-        theme: "advanced",
-        skin: "o2k7",
-        plugins: "imagemanager,autoresize,paste,table,inlinepopups,table",
-        theme_advanced_buttons1: "insertPasteImage,insertKb,insertTicket,insertimage,insertDropBox,recordScreen,|,link,unlink,|,undo,redo,removeformat,|,cut,copy,paste,pastetext,pasteword,|,cleanup,code,|,outdent,indent,|,bullist,numlist",
-        theme_advanced_buttons2: "justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,fontselect,fontsizeselect,bold,italic,underline,strikethrough,blockquote",
-        //theme_advanced_buttons3: "tablecontrols",
-        theme_advanced_buttons3: "",
-        theme_advanced_buttons4: "",
-        theme_advanced_toolbar_location: "top",
-        theme_advanced_toolbar_align: "left",
-        theme_advanced_statusbar_location: "none",
-        theme_advanced_resizing: true,
-        autoresize_bottom_margin: 10,
-        autoresize_on_init: true,
-        force_br_newlines: true,
-        force_p_newlines: false,
-        forced_root_block: '',
-        spellchecker_rpc_url: "../../../TinyMCEHandler.aspx?module=SpellChecker",
+        plugins: "autoresize paste link code textcolor image moxiemanager",
+        toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen | link unlink | undo redo removeformat | cut copy paste pastetext | code | outdent indent | bullist numlist",
+        toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote",
+        statusbar: false,
         gecko_spellcheck: true,
         extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
-        convert_urls: true,
-        remove_script_host: false,
-        relative_urls: false,
         content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
         body_class: "ui-widget ui-widget-content",
 
+        convert_urls: true,
+        remove_script_host: false,
+        relative_urls: false,
         template_external_list_url: "tinymce/jscripts/template_list.js",
         external_link_list_url: "tinymce/jscripts/link_list.js",
         external_image_list_url: "tinymce/jscripts/image_list.js",
         media_external_list_url: "tinymce/jscripts/media_list.js",
+        menubar: false,
+        moxiemanager_leftpanel: false,
+        moxiemanager_fullscreen: false,
+        moxiemanager_title: top.Ts.System.Organization.Name,
+        moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
+
         setup: function (ed) {
-          ed.onInit.add(function (ed) {
+          ed.on('init', function (e) {
             top.Ts.System.refreshUser(function () {
               if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                ed.execCommand("fontName", false, top.Ts.System.User.FontFamilyDescription);
+                ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
               }
               else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                ed.execCommand("fontName", false, top.Ts.System.Organization.FontFamilyDescription);
+                ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
               }
 
               if (top.Ts.System.User.FontSize != "0") {
-                ed.execCommand("fontSize", false, top.Ts.System.User.FontSize);
+                ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
               }
               else if (top.Ts.System.Organization.FontSize != "0") {
-                ed.execCommand("fontSize", false, top.Ts.System.Organization.FontSize);
+                ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSizeDescription);
               }
             });
           });
@@ -1888,9 +1880,65 @@ $(document).ready(function () {
 
   $('.ticket-rail a').addClass('ui-state-default ts-link');
 
-
+  top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 });
 
-
+function GetTinyMCEFontName(fontFamily) {
+  var result = '';
+  switch (fontFamily) {
+    case 1:
+      result = "'andale mono', times";
+      break;
+    case 2:
+      result = "arial, helvetica, sans-serif";
+      break;
+    case 3:
+      result = "'arial black', 'avant garde'";
+      break;
+    case 4:
+      result = "'book antiqua', palatino";
+      break;
+    case 5:
+      result = "'comic sans ms', sans-serif";
+      break;
+    case 6:
+      result = "'courier new', courier";
+      break;
+    case 7:
+      result = "georgia, palatino";
+      break;
+    case 8:
+      result = "helvetica";
+      break;
+    case 9:
+      result = "impact, chicago";
+      break;
+    case 10:
+      result = "symbol";
+      break;
+    case 11:
+      result = "tahoma, arial, helvetica, sans-serif";
+      break;
+    case 12:
+      result = "terminal, monaco";
+      break;
+    case 13:
+      result = "'times new roman', times";
+      break;
+    case 14:
+      result = "'trebuchet ms', geneva";
+      break;
+    case 15:
+      result = "verdana, geneva";
+      break;
+    case 16:
+      result = "webdings";
+      break;
+    case 17:
+      result = "wingdings, 'zapf dingbats'";
+      break;
+  }
+  return result;
+}
 
 

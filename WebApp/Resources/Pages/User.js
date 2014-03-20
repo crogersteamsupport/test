@@ -1413,30 +1413,43 @@ UserPage = function () {
 
   function initEditor(element, init) {
     var editorOptions = {
-      theme: "advanced",
-      skin: "o2k7",
-      plugins: "imagemanager,autoresize",
-      theme_advanced_buttons1: "insertimage,bold,italic,underline,strikethrough,bullist,numlist,fontselect,fontsizeselect,forecolor,backcolor,|,link,unlink,|,code",
-      theme_advanced_buttons2: "",
-      theme_advanced_buttons3: "",
-      theme_advanced_buttons4: "",
-      theme_advanced_toolbar_location: "top",
-      theme_advanced_toolbar_align: "left",
-      theme_advanced_statusbar_location: "none",
-      theme_advanced_resizing: true,
+      plugins: "autoresize link code textcolor image moxiemanager",
+      toolbar1: "image insertimage bold italic underline strikethrough bullist numlist fontselect fontsizeselect forecolor backcolor | link unlink | code",
+      statusbar: false,
+      gecko_spellcheck: true,
       convert_urls: true,
       remove_script_host: false,
       relative_urls: false,
-      force_br_newlines: true,
-      force_p_newlines: false,
-      forced_root_block: '',
       content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
       body_class: "ui-widget",
       template_external_list_url: "tinymce/jscripts/template_list.js",
       external_link_list_url: "tinymce/jscripts/link_list.js",
       external_image_list_url: "tinymce/jscripts/image_list.js",
       media_external_list_url: "tinymce/jscripts/media_list.js",
-      setup: function (ed) { },
+      menubar: false,
+      moxiemanager_leftpanel: false,
+      moxiemanager_fullscreen: false,
+      moxiemanager_title: top.Ts.System.Organization.Name,
+      moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
+      setup: function (ed) {
+        ed.on('init', function (e) {
+          top.Ts.System.refreshUser(function () {
+            if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
+              ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+            }
+            else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+              ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+            }
+
+            if (top.Ts.System.User.FontSize != "0") {
+              ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
+            }
+            else if (top.Ts.System.Organization.FontSize != "0") {
+              ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSizeDescription);
+            }
+          });
+        });
+      },
       oninit: init
     };
     $(element).tinymce(editorOptions);
@@ -2012,6 +2025,7 @@ UserPage = function () {
       result.parent().addClass('ui-state-error-custom ui-corner-all');
     }
   }
+  top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 };
 
 
@@ -2022,3 +2036,61 @@ UserPage.prototype = {
 
   }
 };
+
+function GetTinyMCEFontName(fontFamily) {
+  var result = '';
+  switch (fontFamily) {
+    case 1:
+      result = "'andale mono', times";
+      break;
+    case 2:
+      result = "arial, helvetica, sans-serif";
+      break;
+    case 3:
+      result = "'arial black', 'avant garde'";
+      break;
+    case 4:
+      result = "'book antiqua', palatino";
+      break;
+    case 5:
+      result = "'comic sans ms', sans-serif";
+      break;
+    case 6:
+      result = "'courier new', courier";
+      break;
+    case 7:
+      result = "georgia, palatino";
+      break;
+    case 8:
+      result = "helvetica";
+      break;
+    case 9:
+      result = "impact, chicago";
+      break;
+    case 10:
+      result = "symbol";
+      break;
+    case 11:
+      result = "tahoma, arial, helvetica, sans-serif";
+      break;
+    case 12:
+      result = "terminal, monaco";
+      break;
+    case 13:
+      result = "'times new roman', times";
+      break;
+    case 14:
+      result = "'trebuchet ms', geneva";
+      break;
+    case 15:
+      result = "verdana, geneva";
+      break;
+    case 16:
+      result = "webdings";
+      break;
+    case 17:
+      result = "wingdings, 'zapf dingbats'";
+      break;
+  }
+  return result;
+}

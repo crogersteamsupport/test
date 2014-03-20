@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Data", "TeamSupport.Data\TeamSupport.Data.csproj", "{1943AC11-1F2D-4B85-9F0F-4D67284814BE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.WebUtils", "TeamSupport.WebUtils\TeamSupport.WebUtils.csproj", "{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}"
@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.Handlers", "Tea
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebApp", "WebApp\", "{FE81BB07-5E84-4DBA-9A7A-76F47826EBB9}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		ProjectReferences = "{CC4D311A-D6EA-4113-B648-537824E3B5D7}|TeamSupport.Api.dll;{1943AC11-1F2D-4B85-9F0F-4D67284814BE}|TeamSupport.Data.dll;{7B8AA298-9F29-4CB1-979B-18CC31DF76B1}|TeamSupport.Handlers.dll;{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}|TeamSupport.WebUtils.dll;{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}|TidyNet.dll;{53D27B3B-92A1-4246-94D9-390124F447EC}|SharpZipLib.dll;{193BB801-054F-4729-9D5D-FCE1E32594BF}|HtmlAgilityPack.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/WebApp"
 		Debug.AspNetCompiler.PhysicalPath = "WebApp\"
@@ -27,6 +27,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebApp", "WebApp\", "{FE81B
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "62311"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TidyNet", "TidyNet\TidyNet.csproj", "{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}"

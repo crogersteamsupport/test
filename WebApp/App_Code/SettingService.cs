@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
+using System.IO;
 
 namespace TSWebServices
 {
@@ -76,5 +77,22 @@ namespace TSWebServices
     {
       Settings.SystemDB.WriteString(key, value);
     }
+
+    [WebMethod(EnableSession = true)]
+    public void SetMoxieManagerSessionVariables()
+    {
+      if (Session["isLoggedIn"] == null)
+      {
+        Session["isLoggedIn"] = "true";
+        Session["user"] = UserSession.LoginUser.UserID.ToString();
+        Directory.CreateDirectory("C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images");
+
+        Session["moxiemanager.filesystem.rootpath"] = "C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
+        Session["moxiemanager.filesystem.local.wwwroot"] = "C:/TSData/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
+        Session["moxiemanager.filesystem.local.urlprefix"] = "{proto}://{host}/Wiki/WikiDocs/" + UserSession.LoginUser.OrganizationID + "/images";
+      }
+    }
+
+
   }
 }

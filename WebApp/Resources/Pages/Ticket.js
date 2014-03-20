@@ -1817,7 +1817,7 @@ addToolbarButton('btnFlag', 'fa-flag', 'Flag', function (e) {
     return false;
   });
 
-
+  top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 });
 
 //customers
@@ -2165,7 +2165,9 @@ var initEditor = function (element, init) {
       media_external_list_url: "tinymce/jscripts/media_list.js",
       menubar: false,
       moxiemanager_leftpanel: false,
-        moxiemanager_fullscreen: false,
+      moxiemanager_fullscreen: false,
+      moxiemanager_title: top.Ts.System.Organization.Name,
+      moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
 
       setup: function (ed) {
         ed.on('init', function (e) {
