@@ -2194,7 +2194,8 @@ var initEditor = function (element, init) {
 
         ed.addButton('insertTicket', {
           title: 'Insert Ticket',
-          image: '../images/nav/16/tickets.png',
+          //image: '../images/nav/16/tickets.png',
+          icon:'awesome fa fa-ticket',
           onclick: function () {
             top.Ts.System.logAction('Ticket - Ticket Inserted');
 
@@ -2215,7 +2216,8 @@ var initEditor = function (element, init) {
 
         ed.addButton('insertPasteImage', {
           title: 'Insert Pasted Image',
-          image: '../images/nav/16/imagepaste.png',
+          //image: '../images/nav/16/imagepaste.png',
+          icon: 'awesome fa fa-paste',
           onclick: function () {
             if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
               alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
@@ -2237,7 +2239,8 @@ var initEditor = function (element, init) {
 
         ed.addButton('insertDropBox', {
           title: 'Insert DropBox',
-          image: '../images/icons/dropbox.png',
+          icon: 'awesome fa fa-dropbox',
+          //image: '../images/icons/dropbox.png',
           onclick: function () {
             var options = {
               linkType: "preview",
@@ -2259,7 +2262,8 @@ var initEditor = function (element, init) {
 
         ed.addButton('insertKb', {
           title: 'Insert Knowledgebase',
-          image: '../images/nav/16/knowledge.png',
+          //image: '../images/nav/16/knowledge.png',
+          icon: 'awesome fa fa-book',
           onclick: function () {
             filter = new top.TeamSupport.Data.TicketLoadFilter();
             filter.IsKnowledgeBase = true;
@@ -2296,7 +2300,8 @@ var initEditor = function (element, init) {
         if (enableScreenR.toLowerCase() != 'false') {
           ed.addButton('recordScreen', {
             title: 'Record Screen',
-            image: '../images/icons/Symbol_Record.png',
+            //image: '../images/icons/Symbol_Record.png',
+            icon: 'awesome fa fa-circle',
             onclick: function () {
               //var x = '<div><iframe src="https://teamsupport.viewscreencasts.com/embed/e75084e0156749969d4c82ed05e35a9c" frameborder="0" width="650" height="400"><a href="http://google.com" target="_blank">Click here to view screen recording video</a></iframe>&nbsp;</div>';
               top.Ts.MainPage.recordScreen(null, function (result) {
