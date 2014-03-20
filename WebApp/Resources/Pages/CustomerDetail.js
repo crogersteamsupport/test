@@ -2165,10 +2165,16 @@ var appendCustomEdit = function (field, element) {
     .appendTo(element);
 
     var result = $('<p>')
-      .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+      .html((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : getUrls(field.Value)))
       .addClass('form-control-static editable')
       .appendTo(div)
       .click(function (e) {
+        if ($(this).has('a') && !$(this).hasClass('editable'))
+        {
+            return;
+        }
+        else
+            {
           e.preventDefault();
           if (!$(this).hasClass('editable'))
               return false;
@@ -2209,7 +2215,7 @@ var appendCustomEdit = function (field, element) {
                 }
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
-                    parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+                    parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
                     $('#customerEdit').removeClass("disabled");
                 }, function () {
                     alert("There was a problem saving your contact property.");
@@ -2219,6 +2225,7 @@ var appendCustomEdit = function (field, element) {
             })
             .insertAfter(container1);
           $('#customerEdit').addClass("disabled");
+          }
       });
     if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
         result.parent().addClass('has-error');
@@ -2508,6 +2515,27 @@ CustomerDetailPage.prototype = {
 
     }
 };
+
+var getUrls = function (input) {
+    var source = (input || '').toString();
+    var url;
+    var matchArray;
+    var result = '';
+
+    // Regular expression to find FTP, HTTP(S) and email URLs. Updated to include urls without http
+    var regexToken = /(((ftp|https?|www):?\/?\/?)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g;
+
+    // Iterate through any URLs in the text.
+    while ((matchArray = regexToken.exec(source)) !== null) {
+        url = matchArray[0];
+        if (url.length > 2 && url.substring(0, 3) == 'www') {
+            url = 'http://' + url;
+        }
+        result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '">' + matchArray[0] + '</a>'
+    }
+
+    return result == '' ? input : result;
+}
 
 function openTicketWindow(ticketID) {
     top.Ts.MainPage.openTicketByID(ticketID, true);
