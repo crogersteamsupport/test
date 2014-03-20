@@ -7,7 +7,7 @@
 <html>
 <head id="Head1" runat="server">
   <title>Team Support</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="X-UA-Compatible" content="IE=8" />
    <link rel="SHORTCUT ICON" href="~/favicon.ico" />
   <link href="vcr/1_8_2/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_8_2/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
