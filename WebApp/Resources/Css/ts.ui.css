@@ -327,9 +327,12 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .mce-tinymce .mce-panel { background: #fcfdfd;}
 .mce-tinymce.mce-container { border: 0px solid #fcfdfd; }
 .mce-tinymce .mce-edit-area { border: 0px solid #fcfdfd;}
-.mce-tinymce .mce-toolbar-grp { padding-bottom: 10px;}
+.mce-tinymce .mce-toolbar-grp { padding-bottom: 5px;}
 .mce-tinymce .mce-btn { background: #f3f3f3; border-color: #dadada; box-shadow: none; }
 .mce-tinymce .mce-btn button, .mce-tinymce .mce-btn button .mce-ico { color: #6f6f6f;}
 .mce-tinymce .mce-btn:hover, .mce-tinymce .mce-btn:focus { background: #f6f6f6; }
+.mce-tinymce .mce-btn:hover button, .mce-tinymce .mce-btn:focus button,
+.mce-tinymce .mce-btn:hover button .mce-ico , .mce-tinymce .mce-btn:focus button .mce-ico  { color: #444444;}
 .mce-tinymce .mce-btn-group .mce-first { border-color: #dadada;}
 .mce-tinymce .fa { font-family: "FontAwesome"; line-height:1;}
+.mce-tinymce .mce-toolbar { margin-bottom: 5px;}
