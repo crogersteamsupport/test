@@ -561,7 +561,8 @@ $(document).ready(function () {
 
           ed.addButton('insertTicket', {
             title: 'Insert Ticket',
-            image: '../images/nav/16/tickets.png',
+            //image: '../images/nav/16/tickets.png',
+            icon: 'awesome fa fa-ticket',
             onclick: function () {
               top.Ts.System.logAction('New Ticket - Ticket Inserted');
               top.Ts.MainPage.selectTicket(null, function (ticketID) {
@@ -582,7 +583,8 @@ $(document).ready(function () {
 
           ed.addButton('insertPasteImage', {
             title: 'Insert Pasted Image',
-            image: '../images/nav/16/imagepaste.png',
+            //image: '../images/nav/16/imagepaste.png',
+            icon: 'awesome fa fa-paste',
             onclick: function () {
               if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
                 alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
@@ -603,7 +605,8 @@ $(document).ready(function () {
 
           ed.addButton('insertDropBox', {
             title: 'Insert DropBox',
-            image: '../images/icons/dropbox.png',
+            icon: 'awesome fa fa-dropbox',
+            //image: '../images/icons/dropbox.png',
             onclick: function () {
               var options = {
                 linkType: "preview",
@@ -626,7 +629,8 @@ $(document).ready(function () {
 
           ed.addButton('insertKb', {
             title: 'Insert Knowledgebase',
-            image: '../images/nav/16/knowledge.png',
+            //image: '../images/nav/16/knowledge.png',
+            icon: 'awesome fa fa-book',
             onclick: function () {
               filter = new top.TeamSupport.Data.TicketLoadFilter();
               filter.IsKnowledgeBase = true;
@@ -664,7 +668,8 @@ $(document).ready(function () {
           if (enableScreenR.toLowerCase() != 'false') {
             ed.addButton('recordScreen', {
               title: 'Record Screen',
-              image: '../images/icons/Symbol_Record.png',
+              //image: '../images/icons/Symbol_Record.png',
+              icon: 'awesome fa fa-circle',
               onclick: function () {
                 top.Ts.MainPage.recordScreen(null, function (result) {
                   var link = '<a href="' + result.url + '" target="_blank">Click here to view screen recording video</a>';
