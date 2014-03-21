@@ -246,3 +246,20 @@ fieldset[disabled] .btn-default.active {
     font-family: "Lucida Grande","Lucida Sans Unicode",Verdana,Arial,Helvetica,sans-serif;
     font-size: 16px;
 }
+
+
+.mce-tinymce .mce-panel { background: #fcfdfd; filter:none;}
+.mce-tinymce.mce-container { border: 0px solid #fcfdfd; }
+.mce-tinymce .mce-edit-area { border: 0px solid #fcfdfd;}
+.mce-tinymce .mce-toolbar-grp { padding-bottom: 5px;}
+.mce-tinymce .mce-btn { background: #f3f3f3; border-color: #dadada; box-shadow: none; filter:none;}
+.mce-tinymce .mce-btn button { line-height:normal;}
+.mce-tinymce .mce-btn button, .mce-tinymce .mce-btn button .mce-ico { color: #6f6f6f;}
+.mce-tinymce .mce-btn:hover, .mce-tinymce .mce-btn:focus { background: #f6f6f6; filter:none; }
+.mce-tinymce .mce-btn:hover button, .mce-tinymce .mce-btn:focus button,
+.mce-tinymce .mce-btn:hover button .mce-ico , .mce-tinymce .mce-btn:focus button .mce-ico  { color: #444444;}
+.mce-tinymce .mce-btn-group .mce-first, .mce-tinymce .mce-btn-group .mce-last { border-color: #dadada; }
+.mce-tinymce .fa { font-family: "FontAwesome"; line-height:1;}
+.mce-tinymce .mce-toolbar { margin-bottom: 5px;}
+
+
