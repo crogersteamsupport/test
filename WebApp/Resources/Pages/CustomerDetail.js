@@ -1321,9 +1321,47 @@ $(document).ready(function () {
         $('#modalReminder input').val('');
     });
 
-    function deleteOrg() {
+    top.Ts.Services.Tickets.Load5MostRecentByOrgID(organizationID, function (tickets) {
+        var max = 5;
+        if (tickets.length < 5)
+            max = tickets.length;
 
-    }
+
+        for (var i = 0; i < max; i++) {
+            var div = $('<div>')
+          .data('o', tickets[i])
+          .addClass('ticket');
+
+            $('<span>')
+          .addClass('ts-icon ts-icon-info')
+          .attr('rel', '../Tips/Ticket.aspx?TicketID=' + tickets[i].TicketID)
+          .appendTo(div);
+
+            var caption = $('<span>')
+          .addClass('ticket-name')
+          .appendTo(div);
+
+            $('<a>')
+          .addClass('ts-link ui-state-defaultx')
+          .attr('href', '#')
+          .text(tickets[i].TicketNumber + ': ' + ellipseString(tickets[i].Name, 50))
+          .appendTo(caption)
+          .click(function (e) {
+
+              top.Ts.MainPage.openTicket($(this).closest('.ticket').data('o').TicketNumber, true);
+          });
+
+
+            div.appendTo(tickets[i].IsClosed == false ? '#openTickets' : '#closedTickets');
+        }
+
+        if ($('#openTickets .ticket').length < 1) {
+            $('<div>')
+            .addClass('no-tickets')
+            .text('There are no recent tickets to display')
+            .appendTo('#openTickets');
+        }
+    });
 
     function LoadCustomProperties() {
         top.Ts.Services.Customers.GetCustomValues(organizationID, top.Ts.ReferenceTypes.Organizations, function (html) {
@@ -1423,6 +1461,12 @@ $(document).ready(function () {
             }
         });
     }
+
+    var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
+
+    top.Ts.Services.Customers.GetOrganizationTickets(organizationID, 0, function (e) {
+        $('#openTicketCount').text("Open Tickets: " + e);
+    });
 
     function LoadHistory(start) {
 

@@ -1872,6 +1872,14 @@ namespace TSWebServices
             return tickets.GetUserTicketCount(userID, closed).ToString();
         }
 
+        [WebMethod]
+        public string GetOrganizationTickets(int organizationID, int closed)
+        {
+            TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+
+            return tickets.GetOrganizationTicketCount(organizationID, closed).ToString();
+        }
+
         public string CreateTextControl(CustomField field, bool isEditable = false, int organizationID = -1)
         {
             StringBuilder html = new StringBuilder();
