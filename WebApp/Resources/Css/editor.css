@@ -194,3 +194,6 @@ li.ts-menutree-item  div { border:1px solid transparent; }
 
 .loading-indicator label {padding-left: 20px;	background: url('../images/ajax-loader-small.gif') no-repeat center left; }
 
+@media screen and (max-device-width: 1024px) {
+  .mce-btn button { padding: 4px 3px;} 
+}
