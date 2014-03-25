@@ -1658,24 +1658,27 @@ namespace TeamSupport.Data
     {
       Report report = Reports.GetReport(loginUser, reportID);
 
-      if (report.ReportDefType == ReportType.Custom)
+      try
       {
-        try
+        if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+        {
+          return GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
+        }
+        else
         {
           return GetReportDataPage(loginUser, report, from, to, sortField, isDesc, useUserFilter);
         }
-        catch (Exception ex)
-        {
-          ExceptionLogs.LogException(loginUser, ex, "Custom Report");
-        }
-        return null;
       }
-      else if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart) {
-        return GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
-      }
-      else
+      catch (Exception)
       {
-        return GetReportDataPage(loginUser, report, from, to, sortField, isDesc, useUserFilter);
+        if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+        {
+          return GetReportDataAll(loginUser, report, null, isDesc, useUserFilter);
+        }
+        else
+        {
+          return GetReportDataPage(loginUser, report, from, to, null, isDesc, useUserFilter);
+        }
       }
 
     }
