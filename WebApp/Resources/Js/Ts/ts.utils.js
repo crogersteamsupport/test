@@ -122,8 +122,12 @@
    getDateString: function(date, showDate, showTime, isUTC)
    {
      if (!date) return "";
-     if (isUTC) date = date + "GMT";
-     var msDate = this.getMsDate(date);
+     var msDate = date;
+     if (!msDate.localeFormat)
+     {
+       msDate = this.getMsDate(isUTC ? moment.utc(date) : moment(date));
+     }
+
      if ((!showDate || showDate === true) && (!showTime || showTime === true))
      {
        return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern + ' ' + top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
@@ -135,6 +139,7 @@
        return msDate.localeFormat(top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortTimePattern);
       }
    },
+
    getJqueryDateFormat: function(dateFormat)
    {
         var result = dateFormat;

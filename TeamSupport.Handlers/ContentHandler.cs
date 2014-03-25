@@ -60,7 +60,7 @@ namespace TeamSupport.Handlers
           {
             case "images": ProcessImages(context, segments.ToArray(), organizationID); break;
             case "chat": ProcessChat(context, segments[2], organizationID); break;
-            case "reports": ProcessReport(context, int.Parse(segments[2]), (context.Request["Type"] == null ? "CSV" : context.Request["Type"])); break;
+            case "reports": ProcessReport(context, int.Parse(segments[2]), (context.Request["Type"] == null ? "old" : context.Request["Type"])); break;
             case "ticketexport": ProcessTicketExport(context); break;
             case "attachments": ProcessAttachment(context, int.Parse(segments[2])); break;
             case "avatar": ProcessAvatar(context, segments.ToArray(), organizationID); break;
@@ -71,7 +71,7 @@ namespace TeamSupport.Handlers
         {
           switch (segments[0])
           {
-            case "reports": ProcessReport(context, int.Parse(segments[1]), (context.Request["Type"] == null ? "CSV" : context.Request["Type"])); break;
+            case "reports": ProcessReport(context, int.Parse(segments[1]), (context.Request["Type"] == null ? "old" : context.Request["Type"])); break;
             case "ticketexport": ProcessTicketExport(context); break;
             case "attachments": ProcessAttachment(context, int.Parse(segments[1])); break;
             default: context.Response.End(); break;
@@ -319,9 +319,9 @@ namespace TeamSupport.Handlers
         context.Response.ContentType = "text/html";
         return;
       }
-     
 
-      if (false)
+
+      if (type.ToLower() == "old")
       {
         string sql = report.GetSqlOld(false);
         SqlCommand command = new SqlCommand(sql);

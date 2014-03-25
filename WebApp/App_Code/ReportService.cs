@@ -133,7 +133,7 @@ namespace TSWebServices
       }
 
       [WebMethod]
-      public ReportItem[] GetReports()
+      public string GetReports()
       {
         List<ReportItem> result = new List<ReportItem>();
         Reports reports = new Reports(TSAuthentication.GetLoginUser());
@@ -143,7 +143,7 @@ namespace TSWebServices
           result.Add(new ReportItem(report, false));
         }
 
-        return result.ToArray();
+        return JsonConvert.SerializeObject(result);
       }
 
       [WebMethod]

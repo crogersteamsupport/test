@@ -323,7 +323,7 @@
 
     var dateFormatter = function (row, cell, value, columnDef, dataContext) {
         var date = dataContext[columnDef.id];
-        return date ? top.Ts.Utils.getMsDate(date).localeFormat(top.Ts.Utils.getDateTimePattern()) : '';
+        return date ? top.Ts.Utils.getDateString(date, true, true, false) : '';
     };
 
     var bitFormatter = function (row, cell, value, columnDef, dataContext) {

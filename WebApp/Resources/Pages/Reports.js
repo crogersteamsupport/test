@@ -378,7 +378,7 @@ $(document).ready(function () {
     }
 
     function applySearch() {
-        var term = $('.report-search').val().trim().toLowerCase();
+        var term = $('.report-search').val().toLowerCase();
         if (term.length > 0) {
             $('.report-clear-search i.fa-search').removeClass('fa-search').addClass('fa-times');
         }
@@ -438,7 +438,8 @@ $(document).ready(function () {
     }
 
 
-    function loadReports(reports) {
+    function loadReports(data) {
+        var reports = JSON.parse(data);
         $('.report-list .report-item').remove();
         for (var i = 0; i < reports.length; i++) {
             $('.report-list table').append(getNewReportItem(reports[i]));

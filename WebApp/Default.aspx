@@ -29,6 +29,7 @@
   <script src="vcr/1_8_2/Js/jquery.signalR-1.1.1.min.js" type="text/javascript"></script>
   <script src="vcr/1_8_2/Js/jquery.jplayer.min.js" type="text/javascript"></script>
   <script src="vcr/1_8_2/Js/jquery.pnotify.min.js" type="text/javascript"></script>
+  <script src="vcr/1_8_2/Js/moment.min.js" type="text/javascript"></script>
 
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
