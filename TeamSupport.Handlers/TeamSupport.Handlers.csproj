@@ -101,6 +101,7 @@
     <Reference Include="EPPlus">
       <HintPath>..\packages\EPPlus 3.1.3\EPPlus.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NewtonSoft.Json\Bin\Net40\Newtonsoft.Json.dll</HintPath>
@@ -131,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentHandler.cs" />
+    <Compile Include="ReportDataHandler.cs" />
     <Compile Include="ResourceHandler.cs" />
     <Compile Include="SessionModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

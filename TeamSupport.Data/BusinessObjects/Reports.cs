@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using System.Globalization;
 
 
 namespace TeamSupport.Data
@@ -356,7 +357,7 @@ namespace TeamSupport.Data
         {
           UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
           StringBuilder builder = new StringBuilder();
-          if (userFilters.Filters.Length > 0)
+          if (userFilters != null && userFilters.Filters != null && userFilters.Filters.Length > 0)
           {
             GetWhereClause(Collection.LoginUser, command, builder, userFilters.Filters);
             builder.Remove(0, 4);
@@ -1347,12 +1348,12 @@ namespace TeamSupport.Data
 
     public void MigrateToNewReport()
     {
-      if (ReportDef == null)
+      if (ReportDef == null || ReportDefType < 0)
       {
         if (!string.IsNullOrWhiteSpace(Query))
         {
-          /*
           ReportDefType = Data.ReportType.Custom;
+          /*
           CustomReport customReport = new CustomReport();
           customReport.Query = Query;
           string q = Query.ToLower();
@@ -1706,7 +1707,7 @@ namespace TeamSupport.Data
       result.From = from;
       result.To = to;
       result.Total = table.Rows.Count > 0 ? (int)table.Rows[0]["TotalRows"] : 0;
-      result.Data = JsonConvert.SerializeObject(table);
+      result.Data = table;
       return result;
     }
 
@@ -1786,7 +1787,7 @@ WHERE RowNum BETWEEN @From AND @To";
       result.From = 0;
       result.To = table.Rows.Count - 1;
       result.Total = table.Rows.Count;
-      result.Data = JsonConvert.SerializeObject(table);
+      result.Data = table;
       return result;
     }
 
@@ -2107,6 +2108,113 @@ IF @@ROWCOUNT=0
       }
       return null;
     }
+
+    public static void UpdateReportView(LoginUser loginUser, int reportID)
+    {
+      ReportView reportView = (new ReportViews(loginUser)).AddNewReportView();
+      reportView.UserID = loginUser.UserID;
+      reportView.ReportID = reportID;
+      reportView.DateViewed = DateTime.UtcNow;
+      reportView.Collection.Save();
+    }
+
+    public static string BuildChartData(LoginUser loginUser, DataTable table, SummaryReport summaryReport)
+    {
+      DataResult[] result = new DataResult[table.Columns.Count];
+
+      for (int i = 0; i < table.Columns.Count; i++)
+      {
+        result[i] = new DataResult();
+        result[i].name = table.Columns[i].ColumnName;
+        result[i].data = new object[table.Rows.Count];
+
+        for (int j = 0; j < table.Rows.Count; j++)
+        {
+          object data = table.Rows[j][i];
+          result[i].data[j] = data == null || data == DBNull.Value ? null : data;
+        }
+
+        if (i < summaryReport.Fields.Descriptive.Length)
+        {
+          result[i].fieldType = summaryReport.Fields.Descriptive[i].Field.FieldType;
+          result[i].format = summaryReport.Fields.Descriptive[i].Value1;
+          if (result[i].fieldType == "datetime") FixChartDateNames(loginUser, result[i].data, summaryReport.Fields.Descriptive[i].Value1);
+        }
+
+
+      }
+
+      return JsonConvert.SerializeObject(result);
+    }
+
+    public static void FixChartDateNames(LoginUser loginUser, object[] list, string dateType)
+    {
+      try
+      {
+        DateTime baseDate = new DateTime(1970, 1, 1);
+        for (int i = 0; i < list.Length; i++)
+        {
+          if (string.IsNullOrWhiteSpace((string)list[i])) continue;
+          string item = ((string)list[i]).Trim().ToLower();
+
+
+          if (dateType == "qtryear" || dateType == "monthyear" || dateType == "weekyear")
+          {
+            string[] items = item.Split('-');
+            if (items.Length == 2)
+            {
+              string year = items[0];
+              string value = items[1];
+
+              switch (dateType)
+              {
+                case "qtryear": list[i] = string.Format("Q{0} {1}", value, year); break;
+                case "monthyear": list[i] =
+
+
+                  string.Format("{0} {1}", loginUser.CultureInfo.DateTimeFormat.GetAbbreviatedMonthName(int.Parse(value)), year);
+
+                  break;
+                case "weekyear": list[i] = string.Format("{0}-{1}", value, year); break;
+                default:
+                  break;
+              }
+            }
+
+
+          }
+          else if (dateType == "qtr")
+          {
+            list[i] = "Q" + item;
+          }
+          else if (dateType == "month")
+          {
+            list[i] = loginUser.CultureInfo.DateTimeFormat.GetMonthName(int.Parse(item));
+          }
+          else if (dateType == "dayweek")
+          {
+            list[i] = CultureInfo.CurrentCulture.DateTimeFormat.GetDayName((DayOfWeek)(int.Parse(item) - 1));
+          }
+          else if (dateType == "date")
+          {
+
+            DateTime d = DateTime.SpecifyKind(DateTime.Parse(item), DateTimeKind.Utc);
+            list[i] = new TimeSpan(d.Ticks - baseDate.Ticks).TotalMilliseconds.ToString();
+          }
+          else
+          {
+            break;
+          }
+        }
+      }
+      catch (Exception)
+      {
+
+
+      }
+
+    }
+
   }
 
   public class CustomReport
@@ -2314,4 +2422,18 @@ IF @@ROWCOUNT=0
     public string Alias { get; set; }
   }
 
+    [DataContract]
+  public class DataResult
+  {
+    public DataResult() { }
+        
+    [DataMember] public string name { get; set; }
+    [DataMember] public string fieldType { get; set; }
+    [DataMember] public string format { get; set; }
+    [DataMember] public object[] data { get; set; }
+  }
+
+
 }
+
+

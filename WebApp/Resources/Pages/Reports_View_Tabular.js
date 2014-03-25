@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
     var _layout = null;
-    var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
+    var _reportID = parseInt(top.Ts.Utils.getQueryValue('ReportID', window));
     var _grid;
     var datamodel = new TeamSupport.DataModel(getReportData);
     var _report = null;
@@ -18,11 +18,12 @@
         //console.log('REQUEST: From: ' + fromPage * PAGESIZE + ', To: ' + ((fromPage * PAGESIZE) + PAGESIZE-1) + "  Page: " + fromPage);
         req = $.ajax({
             type: "POST",
-            url: "/Services/ReportService.asmx/GetReportData",
+            url: "/reportdata/table",
             data: JSON.stringify(params),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: callback
+            success: callback,
+            error: function (xhr, status, error) { alert(error); }
         });
 
         return req;

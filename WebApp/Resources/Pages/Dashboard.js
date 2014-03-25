@@ -238,10 +238,10 @@ Dashboard.prototype = {
         else if (report.ReportType == 1) {
             report.Def = JSON.parse(report.ReportDef);
 
-            top.Ts.Utils.webMethod("ReportService", "GetChartReportData",
+            top.Ts.Utils.webMethod(null, "reportdata/chart",
               { "reportID": report.ReportID },
               function (data) {
-                  createChart(content, report.Def.Chart, JSON.parse(data));
+                  createChart(content, report.Def.Chart, data);
               },
               function (error) {
                   showChartError(content, error.get_message());
@@ -291,7 +291,7 @@ Grid = function (element, report) {
         //console.log('REQUEST: From: ' + fromPage * PAGESIZE + ', To: ' + ((fromPage * PAGESIZE) + PAGESIZE-1) + "  Page: " + fromPage);
         req = $.ajax({
             type: "POST",
-            url: "/Services/ReportService.asmx/GetReportData",
+            url: "/reportdata/table",
             data: JSON.stringify(params),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -554,7 +554,7 @@ Grid.prototype = {
                 self.grid.resizeCanvas();
             });
         } catch (e) {
-            console.log(message);
+            console.log(e.message);
         }
 
     }

@@ -26,7 +26,7 @@ using OfficeOpenXml;
 
 namespace TeamSupport.Handlers
 {
-  public class ContentHandler : IHttpHandler, IRequiresSessionState
+  public class ContentHandler : IHttpHandler
   {
     #region IHttpHandler Members
 

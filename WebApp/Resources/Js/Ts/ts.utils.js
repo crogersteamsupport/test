@@ -21,14 +21,19 @@
       return null;
     },
     webMethod: function (service, method, params, onSuccess, onFailure) {
+      var theUrl = service == null ? "/" + method : "/Services/" + service + ".asmx/" + method
+
       return $.ajax({
         type: "POST",
-        url: "/Services/" + service + ".asmx/" + method,
+        url: theUrl,
         data: JSON.stringify(params),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (result) {
-          if (typeof (onSuccess) !== 'undefined') { onSuccess(result.d); }
+          if (typeof (onSuccess) !== 'undefined') { 
+            if (result.d) {onSuccess(result.d); } else {onSuccess(result);}
+          
+          }
         },
         error: onFailure
       });

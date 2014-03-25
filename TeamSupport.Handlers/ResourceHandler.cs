@@ -25,7 +25,7 @@ using System.Web.Security;
 
 namespace TeamSupport.Handlers
 {
-  public class ResourceHandler : IHttpHandler, IRequiresSessionState
+  public class ResourceHandler : IHttpHandler
   {
     #region IHttpHandler Members
 

@@ -16,8 +16,8 @@
             $('#mainFrame').attr('src', report.ReportDef);
             $('.report-title').text(report.Name);
 
-
-            top.Ts.Utils.webMethod("ReportService", "GetChartReportData",
+            
+            top.Ts.Utils.webMethod(null, "chartdata",
               { "reportID": _reportID },
               function (data) {
                   createChart('.chart-container', _report.Def.Chart, JSON.parse(data));
