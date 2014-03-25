@@ -1431,6 +1431,8 @@ UserPage = function () {
       moxiemanager_fullscreen: false,
       moxiemanager_title: top.Ts.System.Organization.Name,
       moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
+      paste_data_images: true,
+
       setup: function (ed) {
         ed.on('init', function (e) {
           top.Ts.System.refreshUser(function () {

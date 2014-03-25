@@ -1912,6 +1912,7 @@ var initEditor = function (element, init) {
             external_image_list_url: "tinymce/jscripts/image_list.js",
             media_external_list_url: "tinymce/jscripts/media_list.js",
             menubar: false,
+            paste_data_images: true,
 
             setup: function (ed) {
                 ed.on('init', function (e) {
