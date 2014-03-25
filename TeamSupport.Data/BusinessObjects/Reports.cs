@@ -402,7 +402,11 @@ namespace TeamSupport.Data
             try
             {
               UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
-              GetWhereClause(loginUser, command, builder, userFilters.Filters);
+
+              if (userFilters != null)
+              {
+                GetWhereClause(loginUser, command, builder, userFilters.Filters);
+              }
             }
             catch (Exception ex)
             {
@@ -921,7 +925,10 @@ namespace TeamSupport.Data
             try
             {
               UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
-              GetWhereClause(loginUser, command, builder, userFilters.Filters);
+              if (userFilters != null)
+              {
+                GetWhereClause(loginUser, command, builder, userFilters.Filters);
+              }
             }
             catch (Exception ex)
             {
@@ -1211,7 +1218,7 @@ namespace TeamSupport.Data
 
       using (SqlCommand command = new SqlCommand())
       {
-        GetCommand(command, false, true);
+        GetCommand(command, false, false);
         BaseCollection.FixCommandParameters(command);
 
         using (SqlConnection connection = new SqlConnection(Collection.LoginUser.ConnectionString))
@@ -1879,7 +1886,7 @@ WHERE RowNum BETWEEN @From AND @To";
     public static ReportColumn[] GetReportColumns(LoginUser loginUser, int reportID)
     {
       Report report = Reports.GetReport(loginUser, reportID);
-      if (report.ReportDefType == ReportType.Table) return report.GetTabularColumns();
+      //if (report.ReportDefType == ReportType.Table) return report.GetTabularColumns();
       return report.GetSqlColumns();
     }
 
