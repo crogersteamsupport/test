@@ -1949,7 +1949,7 @@ var appendCustomValues = function (fields) {
         for (var i = 0; i < fields.length; i++) {
 
             if (fields[i].CustomFieldCategoryID == -1) {
-                noCatfields = 1;
+                noCatfields++;
                 var item = null;
                 var field = fields[i];
                 var div = $('<div>').addClass('form-group').data('field', field);
@@ -1974,7 +1974,10 @@ var appendCustomValues = function (fields) {
                 //if (i < (fields.length / 2))
                 //    containerL.append(div);
                 //else
-                $('#customPropertiesL').append(div);
+                if (noCatfields % 2)
+                    $('#customPropertiesL').append(div);
+                else
+                    $('#customPropertiesR').append(div);
             }
         }
 
@@ -1992,8 +1995,9 @@ var appendCustomValues = function (fields) {
             var boxcontent = $('<div>').addClass('box-content').appendTo(box);
             var boxrow = $('<div>').addClass('row').appendTo(boxcontent);
             var formh = $('<form>').addClass('form-horizontal').appendTo(boxrow);
-            var colxs = $('<div>').addClass('col-xs-6 customProperties').appendTo(formh);
-
+            var colxsL = $('<div>').addClass('col-xs-6 customProperties').appendTo(formh);
+            var colxsR = $('<div>').addClass('col-xs-6 customProperties').appendTo(formh);
+            var fieldcount = 0;
 
             for (var i = 0; i < fields.length; i++) {
 
@@ -2019,7 +2023,11 @@ var appendCustomValues = function (fields) {
                         default:
                     }
 
-                    colxs.append(div);
+                    if (fieldcount % 2)
+                        colxsR.append(div);
+                    else
+                        colxsL.append(div);
+                    fieldcount++;
                     //if (i < (fields.length / 2))
                     //    containerL.append(div);
                     //else
@@ -2033,7 +2041,7 @@ var appendCustomValues = function (fields) {
 
     if (fields === null || fields.length < 1) {
         $('#customPropertiesL').empty();
-        $('#customPropertiesR').empty();
+        //$('#customPropertiesR').empty();
         return;
     }
     //var containerL = $('#customPropertiesL').empty();

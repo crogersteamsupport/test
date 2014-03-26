@@ -228,9 +228,24 @@ namespace TSWebServices
         [WebMethod]
         public string SetContactCompany(int userID, int value)
         {
-            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-            u.OrganizationID = value;
-            u.Collection.Save();
+            Tickets t = new Tickets(TSAuthentication.GetLoginUser());
+            t.LoadByContact(userID);
+
+            foreach (Ticket tix in t)
+            {
+                tix.Collection.RemoveContact(userID, tix.TicketID);
+                User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+                u.OrganizationID = value;
+                u.Collection.Save();
+
+                tix.Collection.AddContact(userID, tix.TicketID);
+
+            }
+
+            //User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            //u.OrganizationID = value;
+            //u.Collection.Save();
+
             Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), value);
             string description = String.Format("{0} set contact company to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, organization.Name);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
@@ -1148,6 +1163,7 @@ namespace TSWebServices
                             <div class='row'>
                                 <div class='col-xs-6'>
                                     <p class='list-group-item-text'>{3}</p>
+                                    {8}
                                     {6}
                                 </div>
                                 <div class='col-xs-6'>
@@ -1157,7 +1173,7 @@ namespace TSWebServices
                             </div>
                             </div>"
 
-                    , u.IsActive ? "user-active":"user-inactive", u.IsActive ? "Active":"Inactive", u.FirstLastName, u.Email != "" ? "<a href='mailto:"+u.Email+"'>"+u.Email+"</a>" : "Empty", GetContactTickets(u.UserID, 0), GetContactTickets(u.UserID, 1),  phoneResults, u.UserID);
+                    , u.IsActive ? "user-active" : "user-inactive", u.IsActive ? "Active" : "Inactive", u.FirstLastName, u.Email != "" ? "<a href='mailto:" + u.Email + "'>" + u.Email + "</a>" : "Empty", GetContactTickets(u.UserID, 0), GetContactTickets(u.UserID, 1), phoneResults, u.UserID, u.IsPortalUser == true ? "<p class='list-group-item-text'><span class=\"text-muted\">Portal User</span>: True" : "");
 
                 phoneResults.Clear();
             }

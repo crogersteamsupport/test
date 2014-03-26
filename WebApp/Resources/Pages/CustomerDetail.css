@@ -1,12 +1,13 @@
 ﻿body {
 }
-.form-horizontal .control-label{font-weight:normal;color:#888;}
+.form-horizontal .control-label{font-weight:normal;color:#888;text-align:left;font-size:12px}
 /*.form-group {margin-bottom: 0px;}*/
 .borderbottom{border-bottom: 1px dashed #e3e3e3;}
 .mr15{margin-right:15px;}
 .modal-body .form-group{margin-bottom: 10px;}
 .pageheader .nav-tabs{border-bottom:none !important;}
 
+.box-content {font-size: 12px}
 
 .hiddenmenu {display:none;}
   
@@ -21,7 +22,6 @@
 .header-nav { height: 49px; overflow:hidden; white-space:nowrap; }
 .pageheader .btn-toolbar { margin: 10px 20px 0 0; }
 .main-nav { margin-top: 0; }
-
 
 .list-group { padding-top: 15px; }
 
@@ -97,11 +97,11 @@
 }
 
 .viewFile {cursor:pointer}
-.db{display:block;}
+.db{display:block;font-size:12px}
 
 .w-wrap{word-wrap:break-word;}
 
-.userProperties p, .customProperties p{word-wrap:break-word;}
+.userProperties p, .customProperties p{word-wrap:break-word;font-size: 12px}
 
 .list-group-item-text a{
     word-wrap:break-word;

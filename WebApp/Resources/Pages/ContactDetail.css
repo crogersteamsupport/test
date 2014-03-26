@@ -9,6 +9,8 @@
     border:none;
 }
 
+.box-content {font-size: 12px}
+
 .header-nav { height: 49px; overflow:hidden; white-space:nowrap; }
 .pageheader .btn-toolbar { margin: 10px 20px 0 0; }
 .main-nav { margin-top: 0; }
@@ -65,7 +67,7 @@
     padding-left: 15px;
 }
 
-.userProperties i, #customProperties i{line-height: 2em;cursor:pointer}
+.userProperties i, .customProperties i{line-height: 2em;cursor:pointer}
 
 .form-inline .form-group input {
 	width:140px;
@@ -85,6 +87,7 @@
 .form-horizontal .control-label {
     color: #888888;
     font-weight: normal;
+    text-align: left;
 }
 
 .userProperties p, .customProperties p{word-wrap:break-word;}

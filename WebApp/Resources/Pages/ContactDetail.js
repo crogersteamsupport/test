@@ -58,7 +58,7 @@ $(document).ready(function () {
 
     $('#contactEdit').click(function (e) {
         $('.userProperties p').toggleClass("editable");
-        $('#customProperties p').toggleClass("editable");
+        $('.customProperties p').toggleClass("editable");
         $("#phonePanel #editmenu").toggleClass("hiddenmenu");
         $("#addressPanel #editmenu").toggleClass("hiddenmenu");
 
@@ -937,7 +937,7 @@ $(document).ready(function () {
         }
     }
 
-    $('#customProperties').on('keydown', '.number', function (event) {
+    $('.customProperties').on('keydown', '.number', function (event) {
         // Allow only backspace and delete
         if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 190 || event.keyCode == 109 || event.keyCode == 173 || (event.keyCode >= 96 && event.keyCode <= 105)) {
             // let it happen, don't do anything
@@ -1264,10 +1264,13 @@ $.fn.autoGrow = function () {
 
 var appendCustomValues = function (fields) {
     if (fields === null || fields.length < 1) {
-        $('#customProperties').empty();
+        $('.customProperties').empty();
         return;
     }
-    var container = $('#customProperties').empty().removeClass('ts-loading');
+    var containerL = $('#customPropertiesL').empty();
+    var containerR = $('#customPropertiesR').empty();
+
+
     for (var i = 0; i < fields.length; i++) {
         var item = null;
 
@@ -1290,9 +1293,13 @@ var appendCustomValues = function (fields) {
             default:
         }
 
-        container.append(div);
+        if (i % 2)
+            containerR.append(div);
+        else
+            containerL.append(div);
+        
     }
-    $('#customProperties p').toggleClass("editable");
+    $('.customProperties p').toggleClass("editable");
     //$('#contactName').toggleClass("editable");
 }
 
