@@ -1332,6 +1332,9 @@ $(document).ready(function () {
             else {
               parent.show().find('img').hide();
             }
+            if (top.Ts.System.Organization.UpdateTicketChildrenGroupWithParent) {
+              top.Ts.Services.Tickets.SetTicketChildrenGroup(_ticketID, group.GroupID);
+            }
           },
           function (error) {
             parent.show().find('img').hide();

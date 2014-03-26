@@ -88,6 +88,7 @@ namespace TeamSupport.Data
     [DataMember] public string FontFamilyDescription { get; set; }
     [DataMember] public string FontSizeDescription { get; set; }
     [DataMember] public bool ShowGroupMembersFirstInTicketAssignmentList { get; set; }
+    [DataMember] public bool UpdateTicketChildrenGroupWithParent { get; set; }
           
   }
   
@@ -96,6 +97,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.UpdateTicketChildrenGroupWithParent = this.UpdateTicketChildrenGroupWithParent;
       result.ShowGroupMembersFirstInTicketAssignmentList = this.ShowGroupMembersFirstInTicketAssignmentList;
       result.FontSize = this.FontSize;
       result.FontFamily = this.FontFamily;

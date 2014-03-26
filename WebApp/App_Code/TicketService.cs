@@ -1497,6 +1497,18 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void SetTicketChildrenGroup(int ticketID, int? groupID)
+    {
+      Tickets children = new Tickets(TSAuthentication.GetLoginUser());
+      children.LoadChildren(ticketID);
+      foreach (Ticket child in children)
+      {
+        child.GroupID = groupID;
+      }
+      children.Save();
+    }
+
+    [WebMethod]
     public AutocompleteItem SetProduct(int ticketID, int? productID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);

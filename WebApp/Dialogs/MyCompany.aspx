@@ -125,6 +125,9 @@
           <td class="labelColTD" colspan="2">
             <asp:CheckBox ID="cbShowGroupMembersFirstInTicketAssignmentList" runat="server" Text="Show Group Members First in Ticket Assignment List"/>
           </td>
+          <td class="labelColTD" colspan="2">
+            <asp:CheckBox ID="cbUpdateTicketChildrenGroupWithParent" runat="server" Text="Update Ticket Children Group With Parent"/>
+          </td>
         </tr>
 
         <tr>

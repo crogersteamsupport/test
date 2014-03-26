@@ -157,6 +157,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     cbUnsecureAttachments.Checked = organization.AllowUnsecureAttachmentViewing;
     cbSlaInitRespAnyAction.Checked = organization.SlaInitRespAnyAction;
     cbShowGroupMembersFirstInTicketAssignmentList.Checked = organization.ShowGroupMembersFirstInTicketAssignmentList;
+    cbUpdateTicketChildrenGroupWithParent.Checked = organization.UpdateTicketChildrenGroupWithParent;
 
    // cbCommunity.Checked = organization.UseForums;
     cbRequireCustomer.Checked = Settings.OrganizationDB.ReadBool("RequireNewTicketCustomer", false);
@@ -236,6 +237,7 @@ public partial class Dialogs_Organization : BaseDialogPage
     organization.AllowUnsecureAttachmentViewing = cbUnsecureAttachments.Checked;
     organization.SlaInitRespAnyAction = cbSlaInitRespAnyAction.Checked;
     organization.ShowGroupMembersFirstInTicketAssignmentList = cbShowGroupMembersFirstInTicketAssignmentList.Checked;
+    organization.UpdateTicketChildrenGroupWithParent = cbUpdateTicketChildrenGroupWithParent.Checked;
     //organization.UseForums = cbCommunity.Checked;
     Settings.OrganizationDB.WriteBool("RequireNewTicketCustomer", cbRequireCustomer.Checked);
     //organization.AdminOnlyCustomers = cbAdminCustomers.Checked;

@@ -171,6 +171,7 @@ public partial class Frames_AdminCompany : BaseFramePage
     table.Rows.Add(new string[] { "Internal SLA:", level == null ? "[None Assigned]" :level.Name});
 
     table.Rows.Add(new string[] { "Show Group Members First in Ticket Assignment List:", organization.ShowGroupMembersFirstInTicketAssignmentList.ToString() });
+    table.Rows.Add(new string[] { "Update Ticket Children Group With Parent:", organization.UpdateTicketChildrenGroupWithParent.ToString() });
 
     
     rptProperties.DataSource = table;
