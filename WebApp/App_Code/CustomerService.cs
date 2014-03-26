@@ -1163,8 +1163,8 @@ namespace TSWebServices
                             <div class='row'>
                                 <div class='col-xs-6'>
                                     <p class='list-group-item-text'>{3}</p>
-                                    {8}
                                     {6}
+                                    {8}
                                 </div>
                                 <div class='col-xs-6'>
                                     <p class='list-group-item-text'>{4} Open Tickets</p>
@@ -1173,7 +1173,7 @@ namespace TSWebServices
                             </div>
                             </div>"
 
-                    , u.IsActive ? "user-active" : "user-inactive", u.IsActive ? "Active" : "Inactive", u.FirstLastName, u.Email != "" ? "<a href='mailto:" + u.Email + "'>" + u.Email + "</a>" : "Empty", GetContactTickets(u.UserID, 0), GetContactTickets(u.UserID, 1), phoneResults, u.UserID, u.IsPortalUser == true ? "<p class='list-group-item-text'><span class=\"text-muted\">Portal User</span>: True" : "");
+                    , u.IsActive ? "user-active" : "user-inactive", u.IsActive ? "Active" : "Inactive", u.FirstLastName, u.Email != "" ? "<a href='mailto:" + u.Email + "'>" + u.Email + "</a>" : "Empty", GetContactTickets(u.UserID, 0), GetContactTickets(u.UserID, 1), phoneResults, u.UserID, u.IsPortalUser == true ? "<p class='list-group-item-text'><span class=\"text-muted\">Has Portal Access</span>" : "");
 
                 phoneResults.Clear();
             }

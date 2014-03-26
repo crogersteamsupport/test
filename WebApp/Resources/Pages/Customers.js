@@ -87,7 +87,6 @@
             $('<div>')
               .addClass('pull-right')
               .append($('<p>').text(item.openTicketCount + ' open tickets'))
-              .append($('<p>').text(item.isPortal ? 'Has portal access' : 'Does not have portal access'))
           );
 
         $('<td>').append(div).appendTo(el);
@@ -129,6 +128,8 @@
         var phones = $('<li>');
         appendPhones(phones, item);
         phones.appendTo(list);
+
+        $('<li>').text(item.isPortal ? 'Has portal access' : '').appendTo(list);
     }
 
     function appendContact(el, item) {
@@ -172,6 +173,8 @@
         var phones = $('<li>');
         appendPhones(phones, item);
         phones.appendTo(list);
+
+        $('<li>').text(item.isPortal ? 'Has portal access' : '').appendTo(list);
     }
 
     function appendPhones(el, item) {
