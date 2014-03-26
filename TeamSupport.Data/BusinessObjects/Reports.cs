@@ -1218,7 +1218,7 @@ namespace TeamSupport.Data
 
       using (SqlCommand command = new SqlCommand())
       {
-        GetCommand(command, false, false);
+        GetCommand(command, true, true, false);
         BaseCollection.FixCommandParameters(command);
 
         using (SqlConnection connection = new SqlConnection(Collection.LoginUser.ConnectionString))
