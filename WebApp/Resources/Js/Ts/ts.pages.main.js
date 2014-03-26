@@ -1084,6 +1084,14 @@ Ts.Pages.Main.prototype = {
   },
   closeTab: function (tab) {
     return tab.remove();
+},
+  closeReportTab: function(reportID)
+  {
+      var tab = this.MainTabs.find(reportID, Ts.Ui.Tabs.Tab.Type.Report);
+        if (tab) {
+            return this.closeTab(tab);
+        }
+    return false;
   },
     openReport: function (report, doSelect) {
         var self = this;

@@ -147,6 +147,76 @@ namespace TSWebServices
       }
 
       [WebMethod]
+      public string GetStarredReports()
+      { 
+        List<ReportItem> result = new List<ReportItem>();
+        Reports reports = new Reports(TSAuthentication.GetLoginUser());
+        reports.LoadAll(TSAuthentication.OrganizationID, TSAuthentication.UserID);
+        foreach (Report report in reports)
+        {
+          if (report.Row["IsFavorite"] != DBNull.Value && (bool)report.Row["IsFavorite"] == true) result.Add(new ReportItem(report, false));
+        }
+
+        return JsonConvert.SerializeObject(result);
+      }
+
+      [WebMethod]
+      public string GetCustomReports()
+      {
+        List<ReportItem> result = new List<ReportItem>();
+        Reports reports = new Reports(TSAuthentication.GetLoginUser());
+        reports.LoadAll(TSAuthentication.OrganizationID, TSAuthentication.UserID);
+        foreach (Report report in reports)
+        {
+          if (report.OrganizationID != null) result.Add(new ReportItem(report, false));
+        }
+
+        return JsonConvert.SerializeObject(result);
+      }
+
+      [WebMethod]
+      public string GetStockReports()
+      {
+        List<ReportItem> result = new List<ReportItem>();
+        Reports reports = new Reports(TSAuthentication.GetLoginUser());
+        reports.LoadAll(TSAuthentication.OrganizationID, TSAuthentication.UserID);
+        foreach (Report report in reports)
+        {
+          if (report.OrganizationID == null) result.Add(new ReportItem(report, false));
+        }
+
+        return JsonConvert.SerializeObject(result);
+      }
+
+      [WebMethod]
+      public string GetReportsByReportType(ReportType reportType)
+      {
+        List<ReportItem> result = new List<ReportItem>();
+        Reports reports = new Reports(TSAuthentication.GetLoginUser());
+        reports.LoadAll(TSAuthentication.OrganizationID, TSAuthentication.UserID);
+        foreach (Report report in reports)
+        {
+          if (report.ReportDefType == reportType && report.OrganizationID != null) result.Add(new ReportItem(report, false));
+        }
+
+        return JsonConvert.SerializeObject(result);
+      }
+
+      [WebMethod]
+      public string GetReportsByFolder(int folderID)
+      {
+        List<ReportItem> result = new List<ReportItem>();
+        Reports reports = new Reports(TSAuthentication.GetLoginUser());
+        reports.LoadAll(TSAuthentication.OrganizationID, TSAuthentication.UserID);
+        foreach (Report report in reports)
+        {
+          if (report.Row["Folder"] != DBNull.Value && (int?)report.Row["Folder"] == folderID) result.Add(new ReportItem(report, false));
+        }
+
+        return JsonConvert.SerializeObject(result);
+      }
+
+      [WebMethod]
       public ReportItem GetReport(int reportID)
       {
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID, TSAuthentication.UserID);

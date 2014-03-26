@@ -12,6 +12,7 @@
   <script src="../Js/jquery-ui-latest.custom.min.js" type="text/javascript"></script>
   <script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.sortelements.js" type="text/javascript"></script>
+  <script src="../Js/moment.min.js" type="text/javascript"></script>
   <script src="reports.js" type="text/javascript"></script>
 
   <title>Reports</title>
@@ -28,10 +29,10 @@
     .report-list-selection { width: 25px; cursor: default; }
     .report-list-star { width: 25px; cursor: default; }
     .report-list-title a { color: #444; }
-    .report-list-owner { width: 215px; }
-    .report-list-modified, .report-list-lastviewed { width: 250px; }
+    .report-list-ownerx { width: 215px; }
+    .report-list-modifiedx, .report-list-lastviewed { width: 250px; }
     .report-list-modified .text-muted { font-size: 10px; }
-    .report-list-lastviewed { display: none; }
+    .report-list-lastviewedx { display: none; }
     .report-header-create { width: 186px; float: left; padding-left: 30px; }
     .report-header-create h3 { margin-top: 15px; margin-bottom: 18px; }
     .report-header-create .dropdown-menu li { }
@@ -55,10 +56,10 @@
     .report-menu .fa-caret-square-o-down { color: #aaa; opacity: 0; float:right; margin: 3px 5px 0 0;}
     .report-menu a:hover .fa-caret-square-o-down { opacity:1; }
     .btn-toolbar button { padding-left: 30px; padding-right: 30px; }
+    .report-list-header span, .report-list-header i {cursor:pointer;}
     /*.report-menu li:nth-child(1), .report-menu li:nth-child(2) {display:inline-block; }*/
     
-    
-    
+   
     </style>
 </head>
 <body>
@@ -108,13 +109,13 @@
           <table class="table table-hover">
             <thead>
               <tr>
-                <th class="report-list-active"></th>
-                <th class="report-list-selection"><i class="fa fa-square-o"></i></th>
-                <th class="report-list-star"></th>
-                <th class="report-list-title">Report</th>
-                <th class="report-list-owner">Owner</th>
-                <th class="report-list-modified">Last Modified</th>
-                <th class="report-list-lastviewed">Last Viewed</th>
+                <th class="report-list-header report-list-active"></th>
+                <th class="report-list-header report-list-selection"><i class="fa fa-square-o"></i></th>
+                <th class="report-list-header report-list-star"></th>
+                <th class="report-list-header report-list-title" data-sortfield="Name"><span>Report</span> <i class="fa fa-angle-down"></i></th>
+                <th class="report-list-header report-list-owner" data-sortfield="Creator"><span>Owner</span> <i></i></th>
+                <th class="report-list-header report-list-lastviewed" data-sortfield="LastViewed"><span>Last Viewed</span> <i></i></th>
+                <th class="report-list-header report-list-modified" data-sortfield="DateEdited"><span>Last Modified</span> <i></i></th>
               </tr>
             </thead>
             <tbody>
@@ -124,14 +125,13 @@
       </div>
       <div class="report-menu">
         <ul class="nav nav-pills nav-stacked">
-          <li class="menu-starred report-menu-item active"><a href="#"><i class="fa fa-star"></i>&nbsp;Starred</a></li>
-          <li class="menu-recent report-menu-item"><a href="#"><i class="fa fa-clock-o"></i>&nbsp;Recently Viewed</a></li>
+          <li class="menu-custom report-menu-item active"><a href="#"><i class="fa fa-wrench"></i>&nbsp;Custom</a></li>
+          <li class="menu-starred report-menu-item"><a href="#"><i class="fa fa-star"></i>&nbsp;Starred</a></li>
           <li class="menu-tablular report-menu-item"><a href="#"><i class="fa fa-table"></i>&nbsp;Tabular</a></li>
           <li class="menu-summary report-menu-item"><a href="#"><i class="fa fa-tasks"></i>&nbsp;Summary</a></li>
           <li class="menu-charts report-menu-item"><a href="#"><i class="fa fa-bar-chart-o"></i>&nbsp;Charts</a></li>
           <li class="menu-external report-menu-item"><a href="#"><i class="fa fa-globe"></i>&nbsp;External</a></li>
-          <li class="menu-custom report-menu-item"><a href="#"><i class="fa fa-wrench"></i>&nbsp;Custom</a></li>
-          <li class="menu-all report-menu-item"><a href="#"><i class="fa fa-asterisk"></i>&nbsp;All Reports</a></li>
+          <li class="menu-stock report-menu-item"><a href="#"><i class="fa fa-asterisk"></i>&nbsp;Stock</a></li>
         </ul>
       </div>
     </div>
@@ -157,8 +157,8 @@
           <td class="report-list-star"><i class="fa"></i></td>
           <td class="report-list-title"><i class="fa"></i>&nbsp;&nbsp;<a href="#"></a></td>
           <td class="report-list-owner"></td>
-          <td class="report-list-modified"></td>
           <td class="report-list-lastviewed"></td>
+          <td class="report-list-modified"></td>
         </tr>
       </table>
     </div>

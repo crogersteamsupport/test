@@ -12,7 +12,7 @@ $(document).ready(function () {
         $('.open').removeClass('open');
     });
 
-    top.Ts.Services.Reports.GetReports(loadReports);
+    getReports();
 
     top.Ts.Services.Reports.GetFolders(function (folders) {
         top.Ts.Settings.User.read('reports-folder', '[]', function (userFolders) {
@@ -108,9 +108,10 @@ $(document).ready(function () {
         e.preventDefault();
         $('.active.report-menu-item').removeClass('active');
         $(this).addClass('active');
-        top.Ts.Services.Reports.GetReports(loadReports);
-        filterReport();
+        getReports();
     });
+
+
 
     $('.modal-folder-name').modal({ show: false, "backdrop": 'static' });
     $('.modal-folder-move').modal({ show: false, "backdrop": 'static' });
@@ -260,7 +261,7 @@ $(document).ready(function () {
             ids.push(report.ReportID);
         });
 
-        top.Ts.Services.Reports.MoveReports(JSON.stringify(ids), folderID, function () { filterReport(); });
+        top.Ts.Services.Reports.MoveReports(JSON.stringify(ids), folderID, function () { getReports(); });
     }
 
     $('.report-clone').click(function (e) {
@@ -294,6 +295,7 @@ $(document).ready(function () {
                 for (var i = 0; i < results.length; i++) {
                     var item = $('.reportid-' + results[i]);
                     item.fadeOut("slow", function (results) { item.remove(); });
+                    top.Ts.MainPage.closeReportTab(results[i]);
                 }
             });
         }
@@ -318,63 +320,13 @@ $(document).ready(function () {
     function filterReport() {
         $('.report-list .no-reports:visible').hide();
         $('.report-list table:hidden').show();
-
         if (_tmrSearch) { clearTimeout(_tmrSearch); }
         _tmrSearch = null;
         $('.report-list th.report-list-selection i').removeClass('fa-check-square-o').addClass('fa-square-o');
-
         $('.report-list .report-item:hidden').show();
-        $('.report-list-lastviewed').show();
-        $('.report-list-modified').hide();
 
-        var item = $('.report-menu-item.active');
-        if (item.hasClass('menu-starred')) {
-            sortReports('Name', true);
-            $('.report-list .fa-star-o').closest('.report-item').hide();
-        }
-        else if (item.hasClass('menu-recent')) {
-            $('.report-list-lastviewed').show();
-            $('.report-list-modified').hide();
-            $('.report-list .report-item').each(function () {
-                if ($(this).find('.report-list-lastviewed:empty').length > 0) $(this).hide();
-            });
-
-            sortReports('LastViewed', false);
-            applySearch();
-            return;
-        }
-        else if (item.hasClass('menu-tablular')) {
-            $('.report-list .report-item').not('[data-reporttype="0"]').hide();
-            sortReports('Name', true);
-        }
-        else if (item.hasClass('menu-summary')) {
-            $('.report-list .report-item').not('[data-reporttype="4"]').hide();
-            sortReports('Name', true);
-        }
-        else if (item.hasClass('menu-charts')) {
-            $('.report-list .report-item').not('[data-reporttype="1"]').hide();
-            sortReports('Name', true);
-        }
-        else if (item.hasClass('menu-external')) {
-            $('.report-list .report-item').not('[data-reporttype="2"]').hide();
-            sortReports('Name', true);
-        }
-        else if (item.hasClass('menu-custom')) {
-            $('.report-list .report-item').not('[data-reporttype="3"]').hide();
-            sortReports('Name', true);
-        }
-        else if (item.hasClass('menu-all')) {
-            sortReports('Name', true);
-        }
-        else if (item.hasClass('report-folder')) {
-            var folder = item.data('o');
-            $('.report-list .report-item').not('[data-folderid="' + folder.FolderID + '"]').hide();
-        }
-        $('.report-list-lastviewed').hide();
-        $('.report-list-modified').show();
-
+        sortReports();
         applySearch();
-
     }
 
     function applySearch() {
@@ -393,6 +345,7 @@ $(document).ready(function () {
 
         if ($('.report-list .report-item:visible').length < 1) {
             $('.report-list table:visible').hide();
+            $('.report-list .no-reports span').text(term.length > 0 ? ('There are no reports to display with "' + term + '" in the name.') : 'There are no reports to display.')
             $('.report-list .no-reports:hidden').show();
         }
     }
@@ -410,19 +363,32 @@ $(document).ready(function () {
         filterReport();
     });
 
-    var toString = Object.prototype.toString;
 
-    function isString(obj) {
-        return toString.call(obj) == '[object String]';
-    }
+    $('.report-list-header').click(function (e) {
+        e.preventDefault();
+        var item = $(this);
+        var i = item.find('i');
+        var isAsc = !i.hasClass('fa-angle-down');
+        $('.report-list-header i').removeClass('fa fa-angle-down fa-angle-up');
+        i.addClass(isAsc ? 'fa fa-angle-down' : 'fa fa-angle-up');
+        sortReports();
+    });
 
-    function sortReports(fieldname, asc) {
+    function sortReports() {
+        var item = $('.report-list-header .fa');
+        var fieldname = item.closest('th').data('sortfield')
+        var asc = !item.hasClass('fa-angle-down');
+
         if (asc == true) {
             $('.report-list table .report-item').sortElements(function (a, b) {
                 var val1 = $(a).data('o')[fieldname];
                 var val2 = $(b).data('o')[fieldname];
-                if (isString(val1)) { val1 = val1.toLowerCase(); }
-                if (isString(val2)) { val1 = val2.toLowerCase(); }
+                if (val1 && val1.toLowerCase) { val1 = val1.toLowerCase(); }
+                if (val2 && val2.toLowerCase) { val2 = val2.toLowerCase(); }
+                if (val1 > val2) console.log(val1 + ' > ' + val2); else console.log(val1 + ' < ' + val2); ;
+                if (val1 == null) return -1;
+                if (val2 == null) return 1
+
                 return val1 > val2 ? 1 : -1;
             });
         }
@@ -430,13 +396,31 @@ $(document).ready(function () {
             $('.report-list table .report-item').sortElements(function (a, b) {
                 var val1 = $(a).data('o')[fieldname];
                 var val2 = $(b).data('o')[fieldname];
-                if (isString(val1)) { val1 = val1.toLowerCase(); }
-                if (isString(val2)) { val1 = val2.toLowerCase(); }
+                if (val1 && val1.toLowerCase) { val1 = val1.toLowerCase(); }
+                if (val2 && val2.toLowerCase) { val2 = val2.toLowerCase(); }
+                if (val1 == null) return 1;
+                if (val2 == null) return -1
                 return val1 < val2 ? 1 : -1;
             });
         }
     }
 
+
+    function getReports() {
+        var item = $('.report-menu-item.active');
+        if (item.hasClass('menu-custom')) { top.Ts.Services.Reports.GetCustomReports(loadReports); }
+        else if (item.hasClass('menu-starred')) { top.Ts.Services.Reports.GetStarredReports(loadReports); }
+        else if (item.hasClass('menu-tablular')) { top.Ts.Services.Reports.GetReportsByReportType(0, loadReports); }
+        else if (item.hasClass('menu-summary')) { top.Ts.Services.Reports.GetReportsByReportType(4, loadReports); }
+        else if (item.hasClass('menu-charts')) { top.Ts.Services.Reports.GetReportsByReportType(1, loadReports); }
+        else if (item.hasClass('menu-external')) { top.Ts.Services.Reports.GetReportsByReportType(2, loadReports); }
+        else if (item.hasClass('menu-stock')) { top.Ts.Services.Reports.GetStockReports(loadReports); }
+        else if (item.hasClass('report-folder')) {
+            var folder = item.data('o');
+            top.Ts.Services.Reports.GetReportsByFolder(folder.FolderID, loadReports);
+        }
+
+    }
 
     function loadReports(data) {
         var reports = JSON.parse(data);
@@ -454,20 +438,28 @@ $(document).ready(function () {
                 _rowClone.helper = ui.helper;
             }
         });
-
         filterReport();
     }
 
+
+
     function getNewReportItem(report) {
+        var item = $('<tr>').addClass('report-item reportid-' + report.ReportID).html($('.report-row-template tr').html());
+        setReportItem(report, item);
+        return item;
+    }
 
-        var item = $('<tr>').data('o', report).attr('data-folderid', report.FolderID).attr('data-reporttype', report.ReportType).addClass('report-item reportid-' + report.ReportID).html($('.report-row-template tr').html());
-
+    function setReportItem(report, item) {
+        var isTsReport = report.OrganizationID == null || report.ReportType == 3;
+        item.attr('data-folderid', report.FolderID);
+        item.attr('data-isstock', report.OrganizationID ? 0 : 1);
+        item.attr('data-reporttype', report.ReportType);
         item.find('.report-list-title a').text(report.Name);
         item.find('.report-list-star i').addClass(report.IsFavorite == true ? 'fa-star color-yellow' : 'fa-star-o');
-        item.find('.report-list-owner').text(report.Creator);
-        var name = report.EditorID == top.Ts.System.User.UserID ? "me" : report.Editor;
+        item.find('.report-list-owner').text(isTsReport ? 'TeamSupport' : report.Creator);
+        var name = isTsReport ? "" : (report.EditorID == top.Ts.System.User.UserID ? "me" : report.Editor);
         item.find('.report-list-modified').html('<span>' + top.Ts.Utils.getDateString(report.DateEdited, true, false, true) + '</span> <span class="text-muted">' + name + '</span>');
-        item.find('.report-list-lastviewed').text(report.LastViewed ? top.Ts.Utils.getDateString(report.LastViewed, true, true, true) : "");
+        item.find('.report-list-lastviewed').text(report.LastViewed ? top.Ts.Utils.getDateString(report.LastViewed, true, true, true) : "Never");
         switch (report.ReportType) {
             case 1: item.find('.report-list-title i').addClass('fa-bar-chart-o color-green'); break;
             case 2: item.find('.report-list-title i').addClass('fa-globe color-blue'); break;
@@ -475,13 +467,9 @@ $(document).ready(function () {
             case 4: item.find('.report-list-title i').addClass('fa-tasks color-yellow'); break;
             default: item.find('.report-list-title i').addClass('fa-table color-red');
         }
+        item.data('o', report);
 
-        return item;
     }
-
-    //function updateReportFolde
-
-
 });
 
 

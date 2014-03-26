@@ -1656,30 +1656,52 @@ namespace TeamSupport.Data
 
     public static GridResult GetReportData(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter)
     {
-      Report report = Reports.GetReport(loginUser, reportID);
-
+      Report report = Reports.GetReport(loginUser, reportID, loginUser.UserID);
+      GridResult result;
       try
       {
         if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
         {
-          return GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
+          result = GetReportDataAll(loginUser, report, sortField, isDesc, useUserFilter);
         }
         else
         {
-          return GetReportDataPage(loginUser, report, from, to, sortField, isDesc, useUserFilter);
+          result = GetReportDataPage(loginUser, report, from, to, sortField, isDesc, useUserFilter);
         }
       }
       catch (Exception)
       {
-        if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+        // try without the sort
+        try
         {
-          return GetReportDataAll(loginUser, report, null, isDesc, useUserFilter);
+          if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+          {
+            result = GetReportDataAll(loginUser, report, null, isDesc, useUserFilter);
+          }
+          else
+          {
+            result = GetReportDataPage(loginUser, report, from, to, null, isDesc, useUserFilter);
+          }
         }
-        else
+        catch (Exception)
         {
-          return GetReportDataPage(loginUser, report, from, to, null, isDesc, useUserFilter);
+          // try without the user filters
+          if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+          {
+            result = GetReportDataAll(loginUser, report, null, isDesc, false);
+          }
+          else
+          {
+            result = GetReportDataPage(loginUser, report, from, to, null, isDesc, false);
+          }
+
+          UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
+          userFilters.Filters = null;
+          report.Row["Settings"] = JsonConvert.SerializeObject(userFilters);
+          report.Collection.Save();
         }
       }
+      return result;
 
     }
 
@@ -1889,7 +1911,7 @@ WHERE RowNum BETWEEN @From AND @To";
     public static ReportColumn[] GetReportColumns(LoginUser loginUser, int reportID)
     {
       Report report = Reports.GetReport(loginUser, reportID);
-      //if (report.ReportDefType == ReportType.Table) return report.GetTabularColumns();
+      if (report.ReportDefType == ReportType.Table) return report.GetTabularColumns();
       return report.GetSqlColumns();
     }
 
