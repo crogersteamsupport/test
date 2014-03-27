@@ -985,13 +985,25 @@ namespace TeamSupport.Data
       if (useDefaultOrderBy)
       {
         // order by
-        for (int i = descFields.Count-1; i >-1 ; i--)
+        flag = true;
+        foreach (DescriptiveClauseItem descField in descFields)
+        {
+          if (flag)
+            builder.Append(string.Format(" ORDER BY [{0}]", descField.Alias));
+          else
+            builder.Append(string.Format(", [{0}]", descField.Alias));
+
+          flag = false;
+        }
+        /*
+        // order by
+        for (int i = descFields.Count - 1; i > -1; i--)
         {
           if (i == descFields.Count - 1)
             builder.Append(string.Format(" ORDER BY [{0}]", descFields[i].Alias));
           else
             builder.Append(string.Format(", [{0}]", descFields[i].Alias));
-        }
+        }*/
       }
       command.CommandText = builder.ToString();
     }

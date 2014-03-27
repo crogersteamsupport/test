@@ -59,7 +59,6 @@ namespace TeamSupport.Handlers
 
 
             JObject args = JObject.Parse(requestContent);
-            
             string content = "";
             switch (segments[0])
             {
@@ -107,10 +106,9 @@ namespace TeamSupport.Handlers
       return Reports.BuildChartData(loginUser, table, summaryReport);
     }
 
-    private static int GetIntFromArgs(object arg)
+    private static int GetIntFromArgs(JToken arg)
     { 
-      return arg is string ? int.Parse((string)arg) : Convert.ToInt32(arg);
-    
+      return int.Parse(arg.ToString());
     }
 
   }
