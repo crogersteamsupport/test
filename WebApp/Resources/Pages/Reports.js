@@ -1,5 +1,4 @@
-﻿
-var reportPage = null;
+﻿var reportPage = null;
 $(document).ready(function () {
     reportPage = new ReportPage();
     reportPage.refresh();
@@ -466,12 +465,13 @@ ReportPage = function () {
 
     function setReportItem(report, item) {
         var isTsReport = report.OrganizationID == null || report.ReportType == 3;
+        report.Creator = isTsReport ? 'TeamSupport' : report.Creator;
         item.attr('data-folderid', report.FolderID);
         item.attr('data-isstock', report.OrganizationID ? 0 : 1);
         item.attr('data-reporttype', report.ReportType);
         item.find('.report-list-title a').text(report.Name);
         item.find('.report-list-star i').addClass(report.IsFavorite == true ? 'fa-star color-yellow' : 'fa-star-o');
-        item.find('.report-list-owner').text(isTsReport ? 'TeamSupport' : report.Creator);
+        item.find('.report-list-owner').text(report.Creator);
         var name = isTsReport ? "" : (report.EditorID == top.Ts.System.User.UserID ? "me" : report.Editor);
         item.find('.report-list-modified').html('<span>' + top.Ts.Utils.getDateString(report.DateEdited, true, false, true) + '</span> <span class="text-muted">' + name + '</span>');
         item.find('.report-list-lastviewed').text(report.LastViewed ? top.Ts.Utils.getDateString(report.LastViewed, true, true, true) : "Never");
@@ -482,6 +482,7 @@ ReportPage = function () {
             case 4: item.find('.report-list-title i').addClass('fa-tasks color-yellow'); break;
             default: item.find('.report-list-title i').addClass('fa-table color-red');
         }
+
         item.data('o', report);
 
     }
