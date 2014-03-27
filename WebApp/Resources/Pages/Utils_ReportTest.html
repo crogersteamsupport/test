@@ -1,0 +1,286 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link href="../Css/bootstrap3.min.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+  <link href="../Css/tsbs.css" rel="stylesheet" type="text/css" />
+  <!--[if IE]><link href="../Css/tsbs-ie.css" rel="stylesheet" type="text/css" /><![endif]-->
+  <script src="../Js/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="../Js/bootstrap3.min.js" type="text/javascript"></script>
+  <style type="text/css">
+    .user-info { padding: 10px 0; }
+    .org-tools { padding-bottom: 20px; }
+
+
+
+
+  </style>
+
+  <script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+      $('.action-refresh').click(function (e) { e.preventDefault(); window.location = window.location; });
+
+      var organizationID = -1;
+      $('#inputOrg')
+        .typeahead({ remote: { url: '/Services/OrganizationService.asmx/AdminQueryOrganizations?parentID=1&query=%QUERY'} })
+        .on('typeahead:selected', function (e, datum) {
+          organizationID = datum.id;
+          $('.users-box').show();
+          $('.org-info').show();
+          showOrgInfo(organizationID);
+        });
+
+
+      function showOrgInfo(orgID) {
+        top.Ts.Services.Organizations.GetOrganization(orgID, function (org) {
+          $('.org-info').data('o', org);
+
+          $('.action-toggle-active').text(org.IsActive != true ? 'Enable' : 'Disable');
+          $('#selectProduct').val(org.ProductType);
+
+          function appendProperty(name, value) {
+            var row = $('<tr>');
+            row.append($('<td>').html('<strong>' + name + '</strong>'));
+            row.append($('<td>').html(value));
+            $('.org-props').append(row);
+          }
+
+          $('.org-props').empty();
+          appendProperty('Organization ID', org.OrganizationID);
+          appendProperty('Is Active', org.IsActive.toString());
+          appendProperty('Date Created', org.DateCreated.toString());
+          appendProperty('Inventory Enabled', '<a href="#" class="action-toggle-inventory">' + org.IsInventoryEnabled.toString() + '</a>');
+          appendProperty('API Request Limit', org.APIRequestLimit);
+          appendProperty('User Seats', org.UserSeats);
+          top.Ts.Services.Organizations.AdminGetUserCount(orgID, function (count) {
+            appendProperty('Active Users', count);
+          });
+          top.Ts.Services.Organizations.AdminGetStorageUsed(orgID, function (size) {
+            appendProperty('Storage Used', size + ' MB');
+          });
+
+          $('.evergage-company').attr('href', getEGCompanyLink());
+          showUsers(org);
+
+        });
+      }
+
+      $('.org-props').on('click', '.action-toggle-inventory', function (e) {
+        e.preventDefault();
+        var org = $('.org-info').data('o');
+        var item = $(this);
+        top.Ts.Services.Organizations.AdminSetInventory(org.OrganizationID, !org.IsInventoryEnabled, function () {
+          org.IsInventoryEnabled = !org.IsInventoryEnabled;
+          item.text(org.IsInventoryEnabled.toString());
+        });
+
+      });
+
+      function showUsers(org) {
+        top.Ts.Services.Users.AdminGetUsers(org.OrganizationID, function (users) {
+
+
+          function appendUser(user) {
+            var row = $('<tr>');
+            row.append($('<td>').text(user.UserID));
+            row.append($('<td>').html('<a href="' + getEGUserLink(user.Email) + '" target="EverGage">' + user.FirstName + ' ' + user.LastName + '&nbsp;<i class="fa fa-external-link"></i>'));
+            row.append($('<td>').html('<a href="mailto:' + user.Email + '">' + user.Email + '</a>'));
+            row.append($('<td>').text(user.LastLogin));
+
+            var checkActive = $('<input />', { type: 'checkbox' })
+            if (user.IsActive == true) checkActive.prop('checked', true);
+            checkActive.change(function (e) {
+              e.preventDefault();
+              var user = $(this).parents('tr').data('o');
+              top.Ts.Services.Users.AdminSetActive(user.UserID, !user.IsActive);
+
+            });
+            row.append($('<td>').append(checkActive));
+
+            var checkSession = $('<input />', { type: 'checkbox' })
+            checkSession.change(function (e) {
+              e.preventDefault();
+              var user = $(this).parents('tr').data('o');
+              top.Ts.Services.Users.SetSingleSessionEnforcement(user.UserID, !user.EnforceSingleSession);
+            });
+            if (user.EnforceSingleSession == true) checkSession.prop('checked', true);
+            row.append($('<td>').append(checkSession));
+
+            row.data('o', user);
+
+            if (user.UserID == org.PrimaryUserID) {
+              row.addClass('danger');
+            }
+            else if (user.IsSystemAdmin == true) {
+              row.addClass('warning');
+            }
+            $('.users-table tbody').append(row);
+          }
+
+
+          $('.users-table tbody').empty();
+
+          for (var i = 0; i < users.length; i++) { appendUser(users[i]); }
+        });
+      }
+
+      $('.action-toggle-active').click(function (e) {
+        e.preventDefault();
+        if (!confirm("Are you really sure you would like to disable this account?")) return;
+        var org = $('.org-info').data('o');
+        top.Ts.Services.Organizations.AdminEnable(org.OrganizationID, !org.IsActive, function () {
+          showOrgInfo(org.OrganizationID);
+        });
+      });
+
+      $('.action-rename').click(function (e) {
+        e.preventDefault();
+        var org = $('.org-info').data('o');
+        var name = prompt("Rename company", org.Name);
+        if (name != null && name != "") {
+          top.Ts.Services.Organizations.AdminRenameCompany(org.OrganizationID, name, function () {
+            showOrgInfo(org.OrganizationID);
+          });
+        }
+      });
+
+      $('.action-seats').click(function (e) {
+        e.preventDefault();
+        var org = $('.org-info').data('o');
+        var count = prompt("Change seat count", org.UserSeats);
+        if (count != null) {
+          top.Ts.Services.Organizations.AdminUpdateSeats(org.OrganizationID, count, function () {
+            showOrgInfo(org.OrganizationID);
+          });
+        }
+      });
+
+      $('.action-api').click(function (e) {
+        e.preventDefault();
+        var org = $('.org-info').data('o');
+        var count = prompt("Change API request count", org.APIRequestLimit);
+        if (count != null) {
+          top.Ts.Services.Organizations.AdminSetApiCount(org.OrganizationID, count, function () {
+            showOrgInfo(org.OrganizationID);
+          });
+        }
+      });
+
+      $('.action-portal').click(function (e) {
+        e.preventDefault();
+        if (!confirm("Are you sure you would like to turn all the contacts into portal users?")) return;
+        var org = $('.org-info').data('o');
+        top.Ts.Services.Organizations.AdminSetAllPortalUsers(org.OrganizationID, true, function () {
+          alert("All portal users are now enabled.");
+        });
+      });
+
+      $('#selectProduct').change(function (e) {
+        e.preventDefault();
+        top.Ts.Services.Organizations.AdminUpdateProductType(organizationID, $('#selectProduct').val(), function () {
+          showOrgInfo(organizationID);
+        });
+
+      });
+
+      function getEGUserLink(email) {
+        var org = $('.org-info').data('o');
+        return 'https://teamsupport.evergage.com/#dataset;dataset-id=MainApp/customer/c-overview;customer-type=user;user-id=' + encodeURIComponent(email.toLowerCase()) + ';account-id=' + encodeURIComponent(org.Name.toLowerCase());
+      }
+
+      function getEGCompanyLink() {
+        var org = $('.org-info').data('o');
+        return 'https://teamsupport.evergage.com/#dataset;dataset-id=MainApp/customer/c-overview;customer-type=account;account-id=' + encodeURIComponent(org.Name.toLowerCase());
+      }
+
+
+
+    });  
+  </script>
+
+</head>
+<body>
+  <div class="frame-container container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box">
+          <div class="box-header">
+            <h3><i class="fa fa-building-o"></i>Accounts Utility</h3>
+            <div class="box-actions">
+              <a class="btn btn-link action-refresh" href="#"><i class="fa fa-refresh"></i></a>
+            </div>
+          </div>
+          <div class="box-content">
+            <form class="form">
+            <div class="form-group">
+              <label class="sr-only" for="inputOrg">Company</label>
+              <input class="form-control" type="text" id="inputOrg" placeholder="Enter a company name or organization id" autocomplete="off" />
+              <div class="clearfix">
+              </div>
+            </div>
+            </form>
+            <div class="org-info" style="display: none;">
+              <div class="btn-group org-tools">
+                <button class="btn btn-warning action-toggle-active">Disable</button>
+                <button class="btn btn-default action-rename">Rename</button>
+                <button class="btn btn-default action-seats">Change Seat Count</button>
+                <button class="btn btn-default action-api">Change API Request Count</button>
+                <button class="btn btn-default action-portal">Turn all portal users on</button>
+              </div>
+              <div>
+                <form class="form">
+                <div class="form-group">
+                  <label for="selectProduct">Product Type</label>
+                  <select id="selectProduct" class="form-control">
+                    <option value="0">Express</option>
+                    <option value="1">Support Desk</option>
+                    <option value="2">Enterprise</option>
+                  </select>
+                </div>
+                </form>
+              </div>
+              <div>
+                <table class="org-props table table-hover table-bordered">
+                </table>
+              </div>
+              <div class="clearfix">
+              </div>
+              <p><a href="#" class="evergage-company" target="EverGage">View in Evergage&nbsp;<i
+                class="fa fa-external-link"></i></a> </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12">
+        <div class="box users-box" style="display: none;">
+          <div class="box-header">
+            <h3><i class="fa fa-group"></i><span>Users</span></h3>
+          </div>
+          <div class="box-content">
+            <div class="users-info">
+              <table class="users-table table table-hover table-bordered">
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Last Login</th>
+                    <th>Is Active</th>
+                    <th>Single Session Enforced</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

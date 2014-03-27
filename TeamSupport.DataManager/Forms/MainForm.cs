@@ -183,18 +183,41 @@ namespace TeamSupport.DataManager
     {
       Reports reports = new Reports(LoginSession.LoginUser);
       StreamWriter sw = new StreamWriter("FieldReportIDs.txt", false);
+      reports.LoadEverything();
+      sw.WriteLine(string.Format("Testing {0:D} Reports", reports.Count));
       foreach (Report report in reports)
       {
         try
         {
-          Reports.GetReportTable(LoginSession.LoginUser, report.ReportID, 1, 2, "", true, false, true);
+
+          int userID = 34;
+          int organizationID = 1078;
+
+          if (report.OrganizationID != null)
+          {
+            organizationID = (int)report.OrganizationID;
+            Organization org = Organizations.GetOrganization(LoginSession.LoginUser, organizationID);
+            if (!org.IsActive) continue;
+            Users users = new Users(LoginSession.LoginUser);
+            users.LoadByOrganizationID(organizationID, true);
+            if (users.IsEmpty) continue;
+            userID = users[0].UserID;
+          }
+
+
+          LoginUser loginUser = new LoginUser(LoginSession.LoginUser.ConnectionString, userID, organizationID : (int)report.OrganizationID, null);
+          Reports.GetReportTable(loginUser, report.ReportID, 1, 2, "", true, false, true);
         }
         catch (Exception ex)
         {
           sw.WriteLine(report.ReportID.ToString());
+          sw.WriteLine(ex.Message);
+          sw.WriteLine(ex.StackTrace);
         }
       
       }
+      sw.WriteLine("Done Testing");
+
       sw.Close();
      
     }

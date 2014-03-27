@@ -58,7 +58,7 @@ public partial class Frames_TicketTabsProduct : BaseFramePage
     tsMain.Tabs.Clear();
 
     StringBuilder builder = new StringBuilder();
-    builder.Append("../vcr/1_8_2/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
+    builder.Append("../vcr/1_9_0/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
     builder.Append("&tf_ProductID=" + _productID.ToString());
     if (_reportedVersionID > -1) builder.Append("&tf_ReportedVersionID=" + _reportedVersionID.ToString());
     if (_resolvedVersionID > -1) builder.Append("&tf_SolvedVersionID=" + _resolvedVersionID.ToString());
@@ -67,7 +67,7 @@ public partial class Frames_TicketTabsProduct : BaseFramePage
     tsMain.Tabs.Add(CreateTab(ticketType, "My Tickets", builder.ToString()));
     
     builder = new StringBuilder();
-    builder.Append("../vcr/1_8_2/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
+    builder.Append("../vcr/1_9_0/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
     builder.Append("&tf_ProductID=" + _productID.ToString());
     if (_reportedVersionID > -1) builder.Append("&tf_ReportedVersionID=" + _reportedVersionID.ToString());
     if (_resolvedVersionID > -1) builder.Append("&tf_SolvedVersionID=" + _resolvedVersionID.ToString());
@@ -75,7 +75,7 @@ public partial class Frames_TicketTabsProduct : BaseFramePage
     tsMain.Tabs.Add(CreateTab(ticketType, "Open Tickets", builder.ToString()));
 
     builder = new StringBuilder();
-    builder.Append("../vcr/1_8_2/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
+    builder.Append("../vcr/1_9_0/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
     builder.Append("&tf_ProductID=" + _productID.ToString());
     if (_reportedVersionID > -1) builder.Append("&tf_ReportedVersionID=" + _reportedVersionID.ToString());
     if (_resolvedVersionID > -1) builder.Append("&tf_SolvedVersionID=" + _resolvedVersionID.ToString());
@@ -84,7 +84,7 @@ public partial class Frames_TicketTabsProduct : BaseFramePage
 
 
     builder = new StringBuilder();
-    builder.Append("../vcr/1_8_2/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
+    builder.Append("../vcr/1_9_0/pages/ticketgrid.html?tf_TicketTypeID=" + ticketType.TicketTypeID);
     builder.Append("&tf_ProductID=" + _productID.ToString());
     if (_reportedVersionID > -1) builder.Append("&tf_ReportedVersionID=" + _reportedVersionID.ToString());
     if (_resolvedVersionID > -1) builder.Append("&tf_SolvedVersionID=" + _resolvedVersionID.ToString());

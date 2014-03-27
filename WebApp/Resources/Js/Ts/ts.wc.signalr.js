@@ -7,11 +7,11 @@ function loadSignalR() {
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
             $(this).jPlayer("setMedia", {
-                mp3: "vcr/1_8_2/Audio/chime.mp3"
+                mp3: "vcr/1_9_0/Audio/chime.mp3"
             });
         },
         loop: false,
-        swfPath: "vcr/1_8_2/Js"
+        swfPath: "vcr/1_9_0/Js"
     });
 
     //Debug reasons
@@ -46,7 +46,7 @@ function loadSignalR() {
 
         if (notify) {
             $("#jquery_jplayer_1").jPlayer("setMedia", {
-                mp3: "vcr/1_8_2/Audio/chime.mp3"
+                mp3: "vcr/1_9_0/Audio/chime.mp3"
             }).jPlayer("play", 0);
         }
     };
@@ -254,7 +254,7 @@ function openChat(name, chatid) {
 
 function chime(chimeType) {
         $("#jquery_jplayer_1").jPlayer("setMedia", {
-            mp3: "vcr/1_8_2/Audio/drop.mp3"
+            mp3: "vcr/1_9_0/Audio/drop.mp3"
         }).jPlayer("play", 0);
 }
 
