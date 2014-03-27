@@ -55,7 +55,7 @@
     });
 
     function exportChart(exportType) {
-        var options = { type: exportType, url: '../../../chartexport', filename: '"' + _report.Name + '"' , width: 1200 };
+        var options = { type: exportType, url: '../../../chartexport', filename: '"' + _report.Name + '"' , width: 1900 };
         $('.chart-container').highcharts().exportChart(options);
     }
 
