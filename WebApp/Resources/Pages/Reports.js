@@ -384,9 +384,9 @@ ReportPage = function () {
         e.preventDefault();
         var item = $(this);
         var i = item.find('i');
-        var isAsc = !i.hasClass('fa-angle-down');
+        var isDesc = !i.hasClass('fa-angle-up');
         $('.report-list-header i').removeClass('fa fa-angle-down fa-angle-up');
-        i.addClass(isAsc ? 'fa fa-angle-down' : 'fa fa-angle-up');
+        i.addClass(isDesc ? 'fa fa-angle-up' : 'fa fa-angle-down');
         sortReports();
     });
 
@@ -401,7 +401,6 @@ ReportPage = function () {
                 var val2 = $(b).data('o')[fieldname];
                 if (val1 && val1.toLowerCase) { val1 = val1.toLowerCase(); }
                 if (val2 && val2.toLowerCase) { val2 = val2.toLowerCase(); }
-                if (val1 > val2) console.log(val1 + ' > ' + val2); else console.log(val1 + ' < ' + val2); ;
                 if (val1 == null) return -1;
                 if (val2 == null) return 1
 

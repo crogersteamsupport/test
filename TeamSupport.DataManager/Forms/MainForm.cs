@@ -205,7 +205,7 @@ namespace TeamSupport.DataManager
           }
 
 
-          LoginUser loginUser = new LoginUser(LoginSession.LoginUser.ConnectionString, userID, organizationID : (int)report.OrganizationID, null);
+          LoginUser loginUser = new LoginUser(LoginSession.LoginUser.ConnectionString, userID, organizationID, null);
           Reports.GetReportTable(loginUser, report.ReportID, 1, 2, "", true, false, true);
         }
         catch (Exception ex)
