@@ -20,6 +20,7 @@
             top.Ts.Utils.webMethod(null, "reportdata/chart",
               { "reportID": _reportID },
               function (data) {
+                  
                   createChart('.chart-container', _report.Def.Chart, data);
               },
               function (error) {

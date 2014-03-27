@@ -985,7 +985,7 @@ namespace TeamSupport.Data
       if (useDefaultOrderBy)
       {
         // order by
-        flag = true;
+       /* flag = true;
         foreach (DescriptiveClauseItem descField in descFields)
         {
           if (flag)
@@ -994,8 +994,8 @@ namespace TeamSupport.Data
             builder.Append(string.Format(", [{0}]", descField.Alias));
 
           flag = false;
-        }
-        /*
+        }*/
+        
         // order by
         for (int i = descFields.Count - 1; i > -1; i--)
         {
@@ -1003,7 +1003,7 @@ namespace TeamSupport.Data
             builder.Append(string.Format(" ORDER BY [{0}]", descFields[i].Alias));
           else
             builder.Append(string.Format(", [{0}]", descFields[i].Alias));
-        }*/
+        }
       }
       command.CommandText = builder.ToString();
     }
@@ -2219,14 +2219,11 @@ IF @@ROWCOUNT=0
 
               switch (dateType)
               {
-                case "qtryear": list[i] = string.Format("Q{0} {1}", value, year); break;
+                case "qtryear": list[i] = string.Format("{1} - Q{0}", value, year); break;
                 case "monthyear": list[i] =
-
-
-                  string.Format("{0} {1}", loginUser.CultureInfo.DateTimeFormat.GetAbbreviatedMonthName(int.Parse(value)), year);
-
+                  string.Format("{1} {0}", loginUser.CultureInfo.DateTimeFormat.GetAbbreviatedMonthName(int.Parse(value)), year);
                   break;
-                case "weekyear": list[i] = string.Format("{0}-{1}", value, year); break;
+                case "weekyear": list[i] = string.Format("{1}-{0}", value, year); break;
                 default:
                   break;
               }
