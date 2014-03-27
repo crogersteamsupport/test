@@ -1,11 +1,27 @@
 ﻿
+var reportPage = null;
 $(document).ready(function () {
+    reportPage = new ReportPage();
+    reportPage.refresh();
+});
+
+function onShow() {
+    reportPage.refresh();
+};
+
+ReportPage = function () {
     var _rowClone = {};
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
+
+    this.refresh = function () {
+        getReports();
+    }
+
+
     $('.report-refresh').click(
     function (e) {
         e.preventDefault();
-        window.location.assign(location.href);
+        getReports();
     });
 
     $('body').click(function (e) {
@@ -470,9 +486,7 @@ $(document).ready(function () {
         item.data('o', report);
 
     }
-});
-
-
+}
 
 
 

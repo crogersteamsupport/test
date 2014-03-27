@@ -159,7 +159,7 @@ namespace TeamSupport.DataManager.UserControls
         writer.WriteLine(builder.ToString());
       }*/
 
-      writer.Write(DataUtils.TableToCsv((DataTable)gridResults.DataSource, true));
+     // writer.Write(DataUtils.TableToCsv((DataTable)gridResults.DataSource, true));
       writer.Close();
 
     }

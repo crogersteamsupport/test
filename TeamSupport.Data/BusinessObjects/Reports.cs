@@ -1953,6 +1953,16 @@ ORDER BY r.Name
       }
     }
 
+    public void LoadEverything() 
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"SELECT * FROM Reports ORDER BY ReportID DESC";
+        command.CommandType = CommandType.Text;
+        Fill(command);
+      }
+    }
+
     public void Search(int organizationID, string term, int top = 25)
     {
       using (SqlCommand command = new SqlCommand())

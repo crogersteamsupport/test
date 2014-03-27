@@ -181,33 +181,22 @@ namespace TeamSupport.DataManager
 
     private void btnTestButton_Click(object sender, EventArgs e)
     {
-
-      Pop3Client pop = new Pop3Client();
-      pop.Connect("pop.gmail.com", 995, true);
-      pop.Authenticate("recent:tickets@teamsupport.com", "Muroc2008!");
-      int count = pop.GetMessageCount();
-      DateTime startDate = new DateTime(2012, 4, 23, 20, 0, 0);
-      DateTime endDate = new DateTime(2012, 4, 24, 10, 0, 0);
-      for (int i = count; i > 0; i--)
-			{
+      Reports reports = new Reports(LoginSession.LoginUser);
+      StreamWriter sw = new StreamWriter("FieldReportIDs.txt", false);
+      foreach (Report report in reports)
+      {
         try
         {
-          MessageHeader header = pop.GetMessageHeaders(i);
-          if (header.DateSent > startDate && header.DateSent < endDate) continue;
-
-          OpenPop.Mime.Message message = pop.GetMessage(i);
-
-          foreach (MessagePart attachment in message.FindAllAttachments())
-	        {
-		        ProcessAttachment(attachment.FileName, attachment.Body);
-	        }
+          Reports.GetReportTable(LoginSession.LoginUser, report.ReportID, 1, 2, "", true, false, true);
         }
         catch (Exception ex)
         {
-          MessageBox.Show(ex.Message);
+          sw.WriteLine(report.ReportID.ToString());
         }
-			}
-      MessageBox.Show("Done");
+      
+      }
+      sw.Close();
+     
     }
 
     private void ProcessAttachment(string fileName, byte[] bytes)
