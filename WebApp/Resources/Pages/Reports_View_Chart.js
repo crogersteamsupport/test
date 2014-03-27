@@ -16,14 +16,14 @@
             $('#mainFrame').attr('src', report.ReportDef);
             $('.report-title').text(report.Name);
 
-            
-            top.Ts.Utils.webMethod(null, "chartdata",
+
+            top.Ts.Utils.webMethod(null, "reportdata/chart",
               { "reportID": _reportID },
               function (data) {
-                  createChart('.chart-container', _report.Def.Chart, JSON.parse(data));
+                  createChart('.chart-container', _report.Def.Chart, data);
               },
               function (error) {
-                  showChartError('.chart-container', error.get_message());
+                  showChartError('.chart-container', error.statusText);
               });
 
         });
@@ -38,6 +38,26 @@
         e.preventDefault();
         window.location.assign("reports_edit.html?ReportID=" + _reportID);
     });
+
+    $('.reports-export-png').click(function (e) {
+        e.preventDefault();
+        exportChart('image/png');
+    });
+
+    $('.reports-export-jpg').click(function (e) {
+        e.preventDefault();
+        exportChart('image/jpeg');
+    });
+
+    $('.reports-export-svg').click(function (e) {
+        e.preventDefault();
+        exportChart('image/svg+xml');
+    });
+
+    function exportChart(exportType) {
+        var options = { type: exportType, url: '../../../chartexport', filename: '"' + _report.Name + '"' , width: 1200 };
+        $('.chart-container').highcharts().exportChart(options);
+    }
 
     $('.reports-fav').click(function (e) {
         e.preventDefault();

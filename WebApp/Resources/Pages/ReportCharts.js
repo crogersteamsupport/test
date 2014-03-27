@@ -47,6 +47,7 @@ function addChartData(options, records) {
     options.colors = brightPastel;
     
     
+    
     function fixRecordName(record, index) {
         if (record.fieldType == 'bool') {
             return record.name + (record.data[index] == true ? ' = True' : ' = False');

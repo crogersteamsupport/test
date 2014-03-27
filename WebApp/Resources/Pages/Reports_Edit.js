@@ -556,6 +556,7 @@ $(document).ready(function () {
             options.yAxis = {};
             options.yAxis.title = { text: $('#chart-series-title').val() };
             options.yAxis.plotLines = [{ value: 0, width: 1, color: '#808080'}];
+            
             switch ($('#chart-type').val()) {
                 case 'line':
                     options.plotOptions = {};

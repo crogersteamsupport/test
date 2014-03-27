@@ -101,10 +101,16 @@
     <Reference Include="EPPlus">
       <HintPath>..\packages\EPPlus 3.1.3\EPPlus.dll</HintPath>
     </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>..\packages\HighCharts\itextsharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NewtonSoft.Json\Bin\Net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Svg">
+      <HintPath>..\packages\HighCharts\Svg.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -131,7 +137,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChartHandler.cs" />
     <Compile Include="ContentHandler.cs" />
+    <Compile Include="HighCharts\ExportChart.cs" />
+    <Compile Include="HighCharts\Exporter.cs" />
+    <Compile Include="HighCharts\Page.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="ReportDataHandler.cs" />
     <Compile Include="ResourceHandler.cs" />
     <Compile Include="SessionModule.cs" />
