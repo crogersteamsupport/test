@@ -383,9 +383,9 @@ ReportPage = function () {
         e.preventDefault();
         var item = $(this);
         var i = item.find('i');
-        var isDesc = !i.hasClass('fa-angle-up');
+        var isAsc = !i.hasClass('fa-angle-up');
         $('.report-list-header i').removeClass('fa fa-angle-down fa-angle-up');
-        i.addClass(isDesc ? 'fa fa-angle-up' : 'fa fa-angle-down');
+        i.addClass(isAsc ? 'fa fa-angle-up' : 'fa fa-angle-down');
         sortReports();
     });
 

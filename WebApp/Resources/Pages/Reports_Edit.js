@@ -354,9 +354,9 @@ $(document).ready(function () {
                                 .addClass('report-field ' + getUniqueFieldClass(fields[i]))
                                 .data('field', fields[i])
                                 .append($('<div>', {
-                                    class: 'checkbox'
+                                    'class': 'checkbox'
                                 }).append($('<label>', {
-                                    html: ' <span class="text-muted">' + fields[i].Table + '.</span>' + fieldName
+                                    'html': ' <span class="text-muted">' + fields[i].Table + '.</span>' + fieldName
                                 }).prepend('<input type="checkbox" />')))
                                 .appendTo(list);
                     if (tableName != fields[i].Table) {
