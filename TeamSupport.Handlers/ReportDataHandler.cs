@@ -59,7 +59,7 @@ namespace TeamSupport.Handlers
 
 
             JObject args = JObject.Parse(requestContent);
-
+            
             string content = "";
             switch (segments[0])
             {
@@ -93,18 +93,24 @@ namespace TeamSupport.Handlers
 
     private static string GetReportTableData(JObject args)
     {
-      GridResult result = Reports.GetReportData(TSAuthentication.GetLoginUser(), (int)args["reportID"], (int)args["from"], (int)args["to"], (string)args["sortField"], (bool)args["isDesc"], (bool)args["useUserFilter"]);
+      GridResult result = Reports.GetReportData(TSAuthentication.GetLoginUser(), GetIntFromArgs(args["reportID"]), GetIntFromArgs(args["from"]), GetIntFromArgs(args["to"]), (string)args["sortField"], (bool)args["isDesc"], (bool)args["useUserFilter"]);
       return JsonConvert.SerializeObject(result);
     }
 
     private static string GetReportChartData(JObject args)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
-      Report report = Reports.GetReport(loginUser, (int)args["reportID"], TSAuthentication.UserID);
+      Report report = Reports.GetReport(loginUser, GetIntFromArgs(args["reportID"]), TSAuthentication.UserID);
       Reports.UpdateReportView(loginUser, report.ReportID);
       SummaryReport summaryReport = JsonConvert.DeserializeObject<SummaryReport>(report.ReportDef);
       DataTable table = Reports.GetSummaryData(TSAuthentication.GetLoginUser(), summaryReport, true, report);
       return Reports.BuildChartData(loginUser, table, summaryReport);
+    }
+
+    private static int GetIntFromArgs(object arg)
+    { 
+      return arg is string ? int.Parse((string)arg) : Convert.ToInt32(arg);
+    
     }
 
   }

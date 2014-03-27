@@ -45,8 +45,8 @@ function addChartData(options, records) {
 
     //options.colors = old;
     options.colors = brightPastel;
-    
-    
+
+    options.navigation = { buttonOptions: { enabled: false} };
     
     function fixRecordName(record, index) {
         if (record.fieldType == 'bool') {
