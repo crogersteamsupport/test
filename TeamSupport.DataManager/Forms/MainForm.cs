@@ -189,7 +189,7 @@ namespace TeamSupport.DataManager
       {
         try
         {
-
+          if (report.Query == null) continue;
           int userID = 34;
           int organizationID = 1078;
 
