@@ -161,7 +161,7 @@ namespace TSWebServices
       }
 
       [WebMethod]
-      public string GetCustomReports()
+      public string GetNonStockReports()
       {
         List<ReportItem> result = new List<ReportItem>();
         Reports reports = new Reports(TSAuthentication.GetLoginUser());
@@ -169,6 +169,20 @@ namespace TSWebServices
         foreach (Report report in reports)
         {
           if (report.OrganizationID != null) result.Add(new ReportItem(report, false));
+        }
+
+        return JsonConvert.SerializeObject(result);
+      }
+
+      [WebMethod]
+      public string GetAllReports()
+      {
+        List<ReportItem> result = new List<ReportItem>();
+        Reports reports = new Reports(TSAuthentication.GetLoginUser());
+        reports.LoadAll(TSAuthentication.OrganizationID, TSAuthentication.UserID);
+        foreach (Report report in reports)
+        {
+          result.Add(new ReportItem(report, false));
         }
 
         return JsonConvert.SerializeObject(result);

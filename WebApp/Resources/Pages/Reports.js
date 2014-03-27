@@ -422,12 +422,13 @@ ReportPage = function () {
 
     function getReports() {
         var item = $('.report-menu-item.active');
-        if (item.hasClass('menu-custom')) { top.Ts.Services.Reports.GetCustomReports(loadReports); }
+        if (item.hasClass('menu-all')) { top.Ts.Services.Reports.GetAllReports(loadReports); }
         else if (item.hasClass('menu-starred')) { top.Ts.Services.Reports.GetStarredReports(loadReports); }
         else if (item.hasClass('menu-tablular')) { top.Ts.Services.Reports.GetReportsByReportType(0, loadReports); }
         else if (item.hasClass('menu-summary')) { top.Ts.Services.Reports.GetReportsByReportType(4, loadReports); }
         else if (item.hasClass('menu-charts')) { top.Ts.Services.Reports.GetReportsByReportType(1, loadReports); }
         else if (item.hasClass('menu-external')) { top.Ts.Services.Reports.GetReportsByReportType(2, loadReports); }
+        else if (item.hasClass('menu-custom')) { top.Ts.Services.Reports.GetReportsByReportType(3, loadReports); }
         else if (item.hasClass('menu-stock')) { top.Ts.Services.Reports.GetStockReports(loadReports); }
         else if (item.hasClass('report-folder')) {
             var folder = item.data('o');
