@@ -15,6 +15,15 @@ Dashboard = function () {
 Dashboard.prototype = {
     init: function () {
         var self = this;
+
+        $('.dashboard-container').on('click', '.report-title a', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var report = $(this).closest('.item').data('report');
+            top.Ts.MainPage.openReport(report);
+        });
+
+
         top.Ts.Utils.webMethod("ReportService", "GetDashboard", {},
               function (result) {
                   top.Ts.Utils.webMethod("ReportService", "GetDashboardReports", {},
@@ -32,7 +41,7 @@ Dashboard.prototype = {
                               var report = findReport(dashboard.ReportID);
                               if (report != null) {
                                   var item = $('.template-box .item').clone().appendTo(container).data('report', report);
-                                  item.find('.report-title').text(report.Name);
+                                  item.find('.report-title a').text(report.Name);
                                   if (dashboard.Rows == 2) {
                                       item.addClass('ht2');
                                   }
@@ -173,7 +182,7 @@ Dashboard.prototype = {
             top.Ts.Utils.webMethod("ReportService", "GetReport", { "reportID": reportID }, function (report) {
                 var $container = $('.dashboard-container');
                 var item = $('.template-box .item').clone().appendTo($container).data('report', report);
-                item.find('.report-title').text(report.Name);
+                item.find('.report-title a').text(report.Name);
 
                 var w = $('.report-modal-add input[name=modal-w]:checked').val();
                 if (w == "w2") {

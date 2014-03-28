@@ -191,15 +191,17 @@ $(document).ready(function () {
             e.preventDefault();
             var list = $(this).prev();
             var item = list.find('li:first').clone(true).hide();
-            initSummaryRow(item);
+            item.find('.summary-desc-val1').hide();
             if (_reportType == 1) {
                 $('.summary-add-descfield').hide();
                 item.find('label').text('Series');
-                item.prependTo(list).fadeIn();
+                item.prependTo(list).fadeIn(function () { initSummaryRow(item); });
             }
             else {
-                item.appendTo(list).fadeIn();
+                item.appendTo(list).fadeIn(function () { initSummaryRow(item); });
             }
+
+
         });
 
         $('.summary-fields').on('click', 'li a', function (e) {
@@ -548,7 +550,7 @@ $(document).ready(function () {
             options.credits = { enabled: false }
             options.title = { text: $('#chart-title').val(), x: -20 };
             options.subtitle = { text: $('#chart-subtitle').val(), x: -20 };
-            options.tooltip = { valueSuffix: $('#chart-tip-suffix').val() };
+            options.tooltip = { valueSuffix: ' ' + $('#chart-tip-suffix').val() };
             options.legend = {};
             options.legend.layout = $('#chart-legend-layout').val();
             options.legend.align = $('#chart-legend-align').val();
@@ -556,7 +558,7 @@ $(document).ready(function () {
             options.yAxis = {};
             options.yAxis.title = { text: $('#chart-series-title').val() };
             options.yAxis.plotLines = [{ value: 0, width: 1, color: '#808080'}];
-            
+
             switch ($('#chart-type').val()) {
                 case 'line':
                     options.plotOptions = {};

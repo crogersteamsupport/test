@@ -1220,7 +1220,7 @@ namespace TeamSupport.Data
         case "qtr": return string.Format("DATEPART(QUARTER, {0})", fieldName);
         case "month": return string.Format("DATEPART(MONTH, {0}) ", fieldName);
         case "week": return string.Format("DATEPART(WEEK, {0}) ", fieldName);
-        case "dayweek": return string.Format("DATEPART(WEEKDAY, {0})", fieldName);
+        case "dayweek": return string.Format("CAST(DATEPART(WEEKDAY, {0}) AS VARCHAR)", fieldName);
         case "daymonth": return string.Format("DATEPART(DAY, {0})", fieldName);
         case "hourday": return string.Format("DATEPART(HOUR, {0})", fieldName);
         default:

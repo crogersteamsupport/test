@@ -29,7 +29,7 @@ function showChartError(element, message) {
 }
 
 function addChartData(options, records) {
-    
+   
     var old = ['#3276B1', '#193b58', '#78A300', '#e72b19', '#008080', '#E57B3A', '#bd4cff', '#FFC312', '#BA55D3'];
     var berry = ['#8A2BE2','#BA55D3','#4169E1','#C71585','#0000FF','#8019E0','#DA70D6','#7B68EE','#C000C0','#0000CD','#800080'];
     var bright = ['#008000','#0000FF','#800080','#800080','#FF00FF','#008080','#FFFF00','#808080','#00FFFF','#000080','#800000','#FF3939','#7F7F00','#C0C0C0','#FF6347','#FFE4B5'];
@@ -57,6 +57,10 @@ function addChartData(options, records) {
         return record.data[index];
     }
 
+    function fixBlankSeriesName(val) {
+        return !val || val == '' ? 'Unknown' : val + '';
+    }
+
     if (options.ts.chartType == 'pie') {
         if (records.length > 2) {
             return 'Please do not select a series field to plot a pie chart.';
@@ -71,7 +75,7 @@ function addChartData(options, records) {
 
         for (var i = 0; i < records[1].data.length; i++) {
             var val = records[1].data[i] / total * 100;
-            options.series[0].data.push([records[0].data[i], parseFloat(val.toFixed(2))]);
+            options.series[0].data.push([fixBlankSeriesName(records[0].data[i]), parseFloat(val.toFixed(2))]);
         }
     }
     else if ((records[0].fieldType == 'datetime' && records[0].format == 'date') || (records[1].fieldType == 'datetime' && records[1].format == 'date')) {
@@ -81,7 +85,7 @@ function addChartData(options, records) {
         if (records.length == 3) {
             function findSeries(value) {
                 for (var i = 0; i < options.series.length; i++) {
-                    if (options.series[i].value == value) return options.series[i]
+                    if (options.series[i].value == fixBlankSeriesName(value)) return options.series[i]
                 }
                 return null;
             }
@@ -91,7 +95,7 @@ function addChartData(options, records) {
                 var series = findSeries(val);
 
                 if (!series) {
-                    series = { name: fixRecordName(records[0], i), value: val, data: [] };
+                    series = { name: fixBlankSeriesName(fixRecordName(records[0], i)), value: val, data: [] };
                     options.series.push(series);
                 }
 
@@ -156,7 +160,7 @@ function addChartData(options, records) {
 
             function findSeries(value) {
                 for (var i = 0; i < options.series.length; i++) {
-                    if (options.series[i].value == value) return options.series[i]
+                    if (options.series[i].value == fixBlankSeriesName(value)) return options.series[i]
                 }
                 return null;
             }
@@ -167,7 +171,7 @@ function addChartData(options, records) {
                 var series = findSeries(val);
                 
                 if (!series) {
-                    series = { name: fixRecordName(records[0], i), value: val, data: createDataArray() };
+                    series = { name: fixBlankSeriesName(fixRecordName(records[0], i)), value: val, data: createDataArray() };
                     options.series.push(series);
                 }
                 var catIndex = indexOfCategory(fixRecordName(records[1], i));

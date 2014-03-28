@@ -1171,7 +1171,7 @@ Ts.Pages.Main.prototype = {
   openCustomerByName: function (name) {
     var self = this;
     Ts.Services.Organizations.GetIDByName(name, function (id) {
-      self.openCustomer(id);
+        self.openNewCustomer(id);
     });
   },
   openCustomer: function (customerID) {

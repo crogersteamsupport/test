@@ -149,6 +149,8 @@
                     column.openField = repCol.OpenField;
                 } else if (low == 'ticketnumber') {
                     column.formatter = ticketNumberFormatter;
+                } else if (low == 'companyname') {
+                    column.formatter = companyFormatter;
                 }
                 columns.push(column);
             }
@@ -345,6 +347,11 @@
     var ticketNumberFormatter = function (row, cell, value, columnDef, dataContext) {
         return '<a href="#" onclick="top.Ts.MainPage.openTicket(' + dataContext[columnDef.id] + ', true); return false;">' + dataContext[columnDef.id] + '</a>';
     }
+
+    var companyFormatter = function (row, cell, value, columnDef, dataContext) {
+        return '<a href="#" onclick="top.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
+    }
+    
 
     var openFormatter = function (row, cell, value, columnDef, dataContext) {
         if (columnDef.openField == "TicketID") {
