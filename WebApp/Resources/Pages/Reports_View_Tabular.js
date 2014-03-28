@@ -23,7 +23,7 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: callback,
-            error: function (xhr, status, error) { alert(error); }
+            error: function (xhr, status, error) { console.log(error); }
         });
 
         return req;
@@ -107,7 +107,11 @@
             else if (_report.Def.Subcategory) {
                 top.Ts.Services.Reports.GetFields(_report.Def.Subcategory, function (fields) {
                     $('#filter-user').reportFilter({ "fields": fields });
-                    $('#filter-global').reportFilter({ "fields": fields });
+                    if (_report.OrganizationID != null) {
+                        $('#filter-global').reportFilter({ "fields": fields });
+                    } else {
+                        $('.global-filter-tab').remove();
+                    }
                 });
             }
 
@@ -185,13 +189,13 @@
     $('.reports-filter').click(function (e) {
         e.preventDefault();
         $('.filter-modal').modal('show');
-        if (_report.ReportType != 3) { $('#filter-global').reportFilter("loadFilters", _report.Def.Filters); }
+        if (_report.ReportType != 3 || _report.OrganizationID != null) { $('#filter-global').reportFilter("loadFilters", _report.Def.Filters); }
         if (_report.Settings.Filters) $('#filter-user').reportFilter("loadFilters", _report.Settings.Filters);
     });
 
     $('.filter-save').click(function (e) {
         e.preventDefault();
-        if (_report.ReportType != 3) { _report.Def.Filters = $('#filter-global').reportFilter('getObject'); }
+        if (_report.ReportType != 3 || _report.OrganizationID != null) { _report.Def.Filters = $('#filter-global').reportFilter('getObject'); }
         _report.Settings.Filters = $('#filter-user').reportFilter('getObject');
         if (_report.Settings.Filters.length == 1) {
             $('.reports-filter i').addClass('color-red');
@@ -210,7 +214,7 @@
                 }
             );
             },
-            function (error) { alert(error.get_message()); }
+            function (error) { console.log(error.get_message()); }
         );
 
         $('.filter-modal').modal('hide');
@@ -224,7 +228,7 @@
                 "data": JSON.stringify(_report.Settings)
             },
             function () { if (callback) callback(); },
-            function (error) { alert(error.get_message()); }
+            function (error) { console.log(error.get_message()); }
         );
     }
 
@@ -318,7 +322,7 @@
                 _grid.resizeCanvas();
             });
         } catch (e) {
-            alert(e.message);
+            console.log(e.message);
         }
 
     }
@@ -351,7 +355,7 @@
     var companyFormatter = function (row, cell, value, columnDef, dataContext) {
         return '<a href="#" onclick="top.Ts.MainPage.openCustomerByName(\'' + dataContext[columnDef.id] + '\', true); return false;">' + dataContext[columnDef.id] + '</a>';
     }
-    
+
 
     var openFormatter = function (row, cell, value, columnDef, dataContext) {
         if (columnDef.openField == "TicketID") {

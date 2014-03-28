@@ -98,10 +98,10 @@ Dashboard.prototype = {
         $('.dashboard-refresh').click(function (e) {
             e.preventDefault();
             if (e.shiftKey) {
-                window.location.assign(window.location.href);
+                self.refreshAll();
             }
             else {
-                self.refreshAll();
+                window.location.assign(window.location.href);
             }
         });
 

@@ -479,6 +479,7 @@ namespace TSWebServices
       public void SaveReportDef(int reportID, string data)
       {
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+        if (report.OrganizationID == null) return;
         if (!TSAuthentication.IsSystemAdmin && report.CreatorID != TSAuthentication.UserID) return;
         report.EditorID = TSAuthentication.UserID;
         report.DateEdited = DateTime.UtcNow;
@@ -510,10 +511,12 @@ namespace TSWebServices
           folder.OrganizationID = TSAuthentication.OrganizationID;
           folder.CreatorID = TSAuthentication.UserID;
         }
-        else
+        else 
         {
           folder = ReportFolders.GetReportFolder(TSAuthentication.GetLoginUser(), (int)folderID);
+          if (!TSAuthentication.IsSystemAdmin && folder.CreatorID != TSAuthentication.UserID) return folder.GetProxy();
         }
+        
         folder.Name = name.Trim();
         folder.Collection.Save();
         return folder.GetProxy();
