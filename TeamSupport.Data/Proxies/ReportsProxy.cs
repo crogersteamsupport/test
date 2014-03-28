@@ -29,6 +29,11 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public int CreatorID { get; set; }
     [DataMember] public int ModifierID { get; set; }
+    [DataMember] public ReportType ReportType { get; set; }
+    [DataMember] public string ReportDef { get; set; }
+    [DataMember] public ReportType ReportDefType { get; set; }
+    [DataMember] public DateTime DateEdited { get; set; }
+    [DataMember] public int EditorID { get; set; }
           
   }
   
@@ -37,6 +42,10 @@ namespace TeamSupport.Data
     public ReportProxy GetProxy()
     {
       ReportProxy result = new ReportProxy();
+      result.EditorID = this.EditorID;
+      result.ReportDefType = this.ReportDefType;
+      result.ReportDef = this.ReportDef;
+      result.ReportType = this.ReportType;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;
       result.LastSqlExecuted = this.LastSqlExecuted;
@@ -44,7 +53,7 @@ namespace TeamSupport.Data
       result.QueryObject = this.QueryObject;
       result.ReportSubcategoryID = this.ReportSubcategoryID;
       result.CustomAuxID = this.CustomAuxID;
-      result.CustomRefType = this.CustomRefType;
+      result.CustomRefType = ReferenceType.None;
       result.CustomFieldKeyName = this.CustomFieldKeyName;
       result.Query = this.Query;
       result.Description = this.Description;
@@ -54,6 +63,7 @@ namespace TeamSupport.Data
        
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
+      result.DateEdited = DateTime.SpecifyKind(this.DateEditedUtc, DateTimeKind.Utc);
        
        
       return result;

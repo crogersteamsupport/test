@@ -240,6 +240,47 @@ namespace TSWebServices
       }
 
       [WebMethod]
+      public ReportProxy[] AdminGetReports()
+      {
+        if (TSAuthentication.OrganizationID != 1078) return null;
+        Reports reports = new Reports(TSAuthentication.GetLoginUser());
+        reports.LoadEverything();
+        return reports.GetReportProxies();
+      }
+
+      [WebMethod]
+      public ReportProxy AdminGetReport(int reportID)
+      {
+        if (TSAuthentication.OrganizationID != 1078) return null;
+        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+        return report.GetProxy();
+      }
+
+      [WebMethod]
+      public void AdminUpdateQuery(int reportID, string query)
+      {
+        if (TSAuthentication.UserID != 34) return;
+        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+        report.Query = query;
+        report.Collection.Save();
+      }
+
+      [WebMethod]
+      public void AdminTestQuery(int reportID, string query)
+      {
+        if (TSAuthentication.UserID != 34) return;
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+          Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+          report.Query = query;
+          report.Collection.Save();
+        }
+
+        Reports.GetReportData(TSAuthentication.GetLoginUser(), reportID, 1, 10, "", true, false);
+
+      }
+
+      [WebMethod]
       public int[] DeleteReports(string reportIDs)
       {
         List<int> result = new List<int>();
