@@ -17,14 +17,16 @@
     .report-valid a { color:Lime; font-weight: bold;}
     .report-bad a { color:Red; font-weight: bold;}
     .alert { display:none;}
+    .report-list { height: 500px; overflow:auto;}
   </style>
 
   <script language="javascript" type="text/javascript">
     $(document).ready(function () {
       top.Ts.Services.Reports.AdminGetReports(function (reports) {
-        var list = $('.report-list');
+        var list = $('.report-list ul');
         for (var i = 0; i < reports.length; i++) {
           if (reports[i].Query == null) continue;
+          if (reports[i].OrganizationID != null && reports[i].OrganizationID == 1078) continue;
           var item = $('<li>').data('report', reports[i]).attr('data-id', reports[i].ReportID);
           $('<a>')
             .attr('href', '#')
@@ -44,11 +46,15 @@
       function loadReport(li) {
         $('.report-list li').removeClass('active');
         var report = li.addClass('active').data('report');
+        $('.alert-danger').hide();
+        $('.alert-success').hide();
         top.Ts.Services.Reports.AdminGetReport(report.ReportID, function (result) {
           li.data('report', result);
           $('.title').text(result.Name);
           $('#query').val(result.Query);
-          if ($('#autotest').prop('checked')) $('.btn-test').trigger('click');
+          if ($('#autotest').prop('checked')) {
+            testQuery(result.ReportID, '');
+          }
         });
       }
 
@@ -62,7 +68,12 @@
         e.preventDefault();
         var li = $('.report-list li.active');
         var report = li.data('report');
-        top.Ts.Services.Reports.AdminTestQuery(report.ReportID, $('#query').val(),
+        testQuery(report.reportID, $('#query').val());
+      });
+
+      function testQuery(reportID, query) {
+        var li = $('li[data-id="' + reportID + '"]');
+        top.Ts.Services.Reports.AdminTestQuery(reportID, query,
         function () {
           li.addClass('report-valid').removeClass('report-bad');
           $('.alert-danger').hide();
@@ -76,7 +87,8 @@
           $('.alert-danger').show();
 
         });
-      });
+      }
+
     });  
   </script>
 
@@ -85,13 +97,15 @@
   <div class="frame-container container">
     <div class="row">
       <div class="col-xs-2">
-        <ul class="nav nav-pills nav-stacked report-list">
+        <div class="report-list">
+        <ul class="nav nav-pills nav-stacked">
         </ul>
+        </div>
       </div>
       <div class="col-xs-10">
       <form>
       <h3 class="title"></h3>
-      <button class="btn-test btn btn-primary">Test</button>
+      <button class="btn-test btn btn-primary">Test &amp; Save</button>
       <button class="btn-save btn btn-default pull-right">Save</button>
       <div class="checkbox">
         <label>

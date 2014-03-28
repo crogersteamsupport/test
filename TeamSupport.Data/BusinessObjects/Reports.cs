@@ -1026,6 +1026,8 @@ namespace TeamSupport.Data
       ReportTableFields tableFields = new ReportTableFields(loginUser);
       tableFields.LoadAll();
       TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
+      TicketTypes ticketTypes = new TicketTypes(loginUser);
+      ticketTypes.LoadByOrganizationID(loginUser.OrganizationID);
 
       foreach (ReportSummaryDescriptiveField field in summaryReport.Fields.Descriptive)
       {
@@ -1037,8 +1039,7 @@ namespace TeamSupport.Data
           if (fieldName != "")
           {
             fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
-            
-            
+
             if (customField.FieldType == CustomFieldType.DateTime)
             {
               fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
@@ -1049,10 +1050,18 @@ namespace TeamSupport.Data
 
               fieldName = GetDateGroupField(fieldName, field.Value1);
             }
+            string alias = customField.Name;
 
-            result.Add(new DescriptiveClauseItem(fieldName, customField.Name));
+            if (customField.AuxID > 0 && customField.RefType == ReferenceType.Tickets)
+            {
+              TicketType ticketType = ticketTypes.FindByTicketTypeID(customField.AuxID);
+              if (ticketType != null && ticketType.OrganizationID == customField.OrganizationID)
+              {
+                alias =  string.Format("{1} ({2})", fieldName, customField.Name, ticketType.Name); 
+              }
+            }
+            result.Add(new DescriptiveClauseItem(fieldName, alias));
           }
-
         }
         else
         {
