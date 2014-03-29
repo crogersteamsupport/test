@@ -26,7 +26,8 @@
         var list = $('.report-list ul');
         for (var i = 0; i < reports.length; i++) {
           if (reports[i].Query == null) continue;
-          if (reports[i].OrganizationID != null && reports[i].OrganizationID == 1078) continue;
+          if (reports[i].OrganizationID == null) continue;
+          if (reports[i].OrganizationID != 1078) continue;
           var item = $('<li>').data('report', reports[i]).attr('data-id', reports[i].ReportID);
           $('<a>')
             .attr('href', '#')

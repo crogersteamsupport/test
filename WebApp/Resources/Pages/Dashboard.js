@@ -20,7 +20,7 @@ Dashboard.prototype = {
             e.preventDefault();
             e.stopPropagation();
             var report = $(this).closest('.item').data('report');
-            top.Ts.MainPage.openReport(report);
+            top.Ts.MainPage.openReport(report, true);
         });
 
 
