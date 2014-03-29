@@ -4,6 +4,7 @@
 
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
 
+
     function loadChart() {
         top.Ts.Utils.webMethod("ReportService", "GetReport", { "reportID": _reportID }, function (report) {
             _report = report;
@@ -15,6 +16,7 @@
 
             $('#mainFrame').attr('src', report.ReportDef);
             $('.report-title').text(report.Name);
+            if ((top.Ts.System.User.IsSystemAdmin == false && report.CreatorID != top.Ts.System.User.UserID) || report.OrganizationID == null) { $('.reports-edit').remove(); }
 
 
             top.Ts.Utils.webMethod(null, "reportdata/chart",

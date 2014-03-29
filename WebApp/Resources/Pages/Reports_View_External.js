@@ -6,6 +6,7 @@ $(document).ready(function () {
 
     top.Ts.Utils.webMethod("ReportService", "GetReport", { "reportID": _reportID }, function (report) {
         _report = report;
+        if ((top.Ts.System.User.IsSystemAdmin == false && report.CreatorID != top.Ts.System.User.UserID) || report.OrganizationID == null) { $('.reports-edit').remove(); }
 
         if (report.IsFavorite) {
             $('.reports-fav i').removeClass('fa-star-o').addClass('fa-star');
