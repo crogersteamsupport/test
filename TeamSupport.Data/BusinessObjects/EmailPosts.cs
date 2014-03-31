@@ -17,7 +17,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM EmailPosts";
+        command.CommandText = "SELECT * FROM EmailPosts ORDER BY DateCreated";
         command.CommandType = CommandType.Text;
         Fill(command);
       }

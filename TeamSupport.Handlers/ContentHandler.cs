@@ -21,6 +21,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Web.Security;
 using OfficeOpenXml;
 
@@ -311,7 +312,7 @@ namespace TeamSupport.Handlers
     {
 
       //http://127.0.0.1/tsdev/dc/1078/reports/7401
-      Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+      Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID, TSAuthentication.UserID);
 
       if (report == null ||  (report.OrganizationID != TSAuthentication.GetLoginUser().OrganizationID && report.OrganizationID != null))
       {
@@ -320,68 +321,101 @@ namespace TeamSupport.Handlers
         return;
       }
 
-
-      if (type.ToLower() == "old")
+      dynamic settings = null;
+      string sortField = null;
+      bool isDesc = true;
+      try
       {
-        string sql = report.GetSqlOld(false);
-        SqlCommand command = new SqlCommand(sql);
-        Report.CreateParameters(TSAuthentication.GetLoginUser(), command, TSAuthentication.GetLoginUser().UserID);
-        string text = DataUtils.CommandToCsv(TSAuthentication.GetLoginUser(), command, false);
+        object o = report.Row["Settings"];
+        if (o != null && o != DBNull.Value)
+        {
+          settings = JObject.Parse(o.ToString());
+          if (settings["SortField"] != null) sortField = settings["SortField"].ToString();
+          if (settings["IsSortAsc"] != null) isDesc = (bool)settings["IsSortAsc"] == false;
 
-        context.Response.Write(text);
-        context.Response.ContentType = "application/octet-stream";
-        context.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + report.Name + ".csv\"");
-        //context.Response.AddHeader("Content-Length", text.Length.ToString());
+        }
+      }
+      catch (Exception)
+      {
+      }
+
+      DataTable table = Reports.GetReportTable(report.Collection.LoginUser, report.ReportID, 0, 10000000, sortField, isDesc, true, false);
+
+      try
+      {
+        if (settings != null)
+        {
+          if (settings["Columns"] != null)
+          {
+            List<string> columnNames = new List<string>();
+            for (int i = 0; i < settings["Columns"].Count; i++)
+            {
+              columnNames.Add(settings["Columns"][i]["id"].ToString());
+            }
+
+            int index = 0;
+            foreach (string columnName in columnNames)
+            {
+              DataColumn column = table.Columns[columnName];
+              if (column != null)
+              {
+                column.SetOrdinal(index);
+                index++;
+              }
+            }
+          }
+        }
+
+      }
+      catch (Exception)
+      {
+
+      }
+
+
+      if (type.ToLower() == "excel")
+      {
+        using (ExcelPackage pck = new ExcelPackage())
+        {
+          ExcelWorksheet ws = pck.Workbook.Worksheets.Add(report.Name);
+
+          System.Globalization.DateTimeFormatInfo dtfi = TSAuthentication.GetLoginUser().CultureInfo.DateTimeFormat;
+          //ws.Column(0).Style.Numberformat.Format = dtfi.ShortDatePattern + " " + dtfi.ShortTimePattern;
+          ws.Cells["A1"].LoadFromDataTable(table, true);
+          ws.Cells["A1:" + GetExcelColumnName(table.Columns.Count) + "1"].AutoFilter = true;
+
+          int columnCount = table.Columns.Count;
+          int rowCount = table.Rows.Count;
+
+          ExcelRange r;
+
+          // which columns have dates in
+          for (int i = 0; i < columnCount; i++)
+          {
+            // if cell header value matches a date column
+            if (table.Columns[i].DataType == typeof(System.DateTime))
+            {
+              r = ws.Cells[2, i + 1, rowCount + 1, i + 1];
+              r.AutoFitColumns();
+              r.Style.Numberformat.Format = dtfi.ShortDatePattern + " " + dtfi.ShortTimePattern;
+            }
+          }
+          // get all data and autofit
+          r = ws.Cells[1, 1, rowCount + 1, columnCount];
+          r.AutoFitColumns();
+
+          context.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+          context.Response.AddHeader("content-disposition", "attachment;  filename=\"" + report.Name + ".xlsx\"");
+          context.Response.BinaryWrite(pck.GetAsByteArray());
+        }
+
       }
       else
       {
-        if (type.ToLower() == "excel")
-        {
-          using (ExcelPackage pck = new ExcelPackage())
-          {
-            ExcelWorksheet ws = pck.Workbook.Worksheets.Add(report.Name);
-            
-            DataTable table = Reports.GetReportTable(report.Collection.LoginUser, report.ReportID, 0, 10000000, null, true, true, false);
-            System.Globalization.DateTimeFormatInfo dtfi = TSAuthentication.GetLoginUser().CultureInfo.DateTimeFormat;
-            //ws.Column(0).Style.Numberformat.Format = dtfi.ShortDatePattern + " " + dtfi.ShortTimePattern;
-            ws.Cells["A1"].LoadFromDataTable(table, true);
-            ws.Cells["A1:" + GetExcelColumnName(table.Columns.Count) + "1"].AutoFilter = true;
-
-            int columnCount = table.Columns.Count;
-            int rowCount = table.Rows.Count;
-
-            ExcelRange r;
-
-            // which columns have dates in
-            for (int i = 0; i < columnCount; i++)
-            {
-              // if cell header value matches a date column
-              if (table.Columns[i].DataType == typeof(System.DateTime))
-              {
-                r = ws.Cells[2, i+1, rowCount + 1, i+1];
-                r.AutoFitColumns();
-                r.Style.Numberformat.Format = dtfi.ShortDatePattern + " " + dtfi.ShortTimePattern; 
-              }
-            }
-            // get all data and autofit
-            r = ws.Cells[1, 1, rowCount + 1, columnCount];
-            r.AutoFitColumns();
- 
-            context.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            context.Response.AddHeader("content-disposition", "attachment;  filename=\"" + report.Name + ".xlsx\"");
-            context.Response.BinaryWrite(pck.GetAsByteArray());
-          }
-
-        }
-        else
-        {
-          DataTable table = Reports.GetReportTable(report.Collection.LoginUser, report.ReportID, 0, 10000000, null, true, true, false);
-          string text = DataUtils.TableToCsv(report.Collection.LoginUser, table);
-          context.Response.Write(text);
-          context.Response.ContentType = "application/octet-stream";
-          context.Response.AddHeader("content-disposition", "attachment; filename=\"" + report.Name + ".csv\"");
-
-        }
+        string text = DataUtils.TableToCsv(report.Collection.LoginUser, table);
+        context.Response.Write(text);
+        context.Response.ContentType = "application/octet-stream";
+        context.Response.AddHeader("content-disposition", "attachment; filename=\"" + report.Name + ".csv\"");
 
       }
     }

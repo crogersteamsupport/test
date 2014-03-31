@@ -1727,19 +1727,7 @@ namespace TeamSupport.Data
     {
       Report report = Reports.GetReport(loginUser, reportID);
 
-      if (report.ReportDefType == ReportType.Custom)
-      {
-        try
-        {
-          return GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
-        }
-        catch (Exception ex)
-        {
-          ExceptionLogs.LogException(loginUser, ex, "Custom Report Table");
-        }
-        return null;
-      }
-      else if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+      if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
       {
         return GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
       }
