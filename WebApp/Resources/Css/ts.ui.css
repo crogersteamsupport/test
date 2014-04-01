@@ -330,14 +330,15 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .mce-tinymce .mce-toolbar-grp { padding-bottom: 5px;}
 .mce-tinymce .mce-btn { background: #f3f3f3; border-color: #dadada; box-shadow: none; filter:none;}
 .mce-tinymce .mce-btn i { text-shadow: none; }
-.mce-tinymce .mce-btn button { line-height:normal; padding: 4px 4px; }
-.mce-tinymce .mce-btn button, .mce-tinymce .mce-btn button .mce-ico { color: #6f6f6f;}
+.mce-tinymce .mce-btn button { line-height:normal; padding: 5px 5px; }
+.mce-tinymce .mce-menubtn span { line-height:normal; }
+.mce-tinymce .mce-btn button, .mce-tinymce .mce-btn button .mce-ico { color: #888;}
 .mce-tinymce .mce-btn:hover, .mce-tinymce .mce-btn:focus { background: #f6f6f6; filter:none; }
 .mce-tinymce .mce-btn:hover button, .mce-tinymce .mce-btn:focus button,
 .mce-tinymce .mce-btn:hover button .mce-ico , .mce-tinymce .mce-btn:focus button .mce-ico  { color: #444444;}
 .mce-tinymce .mce-btn-group .mce-first, .mce-tinymce .mce-btn-group .mce-last { border-color: #dadada; }
 .mce-tinymce .fa { font-family: "FontAwesome"; line-height:1;}
-.mce-tinymce .mce-toolbar { margin-bottom: 5px;}
+.mce-tinymcex .mce-toolbar { margin-bottom: 5px;}
 
 .color-white { color: #FFFFFF; }
 .color-black { color: #000000; }
