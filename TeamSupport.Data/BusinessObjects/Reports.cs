@@ -1304,13 +1304,26 @@ namespace TeamSupport.Data
           CustomField customField = (CustomField)CustomFields.GetCustomField(Collection.LoginUser, field.FieldID);
           if (customField == null) continue;
           ReportColumn col = new ReportColumn();
-          col.Name = customField.Name;
           col.IsEmail = false;
           col.IsLink = false;
           col.IsOpenable = false;
           col.OpenField = "";
           col.IsCustomField = true;
           col.FieldID = customField.CustomFieldID;
+          col.Name = customField.Name;
+
+          TicketTypes ticketTypes = new TicketTypes(Collection.LoginUser);
+          ticketTypes.LoadByOrganizationID(Collection.LoginUser.OrganizationID);
+
+          if (customField.AuxID > 0 && customField.RefType == ReferenceType.Tickets)
+          {
+            TicketType ticketType = ticketTypes.FindByTicketTypeID(customField.AuxID);
+            if (ticketType != null && ticketType.OrganizationID == customField.OrganizationID)
+            {
+              col.Name = string.Format("{0} ({1})", customField.Name, ticketType.Name); 
+            }
+          }
+
 
           switch (customField.FieldType)
           {
@@ -1342,6 +1355,7 @@ namespace TeamSupport.Data
       return result.ToArray();
     }
 
+  
     public int CloneReport(string newName)
     {
       Reports reports = new Reports(this.Collection.LoginUser);
