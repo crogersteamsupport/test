@@ -329,7 +329,8 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .mce-tinymce .mce-edit-area { border: 0px solid #fcfdfd;}
 .mce-tinymce .mce-toolbar-grp { padding-bottom: 5px;}
 .mce-tinymce .mce-btn { background: #f3f3f3; border-color: #dadada; box-shadow: none; filter:none;}
-.mce-tinymce .mce-btn button { line-height:normal;}
+.mce-tinymce .mce-btn i { text-shadow: none; }
+.mce-tinymce .mce-btn button { line-height:normal; padding: 4px 4px; }
 .mce-tinymce .mce-btn button, .mce-tinymce .mce-btn button .mce-ico { color: #6f6f6f;}
 .mce-tinymce .mce-btn:hover, .mce-tinymce .mce-btn:focus { background: #f6f6f6; filter:none; }
 .mce-tinymce .mce-btn:hover button, .mce-tinymce .mce-btn:focus button,
@@ -337,3 +338,29 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .mce-tinymce .mce-btn-group .mce-first, .mce-tinymce .mce-btn-group .mce-last { border-color: #dadada; }
 .mce-tinymce .fa { font-family: "FontAwesome"; line-height:1;}
 .mce-tinymce .mce-toolbar { margin-bottom: 5px;}
+
+.color-white { color: #FFFFFF; }
+.color-black { color: #000000; }
+.color-lightgray { color: #e5e5e5; }
+.color-gray { color: #999; }
+.color-darkgray { color: #777; }
+.color-blue { color: #3276B1 !important; }
+.color-yellow { color: #FEC21E; }
+.color-orange { color: #E47A3B; }
+.color-red { color: #D9534F; }
+.color-green { color: #5CB85C ; }
+.color-teal { color: #008080; }
+.color-magenta { color: #BA55D3; }
+
+.bgcolor-white { background-color: #FFFFFF; }
+.bgcolor-black { background-color: #000000; }
+.bgcolor-lightgray { background-color: #e5e5e5; }
+.bgcolor-darkgray { background-color: #777; }
+.bgcolor-gray { background-color: #999; }
+.bgcolor-blue { background-color: #3276B1; }
+.bgcolor-yellow { background-color: #FEC21E; }
+.bgcolor-orange { background-color: #E47A3B; }
+.bgcolor-red { background-color: #D9534F; }
+.bgcolor-green { background-color: #5CB85C; }
+.bgcolor-teal { background-color: #008080; }
+.bgcolor-magenta { background-color: #BA55D3; }
