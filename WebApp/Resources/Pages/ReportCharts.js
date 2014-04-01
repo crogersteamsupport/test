@@ -85,7 +85,7 @@ function addChartData(options, records) {
         if (records.length == 3) {
             function findSeries(value) {
                 for (var i = 0; i < options.series.length; i++) {
-                    if (options.series[i].value == fixBlankSeriesName(value)) return options.series[i]
+                    if (options.series[i].value == value) return options.series[i]
                 }
                 return null;
             }
@@ -160,7 +160,7 @@ function addChartData(options, records) {
 
             function findSeries(value) {
                 for (var i = 0; i < options.series.length; i++) {
-                    if (options.series[i].value == fixBlankSeriesName(value)) return options.series[i]
+                    if (options.series[i].value == value) return options.series[i]
                 }
                 return null;
             }
