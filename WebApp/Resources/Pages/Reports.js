@@ -1,7 +1,7 @@
 ﻿var reportPage = null;
 $(document).ready(function () {
     reportPage = new ReportPage();
-    reportPage.refresh();
+    
 });
 
 function onShow() {
@@ -10,6 +10,7 @@ function onShow() {
 
 ReportPage = function () {
     var _rowClone = {};
+    var _settings = {};
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
 
     this.refresh = function () {
@@ -27,7 +28,31 @@ ReportPage = function () {
         $('.open').removeClass('open');
     });
 
-    getReports();
+    function writeSettings(settings) {
+        top.Ts.Services.Settings.WriteUserSetting('Reports-Settings', JSON.stringify(settings));
+    }
+
+    function readSettings(callback) {
+        top.Ts.Services.Settings.ReadUserSetting('Reports-Settings', null, function (settings) {
+            if (callback) { callback(settings == null ? {} : JSON.parse(settings)); }
+        });
+    }
+
+    readSettings(function (settings) {
+        _settings = settings;
+        if (_settings.sortField) {
+            var item = $('.report-list-header[data-sortfield="' + _settings.sortField + '"]');
+            if (item) {
+                $('.report-list-header i').removeClass('fa fa-angle-down fa-angle-up');
+
+                item.find('i').addClass(_settings.isDesc ? 'fa fa-angle-down' : 'fa fa-angle-up');
+            }
+        }
+
+        getReports();
+    });
+
+
 
     top.Ts.Services.Reports.GetFolders(function (folders) {
         top.Ts.Settings.User.read('reports-folder', '[]', function (userFolders) {
@@ -386,8 +411,12 @@ ReportPage = function () {
         var isAsc = !i.hasClass('fa-angle-up');
         $('.report-list-header i').removeClass('fa fa-angle-down fa-angle-up');
         i.addClass(isAsc ? 'fa fa-angle-up' : 'fa fa-angle-down');
+        _settings.sortField = item.data('sortfield');
+        _settings.isDesc = !isAsc;
+        writeSettings(_settings);
         sortReports();
     });
+
 
     function sortReports() {
         var item = $('.report-list-header .fa');
