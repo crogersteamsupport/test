@@ -279,13 +279,13 @@
     $('.reports-export-excel').click(function (e) {
         e.preventDefault();
         //'../dc/1078/reports/95'
-        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=EXCEL', 'Report Download');
+        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=EXCEL', 'ReportDownload');
     });
 
     $('.reports-export-csv').click(function (e) {
         e.preventDefault();
         //'../dc/1078/reports/95'
-        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=CSV', 'Report Download');
+        window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/reports/' + _report.ReportID + '?Type=CSV', 'ReportDownload');
     });
     _layout = $('#reports-tabview-layout').layout({
         resizeNestedLayout: true,
