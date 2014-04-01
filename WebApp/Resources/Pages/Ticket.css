@@ -206,3 +206,10 @@
     }
 
     #ticketEmailIntroductionLabel { margin-top: 5px;}
+
+    .fa-ticket  { color: #FFCC00 !important}
+    .fa-paste   { color: #009933 !important}
+    .fa-dropbox { color: #3d9ae8 !important}
+    .fa-book    { color: #000099 !important}
+    .fa-circle  { color: #FF0000 !important}
+    .mce-i-image{ color: #990099 !important}
