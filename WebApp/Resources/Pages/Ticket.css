@@ -207,9 +207,9 @@
 
     #ticketEmailIntroductionLabel { margin-top: 5px;}
 
-    .fa-ticket  { color: #FFCC00 !important}
-    .fa-paste   { color: #009933 !important}
+    .fa-paste   { color: #5CB85C !important}
+    .fa-book    { color: #3276B1 !important}
+    .fa-ticket  { color: #FEC21E !important}
+    .mce-i-image{ color: #BA55D3 !important}
     .fa-dropbox { color: #3d9ae8 !important}
-    .fa-book    { color: #000099 !important}
-    .fa-circle  { color: #FF0000 !important}
-    .mce-i-image{ color: #990099 !important}
+    .fa-circle  { color: #D9534F !important}
