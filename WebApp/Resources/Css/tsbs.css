@@ -253,7 +253,8 @@ fieldset[disabled] .btn-default.active {
 .mce-tinymce .mce-edit-area { border: 0px solid #fcfdfd;}
 .mce-tinymce .mce-toolbar-grp { padding-bottom: 5px;}
 .mce-tinymce .mce-btn { background: #f3f3f3; border-color: #dadada; box-shadow: none; filter:none;}
-.mce-tinymce .mce-btn button { line-height:normal;}
+.mce-tinymce .mce-btn i { text-shadow: none; }
+.mce-tinymce .mce-btn button { line-height:normal; padding: 4px 4px; }
 .mce-tinymce .mce-btn button, .mce-tinymce .mce-btn button .mce-ico { color: #6f6f6f;}
 .mce-tinymce .mce-btn:hover, .mce-tinymce .mce-btn:focus { background: #f6f6f6; filter:none; }
 .mce-tinymce .mce-btn:hover button, .mce-tinymce .mce-btn:focus button,
