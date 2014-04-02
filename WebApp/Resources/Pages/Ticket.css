@@ -80,7 +80,7 @@
     .ticket-action .ticket-action-header { margin: 0 0 1em 0; font-size: 1em; padding-bottom: 1em;}
     .ticket-action .ticket-action-header .ticket-action-buttons .ts-icon { float:right; margin-left: 3px; cursor:pointer;}
     .ticket-action .ticket-action-header .ui-icon { float:left; cursor:pointer; margin-right: 3px; }
-    .ticket-action .ticket-action-header .ts-icon-edit, .ticket-action h1 .ts-icon-delete { display:none;}
+    .ticket-action .ticket-action-header .ts-icon-edit, .ticket-action h1 .ts-icon-delete, .ts-icon-pinnot { display:none;}
     .ticket-action .ticket-action-header ul { padding:0; margin:0;}
     .ticket-action .ticket-action-header li { float:left; border-right: 1px solid; list-style:none; padding: 0 .5em 0 0; margin:0 .5em 0 0; }
     .ticket-action .ticket-action-header li.last { border-right: none; padding:0; margin:0;}

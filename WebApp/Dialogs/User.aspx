@@ -126,6 +126,14 @@
         </tr>
         <tr>
           <td class="labelColTD">
+           User Can Pin Action:
+          </td>
+          <td class="inputColTD">
+            <asp:CheckBox ID="cbUserCanPinAction" runat="server" Text=""/>
+          </td>
+        </tr>
+        <tr>
+          <td class="labelColTD">
             Time Zone:
           </td>
           <td class="inputColTD">

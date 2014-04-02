@@ -1651,6 +1651,37 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public bool SetActionPinned(int ticketID, int actionID, bool pinned)
+    {
+      // When an action is pinned, all other actions need to be unpinned.
+      if (pinned)
+      {
+        Actions actions = new Actions(TSAuthentication.GetLoginUser());
+        actions.LoadByTicketID(ticketID);
+        foreach (TeamSupport.Data.Action action in actions)
+        {
+          if (action.ActionID == actionID)
+          {
+            action.Pinned = true;
+          }
+          else
+          {
+            action.Pinned = false;
+          }
+        }
+        actions.Save();
+      }
+      // When unpin we only need to update the requested action.
+      else
+      {
+        TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
+        action.Pinned = false;
+        action.Collection.Save();
+      }
+      return pinned;
+    }
+
+    [WebMethod]
     public bool SetJiraIssueKey(int ticketID, string jiraIssueKey)
     {
       bool result = false;
@@ -2267,7 +2298,7 @@ namespace TSWebServices
 
       for (int i = 0; i < actions.Count; i++)
       {
-        ActionInfo actionInfo = GetActionInfo(ticket.Collection.LoginUser, actions[i], i < 10 || actions[i].SystemActionTypeID == SystemActionType.Description);
+        ActionInfo actionInfo = GetActionInfo(ticket.Collection.LoginUser, actions[i], i < 10 || actions[i].SystemActionTypeID == SystemActionType.Description || actions[i].Pinned);
         actionInfos.Add(actionInfo);
       }
 
