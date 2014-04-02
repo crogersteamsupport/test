@@ -210,7 +210,7 @@ namespace TSWebServices
         reports.LoadAll(TSAuthentication.OrganizationID, TSAuthentication.UserID);
         foreach (Report report in reports)
         {
-          if (report.ReportDefType == reportType && report.OrganizationID != null) result.Add(new ReportItem(report, false));
+          if (report.ReportDefType == reportType) result.Add(new ReportItem(report, false));
         }
 
         return JsonConvert.SerializeObject(result);

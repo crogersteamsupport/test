@@ -17,6 +17,11 @@ namespace TeamSupport.Data
 
     public static string ReadString(LoginUser loginUser, string key, string defaultValue)
     {
+      return ReadString(loginUser, loginUser.UserID, key, defaultValue);
+    }
+
+    public static string ReadString(LoginUser loginUser, int userID, string key, string defaultValue = "")
+    {
       string result = defaultValue;
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
       {
@@ -26,7 +31,7 @@ namespace TeamSupport.Data
         command.Connection = connection;
         command.CommandText = "SELECT SettingValue FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@SettingKey)";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+        command.Parameters.AddWithValue("@UserID", userID);
         command.Parameters.AddWithValue("@SettingKey", key);
 
         SqlDataReader reader = command.ExecuteReader(CommandBehavior.SingleRow);
@@ -55,8 +60,12 @@ namespace TeamSupport.Data
 
     }
 
-
     public static void WriteString(LoginUser loginUser, string key, string value)
+    {
+      WriteString(loginUser, loginUser.UserID, key, value);
+    }
+
+    public static void WriteString(LoginUser loginUser, int userID, string key, string value)
     {
 
 
@@ -87,7 +96,7 @@ IF EXISTS(SELECT * FROM UserSettings WHERE (UserID=@UserID) AND (SettingKey=@Set
 		@SettingKey,
 		@SettingValue)
   END";
-          command.Parameters.AddWithValue("@UserID", loginUser.UserID);
+          command.Parameters.AddWithValue("@UserID", userID);
           command.Parameters.AddWithValue("@SettingKey", key);
           command.Parameters.AddWithValue("@SettingValue", value);
           command.ExecuteNonQuery();

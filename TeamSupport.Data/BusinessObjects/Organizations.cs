@@ -608,8 +608,29 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
         }
 
+        // copy dashboard
+        UserSettings.WriteString(loginUser, "Dashboard", UserSettings.ReadString(loginUser, (int)sourceOrg.PrimaryUserID, "Dashboard"));
 
+        // copy reports
+        /*
+        Reports reports = new Reports(loginUser);
+        reports.LoadAll(sourceOrgID);
 
+        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+
+        int i = 0;
+        string reportName = report.Name + " Clone ({0:D})";
+
+        while (true)
+        {
+          i++;
+          if (reports.FindByName(string.Format(reportName, i)) == null) break;
+        }
+
+        int newID = report.CloneReport(string.Format(reportName, i));
+
+        Report result = Reports.GetReport(TSAuthentication.GetLoginUser(), newID, TSAuthentication.UserID);
+        return new ReportItem(result, false);*/
     
         sourceOrg.Collection.Save();
 
