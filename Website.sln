@@ -27,7 +27,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebApp", "WebApp\", "{FE81B
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "62311"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TidyNet", "TidyNet\TidyNet.csproj", "{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}"
@@ -56,7 +55,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SignalR", "SignalR\", "{47E
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "62314"
 	EndProjectSection
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Report", "Report\", "{46F73918-E83B-46CA-8B72-76726952481D}"
@@ -77,7 +75,27 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Report", "Report\", "{46F73
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "53634"
+	EndProjectSection
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Handlers", "Handlers\", "{F97988BA-B368-443B-9778-9E2BCEEB80E2}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		ProjectReferences = "{7B8AA298-9F29-4CB1-979B-18CC31DF76B1}|TeamSupport.Handlers.dll;{53D27B3B-92A1-4246-94D9-390124F447EC}|SharpZipLib.dll;{1943AC11-1F2D-4B85-9F0F-4D67284814BE}|TeamSupport.Data.dll;{193BB801-054F-4729-9D5D-FCE1E32594BF}|HtmlAgilityPack.dll;{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}|TidyNet.dll;{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}|TeamSupport.WebUtils.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/Handlers"
+		Debug.AspNetCompiler.PhysicalPath = "Handlers\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\Handlers\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/Handlers"
+		Release.AspNetCompiler.PhysicalPath = "Handlers\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\Handlers\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "50501"
 	EndProjectSection
 EndProject
 Global
@@ -381,6 +399,30 @@ Global
 		{46F73918-E83B-46CA-8B72-76726952481D}.Release|Win32.ActiveCfg = Debug|Any CPU
 		{46F73918-E83B-46CA-8B72-76726952481D}.Release|x64.ActiveCfg = Debug|Any CPU
 		{46F73918-E83B-46CA-8B72-76726952481D}.Release|x86.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.dtSearch Internal Debug|.NET.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.dtSearch Internal Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.dtSearch Internal Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.dtSearch Internal Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.dtSearch Internal Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.dtSearch Internal Debug|Win32.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.dtSearch Internal Debug|x64.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.dtSearch Internal Debug|x86.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Release|.NET.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Release|Win32.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Release|x64.ActiveCfg = Debug|Any CPU
+		{F97988BA-B368-443B-9778-9E2BCEEB80E2}.Release|x86.ActiveCfg = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
