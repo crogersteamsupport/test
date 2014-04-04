@@ -31,7 +31,6 @@ namespace TeamSupport.Data
     [DataMember] public string DisplayName { get; set; }
     [DataMember] public string SalesForceID { get; set; }          
     [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
-    [DataMember] public bool Pinned { get; set; }
           
   }
   
@@ -40,7 +39,6 @@ namespace TeamSupport.Data
     public ActionProxy GetProxy()
     {
       ActionProxy result = new ActionProxy();
-      result.Pinned = this.Pinned;
       result.SalesForceID = this.SalesForceID;
       result.TicketID = this.TicketID;
       result.ModifierID = this.ModifierID;

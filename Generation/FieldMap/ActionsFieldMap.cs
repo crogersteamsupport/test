@@ -33,7 +33,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
       _fieldMap.AddMap("DateModifiedByJiraSync", "DateModifiedByJiraSync", false, false, false);
       _fieldMap.AddMap("JiraID", "JiraID", false, false, false);
-      _fieldMap.AddMap("Pinned", "Pinned", false, false, false);
             
     }
   }

@@ -719,21 +719,6 @@ $(document).ready(function () {
     }
   });
 
-  $('#divActions').delegate('.ticket-action-pin', 'click', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserCanPinAction) {
-      var action = $(this).parents('.ticket-action').data('action');
-      top.Ts.System.logAction('Ticket - Action Pin Icon Clicked');
-      top.Ts.Services.Tickets.SetActionPinned(action.TicketID, action.ActionID, !$(this).hasClass('ts-icon-pin'),
-          function (result) {
-            window.location = window.location;
-          }, function () {
-            alert('There was an error editing this action.');
-          });
-    }
-  });
-
   $('#divActions').delegate('.tag-link', 'click', function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -1597,7 +1582,7 @@ $(document).ready(function () {
   }
 
 
-  addToolbarButton('btnOwn', 'fa-anchor', 'Take Ownership', function (e) {
+addToolbarButton('btnOwn', 'fa-anchor', 'Take Ownership', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Take Ownership');
@@ -1609,7 +1594,7 @@ $(document).ready(function () {
 
     });
   });
-  addToolbarButton('btnUpdate', 'fa-bullhorn', 'Get Update', function (e) {
+addToolbarButton('btnUpdate', 'fa-bullhorn', 'Get Update', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Request Update');
@@ -1637,7 +1622,7 @@ $(document).ready(function () {
     });
   });
 
-  addToolbarButton('btnEnqueue', 'fa-list-ol', 'Enqueue', function (e) {
+addToolbarButton('btnEnqueue', 'fa-list-ol', 'Enqueue', function (e) {
     e.preventDefault();
     e.stopPropagation();
     var caption = $(this).find('.ts-toolbar-caption');
@@ -1652,7 +1637,7 @@ $(document).ready(function () {
     });
   });
 
-  addToolbarButton('btnFlag', 'fa-flag', 'Flag', function (e) {
+addToolbarButton('btnFlag', 'fa-flag', 'Flag', function (e) {
     e.preventDefault();
     e.stopPropagation();
     top.Ts.System.logAction('Ticket - Flagged');
@@ -2616,27 +2601,28 @@ var createActionElement = function () {
         e.preventDefault();
         $(this).find('.ticket-action-edit').show();
         $(this).find('.ticket-action-delete').show();
-        $(this).find('.ts-icon-pinnot').show();
       }, function (e) {
         e.preventDefault();
         $('.ticket-action-edit').hide();
         $('.ticket-action-delete').hide();
-        $('.ts-icon-pinnot').hide();
 
       });
 }
 
-var appendActionElement = function (actionInfo, actionNumber) {
+var appendActionElement = function (actionInfo, actionOrder) {
     var actionDiv = createActionElement().appendTo('#divActions');
-    actionDiv.find(".ticket-action-order").html('(' + actionNumber + ')');
     loadActionDisplay(actionDiv, actionInfo, true);
+    $(".ticket-action-order").each(function (index) {
+        $(this).html('(' + ($('.ticket-action-order').length - index) + ')');
+    });
 }
 
-var preappendActionElement = function (actionInfo, actionNumber) {
+var preappendActionElement = function (actionInfo, actionOrder) {
     var actionDiv = createActionElement().prependTo('#divActions');
-    actionDiv.find(".ts-icon-pin").show();
-    actionDiv.find(".ticket-action-order").html('(' + actionNumber + ')');
     loadActionDisplay(actionDiv, actionInfo, true);
+    $(".ticket-action-order").each(function (index) {
+        $(this).html('(' + ($('.ticket-action-order').length - index) + ')');
+    });
 }
 
 var loadActionDisplay = function (element, actionInfo, doExpand) {
@@ -2672,11 +2658,6 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
     element.find('.ticket-action-title').text(action.DisplayName);
     element.find('.ticket-action-kb').toggleClass('ts-icon-kb', action.IsKnowledgeBase === true).toggleClass('ts-icon-kbnot', action.IsKnowledgeBase === false);
     element.find('.ticket-action-portal').toggleClass('ts-icon-portal', action.IsVisibleOnPortal === true).toggleClass('ts-icon-portalnot', action.IsVisibleOnPortal === false);
-    element.find('.ticket-action-pin').toggleClass('ts-icon-pin', action.Pinned === true).toggleClass('ts-icon-pinnot', action.Pinned === false);
-    if (!top.Ts.System.User.IsSystemAdmin && !top.Ts.System.User.UserCanPinAction) {
-      element.find('.ts-icon-pinnot').remove();
-    }
-
     if (attachments.length < 1) {
         element.find('.ticket-action-attachment-count').hide();
         element.find('.ticket-action-attachments').hide();
@@ -3039,16 +3020,11 @@ var loadTicket = function (ticketNumber, refresh) {
         $('#divActions').empty();
 
         for (var i = 0; i < info.Actions.length; i++) {
-          if (info.Actions[i].Action.Pinned) {
-            preappendActionElement(info.Actions[i], info.Actions.length - i);
-          }
-          else {
-            appendActionElement(info.Actions[i], info.Actions.length - i);
-          }
+          appendActionElement(info.Actions[i], info.Actions.length - i);
         }
       }
       else {
-        preappendActionElement(info.Actions[0], info.Actions.length - i);
+        preappendActionElement(info.Actions[0], info.Actions.length);
       }
     }
 
@@ -3114,7 +3090,7 @@ var loadTicket = function (ticketNumber, refresh) {
     }
 
     if (typeof refresh === "undefined") {
-      window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
+            window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
     }
 
     if (_ticketGroupID != null) {

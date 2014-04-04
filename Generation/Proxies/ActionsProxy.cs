@@ -33,7 +33,6 @@ namespace TeamSupport.Data
     [DataMember] public string SalesForceID { get; set; }
     [DataMember] public DateTime? DateModifiedByJiraSync { get; set; }
     [DataMember] public int? JiraID { get; set; }
-    [DataMember] public bool Pinned { get; set; }
           
   }
   
@@ -42,7 +41,6 @@ namespace TeamSupport.Data
     public ActionProxy GetProxy()
     {
       ActionProxy result = new ActionProxy();
-      result.Pinned = this.Pinned;
       result.JiraID = this.JiraID;
       result.SalesForceID = this.SalesForceID;
       result.ActionSource = this.ActionSource;

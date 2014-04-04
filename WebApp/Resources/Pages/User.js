@@ -100,7 +100,6 @@ UserPage = function () {
     $('#userFontSize').html(user.FontSizeDescription);
     $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Yes' : 'No'));
     $('#userAllowToEditAnyAction').html((user.AllowUserToEditAnyAction == true ? 'Yes' : 'No'));
-    $('#userCanPinAction').html((user.UserCanPinAction == true ? 'Yes' : 'No'));
     $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
     $('#userCanCreateCompany').html((user.CanCreateCompany == true ? 'Yes' : 'No'));
     $('#userCanEditCompany').html((user.CanEditCompany == true ? 'Yes' : 'No'));
@@ -238,8 +237,6 @@ UserPage = function () {
       $('#userRestrictFromEditingAnyActions').addClass('disabledlink');
       $('#userAllowToEditAnyAction').removeClass('ui-state-default ts-link');
       $('#userAllowToEditAnyAction').addClass('disabledlink');
-      $('#userCanPinAction').removeClass('ui-state-default ts-link');
-      $('#userCanPinAction').addClass('disabledlink');
       $('#userCanCreateCompany').removeClass('ui-state-default ts-link');
       $('#userCanCreateCompany').addClass('disabledlink');
       $('#userCanEditCompany').removeClass('ui-state-default ts-link');
@@ -750,25 +747,6 @@ UserPage = function () {
               },
               function (error) {
                 alert('There was an error saving the user change allow user to edit any action.');
-                item.next().hide();
-              });
-        }
-      });
-
-    $('#userCanPinAction')
-      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
-      .click(function (e) {
-        e.preventDefault();
-        var item = $(this);
-        if (isSysAdmin) {
-          item.next().show();
-          top.Ts.Services.Users.SetUserCanPinAction(_user.UserID, (item.text() !== 'Yes'),
-              function (result) {
-                top.Ts.System.logAction('User Info - User Can Pin Action Changed');
-                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
-              },
-              function (error) {
-                alert('There was an error saving the user can pin action.');
                 item.next().hide();
               });
         }

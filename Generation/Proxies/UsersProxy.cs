@@ -79,7 +79,6 @@ namespace TeamSupport.Data
     [DataMember] public bool CanEditContact { get; set; }
     [DataMember] public bool RestrictUserFromEditingAnyActions { get; set; }
     [DataMember] public bool AllowUserToEditAnyAction { get; set; }
-    [DataMember] public bool UserCanPinAction { get; set; }
           
   }
   
@@ -88,7 +87,6 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
-      result.UserCanPinAction = this.UserCanPinAction;
       result.AllowUserToEditAnyAction = this.AllowUserToEditAnyAction;
       result.RestrictUserFromEditingAnyActions = this.RestrictUserFromEditingAnyActions;
       result.CanEditContact = this.CanEditContact;
