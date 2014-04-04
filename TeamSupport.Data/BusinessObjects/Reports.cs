@@ -1740,15 +1740,16 @@ namespace TeamSupport.Data
     public static DataTable GetReportTable(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
     {
       Report report = Reports.GetReport(loginUser, reportID);
+      DataTable result = null;
       try
       {
         if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
         {
-          return GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+          result = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
         }
         else
         {
-          return GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+          result = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
         }
       }
       catch (Exception)
@@ -1758,11 +1759,11 @@ namespace TeamSupport.Data
         {
           if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
           {
-            return GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+            result = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
           }
           else
           {
-            return GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+            result = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
           }
         }
         catch (Exception)
@@ -1770,11 +1771,11 @@ namespace TeamSupport.Data
           // try without the user filters
           if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
           {
-            return GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+            result = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
           }
           else
           {
-            return GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+            result = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
           }
 
           UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
@@ -1783,6 +1784,7 @@ namespace TeamSupport.Data
           report.Collection.Save();
         }
       }
+      return result;
     }
 
     private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter)
