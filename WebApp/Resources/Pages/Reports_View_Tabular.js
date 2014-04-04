@@ -23,7 +23,7 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: callback,
-            error: function (xhr, status, error) { console.log(error); }
+            error: function (xhr, status, error) { }
         });
 
         return req;
@@ -214,7 +214,7 @@
                 }
             );
             },
-            function (error) { console.log(error.get_message()); }
+            function (error) { }
         );
 
         $('.filter-modal').modal('hide');
@@ -228,7 +228,7 @@
                 "data": JSON.stringify(_report.Settings)
             },
             function () { if (callback) callback(); },
-            function (error) { console.log(error.get_message()); }
+            function (error) { }
         );
     }
 
@@ -322,7 +322,7 @@
                 _grid.resizeCanvas();
             });
         } catch (e) {
-            console.log(e.message);
+            
         }
 
     }
