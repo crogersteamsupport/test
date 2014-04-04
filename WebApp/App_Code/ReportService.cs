@@ -60,18 +60,23 @@ namespace TSWebServices
       [WebMethod]
       public ReportItem[] GetDashboardReports()
       {
-        DashboardItem[] items = JsonConvert.DeserializeObject<DashboardItem[]>(GetDashboard());
-        List<string> idlist = new List<string>();
-        foreach (DashboardItem item in items)
-        {
-          idlist.Add(item.ReportID.ToString());
-        }
+        string data = GetDashboard();
         List<ReportItem> result = new List<ReportItem>();
-        Reports reports = new Reports(TSAuthentication.GetLoginUser());
-        reports.LoadList(TSAuthentication.OrganizationID, TSAuthentication.UserID, idlist.ToArray());
-        foreach (Report report in reports)
+        if (!string.IsNullOrWhiteSpace(data))
         {
-          result.Add(new ReportItem(report, true));
+
+          DashboardItem[] items = JsonConvert.DeserializeObject<DashboardItem[]>(GetDashboard());
+          List<string> idlist = new List<string>();
+          foreach (DashboardItem item in items)
+          {
+            idlist.Add(item.ReportID.ToString());
+          }
+          Reports reports = new Reports(TSAuthentication.GetLoginUser());
+          reports.LoadList(TSAuthentication.OrganizationID, TSAuthentication.UserID, idlist.ToArray());
+          foreach (Report report in reports)
+          {
+            result.Add(new ReportItem(report, true));
+          }
         }
 
         return result.ToArray();
@@ -80,34 +85,43 @@ namespace TSWebServices
       [WebMethod]
       public string GetDashboard()
       {
-        string result = Settings.UserDB.ReadString("Dashboard", "");
+        string result = Settings.UserDB.ReadString("Dashboard", "[]");
 
-        if (result == "")
+        if (result == "[]")
         {
-          string[] ids = null;
-          List<DashboardItem> items = new List<DashboardItem>();
-          ids = Settings.UserDB.ReadString("DashboardPortlets").Split(',');
-          foreach (string id in ids)
+          try
+          {
+            string[] ids = null;
+            List<DashboardItem> items = new List<DashboardItem>();
+            ids = Settings.UserDB.ReadString("DashboardPortlets").Split(',');
+            foreach (string id in ids)
+            {
+
+
+              OldPortlet oldPortlet = Settings.UserDB.ReadJson<OldPortlet>("DashboardPortlet-portlet" + id);
+              int width = 1;
+              if (oldPortlet != null)
+              {
+                try
+                {
+                  if (oldPortlet.X > 0) width = 2;
+                }
+                catch (Exception)
+                {
+                }
+              }
+
+              items.Add(new DashboardItem(int.Parse(id), 1, width));
+            }
+            result = JsonConvert.SerializeObject(items.ToArray());
+            Settings.UserDB.WriteString("Dashboard", result);
+
+          }
+          catch (Exception)
           {
 
-
-            OldPortlet oldPortlet = Settings.UserDB.ReadJson<OldPortlet>("DashboardPortlet-portlet" + id);
-            int width = 1;
-            if (oldPortlet != null)
-            {
-              try
-              {
-                if (oldPortlet.X > 0) width = 2;
-              }
-              catch (Exception)
-              {
-              }
-            }
-
-            items.Add(new DashboardItem(int.Parse(id), 1, width));
+            result = "[]";
           }
-          result = JsonConvert.SerializeObject(items.ToArray());
-          Settings.UserDB.WriteString("Dashboard", result);
         }
         return result;
       }
