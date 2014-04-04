@@ -346,7 +346,7 @@ public partial class Dialogs_User : BaseDialogPage
 
       Organization orgTemplate = Organizations.GetTemplateOrganization(UserSession.LoginUser, organization.ProductType);
 
-      if (orgTemplate != null) UserSettings.WriteString(UserSession.LoginUser, "Dashboard", UserSettings.ReadString(UserSession.LoginUser, (int)orgTemplate.PrimaryUserID, "Dashboard"));
+      if (orgTemplate != null) UserSettings.WriteString(UserSession.LoginUser, user.UserID, "Dashboard", UserSettings.ReadString(UserSession.LoginUser, (int)orgTemplate.PrimaryUserID, "Dashboard"));
     }
 
     UpdateMuroc(user);
