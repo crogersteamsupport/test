@@ -1095,11 +1095,13 @@ Ts.Pages.Main.prototype = {
     openReport: function (report, doSelect) {
         var self = this;
         if (report.ReportID) {
-            self.MainTabs.prepend(doSelect || true, Ts.Ui.Tabs.Tab.Type.Report, report.ReportID, report.Name, true, true, false, null, null, report, report.Name);
+            var data = { ReportID: report.ReportID, ReportType: report.ReportType, Name: report.Name };
+            self.MainTabs.prepend(doSelect || true, Ts.Ui.Tabs.Tab.Type.Report, report.ReportID, report.Name, true, true, false, null, null, data, report.Name);
         } else {
             top.Ts.Utils.webMethod("ReportService", "GetReport", {
                 "reportID": report
             }, function (result) {
+                var data = { ReportID: result.ReportID, ReportType: result.ReportType, Name: result.Name };
                 self.MainTabs.prepend(doSelect || true, Ts.Ui.Tabs.Tab.Type.Report, result.ReportID, result.Name, true, true, false, null, null, result, result.Name);
             });
         }
