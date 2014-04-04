@@ -372,6 +372,25 @@ namespace TeamSupport.Handlers
 
       }
 
+      foreach (DataColumn column in table.Columns)
+      {
+        if (column.DataType == typeof(System.DateTime))
+        {
+
+          foreach (DataRow row in table.Rows)
+          {
+            try
+            {
+              if (row[column] != null && row[column] != DBNull.Value)
+                row[column] = TimeZoneInfo.ConvertTimeFromUtc((DateTime)row[column], report.Collection.LoginUser.TimeZoneInfo);
+            }
+            catch (Exception)
+            {
+            }
+          }
+        }
+      }
+
 
       if (type.ToLower() == "excel")
       {
