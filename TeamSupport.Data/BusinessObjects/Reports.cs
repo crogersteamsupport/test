@@ -1740,16 +1740,49 @@ namespace TeamSupport.Data
     public static DataTable GetReportTable(LoginUser loginUser, int reportID, int from, int to, string sortField, bool isDesc, bool useUserFilter, bool includeHiddenFields)
     {
       Report report = Reports.GetReport(loginUser, reportID);
-
-      if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+      try
       {
-        return GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+        if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+        {
+          return GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+        }
+        else
+        {
+          return GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+        }
       }
-      else
+      catch (Exception)
       {
-        return GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
-      }
+        // try without the sort
+        try
+        {
+          if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+          {
+            return GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+          }
+          else
+          {
+            return GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+          }
+        }
+        catch (Exception)
+        {
+          // try without the user filters
+          if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
+          {
+            return GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+          }
+          else
+          {
+            return GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+          }
 
+          UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
+          userFilters.Filters = null;
+          report.Row["Settings"] = JsonConvert.SerializeObject(userFilters);
+          report.Collection.Save();
+        }
+      }
     }
 
     private static GridResult GetReportDataPage(LoginUser loginUser, Report report, int from, int to, string sortField, bool isDesc, bool useUserFilter)
