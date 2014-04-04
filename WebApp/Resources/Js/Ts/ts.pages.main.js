@@ -1150,7 +1150,7 @@ Ts.Pages.Main.prototype = {
         });
     },
     openContact: function (contactID, customerID) {
-        openNewContact(contactID, customerID);
+        this.openNewContact(contactID, customerID);
 
     },
     openCustomerByName: function (name) {
@@ -1160,7 +1160,7 @@ Ts.Pages.Main.prototype = {
         });
     },
     openCustomer: function (customerID) {
-        openNewCustomer(customerID);
+        this.openNewCustomer(customerID);
     },
     openCustomerNote: function (customerID, noteID) {
         _selectContactID = -1;
