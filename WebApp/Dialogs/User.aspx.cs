@@ -343,6 +343,10 @@ public partial class Dialogs_User : BaseDialogPage
       user.IsPasswordExpired = true;
       user.Collection.Save();
       if (cbEmail.Checked) EmailPosts.SendWelcomeTSUser(UserSession.LoginUser, user.UserID, password);
+
+      Organization orgTemplate = Organizations.GetTemplateOrganization(UserSession.LoginUser, organization.ProductType);
+
+      if (orgTemplate != null) UserSettings.WriteString(UserSession.LoginUser, "Dashboard", UserSettings.ReadString(UserSession.LoginUser, (int)orgTemplate.PrimaryUserID, "Dashboard"));
     }
 
     UpdateMuroc(user);

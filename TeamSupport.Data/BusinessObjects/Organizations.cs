@@ -276,24 +276,28 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
   public partial class Organizations
   {
 
+    public static Organization GetTemplateOrganization(LoginUser loginUser, ProductType productType)
+    {
+      Organizations orgTemplate = new Organizations(LoginUser.Anonymous);
+
+      switch (productType)
+      {
+        case ProductType.Express: orgTemplate.LoadByOrganizationName("Trial Setup: Express", 1); break;
+        case ProductType.HelpDesk: orgTemplate.LoadByOrganizationName("Trial Setup: Support", 1); break;
+        case ProductType.Enterprise: orgTemplate.LoadByOrganizationName("Trial Setup: Enterprise", 1); break;
+        default: break;
+      }
+      return orgTemplate.IsEmpty ? null : orgTemplate[0];
+    }
+
     public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, ProductType productType, string password, string promo, string interest, string seats, string process)
     {
       try
       {
 
-        int sourceOrgID = -1;
-        Organizations tsCustomers = new Organizations(LoginUser.Anonymous);
-        tsCustomers.LoadByParentID(1, false);
-      
-        switch (productType)
-        {
-          case ProductType.Express: sourceOrgID = tsCustomers.FindByName("Trial Setup: Express").OrganizationID; break;
-          case ProductType.HelpDesk: sourceOrgID = tsCustomers.FindByName("Trial Setup: Support").OrganizationID; break;
-          case ProductType.Enterprise: sourceOrgID = tsCustomers.FindByName("Trial Setup: Enterprise").OrganizationID; break;
-          default: sourceOrgID = 563584; break;
-        }
 
-        Organization sourceOrg = Organizations.GetOrganization(LoginUser.Anonymous, sourceOrgID);
+        Organization sourceOrg = GetTemplateOrganization(LoginUser.Anonymous, productType);
+        int sourceOrgID = sourceOrg.OrganizationID;
 
         Organization organization = (new Organizations(LoginUser.Anonymous)).AddNewOrganization();
         organization.Name = company.Trim();
@@ -610,28 +614,6 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
         // copy dashboard
         UserSettings.WriteString(loginUser, "Dashboard", UserSettings.ReadString(loginUser, (int)sourceOrg.PrimaryUserID, "Dashboard"));
-
-        // copy reports
-        /*
-        Reports reports = new Reports(loginUser);
-        reports.LoadAll(sourceOrgID);
-
-        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
-
-        int i = 0;
-        string reportName = report.Name + " Clone ({0:D})";
-
-        while (true)
-        {
-          i++;
-          if (reports.FindByName(string.Format(reportName, i)) == null) break;
-        }
-
-        int newID = report.CloneReport(string.Format(reportName, i));
-
-        Report result = Reports.GetReport(TSAuthentication.GetLoginUser(), newID, TSAuthentication.UserID);
-        return new ReportItem(result, false);*/
-    
         sourceOrg.Collection.Save();
 
         EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, password);
