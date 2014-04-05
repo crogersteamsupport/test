@@ -167,7 +167,7 @@
                                 $('<option>').attr('value', 7).text('Saturday').appendTo(days);
                                 break;
                             case 'date':
-                                $('<input type="text">').addClass('form-control filter-value').insertAfter($(this)).datetimepicker({
+                                $('<input type="text">').addClass('form-control filter-value').insertAfter($(this)).datepicker({
                                     icons: {
                                         time: "fa fa-clock-o",
                                         date: "fa fa-calendar",
