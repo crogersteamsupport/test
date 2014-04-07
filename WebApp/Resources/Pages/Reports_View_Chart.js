@@ -1,6 +1,7 @@
 ﻿$(document).ready(function () {
     var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
     var _report = null;
+    $('.reports-edit').hide();
 
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
 
@@ -16,7 +17,14 @@
 
             $('#mainFrame').attr('src', report.ReportDef);
             $('.report-title').text(report.Name);
-            if ((top.Ts.System.User.IsSystemAdmin == false && report.CreatorID != top.Ts.System.User.UserID) || report.OrganizationID == null) { $('.reports-edit').remove(); }
+
+            if ((top.Ts.System.User.IsSystemAdmin != false || report.CreatorID == top.Ts.System.User.UserID) && report.OrganizationID != null) {
+                $('.reports-edit').show();
+            }
+
+            if (report.OrganizationID == null && (top.Ts.System.User.UserID == 34 || top.Ts.System.User.UserID == 43 || top.Ts.System.User.UserID == 47)) {
+                $('.reports-edit').show();
+            }
 
 
             top.Ts.Utils.webMethod(null, "reportdata/chart",

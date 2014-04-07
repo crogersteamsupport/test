@@ -18,6 +18,7 @@
     .report-bad a { color:Red; font-weight: bold;}
     .alert { display:none;}
     .report-list { height: 500px; overflow:auto;}
+    .report-stock { font-weight:bold;}
   </style>
 
   <script language="javascript" type="text/javascript">
@@ -25,14 +26,12 @@
       top.Ts.Services.Reports.AdminGetReports(function (reports) {
         var list = $('.report-list ul');
         for (var i = 0; i < reports.length; i++) {
-          if (reports[i].Query == null) continue;
-          if (reports[i].OrganizationID == null) continue;
-          if (reports[i].OrganizationID != 1078) continue;
           var item = $('<li>').data('report', reports[i]).attr('data-id', reports[i].ReportID);
           $('<a>')
             .attr('href', '#')
-            .text(reports[i].ReportID + ' (' + (reports[i].OrganizationID ? reports[i].OrganizationID : 'Stock') + ')')
+            .text(reports[i].ReportID + ' (' + (reports[i].OrganizationID ? reports[i].OrganizationID : 'Stock') + ') - ' + reports[i].Name)
             .appendTo(item)
+            .addClass(reports[i].OrganizationID == null ? 'report-stock' : '')
             .click(function (e) {
               e.preventDefault();
               loadReport($(this).closest('li'));
@@ -69,7 +68,7 @@
         e.preventDefault();
         var li = $('.report-list li.active');
         var report = li.data('report');
-        testQuery(report.reportID, $('#query').val());
+        testQuery(report.ReportID, $('#query').val());
       });
 
       function testQuery(reportID, query) {
@@ -97,16 +96,16 @@
 <body>
   <div class="frame-container container">
     <div class="row">
-      <div class="col-xs-2">
+      <div class="col-xs-4">
         <div class="report-list">
         <ul class="nav nav-pills nav-stacked">
         </ul>
         </div>
       </div>
-      <div class="col-xs-10">
+      <div class="col-xs-8">
       <form>
       <h3 class="title"></h3>
-      <button class="btn-test btn btn-primary">Test &amp; Save</button>
+      <button class="btn-test btn btn-primary">Test</button>
       <button class="btn-save btn btn-default pull-right">Save</button>
       <div class="checkbox">
         <label>

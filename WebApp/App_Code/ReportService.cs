@@ -258,8 +258,14 @@ namespace TSWebServices
       {
         if (TSAuthentication.OrganizationID != 1078) return null;
         Reports reports = new Reports(TSAuthentication.GetLoginUser());
-        reports.LoadEverything();
-        return reports.GetReportProxies();
+        reports.LoadCustomReports();
+        List<ReportProxy> result = new List<ReportProxy>();
+
+        foreach (Report report in reports)
+        {
+          result.Add(report.GetProxy());
+        }
+        return result.ToArray();
       }
 
       [WebMethod]
@@ -273,7 +279,7 @@ namespace TSWebServices
       [WebMethod]
       public void AdminUpdateQuery(int reportID, string query)
       {
-        if (TSAuthentication.UserID != 34) return;
+        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
         report.Query = query;
         report.Collection.Save();
@@ -282,15 +288,24 @@ namespace TSWebServices
       [WebMethod]
       public void AdminTestQuery(int reportID, string query)
       {
-        if (TSAuthentication.UserID != 34) return;
+        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;
         if (!string.IsNullOrWhiteSpace(query))
         {
           Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
-          report.Query = query;
-          report.Collection.Save();
+          string oldQuery = report.Query;
+          try
+          {
+            report.Query = query;
+            report.Collection.Save();
+            Reports.GetReportData(TSAuthentication.GetLoginUser(), reportID, 1, 10, "", true, false);
+          }
+          finally
+          {
+            report.Query = oldQuery;
+            report.Collection.Save();
+          } 
         }
 
-        Reports.GetReportData(TSAuthentication.GetLoginUser(), reportID, 1, 10, "", true, false);
 
       }
 
@@ -456,7 +471,7 @@ namespace TSWebServices
       }
 
       [WebMethod]
-      public ReportItem SaveReport(int? reportID, string name, int reportType, string data)
+      public ReportItem SaveReport(int? reportID, string name, int reportType, string data, bool isStock)
       {
         Report report = null;
         if (reportID == null)
@@ -469,11 +484,20 @@ namespace TSWebServices
           if (!TSAuthentication.IsSystemAdmin && report.CreatorID != TSAuthentication.UserID) return null;
         }
 
+        if (isStock)
+        {
+          if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 43 && TSAuthentication.UserID != 47) return null;
+          report.OrganizationID = null;
+        }
+        else
+        {
+          report.OrganizationID = TSAuthentication.OrganizationID;
+        }
+
         report.Name = name;
         report.ReportDef = data;
         report.EditorID = TSAuthentication.UserID;
         report.DateEdited = DateTime.UtcNow;
-        report.OrganizationID = TSAuthentication.OrganizationID;
 
         switch (reportType)
         {

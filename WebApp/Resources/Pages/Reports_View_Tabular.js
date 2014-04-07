@@ -4,6 +4,7 @@
     var _grid;
     var datamodel = new TeamSupport.DataModel(getReportData);
     var _report = null;
+    $('.reports-edit').hide();
 
     function getReportData(from, to, sortcol, isdesc, callback) {
         var params = { "reportID":
@@ -69,8 +70,13 @@
             $('.reports-filter i').addClass('color-red');
         }
 
-        if ((top.Ts.System.User.IsSystemAdmin == false && report.CreatorID != top.Ts.System.User.UserID) || report.ReportType == 3 || report.OrganizationID == null) {
-            $('.reports-edit').remove();
+        if ((top.Ts.System.User.IsSystemAdmin != false || report.CreatorID == top.Ts.System.User.UserID) && report.ReportType != 3 && report.OrganizationID != null) {
+            $('.reports-edit').show();
+        }
+
+        if (report.OrganizationID == null && (top.Ts.System.User.UserID == 34 || top.Ts.System.User.UserID == 43 || top.Ts.System.User.UserID == 47) && report.ReportType != 3)
+        {
+            $('.reports-edit').show();
         }
 
         top.Ts.Utils.webMethod("ReportService", "GetReportColumns", {

@@ -2011,11 +2011,11 @@ ORDER BY r.Name
       }
     }
 
-    public void LoadEverything() 
+    public void LoadCustomReports() 
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT * FROM Reports ORDER BY ReportID DESC";
+        command.CommandText = @"SELECT * FROM Reports WHERE Query IS NOT NULL ORDER BY Name";
         command.CommandType = CommandType.Text;
         Fill(command);
       }

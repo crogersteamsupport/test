@@ -229,9 +229,9 @@ namespace TSWebServices
           utils.AddItem(new TsMenuItem("utils", "utils-customersearch", "Customer Search", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_CustomerSearch.html", "vcr/1_9_0/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-portalsearch", "Portal Search", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_PortalSearch.html", "vcr/1_9_0/PaneInfo/Admin.html")));
           utils.AddItem(new TsMenuItem("utils", "utils-emailsearch", "Email Search", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_EmailsSearch.html", "vcr/1_9_0/PaneInfo/Admin.html")));
-          if (user.UserID == 34)
+          if (user.UserID == 34 || user.UserID == 47)
 
-            utils.AddItem(new TsMenuItem("utils", "utils-reporttest", "Report Test", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_ReportTest.html", "vcr/1_9_0/PaneInfo/Admin.html")));
+            utils.AddItem(new TsMenuItem("utils", "utils-reporttest", "Custom Reports", "vcr/1_9_0/images/nav/20/admin.png", string.Format(data, "vcr/1_9_0/Pages/Utils_ReportTest.html", "vcr/1_9_0/PaneInfo/Admin.html")));
           
         }
 

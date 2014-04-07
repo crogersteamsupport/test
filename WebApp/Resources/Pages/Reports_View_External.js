@@ -2,11 +2,19 @@
 $(document).ready(function () {
     var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
     var _report = null;
+    $('.reports-edit').hide();
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
 
     top.Ts.Utils.webMethod("ReportService", "GetReport", { "reportID": _reportID }, function (report) {
         _report = report;
-        if ((top.Ts.System.User.IsSystemAdmin == false && report.CreatorID != top.Ts.System.User.UserID) || report.OrganizationID == null) { $('.reports-edit').remove(); }
+
+        if ((top.Ts.System.User.IsSystemAdmin != false || report.CreatorID == top.Ts.System.User.UserID) && report.OrganizationID != null) {
+            $('.reports-edit').show();
+        }
+
+        if (report.OrganizationID == null && (top.Ts.System.User.UserID == 34 || top.Ts.System.User.UserID == 43 || top.Ts.System.User.UserID == 47)) {
+            $('.reports-edit').show();
+        }
 
         if (report.IsFavorite) {
             $('.reports-fav i').removeClass('fa-star-o').addClass('fa-star');

@@ -23,12 +23,29 @@ $(document).ready(function () {
     $('.report-filter').reportFilter();
     $('#chartFilter').reportFilter();
 
+    $('#cbStock').change(function (e) {
+        if ($('#cbStock').prop('checked')) {
+            $('.report-section .panel').removeClass('panel-default').addClass('panel-danger');
+            $('.action-save').removeClass('btn-primary').addClass('btn-danger').text('SAVE STOCK REPORT');
+        }
+        else {
+            $('.report-section .panel').addClass('panel-default').removeClass('panel-danger');
+            $('.action-save').addClass('btn-primary').removeClass('btn-danger').text('Save');
+        }
+
+    });
+
     if (_reportID != null) {
         top.Ts.Utils.webMethod("ReportService", "GetReport", {
             "reportID": _reportID
         }, function (report) {
             _report = report;
-            if (_report.OrganizationID == null) return;
+            if (_report.OrganizationID == null) {
+                if (top.Ts.System.User.UserID != 34 && top.Ts.System.User.UserID != 43 && top.Ts.System.User.UserID != 47) return;
+                $('#cbStock').prop('checked', true).trigger('change');
+
+            }
+
             $('.report-name').val(report.Name);
             initReport();
         });
@@ -36,6 +53,10 @@ $(document).ready(function () {
         initReport();
     } else {
         return;
+    }
+
+    if (top.Ts.System.User.UserID == 34 || top.Ts.System.User.UserID == 43 || top.Ts.System.User.UserID == 47) {
+        $('.checkbox-stock').removeClass('hidden');
     }
 
 
@@ -418,7 +439,8 @@ $(document).ready(function () {
                 "reportID": _reportID,
                 "name": $('.report-name').val(),
                 "reportType": _reportType,
-                "data": data
+                "data": data,
+                "isStock": $('#cbStock').prop('checked')
             },
             closeReport,
             function (error) { alert(error.get_message()); });
