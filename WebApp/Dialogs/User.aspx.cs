@@ -79,6 +79,7 @@ public partial class Dialogs_User : BaseDialogPage
       cbNoAutoSubscribe.Checked = false;
       cbRestrictUserFromEditingAnyActions.Checked = false;
       cbAllowUserToEditAnyAction.Checked = false;
+      cbUserCanPinAction.Checked = true;
       Page.Title = "New User";
 
       if (!string.IsNullOrEmpty(organization.TimeZoneID))
@@ -188,6 +189,7 @@ public partial class Dialogs_User : BaseDialogPage
       cbNoAutoSubscribe.Checked = users[0].DoNotAutoSubscribe;
       cbRestrictUserFromEditingAnyActions.Checked = users[0].RestrictUserFromEditingAnyActions;
       cbAllowUserToEditAnyAction.Checked = users[0].AllowUserToEditAnyAction;
+      cbUserCanPinAction.Checked = users[0].UserCanPinAction;
 
       cmbTimeZones.SelectedValue = "Central Standard Time";
       
@@ -310,6 +312,7 @@ public partial class Dialogs_User : BaseDialogPage
     user.DoNotAutoSubscribe = cbNoAutoSubscribe.Checked;
     user.RestrictUserFromEditingAnyActions = cbRestrictUserFromEditingAnyActions.Checked;
     user.AllowUserToEditAnyAction = cbAllowUserToEditAnyAction.Checked;
+    user.UserCanPinAction = cbUserCanPinAction.Checked;
     user.TicketRights = (TicketRightType)int.Parse(cmbRights.SelectedValue);
     user.ShowWelcomePage = true;
     UserSession.LoginUser.TimeZoneInfo = null;

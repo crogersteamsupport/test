@@ -51,6 +51,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("FontSize", "FontSize", false, false, false);
       _fieldMap.AddMap("RestrictUserFromEditingAnyActions", "RestrictUserFromEditingAnyActions", false, false, false);
       _fieldMap.AddMap("AllowUserToEditAnyAction", "AllowUserToEditAnyAction", false, false, false);
+      _fieldMap.AddMap("UserCanPinAction", "UserCanPinAction", false, false, false);
             
     }
   }
