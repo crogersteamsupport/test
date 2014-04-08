@@ -23,6 +23,32 @@ namespace TeamSupport.Data
       }
     }
 
+    public static EmailPost GetNextWaiting(LoginUser loginUser, string processID)
+    {
+      EmailPosts emails = new EmailPosts(loginUser);
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+UPDATE EmailPosts 
+SET LockProcessID = @ProcessID 
+OUTPUT Inserted.*
+WHERE EmailPostID IN (
+  SELECT TOP 1 EmailPostID FROM EmailPosts WHERE LockProcessID IS NULL AND DATEADD(SECOND, HoldTime, DateCreated) < GETUTCDATE() ORDER BY DateCreated
+)
+";
+
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProcessID", processID);
+        emails.Fill(command);
+      }
+
+      if (emails.IsEmpty)
+        return null;
+      else
+        return emails[0];
+    }
+
     public static void DeleteImportEmails(LoginUser loginUser)
     {
       EmailPosts emailPosts = new EmailPosts(loginUser);
@@ -34,6 +60,19 @@ namespace TeamSupport.Data
         emailPosts.ExecuteNonQuery(command, "EmailPosts");
       }
     }
+
+    public static void UnlockAll(LoginUser loginUser)
+    {
+      EmailPosts emailPosts = new EmailPosts(loginUser);
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "UPDATE EmailPosts SET LockProcessID = NULL WHERE LockProcessID IS NOT NULL";
+        command.CommandType = CommandType.Text;
+        emailPosts.ExecuteNonQuery(command);
+      }
+    }
+
 
     private static void PostEmail(LoginUser loginUser, EmailPostType emailPostType, int holdTime, string param1, string param2, string param3, string param4, string param5, string text1, string text2, string text3)
     {

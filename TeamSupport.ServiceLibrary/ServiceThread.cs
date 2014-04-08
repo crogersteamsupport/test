@@ -8,6 +8,7 @@ using TeamSupport.Data;
 using System.Configuration;
 
 
+
 namespace TeamSupport.ServiceLibrary
 {
 
@@ -70,7 +71,17 @@ namespace TeamSupport.ServiceLibrary
       {
         string result;
 
-        lock (this) { result = this.GetType().Name; }
+        lock (this) { 
+          Type type = this.GetType();
+          if (type.IsGenericType)
+          {
+            result = this.GetType().GetGenericArguments()[0].Name + "Pool";
+          }
+          else
+	        {
+            result = this.GetType().Name; 
+	        }
+        }
         return result;
       }
 
@@ -117,8 +128,7 @@ namespace TeamSupport.ServiceLibrary
 
     public virtual void Start()
     {
-      _logs = new Data.Logs(ServiceName);
-      _logs.WriteEvent("Service Started");
+      _logs = new Data.Logs(GetLogFileCategory());
       if (!IsStopped) return;
       _isStopped = false;
       _thread = new Thread(new ThreadStart(Process));
@@ -137,6 +147,11 @@ namespace TeamSupport.ServiceLibrary
         service.Collection.Save();
       }
       _thread.Start();
+    }
+
+    public virtual string GetLogFileCategory()
+    {
+      return ServiceName;
     }
 
     protected virtual void Process()
@@ -187,6 +202,10 @@ namespace TeamSupport.ServiceLibrary
             return;
           }
         }
+      }
+      catch (ThreadAbortException)
+      {
+
       }
       catch (Exception ex)
       {

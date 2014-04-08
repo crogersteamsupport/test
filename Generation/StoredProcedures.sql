@@ -8741,7 +8741,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3]
+    [Text3],
+    [LockProcessID]
   FROM [dbo].[EmailPostHistory]
   WHERE ([EmailPostID] = @EmailPostID)
 GO
@@ -8770,6 +8771,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
   @Text3 varchar(MAX),
+  @LockProcessID varchar(250),
   @Identity int OUT
 )
 AS
@@ -8793,7 +8795,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3])
+    [Text3],
+    [LockProcessID])
   VALUES (
     @EmailPostID,
     @EmailPostType,
@@ -8812,7 +8815,8 @@ AS
     @Param10,
     @Text1,
     @Text2,
-    @Text3)
+    @Text3,
+    @LockProcessID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -8838,7 +8842,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
   @Param10 varchar(8000),
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
-  @Text3 varchar(MAX)
+  @Text3 varchar(MAX),
+  @LockProcessID varchar(250)
 )
 AS
   SET NOCOUNT OFF;
@@ -8858,7 +8863,8 @@ AS
     [Param10] = @Param10,
     [Text1] = @Text1,
     [Text2] = @Text2,
-    [Text3] = @Text3
+    [Text3] = @Text3,
+    [LockProcessID] = @LockProcessID
   WHERE ([EmailPostID] = @EmailPostID)
 GO
 
@@ -9762,7 +9768,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3]
+    [Text3],
+    [LockProcessID]
   FROM [dbo].[EmailPosts]
   WHERE ([EmailPostID] = @EmailPostID)
 GO
@@ -9790,6 +9797,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
   @Text3 varchar(MAX),
+  @LockProcessID varchar(250),
   @Identity int OUT
 )
 AS
@@ -9812,7 +9820,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3])
+    [Text3],
+    [LockProcessID])
   VALUES (
     @EmailPostType,
     @HoldTime,
@@ -9830,7 +9839,8 @@ AS
     @Param10,
     @Text1,
     @Text2,
-    @Text3)
+    @Text3,
+    @LockProcessID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -9856,7 +9866,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
   @Param10 varchar(8000),
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
-  @Text3 varchar(MAX)
+  @Text3 varchar(MAX),
+  @LockProcessID varchar(250)
 )
 AS
   SET NOCOUNT OFF;
@@ -9876,7 +9887,8 @@ AS
     [Param10] = @Param10,
     [Text1] = @Text1,
     [Text2] = @Text2,
-    [Text3] = @Text3
+    [Text3] = @Text3,
+    [LockProcessID] = @LockProcessID
   WHERE ([EmailPostID] = @EmailPostID)
 GO
 
@@ -22119,7 +22131,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3]
+    [Text3],
+    [LockProcessID]
   FROM [dbo].[EmailPostHistory]
   WHERE ([EmailPostID] = @EmailPostID)
 GO
@@ -22148,6 +22161,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
   @Text3 varchar(MAX),
+  @LockProcessID varchar(250),
   @Identity int OUT
 )
 AS
@@ -22171,7 +22185,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3])
+    [Text3],
+    [LockProcessID])
   VALUES (
     @EmailPostID,
     @EmailPostType,
@@ -22190,7 +22205,8 @@ AS
     @Param10,
     @Text1,
     @Text2,
-    @Text3)
+    @Text3,
+    @LockProcessID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -22216,7 +22232,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
   @Param10 varchar(8000),
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
-  @Text3 varchar(MAX)
+  @Text3 varchar(MAX),
+  @LockProcessID varchar(250)
 )
 AS
   SET NOCOUNT OFF;
@@ -22236,7 +22253,8 @@ AS
     [Param10] = @Param10,
     [Text1] = @Text1,
     [Text2] = @Text2,
-    [Text3] = @Text3
+    [Text3] = @Text3,
+    [LockProcessID] = @LockProcessID
   WHERE ([EmailPostID] = @EmailPostID)
 GO
 
@@ -23140,7 +23158,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3]
+    [Text3],
+    [LockProcessID]
   FROM [dbo].[EmailPosts]
   WHERE ([EmailPostID] = @EmailPostID)
 GO
@@ -23168,6 +23187,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
   @Text3 varchar(MAX),
+  @LockProcessID varchar(250),
   @Identity int OUT
 )
 AS
@@ -23190,7 +23210,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3])
+    [Text3],
+    [LockProcessID])
   VALUES (
     @EmailPostType,
     @HoldTime,
@@ -23208,7 +23229,8 @@ AS
     @Param10,
     @Text1,
     @Text2,
-    @Text3)
+    @Text3,
+    @LockProcessID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -23234,7 +23256,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
   @Param10 varchar(8000),
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
-  @Text3 varchar(MAX)
+  @Text3 varchar(MAX),
+  @LockProcessID varchar(250)
 )
 AS
   SET NOCOUNT OFF;
@@ -23254,7 +23277,8 @@ AS
     [Param10] = @Param10,
     [Text1] = @Text1,
     [Text2] = @Text2,
-    [Text3] = @Text3
+    [Text3] = @Text3,
+    [LockProcessID] = @LockProcessID
   WHERE ([EmailPostID] = @EmailPostID)
 GO
 
@@ -35497,7 +35521,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3]
+    [Text3],
+    [LockProcessID]
   FROM [dbo].[EmailPostHistory]
   WHERE ([EmailPostID] = @EmailPostID)
 GO
@@ -35526,6 +35551,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
   @Text3 varchar(MAX),
+  @LockProcessID varchar(250),
   @Identity int OUT
 )
 AS
@@ -35549,7 +35575,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3])
+    [Text3],
+    [LockProcessID])
   VALUES (
     @EmailPostID,
     @EmailPostType,
@@ -35568,7 +35595,8 @@ AS
     @Param10,
     @Text1,
     @Text2,
-    @Text3)
+    @Text3,
+    @LockProcessID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -35594,7 +35622,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
   @Param10 varchar(8000),
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
-  @Text3 varchar(MAX)
+  @Text3 varchar(MAX),
+  @LockProcessID varchar(250)
 )
 AS
   SET NOCOUNT OFF;
@@ -35614,7 +35643,8 @@ AS
     [Param10] = @Param10,
     [Text1] = @Text1,
     [Text2] = @Text2,
-    [Text3] = @Text3
+    [Text3] = @Text3,
+    [LockProcessID] = @LockProcessID
   WHERE ([EmailPostID] = @EmailPostID)
 GO
 
@@ -36518,7 +36548,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3]
+    [Text3],
+    [LockProcessID]
   FROM [dbo].[EmailPosts]
   WHERE ([EmailPostID] = @EmailPostID)
 GO
@@ -36546,6 +36577,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
   @Text3 varchar(MAX),
+  @LockProcessID varchar(250),
   @Identity int OUT
 )
 AS
@@ -36568,7 +36600,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3])
+    [Text3],
+    [LockProcessID])
   VALUES (
     @EmailPostType,
     @HoldTime,
@@ -36586,7 +36619,8 @@ AS
     @Param10,
     @Text1,
     @Text2,
-    @Text3)
+    @Text3,
+    @LockProcessID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -36612,7 +36646,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
   @Param10 varchar(8000),
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
-  @Text3 varchar(MAX)
+  @Text3 varchar(MAX),
+  @LockProcessID varchar(250)
 )
 AS
   SET NOCOUNT OFF;
@@ -36632,7 +36667,8 @@ AS
     [Param10] = @Param10,
     [Text1] = @Text1,
     [Text2] = @Text2,
-    [Text3] = @Text3
+    [Text3] = @Text3,
+    [LockProcessID] = @LockProcessID
   WHERE ([EmailPostID] = @EmailPostID)
 GO
 
@@ -48875,7 +48911,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3]
+    [Text3],
+    [LockProcessID]
   FROM [dbo].[EmailPostHistory]
   WHERE ([EmailPostID] = @EmailPostID)
 GO
@@ -48904,6 +48941,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
   @Text3 varchar(MAX),
+  @LockProcessID varchar(250),
   @Identity int OUT
 )
 AS
@@ -48927,7 +48965,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3])
+    [Text3],
+    [LockProcessID])
   VALUES (
     @EmailPostID,
     @EmailPostType,
@@ -48946,7 +48985,8 @@ AS
     @Param10,
     @Text1,
     @Text2,
-    @Text3)
+    @Text3,
+    @LockProcessID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -48972,7 +49012,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
   @Param10 varchar(8000),
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
-  @Text3 varchar(MAX)
+  @Text3 varchar(MAX),
+  @LockProcessID varchar(250)
 )
 AS
   SET NOCOUNT OFF;
@@ -48992,7 +49033,8 @@ AS
     [Param10] = @Param10,
     [Text1] = @Text1,
     [Text2] = @Text2,
-    [Text3] = @Text3
+    [Text3] = @Text3,
+    [LockProcessID] = @LockProcessID
   WHERE ([EmailPostID] = @EmailPostID)
 GO
 
@@ -49896,7 +49938,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3]
+    [Text3],
+    [LockProcessID]
   FROM [dbo].[EmailPosts]
   WHERE ([EmailPostID] = @EmailPostID)
 GO
@@ -49924,6 +49967,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
   @Text3 varchar(MAX),
+  @LockProcessID varchar(250),
   @Identity int OUT
 )
 AS
@@ -49946,7 +49990,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3])
+    [Text3],
+    [LockProcessID])
   VALUES (
     @EmailPostType,
     @HoldTime,
@@ -49964,7 +50009,8 @@ AS
     @Param10,
     @Text1,
     @Text2,
-    @Text3)
+    @Text3,
+    @LockProcessID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -49990,7 +50036,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
   @Param10 varchar(8000),
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
-  @Text3 varchar(MAX)
+  @Text3 varchar(MAX),
+  @LockProcessID varchar(250)
 )
 AS
   SET NOCOUNT OFF;
@@ -50010,7 +50057,8 @@ AS
     [Param10] = @Param10,
     [Text1] = @Text1,
     [Text2] = @Text2,
-    [Text3] = @Text3
+    [Text3] = @Text3,
+    [LockProcessID] = @LockProcessID
   WHERE ([EmailPostID] = @EmailPostID)
 GO
 
@@ -62253,7 +62301,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3]
+    [Text3],
+    [LockProcessID]
   FROM [dbo].[EmailPostHistory]
   WHERE ([EmailPostID] = @EmailPostID)
 GO
@@ -62282,6 +62331,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertEmailPostHistoryItem
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
   @Text3 varchar(MAX),
+  @LockProcessID varchar(250),
   @Identity int OUT
 )
 AS
@@ -62305,7 +62355,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3])
+    [Text3],
+    [LockProcessID])
   VALUES (
     @EmailPostID,
     @EmailPostType,
@@ -62324,7 +62375,8 @@ AS
     @Param10,
     @Text1,
     @Text2,
-    @Text3)
+    @Text3,
+    @LockProcessID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -62350,7 +62402,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPostHistoryItem
   @Param10 varchar(8000),
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
-  @Text3 varchar(MAX)
+  @Text3 varchar(MAX),
+  @LockProcessID varchar(250)
 )
 AS
   SET NOCOUNT OFF;
@@ -62370,7 +62423,8 @@ AS
     [Param10] = @Param10,
     [Text1] = @Text1,
     [Text2] = @Text2,
-    [Text3] = @Text3
+    [Text3] = @Text3,
+    [LockProcessID] = @LockProcessID
   WHERE ([EmailPostID] = @EmailPostID)
 GO
 
@@ -63274,7 +63328,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3]
+    [Text3],
+    [LockProcessID]
   FROM [dbo].[EmailPosts]
   WHERE ([EmailPostID] = @EmailPostID)
 GO
@@ -63302,6 +63357,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertEmailPost
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
   @Text3 varchar(MAX),
+  @LockProcessID varchar(250),
   @Identity int OUT
 )
 AS
@@ -63324,7 +63380,8 @@ AS
     [Param10],
     [Text1],
     [Text2],
-    [Text3])
+    [Text3],
+    [LockProcessID])
   VALUES (
     @EmailPostType,
     @HoldTime,
@@ -63342,7 +63399,8 @@ AS
     @Param10,
     @Text1,
     @Text2,
-    @Text3)
+    @Text3,
+    @LockProcessID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -63368,7 +63426,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateEmailPost
   @Param10 varchar(8000),
   @Text1 varchar(MAX),
   @Text2 varchar(MAX),
-  @Text3 varchar(MAX)
+  @Text3 varchar(MAX),
+  @LockProcessID varchar(250)
 )
 AS
   SET NOCOUNT OFF;
@@ -63388,7 +63447,8 @@ AS
     [Param10] = @Param10,
     [Text1] = @Text1,
     [Text2] = @Text2,
-    [Text3] = @Text3
+    [Text3] = @Text3,
+    [LockProcessID] = @LockProcessID
   WHERE ([EmailPostID] = @EmailPostID)
 GO
 

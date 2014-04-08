@@ -19,16 +19,14 @@ using System.ComponentModel;
 namespace TeamSupport.ServiceLibrary
 {
   [Serializable]
-  public class EmailSender : ServiceThread
+  public class EmailSender : ServiceThreadPoolProcess
   {
+    public EmailSender(int threadPosition) : base(threadPosition) { }
+
     private static int[] _nextAttempts = new int[] { 10, 15, 20, 30, 60, 120, 360, 720, 1440 };
 
     private bool _isDebug = false;
     private string _debugAddresses;
-
-    public EmailSender()
-    {
-    }
 
     public override void Run()
     {
@@ -40,11 +38,11 @@ namespace TeamSupport.ServiceLibrary
 
       try
       {
-        SendEmails();
+        SendNextEmail();
       }
       catch (Exception ex)
       {
-        ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending emails");
+        ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
       }
 
       try
@@ -59,98 +57,65 @@ namespace TeamSupport.ServiceLibrary
     }
 
     private void DeleteOldEmails()
-    { 
+    {
       SqlExecutor.ExecuteNonQuery(LoginUser, new SqlCommand("DELETE FROM Emails WHERE DateCreated < (DATEADD(month, -1, GetUtcDate()))"));
     }
-   
 
-    private void SendEmails()
+
+    private void SendNextEmail()
     {
-      Emails emails = new Emails(LoginUser);
-      emails.LoadTop100Waiting();
-      if (emails.IsEmpty) return;
+      string processID = Guid.NewGuid().ToString();
+      Email email = Emails.GetNextWaiting(LoginUser, processID);
+      if (email == null) return;
 
-      SmtpClient client = new SmtpClient();
-      client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port"));
-      string username = Settings.ReadString("SMTP UserName", "");
-      if (username.Trim() != "") client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
 
-      foreach (Email email in emails)
+      try
       {
-        if (IsStopped) break;
-        try
-        {
-          if (email.NextAttempt < DateTime.UtcNow)
-          {
+        SmtpClient client = new SmtpClient();
+        client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port"));
+        string username = Settings.ReadString("SMTP UserName", "");
+        if (username.Trim() != "") client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
 
-            email.Attempts = email.Attempts + 1;
-            email.Collection.Save();
-            MailMessage message = email.GetMailMessage();
-            message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
-            message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
-            if (_isDebug == true)
-            {
-              message.To.Clear();
-              message.To.Add(_debugAddresses);
-              message.Subject = "[DEBUG] " + message.Subject;
-            }
-            client.Send(message);
-            email.IsSuccess = true;
-            email.IsWaiting = false;
-            email.Body = "";
-            email.DateSent = DateTime.UtcNow;
-            email.Collection.Save();
-            UpdateHealth();
-          }
-        }
-        catch (Exception ex)
+        if (email.NextAttempt < DateTime.UtcNow)
         {
-          StringBuilder builder = new StringBuilder();
-          builder.AppendLine(ex.Message);
-          builder.AppendLine("<br />");
-          builder.AppendLine("<br />");
-          builder.AppendLine("<br />");
-          builder.AppendLine(ex.StackTrace);
-          email.NextAttempt = DateTime.UtcNow.AddMinutes(_nextAttempts[email.Attempts - 1] * email.Attempts);
-          email.LastFailedReason = builder.ToString();
-          email.IsSuccess = false;
-          email.IsWaiting = (email.Attempts < _nextAttempts.Length);
+
+          email.Attempts = email.Attempts + 1;
           email.Collection.Save();
+          MailMessage message = email.GetMailMessage();
+          message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
+          message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
+          if (_isDebug == true)
+          {
+            message.To.Clear();
+            message.To.Add(_debugAddresses);
+            message.Subject = "[DEBUG] " + message.Subject;
+          }
+          client.Send(message);
+          email.IsSuccess = true;
+          email.IsWaiting = false;
+          email.Body = "";
+          email.DateSent = DateTime.UtcNow;
+          email.LockProcessID = null;
+          email.Collection.Save();
+          UpdateHealth();
         }
       }
-    }
-    /*
-    private static void SmtpSendCompletedCallback(object sender, AsyncCompletedEventArgs e)
-    {
-      if (e.Cancelled) return;
-
-      int emailID = (int)e.UserState;
-      Email email = Emails.GetEmail(GetLoginUser(), emailID);
-
-      if (e.Error != null)
+      catch (Exception ex)
       {
         StringBuilder builder = new StringBuilder();
-        builder.AppendLine("AsyncSendError: ");
-        builder.AppendLine(e.Error.Message);
+        builder.AppendLine(ex.Message);
         builder.AppendLine("<br />");
         builder.AppendLine("<br />");
         builder.AppendLine("<br />");
-        builder.AppendLine(e.Error.StackTrace);
+        builder.AppendLine(ex.StackTrace);
         email.NextAttempt = DateTime.UtcNow.AddMinutes(_nextAttempts[email.Attempts - 1] * email.Attempts);
         email.LastFailedReason = builder.ToString();
         email.IsSuccess = false;
         email.IsWaiting = (email.Attempts < _nextAttempts.Length);
+        email.LockProcessID = null;
+        email.Collection.Save();
       }
-      else
-      {
-        email.IsSuccess = true;
-        email.IsWaiting = false;
-        email.Body = "";
-        email.DateSent = DateTime.UtcNow;
-      }
-
-      email.Collection.Save();
     }
-    */
+
   }
 }

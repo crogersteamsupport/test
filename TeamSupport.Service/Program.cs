@@ -34,8 +34,8 @@ namespace TeamSupport.Service
       ServiceThread result = null;
       switch (ServiceName)
       {
-        case "TSEmailProcessor": result = new EmailProcessor(); break;
-        case "TSEmailSender": result = new EmailSender(); break;
+        case "TSEmailProcessor": result = new ServiceThreadPool<EmailProcessor>("EmailProcessor"); break;
+        case "TSEmailSender": result = new ServiceThreadPool<EmailSender>("EmailSender"); break;
         case "TSSlaProcessor": result = new SlaProcessor(); break;
         case "TSIndexer": result = new Indexer(); break;
         case "TSIndexRebuilder": result = new Indexer(); break;

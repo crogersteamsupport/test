@@ -31,6 +31,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Text1", "Text1", false, false, false);
       _fieldMap.AddMap("Text2", "Text2", false, false, false);
       _fieldMap.AddMap("Text3", "Text3", false, false, false);
+      _fieldMap.AddMap("LockProcessID", "LockProcessID", false, false, false);
             
     }
   }

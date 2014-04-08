@@ -113,6 +113,46 @@ namespace TeamSupport.Data
       }
     }
 
+    public static Email GetNextWaiting(LoginUser loginUser, string processID)
+    {
+      Emails emails = new Emails(loginUser);
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+UPDATE Emails
+SET LockProcessID = @ProcessID 
+OUTPUT Inserted.*
+WHERE EmailID IN (
+  SELECT TOP 1 EmailID FROM Emails WHERE LockProcessID IS NULL AND IsWaiting = 1 AND NextAttempt < GETUTCDATE() ORDER BY DateCreated
+)
+";
+
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProcessID", processID);
+        emails.Fill(command);
+      }
+
+      if (emails.IsEmpty)
+        return null;
+      else
+        return emails[0];
+
+    
+    }
+
+    public static void UnlockAll(LoginUser loginUser)
+    {
+      Emails emails = new Emails(loginUser);
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "UPDATE Emails SET LockProcessID = NULL WHERE LockProcessID IS NOT NULL";
+        command.CommandType = CommandType.Text;
+        emails.ExecuteNonQuery(command);
+      }
+    }
+
     public static string EmailAddressToString(MailAddressCollection addresses)
     {
       StringBuilder builder = new StringBuilder();

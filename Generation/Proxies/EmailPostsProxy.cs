@@ -31,6 +31,7 @@ namespace TeamSupport.Data
     [DataMember] public string Text1 { get; set; }
     [DataMember] public string Text2 { get; set; }
     [DataMember] public string Text3 { get; set; }
+    [DataMember] public string LockProcessID { get; set; }
           
   }
   
@@ -39,6 +40,7 @@ namespace TeamSupport.Data
     public EmailPostProxy GetProxy()
     {
       EmailPostProxy result = new EmailPostProxy();
+      result.LockProcessID = this.LockProcessID;
       result.Text3 = this.Text3;
       result.Text2 = this.Text2;
       result.Text1 = this.Text1;

@@ -17,8 +17,8 @@ namespace TeamSupport.ServiceTestApplication
 {
   public partial class Form1 : Form
   {
-    EmailProcessor _emailProcessor;
-    EmailSender _emailSender;
+    ServiceThreadPool<EmailProcessor> _emailProcessor;
+    ServiceThreadPool<EmailSender> _emailSender;
     SlaProcessor _slaProcessor;
     Indexer _indexer;
     CrmPool _crmPool;
@@ -87,12 +87,12 @@ namespace TeamSupport.ServiceTestApplication
 
     private void btnEmailProcessor_Click(object sender, EventArgs e)
     {
-      if (_emailProcessor == null || _emailProcessor.IsStopped) StartProcess(_emailProcessor = new EmailProcessor(), sender as Button); else StopProcess(_emailProcessor, sender as Button);
+      if (_emailProcessor == null || _emailProcessor.IsStopped) StartProcess(_emailProcessor = new ServiceThreadPool<EmailProcessor>("EmailProcessor"), sender as Button); else StopProcess(_emailProcessor, sender as Button);
     }
 
     private void btnEmailSender_Click(object sender, EventArgs e)
     {
-      if (_emailSender == null || _emailSender.IsStopped) StartProcess(_emailSender = new EmailSender(), sender as Button); else StopProcess(_emailSender, sender as Button);
+      if (_emailSender == null || _emailSender.IsStopped) StartProcess(_emailSender = new ServiceThreadPool<EmailSender>("EmailSender"), sender as Button); else StopProcess(_emailSender, sender as Button);
     }
 
     private void btnSlaProcessor_Click(object sender, EventArgs e)

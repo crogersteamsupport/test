@@ -135,6 +135,8 @@
     <Compile Include="Indexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceThread.cs" />
+    <Compile Include="ServiceThreadPool.cs" />
+    <Compile Include="ServiceThreadPoolProcess.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SlaProcessor.cs" />
     <Compile Include="TicketIndexDataSource.cs" />
