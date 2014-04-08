@@ -87,6 +87,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("LastIndexRebuilt", "LastIndexRebuilt", false, false, false);
       _fieldMap.AddMap("IsIndexLocked", "IsIndexLocked", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
+      _fieldMap.AddMap("NeedCustForTicketMatch", "NeedCustForTicketMatch", false, false, false);
       _fieldMap.AddMap("TotalTicketsCreated", "TotalTicketsCreated", false, false, false);
       _fieldMap.AddMap("TicketsOpen", "TicketsOpen", false, false, false);
       _fieldMap.AddMap("CreatedLast30", "CreatedLast30", false, false, false);
@@ -98,6 +99,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("FontSize", "FontSize", false, false, false);
       _fieldMap.AddMap("ShowGroupMembersFirstInTicketAssignmentList", "ShowGroupMembersFirstInTicketAssignmentList", false, false, false);
       _fieldMap.AddMap("UpdateTicketChildrenGroupWithParent", "UpdateTicketChildrenGroupWithParent", false, false, false);
+      _fieldMap.AddMap("ReplyToAlternateEmailAddresses", "ReplyToAlternateEmailAddresses", false, false, false);
             
     }
   }

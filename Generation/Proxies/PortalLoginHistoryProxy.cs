@@ -21,6 +21,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? LoginDateTime { get; set; }
     [DataMember] public string IPAddress { get; set; }
     [DataMember] public string Browser { get; set; }
+    [DataMember] public int UserID { get; set; }
           
   }
   
@@ -29,6 +30,7 @@ namespace TeamSupport.Data
     public PortalLoginHistoryItemProxy GetProxy()
     {
       PortalLoginHistoryItemProxy result = new PortalLoginHistoryItemProxy();
+      result.UserID = this.UserID;
       result.Browser = this.Browser;
       result.IPAddress = this.IPAddress;
       result.Success = this.Success;

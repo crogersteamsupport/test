@@ -57,6 +57,7 @@ namespace TeamSupport.Data
     [DataMember] public int? JiraID { get; set; }
     [DataMember] public string JiraKey { get; set; }
     [DataMember] public string JiraLinkURL { get; set; }
+    [DataMember] public string EmailReplyToAddress { get; set; }
           
   }
   
@@ -65,6 +66,7 @@ namespace TeamSupport.Data
     public TicketProxy GetProxy()
     {
       TicketProxy result = new TicketProxy();
+      result.EmailReplyToAddress = this.EmailReplyToAddress;
       result.JiraLinkURL = this.JiraLinkURL;
       result.JiraKey = this.JiraKey;
       result.JiraID = this.JiraID;

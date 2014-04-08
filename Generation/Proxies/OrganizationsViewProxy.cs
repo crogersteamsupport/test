@@ -20,6 +20,7 @@ namespace TeamSupport.Data
     [DataMember] public bool IsActive { get; set; }
     [DataMember] public string InActiveReason { get; set; }
     [DataMember] public int? PrimaryUserID { get; set; }
+    [DataMember] public string PrimaryContactEmail { get; set; }
     [DataMember] public string PrimaryContact { get; set; }
     [DataMember] public int? ParentID { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
@@ -41,8 +42,6 @@ namespace TeamSupport.Data
     [DataMember] public string DefaultSupportGroup { get; set; }
     [DataMember] public string CompanyDomains { get; set; }
     [DataMember] public int SupportHoursMonth { get; set; }
-    [DataMember] public int? SupportHoursUsed { get; set; }
-    [DataMember] public int? SupportHoursRemaining { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
           
   }
@@ -53,8 +52,6 @@ namespace TeamSupport.Data
     {
       OrganizationsViewItemProxy result = new OrganizationsViewItemProxy();
       result.NeedsIndexing = this.NeedsIndexing;
-      result.SupportHoursRemaining = this.SupportHoursRemaining;
-      result.SupportHoursUsed = this.SupportHoursUsed;
       result.SupportHoursMonth = this.SupportHoursMonth;
       result.CompanyDomains = this.CompanyDomains;
       result.DefaultSupportGroup = this.DefaultSupportGroup;
@@ -73,6 +70,7 @@ namespace TeamSupport.Data
       result.CreatorID = this.CreatorID;
       result.ParentID = this.ParentID;
       result.PrimaryContact = this.PrimaryContact;
+      result.PrimaryContactEmail = this.PrimaryContactEmail;
       result.PrimaryUserID = this.PrimaryUserID;
       result.InActiveReason = this.InActiveReason;
       result.IsActive = this.IsActive;

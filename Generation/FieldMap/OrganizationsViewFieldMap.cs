@@ -20,6 +20,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("IsActive", "IsActive", false, false, false);
       _fieldMap.AddMap("InActiveReason", "InActiveReason", false, false, false);
       _fieldMap.AddMap("PrimaryUserID", "PrimaryUserID", false, false, false);
+      _fieldMap.AddMap("PrimaryContactEmail", "PrimaryContactEmail", false, false, false);
       _fieldMap.AddMap("PrimaryContact", "PrimaryContact", false, false, false);
       _fieldMap.AddMap("ParentID", "ParentID", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
@@ -41,8 +42,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DefaultSupportGroup", "DefaultSupportGroup", false, false, false);
       _fieldMap.AddMap("CompanyDomains", "CompanyDomains", false, false, false);
       _fieldMap.AddMap("SupportHoursMonth", "SupportHoursMonth", false, false, false);
-      _fieldMap.AddMap("SupportHoursUsed", "SupportHoursUsed", false, false, false);
-      _fieldMap.AddMap("SupportHoursRemaining", "SupportHoursRemaining", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
             
     }

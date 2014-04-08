@@ -21,6 +21,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("LoginDateTime", "LoginDateTime", false, false, false);
       _fieldMap.AddMap("IPAddress", "IPAddress", false, false, false);
       _fieldMap.AddMap("Browser", "Browser", false, false, false);
+      _fieldMap.AddMap("UserID", "UserID", false, false, false);
             
     }
   }

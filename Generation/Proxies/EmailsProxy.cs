@@ -33,6 +33,7 @@ namespace TeamSupport.Data
     [DataMember] public string LastFailedReason { get; set; }
     [DataMember] public int? EmailPostID { get; set; }
     [DataMember] public DateTime DateCreated { get; set; }
+    [DataMember] public string LockProcessID { get; set; }
           
   }
   
@@ -41,6 +42,7 @@ namespace TeamSupport.Data
     public EmailProxy GetProxy()
     {
       EmailProxy result = new EmailProxy();
+      result.LockProcessID = this.LockProcessID;
       result.EmailPostID = this.EmailPostID;
       result.LastFailedReason = this.LastFailedReason;
       result.Attempts = this.Attempts;

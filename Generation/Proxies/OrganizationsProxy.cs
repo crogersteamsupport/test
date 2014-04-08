@@ -87,6 +87,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime LastIndexRebuilt { get; set; }
     [DataMember] public bool IsIndexLocked { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public bool NeedCustForTicketMatch { get; set; }
     [DataMember] public int TotalTicketsCreated { get; set; }
     [DataMember] public int TicketsOpen { get; set; }
     [DataMember] public int CreatedLast30 { get; set; }
@@ -98,6 +99,7 @@ namespace TeamSupport.Data
     [DataMember] public FontSize FontSize { get; set; }
     [DataMember] public bool ShowGroupMembersFirstInTicketAssignmentList { get; set; }
     [DataMember] public bool UpdateTicketChildrenGroupWithParent { get; set; }
+    [DataMember] public bool ReplyToAlternateEmailAddresses { get; set; }
           
   }
   
@@ -106,6 +108,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.ReplyToAlternateEmailAddresses = this.ReplyToAlternateEmailAddresses;
       result.UpdateTicketChildrenGroupWithParent = this.UpdateTicketChildrenGroupWithParent;
       result.ShowGroupMembersFirstInTicketAssignmentList = this.ShowGroupMembersFirstInTicketAssignmentList;
       result.FontSize = this.FontSize;
@@ -117,6 +120,7 @@ namespace TeamSupport.Data
       result.CreatedLast30 = this.CreatedLast30;
       result.TicketsOpen = this.TicketsOpen;
       result.TotalTicketsCreated = this.TotalTicketsCreated;
+      result.NeedCustForTicketMatch = this.NeedCustForTicketMatch;
       result.NeedsIndexing = this.NeedsIndexing;
       result.IsIndexLocked = this.IsIndexLocked;
       result.IsRebuildingIndex = this.IsRebuildingIndex;

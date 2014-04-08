@@ -413,7 +413,6 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-
 		tempParameter = updateCommand.Parameters.Add("Pinned", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{

@@ -57,6 +57,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("JiraID", "JiraID", false, false, false);
       _fieldMap.AddMap("JiraKey", "JiraKey", false, false, false);
       _fieldMap.AddMap("JiraLinkURL", "JiraLinkURL", false, false, false);
+      _fieldMap.AddMap("EmailReplyToAddress", "EmailReplyToAddress", false, false, false);
             
     }
   }

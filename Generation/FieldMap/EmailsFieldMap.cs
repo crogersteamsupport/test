@@ -33,6 +33,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("LastFailedReason", "LastFailedReason", false, false, false);
       _fieldMap.AddMap("EmailPostID", "EmailPostID", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
+      _fieldMap.AddMap("LockProcessID", "LockProcessID", false, false, false);
             
     }
   }

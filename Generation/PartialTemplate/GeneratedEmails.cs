@@ -76,6 +76,12 @@ namespace TeamSupport.Data
       set { Row["EmailPostID"] = CheckValue("EmailPostID", value); }
     }
     
+    public string LockProcessID
+    {
+      get { return Row["LockProcessID"] != DBNull.Value ? (string)Row["LockProcessID"] : null; }
+      set { Row["LockProcessID"] = CheckValue("LockProcessID", value); }
+    }
+    
 
     
     public int Attempts
@@ -268,7 +274,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Emails] SET     [OrganizationID] = @OrganizationID,    [Description] = @Description,    [FromAddress] = @FromAddress,    [ToAddress] = @ToAddress,    [CCAddress] = @CCAddress,    [BCCAddress] = @BCCAddress,    [Subject] = @Subject,    [Body] = @Body,    [Attachments] = @Attachments,    [Size] = @Size,    [IsSuccess] = @IsSuccess,    [IsWaiting] = @IsWaiting,    [IsHtml] = @IsHtml,    [Attempts] = @Attempts,    [NextAttempt] = @NextAttempt,    [DateSent] = @DateSent,    [LastFailedReason] = @LastFailedReason,    [EmailPostID] = @EmailPostID  WHERE ([EmailID] = @EmailID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Emails] SET     [OrganizationID] = @OrganizationID,    [Description] = @Description,    [FromAddress] = @FromAddress,    [ToAddress] = @ToAddress,    [CCAddress] = @CCAddress,    [BCCAddress] = @BCCAddress,    [Subject] = @Subject,    [Body] = @Body,    [Attachments] = @Attachments,    [Size] = @Size,    [IsSuccess] = @IsSuccess,    [IsWaiting] = @IsWaiting,    [IsHtml] = @IsHtml,    [Attempts] = @Attempts,    [NextAttempt] = @NextAttempt,    [DateSent] = @DateSent,    [LastFailedReason] = @LastFailedReason,    [EmailPostID] = @EmailPostID,    [LockProcessID] = @LockProcessID  WHERE ([EmailID] = @EmailID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("EmailID", SqlDbType.Int, 4);
@@ -404,13 +410,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("LockProcessID", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Emails] (    [OrganizationID],    [Description],    [FromAddress],    [ToAddress],    [CCAddress],    [BCCAddress],    [Subject],    [Body],    [Attachments],    [Size],    [IsSuccess],    [IsWaiting],    [IsHtml],    [Attempts],    [NextAttempt],    [DateSent],    [LastFailedReason],    [EmailPostID],    [DateCreated]) VALUES ( @OrganizationID, @Description, @FromAddress, @ToAddress, @CCAddress, @BCCAddress, @Subject, @Body, @Attachments, @Size, @IsSuccess, @IsWaiting, @IsHtml, @Attempts, @NextAttempt, @DateSent, @LastFailedReason, @EmailPostID, @DateCreated); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Emails] (    [OrganizationID],    [Description],    [FromAddress],    [ToAddress],    [CCAddress],    [BCCAddress],    [Subject],    [Body],    [Attachments],    [Size],    [IsSuccess],    [IsWaiting],    [IsHtml],    [Attempts],    [NextAttempt],    [DateSent],    [LastFailedReason],    [EmailPostID],    [DateCreated],    [LockProcessID]) VALUES ( @OrganizationID, @Description, @FromAddress, @ToAddress, @CCAddress, @BCCAddress, @Subject, @Body, @Attachments, @Size, @IsSuccess, @IsWaiting, @IsHtml, @Attempts, @NextAttempt, @DateSent, @LastFailedReason, @EmailPostID, @DateCreated, @LockProcessID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("LockProcessID", SqlDbType.VarChar, 250);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("DateCreated", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -657,7 +677,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [EmailID], [OrganizationID], [Description], [FromAddress], [ToAddress], [CCAddress], [BCCAddress], [Subject], [Body], [Attachments], [Size], [IsSuccess], [IsWaiting], [IsHtml], [Attempts], [NextAttempt], [DateSent], [LastFailedReason], [EmailPostID], [DateCreated] FROM [dbo].[Emails] WHERE ([EmailID] = @EmailID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [EmailID], [OrganizationID], [Description], [FromAddress], [ToAddress], [CCAddress], [BCCAddress], [Subject], [Body], [Attachments], [Size], [IsSuccess], [IsWaiting], [IsHtml], [Attempts], [NextAttempt], [DateSent], [LastFailedReason], [EmailPostID], [DateCreated], [LockProcessID] FROM [dbo].[Emails] WHERE ([EmailID] = @EmailID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("EmailID", emailID);
         Fill(command);

@@ -35,6 +35,11 @@ namespace TeamSupport.Data
       get { return Row["ModifierName"] != DBNull.Value ? (string)Row["ModifierName"] : null; }
     }
     
+    public string ContactName
+    {
+      get { return Row["ContactName"] != DBNull.Value ? (string)Row["ContactName"] : null; }
+    }
+    
     
     
 
@@ -50,15 +55,6 @@ namespace TeamSupport.Data
       get { return Row["OrganizationName"] != DBNull.Value ? (string)Row["OrganizationName"] : null; }
       set { Row["OrganizationName"] = CheckValue("OrganizationName", value); }
     }
-    
-    public string ContactName
-    {
-      get { return Row["ContactName"] != DBNull.Value ? (string)Row["ContactName"] : null; }
-    }
-    
-    
-    
-
     
 
     
@@ -336,7 +332,7 @@ namespace TeamSupport.Data
 		insertCommand.CommandType = CommandType.Text;
 		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[NotesView] (    [NoteID],    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateModified],    [DateCreated],    [NeedsIndexing],    [CreatorName],    [ModifierName],    [ParentOrganizationID],    [OrganizationName],    [ContactName]) VALUES ( @NoteID, @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateModified, @DateCreated, @NeedsIndexing, @CreatorName, @ModifierName, @ParentOrganizationID, @OrganizationName, @ContactName); SET @Identity = SCOPE_IDENTITY();";
 
-
+		
 		tempParameter = insertCommand.Parameters.Add("ContactName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
