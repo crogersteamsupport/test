@@ -42,6 +42,8 @@ namespace TeamSupport.ServiceLibrary
       }
       catch (Exception ex)
       {
+        Logs.WriteEvent("Error sending email");
+        Logs.WriteException(ex);
         ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
       }
 
@@ -51,6 +53,8 @@ namespace TeamSupport.ServiceLibrary
       }
       catch (Exception ex)
       {
+        Logs.WriteEvent("Error deleting old emails");
+        Logs.WriteException(ex);
         ExceptionLogs.LogException(LoginUser, ex, "Email", "Error deleting old emails");
       }
 
@@ -67,7 +71,10 @@ namespace TeamSupport.ServiceLibrary
       string processID = Guid.NewGuid().ToString();
       Email email = Emails.GetNextWaiting(LoginUser, processID);
       if (email == null) return;
-
+      
+      Logs.WriteLine();
+      Logs.WriteHeader("Processing Email");
+      Logs.WriteData(email.Row);
 
       try
       {
@@ -75,33 +82,35 @@ namespace TeamSupport.ServiceLibrary
         client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port"));
         string username = Settings.ReadString("SMTP UserName", "");
         if (username.Trim() != "") client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
-
-        if (email.NextAttempt < DateTime.UtcNow)
+        Logs.WriteEventFormat("SMTP: Host: {0}, Port: {1}, User: {2}", client.Host, client.Port.ToString(), username);
+        email.Attempts = email.Attempts + 1;
+        email.Collection.Save();
+        Logs.WriteEvent("Attempt: " + email.Attempts);
+        MailMessage message = email.GetMailMessage();
+        message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
+        message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
+        if (_isDebug == true)
         {
-
-          email.Attempts = email.Attempts + 1;
-          email.Collection.Save();
-          MailMessage message = email.GetMailMessage();
-          message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
-          message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
-          if (_isDebug == true)
-          {
-            message.To.Clear();
-            message.To.Add(_debugAddresses);
-            message.Subject = "[DEBUG] " + message.Subject;
-          }
-          client.Send(message);
-          email.IsSuccess = true;
-          email.IsWaiting = false;
-          email.Body = "";
-          email.DateSent = DateTime.UtcNow;
-          email.LockProcessID = null;
-          email.Collection.Save();
-          UpdateHealth();
+          message.To.Clear();
+          message.To.Add(_debugAddresses);
+          message.Subject = "[DEBUG] " + message.Subject;
         }
+        Logs.WriteEvent("Sending email");
+        client.Send(message);
+        Logs.WriteEvent("Email sent");
+        email.IsSuccess = true;
+        email.IsWaiting = false;
+        email.Body = "";
+        email.DateSent = DateTime.UtcNow;
+        email.LockProcessID = null;
+        email.Collection.Save();
+        UpdateHealth();
       }
       catch (Exception ex)
       {
+        Logs.WriteEvent("Error sending email");
+        Logs.WriteException(ex);
+
         StringBuilder builder = new StringBuilder();
         builder.AppendLine(ex.Message);
         builder.AppendLine("<br />");
