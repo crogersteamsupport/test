@@ -85,7 +85,8 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEventFormat("SMTP: Host: {0}, Port: {1}, User: {2}", client.Host, client.Port.ToString(), username);
         email.Attempts = email.Attempts + 1;
         email.Collection.Save();
-        Logs.WriteEvent("Attempt: " + email.Attempts);
+        Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
+        Logs.WriteEventFormat("Size: {0}, Attachments: {1}", email.Size.ToString(), email.Attachments);
         MailMessage message = email.GetMailMessage();
         message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
         message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
