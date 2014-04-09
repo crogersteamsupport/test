@@ -201,7 +201,7 @@ namespace TeamSupport.Data
       Organization organization = Organizations.GetOrganization(BaseCollection.LoginUser, _organizationID);
       MailMessage message = new MailMessage();
       message.Subject = Subject.Replace('\r', ' ').Replace('\n', ' ');
-      message.From = new MailAddress(organization.GetReplyToAddress());
+      message.From = organization.GetReplyToMailAddress();
       message.IsBodyHtml = IsHtml;
       message.Body = Body;
       return message;

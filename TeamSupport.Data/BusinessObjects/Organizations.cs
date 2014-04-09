@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Web.Security;
+using System.Net.Mail;
 
 namespace TeamSupport.Data
 {
@@ -21,6 +22,24 @@ namespace TeamSupport.Data
       if (string.IsNullOrEmpty(OrganizationReplyToAddress))
         return SystemEmailID.ToString() + "@teamsupport.com";
       return OrganizationReplyToAddress;
+    }
+
+    public MailAddress GetReplyToMailAddress()
+    {
+      string sysMail = SystemEmailID.ToString() + "@teamsupport.com";
+      if (string.IsNullOrWhiteSpace(OrganizationReplyToAddress))
+      {
+        return new MailAddress(sysMail);
+      }
+
+      try
+      {
+        return new MailAddress(OrganizationReplyToAddress);
+      }
+      catch (Exception)
+      {
+        return new MailAddress(sysMail);
+      }
     }
 
     public bool IsInBusinessHours(DateTime utcDateTime)

@@ -44,8 +44,6 @@ namespace TeamSupport.ServiceLibrary
       MailMessage message;
       UsersViewItem user = UsersView.GetUsersViewItem(LoginUser, reminder.UserID);
       if (user == null) return;
-      MailAddress address = new MailAddress(user.Email, user.FirstName + " " + user.LastName);
-      Logs.WriteEvent("Mail Address: " + address.ToString());
       string description = "";
       switch (reminder.RefType)
       {
@@ -96,12 +94,14 @@ namespace TeamSupport.ServiceLibrary
       
       if (message == null) return;
 
+      reminder.HasEmailSent = true;
+      reminder.Collection.Save();
+
+      MailAddress address = new MailAddress(user.Email, user.FirstName + " " + user.LastName);
+      Logs.WriteEvent("Mail Address: " + address.ToString());
       message.To.Add(address);
       Emails.AddEmail(LoginUser, reminder.OrganizationID, null, message.Subject, message);
       Logs.WriteEvent("Message queued");
-      reminder.HasEmailSent = true;
-      reminder.Collection.Save();
-      Logs.WriteEvent("Reminder marked sent");
     }
 
 
