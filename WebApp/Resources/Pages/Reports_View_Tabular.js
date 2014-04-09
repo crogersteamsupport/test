@@ -195,13 +195,13 @@
     $('.reports-filter').click(function (e) {
         e.preventDefault();
         $('.filter-modal').modal('show');
-        if (_report.ReportType != 3 || _report.OrganizationID != null) { $('#filter-global').reportFilter("loadFilters", _report.Def.Filters); }
+        if (_report.ReportType != 3 && _report.OrganizationID != null) { $('#filter-global').reportFilter("loadFilters", _report.Def.Filters); }
         if (_report.Settings.Filters) $('#filter-user').reportFilter("loadFilters", _report.Settings.Filters);
     });
 
     $('.filter-save').click(function (e) {
         e.preventDefault();
-        if (_report.ReportType != 3 || _report.OrganizationID != null) { _report.Def.Filters = $('#filter-global').reportFilter('getObject'); }
+        if (_report.ReportType != 3 && _report.OrganizationID != null) { _report.Def.Filters = $('#filter-global').reportFilter('getObject'); }
         _report.Settings.Filters = $('#filter-user').reportFilter('getObject');
         if (_report.Settings.Filters.length == 1) {
             $('.reports-filter i').addClass('color-red');

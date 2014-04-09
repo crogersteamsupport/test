@@ -182,7 +182,7 @@ namespace TeamSupport.ServiceLibrary
               service.RunTimeAvg = service.RunCount > 1 ? (int)((((service.RunCount - 1) * service.RunTimeAvg) + total) / service.RunCount) : total;
               service.Collection.Save();
             }
-            Thread.Sleep(1000);
+            Thread.Sleep(100);
           }
           catch (ThreadAbortException)
           { 
