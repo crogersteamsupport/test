@@ -34,6 +34,7 @@ namespace TeamSupport.ServiceLibrary
       if (_isDebug)
       {
         _debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
+        Logs.WriteEvent("DEBUG Addresses: " + _debugAddresses);
       }
 
       try
