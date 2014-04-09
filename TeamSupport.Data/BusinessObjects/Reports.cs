@@ -1759,11 +1759,11 @@ namespace TeamSupport.Data
         {
           if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
           {
-            result = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+            result = GetReportTableAll(loginUser, report, null, isDesc, useUserFilter, includeHiddenFields);
           }
           else
           {
-            result = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+            result = GetReportTablePage(loginUser, report, from, to, null, isDesc, useUserFilter, includeHiddenFields);
           }
         }
         catch (Exception)
@@ -1771,11 +1771,11 @@ namespace TeamSupport.Data
           // try without the user filters
           if (report.ReportDefType == ReportType.Summary || report.ReportDefType == ReportType.Chart)
           {
-            result = GetReportTableAll(loginUser, report, sortField, isDesc, useUserFilter, includeHiddenFields);
+            result = GetReportTableAll(loginUser, report, null, isDesc, false, includeHiddenFields);
           }
           else
           {
-            result = GetReportTablePage(loginUser, report, from, to, sortField, isDesc, useUserFilter, includeHiddenFields);
+            result = GetReportTablePage(loginUser, report, from, to, null, isDesc, false, includeHiddenFields);
           }
 
           UserTabularSettings userFilters = JsonConvert.DeserializeObject<UserTabularSettings>((string)report.Row["Settings"]);
