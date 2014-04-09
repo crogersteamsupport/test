@@ -36,6 +36,7 @@ namespace TeamSupport.Data
     [DataMember] public string DefaultProject { get; set; }
     [DataMember] public bool? UpdateStatus { get; set; }
     [DataMember] public bool MatchAccountsByName { get; set; }
+    [DataMember] public bool UseSandBoxServer { get; set; }
           
   }
   
@@ -44,6 +45,7 @@ namespace TeamSupport.Data
     public CRMLinkTableItemProxy GetProxy()
     {
       CRMLinkTableItemProxy result = new CRMLinkTableItemProxy();
+      result.UseSandBoxServer = this.UseSandBoxServer;
       result.MatchAccountsByName = this.MatchAccountsByName;
       result.UpdateStatus = this.UpdateStatus;
       result.DefaultProject = this.DefaultProject;

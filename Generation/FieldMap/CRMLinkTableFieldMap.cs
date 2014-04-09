@@ -36,6 +36,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("HostName", "HostName", false, false, false);
       _fieldMap.AddMap("DefaultProject", "DefaultProject", false, false, false);
       _fieldMap.AddMap("MatchAccountsByName", "MatchAccountsByName", false, false, false);
+      _fieldMap.AddMap("UseSandBoxServer", "UseSandBoxServer", false, false, false);
             
     }
   }
