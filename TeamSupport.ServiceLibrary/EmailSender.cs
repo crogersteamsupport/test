@@ -74,7 +74,7 @@ namespace TeamSupport.ServiceLibrary
       
       Logs.WriteLine();
       Logs.WriteHeader("Processing Email");
-      Logs.WriteData(email.Row);
+      Logs.WriteEventFormat("EmailID: {0}, EmailPostID: {1}", email.EmailID.ToString(), email.EmailPostID.ToString());
 
       try
       {
