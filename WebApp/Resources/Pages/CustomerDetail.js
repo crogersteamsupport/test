@@ -60,6 +60,33 @@ $(document).ready(function () {
     LoadReminderUsers();
     UpdateRecentView();
 
+    top.Ts.Services.Customers.LoadAlert(organizationID, top.Ts.ReferenceTypes.Organizations, function (note) {
+        if (note != null) {
+            $('#modalAlertMessage').html(note.Description);
+            //$('#modalAlert').modal('show');
+            $("#dialog").dialog({
+                resizable: false,
+                width: 'auto',
+                height: 'auto',
+                modal: true,
+                buttons: {
+                    "Close": function () {
+                        $(this).dialog("close");
+                    },
+                    "Snooze": function () {
+                        top.Ts.Services.Customers.SnoozeAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
+                        $(this).dialog("close");
+                    },
+                    "Dismiss": function () {
+                        top.Ts.Services.Customers.DismissAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+        }
+    });
+
 
     if (!top.Ts.System.User.CanEditCompany && !_isAdmin) 
     {
@@ -177,6 +204,7 @@ $(document).ready(function () {
                                 alert('There was an error saving the company name.');
                                 $('#customerEdit').removeClass("disabled");
                             });
+              $('#customerEdit').removeClass("disabled");
               $(this).closest('div').remove();
               header.show();
           })
@@ -976,6 +1004,11 @@ $(document).ready(function () {
         top.privateServices.IsSubscribed(9, organizationID, issubbed);
     });
 
+    $('#customerRefresh').click(function (e) {
+        window.location = window.location;
+    });
+
+
     $('#customerDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this organization?')) {
             top.privateServices.DeleteOrganization(organizationID, function (e) {
@@ -1122,6 +1155,7 @@ $(document).ready(function () {
             desc = desc.replace(/<br\s?\/?>/g, "\n");
             //$('#fieldNoteDesc').val(desc);
             $('#fieldNoteID').val(note.NoteID);
+            $('#noteCustomerAlert').prop('checked', note.IsAlert);
             $('#btnNotesSave').text("Edit Note");
             $('#btnNotesCancel').show();
             $('#noteForm').show();
@@ -1172,6 +1206,7 @@ $(document).ready(function () {
         $('#fieldNoteTitle').val('');
         $('#fieldNoteDesc').val('');
         $('#fieldNoteID').val('-1');
+        $('#noteCustomerAlert').prop('checked', false);
         $('#btnNotesSave').text("Save Note");
         $('#noteForm').toggle();
     });
@@ -1181,15 +1216,17 @@ $(document).ready(function () {
         var title = $('#fieldNoteTitle').val();
         var description = $('#fieldNoteDesc').val();
         var noteID = $('#fieldNoteID').val();
+        var isAlert = $('#noteCustomerAlert').prop('checked');
         if ((title.length || description.length) < 1){
             alert("Please fill in all the required information");
             return;
         }
         $(this).prop('disabled', true);
-        top.Ts.Services.Customers.SaveNote(title, description, noteID, organizationID, top.Ts.ReferenceTypes.Organizations, function (note) {
+        top.Ts.Services.Customers.SaveNote(title, description, noteID, organizationID, top.Ts.ReferenceTypes.Organizations, isAlert, function (note) {
             $('#fieldNoteTitle').val('');
             $('#fieldNoteDesc').val('');
             $('#fieldNoteID').val('-1');
+            $('#noteCustomerAlert').prop('checked',false);
             $('#btnNotesSave').text("Save Note");
             LoadNotes();
             $('#noteForm').toggle();
@@ -1888,8 +1925,15 @@ $(document).ready(function () {
 
     $('.userProperties p').toggleClass("editable");
 
-    
+    $('#alertSnooze').click(function (e) {
+        top.Ts.Services.Customers.SnoozeAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
+        $('#modalAlert').modal('hide');
+    });
 
+    $('#alertDismiss').click(function (e) {
+        top.Ts.Services.Customers.DismissAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
+        $('#modalAlert').modal('hide');
+    });
 });
 
 var initEditor = function (element, init) {

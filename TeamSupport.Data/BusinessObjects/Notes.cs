@@ -46,8 +46,26 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@ReferenceID", refID);
         Fill(command);
       }
-    }    
-    
+    }
+
+    public void LoadbyIsAlert(ReferenceType refType, int refID, string orderBy = "DateModified")
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"SELECT n.*, u.FirstName + ' ' + u.LastName AS CreatorName
+                                FROM Notes n 
+                                LEFT JOIN Users u ON n.CreatorID = u.UserID 
+                                WHERE (n.RefID = @ReferenceID)
+                                AND n.isAlert = 1
+                                AND (n.RefType = @ReferenceType)
+                                ORDER BY n." + orderBy;
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ReferenceType", refType);
+            command.Parameters.AddWithValue("@ReferenceID", refID);
+            Fill(command);
+        }
+    }   
+
   }
   
   

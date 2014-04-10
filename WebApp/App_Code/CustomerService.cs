@@ -234,13 +234,17 @@ namespace TSWebServices
             foreach (Ticket tix in t)
             {
                 tix.Collection.RemoveContact(userID, tix.TicketID);
-                User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
-                u.OrganizationID = value;
-                u.Collection.Save();
-
-                tix.Collection.AddContact(userID, tix.TicketID);
-
             }
+
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            u.OrganizationID = value;
+            u.Collection.Save();
+
+            foreach (Ticket tix in t)
+            {
+                tix.Collection.AddContact(userID, tix.TicketID);
+            }
+           
 
             //User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             //u.OrganizationID = value;
@@ -598,7 +602,6 @@ namespace TSWebServices
         [WebMethod]
         public SlaLevelProxy[] LoadSlas()
         {
-            if (!TSAuthentication.IsSystemAdmin) return null;
             SlaLevels table = new SlaLevels(TSAuthentication.GetLoginUser());
             table.LoadByOrganizationID(TSAuthentication.OrganizationID);
             return table.GetSlaLevelProxies();
@@ -934,6 +937,165 @@ namespace TSWebServices
             notes.LoadByNoteID(noteID);
 
             return notes[0].GetProxy();
+        }
+
+        [WebMethod]
+        public NoteProxy LoadTicketAlerts(int ticketID)
+        {
+            TicketCustomer[] customers;
+            customers = GetTicketCustomers(ticketID);
+            NoteProxy note = null;
+
+            foreach (TicketCustomer cust in customers)
+            {
+                if (cust.UserID.HasValue)
+                {
+                    note = LoadAlert((int)cust.UserID, ReferenceType.Users);
+                }
+                else
+                {
+                    note = LoadAlert(cust.OrganizationID, ReferenceType.Organizations);
+                }
+
+                if (note != null)
+                    return note;
+            }
+
+            return note;
+
+        }
+
+        private TicketCustomer[] GetTicketCustomers(int ticketID)
+        {
+            List<TicketCustomer> customers = new List<TicketCustomer>();
+
+            ContactsView contacts = new ContactsView(TSAuthentication.GetLoginUser());
+            contacts.LoadByTicketID(ticketID);
+
+
+            foreach (ContactsViewItem contact in contacts)
+            {
+                TicketCustomer customer = new TicketCustomer();
+                customer.Company = contact.Organization;
+                customer.OrganizationID = contact.OrganizationID;
+                customer.Contact = contact.FirstName + " " + contact.LastName;
+                customer.UserID = contact.UserID;
+                customers.Add(customer);
+            }
+
+            Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+            organizations.LoadByNotContactTicketID(ticketID);
+            foreach (Organization organization in organizations)
+            {
+                TicketCustomer customer = new TicketCustomer();
+                customer.Company = organization.Name;
+                customer.OrganizationID = organization.OrganizationID;
+                customer.UserID = null;
+                customers.Add(customer);
+            }
+            return customers.ToArray();
+        }
+
+        [WebMethod]
+        public NoteProxy LoadAlert(int refID, ReferenceType refType)
+        {
+            Notes notes = new Notes(TSAuthentication.GetLoginUser());
+            UserNoteSettings us = new UserNoteSettings(TSAuthentication.GetLoginUser());
+
+            notes.LoadbyIsAlert(refType, refID);
+
+            if (notes.IsEmpty)
+                return null;
+            else
+            {
+                us.LoadByUserNoteID(TSAuthentication.GetLoginUser().UserID, notes[0].NoteID, refType);
+
+                if (us.IsEmpty)
+                    return notes[0].GetProxy();
+                else
+                {
+                    if (us[0].IsDismissed)
+                        return null;
+
+                    if (!us[0].IsSnoozed)
+                    {
+                        return notes[0].GetProxy();
+                    }
+
+                    if (us[0].IsSnoozed && (us[0].SnoozeTimeUtc.AddHours(8) < DateTime.Now))
+                    {
+                        return notes[0].GetProxy();
+                    }
+                    else
+                        return null;
+                        
+
+                }
+
+
+                // search usernotesettings for noteid and userid
+                // if found check if isDismissed is set
+                //  if so return null
+                // if isSnozzed is set
+                // check if snooze time is within 8 hours of current time
+                // if so return null
+                // else return note notes[0].NoteID
+
+                
+            }
+        }
+
+        [WebMethod]
+        public void SnoozeAlert(int refID, ReferenceType refType)
+        {
+            Notes notes = new Notes(TSAuthentication.GetLoginUser());
+            notes.LoadbyIsAlert(refType, refID);
+
+            UserNoteSettings us = new UserNoteSettings(TSAuthentication.GetLoginUser());
+            us.LoadByUserNoteID(TSAuthentication.GetLoginUser().UserID, notes[0].NoteID, refType);
+
+            if (us.IsEmpty)
+            {
+                UserNoteSetting u = new UserNoteSettings(TSAuthentication.GetLoginUser()).AddNewUserNoteSetting();
+                u.RefID = notes[0].NoteID;
+                u.RefType =  refType;
+                u.UserID = TSAuthentication.GetLoginUser().UserID;
+                u.SnoozeTime = DateTime.Now;
+                u.IsSnoozed = true;
+                u.Collection.Save();
+            }
+            else
+            {
+                us[0].IsSnoozed = true;
+                us[0].SnoozeTime = DateTime.Now;
+                us[0].Collection.Save();
+            }
+        }
+
+        [WebMethod]
+        public void DismissAlert(int refID, ReferenceType refType)
+        {
+            Notes notes = new Notes(TSAuthentication.GetLoginUser());
+            notes.LoadbyIsAlert(refType, refID);
+
+            UserNoteSettings us = new UserNoteSettings(TSAuthentication.GetLoginUser());
+            us.LoadByUserNoteID(TSAuthentication.GetLoginUser().UserID, notes[0].NoteID, refType);
+
+            if (us.IsEmpty)
+            {
+                UserNoteSetting u = new UserNoteSettings(TSAuthentication.GetLoginUser()).AddNewUserNoteSetting();
+                u.RefID = notes[0].NoteID;
+                u.RefType = refType;
+                u.UserID = TSAuthentication.GetLoginUser().UserID;
+                u.IsDismissed = true;
+                u.SnoozeTime = DateTime.Now;
+                u.Collection.Save();
+            }
+            else
+            {
+                us[0].IsDismissed = true;
+                us[0].Collection.Save();
+            }
         }
 
         [WebMethod]
@@ -1493,7 +1655,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public void SaveNote(string title, string noteText, int noteID, int refID, ReferenceType refType)
+        public void SaveNote(string title, string noteText, int noteID, int refID, ReferenceType refType, bool isAlert = false)
         {
             Note note = null;
             bool isNew = false;
@@ -1502,6 +1664,16 @@ namespace TSWebServices
                 note = (Note)Notes.GetNote(TSAuthentication.GetLoginUser(), noteID);
                 string description = String.Format("{0} modified note {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
                 ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, refType, noteID, description);
+
+                UserNoteSettings uns = new UserNoteSettings(TSAuthentication.GetLoginUser());
+                uns.LoadByIDType(noteID, refType);
+
+                foreach (UserNoteSetting u in uns)
+                {
+                    u.IsDismissed = false;
+                    u.IsSnoozed = false;
+                    u.Collection.Save();
+                }
             }
             else
             {
@@ -1509,18 +1681,23 @@ namespace TSWebServices
                 note.RefID = refID;
                 note.RefType = refType;
                 isNew = true;
+
+
+
             }
 
             if (note != null)
             {
                 note.Description = noteText;
                 note.Title = title;
+                note.IsAlert = isAlert;
                 note.Collection.Save();
                 if (isNew)
                 {
                     string description = String.Format("{0} added note {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, title);
                     ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, refType, note.NoteID, description);
                 }
+
             }
 
         }

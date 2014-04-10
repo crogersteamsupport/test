@@ -94,6 +94,10 @@ $(document).ready(function () {
         $('#contactDelete').hide();
     }
 
+    $('#contactRefresh').click(function (e) {
+        window.location = window.location;
+    });
+
     $('#historyToggle').on('click', function () {
         if (historyLoaded == 0) {
             historyLoaded = 1;
@@ -601,6 +605,7 @@ $(document).ready(function () {
             desc = desc.replace(/<br\s?\/?>/g, "\n");
             //$('#fieldNoteDesc').val(desc);
             $('#fieldNoteID').val(note.NoteID);
+            $('#noteContactAlert').prop('checked', note.IsAlert);
             $('#btnNotesSave').text("Edit Note");
             $('#btnNotesCancel').show();
             $('#noteForm').show();
@@ -634,6 +639,7 @@ $(document).ready(function () {
         $('#fieldNoteTitle').val('');
         $('#fieldNoteDesc').val('');
         $('#fieldNoteID').val('-1');
+        $('#noteContactAlert').prop('checked', false);
         $('#btnNotesSave').text("Save Note");
         $('#noteForm').toggle();
     });
@@ -644,15 +650,17 @@ $(document).ready(function () {
         var title = $('#fieldNoteTitle').val();
         var description = $('#fieldNoteDesc').val();
         var noteID = $('#fieldNoteID').val();
+        var isAlert = $('#noteContactAlert').prop('checked');
         if ((title.length || description.length) < 1) {
             alert("Please fill in all the required information");
             return;
         }
         $(this).prop('disabled', true);
-        top.Ts.Services.Customers.SaveNote(title, description, noteID, userID, top.Ts.ReferenceTypes.Users, function (note) {
+        top.Ts.Services.Customers.SaveNote(title, description, noteID, userID, top.Ts.ReferenceTypes.Users, isAlert, function (note) {
             $('#fieldNoteTitle').val('');
             $('#fieldNoteDesc').val('');
             $('#fieldNoteID').val('-1');
+            $('#noteContactAlert').prop('checked', false);
             $('#btnNotesSave').text("Save Note");
             LoadNotes();
             $('#noteForm').toggle();
@@ -1135,7 +1143,42 @@ $(document).ready(function () {
     }
     $('.userProperties p').toggleClass("editable");
     
+    top.Ts.Services.Customers.LoadAlert(userID, top.Ts.ReferenceTypes.Users, function (note) {
+        if (note != null) {
+            $('#modalAlertMessage').html(note.Description);
+            //$('#modalAlert').modal('show');
+            $("#dialog").dialog({
+                resizable: false,
+                width: 'auto',
+                height: 'auto',
+                modal: true,
+                buttons: {
+                    "Close": function () {
+                        $(this).dialog("close");
+                    },
+                    "Snooze": function () {
+                        top.Ts.Services.Customers.SnoozeAlert(userID, top.Ts.ReferenceTypes.Users);
+                        $(this).dialog("close");
+                    },
+                    "Dismiss": function () {
+                        top.Ts.Services.Customers.DismissAlert(userID, top.Ts.ReferenceTypes.Users);
+                        $(this).dialog("close");
+                    }
+                }
+            });
 
+        }
+    });
+
+    $('#alertSnooze').click(function (e) {
+        top.Ts.Services.Customers.SnoozeAlert(userID, top.Ts.ReferenceTypes.Users);
+        $('#modalAlert').modal('hide');
+    });
+
+    $('#alertDismiss').click(function (e) {
+        top.Ts.Services.Customers.DismissAlert(userID, top.Ts.ReferenceTypes.Users);
+        $('#modalAlert').modal('hide');
+    });
 });
 
 var initEditor = function (element, init) {

@@ -9,6 +9,7 @@ $(document).ready(function () {
   var _ticketID = null;
   var _doClose = false;
   var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility;
+  var alertMessage = null;
   top.Ts.System.logAction('New Ticket - Started');
 
   $('#knowledgeBaseCategoryDiv').hide();
@@ -896,10 +897,66 @@ $(document).ready(function () {
           minLength: 2,
           source: getCustomers,
           select: function (event, ui) {
-            $(this).removeClass('ui-autocomplete-loading');
+              $(this).removeClass('ui-autocomplete-loading');
+              alertMessage = ui.item;
             top.Ts.Services.Tickets.GetTicketCustomer(ui.item.data, ui.item.id, function (result) {
               appendCustomer(result);
-
+              if (alertMessage.data == "u") {
+                  top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Users, function (note) {
+                      if (note != null) {
+                          $('#modalAlertMessage').html(note.Description);
+                          $('#alertID').val(note.RefID);
+                          $('#alertType').val(note.RefType);
+                          $("#dialog").dialog({
+                              resizable: false,
+                              width: 'auto',
+                              height: 'auto',
+                              modal: true,
+                              buttons: {
+                                  "Close": function () {
+                                      $(this).dialog("close");
+                                  },
+                                  "Snooze": function () {
+                                      top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                                      $(this).dialog("close");
+                                  },
+                                  "Dismiss": function () {
+                                      top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                                      $(this).dialog("close");
+                                  }
+                              }
+                          });
+                      }
+                  });
+              }
+              else {
+                  top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Organizations, function (note) {
+                      if (note != null) {
+                          $('#modalAlertMessage').html(note.Description);
+                          $('#alertID').val(note.RefID);
+                          $('#alertType').val(note.RefType);
+                          $("#dialog").dialog({
+                              resizable: false,
+                              width: 'auto',
+                              height: 'auto',
+                              modal: true,
+                              buttons: {
+                                  "Close": function () {
+                                      $(this).dialog("close");
+                                  },
+                                  "Snooze": function () {
+                                      top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                                      $(this).dialog("close");
+                                  },
+                                  "Dismiss": function () {
+                                      top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                                      $(this).dialog("close");
+                                  }
+                              }
+                          });
+                      }
+                  });
+              }
             });
           },
           close: function () {

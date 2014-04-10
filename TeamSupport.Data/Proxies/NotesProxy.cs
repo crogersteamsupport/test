@@ -24,7 +24,8 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public string CreatorName { get; set; }
-          
+    [DataMember]
+    public bool IsAlert { get; set; }
   }
   
   public partial class Note : BaseItem
@@ -41,6 +42,7 @@ namespace TeamSupport.Data
       result.RefType = this.RefType;
       result.NoteID = this.NoteID;
       result.CreatorName = this.CreatorName;
+      result.IsAlert = this.IsAlert;
             
 
        

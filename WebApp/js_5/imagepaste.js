@@ -26,7 +26,7 @@
 
             // as long as we make sure it is always in focus
             //pasteCatcher.focus();
-            document.getElementById("dialog-paste-imageID").addEventListener("click", listener);
+            //document.getElementById("dialog-paste-imageID").addEventListener("click", listener);
         }
         //Add the paste event listener
         window.addEventListener("paste", pasteHandler);

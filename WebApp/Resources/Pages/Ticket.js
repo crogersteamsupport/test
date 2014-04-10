@@ -26,6 +26,7 @@ var tipTimer = null;
 var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
 var userFullName = top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastName;
 var canKbEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility;
+var alertMessage = null;
 
 $(document).ready(function () {
   if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
@@ -237,8 +238,67 @@ $(document).ready(function () {
             //.next().show();
 
             var item = $(this).data('item');
+            alertMessage = item;
             top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, item.data, item.id, function (customers) {
-              appendCustomers(customers);
+                appendCustomers(customers);
+                if (alertMessage.data == "u")
+                {
+                    top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Users, function (note) {
+                        if (note != null) {
+                            $('#modalAlertMessage').html(note.Description);
+                            $('#alertID').val(note.RefID);
+                            $('#alertType').val(note.RefType);
+                            $("#dialog").dialog({
+                                resizable: false,
+                                width: 'auto',
+                                height: 'auto',
+                                modal: true,
+                                buttons: {
+                                    "Close": function () {
+                                        $(this).dialog("close");
+                                    },
+                                    "Snooze": function () {
+                                        top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                                        $(this).dialog("close");
+                                    },
+                                    "Dismiss": function () {
+                                        top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+                else
+                {
+                    top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Organizations, function (note) {
+                        if (note != null) {
+                            $('#modalAlertMessage').html(note.Description);
+                            $('#alertID').val(note.RefID);
+                            $('#alertType').val(note.RefType);
+                            $("#dialog").dialog({
+                                resizable: false,
+                                width: 'auto',
+                                height: 'auto',
+                                modal: true,
+                                buttons: {
+                                    "Close": function () {
+                                        $(this).dialog("close");
+                                    },
+                                    "Snooze": function () {
+                                        top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                                        $(this).dialog("close");
+                                    },
+                                    "Dismiss": function () {
+                                        top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
               window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addcustomer", userFullName);
               $(this).parent().remove();
             }, function () {
@@ -1836,7 +1896,20 @@ $(document).ready(function () {
   });
 
   top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
+
+  $('#alertSnooze').click(function (e) {
+      top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+      $('#modalAlert').modal('hide');
+  });
+
+  $('#alertDismiss').click(function (e) {
+      top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+      $('#modalAlert').modal('hide');
+  });
+
 });
+
+
 
 //customers
 var appendCustomers = function (customers) {
@@ -1845,6 +1918,7 @@ var appendCustomers = function (customers) {
     for (var i = 0; i < customers.length; i++) {
         appendCustomer(customers[i]);
     }
+
 }
 
 var appendCustomer = function (customer) {
@@ -1886,6 +1960,7 @@ var appendCustomer = function (customer) {
         .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID + '&TicketID=' + _ticketID)
         .cluetip(clueTipOptions)
         .appendTo(desc);
+
     }
     else {
         $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
@@ -1905,6 +1980,7 @@ var appendCustomer = function (customer) {
         .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID + '&TicketID=' + _ticketID)
         .cluetip(clueTipOptions)
         .appendTo(title);
+
     }
     $('#divCustomers').append(item);
 
@@ -3122,6 +3198,36 @@ var loadTicket = function (ticketNumber, refresh) {
         _ticketGroupUsers = result;
       });
     }
+
+    top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
+        if (note)
+        {
+            $('#modalAlertMessage').html(note.Description);
+            $('#alertID').val(note.RefID);
+            $('#alertType').val(note.RefType);
+            $("#dialog").dialog({
+                resizable: false,
+                width: 'auto',
+                height: 'auto',
+                modal: true,
+                buttons: {
+                    "Close": function () {
+                        $(this).dialog("close");
+                    },
+                    "Snooze": function () {
+                        top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                        $(this).dialog("close");
+                    },
+                    "Dismiss": function () {
+                        top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+        }
+    });
+
   });
 }
 
