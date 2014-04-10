@@ -55,48 +55,48 @@ namespace TeamSupport.ServiceLibrary
       try
       {
         _isDebug = Settings.ReadBool("Debug", false);
-
-        string processID = Guid.NewGuid().ToString();
-        EmailPost emailPost = EmailPosts.GetNextWaiting(LoginUser, processID);
-        if (emailPost == null) return;
-
         _logEnabled = ConfigurationManager.AppSettings["LoggingEnabled"] != null && ConfigurationManager.AppSettings["LoggingEnabled"] == "1";
 
-        // debug code
-        if (ConfigurationManager.AppSettings["DebugMode"] != null && ConfigurationManager.AppSettings["DebugMode"] == "1")
-        {
-        }
+        string processID = Guid.NewGuid().ToString();
 
-        try
+        while (!IsStopped)
         {
-          Logs.WriteLine();
-          Logs.WriteEvent("***********************************************************************************");
-          Logs.WriteEvent("Processing Email Post  EmailPostID: " + emailPost.EmailPostID.ToString());
-          Logs.WriteData(emailPost.Row);
-          Logs.WriteLine();
-          Logs.WriteEvent("***********************************************************************************");
-          Logs.WriteLine();
-          SetTimeZone(emailPost);
+          EmailPost emailPost = EmailPosts.GetNextWaiting(LoginUser, processID);
+          if (emailPost == null) break;
+
           try
           {
-            ProcessEmail(emailPost);
+            Logs.WriteLine();
+            Logs.WriteEvent("***********************************************************************************");
+            Logs.WriteEvent("Processing Email Post  EmailPostID: " + emailPost.EmailPostID.ToString());
+            Logs.WriteData(emailPost.Row);
+            Logs.WriteLine();
+            Logs.WriteEvent("***********************************************************************************");
+            Logs.WriteLine();
+            SetTimeZone(emailPost);
+            try
+            {
+              ProcessEmail(emailPost);
+            }
+            catch (Exception ex)
+            {
+              ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
+            }
+            finally
+            {
+              Logs.WriteEvent("Deleting from DB");
+              emailPost.Collection.DeleteFromDB(emailPost.EmailPostID);
+            }
+            Logs.WriteEvent("Updating Health");
+            UpdateHealth();
           }
           catch (Exception ex)
           {
             ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
           }
-          finally
-          {
-            Logs.WriteEvent("Deleting from DB");
-            emailPost.Collection.DeleteFromDB(emailPost.EmailPostID);
-          }
-          Logs.WriteEvent("Updating Health");
-          UpdateHealth();
+        
         }
-        catch (Exception ex)
-        {
-          ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
-        }
+
       }
       catch (Exception ex)
       {

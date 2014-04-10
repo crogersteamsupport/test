@@ -37,16 +37,24 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent("DEBUG Addresses: " + _debugAddresses);
       }
 
-      try
+      string processID = Guid.NewGuid().ToString();
+
+      while (!IsStopped)
       {
-        SendNextEmail();
+        try
+        {
+          Email email = Emails.GetNextWaiting(LoginUser, processID);
+          if (email == null) break;
+          SendEmail(email);
+        }
+        catch (Exception ex)
+        {
+          Logs.WriteEvent("Error sending email");
+          Logs.WriteException(ex);
+          ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
+        }
       }
-      catch (Exception ex)
-      {
-        Logs.WriteEvent("Error sending email");
-        Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
-      }
+
 
       try
       {
@@ -67,12 +75,8 @@ namespace TeamSupport.ServiceLibrary
     }
 
 
-    private void SendNextEmail()
+    private void SendEmail(Email email)
     {
-      string processID = Guid.NewGuid().ToString();
-      Email email = Emails.GetNextWaiting(LoginUser, processID);
-      if (email == null) return;
-      
       Logs.WriteLine();
       Logs.WriteHeader("Processing Email");
       Logs.WriteEventFormat("EmailID: {0}, EmailPostID: {1}", email.EmailID.ToString(), email.EmailPostID.ToString());
