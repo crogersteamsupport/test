@@ -37,6 +37,8 @@ namespace TeamSupport.Data
     [DataMember] public int? DefaultWikiArticleID { get; set; }
     [DataMember] public int? DefaultSupportGroupID { get; set; }
     [DataMember] public int? DefaultSupportUserID { get; set; }
+    [DataMember] public int? SupportHoursUsed { get; set; }
+    [DataMember] public int? SupportHoursRemaining { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
           
   }
@@ -47,6 +49,8 @@ namespace TeamSupport.Data
     {
       OrganizationsViewItemProxy result = new OrganizationsViewItemProxy();
       result.NeedsIndexing = this.NeedsIndexing;
+      result.SupportHoursRemaining = this.SupportHoursRemaining;
+      result.SupportHoursUsed = this.SupportHoursUsed;
       result.DefaultSupportUserID = this.DefaultSupportUserID;
       result.DefaultSupportGroupID = this.DefaultSupportGroupID;
       result.DefaultWikiArticleID = this.DefaultWikiArticleID;
