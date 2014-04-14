@@ -22,7 +22,7 @@ namespace TeamSupport.ServiceLibrary
   [Serializable]
   public class EmailProcessor : ServiceThreadPoolProcess
   {
-    public EmailProcessor(int threadPosition) :base(threadPosition) { }
+    //public EmailProcessor(int threadPosition) :base(threadPosition) { }
 
     class UserEmail
     {
@@ -49,7 +49,16 @@ namespace TeamSupport.ServiceLibrary
     private bool _logEnabled = false;
     private int _currentEmailPostID;
 
+    public override void ReleaseAllLocks()
+    {
+      EmailPosts.UnlockAll(LoginUser);
+    }
 
+    public override int GetNextID(int threadPosition)
+    {
+      EmailPost emailPost = EmailPosts.GetNextWaiting(LoginUser, threadPosition.ToString());
+      return emailPost == null ? -1 : emailPost.EmailPostID;
+    }
     public override void Run()
     {
       try
@@ -57,11 +66,9 @@ namespace TeamSupport.ServiceLibrary
         _isDebug = Settings.ReadBool("Debug", false);
         _logEnabled = ConfigurationManager.AppSettings["LoggingEnabled"] != null && ConfigurationManager.AppSettings["LoggingEnabled"] == "1";
 
-        string processID = Guid.NewGuid().ToString();
-
         while (!IsStopped)
         {
-          EmailPost emailPost = EmailPosts.GetNextWaiting(LoginUser, processID);
+          EmailPost emailPost = EmailPosts.GetEmailPost(LoginUser, _id);
           if (emailPost == null) break;
 
           try
@@ -1081,5 +1088,7 @@ namespace TeamSupport.ServiceLibrary
     }
 
     #endregion
+
+ 
   }
 }

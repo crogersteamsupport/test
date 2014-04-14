@@ -525,7 +525,7 @@ namespace TeamSupport.Data
 
     private static void GetWhereClause(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters)
     {
-      WriteFilters(loginUser, command, builder, filters, null);
+      if (filters != null ) WriteFilters(loginUser, command, builder, filters, null);
     }
 
     private static void WriteFilters(LoginUser loginUser, SqlCommand command, StringBuilder builder, ReportFilter[] filters, ReportFilter parentFilter)

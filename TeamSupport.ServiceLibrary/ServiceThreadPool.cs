@@ -62,9 +62,15 @@ namespace TeamSupport.ServiceLibrary
       service.Collection.Save();
       int maxThreads = Settings.ReadInt("Max Worker Processes", 1);
       _threads = new T[maxThreads];
+      GetProcessObject().ReleaseAllLocks();
       base.Start();
     }
 
+    public T GetProcessObject()
+    {
+      return (T)Activator.CreateInstance(typeof(T));
+    }
+        
     public override void Run()
     {
       int nextEmptySpot = -1;
@@ -90,9 +96,14 @@ namespace TeamSupport.ServiceLibrary
 			}
 
       if (nextEmptySpot < 0) return;
-      T service = (T)Activator.CreateInstance(typeof(T), nextEmptySpot);
-      service.Start();
-      _threads[nextEmptySpot] = service;
+
+      T process = GetProcessObject();
+      int id = process.GetNextID(nextEmptySpot);
+      if (id > -1)
+      {
+        process.Start(-1, nextEmptySpot);
+        _threads[nextEmptySpot] = process;
+      }
     }
   }
 }

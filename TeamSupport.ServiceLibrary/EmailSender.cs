@@ -21,12 +21,22 @@ namespace TeamSupport.ServiceLibrary
   [Serializable]
   public class EmailSender : ServiceThreadPoolProcess
   {
-    public EmailSender(int threadPosition) : base(threadPosition) { }
+    //public EmailSender(int id, int threadPosition) : base(id, threadPosition) { }
 
     private static int[] _nextAttempts = new int[] { 10, 15, 20, 30, 60, 120, 360, 720, 1440 };
-
     private bool _isDebug = false;
     private string _debugAddresses;
+
+    public override void ReleaseAllLocks()
+    {
+      Emails.UnlockAll(LoginUser);
+    }
+
+    public override int GetNextID(int threadPosition)
+    {
+      Email email = Emails.GetNextWaiting(LoginUser, threadPosition.ToString());
+      return email == null ? -1 : email.EmailID;
+    }
 
     public override void Run()
     {
@@ -37,13 +47,11 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent("DEBUG Addresses: " + _debugAddresses);
       }
 
-      string processID = Guid.NewGuid().ToString();
-
       while (!IsStopped)
       {
         try
         {
-          Email email = Emails.GetNextWaiting(LoginUser, processID);
+          Email email = Emails.GetEmail(LoginUser, _id);
           if (email == null) break;
           SendEmail(email);
         }
@@ -53,27 +61,9 @@ namespace TeamSupport.ServiceLibrary
           Logs.WriteException(ex);
           ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
         }
+ 
       }
-
-
-      try
-      {
-        DeleteOldEmails();
-      }
-      catch (Exception ex)
-      {
-        Logs.WriteEvent("Error deleting old emails");
-        Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Email", "Error deleting old emails");
-      }
-
     }
-
-    private void DeleteOldEmails()
-    {
-      SqlExecutor.ExecuteNonQuery(LoginUser, new SqlCommand("DELETE FROM Emails WHERE DateCreated < (DATEADD(month, -1, GetUtcDate()))"));
-    }
-
 
     private void SendEmail(Email email)
     {
@@ -108,7 +98,6 @@ namespace TeamSupport.ServiceLibrary
         email.IsWaiting = false;
         email.Body = "";
         email.DateSent = DateTime.UtcNow;
-        email.LockProcessID = null;
         email.Collection.Save();
         UpdateHealth();
       }
@@ -119,9 +108,6 @@ namespace TeamSupport.ServiceLibrary
 
         StringBuilder builder = new StringBuilder();
         builder.AppendLine(ex.Message);
-        builder.AppendLine("<br />");
-        builder.AppendLine("<br />");
-        builder.AppendLine("<br />");
         builder.AppendLine(ex.StackTrace);
         email.NextAttempt = DateTime.UtcNow.AddMinutes(_nextAttempts[email.Attempts - 1] * email.Attempts);
         email.LastFailedReason = builder.ToString();
