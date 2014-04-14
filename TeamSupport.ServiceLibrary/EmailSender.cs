@@ -47,22 +47,19 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent("DEBUG Addresses: " + _debugAddresses);
       }
 
-      while (!IsStopped)
+      try
       {
-        try
-        {
-          Email email = Emails.GetEmail(LoginUser, _id);
-          if (email == null) break;
-          SendEmail(email);
-        }
-        catch (Exception ex)
-        {
-          Logs.WriteEvent("Error sending email");
-          Logs.WriteException(ex);
-          ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
-        }
- 
+        Email email = Emails.GetEmail(LoginUser, _id);
+        if (email == null) return;
+        SendEmail(email);
       }
+      catch (Exception ex)
+      {
+        Logs.WriteEvent("Error sending email");
+        Logs.WriteException(ex);
+        ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
+      }
+ 
     }
 
     private void SendEmail(Email email)

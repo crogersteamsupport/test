@@ -61,56 +61,42 @@ namespace TeamSupport.ServiceLibrary
     }
     public override void Run()
     {
+      EmailPost emailPost = EmailPosts.GetEmailPost(LoginUser, _id);
+      if (emailPost == null) return;
+
       try
       {
         _isDebug = Settings.ReadBool("Debug", false);
         _logEnabled = ConfigurationManager.AppSettings["LoggingEnabled"] != null && ConfigurationManager.AppSettings["LoggingEnabled"] == "1";
 
-        while (!IsStopped)
+        Logs.WriteLine();
+        Logs.WriteEvent("***********************************************************************************");
+        Logs.WriteEvent("Processing Email Post  EmailPostID: " + emailPost.EmailPostID.ToString());
+        Logs.WriteData(emailPost.Row);
+        Logs.WriteLine();
+        Logs.WriteEvent("***********************************************************************************");
+        Logs.WriteLine();
+        SetTimeZone(emailPost);
+        try
         {
-          EmailPost emailPost = EmailPosts.GetEmailPost(LoginUser, _id);
-          if (emailPost == null) break;
-
-          try
-          {
-            Logs.WriteLine();
-            Logs.WriteEvent("***********************************************************************************");
-            Logs.WriteEvent("Processing Email Post  EmailPostID: " + emailPost.EmailPostID.ToString());
-            Logs.WriteData(emailPost.Row);
-            Logs.WriteLine();
-            Logs.WriteEvent("***********************************************************************************");
-            Logs.WriteLine();
-            SetTimeZone(emailPost);
-            try
-            {
-              ProcessEmail(emailPost);
-            }
-            catch (Exception ex)
-            {
-              ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
-            }
-            finally
-            {
-              Logs.WriteEvent("Deleting from DB");
-              emailPost.Collection.DeleteFromDB(emailPost.EmailPostID);
-            }
-            Logs.WriteEvent("Updating Health");
-            UpdateHealth();
-          }
-          catch (Exception ex)
-          {
-            ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
-          }
-        
+          ProcessEmail(emailPost);
         }
-
+        catch (Exception ex)
+        {
+          ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
+        }
+        finally
+        {
+          Logs.WriteEvent("Deleting from DB");
+          emailPost.Collection.DeleteFromDB(emailPost.EmailPostID);
+        }
+        Logs.WriteEvent("Updating Health");
+        UpdateHealth();
       }
       catch (Exception ex)
       {
-        ExceptionLogs.LogException(LoginUser, ex, "Email", "Error processing emails");
+        ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
       }
-
-
     }
 
     public void SetTimeZone(EmailPost emailPost)
