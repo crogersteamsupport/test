@@ -101,7 +101,7 @@ namespace TeamSupport.ServiceLibrary
       int id = process.GetNextID(nextEmptySpot);
       if (id > -1)
       {
-        process.Start(-1, nextEmptySpot);
+        process.Start(id, nextEmptySpot);
         _threads[nextEmptySpot] = process;
       }
     }
