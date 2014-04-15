@@ -5,7 +5,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
   <title></title>
-  <meta http-equiv="X-UA-Compatible" content="IE=8" />
   <link href="../css_5/ui.css" rel="stylesheet" type="text/css" />
   <style type="text/css">
     body{background-color:#ffffff;}

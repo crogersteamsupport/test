@@ -7,7 +7,6 @@
 <html>
 <head id="Head1" runat="server">
   <title>Team Support</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=8" />
    <link rel="SHORTCUT ICON" href="~/favicon.ico" />
   <link href="vcr/1_9_0/Css/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
   <link href="vcr/1_9_0/Css/jquery-ui-enhanced.css" rel="stylesheet" type="text/css" />
@@ -313,11 +312,11 @@
           </telerik:RadComboBox>
         </div>
         <div style="float: right;">
-          <asp:Button ID="btnOk" runat="server" Text="OK" OnClientClick="CloseSelectTicketDialog(true); return false;" />&nbsp
-          <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClientClick="CloseSelectTicketDialog(false); return false;" />
+          <asp:Button ID="btnOk1" runat="server" Text="OK" OnClientClick="CloseSelectTicketDialog(true); return false;" />&nbsp
+          <asp:Button ID="btnCancel1" runat="server" Text="Cancel" OnClientClick="CloseSelectTicketDialog(false); return false;" />
         </div>
       </div>
-      <telerik:RadCodeBlock ID="RadCodeBlock1" runat="server">
+      <telerik:RadCodeBlock ID="RadCodeBlock3" runat="server">
 
         <script type="text/javascript" language="javascript">
           function CloseSelectTicketDialog(accepted) {
@@ -331,7 +330,7 @@
     </ContentTemplate>
   </telerik:RadWindow>
 
-  <telerik:RadCodeBlock ID="RadCodeBlock1" runat="server">
+  <telerik:RadCodeBlock ID="RadCodeBlock2" runat="server">
 
     <script type="text/javascript" language="javascript">
       function get_wndSelectUserDialogClientID() { return "<%= wndSelectUserDialog.ClientID %>"; }

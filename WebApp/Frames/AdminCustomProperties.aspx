@@ -138,8 +138,8 @@
             </div>
           </div>
           <div style="float: right; margin: 0px 0px 0 0;">
-            <asp:Button ID="btnOk" runat="server" Text="OK" OnClientClick="closeEditTypeWindow(true); return false;" />&nbsp
-            <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClientClick="closeEditTypeWindow(false); return false;" />
+            <asp:Button ID="btnOk1" runat="server" Text="OK" OnClientClick="closeEditTypeWindow(true); return false;" />&nbsp
+            <asp:Button ID="btnCancel1" runat="server" Text="Cancel" OnClientClick="closeEditTypeWindow(false); return false;" />
           </div>
         </div>
       </div>
