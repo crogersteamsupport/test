@@ -58,7 +58,8 @@ namespace TeamSupport.ServiceLibrary
     {
       EmailPost emailPost = EmailPosts.GetNextWaiting(LoginUser, threadPosition.ToString());
       return emailPost == null ? -1 : emailPost.EmailPostID;
-    }
+    }
+
     public override void Run()
     {
       EmailPost emailPost = EmailPosts.GetEmailPost(LoginUser, _id);

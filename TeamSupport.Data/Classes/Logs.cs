@@ -46,20 +46,17 @@ namespace TeamSupport.Data
       if (!Directory.Exists(_logPath)) Directory.CreateDirectory(_logPath);
     }
 
-    public void WriteException(Exception ex)
-    {
-      WriteException(ex, null);
-    }
-
-    public void WriteException(Exception ex, DataRow row)
+    public void WriteException(Exception ex, DataRow row = null)
     {
       WriteEvent("EXCEPTION:");
       WriteEvent("Message: ");
       WriteEvent(ex.Message);
       WriteEvent("Stack Trace: ");
       WriteEvent(ex.StackTrace);
-
+      
       if (row != null) { WriteData(row); }
+
+      if (ex.InnerException != null) WriteException(ex.InnerException);
     }
 
     public void WriteData(DataRow row)

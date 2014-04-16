@@ -102,7 +102,7 @@ namespace TeamSupport.ServiceLibrary
       {
         Logs.WriteEvent("Error sending email");
         Logs.WriteException(ex);
-
+        ExceptionLogs.LogException(LoginUser, ex, "Email Sender", email.Row);
         StringBuilder builder = new StringBuilder();
         builder.AppendLine(ex.Message);
         builder.AppendLine(ex.StackTrace);
