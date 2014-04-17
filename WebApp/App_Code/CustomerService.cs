@@ -951,6 +951,8 @@ namespace TSWebServices
                 if (cust.UserID.HasValue)
                 {
                     note = LoadAlert((int)cust.UserID, ReferenceType.Users);
+                    if(note == null)
+                        note = LoadAlert(cust.OrganizationID, ReferenceType.Organizations);
                 }
                 else
                 {
