@@ -2660,6 +2660,10 @@ namespace TSWebServices
         customer.OrganizationID = contact.OrganizationID;
         customer.Contact = contact.FirstName + " " + contact.LastName;
         customer.UserID = contact.UserID;
+        if (!(bool)contact.OrganizationActive || contact.OrganizationSAExpirationDateUtc < DateTime.UtcNow)
+        {
+          customer.Flag = true;
+        }
         customers.Add(customer);
       }
 
@@ -2671,6 +2675,10 @@ namespace TSWebServices
         customer.Company = organization.Name;
         customer.OrganizationID = organization.OrganizationID;
         customer.UserID = null;
+        if (!organization.IsActive || organization.SAExpirationDateUtc < DateTime.UtcNow)
+        {
+          customer.Flag = true;
+        }
         customers.Add(customer);
       }
       return customers.ToArray();
@@ -3267,6 +3275,8 @@ namespace TSWebServices
     public int OrganizationID { get; set; }
     [DataMember]
     public int? UserID { get; set; }
+    [DataMember]
+    public bool Flag { get; set; }
   }
 
   [DataContract]

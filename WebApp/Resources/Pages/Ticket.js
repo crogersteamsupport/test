@@ -1922,67 +1922,73 @@ var appendCustomers = function (customers) {
 }
 
 var appendCustomer = function (customer) {
-    var itemClass = (customer.UserID ? 'ticket-customer-contact' : 'ticket-customer-company');
-    var item = $('<div>')
+  var itemClass = (customer.UserID ? 'ticket-customer-contact' : 'ticket-customer-company');
+  var item = $('<div>')
       .addClass('ticket-removable-item ui-corner-all ts-color-bg-accent ' + itemClass)
       .data('data', customer);
 
-    if (customer.UserID) {
-        $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
-        var title = $('<div>').addClass('ticket-removable-item-title').appendTo(item);
-        $('<a>')
+  if (customer.UserID) {
+    $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
+    var title = $('<div>').addClass('ticket-removable-item-title').appendTo(item);
+    $('<a>')
           .attr('href', '#')
           .attr('target', '_blank')
           .click(function (e) {
-              e.preventDefault();
-              top.Ts.MainPage.openNewContact(customer.UserID);
+            e.preventDefault();
+            top.Ts.MainPage.openNewContact(customer.UserID);
           })
           .text(ellipseString(customer.Contact, 30))
           .appendTo(title);
-        $('<span>')
+    $('<span>')
         .addClass('ts-icon ts-icon-info')
         .attr('rel', '../../../Tips/User.aspx?UserID=' + customer.UserID + '&TicketID=' + _ticketID)
         .cluetip(clueTipOptions)
         .appendTo(title);
 
-        var desc = $('<div>').addClass('ticket-removable-item-description').appendTo(item);
-        $('<a>')
+    var desc = $('<div>').addClass('ticket-removable-item-description').appendTo(item);
+    $('<a>')
           .attr('href', '#')
           .addClass('ui-state-default ts-link')
           .click(function (e) {
-              e.preventDefault();
-              top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
+            e.preventDefault();
+            top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
           })
           .text(ellipseString(customer.Company, 30))
           .appendTo(desc);
-        $('<span>')
+    $('<span>')
         .addClass('ts-icon ts-icon-info')
         .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID + '&TicketID=' + _ticketID)
         .cluetip(clueTipOptions)
         .appendTo(desc);
 
-    }
-    else {
-        $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
-        var title = $('<div>').addClass('ticket-removable-item-title').appendTo(item);
-        $('<a>')
+  }
+  else {
+    $('<span>').addClass('ui-icon ui-icon-close').appendTo(item);
+    var title = $('<div>').addClass('ticket-removable-item-title').appendTo(item);
+    $('<a>')
           .attr('href', '#')
           .addClass('ui-state-default ts-link')
           .click(function (e) {
-              e.preventDefault();
-              top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
+            e.preventDefault();
+            top.Ts.MainPage.openNewCustomer(customer.OrganizationID);
           })
           .text(ellipseString(customer.Company, 30))
           .appendTo(title);
 
-        $('<span>')
+    $('<span>')
         .addClass('ts-icon ts-icon-info')
         .attr('rel', '../../../Tips/Customer.aspx?CustomerID=' + customer.OrganizationID + '&TicketID=' + _ticketID)
         .cluetip(clueTipOptions)
         .appendTo(title);
 
-    }
-    $('#divCustomers').append(item);
+  }
+
+  if (customer.Flag) {
+    item.addClass('nonrequired-field-error ui-corner-all');
+    var anchor = item.find('a');
+    anchor.addClass('nonrequired-field-error-font');
+  }
+  $('#divCustomers').append(item);
 
 }
 

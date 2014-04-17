@@ -45,6 +45,8 @@ namespace TeamSupport.Data
     [DataMember] public string CryptedPassword { get; set; }
     [DataMember] public string SalesForceID { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public bool? OrganizationActive { get; set; }
+    [DataMember] public DateTime? OrganizationSAExpirationDate { get; set; }
           
   }
   
@@ -53,6 +55,7 @@ namespace TeamSupport.Data
     public ContactsViewItemProxy GetProxy()
     {
       ContactsViewItemProxy result = new ContactsViewItemProxy();
+      result.OrganizationActive = this.OrganizationActive;
       result.NeedsIndexing = this.NeedsIndexing;
       result.SalesForceID = this.SalesForceID;
       result.CryptedPassword = this.CryptedPassword;
@@ -85,6 +88,7 @@ namespace TeamSupport.Data
       result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
+      result.OrganizationSAExpirationDate = this.OrganizationSAExpirationDateUtc == null ? this.OrganizationSAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.OrganizationSAExpirationDateUtc, DateTimeKind.Utc); 
       result.DeactivatedOn = this.DeactivatedOnUtc == null ? this.DeactivatedOnUtc : DateTime.SpecifyKind((DateTime)this.DeactivatedOnUtc, DateTimeKind.Utc); 
       result.LastPing = this.LastPingUtc == null ? this.LastPingUtc : DateTime.SpecifyKind((DateTime)this.LastPingUtc, DateTimeKind.Utc); 
        

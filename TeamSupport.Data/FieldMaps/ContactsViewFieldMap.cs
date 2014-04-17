@@ -44,6 +44,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CryptedPassword", "CryptedPassword", true, true, true);
       _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
+      _fieldMap.AddMap("OrganizationActive", "OrganizationActive", false, false, false);
+      _fieldMap.AddMap("OrganizationSAExpirationDate", "OrganizationSAExpirationDate", false, false, false);
             
     }
   }
