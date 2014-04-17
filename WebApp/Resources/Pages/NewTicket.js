@@ -897,65 +897,65 @@ $(document).ready(function () {
           minLength: 2,
           source: getCustomers,
           select: function (event, ui) {
-              $(this).removeClass('ui-autocomplete-loading');
-              alertMessage = ui.item;
+            $(this).removeClass('ui-autocomplete-loading');
+            alertMessage = ui.item;
             top.Ts.Services.Tickets.GetTicketCustomer(ui.item.data, ui.item.id, function (result) {
               appendCustomer(result);
               if (alertMessage.data == "u") {
-                  top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Users, function (note) {
-                      if (note != null) {
-                          $('#modalAlertMessage').html(note.Description);
-                          $('#alertID').val(note.RefID);
-                          $('#alertType').val(note.RefType);
-                          $("#dialog").dialog({
-                              resizable: false,
-                              width: 'auto',
-                              height: 'auto',
-                              modal: true,
-                              buttons: {
-                                  "Close": function () {
-                                      $(this).dialog("close");
-                                  },
-                                  "Snooze": function () {
-                                      top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                                      $(this).dialog("close");
-                                  },
-                                  "Dismiss": function () {
-                                      top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                                      $(this).dialog("close");
-                                  }
-                              }
-                          });
+                top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Users, function (note) {
+                  if (note != null) {
+                    $('#modalAlertMessage').html(note.Description);
+                    $('#alertID').val(note.RefID);
+                    $('#alertType').val(note.RefType);
+                    $("#dialog").dialog({
+                      resizable: false,
+                      width: 'auto',
+                      height: 'auto',
+                      modal: true,
+                      buttons: {
+                        "Close": function () {
+                          $(this).dialog("close");
+                        },
+                        "Snooze": function () {
+                          top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                          $(this).dialog("close");
+                        },
+                        "Dismiss": function () {
+                          top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                          $(this).dialog("close");
+                        }
                       }
-                  });
+                    });
+                  }
+                });
               }
               else {
-                  top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Organizations, function (note) {
-                      if (note != null) {
-                          $('#modalAlertMessage').html(note.Description);
-                          $('#alertID').val(note.RefID);
-                          $('#alertType').val(note.RefType);
-                          $("#dialog").dialog({
-                              resizable: false,
-                              width: 'auto',
-                              height: 'auto',
-                              modal: true,
-                              buttons: {
-                                  "Close": function () {
-                                      $(this).dialog("close");
-                                  },
-                                  "Snooze": function () {
-                                      top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                                      $(this).dialog("close");
-                                  },
-                                  "Dismiss": function () {
-                                      top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                                      $(this).dialog("close");
-                                  }
-                              }
-                          });
+                top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Organizations, function (note) {
+                  if (note != null) {
+                    $('#modalAlertMessage').html(note.Description);
+                    $('#alertID').val(note.RefID);
+                    $('#alertType').val(note.RefType);
+                    $("#dialog").dialog({
+                      resizable: false,
+                      width: 'auto',
+                      height: 'auto',
+                      modal: true,
+                      buttons: {
+                        "Close": function () {
+                          $(this).dialog("close");
+                        },
+                        "Snooze": function () {
+                          top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                          $(this).dialog("close");
+                        },
+                        "Dismiss": function () {
+                          top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                          $(this).dialog("close");
+                        }
                       }
-                  });
+                    });
+                  }
+                });
               }
             });
           },
@@ -1656,12 +1656,16 @@ $(document).ready(function () {
             top.Ts.Services.Settings.ReadUserSetting('SelectedContactID', -1, function (contactID) {
               if (contactID > -1) {
                 top.Ts.Services.Tickets.GetTicketCustomer('u', contactID, function (result) {
-                  appendCustomer(result);
+                  if (!result.Flag) {
+                    appendCustomer(result);
+                  }
                 });
               }
               else {
                 top.Ts.Services.Tickets.GetTicketCustomer('o', organizationID, function (result) {
-                  appendCustomer(result);
+                  if (!result.Flag) {
+                    appendCustomer(result);
+                  }
                 });
               }
 

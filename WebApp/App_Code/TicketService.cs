@@ -1879,6 +1879,10 @@ namespace TSWebServices
         customer.OrganizationID = contact.OrganizationID;
         customer.Contact = contact.FirstName + " " + contact.LastName;
         customer.UserID = contact.UserID;
+        if (!(bool)contact.OrganizationActive || !contact.IsActive)
+        {
+          customer.Flag = true;
+        }
         return customer;
       }
       else
@@ -1889,6 +1893,10 @@ namespace TSWebServices
         customer.Company = organization.Name;
         customer.OrganizationID = organization.OrganizationID;
         customer.UserID = null;
+        if (!organization.IsActive)
+        {
+          customer.Flag = true;
+        }
         return customer;
       }
 
