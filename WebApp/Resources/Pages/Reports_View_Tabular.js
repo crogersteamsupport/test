@@ -74,8 +74,7 @@
             $('.reports-edit').show();
         }
 
-        if (report.OrganizationID == null && (top.Ts.System.User.UserID == 34 || top.Ts.System.User.UserID == 43 || top.Ts.System.User.UserID == 47) && report.ReportType != 3)
-        {
+        if (report.OrganizationID == null && (top.Ts.System.User.UserID == 34 || top.Ts.System.User.UserID == 43 || top.Ts.System.User.UserID == 47) && report.ReportType != 3) {
             $('.reports-edit').show();
         }
 
@@ -328,7 +327,7 @@
                 _grid.resizeCanvas();
             });
         } catch (e) {
-            
+
         }
 
     }
@@ -481,8 +480,10 @@
             datamodel.setSort(_report.Settings.SortField, _report.Settings.IsSortAsc);
         }
         else {
-            _grid.setSortColumn(columns[0].field, true);
-            datamodel.setSort(columns[0].field, true);
+            if (columns.length > 0) {
+                _grid.setSortColumn(columns[0].field, true);
+                datamodel.setSort(columns[0].field, true);
+            }
         }
 
         if (!_report.Settings.Columns) _grid.autosizeColumns();

@@ -537,8 +537,10 @@ Grid.prototype = {
                 self.datamodel.setSort(self.report.Settings.SortField, self.report.Settings.IsSortAsc);
             }
             else {
-                self.grid.setSortColumn(columns[0].field, true);
-                self.datamodel.setSort(columns[0].field, true);
+                if (columns.length > 0) {
+                    self.grid.setSortColumn(columns[0].field, true);
+                    self.datamodel.setSort(columns[0].field, true);
+                }
             }
 
             if (!self.report.Settings.Columns) self.grid.autosizeColumns();

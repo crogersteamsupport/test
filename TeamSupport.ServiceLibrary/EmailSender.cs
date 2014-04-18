@@ -102,8 +102,9 @@ namespace TeamSupport.ServiceLibrary
       {
         Logs.WriteEvent("Error sending email");
         Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Email Sender", email.Row);
+        ExceptionLogs.LogException(LoginUser, ex, _threadPosition.ToString() + " - Email Sender", email.Row);
         StringBuilder builder = new StringBuilder();
+        builder.AppendLine("Log File: " + _threadPosition.ToString());
         builder.AppendLine(ex.Message);
         builder.AppendLine(ex.StackTrace);
         email.NextAttempt = DateTime.UtcNow.AddMinutes(_nextAttempts[email.Attempts - 1] * email.Attempts);
