@@ -111,7 +111,7 @@ $(document).ready(function () {
 
     $("#btnSaveReminder").click(function (e) {
         if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
-            top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Contacts, userID, $('#reminderDesc').val(), $('#reminderDate').val(), $('#reminderUsers').val(), function () { });
+            top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Contacts, userID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val(), function () { });
             $('#modalReminder').modal('hide');
         }
         else

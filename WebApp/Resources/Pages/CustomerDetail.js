@@ -1072,7 +1072,7 @@ $(document).ready(function () {
 
     $("#btnSaveReminder").click(function (e) {
         if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
-            top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), $('#reminderDate').val(), $('#reminderUsers').val());
+            top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
             $('#modalReminder').modal('hide');
         }
         else
