@@ -610,7 +610,6 @@ namespace TSWebServices
         [WebMethod]
         public SlaLevelProxy[] LoadOrgSlas()
         {
-            if (!TSAuthentication.IsSystemAdmin) return null;
             SlaLevels table = new SlaLevels(TSAuthentication.GetLoginUser());
             table.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
             return table.GetSlaLevelProxies();
