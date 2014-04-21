@@ -1,0 +1,51 @@
+﻿
+.ui-layout-resizer { background:#8AAEDE;}
+
+.user-container > li {
+    border-bottom: 1px solid #EEEEEE;
+    list-style: none outside none;
+    padding: 10px;
+    font-size: 12px;
+}
+
+.user-container > li>.active{
+    background-color:#D5E5F7;
+}
+
+.user-container i{
+    cursor: pointer;
+}
+
+.user {cursor:pointer;}
+
+.avatar {
+    height: 25px;
+    width: 25px;
+    overflow:hidden;
+    float: left;
+    margin-top: 3px;
+}
+
+.avatar img{
+    width: 25px;
+    height: 25px;
+}
+
+.main-nav{
+    padding: 10px 10px 0px 10px;
+    border-bottom: 1px solid #DDDDDD;
+}
+
+.nav-tabs{
+    margin-top: 10px;
+    border-bottom: none !important;
+}
+
+.user-tooltip{
+    padding-left: 10px;
+}
+
+.userName{
+    font-size:25px;
+    margin: 0px 0px 10px 0px;
+}

@@ -184,7 +184,7 @@ namespace TSWebServices
 
         if (IsMenuItemActive(user, "mniUsers"))
         {
-          items.Add(new TsMenuItem("users", "mniUsers", "Users", "vcr/1_9_0/images/nav/20/users.png", string.Format(data, "Frames/Users.aspx", "vcr/1_9_0/PaneInfo/Users.html")));
+            items.Add(new TsMenuItem("users", "mniUsers", "Users", "vcr/1_9_0/images/nav/20/users.png", string.Format(data, "vcr/1_9_0/Pages/Users.html", "vcr/1_9_0/PaneInfo/Users.html")));
         }
 
         if (IsMenuItemActive(user, "mniGroups"))

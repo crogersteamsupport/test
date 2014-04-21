@@ -987,6 +987,93 @@ namespace TSWebServices
                 return user.FirstLastName.ToString();
         }
 
+
+        [WebMethod]
+        public string GetUsersSearch(int orgID, string query)
+        {
+            Users users = new Users(TSAuthentication.GetLoginUser());
+
+            if (query == "")
+                users.LoadByOrganizationID(orgID, false);
+            else
+                users.LoadByName(query, orgID, false, false, false);
+
+            StringBuilder html = new StringBuilder();
+
+            foreach (UserProxy u in users.GetUserProxies())
+            {
+                ChatUserSetting setting = ChatUserSettings.GetChatUserSetting(TSAuthentication.GetLoginUser(), u.UserID);
+                string chatsetting = "";
+
+                if (setting != null)
+                {
+                    chatsetting = setting.IsAvailable ? "<i class='user-tooltip fa-comments-o fa color-red' title='Customer Chat Online'></i>" : "";
+                }
+
+                html.AppendFormat(@"<li>
+                    <div class='row'>
+                        <div class='col-xs-2 pl0'>
+                            <div class='avatar'>
+                                <img id='userPhoto' src='{0}'>
+                            </div>
+                        </div>
+                        <div class='col-xs-10'>
+                            <strong><a class='user' uid='{5}'>{1}</a></strong>
+                            <div>{2}<div class='pull-right'>{3}{4}</div></div>
+                        </div>
+                    </div></li>",
+                                u.Avatar,
+                                u.FirstName + " " + u.LastName,
+                                u.Title,
+                                chatsetting,
+                                (u.AppChatStatus == true && u.UserID != TSAuthentication.GetLoginUser().UserID) ? "<i class='user-tooltip fa-comment fa color-green user-chat' cid='"+u.UserID+"' title='Online to Chat'></i>":"",
+                                u.UserID
+                                );
+            }
+
+            return html.ToString();
+
+        }
+
+
+        [WebMethod]
+        public string GetNewUserMessage()
+        {
+            int userCount = Organizations.GetUserCount(TSAuthentication.GetLoginUser(), TSAuthentication.GetLoginUser().OrganizationID);
+            Organization organization = (Organization)Organizations.GetOrganization(TSAuthentication.GetLoginUser(), TSAuthentication.GetLoginUser().OrganizationID);
+            string newusermessage="";
+
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(),TSAuthentication.GetLoginUser().UserID);
+
+            if (organization.UserSeats <= userCount)
+            {
+                if (u.IsFinanceAdmin)
+                {
+                    newusermessage = "You have exceeded the number of user seat licenses.  If you would like to add additional users to your account, please contact our sales team at 800.596.2820 x806, or send an email to sales@teamsupport.com";
+                }
+                else
+                {
+                    Users users = new Users(TSAuthentication.GetLoginUser());
+                    users.LoadFinanceAdmins(TSAuthentication.GetLoginUser().OrganizationID);
+                    if (users.IsEmpty)
+                    {
+                        newusermessage = "Please ask your billing administrator to purchase additional user seat licenses.";
+                    }
+                    else
+                    {
+                        newusermessage = "Please ask your billing administrator (" + users[0].FirstLastName + ") to purchase additional user seat licenses.";
+                    }
+                }
+            }
+            else
+            {
+                newusermessage = "";
+            }
+
+            return newusermessage;
+        }
+
+
       [DataContract]
         public class BasicUser
         {

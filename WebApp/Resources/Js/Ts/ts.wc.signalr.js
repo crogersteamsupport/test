@@ -145,6 +145,11 @@ function loadSignalR() {
       for (var i = 0; i < windows.length; i++) {
         try { if (windows[i].disconnect) windows[i].disconnect(windowid); } catch (err) { }
       }
+
+      var mainWC = $("#iframe-mniUsers");
+        try {
+            if (mainWC[0].contentWindow.Update) { mainWC[0].contentWindow.Update(); }
+        } catch (err) { }
     };
 
     chatHubClient.client.updateUsers = function () {
@@ -152,6 +157,11 @@ function loadSignalR() {
       try {
         if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUsers(); }
       } catch (err) { }
+
+      var userPage = $("#iframe-mniUsers");
+        try {
+            if (userPage[0].contentWindow.Update) { userPage[0].contentWindow.Update(); }
+        } catch (err) { }
 
     };
 

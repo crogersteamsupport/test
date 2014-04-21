@@ -222,11 +222,20 @@ fieldset[disabled] .btn-default.active {
 .mt0 { margin-top: 0px; }
 .mt20 { margin-top: 20px;}
 .mb10 {margin-bottom: 10px;}
+.mb20 {margin-bottom: 20px;}
 .pt0 {padding-top: 0px !important;}
+.pl0 {padding-left: 0px !important;}
+.p0 {padding: 0px !important;}
 .maincontainer .nav-tabs > li.active > a, .maincontainer .nav-tabs > li.active > a:hover, .maincontainer .nav-tabs > li.active > a:focus{
     color:white;
     background-color: #1E7DCC;
 }
+
+.ui-layout-north .nav-tabs > li.active > a, .ui-layout-north .nav-tabs > li.active > a:hover, .ui-layout-north .nav-tabs > li.active > a:focus{
+    color:white;
+    background-color: #1E7DCC;
+}
+
 .pageheader .nav-tabs {
     border-bottom: medium none !important;
 }
@@ -240,6 +249,13 @@ fieldset[disabled] .btn-default.active {
     margin-top: 35px;
     width: 176px;
 }
+
+/*.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    background-color: #428BCA !important;
+    border: medium none;
+    color: #FFFFFF !important;
+}*/
+
 .chart-header{
     color: #274B6D;
     fill: #274B6D;
