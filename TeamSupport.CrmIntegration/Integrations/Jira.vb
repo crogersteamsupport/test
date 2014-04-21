@@ -178,17 +178,20 @@ Namespace TeamSupport
           Dim ticketLinkToJira As TicketLinkToJiraItem = ticketsLinksToJiraToPushAsIssues.FindByTicketID(ticket.TicketID)
           Log.Write("Processing ticket #" + ticket.TicketNumber.ToString())
           Dim updateTicketFlag As Boolean = False
+          Dim sendCustomMappingFields As Boolean = False
+          Dim issueFields As JObject = GetIssueFields(ticket)
           Dim issue As JObject = Nothing
           'Create new issue
           If ticketLinkToJira.JiraKey Is Nothing OrElse ticketLinkToJira.JiraKey.IndexOf("Error") > -1 Then
             Try
               Log.Write("No JiraKey. Creating issue...")
               URI = _baseURI + "/issue"
-              issue = GetAPIJObject(URI, "POST", GetTicketData(ticket))
+              issue = GetAPIJObject(URI, "POST", GetTicketData(ticket, issueFields))
               'The create issue response does not include status and we need it to initialize the synched ticket. So, we do a GET on the recently created issue.
               URI = _baseURI + "/issue/" + issue("key").ToString()
               issue = GetAPIJObject(URI, "GET", String.Empty)
               updateTicketFlag = True
+              sendCustomMappingFields = True
             Catch ex As Exception
               
               Dim errorMessage As String = String.Empty
@@ -266,22 +269,77 @@ Namespace TeamSupport
           End If
 
           PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, issue, ticketLinkToJira.JiraKey)
+
+          If sendCustomMappingFields Then
+            'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
+            Dim customMappingFields As New CRMLinkFields(User)
+            customMappingFields.LoadByObjectType("Ticket", CRMLinkRow.CRMLinkID)
+
+            Dim updateFieldRequestBody As StringBuilder
+
+            For Each field As KeyValuePair(Of String, JToken) In issueFields
+              Dim cRMLinkField As CRMLinkField = customMappingFields.FindByCRMFieldName(field.Value("name").ToString())
+              If cRMLinkField IsNot Nothing Then
+                Dim value As String = Nothing
+                If cRMLinkField.CustomFieldID IsNot Nothing Then
+                  Dim findCustom As New CustomValues(User)
+                  findCustom.LoadByFieldID(cRMLinkField.CustomFieldID, ticket.TicketID)
+                  If findCustom.Count > 0 Then
+                    value = GetDataLineValue(field.Key.ToString(), field.Value("schema")("custom"), findCustom(0).Value)
+                  Else
+                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), findCustom.Count = 0))                      
+                  End If
+                ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
+                  If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing Then
+                    value = GetDataLineValue(field.Key.ToString(), field.Value("schema")("custom"), ticket.Row(cRMLinkField.TSFieldName))
+                  Else
+                    Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), ticket.Row(cRMLinkField.TSFieldName) Is Nothing))                      
+                  End If
+                Else
+                  Log.Write(
+                    "TicketID " + ticket.TicketID.ToString() + "'s field '" + field.Value("name").ToString() + "' was not included because custom field " + 
+                    cRMLinkField.CRMFieldID.ToString() + " CustomFieldID and TSFieldName are null.")
+                End If
+
+                If value IsNot Nothing Then
+                  Try
+                    updateFieldRequestBody = New StringBuilder()
+                    updateFieldRequestBody.Append("{")
+                    updateFieldRequestBody.Append("""fields"":{")
+
+                    updateFieldRequestBody.Append("""" + field.Key.ToString() + """:" + value)                  
+
+                    updateFieldRequestBody.Append("}")
+                    updateFieldRequestBody.Append("}")
+       
+                    issue = GetAPIJObject(URI, "PUT", updateFieldRequestBody.ToString())
+                  Catch ex As Exception
+                    Dim exBody As String = value
+                    If updateFieldRequestBody IsNot Nothing Then
+                      exBody = updateFieldRequestBody.ToString()
+                    End If
+                    If ex.Message <> "Error reading JObject from JsonReader. Path '', line 0, position 0." Then
+                      Log.Write("Field " + field.Value("name").ToString() + " with body " + exBody + ", was not sent because an exception ocurred.")                      
+                    End If
+                  End Try
+                End If
+              End If
+            Next
+
+          End If
         Next
       End Sub
 
-        Private Function GetTicketData(ByVal ticket As TicketsViewItem) As String
+        Private Function GetTicketData(ByVal ticket As TicketsViewItem, ByRef issueFields As JObject) As String
           Dim result As StringBuilder = new StringBuilder()
 
           result.Append("{")
           result.Append("""fields"":{")
 
-          Dim customFields As New CRMLinkFields(User)
-          customFields.LoadByObjectType("Ticket", CRMLinkRow.CRMLinkID)
-
           Dim preffix As String = String.Empty
 
-          For Each field As KeyValuePair(Of String, JToken) In GetTicketFields(ticket)
-            result.Append(GetDataLine(field, ticket, customFields, preffix))
+          For Each field As KeyValuePair(Of String, JToken) In issueFields
+            result.Append(GetDataLine(field, ticket, preffix))
           Next
 
           result.Append("}")
@@ -290,7 +348,7 @@ Namespace TeamSupport
           Return result.ToString()
         End Function
 
-          Private Function GetTicketFields(ByVal ticket As TicketsViewItem) As JObject
+          Private Function GetIssueFields(ByVal ticket As TicketsViewItem) As JObject
             Dim issueTypeName As String = ticket.TicketTypeName
             Dim projectKey As String = GetProjectKey(ticket.ProductName)
             Dim URI As String = 
@@ -348,56 +406,9 @@ Namespace TeamSupport
           Private Function GetDataLine(
             ByVal field As KeyValuePair(Of String, JToken), 
             ByVal ticket As TicketsViewItem,
-            ByVal customFields As CRMLinkFields, 
             ByRef preffix As String) As String
             Dim result As String = String.Empty
         
-            'Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(field.Value("name").ToString())
-            'If cRMLinkField IsNot Nothing Then
-            '  If cRMLinkField.CustomFieldID IsNot Nothing Then
-            '    Dim findCustom As New CustomValues(User)
-            '    findCustom.LoadByFieldID(cRMLinkField.CustomFieldID, ticket.TicketID)
-            '    If findCustom.Count > 0 Then
-            '      Try
-            '        result = preffix + """" + field.Value("name").ToString() + """:" + GetDataLineValue(field.Value("name").ToString(), findCustom(0).Value)
-            '        If preffix = String.Empty Then
-            '          preffix = ","
-            '        End If
-            '      Catch ex As Exception
-            '        If ex.Message = "is list" Then
-            '          Log.Write("Field " + field.Value("name").ToString() + "was not included because list fields are not supported.")                      
-            '          result = String.Empty
-            '        Else
-            '          Throw ex
-            '        End If
-            '      End Try
-            '    Else
-            '      Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), findCustom.Count = 0))                      
-            '    End If
-            '  ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
-            '    If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing Then
-            '      Try
-            '        result = preffix + """" + field.Value("name").ToString() + """:" + GetDataLineValue(field.Value("name").ToString(), ticket.Row(cRMLinkField.TSFieldName))
-            '        If preffix = String.Empty Then
-            '          preffix = ","
-            '        End If
-            '      Catch ex As Exception
-            '        If ex.Message = "is list" Then
-            '          Log.Write("Field " + field.Value("name").ToString() + "was not included because list fields are not supported.")                      
-            '          result = String.Empty
-            '        Else
-            '          Throw ex
-            '        End If
-            '      End Try
-            '    Else
-            '      Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), ticket.Row(cRMLinkField.TSFieldName) Is Nothing))                      
-            '    End If
-            '  Else
-            '    Log.Write(
-            '      "TicketID " + ticket.TicketID.ToString() + "'s field '" + field.Value("name").ToString() + "' was not included because custom field " + 
-            '      cRMLinkField.CRMFieldID.ToString() + " CustomFieldID and TSFieldName are null.")
-            '  End If
-            'Else
               Select Case field.Value("name").ToString().Trim().ToLower()
                 Case "project"
                   Dim projectKey As String = GetProjectKey(ticket.ProductName)
@@ -430,7 +441,6 @@ Namespace TeamSupport
                     preffix = ","
                   End If
               End Select
-            'End If
 
             Return result
           End Function
@@ -457,9 +467,9 @@ Namespace TeamSupport
               Return message.ToString()
             End Function
 
-            Private Function GetDataLineValue(ByVal fieldName As String, ByVal fieldValue As String) As String
+            Private Function GetDataLineValue(ByVal fieldKey As String, ByVal fieldType As Object, ByVal fieldValue As String) As String
               Dim result As String = Nothing
-              Select fieldName.ToLower()
+              Select fieldKey.ToLower()
                 Case "assignee", "reporter"
                   result = "{""emailAddress"":""" + fieldValue + """}"
                 Case "issuetype", "status", "priority", "resolution"
@@ -477,10 +487,29 @@ Namespace TeamSupport
                 Case "aggregrateprogress"
                   result = "{""progress"":""" + fieldValue + """}"
                 Case "attachment", "labels", "issuelinks", "versions", "fixversions", "subtasks", "components"
-                  Dim ex As Exception = New Exception("is list")
-                  Throw ex
+                  result = "[{""name"":""" + fieldValue + """}]"
                 Case Else
                   result = """" + fieldValue + """"                
+                  If fieldType IsNot Nothing Then
+                    Dim fieldTypeString = fieldType.ToString()
+                    If fieldTypeString.Length > 50 Then
+                      Select fieldTypeString.substring(50, fieldTypeString.Length - 50).ToLower()
+                        Case "select"
+                          result = "{""value"":""" + fieldValue + """}"
+                        Case "multiselect"
+                          result = "[{""value"":""" + fieldValue + """}]"
+                        Case "date"
+                          result = """" + Convert.ToDateTime(fieldValue).ToString("'yyyy'-'MM'-'dd'") + """"
+                        Case "datetime"
+                          result = """" + Convert.ToDateTime(fieldValue).ToString("'yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'") + """"
+                        Case "float"
+                          result = fieldValue
+                        'text field (single-line)
+                        Case "string"
+                          result = "{""" + fieldValue + """}"
+                      End Select
+                    End If
+                  End If                                               
               End Select                      
               Return result
             End Function
