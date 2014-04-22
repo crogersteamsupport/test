@@ -50,10 +50,11 @@ namespace TeamSupport.ServiceLibrary
 
     private static object _staticLock = new object();
 
-    private static EmailPost GetNextEmailPost(int lockID)
+    private static EmailPost GetNextEmailPost(string connectionString, int lockID)
     {
       EmailPost result;
-      lock (_staticLock) { result = EmailPosts.GetNextWaiting(LoginUser.Anonymous, lockID.ToString()); }
+      LoginUser loginUser = new LoginUser(connectionString, -1, -1, null);
+      lock (_staticLock) { result = EmailPosts.GetNextWaiting(loginUser, lockID.ToString()); }
       return result;
     }
 
@@ -66,7 +67,7 @@ namespace TeamSupport.ServiceLibrary
     {
       while (!IsStopped)
       {
-        EmailPost emailPost = GetNextEmailPost((int)_threadPosition);
+        EmailPost emailPost = GetNextEmailPost(LoginUser.ConnectionString, (int)_threadPosition);
         if (emailPost == null) return; 
 
         try

@@ -27,11 +27,11 @@ namespace TeamSupport.ServiceLibrary
     private static object _staticLock = new object();
     private SmtpClient _client;
 
-    private static Email GetNextEmail(int lockID)
+    private static Email GetNextEmail(string connectionString, int lockID)
     {
       Email result;
-
-      lock (_staticLock) { result = Emails.GetNextWaiting(LoginUser.Anonymous, lockID.ToString()); }
+      LoginUser loginUser = new LoginUser(connectionString, -1, -1, null);
+      lock (_staticLock) { result = Emails.GetNextWaiting(loginUser, lockID.ToString()); }
 
       return result;
     }
@@ -60,7 +60,7 @@ namespace TeamSupport.ServiceLibrary
       {
         try
         {
-          Email email = GetNextEmail((int)_threadPosition);
+          Email email = GetNextEmail(LoginUser.ConnectionString, (int)_threadPosition);
           if (email == null) return;
           SendEmail(email);
         }
