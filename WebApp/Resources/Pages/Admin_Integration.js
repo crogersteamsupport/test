@@ -501,6 +501,11 @@ AdminInt = function () {
       useSandBoxServer = false;
     }
 
+    var alwaysUseDefaultProjectKey = parent.find('.int-crm-always-use-default-project-key').prop('checked');
+    if (typeof alwaysUseDefaultProjectKey == 'undefined') {
+      alwaysUseDefaultProjectKey = false;
+    }
+
     top.Ts.Services.Organizations.SaveCrmLink(
           linkID,
           parent.find('.int-crm-active').prop('checked'),
@@ -522,6 +527,7 @@ AdminInt = function () {
           (parent.find('.int-crm-update-status').length > 0 ? parent.find('.int-crm-update-status').prop('checked') : null),
           matchAccountsByName,
           useSandBoxServer,
+          alwaysUseDefaultProjectKey,
           function (result) {
             parent.data('link', result).find('.int-message').removeClass('ui-state-error').html('Your information was saved.').show().delay(1000).fadeOut('slow');
             loadMaps(parent);
@@ -649,6 +655,12 @@ AdminInt = function () {
     }
     else {
       element.find('.int-crm-use-sandbox-server').prop('checked', false);
+    }
+    if (item.AlwaysUseDefaultProjectKey) {
+      element.find('.int-crm-always-use-default-project-key').prop('checked', true);
+    }
+    else {
+      element.find('.int-crm-always-use-default-project-key').prop('checked', false);
     }
   }
 

@@ -393,7 +393,7 @@ Namespace TeamSupport
 
             Private Function GetProjectKey(ByVal productName As String) As String
               Dim result As String = productName
-              If String.IsNullOrEmpty(productName) Then
+              If CRMLinkRow.AlwaysUseDefaultProjectKey OrElse String.IsNullOrEmpty(productName) Then
                 result = CRMLinkRow.DefaultProject
                 If String.IsNullOrEmpty(result) Then
                   Dim ex As Exception = New Exception("no project")

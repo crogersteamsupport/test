@@ -32,7 +32,8 @@ AS
     [DefaultProject],
     [UpdateStatus],
     [MatchAccountsByName],
-    [UseSandBoxServer]
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -66,6 +67,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @UpdateStatus bit,
   @MatchAccountsByName bit,
   @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
   @Identity int OUT
 )
 AS
@@ -94,7 +96,8 @@ AS
     [DefaultProject],
     [UpdateStatus],
     [MatchAccountsByName],
-    [UseSandBoxServer])
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey])
   VALUES (
     @OrganizationID,
     @Active,
@@ -118,7 +121,8 @@ AS
     @DefaultProject,
     @UpdateStatus,
     @MatchAccountsByName,
-    @UseSandBoxServer)
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -152,7 +156,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @DefaultProject varchar(8000),
   @UpdateStatus bit,
   @MatchAccountsByName bit,
-  @UseSandBoxServer bit
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit
 )
 AS
   SET NOCOUNT OFF;
@@ -180,7 +185,8 @@ AS
     [DefaultProject] = @DefaultProject,
     [UpdateStatus] = @UpdateStatus,
     [MatchAccountsByName] = @MatchAccountsByName,
-    [UseSandBoxServer] = @UseSandBoxServer
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -233,7 +239,8 @@ AS
     [DefaultProject],
     [UpdateStatus],
     [MatchAccountsByName],
-    [UseSandBoxServer]
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -267,6 +274,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @UpdateStatus bit,
   @MatchAccountsByName bit,
   @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
   @Identity int OUT
 )
 AS
@@ -295,7 +303,8 @@ AS
     [DefaultProject],
     [UpdateStatus],
     [MatchAccountsByName],
-    [UseSandBoxServer])
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey])
   VALUES (
     @OrganizationID,
     @Active,
@@ -319,7 +328,8 @@ AS
     @DefaultProject,
     @UpdateStatus,
     @MatchAccountsByName,
-    @UseSandBoxServer)
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -353,7 +363,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @DefaultProject varchar(8000),
   @UpdateStatus bit,
   @MatchAccountsByName bit,
-  @UseSandBoxServer bit
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit
 )
 AS
   SET NOCOUNT OFF;
@@ -381,7 +392,8 @@ AS
     [DefaultProject] = @DefaultProject,
     [UpdateStatus] = @UpdateStatus,
     [MatchAccountsByName] = @MatchAccountsByName,
-    [UseSandBoxServer] = @UseSandBoxServer
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -434,7 +446,8 @@ AS
     [DefaultProject],
     [UpdateStatus],
     [MatchAccountsByName],
-    [UseSandBoxServer]
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -468,6 +481,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @UpdateStatus bit,
   @MatchAccountsByName bit,
   @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
   @Identity int OUT
 )
 AS
@@ -496,7 +510,8 @@ AS
     [DefaultProject],
     [UpdateStatus],
     [MatchAccountsByName],
-    [UseSandBoxServer])
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey])
   VALUES (
     @OrganizationID,
     @Active,
@@ -520,7 +535,8 @@ AS
     @DefaultProject,
     @UpdateStatus,
     @MatchAccountsByName,
-    @UseSandBoxServer)
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -554,7 +570,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @DefaultProject varchar(8000),
   @UpdateStatus bit,
   @MatchAccountsByName bit,
-  @UseSandBoxServer bit
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit
 )
 AS
   SET NOCOUNT OFF;
@@ -582,7 +599,8 @@ AS
     [DefaultProject] = @DefaultProject,
     [UpdateStatus] = @UpdateStatus,
     [MatchAccountsByName] = @MatchAccountsByName,
-    [UseSandBoxServer] = @UseSandBoxServer
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -635,7 +653,8 @@ AS
     [DefaultProject],
     [UpdateStatus],
     [MatchAccountsByName],
-    [UseSandBoxServer]
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -669,6 +688,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @UpdateStatus bit,
   @MatchAccountsByName bit,
   @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
   @Identity int OUT
 )
 AS
@@ -697,7 +717,8 @@ AS
     [DefaultProject],
     [UpdateStatus],
     [MatchAccountsByName],
-    [UseSandBoxServer])
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey])
   VALUES (
     @OrganizationID,
     @Active,
@@ -721,7 +742,8 @@ AS
     @DefaultProject,
     @UpdateStatus,
     @MatchAccountsByName,
-    @UseSandBoxServer)
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -755,7 +777,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @DefaultProject varchar(8000),
   @UpdateStatus bit,
   @MatchAccountsByName bit,
-  @UseSandBoxServer bit
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit
 )
 AS
   SET NOCOUNT OFF;
@@ -783,7 +806,8 @@ AS
     [DefaultProject] = @DefaultProject,
     [UpdateStatus] = @UpdateStatus,
     [MatchAccountsByName] = @MatchAccountsByName,
-    [UseSandBoxServer] = @UseSandBoxServer
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
@@ -836,7 +860,8 @@ AS
     [DefaultProject],
     [UpdateStatus],
     [MatchAccountsByName],
-    [UseSandBoxServer]
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey]
   FROM [dbo].[CRMLinkTable]
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
@@ -870,6 +895,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCRMLinkTableItem
   @UpdateStatus bit,
   @MatchAccountsByName bit,
   @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit,
   @Identity int OUT
 )
 AS
@@ -898,7 +924,8 @@ AS
     [DefaultProject],
     [UpdateStatus],
     [MatchAccountsByName],
-    [UseSandBoxServer])
+    [UseSandBoxServer],
+    [AlwaysUseDefaultProjectKey])
   VALUES (
     @OrganizationID,
     @Active,
@@ -922,7 +949,8 @@ AS
     @DefaultProject,
     @UpdateStatus,
     @MatchAccountsByName,
-    @UseSandBoxServer)
+    @UseSandBoxServer,
+    @AlwaysUseDefaultProjectKey)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -956,7 +984,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCRMLinkTableItem
   @DefaultProject varchar(8000),
   @UpdateStatus bit,
   @MatchAccountsByName bit,
-  @UseSandBoxServer bit
+  @UseSandBoxServer bit,
+  @AlwaysUseDefaultProjectKey bit
 )
 AS
   SET NOCOUNT OFF;
@@ -984,7 +1013,8 @@ AS
     [DefaultProject] = @DefaultProject,
     [UpdateStatus] = @UpdateStatus,
     [MatchAccountsByName] = @MatchAccountsByName,
-    [UseSandBoxServer] = @UseSandBoxServer
+    [UseSandBoxServer] = @UseSandBoxServer,
+    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey
   WHERE ([CRMLinkID] = @CRMLinkID)
 GO
 
