@@ -21,21 +21,24 @@ namespace TeamSupport.ServiceLibrary
   [Serializable]
   public class EmailSender : ServiceThreadPoolProcess
   {
-    //public EmailSender(int id, int threadPosition) : base(id, threadPosition) { }
-
     private static int[] _nextAttempts = new int[] { 10, 15, 20, 30, 60, 120, 360, 720, 1440 };
     private bool _isDebug = false;
     private string _debugAddresses;
+    private static object _staticLock = new object();
+    private SmtpClient _client;
+
+    private static Email GetNextEmail(int lockID)
+    {
+      Email result;
+
+      lock (_staticLock) { result = Emails.GetNextWaiting(LoginUser.Anonymous, lockID.ToString()); }
+
+      return result;
+    }
 
     public override void ReleaseAllLocks()
     {
       Emails.UnlockAll(LoginUser);
-    }
-
-    public override int GetNextID(int threadPosition)
-    {
-      Email email = Emails.GetNextWaiting(LoginUser, threadPosition.ToString());
-      return email == null ? -1 : email.EmailID;
     }
 
     public override void Run()
@@ -47,17 +50,26 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent("DEBUG Addresses: " + _debugAddresses);
       }
 
-      try
+      _client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port"));
+      string username = Settings.ReadString("SMTP UserName", "");
+      if (username.Trim() != "") _client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
+      Logs.WriteEventFormat("SMTP: Host: {0}, Port: {1}, User: {2}", _client.Host, _client.Port.ToString(), username);
+
+
+      while (!IsStopped)
       {
-        Email email = Emails.GetEmail(LoginUser, _id);
-        if (email == null) return;
-        SendEmail(email);
-      }
-      catch (Exception ex)
-      {
-        Logs.WriteEvent("Error sending email");
-        Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
+        try
+        {
+          Email email = GetNextEmail((int)_threadPosition);
+          if (email == null) return;
+          SendEmail(email);
+        }
+        catch (Exception ex)
+        {
+          Logs.WriteEvent("Error sending email");
+          Logs.WriteException(ex);
+          ExceptionLogs.LogException(LoginUser, ex, "Email", "Error sending email");
+        }
       }
  
     }
@@ -70,11 +82,6 @@ namespace TeamSupport.ServiceLibrary
 
       try
       {
-        SmtpClient client = new SmtpClient();
-        client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port"));
-        string username = Settings.ReadString("SMTP UserName", "");
-        if (username.Trim() != "") client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
-        Logs.WriteEventFormat("SMTP: Host: {0}, Port: {1}, User: {2}", client.Host, client.Port.ToString(), username);
         email.Attempts = email.Attempts + 1;
         email.Collection.Save();
         Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
@@ -89,7 +96,7 @@ namespace TeamSupport.ServiceLibrary
           message.Subject = "[DEBUG] " + message.Subject;
         }
         Logs.WriteEvent("Sending email");
-        client.Send(message);
+        _client.Send(message);
         Logs.WriteEvent("Email sent");
         email.IsSuccess = true;
         email.IsWaiting = false;

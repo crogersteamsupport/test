@@ -8,7 +8,6 @@ namespace TeamSupport.ServiceLibrary
   public abstract class ServiceThreadPoolProcess: ServiceThread
   {
     protected int? _threadPosition = null;
-    protected int _id;
 
     public ServiceThreadPoolProcess() { 
       IsLoop = false; 
@@ -19,16 +18,12 @@ namespace TeamSupport.ServiceLibrary
       return _threadPosition == null ? ServiceName : ServiceName + " - " + _threadPosition.ToString();
     }
 
-    public void Start(int id, int threadPosition)
+    public void Start(int threadPosition)
     {
       _threadPosition = threadPosition;
-      _id = id;
       base.Start();
     }
 
     public abstract void ReleaseAllLocks();
-
-    public abstract int GetNextID(int threadPosition);
-
   }
 }

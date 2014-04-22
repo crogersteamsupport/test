@@ -22,8 +22,6 @@ namespace TeamSupport.ServiceLibrary
   [Serializable]
   public class EmailProcessor : ServiceThreadPoolProcess
   {
-    //public EmailProcessor(int threadPosition) :base(threadPosition) { }
-
     class UserEmail
     {
       public UserEmail(int userID, string name, string address, bool sendTicketsOnlyAfterHours)
@@ -49,55 +47,63 @@ namespace TeamSupport.ServiceLibrary
     private bool _logEnabled = false;
     private int _currentEmailPostID;
 
+
+    private static object _staticLock = new object();
+
+    private static EmailPost GetNextEmailPost(int lockID)
+    {
+      EmailPost result;
+      lock (_staticLock) { result = EmailPosts.GetNextWaiting(LoginUser.Anonymous, lockID.ToString()); }
+      return result;
+    }
+
     public override void ReleaseAllLocks()
     {
       EmailPosts.UnlockAll(LoginUser);
     }
 
-    public override int GetNextID(int threadPosition)
-    {
-      EmailPost emailPost = EmailPosts.GetNextWaiting(LoginUser, threadPosition.ToString());
-      return emailPost == null ? -1 : emailPost.EmailPostID;
-    }
-
     public override void Run()
     {
-      EmailPost emailPost = EmailPosts.GetEmailPost(LoginUser, _id);
-      if (emailPost == null) return;
-
-      try
+      while (!IsStopped)
       {
-        _isDebug = Settings.ReadBool("Debug", false);
-        _logEnabled = ConfigurationManager.AppSettings["LoggingEnabled"] != null && ConfigurationManager.AppSettings["LoggingEnabled"] == "1";
+        EmailPost emailPost = GetNextEmailPost((int)_threadPosition);
+        if (emailPost == null) return; 
 
-        Logs.WriteLine();
-        Logs.WriteEvent("***********************************************************************************");
-        Logs.WriteEvent("Processing Email Post  EmailPostID: " + emailPost.EmailPostID.ToString());
-        Logs.WriteData(emailPost.Row);
-        Logs.WriteLine();
-        Logs.WriteEvent("***********************************************************************************");
-        Logs.WriteLine();
-        SetTimeZone(emailPost);
         try
         {
-          ProcessEmail(emailPost);
+          _isDebug = Settings.ReadBool("Debug", false);
+          _logEnabled = ConfigurationManager.AppSettings["LoggingEnabled"] != null && ConfigurationManager.AppSettings["LoggingEnabled"] == "1";
+
+          Logs.WriteLine();
+          Logs.WriteEvent("***********************************************************************************");
+          Logs.WriteEvent("Processing Email Post  EmailPostID: " + emailPost.EmailPostID.ToString());
+          Logs.WriteData(emailPost.Row);
+          Logs.WriteLine();
+          Logs.WriteEvent("***********************************************************************************");
+          Logs.WriteLine();
+          SetTimeZone(emailPost);
+          try
+          {
+            ProcessEmail(emailPost);
+          }
+          catch (Exception ex)
+          {
+            ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
+          }
+          finally
+          {
+            Logs.WriteEvent("Deleting from DB");
+            emailPost.Collection.DeleteFromDB(emailPost.EmailPostID);
+          }
+          Logs.WriteEvent("Updating Health");
+          UpdateHealth();
         }
         catch (Exception ex)
         {
           ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
         }
-        finally
-        {
-          Logs.WriteEvent("Deleting from DB");
-          emailPost.Collection.DeleteFromDB(emailPost.EmailPostID);
-        }
-        Logs.WriteEvent("Updating Health");
-        UpdateHealth();
       }
-      catch (Exception ex)
-      {
-        ExceptionLogs.LogException(LoginUser, ex, "Email", emailPost.Row);
-      }
+
     }
 
     public void SetTimeZone(EmailPost emailPost)

@@ -98,12 +98,8 @@ namespace TeamSupport.ServiceLibrary
       if (nextEmptySpot < 0) return;
 
       T process = GetProcessObject();
-      int id = process.GetNextID(nextEmptySpot);
-      if (id > -1)
-      {
-        process.Start(id, nextEmptySpot);
-        _threads[nextEmptySpot] = process;
-      }
+      process.Start(nextEmptySpot);
+      _threads[nextEmptySpot] = process;
     }
   }
 }
