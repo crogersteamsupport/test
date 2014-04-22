@@ -25,7 +25,6 @@ namespace TeamSupport.ServiceLibrary
     private bool _isDebug = false;
     private string _debugAddresses;
     private static object _staticLock = new object();
-    private SmtpClient _client;
 
     private static Email GetNextEmail(string connectionString, int lockID)
     {
@@ -49,12 +48,6 @@ namespace TeamSupport.ServiceLibrary
         _debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
         Logs.WriteEvent("DEBUG Addresses: " + _debugAddresses);
       }
-
-      _client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port"));
-      string username = Settings.ReadString("SMTP UserName", "");
-      if (username.Trim() != "") _client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
-      Logs.WriteEventFormat("SMTP: Host: {0}, Port: {1}, User: {2}", _client.Host, _client.Port.ToString(), username);
-
 
       while (!IsStopped)
       {
@@ -82,28 +75,35 @@ namespace TeamSupport.ServiceLibrary
 
       try
       {
-        email.Attempts = email.Attempts + 1;
-        email.Collection.Save();
-        Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
-        Logs.WriteEventFormat("Size: {0}, Attachments: {1}", email.Size.ToString(), email.Attachments);
-        MailMessage message = email.GetMailMessage();
-        message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
-        message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
-        if (_isDebug == true)
+        using (SmtpClient client = new SmtpClient(Settings.ReadString("SMTP Host"), Settings.ReadInt("SMTP Port")))
         {
-          message.To.Clear();
-          message.To.Add(_debugAddresses);
-          message.Subject = "[DEBUG] " + message.Subject;
+          string username = Settings.ReadString("SMTP UserName", "");
+          if (username.Trim() != "") client.Credentials = new System.Net.NetworkCredential(Settings.ReadString("SMTP UserName"), Settings.ReadString("SMTP Password"));
+          Logs.WriteEventFormat("SMTP: Host: {0}, Port: {1}, User: {2}", client.Host, client.Port.ToString(), username);
+
+          email.Attempts = email.Attempts + 1;
+          email.Collection.Save();
+          Logs.WriteEvent("Attempt: " + email.Attempts.ToString());
+          Logs.WriteEventFormat("Size: {0}, Attachments: {1}", email.Size.ToString(), email.Attachments);
+          MailMessage message = email.GetMailMessage();
+          message.Headers.Add("X-xsMessageId", email.OrganizationID.ToString());
+          message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
+          if (_isDebug == true)
+          {
+            message.To.Clear();
+            message.To.Add(_debugAddresses);
+            message.Subject = "[DEBUG] " + message.Subject;
+          }
+          Logs.WriteEvent("Sending email");
+          client.Send(message);
+          Logs.WriteEvent("Email sent");
+          email.IsSuccess = true;
+          email.IsWaiting = false;
+          email.Body = "";
+          email.DateSent = DateTime.UtcNow;
+          email.Collection.Save();
+          UpdateHealth();
         }
-        Logs.WriteEvent("Sending email");
-        _client.Send(message);
-        Logs.WriteEvent("Email sent");
-        email.IsSuccess = true;
-        email.IsWaiting = false;
-        email.Body = "";
-        email.DateSent = DateTime.UtcNow;
-        email.Collection.Save();
-        UpdateHealth();
       }
       catch (Exception ex)
       {
