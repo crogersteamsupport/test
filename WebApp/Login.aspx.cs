@@ -310,7 +310,7 @@ public partial class Login : System.Web.UI.Page
     TSAuthentication.Authenticate(user, isBackdoor, deviceID);
     
     System.Web.HttpBrowserCapabilities browser = HttpContext.Current.Request.Browser;
-    ActionLogs.AddInternalActionLog(loginUser, "Logged in (" + browser.Browser + " " + browser.Version + ")");
+    ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Users, userID, "Logged in (" + browser.Browser + " " + browser.Version + ")");
 
     ConfirmBaseData(loginUser);
 

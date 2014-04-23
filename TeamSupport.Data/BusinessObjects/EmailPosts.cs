@@ -67,7 +67,7 @@ WHERE EmailPostID IN (
 
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "UPDATE EmailPosts SET LockProcessID = NULL WHERE LockProcessID IS NOT NULL";
+        command.CommandText = "UPDATE EmailPosts SET LockProcessID = NULL";
         command.CommandType = CommandType.Text;
         emailPosts.ExecuteNonQuery(command);
       }

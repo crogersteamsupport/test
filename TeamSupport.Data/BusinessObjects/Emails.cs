@@ -147,7 +147,7 @@ WHERE EmailID IN (
 
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "UPDATE Emails SET LockProcessID = NULL WHERE LockProcessID IS NOT NULL";
+        command.CommandText = "UPDATE Emails SET LockProcessID = NULL WHERE IsWaiting=1";
         command.CommandType = CommandType.Text;
         emails.ExecuteNonQuery(command);
       }
@@ -208,6 +208,10 @@ WHERE EmailID IN (
         }
       }
       if (attachments.Count > 0) email.Attachments = string.Join(";", attachments.ToArray());
+      if (!string.IsNullOrWhiteSpace(email.Body))
+      {
+        size = size + (ASCIIEncoding.ASCII.GetByteCount(email.Body) / 1024);
+      }
       email.Size = size;
       return email;
     }
