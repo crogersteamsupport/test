@@ -1018,16 +1018,17 @@ namespace TSWebServices
                             </div>
                         </div>
                         <div class='col-xs-10'>
-                            <strong><a class='user' uid='{5}'>{1}</a></strong>
+                            <strong><a class='user' uid='{5}'>{1}{6}</a></strong>
                             <div>{2}<div class='pull-right'>{3}{4}</div></div>
                         </div>
                     </div></li>",
                                 u.Avatar,
                                 u.FirstName + " " + u.LastName,
                                 u.Title,
-                                chatsetting,
+                                u.AppChatStatus == true ? chatsetting:"",
                                 (u.AppChatStatus == true && u.UserID != TSAuthentication.GetLoginUser().UserID) ? "<i class='user-tooltip fa-comment fa color-green user-chat' cid='"+u.UserID+"' title='Online to Chat'></i>":"",
-                                u.UserID
+                                u.UserID,
+                                u.IsActive ? "":"<i>(Inactive)</i>"
                                 );
             }
 
