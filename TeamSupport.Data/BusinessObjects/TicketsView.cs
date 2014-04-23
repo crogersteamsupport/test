@@ -754,7 +754,7 @@ namespace TeamSupport.Data
       using (SearchJob job = new SearchJob())
       {
 
-        searchTerm = Regex.Replace(searchTerm.Trim(), @"[()-.]", "", RegexOptions.IgnoreCase); 
+        searchTerm = Regex.Replace(searchTerm.Trim(), @"[()-.]", " ", RegexOptions.IgnoreCase); 
         job.Request = searchTerm;
         job.FieldWeights = "Name: 1000";
 

@@ -1043,7 +1043,7 @@ namespace TSWebServices
         using (SearchJob job = new SearchJob())
         {
 
-          searchTerm = Regex.Replace(searchTerm.Trim(), @"[()-.]", "", RegexOptions.IgnoreCase);
+          searchTerm = Regex.Replace(searchTerm.Trim(), @"[()-.]", " ", RegexOptions.IgnoreCase);
           job.Request = searchTerm;
           job.FieldWeights = "Name:20,Email:10";
           job.MaxFilesToRetrieve = max;
