@@ -17,28 +17,32 @@ namespace TeamSupport.Data
       return OrganizationsView.GetOrganizationsViewItem(BaseCollection.LoginUser, OrganizationID);
     }
 
-    public string GetReplyToAddress()
+    public string GetReplyToAddress(string replyAddress = null)
     {
+      if (!string.IsNullOrWhiteSpace(replyAddress) && ReplyToAlternateEmailAddresses == true)
+      {
+        return replyAddress;
+      }
+
       if (string.IsNullOrEmpty(OrganizationReplyToAddress))
+      {
         return SystemEmailID.ToString() + "@teamsupport.com";
+      }
+
       return OrganizationReplyToAddress;
     }
 
     public MailAddress GetReplyToMailAddress()
     {
-      string sysMail = SystemEmailID.ToString() + "@teamsupport.com";
-      if (string.IsNullOrWhiteSpace(OrganizationReplyToAddress))
-      {
-        return new MailAddress(sysMail);
-      }
+      string addr = GetReplyToAddress();
 
       try
       {
-        return new MailAddress(OrganizationReplyToAddress);
+        return new MailAddress(addr);
       }
       catch (Exception)
       {
-        return new MailAddress(sysMail);
+        return new MailAddress(SystemEmailID.ToString() + "@teamsupport.com");
       }
     }
 

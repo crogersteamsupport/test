@@ -82,13 +82,27 @@ namespace TeamSupport.Data
     [DataMember] public bool ProductVersionRequired { get; set; }
     [DataMember] public bool AllowUnsecureAttachmentViewing { get; set; }
     [DataMember] public bool ForceBCCEmailsPrivate { get; set; }
+    [DataMember] public int? UnknownCompanyID { get; set; }
+    [DataMember] public bool IsRebuildingIndex { get; set; }
+    [DataMember] public DateTime LastIndexRebuilt { get; set; }
+    [DataMember] public bool IsIndexLocked { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public bool NeedCustForTicketMatch { get; set; }
+    [DataMember] public int TotalTicketsCreated { get; set; }
+    [DataMember] public int TicketsOpen { get; set; }
+    [DataMember] public int CreatedLast30 { get; set; }
+    [DataMember] public int AvgTimeOpen { get; set; }
+    [DataMember] public int AvgTimeToClose { get; set; }
+    [DataMember] public int CustDisIndex { get; set; }
+    [DataMember] public bool SlaInitRespAnyAction { get; set; }
     [DataMember] public FontFamily FontFamily { get; set; }
     [DataMember] public FontSize FontSize { get; set; }
     [DataMember] public string FontFamilyDescription { get; set; }
     [DataMember] public string FontSizeDescription { get; set; }
     [DataMember] public bool ShowGroupMembersFirstInTicketAssignmentList { get; set; }
     [DataMember] public bool UpdateTicketChildrenGroupWithParent { get; set; }
+    [DataMember] public bool ReplyToAlternateEmailAddresses { get; set; }
+    [DataMember] public bool ForceUseOfReplyTo { get; set; }
           
   }
   
@@ -97,13 +111,26 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.ForceUseOfReplyTo = this.ForceUseOfReplyTo;
+      result.ReplyToAlternateEmailAddresses = this.ReplyToAlternateEmailAddresses;
       result.UpdateTicketChildrenGroupWithParent = this.UpdateTicketChildrenGroupWithParent;
       result.ShowGroupMembersFirstInTicketAssignmentList = this.ShowGroupMembersFirstInTicketAssignmentList;
       result.FontSize = this.FontSize;
       result.FontFamily = this.FontFamily;
       result.FontSizeDescription = this.FontSizeDescription;
       result.FontFamilyDescription = this.FontFamilyDescription;
+      result.SlaInitRespAnyAction = this.SlaInitRespAnyAction;
+      result.CustDisIndex = this.CustDisIndex;
+      result.AvgTimeToClose = this.AvgTimeToClose;
+      result.AvgTimeOpen = this.AvgTimeOpen;
+      result.CreatedLast30 = this.CreatedLast30;
+      result.TicketsOpen = this.TicketsOpen;
+      result.TotalTicketsCreated = this.TotalTicketsCreated;
+      result.NeedCustForTicketMatch = this.NeedCustForTicketMatch;
       result.NeedsIndexing = this.NeedsIndexing;
+      result.IsIndexLocked = this.IsIndexLocked;
+      result.IsRebuildingIndex = this.IsRebuildingIndex;
+      result.UnknownCompanyID = this.UnknownCompanyID;
       result.ForceBCCEmailsPrivate = this.ForceBCCEmailsPrivate;
       result.AllowUnsecureAttachmentViewing = this.AllowUnsecureAttachmentViewing;
       result.ProductVersionRequired = this.ProductVersionRequired;
@@ -173,6 +200,7 @@ namespace TeamSupport.Data
       result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
       result.BusinessDayStart = DateTime.SpecifyKind(this.BusinessDayStartUtc, DateTimeKind.Utc);
       result.BusinessDayEnd = DateTime.SpecifyKind(this.BusinessDayEndUtc, DateTimeKind.Utc);
+      result.LastIndexRebuilt = DateTime.SpecifyKind(this.LastIndexRebuiltUtc, DateTimeKind.Utc);
        
       result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc);
 

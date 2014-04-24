@@ -240,20 +240,11 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
-    private void AddMessage(int organizationID, string description, MailMessage message)
-    {
-      AddMessage(organizationID, description, message, null, null);
-    }
 
-    private void AddMessage(int organizationID, string description, MailMessage message, string[] attachments)
-    {
-      AddMessage(organizationID, description, message, attachments, null);
-    }
-
-    private void AddMessage(int organizationID, string description, MailMessage message, string[] attachments, DateTime? timeToSend)
+    private void AddMessage(int organizationID, string description, MailMessage message, string replyToAddress = null, string[] attachments = null, DateTime? timeToSend = null)
     {
       Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
-      string replyAddress = organization.GetReplyToAddress().ToLower();
+      string replyAddress = organization.GetReplyToAddress(replyToAddress).ToLower();
       
       int i = 0; 
       while (i < message.To.Count)
@@ -428,7 +419,7 @@ namespace TeamSupport.ServiceLibrary
           message.Subject = message.Subject + subject;
           Logs.WriteEvent("Added to ticket log");
           ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket assignment email sent to " + message.To[0].DisplayName);
-          AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, fileNames.ToArray());
+          AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
         }
       }
 
@@ -451,7 +442,7 @@ namespace TeamSupport.ServiceLibrary
         {
           ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket assignment email sent to " + mailAddress.Address);
         }
-        AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, fileNames.ToArray());
+        AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
 
       }
 
@@ -512,7 +503,7 @@ namespace TeamSupport.ServiceLibrary
       {
         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket modified email sent to " + mailAddress.Address);
       }
-      AddMessage(ticketOrganization.OrganizationID, "Internal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, fileNames.ToArray());
+      AddMessage(ticketOrganization.OrganizationID, "Internal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
 
     }
 
@@ -671,7 +662,7 @@ namespace TeamSupport.ServiceLibrary
         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, messageType + " sent to " + mailAddress.Address);
       }
 
-      AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, fileNames.ToArray());
+      AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
 
     }
 
@@ -737,7 +728,7 @@ namespace TeamSupport.ServiceLibrary
           {
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket email sent to " + mailAddress.Address);
           }
-          AddMessage(sender.OrganizationID, "Ticket Email [" + ticket.TicketNumber.ToString() + "] to " + item, message, fileNames.ToArray());
+          AddMessage(sender.OrganizationID, "Ticket Email [" + ticket.TicketNumber.ToString() + "] to " + item, message, ticket.EmailReplyToAddress, fileNames.ToArray());
 
         }
         catch (Exception ex) {
@@ -820,13 +811,13 @@ namespace TeamSupport.ServiceLibrary
       message.To.Add(new MailAddress(user.Email));
       message.Bcc.Add(new MailAddress("eharrington@teamsupport.com"));
       message.From = new MailAddress("eharrington@teamsupport.com", "Eric Harrington");
-      AddMessage(1078, "New Sign Up - Check In[" + organization.Name + "]", message, null, DateTime.UtcNow.AddDays(1));
+      AddMessage(1078, "New Sign Up - Check In[" + organization.Name + "]", message, null, null, DateTime.UtcNow.AddDays(1));
 
       message = EmailTemplates.GetWelcomeNewSignUp(LoginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 28);
       message.To.Add(new MailAddress(user.Email));
       message.Bcc.Add(new MailAddress("eharrington@teamsupport.com"));
       message.From = new MailAddress(from);
-      AddMessage(1078, "New Sign Up - Notice [" + organization.Name + "]", message, null, DateTime.UtcNow.AddDays(10));
+      AddMessage(1078, "New Sign Up - Notice [" + organization.Name + "]", message, null, null, DateTime.UtcNow.AddDays(10));
     }
 
     public void ProcessWelcomeTSUser(int userID, string password)

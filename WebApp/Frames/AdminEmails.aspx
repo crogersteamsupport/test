@@ -52,6 +52,7 @@
         $('#cbMatchSubject')[0].checked = result.MatchEmailSubject;
         $('#cbForceBccPrivate')[0].checked = result.ForceBCCEmailsPrivate;
         $('#cbNeedCustForTicketMatch')[0].checked = result.NeedCustForTicketMatch;
+        $('#cbReplyToAlternateEmailAddresses')[0].checked = result.ReplyToAlternateEmailAddresses;
         $('#divSettingsButtons').hide();
       });
     }
@@ -86,8 +87,8 @@
     }
 
     function saveEmailSettings() {
-      
-      PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked, $('#cbForceBccPrivate')[0].checked, $('#cbNeedCustForTicketMatch')[0].checked);
+
+      PageMethods.SaveEmailSettings($find('textReply').get_value(), $('#cbRequireNew')[0].checked, $('#cbRequireKnown')[0].checked, $('#cbChangeStatus')[0].checked, $('#cbAssociatePeople')[0].checked, $('#cbMatchSubject')[0].checked, $('#cbForceBccPrivate')[0].checked, $('#cbNeedCustForTicketMatch')[0].checked, $('#cbReplyToAlternateEmailAddresses')[0].checked);
       $('#divSettingsButtons').hide();
       top.Ts.System.logAction('Admin Email - Email Settings Saved');
     }
@@ -241,6 +242,8 @@
           <p>If an email is sent to your TeamSupport dropbox address on the BCC line, this option will force the ticket and/or action to be private.</p>
           <asp:CheckBox ID="cbNeedCustForTicketMatch" runat="server" CssClass="checkBox" Text="Restrict customer email updates." />
           <p>Only allow customers who are associated with a ticket to update it via email.</p>
+          <asp:CheckBox ID="cbReplyToAlternateEmailAddresses" runat="server" CssClass="checkBox" Text="Use alternate email addresses to reply to tickets." />
+          <p>When emails are received via an Alternate Email address, use the alternate email as the Reply To when sending emails about the ticket.</p>
         </fieldset>
         <div class="buttons ui-helper-hidden" id="divSettingsButtons">
           <button onclick="saveEmailSettings(); return false;">Save</button>
