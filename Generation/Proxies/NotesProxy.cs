@@ -23,6 +23,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateCreated { get; set; }
     [DataMember] public DateTime DateModified { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public bool IsAlert { get; set; }
           
   }
   
@@ -31,6 +32,7 @@ namespace TeamSupport.Data
     public NoteProxy GetProxy()
     {
       NoteProxy result = new NoteProxy();
+      result.IsAlert = this.IsAlert;
       result.NeedsIndexing = this.NeedsIndexing;
       result.ModifierID = this.ModifierID;
       result.CreatorID = this.CreatorID;

@@ -42,6 +42,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DefaultSupportGroup", "DefaultSupportGroup", false, false, false);
       _fieldMap.AddMap("CompanyDomains", "CompanyDomains", false, false, false);
       _fieldMap.AddMap("SupportHoursMonth", "SupportHoursMonth", false, false, false);
+      _fieldMap.AddMap("SupportHoursUsed", "SupportHoursUsed", false, false, false);
+      _fieldMap.AddMap("SupportHoursRemaining", "SupportHoursRemaining", false, false, false);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
             
     }

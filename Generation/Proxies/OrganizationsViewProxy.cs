@@ -42,6 +42,8 @@ namespace TeamSupport.Data
     [DataMember] public string DefaultSupportGroup { get; set; }
     [DataMember] public string CompanyDomains { get; set; }
     [DataMember] public int SupportHoursMonth { get; set; }
+    [DataMember] public int? SupportHoursUsed { get; set; }
+    [DataMember] public int? SupportHoursRemaining { get; set; }
     [DataMember] public bool NeedsIndexing { get; set; }
           
   }
@@ -52,6 +54,8 @@ namespace TeamSupport.Data
     {
       OrganizationsViewItemProxy result = new OrganizationsViewItemProxy();
       result.NeedsIndexing = this.NeedsIndexing;
+      result.SupportHoursRemaining = this.SupportHoursRemaining;
+      result.SupportHoursUsed = this.SupportHoursUsed;
       result.SupportHoursMonth = this.SupportHoursMonth;
       result.CompanyDomains = this.CompanyDomains;
       result.DefaultSupportGroup = this.DefaultSupportGroup;

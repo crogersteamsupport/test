@@ -100,6 +100,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ShowGroupMembersFirstInTicketAssignmentList", "ShowGroupMembersFirstInTicketAssignmentList", false, false, false);
       _fieldMap.AddMap("UpdateTicketChildrenGroupWithParent", "UpdateTicketChildrenGroupWithParent", false, false, false);
       _fieldMap.AddMap("ReplyToAlternateEmailAddresses", "ReplyToAlternateEmailAddresses", false, false, false);
+      _fieldMap.AddMap("ForceUseOfReplyTo", "ForceUseOfReplyTo", false, false, false);
             
     }
   }

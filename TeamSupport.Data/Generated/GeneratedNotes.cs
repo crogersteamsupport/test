@@ -31,14 +31,16 @@ namespace TeamSupport.Data
     {
       get { return (int)Row["NoteID"]; }
     }
+    
 
+    
 
+    
     public bool IsAlert
     {
-        get { return (bool)Row["IsAlert"]; }
-        set { Row["IsAlert"] = CheckValue("IsAlert", value); }
-    }    
-
+      get { return (bool)Row["IsAlert"]; }
+      set { Row["IsAlert"] = CheckValue("IsAlert", value); }
+    }
     
     public bool NeedsIndexing
     {
@@ -207,7 +209,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Notes] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing, [IsAlert] = @IsAlert  WHERE ([NoteID] = @NoteID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Notes] SET     [RefType] = @RefType,    [RefID] = @RefID,    [Title] = @Title,    [Description] = @Description,    [ModifierID] = @ModifierID,    [DateModified] = @DateModified,    [NeedsIndexing] = @NeedsIndexing,    [IsAlert] = @IsAlert  WHERE ([NoteID] = @NoteID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("NoteID", SqlDbType.Int, 4);
@@ -265,27 +267,28 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
-
-        tempParameter = updateCommand.Parameters.Add("IsAlert", SqlDbType.Bit, 1);
-        if (tempParameter.SqlDbType == SqlDbType.Float)
-        {
-            tempParameter.Precision = 255;
-            tempParameter.Scale = 255;
-        }
-
+		
+		tempParameter = updateCommand.Parameters.Add("IsAlert", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Notes] (    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified],    [NeedsIndexing], [IsAlert]) VALUES ( @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateCreated, @DateModified, @NeedsIndexing, @IsAlert); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Notes] (    [RefType],    [RefID],    [Title],    [Description],    [CreatorID],    [ModifierID],    [DateCreated],    [DateModified],    [NeedsIndexing],    [IsAlert]) VALUES ( @RefType, @RefID, @Title, @Description, @CreatorID, @ModifierID, @DateCreated, @DateModified, @NeedsIndexing, @IsAlert); SET @Identity = SCOPE_IDENTITY();";
 
-        tempParameter = insertCommand.Parameters.Add("IsAlert", SqlDbType.Bit, 1);
-        if (tempParameter.SqlDbType == SqlDbType.Float)
-        {
-            tempParameter.Precision = 255;
-            tempParameter.Scale = 255;
-        }
+		
+		tempParameter = insertCommand.Parameters.Add("IsAlert", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
