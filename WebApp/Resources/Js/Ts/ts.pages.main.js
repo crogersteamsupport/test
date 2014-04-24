@@ -1240,6 +1240,11 @@ Ts.Pages.Main.prototype = {
         var element = $('.main-tab-content-item:visible');
         $(element).children('iframe').attr('src', 'Wiki/ViewPage.aspx?ArticleID=' + articleID);
     },
+    openUser: function (userID) {
+        this.MainMenu.find('mniUsers', 'users').select();
+        var element = $('.main-tab-content-item:visible');
+        $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/Users.html?UserID=' + userID);
+    },
     hideWelcome: function () {
         this.MainMenu.find('mniDashboard', 'dashboard').select();
         $('.menutree-item-welcome-mniWelcome').remove();

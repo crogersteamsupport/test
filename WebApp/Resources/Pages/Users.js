@@ -1,13 +1,13 @@
 ﻿
 
-
+var userID
 $(document).ready(function () {
     $('body').layout({
         applyDemoStyles: true
     });
 
     /*initialize */
-    var userID = top.Ts.System.User.UserID;
+    userID = top.Ts.System.User.UserID;
     var activeID;
 
     if (!top.Ts.System.User.IsSystemAdmin)
@@ -15,10 +15,22 @@ $(document).ready(function () {
         $('#historyTab').hide();
     }
 
+    if (top.Ts.Utils.getQueryValue("UserID", window) != null) {
+        userID = top.Ts.Utils.getQueryValue("UserID", window);
+        top.Ts.Services.Users.GetUser(userID, function (user) {
+            $('#userName').text(user.FirstName + " " + user.LastName);
+        });
+        
+    }
+    else
+    {
+        $('#userName').text(top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastName);
+    }
+        
     $('#infoIframe').attr("src", "/vcr/1_9_0/Pages/User.html?UserID=" + userID);
     $('#userTabs a:first').tab('show');
     Search();
-    $('#userName').text(top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastName);
+    
 
     $('#infoIframe, #openIframe, #closedIframe, #allIframe, #queueIframe, #historyIframe, #userName').load(function () {
         $('.maincontainer').fadeTo(0, 1);
@@ -135,6 +147,17 @@ $(document).ready(function () {
         wnd.show();
     }
 
+    $(window).bind('resize', function () {
+        if ($("ul#userTabs li.active").text() == "User Information")
+        {
+            $('#infoIframe').attr("src", "/vcr/1_9_0/Pages/User.html?UserID=" + userID);
+            autoResize();
+        }
+        
+
+        ;
+    });
+
 });
 
 function Search() {
@@ -149,4 +172,8 @@ function Search() {
 
 function Update() {
     Search();
+}
+
+function autoResize() {
+    $('#infoIframe').attr('height', $('.maincontainer').outerHeight() - $('.main-nav').outerHeight());
 }

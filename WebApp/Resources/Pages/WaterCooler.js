@@ -1136,7 +1136,7 @@ function createThread(thread) {
             .text(thread.Message.UserName)
             .click(function (e) {
                 e.preventDefault();
-                top.Ts.MainPage.openNewContact(thread.Message.UserID);
+                top.Ts.MainPage.openUser(thread.Message.UserID);
             })
             .attr('rel', '../../../Tips/User.aspx?UserID=' + thread.Message.UserID)
             .cluetip(clueTipOptions)
@@ -1393,7 +1393,7 @@ function createReply(thread) {
             .text(thread.UserName)
             .click(function (e) {
                 e.preventDefault();
-                top.Ts.MainPage.openNewContact(thread.UserID);
+                top.Ts.MainPage.openUser(thread.UserID);
             })
             .appendTo(sptpic);
 
