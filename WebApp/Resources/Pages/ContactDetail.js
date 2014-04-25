@@ -337,11 +337,17 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         top.Ts.Services.Customers.SetContactPortalUser(userID, ($(this).text() !== 'Yes'), function (result) {
-            $('#fieldPortalUser').text((result === true ? 'Yes' : 'No'));
-            if(result != true || !_isAdmin)
+            $('#fieldPortalUser').text((result == 0 ? 'No' : 'Yes'));
+
+            if(result == 0 || !_isAdmin)
                 $('#btnSendNewPW').hide();
             else
                 $('#btnSendNewPW').show();
+
+            if (result == 2)
+                if (confirm("This users company does not have portal access enabled. Would you like to enable it now?"))
+                    top.Ts.Services.Customers.SetCompanyPortalAccessUser(userID);
+                
         },
         function (error) {
             header.show();

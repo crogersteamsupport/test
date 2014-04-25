@@ -276,15 +276,44 @@ namespace TSWebServices
             return value;
         }
         [WebMethod]
-        public bool SetContactPortalUser(int userID, bool value)
+        public int SetContactPortalUser(int userID, bool value)
         {
+            //0 = false
+            //1 = true
+            //2 = true and ask about org access
+            int result;
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             u.IsPortalUser = value;
             u.Collection.Save();
             string description = String.Format("{0} set contact portal user to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
-            return value;
+            result = Convert.ToInt16(value);
+
+            Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), u.OrganizationID);
+            if (value == true)
+            {
+                if(o.HasPortalAccess == false)
+                    return 2;
+                else
+                    return 1;
+            }
+
+            return result;
         }
+        [WebMethod]
+        public void SetCompanyPortalAccessUser(int userID)
+        {
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+
+            Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), u.OrganizationID);
+            o.HasPortalAccess = true;
+            o.Collection.Save();
+            string description = String.Format("{0} set company portal access to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, true);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, u.OrganizationID, description);
+            return;
+        }
+
+
         [WebMethod]
         public bool SetContactPreventEmail(int userID, bool value)
         {
