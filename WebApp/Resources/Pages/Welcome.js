@@ -70,7 +70,7 @@ WelcomePage = function () {
 
   $('.welcome-payonline').click(function (e) {
     e.preventDefault();
-    window.open('https://ticket.teamsupport.com/basicportal.aspx?OrgName=TeamSupportBilling', 'TSPayment');
+    window.open('http://www.teamsupport.com/billing/', 'TSPayment');
   });
 
 
