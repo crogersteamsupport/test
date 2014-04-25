@@ -339,10 +339,10 @@ $(document).ready(function () {
         top.Ts.Services.Customers.SetContactPortalUser(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldPortalUser').text((result == 0 ? 'No' : 'Yes'));
 
-            if(result == 0 || !_isAdmin)
-                $('#btnSendNewPW').hide();
-            else
+            if (result == 1 || _isAdmin || top.Ts.System.User.CanEditContact)
                 $('#btnSendNewPW').show();
+            else
+                $('#btnSendNewPW').hide();
 
             if (result == 2)
                 if (confirm("This users company does not have portal access enabled. Would you like to enable it now?"))
@@ -908,7 +908,9 @@ $(document).ready(function () {
             $('#userProp').html(user[1]);
 
             $('.userProperties p').toggleClass("editable");
-            if ($('#fieldPortalUser').text() == "No" || !_isAdmin)
+            if ($('#fieldPortalUser').text() == "Yes" || _isAdmin || top.Ts.System.User.CanEditContact)
+                $('#btnSendNewPW').show();
+            else
                 $('#btnSendNewPW').hide();
 
             if($('#fieldEmail').text() != "Empty")
