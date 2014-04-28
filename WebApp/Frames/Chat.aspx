@@ -93,9 +93,7 @@
             </tr>
             <tr>
               <td>
-                <telerik:RadTextBox ID="textSend" runat="server" Width="100%" Height="50px" TextMode="MultiLine"
-                  ClientEvents-OnKeyPress="textSend_OnKeyPress">
-                </telerik:RadTextBox>
+                <textarea id="textSend" rows="3" style="width:100%"></textarea>
               </td>
               <td style="width: 55px; text-align: right;">
                 <asp:Button ID="btnSend" runat="server" Text="Send" Height="50px" Width="50px" OnClientClick="SendMessage(); return false;" />
@@ -255,19 +253,17 @@
     function SendMessage() {
       if (_activeChatID < 0) return;
       top.Ts.System.logAction('Chat - Message Sent');
-      var textbox = $find("<%=textSend.ClientID %>");
-      var message = textbox.get_value().trim();
+      var textbox = $('#textSend');
+      var message = textbox.val().trim();
       if (message == '') return;
-      PageMethods.PostMessage(textbox.get_value(), _activeChatID, function() { UpdateMessages(); });
-      textbox.clear();
-      textbox.selectAllText();
-      textbox.set_caretPosition(0);
+      PageMethods.PostMessage(message, _activeChatID, function () { UpdateMessages(); });
+      textbox.val('');
     }
 
-    function textSend_OnKeyPress(sender, args) {
-      PageMethods.SetTyping(_activeChatID);
-      if (args.get_keyCode() == 13) { SendMessage(); }
-    }
+    $('#textSend').keydown(function (e) {
+      if (e.which == 13) { SendMessage(); } else { PageMethods.SetTyping(_activeChatID); }
+    });
+
 
 
     function SetToolbar() {
