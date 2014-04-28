@@ -477,6 +477,7 @@ namespace TeamSupport.Data
         else
         {
           ReportTableField tableField = tableFields.FindByReportTableFieldID(field.FieldID);
+
           ReportTable table = tables.FindByReportTableID(tableField.ReportTableID);
           string fieldName = table.TableName + "." + tableField.FieldName;
           if (tableField.DataType.Trim().ToLower() == "text")

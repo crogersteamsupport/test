@@ -335,7 +335,7 @@ namespace TeamSupport.Data
           result = "ContactsView.UserID";
           break;
         case ReferenceType.Tickets:
-          result = "TicketsView.TicketID";
+          result = "ReportTicketsView.TicketID";
           break;
         case ReferenceType.OrganizationProducts:
           result = "OrganizationProductsView.OrganizationProductID";
