@@ -14,11 +14,14 @@ namespace TeamSupport.Data
   public partial class ReportTableFields 
   {
 
-    public void LoadAll()
+    public void LoadAll(bool onlyVisible = false)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT rtf.*, rt.Alias AS TableAlias FROM ReportTableFields rtf LEFT JOIN ReportTables rt ON rt.ReportTableID = rtf.ReportTableID WHERE IsVisible = 1 ORDER BY rtf.Alias";
+        if (onlyVisible == true)
+          command.CommandText = "SELECT rtf.*, rt.Alias AS TableAlias FROM ReportTableFields rtf LEFT JOIN ReportTables rt ON rt.ReportTableID = rtf.ReportTableID WHERE IsVisible = 1 ORDER BY rtf.Alias";
+        else
+          command.CommandText = "SELECT rtf.*, rt.Alias AS TableAlias FROM ReportTableFields rtf LEFT JOIN ReportTables rt ON rt.ReportTableID = rtf.ReportTableID ORDER BY rtf.Alias";
         command.CommandType = CommandType.Text;
         Fill(command);
       }

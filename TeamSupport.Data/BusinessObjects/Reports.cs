@@ -1095,7 +1095,7 @@ namespace TeamSupport.Data
       tables.LoadAll();
 
       ReportTableFields tableFields = new ReportTableFields(loginUser);
-      tableFields.LoadAll();
+      tableFields.LoadAll(false);
       TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
 
       foreach (ReportSummaryCalculatedField field in summaryReport.Fields.Calculated)
