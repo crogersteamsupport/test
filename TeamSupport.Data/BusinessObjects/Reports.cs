@@ -562,7 +562,7 @@ namespace TeamSupport.Data
       if (condition.FieldID < 0)
       {
         dataType = condition.DataType;
-        fieldName = condition.FieldName;
+        fieldName = string.Format("[{0}]", condition.FieldName);
       }
       else
       {
