@@ -11,6 +11,7 @@ var _timerid;
 var _timerElapsed = 0;
 var _ticketGroupID = null;
 var _ticketGroupUsers = null;
+var _dueDate = null;
 var speed = 50, counter = 0, start;
 
 var execSelectTicket = null;
@@ -1220,7 +1221,82 @@ $(document).ready(function () {
       select.combobox('search', '');
     });
 
-  $('#userName')
+    $('#dueDate')
+    .addClass('value ui-state-default ts-link')
+    .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+    .click(function (e) {
+          e.preventDefault();
+          var parent = $(this).parent().hide();
+          var container = $('<div>')
+          .css('marginTop', '1em')
+          .insertAfter(parent);
+          var input = $('<input type="text">')
+            .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
+            .css('width', '100%')
+            .appendTo(container)
+            .datetimepicker()
+            .focus();
+
+          if (_dueDate != null) {
+            input.datetimepicker('setDate', top.Ts.Utils.getMsDate(_dueDate));
+          }
+
+          var buttons = $('<div>')
+          .addClass('ticket-custom-edit-buttons')
+          .appendTo(container);
+
+          $('<button>')
+          .text('Cancel')
+          .click(function (e) {
+              parent.show();
+              container.remove();
+          })
+          .appendTo(buttons)
+          .button();
+
+          $('<button>')
+          .text('Save')
+          .click(function (e) {
+              parent.show().find('img').show();
+              var value = top.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
+              container.remove();
+              //how can i check if the date is in the past
+//              if (field.IsRequired && (value === null || $.trim(value) === '')) {
+//                item.addClass('nonrequired-field-error ui-corner-all');
+//                var anchor = item.find('a');
+//                anchor.addClass('nonrequired-field-error-font');
+//              }
+//need to test what is this for apparently makes no sense
+//              if (value === null || $.trim(value) === '') {
+//                result.parent().addClass('is-empty');
+//              }
+//              else {
+//                result.parent().removeClass('is-empty');
+//              }
+              top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
+                  parent.find('img').hide().next().show().delay(800).fadeOut(400);
+                  var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+                  var anchor = parent.find('a');
+                  anchor.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                  _dueDate = result;
+                  if (date != null && date < Date.now()) {
+                    parent.addClass('nonrequired-field-error ui-corner-all');
+                    anchor.addClass('nonrequired-field-error-font');
+                  }
+                  else {
+                    parent.removeClass('nonrequired-field-error ui-corner-all');
+                    anchor.removeClass('nonrequired-field-error-font');
+                  }
+                  window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeduedate", userFullName);
+                }, function () {
+                  alert("There was a problem saving your ticket property.");
+              });
+          })
+          .appendTo(buttons)
+          .button();
+      });
+
+    $('#userName')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
       e.preventDefault();
@@ -3063,6 +3139,16 @@ var loadTicket = function (ticketNumber, refresh) {
       $('#knowledgeBaseCategoryDiv').hide();
     }
     $('#ticketCommunity').text((info.Ticket.CategoryName == null ? 'Unassigned' : info.Ticket.CategoryDisplayString));
+
+    _dueDate = info.Ticket.DueDate;
+    var dueDate = info.Ticket.DueDate == null ? null : top.Ts.Utils.getMsDate(info.Ticket.DueDate);
+    $('#dueDate').text((dueDate === null ? 'Unassigned' : dueDate.localeFormat(top.Ts.Utils.getDateTimePattern())));
+    if (_dueDate != null && _dueDate < Date.now()) {
+      $('#dueDate').parent().addClass('nonrequired-field-error ui-corner-all');
+      var anchor = $('#dueDate').parent().find('a');
+      anchor.addClass('nonrequired-field-error-font');
+    }
+
     $('#ticketType').html(info.Ticket.TicketTypeName);
     $('#ticketStatus')
         .text(info.Ticket.Status)
@@ -3206,32 +3292,32 @@ var loadTicket = function (ticketNumber, refresh) {
     }
 
     top.Ts.Services.Customers.LoadTicketAlerts(_ticketID, function (note) {
-        if (note)
-        {
-            $('#modalAlertMessage').html(note.Description);
-            $('#alertID').val(note.RefID);
-            $('#alertType').val(note.RefType);
-            $("#dialog").dialog({
-                resizable: false,
-                width: 'auto',
-                height: 'auto',
-                modal: true,
-                buttons: {
-                    "Close": function () {
-                        $(this).dialog("close");
-                    },
-                    "Snooze": function () {
-                        top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                        $(this).dialog("close");
-                    },
-                    "Dismiss": function () {
-                        top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                        $(this).dialog("close");
-                    }
-                }
-            });
+      if (note) 
+      {
+        $('#modalAlertMessage').html(note.Description);
+        $('#alertID').val(note.RefID);
+        $('#alertType').val(note.RefType);
+        $("#dialog").dialog({
+          resizable: false,
+          width: 'auto',
+          height: 'auto',
+          modal: true,
+          buttons: {
+            "Close": function () {
+              $(this).dialog("close");
+            },
+            "Snooze": function () {
+              top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+              $(this).dialog("close");
+            },
+            "Dismiss": function () {
+              top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+              $(this).dialog("close");
+            }
+          }
+        });
 
-        }
+      }
     });
 
   });

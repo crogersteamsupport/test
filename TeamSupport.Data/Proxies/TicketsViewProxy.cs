@@ -74,7 +74,7 @@ namespace TeamSupport.Data
     [DataMember] public string CategoryDisplayString { get; set; }
     [DataMember] public string SalesForceID { get; set; }          
     [DataMember] public DateTime? DateModifiedBySalesForceSync { get; set; }
-          
+    [DataMember] public DateTime? DueDate { get; set; }          
   }
   
   public partial class TicketsViewItem : BaseItem
@@ -146,6 +146,7 @@ namespace TeamSupport.Data
       result.IsSubscribed = this.IsSubscribed;
       result.IsEnqueued = this.IsEnqueued;
       result.ViewerID = this.ViewerID;
+      result.DueDate = this.DueDate;
       return result;
     }	
   }

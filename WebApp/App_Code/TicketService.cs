@@ -1418,6 +1418,19 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public DateTime? SetDueDate(int ticketID, Object dueDate)
+    {
+      Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+      if (!CanEditTicket(ticket)) return null;
+      string description = "Changed Due Date from '" + ticket.DueDate == null ? "Unassigned" : ticket.DueDate.ToString() + "' to '" + dueDate == null ? "Unassigned" : dueDate.ToString() + "'.";
+      ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketID, description);
+
+      ticket.DueDate = (DateTime?)dueDate;
+      ticket.Collection.Save();
+      return ticket.DueDate;
+    }
+
+    [WebMethod]
     public KnowledgeBaseCategoryProxy SetTicketKnowledgeBaseCategory(int ticketID, int? categoryID)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
@@ -2772,6 +2785,7 @@ namespace TSWebServices
       ticket.KnowledgeBaseCategoryID = info.KnowledgeBaseCategoryID < 0 ? null : (int?)info.KnowledgeBaseCategoryID;
       ticket.IsVisibleOnPortal = info.IsVisibleOnPortal;
       ticket.ParentID = info.ParentTicketID;
+      ticket.DueDate = info.DueDate;
       ticket.Collection.Save();
 
       if (info.CategoryID != null && info.CategoryID > -1) ticket.AddCommunityTicket((int)info.CategoryID);
@@ -3198,6 +3212,7 @@ namespace TSWebServices
     [DataMember] public List<int> Queuers { get; set; }
     [DataMember] public List<NewTicketReminderInfo> Reminders { get; set; }
     [DataMember] public List<int> Assets { get; set; }
+    [DataMember] public DateTime? DueDate { get; set; }
 
   }
 

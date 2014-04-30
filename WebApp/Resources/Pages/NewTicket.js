@@ -187,6 +187,8 @@ $(document).ready(function () {
     $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('.newticket-group');
   }
 
+  $('.ticket-action-form-dueDate').datetimepicker();
+
   function checkIfUserExistsInArray(user, array) {
     var result = false;
     for (var i = 0; i < array.length; i++) {
@@ -1810,6 +1812,7 @@ $(document).ready(function () {
       info.TicketSeverityID = $('.newticket-severity').val();
       info.UserID = $('.newticket-user').val();
       info.GroupID = $('.newticket-group').val();
+      info.DueDate = top.Ts.Utils.getMsDate($('.ticket-action-form-dueDate').datetimepicker('getDate'));
       info.CategoryID = $('.newticket-community').val();
       info.ProductID = $('.newticket-product').val();
       info.ReportedID = $('.newticket-reported').val();
