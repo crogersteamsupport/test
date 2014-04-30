@@ -1005,6 +1005,10 @@ namespace TSWebServices
                 ChatUserSetting setting = ChatUserSettings.GetChatUserSetting(TSAuthentication.GetLoginUser(), u.UserID);
                 string chatsetting = "";
 
+                Users tempUser = new Users(TSAuthentication.GetLoginUser());
+                int total = tempUser.GetUserTicketCount(u.UserID, false);
+                
+
                 if (setting != null)
                 {
                     chatsetting = setting.IsAvailable ? "<i class='user-tooltip fa-comments-o fa color-red' title='Customer Chat Online'></i>" : "";
@@ -1018,7 +1022,7 @@ namespace TSWebServices
                             </div>
                         </div>
                         <div class='col-xs-10'>
-                            <strong><a class='user' uid='{5}'>{1}{6}</a></strong>
+                            <strong><a class='user' uid='{5}'>{1} ({7}){6}</a></strong>
                             <div>{2}<div class='pull-right'>{3}{4}</div></div>
                         </div>
                     </div></li>",
@@ -1028,7 +1032,8 @@ namespace TSWebServices
                                 u.AppChatStatus == true ? chatsetting:"",
                                 (u.AppChatStatus == true && u.UserID != TSAuthentication.GetLoginUser().UserID) ? "<i class='user-tooltip fa-comment fa color-green user-chat' cid='"+u.UserID+"' title='Online to Chat'></i>":"",
                                 u.UserID,
-                                u.IsActive ? "":"<i>(Inactive)</i>"
+                                u.IsActive ? "":"<i>(Inactive)</i>",
+                                total
                                 );
             }
 

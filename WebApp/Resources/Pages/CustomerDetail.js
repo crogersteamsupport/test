@@ -68,6 +68,7 @@ $(document).ready(function () {
                 resizable: false,
                 width: 'auto',
                 height: 'auto',
+                maxWidth: '500',
                 modal: true,
                 buttons: {
                     "Close": function () {
@@ -133,9 +134,11 @@ $(document).ready(function () {
         $('#customerEdit').hide();
         $('#customerPhoneBtn').hide();
         $('#customerAddressBtn').hide();
-        $('#customerDelete').hide();
         $('#fileToggle').hide();
     }
+
+    if (!_isAdmin)
+        $('#customerDelete').hide();
 
     if (!_isAdmin && !top.Ts.System.User.CanCreateContact) {
         $('.contact-action-add').hide();
@@ -1169,7 +1172,8 @@ $(document).ready(function () {
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this note?')) {
             top.privateServices.DeleteNote($(this).parent().parent().attr('id'), function(){
-                LoadNotes();    
+                LoadNotes();
+                $('.noteDesc').toggle(false);
                 });
         }
     });

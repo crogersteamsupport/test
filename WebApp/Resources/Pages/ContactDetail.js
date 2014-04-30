@@ -91,8 +91,10 @@ $(document).ready(function () {
         $('#contactEdit').hide();
         $('#contactPhoneButton').hide();
         $('#contactAddressButton').hide();
-        $('#contactDelete').hide();
     }
+
+    if (!_isAdmin)
+        $('#contactDelete').hide();
 
     $('#contactRefresh').click(function (e) {
         window.location = window.location;
@@ -626,6 +628,7 @@ $(document).ready(function () {
         if (confirm('Are you sure you would like to remove this note?')) {
             top.privateServices.DeleteNote($(this).parent().parent().attr('id'), function () {;
                 LoadNotes();
+                $('.noteDesc').toggle(false);
             });
         }
     });
@@ -1159,6 +1162,7 @@ $(document).ready(function () {
                 resizable: false,
                 width: 'auto',
                 height: 'auto',
+                maxWidth: '500',
                 modal: true,
                 buttons: {
                     "Close": function () {

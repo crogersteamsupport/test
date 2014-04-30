@@ -628,6 +628,19 @@ namespace TeamSupport.Data
       }
     }
 
+    public int GetUserTicketCount(int userID, bool isClosed)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"SELECT COUNT(*) FROM TicketGridView WHERE UserID = @UserID and IsClosed=@IsClosed";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@UserID", userID);
+            command.Parameters.AddWithValue("@IsClosed", isClosed);
+            return (int)ExecuteScalar(command);
+        }
+
+    }
+
     public void LoadByOnline()
     {
       using (SqlCommand command = new SqlCommand())
