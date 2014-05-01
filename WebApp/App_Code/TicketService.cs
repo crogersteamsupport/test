@@ -49,8 +49,6 @@ namespace TSWebServices
     [WebMethod]
     public GridResult GetTicketRange(int from, int to, TicketLoadFilter filter)
     {
-      if (true)
-      {
         LoginUser loginUser = TSAuthentication.GetLoginUser();
         GridResult result = new GridResult();
         result.From = from;
@@ -127,6 +125,7 @@ namespace TSWebServices
               item.SlaWarningDate = GetReaderNullableDate(reader["SlaWarningDate"]);
               item.SlaViolationDate = GetReaderNullableDate(reader["SlaViolationDate"]);
               item.DateClosed = GetReaderNullableDate(reader["DateClosed"]);
+              item.DueDate = GetReaderNullableDate(reader["DueDate"]);
 
               item.IsRead = reader["IsRead"] as bool? ?? false;
               item.IsFlagged = reader["IsFlagged"] as bool? ?? false;
@@ -146,30 +145,7 @@ namespace TSWebServices
           return result;
         }
       
-      }
-      else
-      {
-        try
-        {
-          TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
-          if (filter == null) filter = new TicketLoadFilter();
-          tickets.LoadByRange(from, to, filter);
-          GridResult result = new GridResult();
-
-          result.From = from;
-          result.To = to;
-          result.Total = tickets.GetFilterCount(filter);
-          result.Data = tickets.GetTicketsViewItemProxies();
-          return result;
-          //return new TicketRange(from, to, tickets.GetFilterCount(filter), tickets.GetTicketsViewItemProxies(), filter);
-        }
-        catch (Exception e)
-        {
-          ExceptionLogs.LogException(TSAuthentication.GetLoginUser(), e, "Ticket Grid");
-          throw;
-        }
-
-      }
+ 
     }
 
     private DateTime? GetReaderNullableDate(object o)

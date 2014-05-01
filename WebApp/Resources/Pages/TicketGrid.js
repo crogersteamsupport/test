@@ -511,9 +511,10 @@ TicketGrid = function (options) {
 
         self.options.isCompact = $('.dialog-columns-compact input').prop('checked') == true;
         saveOptions();
-        saveColumns();
+        saveColumns(function () {
+            self.refresh();
+        });
         $('#dialog-columns').modal('hide');
-        self.refresh();
     });
 
     $('.tickets-default-columns').click(function (e) {
@@ -569,6 +570,8 @@ TicketGrid = function (options) {
             else if (ticket['SlaViolationTime'] && ticket['SlaViolationTime'] < 0) {
                 result = result + ' ticket-grid-row-warning';
             }
+
+            if (ticket['DueDate'] && ticket['DueDate'] < (new Date())) { result = result + ' ticket-grid-row-pastdue'; }
             if (ticket['IsRead'] && ticket['IsRead'] === true) { result = result + ' ticket-grid-row-read'; } else { result = result + ' ticket-grid-row-unread'; }
             if (ticket['UserID'] == top.Ts.System.User.UserID) { result = result + ' ticket-grid-row-mine'; } else { result = result + ' ticket-grid-row-notmine'; }
             if (ticket['IsClosed'] == true) { result = result + ' ticket-grid-row-closed'; } else { result = result + ' ticket-grid-row-open'; }
@@ -587,6 +590,16 @@ TicketGrid = function (options) {
                 return Math.round(min / 60) + ' hours';
         }
         return "";
+    };
+
+    var dueDateTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
+        var date = dataContext["DueDate"];
+        if (date) {
+            return '<span class="ticket-grid-cell-duedate-text">' + date.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</span>';
+        }
+        else {
+            return '';
+        }
     };
 
 
@@ -611,7 +624,13 @@ TicketGrid = function (options) {
     };
 
     var dateTicketColumnFormatter = function (row, cell, value, columnDef, dataContext) {
-        return dataContext[columnDef.id].localeFormat(top.Ts.Utils.getDateTimePattern());
+        var date = dataContext[columnDef.id];
+        if (date) {
+            return date.localeFormat(top.Ts.Utils.getDateTimePattern());
+        }
+        else {
+            return '';
+        }
     };
 
     var ticketSourceColumnFormatter = function (row, cell, value, columnDef, ticket) {
@@ -655,6 +674,7 @@ TicketGrid = function (options) {
     { id: "ReportedVersion", name: "Reported", field: "ReportedVersion", width: 100, sortable: true },
     { id: "SolvedVersion", name: "Resolved", field: "SolvedVersion", width: 100, sortable: true },
     { id: "DateCreated", name: "Date Opened", field: "DateCreated", width: 150, sortable: true, formatter: dateTicketColumnFormatter },
+    { id: "DueDate", name: "Due Date", field: "DueDate", width: 150, sortable: true, formatter: dueDateTicketColumnFormatter },
     { id: "IsClosed", name: "Closed", field: "IsClosed", width: 75, sortable: true },
     { id: "CloserName", name: "Closed By", field: "CloserName", width: 125, sortable: true },
     { id: "SlaViolationTime", name: "SLA Violation Time", field: "SlaViolationTime", width: 125, sortable: true, formatter: slaTicketColumnFormatter },
@@ -771,7 +791,7 @@ TicketGrid = function (options) {
 
     grid.onColumnsResized.subscribe(function (e, args) { saveColumns(); });
 
-    function saveColumns() {
+    function saveColumns(callback) {
         var columns = grid.getColumns();
         var info = new Object();
         info.columns = [];
@@ -784,7 +804,7 @@ TicketGrid = function (options) {
             info.columns.push(item);
         }
         info.version = 1;
-        top.Ts.Services.Settings.WriteUserSetting('TicketGrid-Columns', JSON.stringify(info));
+        top.Ts.Services.Settings.WriteUserSetting('TicketGrid-Columns', JSON.stringify(info), callback);
     }
 
     $('.grid-ticket').on('click', 'a.cell-link', function (e) {

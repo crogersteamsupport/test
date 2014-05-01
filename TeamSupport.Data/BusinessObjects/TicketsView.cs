@@ -516,7 +516,8 @@ namespace TeamSupport.Data
         ,tv.KnowledgeBaseCategoryID
         ,tv.KnowledgeBaseCategoryName
         ,tv.SalesForceID
-        ,tv.DateModifiedBySalesForceSync";
+        ,tv.DateModifiedBySalesForceSync
+        ,tv.DueDate";
       StringBuilder where = new StringBuilder();
       GetFilterWhereClause(loginUser, filter, command, where);
 
