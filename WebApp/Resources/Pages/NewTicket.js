@@ -913,6 +913,9 @@ $(document).ready(function () {
                       resizable: false,
                       width: 'auto',
                       height: 'auto',
+                      create: function () {
+                          $(this).css('maxWidth', '800px');
+                      },
                       modal: true,
                       buttons: {
                         "Close": function () {
@@ -941,6 +944,9 @@ $(document).ready(function () {
                       resizable: false,
                       width: 'auto',
                       height: 'auto',
+                      create: function () {
+                          $(this).css('maxWidth', '800px');
+                      },
                       modal: true,
                       buttons: {
                         "Close": function () {

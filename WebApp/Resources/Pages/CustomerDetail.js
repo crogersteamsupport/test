@@ -68,7 +68,9 @@ $(document).ready(function () {
                 resizable: false,
                 width: 'auto',
                 height: 'auto',
-                maxWidth: '500',
+                create: function () {
+                    $(this).css('maxWidth', '800px');
+                },
                 modal: true,
                 buttons: {
                     "Close": function () {

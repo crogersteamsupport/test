@@ -253,6 +253,9 @@ $(document).ready(function () {
                                 resizable: false,
                                 width: 'auto',
                                 height: 'auto',
+                                create: function () {
+                                    $(this).css('maxWidth', '800px');
+                                },
                                 modal: true,
                                 buttons: {
                                     "Close": function () {
@@ -282,6 +285,9 @@ $(document).ready(function () {
                                 resizable: false,
                                 width: 'auto',
                                 height: 'auto',
+                                create: function () {
+                                    $(this).css('maxWidth', '800px');
+                                },
                                 modal: true,
                                 buttons: {
                                     "Close": function () {
@@ -3302,6 +3308,9 @@ var loadTicket = function (ticketNumber, refresh) {
           width: 'auto',
           height: 'auto',
           modal: true,
+          create: function () {
+              $(this).css('maxWidth', '800px');
+          },
           buttons: {
             "Close": function () {
               $(this).dialog("close");
