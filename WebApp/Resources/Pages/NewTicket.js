@@ -1818,7 +1818,10 @@ $(document).ready(function () {
       info.TicketSeverityID = $('.newticket-severity').val();
       info.UserID = $('.newticket-user').val();
       info.GroupID = $('.newticket-group').val();
-      info.DueDate = top.Ts.Utils.getMsDate($('.ticket-action-form-dueDate').datetimepicker('getDate'));
+      var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
+      if (dueDate != null) {
+        info.DueDate = top.Ts.Utils.getMsDate(dueDate);
+      }
       info.CategoryID = $('.newticket-community').val();
       info.ProductID = $('.newticket-product').val();
       info.ReportedID = $('.newticket-reported').val();
