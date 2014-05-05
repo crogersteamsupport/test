@@ -644,8 +644,8 @@ Namespace TeamSupport
                       ") exceeded the file size limit of " + 
                       fileSizeLimit)
                   Else
-                    Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/attachments/
-                    Dim request As HttpWebRequest = WebRequest.Create(URI)
+                    Dim URIString As String = _baseURI + "/issue/" + issue("id").ToString() + "/attachments/"
+                    Dim request As HttpWebRequest = WebRequest.Create(URIString)
                     request.Headers.Add("Authorization", "Basic " + _encodedCredentials)
                     request.Headers.Add("X-Atlassian-Token", "nocheck")
                     request.Method = "POST"
