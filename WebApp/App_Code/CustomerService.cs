@@ -243,8 +243,14 @@ namespace TSWebServices
             foreach (Ticket tix in t)
             {
                 tix.Collection.AddContact(userID, tix.TicketID);
+
             }
-           
+
+            EmailPosts ep = new EmailPosts(TSAuthentication.GetLoginUser());
+            ep.LoadByRecentUserID(userID);
+            ep.DeleteAll();
+            ep.Save();
+
 
             //User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             //u.OrganizationID = value;
