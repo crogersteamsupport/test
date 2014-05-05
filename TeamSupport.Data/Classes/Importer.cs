@@ -111,26 +111,33 @@ namespace TeamSupport.Data
 
     private DataTable ReadTable(string tableName)
     {
-      DataTable table = new DataTable();
-      using (OleDbConnection connection = new OleDbConnection(GetConnectionString()))
+      try
       {
+        DataTable table = new DataTable();
+        using (OleDbConnection connection = new OleDbConnection(GetConnectionString()))
+        {
 
-        string query = "SELECT * FROM [" + tableName + "$]";
-        OleDbDataAdapter adapter = new OleDbDataAdapter(query, connection);
-        connection.Open();
-        adapter.Fill(table);
-        connection.Close();
+          string query = "SELECT * FROM [" + tableName + "$]";
+          OleDbDataAdapter adapter = new OleDbDataAdapter(query, connection);
+          connection.Open();
+          adapter.Fill(table);
+          connection.Close();
+        }
+
+        for (int i = table.Rows.Count - 1; i >= 0; i--)
+        {
+          DataRow row = table.Rows[i];
+          if (row[0].ToString().Trim() == "") row.Delete();
+        }
+        table.AcceptChanges();
+
+        return table;
+
       }
-
-      for (int i = table.Rows.Count - 1; i >= 0; i--)
+      catch (Exception)
       {
-        DataRow row = table.Rows[i];
-        if (row[0].ToString().Trim() == "") row.Delete();
+        return null;
       }
-      table.AcceptChanges();
-
-      return table;
-
     }
 
     private DataTable ReadDistinctValues(string tableName, string columnName)
@@ -730,6 +737,19 @@ namespace TeamSupport.Data
 
     }
 
+    private bool GetDBBool(object o, bool defValue = false)
+    {
+      if (o == null) return defValue;
+      try 
+	    {	        
+		    return bool.Parse(o.ToString().Trim());
+	    }
+	    catch (Exception)
+	    {
+		
+		    return defValue;
+	    }
+    }
 
     private DateTime? GetDBDate(object o, bool allowNull)
     {
@@ -1391,7 +1411,7 @@ AND RTRIM(LastName) = @LastName
         ticket.DateClosed = GetDBDate(row["DateClosed"], true);
         ticket.GroupID = null;
         ticket.ImportID = row["TicketID"].ToString().Trim();
-        ticket.IsKnowledgeBase = false;
+        ticket.IsKnowledgeBase = GetDBBool(row["IsKnowledgeBase"]); 
         ticket.IsVisibleOnPortal = false;
         ticket.ModifierID = _loginUser.UserID;
         ticket.Name = GetDBString(row["Name"], 250, false);
@@ -1971,6 +1991,32 @@ AND RTRIM(LastName) = @LastName
         if (missing == true) continue;
         tickets.AddOrganization(organization.OrganizationID, ticket.TicketID);
 
+      }
+    }
+
+    private void ImportTicketSubscriptions()
+    {
+      Users users = new Users(_loginUser);
+      users.LoadByOrganizationID(_organizationID, false);
+
+      Tickets tickets = new Tickets(_loginUser);
+      tickets.LoadByOrganizationID(_organizationID);
+      DataTable table = ReadTable("TicketSubscriptions");
+      if (table == null) return;
+
+      foreach (DataRow row in table.Rows)
+      {
+        _currentRow = row;
+        Ticket ticket = tickets.FindByImportID(row["TicketID"].ToString().Trim());
+        User user = users.FindByImportID(row["UserID"].ToString().Trim());
+
+        if (user == null || ticket == null)
+        {
+          _log.AppendError(row, "Ticket Suscription skipped due to missing user or ticket.");
+          continue;
+        }
+
+        tickets.AddSubscription(user.UserID, ticket.TicketID);
       }
     }
 

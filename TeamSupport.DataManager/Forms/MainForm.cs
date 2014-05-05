@@ -181,6 +181,7 @@ namespace TeamSupport.DataManager
 
     private void btnTestButton_Click(object sender, EventArgs e)
     {
+      /*
       Reports reports = new Reports(LoginSession.LoginUser);
       StreamWriter sw = new StreamWriter("FieldReportIDs.txt", false);
       reports.LoadEverything();
@@ -219,7 +220,7 @@ namespace TeamSupport.DataManager
       sw.WriteLine("Done Testing");
 
       sw.Close();
-     
+     */
     }
 
     private void ProcessAttachment(string fileName, byte[] bytes)
