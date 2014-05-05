@@ -26,6 +26,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("RefType", "RefType", false, false, false);
       _fieldMap.AddMap("RefID", "RefID", false, false, false);
+      _fieldMap.AddMap("SentToJira", "SentToJira", false, false, false);
             
     }
   }

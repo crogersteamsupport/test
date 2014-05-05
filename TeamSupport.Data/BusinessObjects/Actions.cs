@@ -378,5 +378,27 @@ namespace TeamSupport.Data
         Fill(command, "Actions");
       }
     }
+
+    public static int GetActionPosition(LoginUser loginUser, int actionID)
+    {
+      using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+      {
+        connection.Open();
+        SqlCommand command = connection.CreateCommand();
+        command.CommandText = @"
+          SELECT 
+	          COUNT(*) 
+          FROM
+	          Actions 
+          WHERE 
+	          ActionID <= @ActionID 
+	          AND TicketID = (SELECT TicketID FROM Actions WHERE ActionID = @ActionID)";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ActionID", actionID);
+        int result = (int)command.ExecuteScalar();
+        connection.Close();
+        return result;
+      }
+    }
   }
 }

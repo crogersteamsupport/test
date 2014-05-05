@@ -160,6 +160,7 @@ Namespace TeamSupport
 
           Using requestStream As Stream = request.GetRequestStream()
             requestStream.Write(bodyByteArray, 0, bodyByteArray.Length)
+            requestStream.Close()
           End Using
         End If
 
@@ -173,6 +174,9 @@ Namespace TeamSupport
         ByVal newActionsTypeID As Integer)
 
         Dim URI As String = _baseURI + "/issue"
+
+        Dim attachmentFileSizeLimit As Integer = 0
+        Dim attachmentEnabled As Boolean = GetAttachmentEnabled(attachmentFileSizeLimit)
 
         For Each ticket As TicketsViewItem In ticketsToPushAsCases
           Dim ticketLinkToJira As TicketLinkToJiraItem = ticketsLinksToJiraToPushAsIssues.FindByTicketID(ticket.TicketID)
@@ -268,7 +272,7 @@ Namespace TeamSupport
             Log.Write("Updated jira fields in ticket")
           End If
 
-          PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, issue, ticketLinkToJira.JiraKey)
+          PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, issue, ticketLinkToJira.JiraKey, attachmentEnabled, attachmentFileSizeLimit)
 
           If sendCustomMappingFields Then
             'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
@@ -329,6 +333,18 @@ Namespace TeamSupport
           End If
         Next
       End Sub
+
+        Private Function GetAttachmentEnabled(ByRef attachmentFileSizeLimit As Integer) As String
+          Dim result As Boolean = False
+
+          Dim URI As String = _baseURI + "/attachment/meta"
+          Dim batch As JObject = GetAPIJObject(URI, "GET", string.Empty)
+          result = Convert.ToBoolean(batch("enabled").ToString())
+          attachmentFileSizeLimit = Convert.ToInt32(batch("uploadLimit").ToString())
+          Log.Write("Attachment enabled is " + result.ToString())
+
+          Return result
+        End Function
 
         Private Function GetTicketData(ByVal ticket As TicketsViewItem, ByRef issueFields As JObject) As String
           Dim result As StringBuilder = new StringBuilder()
@@ -543,7 +559,13 @@ Namespace TeamSupport
           End Try
         End Sub
 
-        Private Sub PushActionsAsComments(ByVal ticketID As Integer, ByVal ticketNumber As Integer, ByVal issue As JObject, ByVal issueKey As String)
+        Private Sub PushActionsAsComments(
+        ByVal ticketID As Integer, 
+        ByVal ticketNumber As Integer, 
+        ByVal issue As JObject, 
+        ByVal issueKey As String,
+        ByVal attachmentEnabled As Boolean,
+        ByVal attachmentFileSizeLimit As Integer)
           Dim actionsToPushAsComments As Actions = New Actions(User)
           actionsToPushAsComments.LoadToPushToJira(CRMLinkRow, ticketID)
           Log.Write("Found " + actionsToPushAsComments.Count.ToString() + " actions to push as comments.")
@@ -588,10 +610,83 @@ Namespace TeamSupport
                 Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
               End If
             End If
+
+            If (attachmentEnabled)
+              PushAttachments(actionToPushAsComment.ActionID, ticketNumber, issue, issueKey, attachmentFileSizeLimit)
+            End If
           Next
           actionLinkToJira.Save()
         End Sub
           
+          Private Sub PushAttachments(
+          ByVal actionID As Integer, 
+          ByVal ticketNumber As Integer, 
+          ByVal issue As JObject, 
+          ByVal issueKey As String,
+          ByVal fileSizeLimit As Integer)
+            Dim actionPosition As integer = 0
+            Dim attachments As Attachments = New Attachments(User)
+            attachments.LoadForJira(actionID)
+            Dim updateAttachments As Boolean = False
+            For Each attachment As Attachment In attachments
+              If (Not File.Exists(attachment.Path))
+                Log.Write("Attachment """ + attachment.FileName + """ was not sent as it was not found on server")
+              Else
+                If actionPosition = 0 Then
+                  actionPosition = Actions.GetActionPosition(User, actionID)
+                End If
+                  Dim fs = new FileStream(attachment.Path, FileMode.Open, FileAccess.Read)
+                  If (fs.Length > fileSizeLimit)
+                    Log.Write(
+                      "Attachment """ + attachment.FileName + 
+                      """ was not sent as its file size (" + 
+                      fs.Length.ToString() + 
+                      ") exceeded the file size limit of " + 
+                      fileSizeLimit)
+                  Else
+                    Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/attachments/
+                    Dim request As HttpWebRequest = WebRequest.Create(URI)
+                    request.Headers.Add("Authorization", "Basic " + _encodedCredentials)
+                    request.Headers.Add("X-Atlassian-Token", "nocheck")
+                    request.Method = "POST"
+                    Dim boundary As String = string.Format("----------{0:N}", Guid.NewGuid())
+                    request.ContentType = string.Format("multipart/form-data; boundary={0}", boundary)
+                    request.UserAgent = Client
+
+                    Dim content = new MemoryStream()
+                      Dim writer = new StreamWriter(content)
+                      writer.WriteLine("--{0}", boundary)
+                      writer.WriteLine("Content-Disposition: form-data; name=""file""; filename=""{0}""", ("TeamSupport Ticket #" + ticketNumber.ToString() + " action #" + actionPosition.ToString() + " - " + attachment.FileName))
+                      writer.WriteLine("Content-Type: application/octet-stream")
+                      writer.WriteLine()
+                      writer.Flush()
+                      Dim data(fs.Length) As Byte
+                      fs.Read(data, 0, data.Length)
+                      fs.Close()
+                      content.Write(data, 0, data.Length)
+                      writer.WriteLine()
+                      writer.WriteLine("--" + boundary + "--")
+                      writer.Flush()
+                    content.Seek(0, SeekOrigin.Begin)
+                    request.ContentLength = content.Length
+
+                    Using requestStream As Stream = request.GetRequestStream()
+                      content.WriteTo(requestStream)
+                      requestStream.Close()
+                    End Using
+
+                    Dim response As HttpWebResponse = request.GetResponse()
+                    Log.Write("Attachment """ + attachment.FileName + """ sent.")
+                    attachment.SentToJira = True
+                    updateAttachments = True                                 
+                  End If
+                End If
+            Next
+            If updateAttachments then
+              attachments.Save()
+            End If
+          End Sub
+
           Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String) As String
             Dim result As StringBuilder = New StringBuilder()
             result.Append("{")
