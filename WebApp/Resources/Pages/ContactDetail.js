@@ -1556,6 +1556,11 @@ var appendCustomEdit = function (field, element) {
                 .appendTo(container1)
                 .focus();
 
+              if (field.Mask) {
+                input.mask(field.Mask);
+                input.attr("placeholder", field.Mask);
+              }
+
               $('<i>')
                 .addClass('col-md-1 fa fa-times')
                 .click(function (e) {
