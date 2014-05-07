@@ -1682,7 +1682,7 @@ $(document).ready(function () {
   $('#newJiraIssue').click(function (e) {
     e.preventDefault();
     var parent = $(this).parent().hide();
-    top.Ts.Services.Tickets.SetSyncWithJira(_ticketID, true, function (result) {
+    top.Ts.Services.Tickets.SetSyncWithJira(_ticketID, function (result) {
       if (result === true) {
         $('#issueKeyValue').text('Pending...');
         $('#issueKey').show();

@@ -1,685 +1,545 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToJiraItem
 
 (
-  @AttachmentID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [id],
+    [TicketID],
+    [DateModifiedByJiraSync],
+    [SyncWithJira],
+    [JiraID],
+    [JiraKey],
+    [JiraLinkURL],
+    [JiraStatus],
+    [CreatorID]
+  FROM [dbo].[TicketLinkToJira]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToJiraItem
 
 (
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
+  @TicketID int,
+  @DateModifiedByJiraSync datetime,
+  @SyncWithJira bit,
+  @JiraID int,
+  @JiraKey varchar(8000),
+  @JiraLinkURL varchar(8000),
+  @JiraStatus varchar(8000),
   @CreatorID int,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[TicketLinkToJira]
   (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira])
+    [TicketID],
+    [DateModifiedByJiraSync],
+    [SyncWithJira],
+    [JiraID],
+    [JiraKey],
+    [JiraLinkURL],
+    [JiraStatus],
+    [CreatorID])
   VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira)
+    @TicketID,
+    @DateModifiedByJiraSync,
+    @SyncWithJira,
+    @JiraID,
+    @JiraKey,
+    @JiraLinkURL,
+    @JiraStatus,
+    @CreatorID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToJiraItem
 
 (
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit
+  @id int,
+  @TicketID int,
+  @DateModifiedByJiraSync datetime,
+  @SyncWithJira bit,
+  @JiraID int,
+  @JiraKey varchar(8000),
+  @JiraLinkURL varchar(8000),
+  @JiraStatus varchar(8000)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[TicketLinkToJira]
   SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira
-  WHERE ([AttachmentID] = @AttachmentID)
+    [TicketID] = @TicketID,
+    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,
+    [SyncWithJira] = @SyncWithJira,
+    [JiraID] = @JiraID,
+    [JiraKey] = @JiraKey,
+    [JiraLinkURL] = @JiraLinkURL,
+    [JiraStatus] = @JiraStatus
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToJiraItem
 
 (
-  @AttachmentID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[TicketLinkToJira]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToJiraItem
 
 (
-  @AttachmentID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [id],
+    [TicketID],
+    [DateModifiedByJiraSync],
+    [SyncWithJira],
+    [JiraID],
+    [JiraKey],
+    [JiraLinkURL],
+    [JiraStatus],
+    [CreatorID]
+  FROM [dbo].[TicketLinkToJira]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToJiraItem
 
 (
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
+  @TicketID int,
+  @DateModifiedByJiraSync datetime,
+  @SyncWithJira bit,
+  @JiraID int,
+  @JiraKey varchar(8000),
+  @JiraLinkURL varchar(8000),
+  @JiraStatus varchar(8000),
   @CreatorID int,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[TicketLinkToJira]
   (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira])
+    [TicketID],
+    [DateModifiedByJiraSync],
+    [SyncWithJira],
+    [JiraID],
+    [JiraKey],
+    [JiraLinkURL],
+    [JiraStatus],
+    [CreatorID])
   VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira)
+    @TicketID,
+    @DateModifiedByJiraSync,
+    @SyncWithJira,
+    @JiraID,
+    @JiraKey,
+    @JiraLinkURL,
+    @JiraStatus,
+    @CreatorID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToJiraItem
 
 (
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit
+  @id int,
+  @TicketID int,
+  @DateModifiedByJiraSync datetime,
+  @SyncWithJira bit,
+  @JiraID int,
+  @JiraKey varchar(8000),
+  @JiraLinkURL varchar(8000),
+  @JiraStatus varchar(8000)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[TicketLinkToJira]
   SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira
-  WHERE ([AttachmentID] = @AttachmentID)
+    [TicketID] = @TicketID,
+    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,
+    [SyncWithJira] = @SyncWithJira,
+    [JiraID] = @JiraID,
+    [JiraKey] = @JiraKey,
+    [JiraLinkURL] = @JiraLinkURL,
+    [JiraStatus] = @JiraStatus
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToJiraItem
 
 (
-  @AttachmentID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[TicketLinkToJira]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToJiraItem
 
 (
-  @AttachmentID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [id],
+    [TicketID],
+    [DateModifiedByJiraSync],
+    [SyncWithJira],
+    [JiraID],
+    [JiraKey],
+    [JiraLinkURL],
+    [JiraStatus],
+    [CreatorID]
+  FROM [dbo].[TicketLinkToJira]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToJiraItem
 
 (
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
+  @TicketID int,
+  @DateModifiedByJiraSync datetime,
+  @SyncWithJira bit,
+  @JiraID int,
+  @JiraKey varchar(8000),
+  @JiraLinkURL varchar(8000),
+  @JiraStatus varchar(8000),
   @CreatorID int,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[TicketLinkToJira]
   (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira])
+    [TicketID],
+    [DateModifiedByJiraSync],
+    [SyncWithJira],
+    [JiraID],
+    [JiraKey],
+    [JiraLinkURL],
+    [JiraStatus],
+    [CreatorID])
   VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira)
+    @TicketID,
+    @DateModifiedByJiraSync,
+    @SyncWithJira,
+    @JiraID,
+    @JiraKey,
+    @JiraLinkURL,
+    @JiraStatus,
+    @CreatorID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToJiraItem
 
 (
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit
+  @id int,
+  @TicketID int,
+  @DateModifiedByJiraSync datetime,
+  @SyncWithJira bit,
+  @JiraID int,
+  @JiraKey varchar(8000),
+  @JiraLinkURL varchar(8000),
+  @JiraStatus varchar(8000)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[TicketLinkToJira]
   SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira
-  WHERE ([AttachmentID] = @AttachmentID)
+    [TicketID] = @TicketID,
+    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,
+    [SyncWithJira] = @SyncWithJira,
+    [JiraID] = @JiraID,
+    [JiraKey] = @JiraKey,
+    [JiraLinkURL] = @JiraLinkURL,
+    [JiraStatus] = @JiraStatus
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToJiraItem
 
 (
-  @AttachmentID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[TicketLinkToJira]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToJiraItem
 
 (
-  @AttachmentID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [id],
+    [TicketID],
+    [DateModifiedByJiraSync],
+    [SyncWithJira],
+    [JiraID],
+    [JiraKey],
+    [JiraLinkURL],
+    [JiraStatus],
+    [CreatorID]
+  FROM [dbo].[TicketLinkToJira]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToJiraItem
 
 (
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
+  @TicketID int,
+  @DateModifiedByJiraSync datetime,
+  @SyncWithJira bit,
+  @JiraID int,
+  @JiraKey varchar(8000),
+  @JiraLinkURL varchar(8000),
+  @JiraStatus varchar(8000),
   @CreatorID int,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[TicketLinkToJira]
   (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira])
+    [TicketID],
+    [DateModifiedByJiraSync],
+    [SyncWithJira],
+    [JiraID],
+    [JiraKey],
+    [JiraLinkURL],
+    [JiraStatus],
+    [CreatorID])
   VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira)
+    @TicketID,
+    @DateModifiedByJiraSync,
+    @SyncWithJira,
+    @JiraID,
+    @JiraKey,
+    @JiraLinkURL,
+    @JiraStatus,
+    @CreatorID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToJiraItem
 
 (
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit
+  @id int,
+  @TicketID int,
+  @DateModifiedByJiraSync datetime,
+  @SyncWithJira bit,
+  @JiraID int,
+  @JiraKey varchar(8000),
+  @JiraLinkURL varchar(8000),
+  @JiraStatus varchar(8000)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[TicketLinkToJira]
   SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira
-  WHERE ([AttachmentID] = @AttachmentID)
+    [TicketID] = @TicketID,
+    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,
+    [SyncWithJira] = @SyncWithJira,
+    [JiraID] = @JiraID,
+    [JiraKey] = @JiraKey,
+    [JiraLinkURL] = @JiraLinkURL,
+    [JiraStatus] = @JiraStatus
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToJiraItem
 
 (
-  @AttachmentID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[TicketLinkToJira]
+  WHERE ([id] = @id)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAttachment
+CREATE PROCEDURE dbo.uspGeneratedSelectTicketLinkToJiraItem
 
 (
-  @AttachmentID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [AttachmentID],
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira]
-  FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+    [id],
+    [TicketID],
+    [DateModifiedByJiraSync],
+    [SyncWithJira],
+    [JiraID],
+    [JiraKey],
+    [JiraLinkURL],
+    [JiraStatus],
+    [CreatorID]
+  FROM [dbo].[TicketLinkToJira]
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAttachment
+CREATE PROCEDURE dbo.uspGeneratedInsertTicketLinkToJiraItem
 
 (
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateCreated datetime,
-  @DateModified datetime,
+  @TicketID int,
+  @DateModifiedByJiraSync datetime,
+  @SyncWithJira bit,
+  @JiraID int,
+  @JiraKey varchar(8000),
+  @JiraLinkURL varchar(8000),
+  @JiraStatus varchar(8000),
   @CreatorID int,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[Attachments]
+  INSERT INTO [dbo].[TicketLinkToJira]
   (
-    [OrganizationID],
-    [FileName],
-    [FileType],
-    [FileSize],
-    [Path],
-    [Description],
-    [DateCreated],
-    [DateModified],
-    [CreatorID],
-    [ModifierID],
-    [RefType],
-    [RefID],
-    [SentToJira])
+    [TicketID],
+    [DateModifiedByJiraSync],
+    [SyncWithJira],
+    [JiraID],
+    [JiraKey],
+    [JiraLinkURL],
+    [JiraStatus],
+    [CreatorID])
   VALUES (
-    @OrganizationID,
-    @FileName,
-    @FileType,
-    @FileSize,
-    @Path,
-    @Description,
-    @DateCreated,
-    @DateModified,
-    @CreatorID,
-    @ModifierID,
-    @RefType,
-    @RefID,
-    @SentToJira)
+    @TicketID,
+    @DateModifiedByJiraSync,
+    @SyncWithJira,
+    @JiraID,
+    @JiraKey,
+    @JiraLinkURL,
+    @JiraStatus,
+    @CreatorID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAttachment
+CREATE PROCEDURE dbo.uspGeneratedUpdateTicketLinkToJiraItem
 
 (
-  @AttachmentID int,
-  @OrganizationID int,
-  @FileName varchar(1000),
-  @FileType varchar(255),
-  @FileSize bigint,
-  @Path varchar(1000),
-  @Description varchar(2000),
-  @DateModified datetime,
-  @ModifierID int,
-  @RefType int,
-  @RefID int,
-  @SentToJira bit
+  @id int,
+  @TicketID int,
+  @DateModifiedByJiraSync datetime,
+  @SyncWithJira bit,
+  @JiraID int,
+  @JiraKey varchar(8000),
+  @JiraLinkURL varchar(8000),
+  @JiraStatus varchar(8000)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[Attachments]
+  UPDATE [dbo].[TicketLinkToJira]
   SET
-    [OrganizationID] = @OrganizationID,
-    [FileName] = @FileName,
-    [FileType] = @FileType,
-    [FileSize] = @FileSize,
-    [Path] = @Path,
-    [Description] = @Description,
-    [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID,
-    [RefType] = @RefType,
-    [RefID] = @RefID,
-    [SentToJira] = @SentToJira
-  WHERE ([AttachmentID] = @AttachmentID)
+    [TicketID] = @TicketID,
+    [DateModifiedByJiraSync] = @DateModifiedByJiraSync,
+    [SyncWithJira] = @SyncWithJira,
+    [JiraID] = @JiraID,
+    [JiraKey] = @JiraKey,
+    [JiraLinkURL] = @JiraLinkURL,
+    [JiraStatus] = @JiraStatus
+  WHERE ([id] = @id)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAttachment' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAttachment
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteTicketLinkToJiraItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteTicketLinkToJiraItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAttachment
+CREATE PROCEDURE dbo.uspGeneratedDeleteTicketLinkToJiraItem
 
 (
-  @AttachmentID int
+  @id int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[Attachments]
-  WHERE ([AttachmentID] = @AttachmentID)
+  DELETE FROM [dbo].[TicketLinkToJira]
+  WHERE ([id] = @id)
 GO
 
 

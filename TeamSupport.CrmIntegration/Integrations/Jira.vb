@@ -229,7 +229,13 @@ Namespace TeamSupport
           End If
 
           If updateTicketFlag Then
-            AddRemoteLinkInJira(issue("id").ToString(), ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.Name)
+            Dim creatorName As String = "TeamSupport"
+            If ticketLinkToJira.CreatorID IsNot Nothing Then
+              Dim creator As Users = New Users(User)
+              creator.LoadByUserID(ticketLinkToJira.CreatorID)
+              creatorName = creator(0).FirstName.Substring(0, 1) + ". " + creator(0).LastName + " linked"
+            End If
+            AddRemoteLinkInJira(issue("id").ToString(), ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.Name, creatorName)
             Log.Write("Added remote link for ticket #" + ticket.TicketNumber.ToString())
 
             ticketLinkToJira.JiraID      = CType(issue("id").ToString(), Integer?)
@@ -530,20 +536,21 @@ Namespace TeamSupport
               Return result
             End Function
 
-        Private Sub AddRemoteLinkInJira(ByVal issueID As String, ByVal ticketID As String, ByVal ticketNumber As String, ByVal ticketName As String)
+        Private Sub AddRemoteLinkInJira(ByVal issueID As String, ByVal ticketID As String, ByVal ticketNumber As String, ByVal ticketName As String, ByVal creatorName As String)
+          Dim domain As String = SystemSettings.ReadString(User, "AppDomain", "https://app.teamsupport.com")
           Dim remoteLinkData As StringBuilder = New StringBuilder()
           remoteLinkData.Append("{")
             'Global ID initialized as documentation examples in two parts separated by &. First part is the domain and the second one the id.
-            remoteLinkData.Append("""globalid"":""system=https://app.teamsupport.com/Ticket.aspx?ticketid=&id=" + ticketID + """,")
+            remoteLinkData.Append("""globalid"":""system=" + domain + "/Ticket.aspx?ticketid=&id=" + ticketID + """,")
             remoteLinkData.Append("""application"":{")
               remoteLinkData.Append("""name"":""Team Support""},")
             remoteLinkData.Append("""object"":{")
               remoteLinkData.Append("""icon"":{")
-                remoteLinkData.Append("""url16x16"":""https://app.teamsupport.com/vcr/1_6_5/Images/icons/TeamSupportLogo16.png"",")
+                remoteLinkData.Append("""url16x16"":""" + domain + "/vcr/1_6_5/Images/icons/TeamSupportLogo16.png"",")
                 remoteLinkData.Append("""title"":""TeamSupport Logo""},")
-              remoteLinkData.Append("""title"":""TeamSupport Ticket #" + ticketNumber + """,")
+              remoteLinkData.Append("""title"":""" + creatorName + " Ticket #" + ticketNumber + """,")
               remoteLinkData.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTML(ticketName))) + """,")
-              remoteLinkData.Append("""url"":""https://app.teamsupport.com/Ticket.aspx?ticketid=" + ticketID + """")
+              remoteLinkData.Append("""url"":""" + domain + "/Ticket.aspx?ticketid=" + ticketID + """")
             remoteLinkData.Append("}")
           remoteLinkData.Append("}")
 
@@ -579,13 +586,14 @@ Namespace TeamSupport
             Log.Write("Processing actionID: " + actionToPushAsComment.ActionID.ToString())
             Dim comment As JObject = Nothing
             
+            Dim actionPosition As Integer =  Actions.GetActionPosition(User, actionToPushAsComment.ActionID)
             If actionLinkToJiraItem Is Nothing Then
               If issue Is Nothing Then
                 issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET",  String.Empty)
               End If
 
               Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/comment"
-              Dim body As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description)
+              Dim body As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition)
               comment = GetAPIJObject(URI, "POST", body)
 
               Dim newActionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
@@ -604,7 +612,7 @@ Namespace TeamSupport
                 End If
 
                 Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/comment/" + actionLinkToJiraItem.JiraID.ToString()
-                Dim body As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description)
+                Dim body As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition)
                 comment = GetAPIJObject(URI, "PUT", body)
                 actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow
                 Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
@@ -612,7 +620,7 @@ Namespace TeamSupport
             End If
 
             If (attachmentEnabled)
-              PushAttachments(actionToPushAsComment.ActionID, ticketNumber, issue, issueKey, attachmentFileSizeLimit)
+              PushAttachments(actionToPushAsComment.ActionID, ticketNumber, issue, issueKey, attachmentFileSizeLimit, actionPosition)
             End If
           Next
           actionLinkToJira.Save()
@@ -623,8 +631,8 @@ Namespace TeamSupport
           ByVal ticketNumber As Integer, 
           ByVal issue As JObject, 
           ByVal issueKey As String,
-          ByVal fileSizeLimit As Integer)
-            Dim actionPosition As integer = 0
+          ByVal fileSizeLimit As Integer,
+          ByVal actionPosition As Integer)
             Dim attachments As Attachments = New Attachments(User)
             attachments.LoadForJira(actionID)
             Dim updateAttachments As Boolean = False
@@ -632,9 +640,6 @@ Namespace TeamSupport
               If (Not File.Exists(attachment.Path))
                 Log.Write("Attachment """ + attachment.FileName + """ was not sent as it was not found on server")
               Else
-                If actionPosition = 0 Then
-                  actionPosition = Actions.GetActionPosition(User, actionID)
-                End If
                   Dim fs = new FileStream(attachment.Path, FileMode.Open, FileAccess.Read)
                   If (fs.Length > fileSizeLimit)
                     Log.Write(
@@ -687,10 +692,10 @@ Namespace TeamSupport
             End If
           End Sub
 
-          Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String) As String
+          Private Function BuildCommentBody(ByVal ticketNumber As String, ByVal actionDescription As String, ByVal actionPosition As Integer) As String
             Dim result As StringBuilder = New StringBuilder()
             result.Append("{")
-              result.Append("""body"":""TeamSupport ticket #" + ticketNumber.ToString() + " comment: ")
+              result.Append("""body"":""TeamSupport ticket #" + ticketNumber.ToString() + " comment #" + actionPosition.ToString() +": ")
               result.Append(DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTML(actionDescription))))
             result.Append("""}")
             Return result.ToString()

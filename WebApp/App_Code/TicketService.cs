@@ -1683,6 +1683,7 @@ namespace TSWebServices
         ticketLinkToJiraItem.TicketID = ticketID;
         ticketLinkToJiraItem.JiraKey = jiraIssueKey;
         ticketLinkToJiraItem.SyncWithJira = true;
+        ticketLinkToJiraItem.CreatorID = TSAuthentication.UserID;
         ticketLinkToJiraItem.Collection.Save();
         result = true;
       }
@@ -1691,7 +1692,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public bool SetSyncWithJira(int ticketID, bool syncWithJira)
+    public bool SetSyncWithJira(int ticketID)
     {
       bool result = false;
 
@@ -1702,6 +1703,7 @@ namespace TSWebServices
         TicketLinkToJiraItem ticketLinkToJiraItem = ticketLinkToJira.AddNewTicketLinkToJiraItem();
         ticketLinkToJiraItem.TicketID = ticketID;
         ticketLinkToJiraItem.SyncWithJira = true;
+        ticketLinkToJiraItem.CreatorID = TSAuthentication.UserID;
         ticketLinkToJiraItem.Collection.Save();
         result = true;
       }
