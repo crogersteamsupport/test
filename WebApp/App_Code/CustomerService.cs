@@ -1149,6 +1149,7 @@ namespace TSWebServices
             OrganizationProducts organizationProducts = new OrganizationProducts(TSAuthentication.GetLoginUser());
             organizationProducts.LoadForCustomerProductGrid(organizationID);
             List<OrganizationCustomProduct> list = new List<OrganizationCustomProduct>();
+
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
             fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.OrganizationProducts);
 
@@ -1164,11 +1165,11 @@ namespace TSWebServices
                 test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
                 test.OrganizationProductID = (int)row["OrganizationProductID"];
                 test.CustomFields = new List<string>();
-                foreach (CustomField field in fields)
-                {
-                    CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, test.OrganizationProductID);
-                    test.CustomFields.Add(customValue.Value);
-                }
+                //foreach (CustomField field in fields)
+                //{
+                //    CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, test.OrganizationProductID);
+                //    test.CustomFields.Add(customValue.Value);
+                //}
 
 
                 list.Add(test);
