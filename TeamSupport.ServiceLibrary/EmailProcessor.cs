@@ -240,17 +240,16 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
-
     private void AddMessage(int organizationID, string description, MailMessage message, string replyToAddress = null, string[] attachments = null, DateTime? timeToSend = null)
     {
       Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
-      string replyAddress = organization.GetReplyToAddress(replyToAddress).ToLower();
+      string replyAddress = organization.GetReplyToAddress(replyToAddress).ToLower().Trim();
       
       int i = 0; 
       while (i < message.To.Count)
       {
         MailAddress address = message.To[i];
-        if (address.Address.ToLower().Trim() == message.From.Address.ToLower().Trim() || address.Address.ToLower().Trim() == replyAddress.ToLower().Trim() || address.Address.ToLower().Trim() == organization.SystemEmailID.ToString().Trim().ToLower() + "@teamsupport.com")
+        if (address.Address.ToLower().Trim() == message.From.Address.ToLower().Trim() || address.Address.ToLower().Trim() == replyAddress || address.Address.ToLower().Trim() == organization.SystemEmailID.ToString().Trim().ToLower() + "@teamsupport.com")
         {
           message.To.RemoveAt(i);
         }
@@ -276,6 +275,7 @@ namespace TeamSupport.ServiceLibrary
         message.To.Add(address);
         message.Body = body;
         message.Subject = subject;
+        message.From = new MailAddress(replyAddress);
         EmailTemplates.ReplaceMailAddressParameters(message);
         Emails.AddEmail(LoginUser, organizationID, _currentEmailPostID, description, message, attachments, timeToSend);
         if (message.Subject == null) message.Subject = "";
@@ -662,6 +662,7 @@ namespace TeamSupport.ServiceLibrary
         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, messageType + " sent to " + mailAddress.Address);
       }
 
+      //message.Body = message.Body + GetViaTSHtmlAd(ticketOrganization.Name);
       AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
 
     }
@@ -1070,6 +1071,16 @@ namespace TeamSupport.ServiceLibrary
         if (item.Address.ToLower().Trim() == address) return item;
       }
       return null;
+    }
+
+    private string GetViaTSHtmlAd(string orgName)
+    { 
+      return string.Format(@"
+<hr style=""border:none 0;border-top:1px solid #dedede;min-height:1px;margin:15px 0 10px 0"">
+<div style=""margin:0px auto;text-align:left;font-size:12px;color:#aaaaaa;padding-bottom:6px;font-family:Arial,Helvetica,sans-serif;"">This email was sent from {0} via <a href=""http://www.teamsupport.com/?utm_source=tsemail&utm_medium=email&utm_campaign=custmail"" title=""TeamSupport.com"" style=""color:#2774a6;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:12px;"" target=""_blank"">TeamSupport</a></div>
+", orgName);
+    
+    
     }
 
     #endregion

@@ -32,9 +32,9 @@ namespace TeamSupport.Data
       return OrganizationReplyToAddress;
     }
 
-    public MailAddress GetReplyToMailAddress()
+    public MailAddress GetReplyToMailAddress(string replyAddress = null)
     {
-      string addr = GetReplyToAddress();
+      string addr = GetReplyToAddress(replyAddress);
 
       try
       {
