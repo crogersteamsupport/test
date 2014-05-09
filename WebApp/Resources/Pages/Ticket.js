@@ -3224,21 +3224,22 @@ var loadTicket = function (ticketNumber, refresh) {
       else {
         preappendActionElement(info.Actions[0], info.Actions.length - i);
       }
-
-      var $table = $('.ticket-action-description .table');
-      var $row = $('.ticket-action-description .table tr');
-      var $cell = $('.ticket-action-description .table td');
-      $table.css({
-        "border": $table.attr('border') + "px solid black",
-        "border-spacing": "2px"
-      });
-      $row.css({
-        "border": $table.attr('border') + "px solid black"
-      });
-      $cell.css({
-        "border": $table.attr('border') + "px solid black"
-      });
     }
+
+    // This is to show any table borders as TinyMCE only provides the html attribute that is deprecated.
+    var $table = $('.ticket-action-description .table');
+    var $row = $('.ticket-action-description .table tr');
+    var $cell = $('.ticket-action-description .table td');
+    $table.css({
+      "border": $table.attr('border') + "px solid black",
+      "border-spacing": "2px"
+    });
+    $row.css({
+      "border": $table.attr('border') + "px solid black"
+    });
+    $cell.css({
+      "border": $table.attr('border') + "px solid black"
+    });
 
     if ($('.ticket-action-form').length < 1)
       $('.ticket-content a').addClass('ui-state-default ts-link');
