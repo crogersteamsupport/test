@@ -911,7 +911,10 @@ $(document).ready(function () {
             $('#userProp').html(user[1]);
 
             $('.userProperties p').toggleClass("editable");
-            if ($('#fieldPortalUser').text() == "Yes" || _isAdmin || top.Ts.System.User.CanEditContact)
+
+            if ($('#fieldPortalUser').text() == "No")
+                $('#btnSendNewPW').hide();
+            else if ($('#fieldPortalUser').text() == "Yes" || _isAdmin || top.Ts.System.User.CanEditContact)
                 $('#btnSendNewPW').show();
             else
                 $('#btnSendNewPW').hide();
