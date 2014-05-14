@@ -1929,6 +1929,19 @@ $(document).ready(function () {
         }
     });
 
+    $('#company-overview').on('keydown', '.number', function (event) {
+        // Allow only backspace and delete
+        if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 190 || event.keyCode == 109 || event.keyCode == 173 || (event.keyCode >= 96 && event.keyCode <= 105)) {
+            // let it happen, don't do anything
+        }
+        else {
+            // Ensure that it is a number and stop the keypress
+            if (event.keyCode < 48 || event.keyCode > 57) {
+                event.preventDefault();
+            }
+        }
+    });
+
     $('.userProperties p').toggleClass("editable");
 
     $('#alertSnooze').click(function (e) {
