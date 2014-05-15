@@ -237,6 +237,7 @@ namespace TSWebServices
             }
 
             User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            u.PortalAutoReg = false;
             u.OrganizationID = value;
             u.Collection.Save();
 
