@@ -347,6 +347,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         organization.PrimaryInterest = interest;
         organization.PotentialSeats = seats;
         organization.EvalProcess = process;
+        organization.AddEmailViaTS = true;
         organization.RequireKnownUserForNewEmail = sourceOrg.RequireKnownUserForNewEmail;
         organization.RequireNewKeyword = sourceOrg.RequireNewKeyword;
         organization.ChangeStatusIfClosed = sourceOrg.ChangeStatusIfClosed;

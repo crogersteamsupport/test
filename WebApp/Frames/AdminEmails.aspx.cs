@@ -176,7 +176,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
   }
 
   [WebMethod(true)]
-  public static void SaveEmailSettings(string reply, bool reqNew, bool reqKnown, bool changeStatus, bool addContacts, bool matchSubject, bool forceBccPrivate, bool needCustForTicketMatch, bool replyToAlternateEmailAddresses)
+  public static void SaveEmailSettings(string reply, bool reqNew, bool reqKnown, bool changeStatus, bool addContacts, bool matchSubject, bool forceBccPrivate, bool needCustForTicketMatch, bool replyToAlternateEmailAddresses, bool addEmailViaTS)
   {
     if (!UserSession.CurrentUser.IsSystemAdmin) return;
 
@@ -190,6 +190,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     organization.ForceBCCEmailsPrivate = forceBccPrivate;
     organization.NeedCustForTicketMatch = needCustForTicketMatch;
     organization.ReplyToAlternateEmailAddresses = replyToAlternateEmailAddresses;
+    organization.AddEmailViaTS = addEmailViaTS;
     organization.Collection.Save();
   }
 

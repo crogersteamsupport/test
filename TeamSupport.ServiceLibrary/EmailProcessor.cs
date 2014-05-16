@@ -662,7 +662,7 @@ namespace TeamSupport.ServiceLibrary
         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, messageType + " sent to " + mailAddress.Address);
       }
 
-      //message.Body = message.Body + GetViaTSHtmlAd(ticketOrganization.Name);
+      if (ticketOrganization.AddEmailViaTS) message.Body = message.Body + GetViaTSHtmlAd(ticketOrganization.Name);
       AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
 
     }

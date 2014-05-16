@@ -12,6 +12,7 @@ using System.Web.Security;
 using System.IO;
 using Microsoft.Win32;
 using System.Data.OleDb;
+using System.Text.RegularExpressions;
 
 
 
@@ -844,6 +845,11 @@ namespace TeamSupport.Data
       return result;
     }
 
+    private string ConvertHtmlLineBreaks(string text, string lineBreak = "<br />")
+    {
+      return Regex.Replace(text, @"\r\n?|\n", lineBreak);
+    }
+
     #endregion
 
     #region Import Methods
@@ -1160,7 +1166,6 @@ AND RTRIM(LastName) = @LastName
       if (_IsBulk == true) productVersions.BulkSave(); else productVersions.Save();
       _log.AppendMessage(productVersions.Count.ToString() + " Versions Imported.");
     }
-
 
     private void ImportAssets()
     {
@@ -1482,7 +1487,7 @@ AND RTRIM(LastName) = @LastName
         action.DateCreated = (DateTime)GetDBDate(row["DateCreated"].ToString().Trim(), false);
         action.DateModified = DateTime.UtcNow;
         action.DateStarted = GetDBDate(row["DateStarted"].ToString().Trim(), true);
-        string desc = row["Description"].ToString().Trim();
+        string desc = ConvertHtmlLineBreaks(row["Description"].ToString().Trim());
         action.Description = desc == "" ? "Comment" : desc;
         action.ActionSource = "Import";
         action.IsVisibleOnPortal = row["VisibleOnPortal"].ToString().ToLower().IndexOf("t") > -1;
@@ -1896,7 +1901,7 @@ AND RTRIM(LastName) = @LastName
         Note note = notes.AddNewNote();
         note.CreatorID = creatorID;
         note.DateCreated = (DateTime)GetDBDate(row["DateCreated"], false);
-        note.Description = GetDBString(row["Description"], 0, false);
+        note.Description = ConvertHtmlLineBreaks(GetDBString(row["Description"], 0, false));
         note.RefID = organization.OrganizationID;
         note.RefType = ReferenceType.Organizations;
         note.Title = row["Title"].ToString().Trim();

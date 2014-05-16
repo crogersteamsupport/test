@@ -101,6 +101,7 @@ namespace TeamSupport.Data
     [DataMember] public bool UpdateTicketChildrenGroupWithParent { get; set; }
     [DataMember] public bool ReplyToAlternateEmailAddresses { get; set; }
     [DataMember] public bool ForceUseOfReplyTo { get; set; }
+    [DataMember] public bool AddEmailViaTS { get; set; }
           
   }
   
@@ -109,6 +110,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.AddEmailViaTS = this.AddEmailViaTS;
       result.ForceUseOfReplyTo = this.ForceUseOfReplyTo;
       result.ReplyToAlternateEmailAddresses = this.ReplyToAlternateEmailAddresses;
       result.UpdateTicketChildrenGroupWithParent = this.UpdateTicketChildrenGroupWithParent;
