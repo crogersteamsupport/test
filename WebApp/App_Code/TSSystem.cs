@@ -203,7 +203,10 @@ namespace TSWebServices
           items.Add(new TsMenuItem("products", "mniProducts", "Products", "vcr/1_9_0/images/nav/20/products.png", string.Format(data, "Frames/Products.aspx", "vcr/1_9_0/PaneInfo/Products.html")));
 
         if (org.IsInventoryEnabled && IsMenuItemActive(user, "mniInventory"))
+        {
           items.Add(new TsMenuItem("inventory", "mniInventory", "Inventory", "vcr/1_9_0/images/nav/20/inventory.png", string.Format(data, "Inventory/Inventory.aspx", "vcr/1_9_0/PaneInfo/Inventory.html")));
+          items.Add(new TsMenuItem("inventory", "mniInventory1", "Leo's Inventory", "vcr/1_9_0/images/nav/20/inventory.png", string.Format(data, "vcr/1_9_0/Pages/Inventory.html", "vcr/1_9_0/PaneInfo/Inventory.html")));
+        }
 
         if ((user.IsSystemAdmin || !org.AdminOnlyReports) && IsMenuItemActive(user, "mniReports"))
         {

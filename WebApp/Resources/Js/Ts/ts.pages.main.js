@@ -681,6 +681,9 @@ Ts.Pages.Main.prototype = {
                         case Ts.Ui.Tabs.Tab.Type.Report:
                             div = $('.main-report-' + tab.getId());
                             break;
+                        case Ts.Ui.Tabs.Tab.Type.NewAsset:
+                          div = $('.main-tab-newAsset');
+                          break;
                         default:
                     }
 
@@ -913,6 +916,27 @@ Ts.Pages.Main.prototype = {
                     $('.main-info-content').load('vcr/1_9_0/PaneInfo/report.html');
 
                     break;
+                case Ts.Ui.Tabs.Tab.Type.NewAsset:
+                  div = $('.main-tab-content .main-ticket-newAsset');
+                  if (div.length < 1) {
+                    var query = '';
+                    if (tab.getData()) query = tab.getData();
+                    div = $('<div>')
+                  .addClass('main-tab-content-item main-tab-newAsset main-ticket-newAsset')
+                  .appendTo('.main-tab-content');
+
+                    $('<iframe>')
+                  .attr('frameborder', 0)
+                  .attr('scrolling', 'no')
+                  .appendTo(div)
+                  .attr('src', 'vcr/1_9_0/Pages/NewAsset.html' + query);
+                  }
+                  else {
+                    div.show();
+                  }
+                  $('.main-info-content').load('vcr/1_9_0/PaneInfo/Inventory.html');
+                  break;
+
                 default:
 
             }
@@ -1449,6 +1473,21 @@ Ts.Pages.Main.prototype = {
             tab.remove();
         }
     },
+
+    newAsset: function (tab, orgID) {
+      var query;
+      if (tab != undefined)
+        query = "?open=" + tab + "&organizationid=" + orgID;
+      this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewAsset, 'newAsset', 'Add Asset', true, true, true, null, null, query, null);
+    },
+    closeNewAssetTab: function () {
+      var tab = this.MainTabs.find('newAsset', Ts.Ui.Tabs.Tab.Type.NewAsset);
+      if (tab) {
+        this.closeTab(tab);
+        tab.remove();
+      }
+    },
+
     AppNotify: function (title, message, options) {
 
         if (options == null)
