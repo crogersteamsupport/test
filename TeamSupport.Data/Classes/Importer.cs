@@ -82,7 +82,7 @@ namespace TeamSupport.Data
     public Importer(LoginUser loginUser, string fileName)
     {
       _creator = Users.GetUser(loginUser, loginUser.UserID);
-      _loginUser = new LoginUser(loginUser.ConnectionString, -1, loginUser.OrganizationID, null);
+      _loginUser = new LoginUser(loginUser.ConnectionString, -2, loginUser.OrganizationID, null);
       _fileName = fileName;
     }
 
@@ -1451,9 +1451,11 @@ AND RTRIM(LastName) = @LastName
 
     private void ImportActions()
     {
+
       Users users = new Users(_loginUser);
-      //users.LoadByOrganizationID(_organizationID, false);
-      users.LoadContactsAndUsers(_organizationID, false);
+      Users contacts = new Users(_loginUser);
+      users.LoadByOrganizationID(_organizationID, false);
+      contacts.LoadContacts(_organizationID, false);
 
       Tickets tickets = new Tickets(_loginUser);
       tickets.LoadByOrganizationID(_organizationID);
@@ -1476,8 +1478,12 @@ AND RTRIM(LastName) = @LastName
         }
 
         User creator = users.FindByImportID(row["CreatorID"].ToString());
+        if (creator == null)
+        {
+          creator = contacts.FindByImportID(row["CreatorID"].ToString());
+        }
+
         int creatorID = creator == null ? -1 : creator.UserID;
-        //int creatorID = GetUserContactID(row["CreatorID"].ToString(), users);
 
         TeamSupport.Data.Action action = actions.AddNewAction();
 
@@ -1995,8 +2001,8 @@ AND RTRIM(LastName) = @LastName
 
         if (missing == true) continue;
         tickets.AddOrganization(organization.OrganizationID, ticket.TicketID);
-
       }
+      EmailPosts.DeleteImportEmails(_loginUser);
     }
 
     private void ImportTicketSubscriptions()
@@ -2022,7 +2028,9 @@ AND RTRIM(LastName) = @LastName
         }
 
         tickets.AddSubscription(user.UserID, ticket.TicketID);
+
       }
+      EmailPosts.DeleteImportEmails(_loginUser);
     }
 
     private void ImportContactTickets()
@@ -2047,9 +2055,8 @@ AND RTRIM(LastName) = @LastName
         }
 
         tickets.AddContact(user.UserID, ticket.TicketID);
-
-
       }
+      EmailPosts.DeleteImportEmails(_loginUser);
     }
 
     private void ImportCustomFields(ReferenceType refType, List<ImportCustomField> importFields, int auxID)

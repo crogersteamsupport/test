@@ -72,20 +72,23 @@ namespace TeamSupport.ServiceLibrary
 
         try
         {
-          _isDebug = Settings.ReadBool("Debug", false);
-          _logEnabled = ConfigurationManager.AppSettings["LoggingEnabled"] != null && ConfigurationManager.AppSettings["LoggingEnabled"] == "1";
-
-          Logs.WriteLine();
-          Logs.WriteEvent("***********************************************************************************");
-          Logs.WriteEvent("Processing Email Post  EmailPostID: " + emailPost.EmailPostID.ToString());
-          Logs.WriteData(emailPost.Row);
-          Logs.WriteLine();
-          Logs.WriteEvent("***********************************************************************************");
-          Logs.WriteLine();
-          SetTimeZone(emailPost);
           try
           {
-            ProcessEmail(emailPost);
+            if (emailPost.CreatorID != -2)
+            {
+              _isDebug = Settings.ReadBool("Debug", false);
+              _logEnabled = ConfigurationManager.AppSettings["LoggingEnabled"] != null && ConfigurationManager.AppSettings["LoggingEnabled"] == "1";
+
+              Logs.WriteLine();
+              Logs.WriteEvent("***********************************************************************************");
+              Logs.WriteEvent("Processing Email Post  EmailPostID: " + emailPost.EmailPostID.ToString());
+              Logs.WriteData(emailPost.Row);
+              Logs.WriteLine();
+              Logs.WriteEvent("***********************************************************************************");
+              Logs.WriteLine();
+              SetTimeZone(emailPost);
+              ProcessEmail(emailPost);
+            }
           }
           catch (Exception ex)
           {
