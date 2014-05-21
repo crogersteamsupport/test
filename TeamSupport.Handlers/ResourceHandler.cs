@@ -16,7 +16,6 @@ using System.Data;
 using System.Data.Sql;
 using System.Data.SqlClient;
 using System.IO.Compression;
-using ICSharpCode.SharpZipLib.Zip;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Web.Script.Serialization;

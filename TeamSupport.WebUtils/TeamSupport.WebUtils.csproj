@@ -136,17 +136,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AjaxRequest.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="CustomFieldControls.cs" />
-    <Compile Include="DynamicScript.cs" />
-    <Compile Include="MenuTree.cs" />
-    <Compile Include="LogFile.cs" />
+    <Compile Include="CustomFieldControls.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Settings.cs" />
-    <Compile Include="TabInfo.cs" />
-    <Compile Include="TicketFilters.cs" />
+    <Compile Include="TicketFilters.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TSAuthentication.cs" />
-    <Compile Include="TSUtils.cs" />
+    <Compile Include="TSUtils.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="UserInfo.cs" />
     <Compile Include="UserSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
