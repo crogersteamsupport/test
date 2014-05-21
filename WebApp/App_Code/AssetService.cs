@@ -139,6 +139,35 @@ namespace TSWebServices
 
       return result;
     }
+
+    [WebMethod]
+    public string GetShortNameFromID(int assetID)
+    {
+      Assets assets = new Assets(TSAuthentication.GetLoginUser());
+      assets.LoadByAssetID(assetID);
+
+      if (assets.IsEmpty) return "N/A";
+
+      string result = assets[0].AssetID.ToString();
+
+      if (!String.IsNullOrEmpty(assets[0].Name))
+      {
+        if (assets[0].Name.Length > 10)
+          result = assets[0].Name.Substring(0, 10).ToString() + "...";
+        else
+          result = assets[0].Name.ToString();
+      }
+      else if (!String.IsNullOrEmpty(assets[0].SerialNumber))
+      {
+        if (assets[0].SerialNumber.Length > 10)
+          result = assets[0].SerialNumber.Substring(0, 10).ToString() + "...";
+        else
+          result = assets[0].SerialNumber.ToString();
+      }
+
+      return result;
+    }
+
   }
 
   public class NewAssetSave

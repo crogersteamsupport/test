@@ -34,7 +34,6 @@
     assetInfo.Name = $("#inputName").val();
     assetInfo.ProductID = $("#ddlProduct").val();
     assetInfo.SerialNumber = $("#inputSerialNumber").val();
-    //    assetInfo.WarrantyExpiration = top.Ts.Utils.getMsDate($("#inputWarrantyExpiration").datepicker('getDate'));
     assetInfo.WarrantyExpiration = $("#inputWarrantyExpiration").val();
     assetInfo.Notes = $("#Notes").val();
 
@@ -70,7 +69,7 @@
 
 
     top.Ts.Services.Assets.SaveAsset(top.JSON.stringify(assetInfo), function (assetID) {
-      //      top.Ts.MainPage.openNewCustomer(f);
+      top.Ts.MainPage.openNewAsset(assetID);
       //      top.Ts.MainPage.closenewCustomerTab();
     }, function () {
       alert('There was an error saving this customer.  Please try again.');
