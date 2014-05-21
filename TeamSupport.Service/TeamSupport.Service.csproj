@@ -145,10 +145,6 @@
       <Project>{6AD9D48C-DDBA-4045-BFAA-362A1FCB0AA0}</Project>
       <Name>TeamSupport.ServiceLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TidyNet\TidyNet.csproj">
-      <Project>{C9B7AEFC-11BF-4902-AB1C-055E87479ACE}</Project>
-      <Name>TidyNet</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
