@@ -8,12 +8,12 @@
 /// <reference path="ts/ts.grids.models.tickets.js" />
 /// <reference path="~/Default.aspx" />
 
-var assetDetailPage = null;
-var assetID = null;
+var _assetDetailPage = null;
+var _assetID = null;
 
 $(document).ready(function () {
-  assetDetailPage = new AssetDetailPage();
-  assetDetailPage.refresh();
+  _assetDetailPage = new AssetDetailPage();
+  _assetDetailPage.refresh();
   $('.asset-tooltip').tooltip({ placement: 'bottom', container: 'body' });
 
   $('body').layout({
@@ -32,9 +32,9 @@ $(document).ready(function () {
     }
   });
 
-  assetID = top.Ts.Utils.getQueryValue("assetid", window);
+  _assetID = top.Ts.Utils.getQueryValue("assetid", window);
   var historyLoaded = 0;
-  top.privateServices.SetUserSetting('SelectedAssetID', assetID);
+  top.privateServices.SetUserSetting('SelectedAssetID', _assetID);
 
   $('#customerRefresh').click(function (e) {
     window.location = window.location;
@@ -56,7 +56,7 @@ $(document).ready(function () {
   //    }
   //  });
 
-  top.Ts.Services.Assets.GetAsset(assetID, function (asset) {
+  top.Ts.Services.Assets.GetAsset(_assetID, function (asset) {
     if (asset.Name) {
       $('#assetTitle').html(asset.Name);
     }
@@ -97,11 +97,19 @@ $(document).ready(function () {
     if (start == 1)
       $('#tblHistory tbody').empty();
 
-    top.Ts.Services.Assets.LoadHistory(organizationID, start, function (history) {
+    top.Ts.Services.Assets.LoadHistory(_assetID, start, function (history) {
       for (var i = 0; i < history.length; i++) {
-        $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
-                    .appendTo('#tblHistory > tbody:last');
-        //$('#tblHistory tr:last').after('<tr><td>' + history[i].DateCreated.toDateString() + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td></tr>');
+        var nameAssignedToValue = history[i].NameAssignedTo == null ? '' : history[i].NameAssignedTo;
+        $('<tr>').html('<td>' +
+        history[i].ActionDescription + '</td><td>' +
+        history[i].ActionTime.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</td><td>' +
+        history[i].ActorName + '</td><td>' +
+        history[i].Comments + '</td><td>' +
+        nameAssignedToValue + '</td><td>' +
+        history[i].ShippingMethod + '</td><td>' +
+        history[i].TrackingNumber + '</td><td>' +
+        history[i].ReferenceNum + '</td><td>' +
+        '</td>').appendTo('#tblHistory > tbody:last');
       }
       if (history.length == 50)
         $('<button>').text("Load More").addClass('btn-link')
@@ -117,7 +125,7 @@ $(document).ready(function () {
 });
 
 function onShow() {
-  assetDetailPage.refresh();
+  _assetDetailPage.refresh();
 };
 
 AssetDetailPage = function () {

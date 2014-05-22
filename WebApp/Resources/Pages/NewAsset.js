@@ -1,4 +1,5 @@
 ﻿$(document).ready(function () {
+  top.Ts.System.logAction('New Asset - Started');
   $('body').layout({
     defaults: {
       spacing_open: 0,
@@ -90,6 +91,7 @@
 
 
     top.Ts.Services.Assets.SaveAsset(top.JSON.stringify(assetInfo), function (assetID) {
+      top.Ts.System.logAction('Asset Created');
       top.Ts.MainPage.openNewAsset(assetID);
       //      top.Ts.MainPage.closenewCustomerTab();
     }, function () {
@@ -97,6 +99,7 @@
     });
   });
   $('#assetCancelBtn').click(function (e) {
+    top.Ts.System.logAction('New Asset - Cancelled');
     top.Ts.MainPage.closenewCustomerTab();
   });
 

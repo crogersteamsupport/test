@@ -78,9 +78,8 @@ namespace TSWebServices
       asset.ProductID =           info.ProductID;
       asset.ProductVersionID =    info.ProductVersionID;
       asset.SerialNumber =        info.SerialNumber;
-      //asset.WarrantyExpiration = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), (DateTime?)info.WarrantyExpiration);
-      asset.WarrantyExpiration = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), info.WarrantyExpiration);
-      asset.Notes = info.Notes;
+      asset.WarrantyExpiration =  DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), info.WarrantyExpiration);
+      asset.Notes =               info.Notes;
       asset.Location =            "2";
 
       asset.DateCreated =   DateTime.UtcNow;
@@ -120,6 +119,23 @@ namespace TSWebServices
 
       //  customValue.Collection.Save();
       //}
+
+      AssetHistory history = new AssetHistory(loginUser);
+      AssetHistoryItem historyItem = history.AddNewAssetHistoryItem();
+
+      historyItem.OrganizationID =    loginUser.OrganizationID;
+      historyItem.Actor =             loginUser.UserID;
+      historyItem.AssetID =           asset.AssetID;
+      historyItem.ActionTime =        DateTime.UtcNow;
+      historyItem.ActionDescription = "Asset created.";
+      historyItem.ShippedFrom =       0;
+      historyItem.ShippedTo =         0;
+      historyItem.TrackingNumber =    string.Empty;
+      historyItem.ShippingMethod =    string.Empty;
+      historyItem.ReferenceNum =      string.Empty;
+      historyItem.Comments =          string.Empty;
+
+      history.Save();
 
       return asset.AssetID;
 
@@ -169,6 +185,14 @@ namespace TSWebServices
       return result;
     }
 
+    [WebMethod]
+    public AssetHistoryViewItemProxy[] LoadHistory(int assetID, int start)
+    {
+      AssetHistoryView history = new AssetHistoryView(TSAuthentication.GetLoginUser());
+      history.LoadByAssetIDLimit(assetID, start);
+
+      return history.GetAssetHistoryViewItemProxies();
+    }
   }
 
   public class NewAssetSave
