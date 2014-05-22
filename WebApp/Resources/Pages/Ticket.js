@@ -2836,7 +2836,12 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
     element.find('.ticket-action-title').text(action.DisplayName);
     element.find('.ticket-action-kb').toggleClass('ts-icon-kb', action.IsKnowledgeBase === true).toggleClass('ts-icon-kbnot', action.IsKnowledgeBase === false);
     element.find('.ticket-action-portal').toggleClass('ts-icon-portal', action.IsVisibleOnPortal === true).toggleClass('ts-icon-portalnot', action.IsVisibleOnPortal === false);
-    element.find('.ticket-action-pin').toggleClass('ts-icon-pin', action.Pinned === true).toggleClass('ts-icon-pinnot', action.Pinned === false);
+    if (action.Pinned) {
+      element.find('.ticket-action-pin').addClass('ts-icon-pin');
+      element.find('.ticket-action-pin').removeClass('ts-icon-pinnot');
+      element.find('.ticket-action-pin').prop('title', 'Unpin this action.');
+    }
+
     if (!top.Ts.System.User.IsSystemAdmin && !top.Ts.System.User.UserCanPinAction) {
       element.find('.ts-icon-pinnot').remove();
     }
