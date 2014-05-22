@@ -45,9 +45,14 @@ $(document).ready(function () {
     top.privateServices.SetUserSetting('SelectedOrganizationID', organizationID);
     top.privateServices.SetUserSetting('SelectedContactID', -1);
 
+    if (top.Ts.System.User.OrganizationID != 1078) {
+        $('#ratingsTab').hide();
+    }
+
     LoadNotes();
     //LoadHistory();
     LoadFiles();
+    //LoadRatings();
     LoadPhoneTypes();
     LoadPhoneNumbers();
     LoadAddresses();
@@ -1422,7 +1427,7 @@ $(document).ready(function () {
             $('#fieldPortalAccess').text(result.orgproxy.HasPortalAccess);
             $('#fieldAPIEnabled').text(result.orgproxy.IsApiActive && result.orgproxy.IsApiEnabled);
             $('#fieldSAED').text(result.SAED == null ? "Empty" : result.SAED);
-            $('#fieldSLA').text(result.SLA);
+            $('#fieldSLA').text(top.Ts.Utils.getMsDate(result.SLA));
             $('#fieldSLA').data('field', result.orgproxy.SlaLevelID);
             $('#fieldSupportHours').text(result.orgproxy.SupportHoursMonth);
             $('#fieldDescription').html(result.orgproxy.Description != null && result.orgproxy.Description != ""? result.orgproxy.Description : "Empty");
@@ -1546,6 +1551,31 @@ $(document).ready(function () {
             }
         });
     }
+
+    function LoadRatings() {
+        $('#tblRatings tbody').empty();
+        top.Ts.Services.Customers.LoadAgentRatings(organizationID, $('#ddlRatingFilter').val(), function (ratings) {
+            var agents = "";
+            for (var i = 0; i < ratings.length; i++) {
+                    for (var j = 0; j < ratings[i].users.length; j++)
+                {
+                    if (j != 0)
+                        agents = agents + ", ";
+
+                        agents = agents + '<a href="#" target="_blank" onclick="top.Ts.MainPage.openUser(' + ratings[i].users[j].UserID + '); return false;">' + ratings[i].users[j].FirstName + ' ' + ratings[i].users[j].LastName + '</a>';
+                }
+
+                var tr = $('<tr>')
+                .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td>' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
+                .appendTo('#tblRatings > tbody:last');
+            }
+        });
+    }
+
+
+    $('#ddlRatingFilter').on('change', function () {
+        LoadRatings();
+    });
 
     function LoadPhoneNumbers(reload)
     {
@@ -1911,6 +1941,8 @@ $(document).ready(function () {
             LoadNotes();
         else if (e.target.innerHTML == "Files")
             LoadFiles();
+        else if (e.target.innerHTML == "Ratings")
+            LoadRatings();
     })
 
     $('#inventoryIframe').attr("src", "../../../Inventory/CustomerInventory.aspx?CustID=" + organizationID);

@@ -10,6 +10,11 @@ $(document).ready(function () {
     userID = top.Ts.System.User.UserID;
     var activeID;
 
+    var organizationID = top.Ts.System.User.OrganizationID;
+    if (organizationID != 1078) {
+        $('#ratingsTab').hide();
+    }
+
     if (!top.Ts.System.User.IsSystemAdmin)
     {
         $('#historyTab').hide();
@@ -56,6 +61,8 @@ $(document).ready(function () {
             $('#queueIframe').attr("src", "/vcr/1_9_0/Pages/TicketGrid.html?tf_IsEnqueued=true&tf_ViewerID=" + userID);
         else if (e.target.innerHTML == "History")
             $('#historyIframe').attr("src", "../../../Frames/History.aspx?RefType=22&RefID=" + userID);
+        else if (e.target.innerHTML == "Ratings")
+            LoadRatings();
     });
 
     var _tmrSearch = null;
@@ -110,6 +117,7 @@ $(document).ready(function () {
         $('#queueIframe').attr("src", "/vcr/1_9_0/Pages/TicketGrid.html?tf_IsEnqueued=true&tf_ViewerID=" + userID);
         $('#historyIframe').attr("src", "../../../Frames/History.aspx?RefType=22&RefID=" + userID);
         $('#userName').text($(this).text());
+        LoadRatings();
         activeID = userID;
         
     });
@@ -157,6 +165,31 @@ $(document).ready(function () {
 
         ;
     });
+
+    $('#ddlRatingFilter').on('change', function () {
+        LoadRatings();
+    });
+
+    LoadRatings();
+
+    function LoadRatings() {
+        $('#tblRatings tbody').empty();
+        top.Ts.Services.Customers.LoadAgentRatingsUser(userID, $('#ddlRatingFilter').val(), function (ratings) {
+            var agents = "";
+            for (var i = 0; i < ratings.length; i++) {
+                for (var j = 0; j < ratings[i].users.length; j++) {
+                    if (j != 0)
+                        agents = agents + ", ";
+
+                    agents = agents + '<a href="#" target="_blank" onclick="top.Ts.MainPage.openUser(' + ratings[i].users[j].UserID + '); return false;">' + ratings[i].users[j].FirstName + ' ' + ratings[i].users[j].LastName + '</a>';
+                }
+
+                var tr = $('<tr>')
+                .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td>' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
+                .appendTo('#tblRatings > tbody:last');
+            }
+        });
+    }
 
 });
 

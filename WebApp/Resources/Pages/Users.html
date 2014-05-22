@@ -53,6 +53,7 @@
       </ul>
 
   </div>
+
   <div class="ui-layout-center p0">
     <div class="maincontainer">
       <div class="main-nav">
@@ -74,6 +75,7 @@
             <li><a href="#user-all" data-toggle="tab">All Tickets</a></li>
             <li><a href="#user-queue" data-toggle="tab">Ticket Queue</a></li>
             <li id="historyTab"><a href="#user-history" data-toggle="tab">History</a></li>
+            <li id="ratingsTab"><a href="#user-ratings" data-toggle="tab">Ratings</a></li>
         </ul>
       </div>
       <div class="tab-content">
@@ -94,6 +96,48 @@
         </div>
         <div class="tab-pane fade in" id="user-history">
           <iframe id="historyIframe" scrolling="no" src="" frameborder="0" height="750px" width="100%"></iframe>
+        </div>
+        <div class="tab-pane fade" id="user-ratings">
+            <div class="row">
+            <div class="col-xs-12">
+              <div class="box">
+                <div class="box-header">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            <div class="form-group">
+                                <select id="ddlRatingFilter" class="form-control">
+                                <option value="">No Filter</option>
+                                <option value="-1">Negative</option>
+                                <option value="0">Neutral</option>
+                                <option value="1">Positive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-content">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <table class="table table-hover" id="tblRatings">
+                        <thead>
+                          <tr>
+                            <th class="col-xs-1">Ticket</th>
+                            <th class="col-xs-2">Agents</th>
+                            <th class="col-xs-1">Reported By</th>
+                            <th class="col-xs-1">Date Reported</th>
+                            <th class="col-xs-1">Rating</th>
+                            <th class="col-xs-6">Comments</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -149,6 +149,31 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public AgentRatingsOptionProxy GetAgentRatingOptions(int organizationID)
+    {
+        AgentRatingsOption options = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), organizationID);
+        return options.GetProxy();
+    }
+
+    [WebMethod]
+    public void SaveAgentRatingOptions(bool agentRatingEnabled, AgentRatingsOptionProxy proxy, int organizationID)
+    {
+        AgentRatingsOption option = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), organizationID);
+        Organization org = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);
+
+        org.AgentRating = agentRatingEnabled;
+        org.AddEmailViaTS = true;
+        org.Collection.Save();
+
+        option.PositiveRatingText = proxy.PositiveRatingText;
+        option.NeutralRatingText = proxy.NeutralRatingText;
+        option.NegativeRatingText = proxy.NegativeRatingText;
+        option.RedirectURL = proxy.RedirectURL;
+
+        option.Collection.Save();
+    }
+
+    [WebMethod]
     public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles, int? groupID)
     {
       Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), proxy.OrganizationID);

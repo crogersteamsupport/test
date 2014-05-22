@@ -16,6 +16,9 @@
   <script src="../Js/jquery.ui.combobox.js" type="text/javascript"></script>
   <script src="../Js/jquery.layout.min.js" type="text/javascript"></script>
   <script src="../Js/jquery.ui.timepicker.js" type="text/javascript"></script>
+  <script src="../Js/jquery.iframe-transport.js" type="text/javascript"></script>
+  <script src="../Js/jquery.fileupload.js" type="text/javascript"></script>
+      
   <script src="../Js/Ts/ts.utils.js" type="text/javascript"></script>
   <script src="Admin_Portal.js" type="text/javascript"></script>
   <style type="text/css">
@@ -70,6 +73,7 @@
                 <li><a href="#tabs-basic">Public Portal</a></li>
                 <li id="tab-community"><a href="#tabs-community">Community</a></li>
                 <li><a href="#tabs-knowledgebase">Knowledge Base</a></li>
+                <li id="tab-rating"><a href="#tabs-agentrating">Agent Rating</a></li>
               </ul>
               <div id="tabs-general" class="tabs-modifiable">
                 <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
@@ -735,7 +739,87 @@
                 <div class="ts-clearfix">
                 </div>
               </div>
-
+              <div id="tabs-agentrating" class="tabs-modifiable">
+                <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Agent Rating</div>
+                  <div class="ts-setting-field-content">
+                    <input type="checkbox" class="checkbox" id="agentrating-enabled" /><label class="checkbox"
+                      for="agentrating-enabled">Enabled</label>
+                    <p>This will enable the Agent Rating sytem.</p>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Positive Rating Text</div>
+                  <div class="ts-setting-field-content">
+                      <textarea id="agentrating-positive" class="ui-corner-all ui-widget-content">We’re happy you had a great experience with our team!  Would you like to share any details?</textarea>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Positive Rating Image</div>
+                  <div class="ts-setting-field-content">
+                  <form class="form-horizontal file-upload" action="Upload/Actions/555" method="POST"
+                  enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+                    <label for="inputName" class="col-md-1 control-label">Select new image</label>
+                      <input class="hiddenfile-positive" type="file" name="file[]">
+                      <ul class="upload-queue"></ul>
+                  </form>
+                    <img id="agentrating-positive-img" src="../Images/face-positive.png" alt="positive" />
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Neutral Rating Text</div>
+                  <div class="ts-setting-field-content">
+                    <textarea id="agentrating-neutral" class="ui-corner-all ui-widget-content">We want to make sure each interaction you have with our team is great.  If we did OK and you’re happy, then we’re happy.  If you feel we could have done better, please tell us!</textarea>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Neutral Rating Image</div>
+                  <div class="ts-setting-field-content">
+                  <form class="form-horizontal file-upload" action="Upload/Actions/555" method="POST"
+                  enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+                    <label for="inputName" class="col-md-1 control-label">Select new image</label>
+                      <input class="hiddenfile-neutral" type="file" name="file[]">
+                      <ul class="upload-queue"></ul>
+                  </form>
+                    <img id="agentrating-neutral-img" src="../Images/face-neutral.png" alt="neutral" />
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Negative Rating Text</div>
+                  <div class="ts-setting-field-content">
+                    <textarea id="agentrating-negative" class="ui-corner-all ui-widget-content">We’re very sorry you had a bad experience with our team.  Please help us improve our service by telling us what went wrong.</textarea>
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Negative Rating Image</div>
+                  <div class="ts-setting-field-content">
+                  <form class="form-horizontal file-upload" action="Upload/Actions/555" method="POST"
+                  enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+                    <label for="inputName" class="col-md-1 control-label">Select new image</label>
+                      <input class="hiddenfile-negative" type="file" name="file[]">
+                      <ul class="upload-queue"></ul>
+                  </form>
+                   <img id="agentrating-negative-img" src="../Images/face-negative.png" alt="negative" />
+                  </div>
+                </div>
+                <div class="ts-setting-field two-column ui-widget-content">
+                  <div class="ts-setting-field-description">
+                    Redirect URL</div>
+                  <div class="ts-setting-field-content">
+                    <input type="text" id="agentrating-redirecturl" class="ui-widget-content ui-corner-all text" />
+                    <p>This is where your users will go after they submit a successful rating.</p>
+                  </div>
+                </div>
+                <div class="portal-save-panel"><button class="portal-save">Save</button>&nbsp<button class="portal-cancel">Cancel</button></div>
+              </div>  
             </div>
           </div>
         </div>

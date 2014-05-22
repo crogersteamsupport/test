@@ -155,6 +155,9 @@
     <Compile Include="BusinessObjects\ActionsView.cs" />
     <Compile Include="BusinessObjects\ActionTypes.cs" />
     <Compile Include="BusinessObjects\Addresses.cs" />
+    <Compile Include="BusinessObjects\AgentRatings.cs" />
+    <Compile Include="BusinessObjects\AgentRatingsOptions.cs" />
+    <Compile Include="BusinessObjects\AgentRatingUsers.cs" />
     <Compile Include="BusinessObjects\ApiLogs.cs" />
     <Compile Include="BusinessObjects\AssetAssignments.cs" />
     <Compile Include="BusinessObjects\AssetAssignmentsView.cs" />
@@ -201,6 +204,7 @@
     <Compile Include="BusinessObjects\MiscellaneousLog.cs" />
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
     <Compile Include="BusinessObjects\OrganizationProductsView.cs" />
+    <Compile Include="BusinessObjects\Organizations.cs" />
     <Compile Include="BusinessObjects\RecentlyViewedItems.cs" />
     <Compile Include="BusinessObjects\Reminders.cs" />
     <Compile Include="BusinessObjects\ReportEmails.cs" />
@@ -244,6 +248,9 @@
     <Compile Include="Classes\NamedGZipStream.cs" />
     <Compile Include="Classes\SqlExecutor.cs" />
     <Compile Include="FieldMaps\ActionLinkToJiraFieldMap.cs" />
+    <Compile Include="FieldMaps\AgentRatingsFieldMap.cs" />
+    <Compile Include="FieldMaps\AgentRatingsOptionsFieldMap.cs" />
+    <Compile Include="FieldMaps\AgentRatingUsersFieldMap.cs" />
     <Compile Include="FieldMaps\ArticleStatsFieldMap.cs" />
     <Compile Include="FieldMaps\AssetAssignmentsFieldMap.cs" />
     <Compile Include="FieldMaps\AssetAssignmentsViewFieldMap.cs" />
@@ -304,6 +311,9 @@
     <Compile Include="FieldMaps\WaterCoolerViewFieldMap.cs" />
     <Compile Include="FieldMaps\WikiArticlesViewFieldMap.cs" />
     <Compile Include="Generated\GeneratedActionLinkToJira.cs" />
+    <Compile Include="Generated\GeneratedAgentRatings.cs" />
+    <Compile Include="Generated\GeneratedAgentRatingsOptions.cs" />
+    <Compile Include="Generated\GeneratedAgentRatingUsers.cs" />
     <Compile Include="Generated\GeneratedArticleStats.cs" />
     <Compile Include="Generated\GeneratedAssetAssignments.cs" />
     <Compile Include="Generated\GeneratedAssetAssignmentsView.cs" />
@@ -322,7 +332,6 @@
     <Compile Include="BusinessObjects\Notes.cs" />
     <Compile Include="BusinessObjects\NotesView.cs" />
     <Compile Include="BusinessObjects\OrganizationProducts.cs" />
-    <Compile Include="BusinessObjects\Organizations.cs" />
     <Compile Include="BusinessObjects\OrganizationSettings.cs" />
     <Compile Include="BusinessObjects\OrganizationsView.cs" />
     <Compile Include="BusinessObjects\PhoneNumbers.cs" />
@@ -588,6 +597,9 @@
     <Compile Include="Proxies\ActionsViewProxy.cs" />
     <Compile Include="Proxies\ActionTypesProxy.cs" />
     <Compile Include="Proxies\AddressesProxy.cs" />
+    <Compile Include="Proxies\AgentRatingsOptionsProxy.cs" />
+    <Compile Include="Proxies\AgentRatingsProxy.cs" />
+    <Compile Include="Proxies\AgentRatingUsersProxy.cs" />
     <Compile Include="Proxies\ApiLogsProxy.cs" />
     <Compile Include="Proxies\ArticleStatsProxy.cs" />
     <Compile Include="Proxies\AssetAssignmentsProxy.cs" />

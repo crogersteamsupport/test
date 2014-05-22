@@ -34,6 +34,9 @@ AdminPortal = function () {
     $('#tabs-advanced').hide();
   }
 
+  if (top.Ts.System.User.OrganizationID != 1078)
+      $('#tab-rating').hide();
+
 
   //$('a').addClass('ui-state-default ts-link');
   $('button').button();
@@ -123,9 +126,9 @@ AdminPortal = function () {
   $('#portal_theme').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
 
   var _portalOption = null;
+  var organization = null;
 
   function getData() {
-    var organization = null;
     top.Ts.Services.Organizations.GetOrganization(top.Ts.System.Organization.OrganizationID, function (org) {
       organization = org;
       top.Ts.Services.Organizations.GetPortalOption(organization.OrganizationID, function (po) {
@@ -196,6 +199,8 @@ AdminPortal = function () {
 
     $('.com-enable').button('option', 'label', (portalOption.DisplayForum == true ? "Disable Community" : "Enable Community"));
 
+    $('#agentrating-enabled').prop('checked', organization.AgentRating);
+
   }
 
   function saveValues(portalOption) {
@@ -259,6 +264,15 @@ AdminPortal = function () {
         $('.portal-save-panel').hide();
       }
     });
+
+    var _agentratingOption = new top.TeamSupport.Data.AgentRatingsOptionProxy();;
+    _agentratingOption.PositiveRatingText = $('#agentrating-positive').val();
+    _agentratingOption.NeutralRatingText = $('#agentrating-neutral').val();
+    _agentratingOption.NegativeRatingText = $('#agentrating-negative').val();
+    _agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
+
+    top.Ts.Services.Organizations.SaveAgentRatingOptions($('#agentrating-enabled').prop('checked'), _agentratingOption, top.Ts.System.Organization.OrganizationID);
+
   }
 
   getForumCats()
@@ -686,6 +700,145 @@ AdminPortal = function () {
 
   }
 
+  loadAgentRating();
+  function loadAgentRating() {
+
+      top.Ts.Services.Organizations.GetAgentRatingOptions(top.Ts.System.Organization.OrganizationID, function (o) {
+          if (o == null) {
+              alert("nothing");
+          } else
+          {
+              
+              if (o.PositiveImage)
+                  $('#agentrating-positive-img').attr('src', o.PositiveImage);
+              if(o.NeutralImage)
+                  $('#agentrating-neutral-img').attr('src', o.NeutralImage);
+              if (o.NegativeImage)
+                  $('#agentrating-negative-img').attr('src', o.NegativeImage);
+
+              if (o.PositiveRatingText != null)
+                  $('#agentrating-positive').text(o.PositiveRatingText);
+              if (o.NeutralRatingText != null)
+                  $('#agentrating-neutral').text(o.NeutralRatingText);
+              if (o.NegativeRatingText != null)
+                  $('#agentrating-negative').text(o.NegativeRatingText);
+              if (o.RedirectURL != null)
+                  $('#agentrating-redirecturl').val(o.RedirectURL);
+          }
+      });
+    }
+  var isFilevalid = true;
+  $('.file-upload').fileupload({
+      namespace: 'custom_attachment',
+      dropZone: $('.file-upload'),
+      previewMaxWidth: 100,
+      previewMaxHeight: 100,
+      previewCrop: true, 
+      add: function (e, data) {
+          for (var i = 0; i < data.files.length; i++) {
+
+              if (!(/\.(gif|jpg|jpeg|tiff|png)$/i).test(data.files[i].name)) {
+                  alert('Please select a valid image file. (jpg, jpeg, gif, tiff, png)');
+                  isFilevalid = false;  
+                  return;
+              }
+
+              var item = $('<li>')
+                .appendTo($('.upload-queue'));
+
+              data.context = item;
+              item.data('data', data);
+
+              var bg = $('<div>')
+                .addClass('ts-color-bg-accent')
+                .appendTo(item);
+
+              $('<div>')
+                .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                .addClass('filename')
+                .appendTo(bg);
+
+              $('<span>')
+                .addClass('icon-remove')
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                })
+                .appendTo(bg);
+
+              $('<span>')
+                .addClass('icon-remove')
+                .hide()
+                .click(function (e) {
+                    e.preventDefault();
+                    var data = $(this).closest('li').data('data');
+                    data.jqXHR.abort();
+                })
+                .appendTo(bg);
+
+              var progress = $('<div>')
+                .addClass('progress progress-striped active')
+                .hide();
+
+              $('<div>')
+                  .addClass('progress-bar')
+                  .attr('role', 'progressbar')
+                  .appendTo(progress);
+
+              progress.appendTo(bg);
+          }
+
+      },
+      send: function (e, data) {
+          if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
+              data.context.find('.progress-bar').css('width', '50%');
+          }
+      },
+      fail: function (e, data) {
+          if (data.errorThrown === 'abort') return;
+          alert('There was an error uploading "' + data.files[0].name + '".');
+      },
+      progress: function (e, data) {
+          data.context.find('.progress-bar').css('width', parseInt(data.loaded / data.total * 100, 10) + '%');
+      },
+      start: function (e, data) {
+          $('.progress').show();
+          $('.upload-queue .ui-icon-close').hide();
+          $('.upload-queue .ui-icon-cancel').show();
+      },
+      stop: function (e, data) {
+          //data.context.find('.progress-bar').css('width', '100%');
+          LoadFiles();
+          $('.upload-queue').empty();
+      }
+  });
+
+
+  function readURL(input, target) {
+      if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+              target.attr('src', e.target.result);
+              //$('<img>').attr('src', e.target.result).appendTo($('#agentrating-positive-image'));
+              //$('#agentrating-positive-image').removeClass('rating-postive');
+          }
+
+          reader.readAsDataURL(input.files[0]);
+      }
+  }
+
+  $(".hiddenfile-positive").change(function () {
+      if (isFilevalid)
+        readURL(this, $('#agentrating-positive-img'));
+  });
+  $(".hiddenfile-neutral").change(function () {
+      if (isFilevalid)
+      readURL(this, $('#agentrating-neutral-img'));
+  });
+  $(".hiddenfile-negative").change(function () {
+      if (isFilevalid)
+      readURL(this, $('#agentrating-negative-img'));
+  });
 
 };
 

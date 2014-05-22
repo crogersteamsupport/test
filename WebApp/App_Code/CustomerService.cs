@@ -2111,6 +2111,86 @@ namespace TSWebServices
             return tickets.GetOrganizationTicketCount(organizationID, closed).ToString();
         }
 
+        [WebMethod]
+        public CustomRatingClass[] LoadAgentRatings(int organizationID, string filter)
+        {
+            List<CustomRatingClass> list = new List<CustomRatingClass>();
+
+            AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
+            ratings.LoadByOrganizationIDFilter(organizationID, filter);
+
+            Users users = new Users(TSAuthentication.GetLoginUser());
+
+            foreach (AgentRating a in ratings)
+            {
+                CustomRatingClass ratingclass = new CustomRatingClass();
+                ratingclass.rating = a.GetProxy();
+            
+                AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+                agents.LoadByAgentRatingID(a.AgentRatingID);
+
+                ratingclass.users = new List<UserProxy>();
+                foreach (AgentRatingUser u in agents)
+                {
+
+                    users.LoadByUserID(u.UserID);
+
+                    ratingclass.users.Add(users[0].GetProxy());
+                }
+
+                users.LoadByUserID(a.ContactID);
+
+                ratingclass.reporter = users[0].GetProxy();
+
+                list.Add(ratingclass);
+            }
+
+
+            return list.ToArray();
+        }
+
+        [WebMethod]
+        public CustomRatingClass[] LoadAgentRatingsUser(int userID, string filter)
+        {
+            List<CustomRatingClass> list = new List<CustomRatingClass>();
+
+            AgentRatingUsers aru = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+            aru.LoadByUserID(userID);
+
+            foreach (AgentRatingUser user in aru)
+            {
+                AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
+                ratings.LoadByAgentRatingIDFilter(user.AgentRatingID, filter);
+
+                Users users = new Users(TSAuthentication.GetLoginUser());
+
+                CustomRatingClass ratingclass = new CustomRatingClass();
+                ratingclass.rating = ratings[0].GetProxy();
+
+                AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+                agents.LoadByAgentRatingID(ratings[0].AgentRatingID);
+
+                ratingclass.users = new List<UserProxy>();
+                foreach (AgentRatingUser u in agents)
+                {
+
+                    users.LoadByUserID(u.UserID);
+
+                    ratingclass.users.Add(users[0].GetProxy());
+                }
+
+                users.LoadByUserID(ratings[0].ContactID);
+
+                ratingclass.reporter = users[0].GetProxy();
+
+                list.Add(ratingclass);
+
+            }
+
+            return list.ToArray();
+        }
+
+
         public string CreateTextControl(CustomField field, bool isEditable = false, int organizationID = -1)
         {
             StringBuilder html = new StringBuilder();
@@ -2408,6 +2488,16 @@ namespace TSWebServices
             public string DefaultSupportUser { get; set; }
             [DataMember]
             public string SAED { get; set; }
+        }
+
+        public class CustomRatingClass
+        {
+            [DataMember]
+            public AgentRatingProxy rating;
+            [DataMember]
+            public List<UserProxy> users;
+            [DataMember]
+            public UserProxy reporter;
         }
 
     }

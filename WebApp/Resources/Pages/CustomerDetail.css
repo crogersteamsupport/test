@@ -106,3 +106,8 @@
 .list-group-item-text a{
     word-wrap:break-word;
 }
+
+.imgsm{
+    width:16px;
+    height: 16px;
+}

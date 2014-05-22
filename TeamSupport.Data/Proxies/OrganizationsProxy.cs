@@ -94,16 +94,15 @@ namespace TeamSupport.Data
     [DataMember] public int AvgTimeOpen { get; set; }
     [DataMember] public int AvgTimeToClose { get; set; }
     [DataMember] public int CustDisIndex { get; set; }
-    [DataMember] public bool SlaInitRespAnyAction { get; set; }
     [DataMember] public FontFamily FontFamily { get; set; }
     [DataMember] public FontSize FontSize { get; set; }
-    [DataMember] public string FontFamilyDescription { get; set; }
-    [DataMember] public string FontSizeDescription { get; set; }
+    [DataMember] public bool SlaInitRespAnyAction { get; set; }
     [DataMember] public bool ShowGroupMembersFirstInTicketAssignmentList { get; set; }
     [DataMember] public bool UpdateTicketChildrenGroupWithParent { get; set; }
     [DataMember] public bool ReplyToAlternateEmailAddresses { get; set; }
-    [DataMember] public bool AddEmailViaTS { get; set; }
     [DataMember] public bool ForceUseOfReplyTo { get; set; }
+    [DataMember] public bool AgentRating { get; set; }
+    [DataMember] public bool AddEmailViaTS { get; set; }
           
   }
   
@@ -112,16 +111,15 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
-      result.ForceUseOfReplyTo = this.ForceUseOfReplyTo;
       result.AddEmailViaTS = this.AddEmailViaTS;
+      result.AgentRating = this.AgentRating;
+      result.ForceUseOfReplyTo = this.ForceUseOfReplyTo;
       result.ReplyToAlternateEmailAddresses = this.ReplyToAlternateEmailAddresses;
       result.UpdateTicketChildrenGroupWithParent = this.UpdateTicketChildrenGroupWithParent;
       result.ShowGroupMembersFirstInTicketAssignmentList = this.ShowGroupMembersFirstInTicketAssignmentList;
+      result.SlaInitRespAnyAction = this.SlaInitRespAnyAction;
       result.FontSize = this.FontSize;
       result.FontFamily = this.FontFamily;
-      result.FontSizeDescription = this.FontSizeDescription;
-      result.FontFamilyDescription = this.FontFamilyDescription;
-      result.SlaInitRespAnyAction = this.SlaInitRespAnyAction;
       result.CustDisIndex = this.CustDisIndex;
       result.AvgTimeToClose = this.AvgTimeToClose;
       result.AvgTimeOpen = this.AvgTimeOpen;
@@ -204,11 +202,8 @@ namespace TeamSupport.Data
       result.BusinessDayEnd = DateTime.SpecifyKind(this.BusinessDayEndUtc, DateTimeKind.Utc);
       result.LastIndexRebuilt = DateTime.SpecifyKind(this.LastIndexRebuiltUtc, DateTimeKind.Utc);
        
-      result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc);
-
-
-
-
+      result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc); 
+       
       return result;
     }	
   }
