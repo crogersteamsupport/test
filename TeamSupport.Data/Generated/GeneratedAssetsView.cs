@@ -8,31 +8,54 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class Asset : BaseItem
+  public partial class AssetsViewItem : BaseItem
   {
-    private Assets _assets;
+    private AssetsView _assetsView;
     
-    public Asset(DataRow row, Assets assets): base(row, assets)
+    public AssetsViewItem(DataRow row, AssetsView assetsView): base(row, assetsView)
     {
-      _assets = assets;
+      _assetsView = assetsView;
     }
 	
     #region Properties
     
-    public Assets Collection
+    public AssetsView Collection
     {
-      get { return _assets; }
+      get { return _assetsView; }
     }
         
     
-    
-    
-    public int AssetID
+    public string CreatorName
     {
-      get { return (int)Row["AssetID"]; }
+      get { return Row["CreatorName"] != DBNull.Value ? (string)Row["CreatorName"] : null; }
     }
     
+    public string ModifierName
+    {
+      get { return Row["ModifierName"] != DBNull.Value ? (string)Row["ModifierName"] : null; }
+    }
+    
+    
+    
 
+    
+    public int? ProductID
+    {
+      get { return Row["ProductID"] != DBNull.Value ? (int?)Row["ProductID"] : null; }
+      set { Row["ProductID"] = CheckValue("ProductID", value); }
+    }
+    
+    public int? ProductVersionID
+    {
+      get { return Row["ProductVersionID"] != DBNull.Value ? (int?)Row["ProductVersionID"] : null; }
+      set { Row["ProductVersionID"] = CheckValue("ProductVersionID", value); }
+    }
+    
+    public string ProductVersionNumber
+    {
+      get { return Row["ProductVersionNumber"] != DBNull.Value ? (string)Row["ProductVersionNumber"] : null; }
+      set { Row["ProductVersionNumber"] = CheckValue("ProductVersionNumber", value); }
+    }
     
     public string SerialNumber
     {
@@ -56,18 +79,6 @@ namespace TeamSupport.Data
     {
       get { return Row["Notes"] != DBNull.Value ? (string)Row["Notes"] : null; }
       set { Row["Notes"] = CheckValue("Notes", value); }
-    }
-    
-    public int? ProductID
-    {
-      get { return Row["ProductID"] != DBNull.Value ? (int?)Row["ProductID"] : null; }
-      set { Row["ProductID"] = CheckValue("ProductID", value); }
-    }
-    
-    public int? AssignedTo
-    {
-      get { return Row["AssignedTo"] != DBNull.Value ? (int?)Row["AssignedTo"] : null; }
-      set { Row["AssignedTo"] = CheckValue("AssignedTo", value); }
     }
     
     public int? CreatorID
@@ -100,18 +111,24 @@ namespace TeamSupport.Data
       set { Row["ImportID"] = CheckValue("ImportID", value); }
     }
     
-    public int? ProductVersionID
-    {
-      get { return Row["ProductVersionID"] != DBNull.Value ? (int?)Row["ProductVersionID"] : null; }
-      set { Row["ProductVersionID"] = CheckValue("ProductVersionID", value); }
-    }
-    
 
     
     public int OrganizationID
     {
       get { return (int)Row["OrganizationID"]; }
       set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
+    }
+    
+    public string ProductName
+    {
+      get { return (string)Row["ProductName"]; }
+      set { Row["ProductName"] = CheckValue("ProductName", value); }
+    }
+    
+    public int AssetID
+    {
+      get { return (int)Row["AssetID"]; }
+      set { Row["AssetID"] = CheckValue("AssetID", value); }
     }
     
 
@@ -162,9 +179,9 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class Assets : BaseCollection, IEnumerable<Asset>
+  public partial class AssetsView : BaseCollection, IEnumerable<AssetsViewItem>
   {
-    public Assets(LoginUser loginUser): base (loginUser)
+    public AssetsView(LoginUser loginUser): base (loginUser)
     {
     }
 
@@ -172,7 +189,7 @@ namespace TeamSupport.Data
 
     public override string TableName
     {
-      get { return "Assets"; }
+      get { return "AssetsView"; }
     }
     
     public override string PrimaryKeyFieldName
@@ -182,9 +199,9 @@ namespace TeamSupport.Data
 
 
 
-    public Asset this[int index]
+    public AssetsViewItem this[int index]
     {
-      get { return new Asset(Table.Rows[index], this); }
+      get { return new AssetsViewItem(Table.Rows[index], this); }
     }
     
 
@@ -192,10 +209,10 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(Asset asset);
-    partial void AfterRowInsert(Asset asset);
-    partial void BeforeRowEdit(Asset asset);
-    partial void AfterRowEdit(Asset asset);
+    partial void BeforeRowInsert(AssetsViewItem assetsViewItem);
+    partial void AfterRowInsert(AssetsViewItem assetsViewItem);
+    partial void BeforeRowEdit(AssetsViewItem assetsViewItem);
+    partial void AfterRowEdit(AssetsViewItem assetsViewItem);
     partial void BeforeRowDelete(int assetID);
     partial void AfterRowDelete(int assetID);    
 
@@ -206,11 +223,11 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public AssetProxy[] GetAssetProxies()
+    public AssetsViewItemProxy[] GetAssetsViewItemProxies()
     {
-      List<AssetProxy> list = new List<AssetProxy>();
+      List<AssetsViewItemProxy> list = new List<AssetsViewItemProxy>();
 
-      foreach (Asset item in this)
+      foreach (AssetsViewItem item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -229,7 +246,7 @@ namespace TeamSupport.Data
 
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Assets] WHERE ([AssetID] = @AssetID);";
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AssetsView] WHERE ([AssetID] = @AssetID);";
         deleteCommand.Parameters.Add("AssetID", SqlDbType.Int);
         deleteCommand.Parameters["AssetID"].Value = assetID;
 
@@ -244,13 +261,13 @@ namespace TeamSupport.Data
     }
 
     public override void Save(SqlConnection connection)    {
-		//SqlTransaction transaction = connection.BeginTransaction("AssetsSave");
+		//SqlTransaction transaction = connection.BeginTransaction("AssetsViewSave");
 		SqlParameter tempParameter;
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Assets] SET     [OrganizationID] = @OrganizationID,    [SerialNumber] = @SerialNumber,    [Name] = @Name,    [Location] = @Location,    [Notes] = @Notes,    [ProductID] = @ProductID,    [WarrantyExpiration] = @WarrantyExpiration,    [AssignedTo] = @AssignedTo,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [SubPartOf] = @SubPartOf,    [Status] = @Status,    [ImportID] = @ImportID,    [ProductVersionID] = @ProductVersionID  WHERE ([AssetID] = @AssetID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AssetsView] SET     [ProductID] = @ProductID,    [ProductName] = @ProductName,    [ProductVersionID] = @ProductVersionID,    [ProductVersionNumber] = @ProductVersionNumber,    [OrganizationID] = @OrganizationID,    [SerialNumber] = @SerialNumber,    [Name] = @Name,    [Location] = @Location,    [Notes] = @Notes,    [WarrantyExpiration] = @WarrantyExpiration,    [DateModified] = @DateModified,    [CreatorName] = @CreatorName,    [ModifierID] = @ModifierID,    [ModifierName] = @ModifierName,    [SubPartOf] = @SubPartOf,    [Status] = @Status,    [ImportID] = @ImportID  WHERE ([AssetID] = @AssetID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("AssetID", SqlDbType.Int, 4);
@@ -258,6 +275,34 @@ namespace TeamSupport.Data
 		{
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ProductName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ProductVersionID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ProductVersionNumber", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -295,25 +340,11 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
 		tempParameter = updateCommand.Parameters.Add("WarrantyExpiration", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 23;
 		  tempParameter.Scale = 23;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("AssignedTo", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
 		}
 		
 		tempParameter = updateCommand.Parameters.Add("DateModified", SqlDbType.DateTime, 8);
@@ -323,11 +354,25 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 		tempParameter = updateCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = updateCommand.Parameters.Add("SubPartOf", SqlDbType.Int, 4);
@@ -351,27 +396,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("ProductVersionID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Assets] (    [OrganizationID],    [SerialNumber],    [Name],    [Location],    [Notes],    [ProductID],    [WarrantyExpiration],    [AssignedTo],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [SubPartOf],    [Status],    [ImportID],    [ProductVersionID]) VALUES ( @OrganizationID, @SerialNumber, @Name, @Location, @Notes, @ProductID, @WarrantyExpiration, @AssignedTo, @DateCreated, @DateModified, @CreatorID, @ModifierID, @SubPartOf, @Status, @ImportID, @ProductVersionID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AssetsView] (    [AssetID],    [ProductID],    [ProductName],    [ProductVersionID],    [ProductVersionNumber],    [OrganizationID],    [SerialNumber],    [Name],    [Location],    [Notes],    [WarrantyExpiration],    [DateCreated],    [DateModified],    [CreatorID],    [CreatorName],    [ModifierID],    [ModifierName],    [SubPartOf],    [Status],    [ImportID]) VALUES ( @AssetID, @ProductID, @ProductName, @ProductVersionID, @ProductVersionNumber, @OrganizationID, @SerialNumber, @Name, @Location, @Notes, @WarrantyExpiration, @DateCreated, @DateModified, @CreatorID, @CreatorName, @ModifierID, @ModifierName, @SubPartOf, @Status, @ImportID); SET @Identity = SCOPE_IDENTITY();";
 
-		
-		tempParameter = insertCommand.Parameters.Add("ProductVersionID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("ImportID", SqlDbType.VarChar, 500);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -394,11 +425,25 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("CreatorName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("CreatorID", SqlDbType.Int, 4);
@@ -422,25 +467,11 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("AssignedTo", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
 		tempParameter = insertCommand.Parameters.Add("WarrantyExpiration", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 23;
 		  tempParameter.Scale = 23;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("Notes", SqlDbType.Text, 2147483647);
@@ -478,28 +509,63 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = insertCommand.Parameters.Add("ProductVersionNumber", SqlDbType.VarChar, 50);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ProductVersionID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ProductName", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ProductID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("AssetID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[Assets] WHERE ([AssetID] = @AssetID);";
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AssetsView] WHERE ([AssetID] = @AssetID);";
 		deleteCommand.Parameters.Add("AssetID", SqlDbType.Int);
 
 		try
 		{
-		  foreach (Asset asset in this)
+		  foreach (AssetsViewItem assetsViewItem in this)
 		  {
-			if (asset.Row.RowState == DataRowState.Added)
+			if (assetsViewItem.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(asset);
+			  BeforeRowInsert(assetsViewItem);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = asset.Row[parameter.ParameterName];
+				  parameter.Value = assetsViewItem.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -510,26 +576,26 @@ namespace TeamSupport.Data
 			  Table.Columns["AssetID"].AutoIncrement = false;
 			  Table.Columns["AssetID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				asset.Row["AssetID"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(asset);
+				assetsViewItem.Row["AssetID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(assetsViewItem);
 			}
-			else if (asset.Row.RowState == DataRowState.Modified)
+			else if (assetsViewItem.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(asset);
+			  BeforeRowEdit(assetsViewItem);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = asset.Row[parameter.ParameterName];
+				parameter.Value = assetsViewItem.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(asset);
+			  AfterRowEdit(assetsViewItem);
 			}
-			else if (asset.Row.RowState == DataRowState.Deleted)
+			else if (assetsViewItem.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)asset.Row["AssetID", DataRowVersion.Original];
+			  int id = (int)assetsViewItem.Row["AssetID", DataRowVersion.Original];
 			  deleteCommand.Parameters["AssetID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
@@ -550,10 +616,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (Asset asset in this)
+      foreach (AssetsViewItem assetsViewItem in this)
       {
-        if (asset.Row.Table.Columns.Contains("CreatorID") && (int)asset.Row["CreatorID"] == 0) asset.Row["CreatorID"] = LoginUser.UserID;
-        if (asset.Row.Table.Columns.Contains("ModifierID")) asset.Row["ModifierID"] = LoginUser.UserID;
+        if (assetsViewItem.Row.Table.Columns.Contains("CreatorID") && (int)assetsViewItem.Row["CreatorID"] == 0) assetsViewItem.Row["CreatorID"] = LoginUser.UserID;
+        if (assetsViewItem.Row.Table.Columns.Contains("ModifierID")) assetsViewItem.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -566,45 +632,45 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public Asset FindByAssetID(int assetID)
+    public AssetsViewItem FindByAssetID(int assetID)
     {
-      foreach (Asset asset in this)
+      foreach (AssetsViewItem assetsViewItem in this)
       {
-        if (asset.AssetID == assetID)
+        if (assetsViewItem.AssetID == assetID)
         {
-          return asset;
+          return assetsViewItem;
         }
       }
       return null;
     }
 
-    public virtual Asset AddNewAsset()
+    public virtual AssetsViewItem AddNewAssetsViewItem()
     {
-      if (Table.Columns.Count < 1) LoadColumns("Assets");
+      if (Table.Columns.Count < 1) LoadColumns("AssetsView");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new Asset(row, this);
+      return new AssetsViewItem(row, this);
     }
     
     public virtual void LoadByAssetID(int assetID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [AssetID], [OrganizationID], [SerialNumber], [Name], [Location], [Notes], [ProductID], [WarrantyExpiration], [AssignedTo], [DateCreated], [DateModified], [CreatorID], [ModifierID], [SubPartOf], [Status], [ImportID], [ProductVersionID] FROM [dbo].[Assets] WHERE ([AssetID] = @AssetID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [AssetID], [ProductID], [ProductName], [ProductVersionID], [ProductVersionNumber], [OrganizationID], [SerialNumber], [Name], [Location], [Notes], [WarrantyExpiration], [DateCreated], [DateModified], [CreatorID], [CreatorName], [ModifierID], [ModifierName], [SubPartOf], [Status], [ImportID] FROM [dbo].[AssetsView] WHERE ([AssetID] = @AssetID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("AssetID", assetID);
         Fill(command);
       }
     }
     
-    public static Asset GetAsset(LoginUser loginUser, int assetID)
+    public static AssetsViewItem GetAssetsViewItem(LoginUser loginUser, int assetID)
     {
-      Assets assets = new Assets(loginUser);
-      assets.LoadByAssetID(assetID);
-      if (assets.IsEmpty)
+      AssetsView assetsView = new AssetsView(loginUser);
+      assetsView.LoadByAssetID(assetID);
+      if (assetsView.IsEmpty)
         return null;
       else
-        return assets[0];
+        return assetsView[0];
     }
     
     
@@ -612,13 +678,13 @@ namespace TeamSupport.Data
 
     #endregion
 
-    #region IEnumerable<Asset> Members
+    #region IEnumerable<AssetsViewItem> Members
 
-    public IEnumerator<Asset> GetEnumerator()
+    public IEnumerator<AssetsViewItem> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new Asset(row, this);
+        yield return new AssetsViewItem(row, this);
       }
     }
 

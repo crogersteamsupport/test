@@ -26,6 +26,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Comments", "Comments", false, false, false);
       _fieldMap.AddMap("DateCreated", "DateCreated", false, false, false);
       _fieldMap.AddMap("Actor", "Actor", false, false, false);
+      _fieldMap.AddMap("RefType", "RefType", false, false, false);
+      _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
+      _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
             
     }
   }

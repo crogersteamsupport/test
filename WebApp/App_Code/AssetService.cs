@@ -49,9 +49,9 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public AssetProxy GetAsset(int assetID)
+    public AssetsViewItemProxy GetAsset(int assetID)
     {
-      Asset asset = Assets.GetAsset(TSAuthentication.GetLoginUser(), assetID);
+      AssetsViewItem asset = AssetsView.GetAssetsViewItem(TSAuthentication.GetLoginUser(), assetID);
       if (asset.OrganizationID != TSAuthentication.OrganizationID) return null;
       return asset.GetProxy();
     }
@@ -76,6 +76,7 @@ namespace TSWebServices
       asset.OrganizationID =      TSAuthentication.OrganizationID;
       asset.Name =                info.Name;
       asset.ProductID =           info.ProductID;
+      asset.ProductVersionID =    info.ProductVersionID;
       asset.SerialNumber =        info.SerialNumber;
       //asset.WarrantyExpiration = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), (DateTime?)info.WarrantyExpiration);
       asset.WarrantyExpiration = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), info.WarrantyExpiration);
@@ -177,6 +178,8 @@ namespace TSWebServices
     public string Name { get; set; }
     [DataMember]
     public int ProductID { get; set; }
+    [DataMember]
+    public int? ProductVersionID { get; set; }
     [DataMember]
     public string SerialNumber { get; set; }
     [DataMember]

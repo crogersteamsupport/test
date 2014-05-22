@@ -26,6 +26,9 @@ namespace TeamSupport.Data
     [DataMember] public string Comments { get; set; }
     [DataMember] public DateTime? DateCreated { get; set; }
     [DataMember] public int? Actor { get; set; }
+    [DataMember] public int? RefType { get; set; }
+    [DataMember] public DateTime? DateModified { get; set; }
+    [DataMember] public int? ModifierID { get; set; }
           
   }
   
@@ -34,6 +37,8 @@ namespace TeamSupport.Data
     public AssetHistoryItemProxy GetProxy()
     {
       AssetHistoryItemProxy result = new AssetHistoryItemProxy();
+      result.ModifierID = this.ModifierID;
+      result.RefType = this.RefType;
       result.Actor = this.Actor;
       result.Comments = this.Comments;
       result.ReferenceNum = this.ReferenceNum;
@@ -47,6 +52,7 @@ namespace TeamSupport.Data
       result.HistoryID = this.HistoryID;
        
        
+      result.DateModified = this.DateModifiedUtc == null ? this.DateModifiedUtc : DateTime.SpecifyKind((DateTime)this.DateModifiedUtc, DateTimeKind.Utc); 
       result.DateCreated = this.DateCreatedUtc == null ? this.DateCreatedUtc : DateTime.SpecifyKind((DateTime)this.DateCreatedUtc, DateTimeKind.Utc); 
       result.ActionTime = this.ActionTimeUtc == null ? this.ActionTimeUtc : DateTime.SpecifyKind((DateTime)this.ActionTimeUtc, DateTimeKind.Utc); 
        

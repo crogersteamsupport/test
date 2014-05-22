@@ -13,14 +13,34 @@
     }
   });
 
-  LoadProducts();
-
   function LoadProducts() {
     var products = top.Ts.Cache.getProducts();
     for (var i = 0; i < products.length; i++) {
       $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#ddlProduct');
     }
   }
+
+  function LoadProductVersions() {
+    $('#ddlProductVersion').empty();
+    var product = top.Ts.Cache.getProduct($('#ddlProduct').val());
+    for (var i = 0; i < product.Versions.length; i++) {
+      $('<option>').attr('value', product.Versions[i].ProductVersionID).text(product.Versions[i].VersionNumber).data('version', product.Versions[i]).appendTo('#ddlProductVersion');
+    }
+    if (product.Versions.length == 0) {
+      $('<option>').text(product.Name + ' has no versions.').appendTo('#ddlProductVersion');
+      $('#ddlProductVersion').prop("disabled", true);
+    }
+    else {
+      $('#ddlProductVersion').prop("disabled", false);
+    }
+  }
+
+  LoadProducts();
+  LoadProductVersions();
+
+  $('#ddlProduct').change(function (e) {
+    LoadProductVersions();
+  });
 
   var userDateFormat = top.Sys.CultureInfo.CurrentCulture.dateTimeFormat.ShortDatePattern.replace("yyyy", "yy");
   $("#inputWarrantyExpiration").datepicker({ dateFormat: userDateFormat });
@@ -33,6 +53,7 @@
 
     assetInfo.Name = $("#inputName").val();
     assetInfo.ProductID = $("#ddlProduct").val();
+    assetInfo.ProductVersionID = $('#ddlProductVersion').val();
     assetInfo.SerialNumber = $("#inputSerialNumber").val();
     assetInfo.WarrantyExpiration = $("#inputWarrantyExpiration").val();
     assetInfo.Notes = $("#Notes").val();

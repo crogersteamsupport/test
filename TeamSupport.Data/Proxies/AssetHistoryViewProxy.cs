@@ -9,10 +9,10 @@ using System.Runtime.Serialization;
 namespace TeamSupport.Data
 {
   [DataContract(Namespace="http://teamsupport.com/")]
-  [KnownType(typeof(AssetHistoryItemProxy))]
-  public class AssetHistoryItemProxy
+  [KnownType(typeof(AssetHistoryViewItemProxy))]
+  public class AssetHistoryViewItemProxy
   {
-    public AssetHistoryItemProxy() {}
+    public AssetHistoryViewItemProxy() {}
     [DataMember] public int HistoryID { get; set; }
     [DataMember] public int AssetID { get; set; }
     [DataMember] public int OrganizationID { get; set; }
@@ -20,30 +20,36 @@ namespace TeamSupport.Data
     [DataMember] public string ActionDescription { get; set; }
     [DataMember] public int? ShippedFrom { get; set; }
     [DataMember] public int? ShippedTo { get; set; }
+    [DataMember] public string NameAssignedTo { get; set; }
     [DataMember] public string TrackingNumber { get; set; }
     [DataMember] public string ShippingMethod { get; set; }
     [DataMember] public string ReferenceNum { get; set; }
     [DataMember] public string Comments { get; set; }
     [DataMember] public DateTime? DateCreated { get; set; }
     [DataMember] public int? Actor { get; set; }
+    [DataMember] public string ActorName { get; set; }
     [DataMember] public int? RefType { get; set; }
     [DataMember] public DateTime? DateModified { get; set; }
     [DataMember] public int? ModifierID { get; set; }
+    [DataMember] public string ModifierName { get; set; }
           
   }
   
-  public partial class AssetHistoryItem : BaseItem
+  public partial class AssetHistoryViewItem : BaseItem
   {
-    public AssetHistoryItemProxy GetProxy()
+    public AssetHistoryViewItemProxy GetProxy()
     {
-      AssetHistoryItemProxy result = new AssetHistoryItemProxy();
+      AssetHistoryViewItemProxy result = new AssetHistoryViewItemProxy();
+      result.ModifierName = this.ModifierName;
       result.ModifierID = this.ModifierID;
       result.RefType = this.RefType;
+      result.ActorName = this.ActorName;
       result.Actor = this.Actor;
       result.Comments = this.Comments;
       result.ReferenceNum = this.ReferenceNum;
       result.ShippingMethod = this.ShippingMethod;
       result.TrackingNumber = this.TrackingNumber;
+      result.NameAssignedTo = this.NameAssignedTo;
       result.ShippedTo = this.ShippedTo;
       result.ShippedFrom = this.ShippedFrom;
       result.ActionDescription = this.ActionDescription;

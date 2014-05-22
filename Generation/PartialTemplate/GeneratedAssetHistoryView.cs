@@ -8,29 +8,39 @@ using System.Data.SqlClient;
 namespace TeamSupport.Data
 {
   [Serializable]
-  public partial class AssetHistoryItem : BaseItem
+  public partial class AssetHistoryViewItem : BaseItem
   {
-    private AssetHistory _assetHistory;
+    private AssetHistoryView _assetHistoryView;
     
-    public AssetHistoryItem(DataRow row, AssetHistory assetHistory): base(row, assetHistory)
+    public AssetHistoryViewItem(DataRow row, AssetHistoryView assetHistoryView): base(row, assetHistoryView)
     {
-      _assetHistory = assetHistory;
+      _assetHistoryView = assetHistoryView;
     }
 	
     #region Properties
     
-    public AssetHistory Collection
+    public AssetHistoryView Collection
     {
-      get { return _assetHistory; }
+      get { return _assetHistoryView; }
     }
         
     
-    
-    
-    public int HistoryID
+    public string NameAssignedTo
     {
-      get { return (int)Row["HistoryID"]; }
+      get { return Row["NameAssignedTo"] != DBNull.Value ? (string)Row["NameAssignedTo"] : null; }
     }
+    
+    public string ActorName
+    {
+      get { return Row["ActorName"] != DBNull.Value ? (string)Row["ActorName"] : null; }
+    }
+    
+    public string ModifierName
+    {
+      get { return Row["ModifierName"] != DBNull.Value ? (string)Row["ModifierName"] : null; }
+    }
+    
+    
     
 
     
@@ -108,6 +118,12 @@ namespace TeamSupport.Data
       set { Row["AssetID"] = CheckValue("AssetID", value); }
     }
     
+    public int HistoryID
+    {
+      get { return (int)Row["HistoryID"]; }
+      set { Row["HistoryID"] = CheckValue("HistoryID", value); }
+    }
+    
 
     /* DateTime */
     
@@ -156,9 +172,9 @@ namespace TeamSupport.Data
     
   }
 
-  public partial class AssetHistory : BaseCollection, IEnumerable<AssetHistoryItem>
+  public partial class AssetHistoryView : BaseCollection, IEnumerable<AssetHistoryViewItem>
   {
-    public AssetHistory(LoginUser loginUser): base (loginUser)
+    public AssetHistoryView(LoginUser loginUser): base (loginUser)
     {
     }
 
@@ -166,7 +182,7 @@ namespace TeamSupport.Data
 
     public override string TableName
     {
-      get { return "AssetHistory"; }
+      get { return "AssetHistoryView"; }
     }
     
     public override string PrimaryKeyFieldName
@@ -176,9 +192,9 @@ namespace TeamSupport.Data
 
 
 
-    public AssetHistoryItem this[int index]
+    public AssetHistoryViewItem this[int index]
     {
-      get { return new AssetHistoryItem(Table.Rows[index], this); }
+      get { return new AssetHistoryViewItem(Table.Rows[index], this); }
     }
     
 
@@ -186,10 +202,10 @@ namespace TeamSupport.Data
 
     #region Protected Members
     
-    partial void BeforeRowInsert(AssetHistoryItem assetHistoryItem);
-    partial void AfterRowInsert(AssetHistoryItem assetHistoryItem);
-    partial void BeforeRowEdit(AssetHistoryItem assetHistoryItem);
-    partial void AfterRowEdit(AssetHistoryItem assetHistoryItem);
+    partial void BeforeRowInsert(AssetHistoryViewItem assetHistoryViewItem);
+    partial void AfterRowInsert(AssetHistoryViewItem assetHistoryViewItem);
+    partial void BeforeRowEdit(AssetHistoryViewItem assetHistoryViewItem);
+    partial void AfterRowEdit(AssetHistoryViewItem assetHistoryViewItem);
     partial void BeforeRowDelete(int historyID);
     partial void AfterRowDelete(int historyID);    
 
@@ -200,11 +216,11 @@ namespace TeamSupport.Data
 
     #region Public Methods
 
-    public AssetHistoryItemProxy[] GetAssetHistoryItemProxies()
+    public AssetHistoryViewItemProxy[] GetAssetHistoryViewItemProxies()
     {
-      List<AssetHistoryItemProxy> list = new List<AssetHistoryItemProxy>();
+      List<AssetHistoryViewItemProxy> list = new List<AssetHistoryViewItemProxy>();
 
-      foreach (AssetHistoryItem item in this)
+      foreach (AssetHistoryViewItem item in this)
       {
         list.Add(item.GetProxy()); 
       }
@@ -223,7 +239,7 @@ namespace TeamSupport.Data
 
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AssetHistory] WHERE ([HistoryID] = @HistoryID);";
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AssetHistoryView] WHERE ([HistoryID] = @HistoryID);";
         deleteCommand.Parameters.Add("HistoryID", SqlDbType.Int);
         deleteCommand.Parameters["HistoryID"].Value = historyID;
 
@@ -238,13 +254,13 @@ namespace TeamSupport.Data
     }
 
     public override void Save(SqlConnection connection)    {
-		//SqlTransaction transaction = connection.BeginTransaction("AssetHistorySave");
+		//SqlTransaction transaction = connection.BeginTransaction("AssetHistoryViewSave");
 		SqlParameter tempParameter;
 		SqlCommand updateCommand = connection.CreateCommand();
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AssetHistory] SET     [AssetID] = @AssetID,    [OrganizationID] = @OrganizationID,    [ActionTime] = @ActionTime,    [ActionDescription] = @ActionDescription,    [ShippedFrom] = @ShippedFrom,    [ShippedTo] = @ShippedTo,    [TrackingNumber] = @TrackingNumber,    [ShippingMethod] = @ShippingMethod,    [ReferenceNum] = @ReferenceNum,    [Comments] = @Comments,    [Actor] = @Actor,    [RefType] = @RefType,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([HistoryID] = @HistoryID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AssetHistoryView] SET     [AssetID] = @AssetID,    [OrganizationID] = @OrganizationID,    [ActionTime] = @ActionTime,    [ActionDescription] = @ActionDescription,    [ShippedFrom] = @ShippedFrom,    [ShippedTo] = @ShippedTo,    [NameAssignedTo] = @NameAssignedTo,    [TrackingNumber] = @TrackingNumber,    [ShippingMethod] = @ShippingMethod,    [ReferenceNum] = @ReferenceNum,    [Comments] = @Comments,    [Actor] = @Actor,    [ActorName] = @ActorName,    [RefType] = @RefType,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ModifierName] = @ModifierName  WHERE ([HistoryID] = @HistoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("HistoryID", SqlDbType.Int, 4);
@@ -296,6 +312,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("NameAssignedTo", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 		tempParameter = updateCommand.Parameters.Add("TrackingNumber", SqlDbType.VarChar, 200);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -331,6 +354,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ActorName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 		tempParameter = updateCommand.Parameters.Add("RefType", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -352,13 +382,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AssetHistory] (    [AssetID],    [OrganizationID],    [ActionTime],    [ActionDescription],    [ShippedFrom],    [ShippedTo],    [TrackingNumber],    [ShippingMethod],    [ReferenceNum],    [Comments],    [DateCreated],    [Actor],    [RefType],    [DateModified],    [ModifierID]) VALUES ( @AssetID, @OrganizationID, @ActionTime, @ActionDescription, @ShippedFrom, @ShippedTo, @TrackingNumber, @ShippingMethod, @ReferenceNum, @Comments, @DateCreated, @Actor, @RefType, @DateModified, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AssetHistoryView] (    [HistoryID],    [AssetID],    [OrganizationID],    [ActionTime],    [ActionDescription],    [ShippedFrom],    [ShippedTo],    [NameAssignedTo],    [TrackingNumber],    [ShippingMethod],    [ReferenceNum],    [Comments],    [DateCreated],    [Actor],    [ActorName],    [RefType],    [DateModified],    [ModifierID],    [ModifierName]) VALUES ( @HistoryID, @AssetID, @OrganizationID, @ActionTime, @ActionDescription, @ShippedFrom, @ShippedTo, @NameAssignedTo, @TrackingNumber, @ShippingMethod, @ReferenceNum, @Comments, @DateCreated, @Actor, @ActorName, @RefType, @DateModified, @ModifierID, @ModifierName); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -379,6 +423,13 @@ namespace TeamSupport.Data
 		{
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ActorName", SqlDbType.VarChar, 201);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("Actor", SqlDbType.Int, 4);
@@ -417,6 +468,13 @@ namespace TeamSupport.Data
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("TrackingNumber", SqlDbType.VarChar, 200);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("NameAssignedTo", SqlDbType.VarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -465,28 +523,35 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = insertCommand.Parameters.Add("HistoryID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;
 		SqlCommand deleteCommand = connection.CreateCommand();
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AssetHistory] WHERE ([HistoryID] = @HistoryID);";
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[AssetHistoryView] WHERE ([HistoryID] = @HistoryID);";
 		deleteCommand.Parameters.Add("HistoryID", SqlDbType.Int);
 
 		try
 		{
-		  foreach (AssetHistoryItem assetHistoryItem in this)
+		  foreach (AssetHistoryViewItem assetHistoryViewItem in this)
 		  {
-			if (assetHistoryItem.Row.RowState == DataRowState.Added)
+			if (assetHistoryViewItem.Row.RowState == DataRowState.Added)
 			{
-			  BeforeRowInsert(assetHistoryItem);
+			  BeforeRowInsert(assetHistoryViewItem);
 			  for (int i = 0; i < insertCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = insertCommand.Parameters[i];
 				if (parameter.Direction != ParameterDirection.Output)
 				{
-				  parameter.Value = assetHistoryItem.Row[parameter.ParameterName];
+				  parameter.Value = assetHistoryViewItem.Row[parameter.ParameterName];
 				}
 			  }
 
@@ -497,26 +562,26 @@ namespace TeamSupport.Data
 			  Table.Columns["HistoryID"].AutoIncrement = false;
 			  Table.Columns["HistoryID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				assetHistoryItem.Row["HistoryID"] = (int)insertCommand.Parameters["Identity"].Value;
-			  AfterRowInsert(assetHistoryItem);
+				assetHistoryViewItem.Row["HistoryID"] = (int)insertCommand.Parameters["Identity"].Value;
+			  AfterRowInsert(assetHistoryViewItem);
 			}
-			else if (assetHistoryItem.Row.RowState == DataRowState.Modified)
+			else if (assetHistoryViewItem.Row.RowState == DataRowState.Modified)
 			{
-			  BeforeRowEdit(assetHistoryItem);
+			  BeforeRowEdit(assetHistoryViewItem);
 			  for (int i = 0; i < updateCommand.Parameters.Count; i++)
 			  {
 				SqlParameter parameter = updateCommand.Parameters[i];
-				parameter.Value = assetHistoryItem.Row[parameter.ParameterName];
+				parameter.Value = assetHistoryViewItem.Row[parameter.ParameterName];
 			  }
 			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
-			  AfterRowEdit(assetHistoryItem);
+			  AfterRowEdit(assetHistoryViewItem);
 			}
-			else if (assetHistoryItem.Row.RowState == DataRowState.Deleted)
+			else if (assetHistoryViewItem.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)assetHistoryItem.Row["HistoryID", DataRowVersion.Original];
+			  int id = (int)assetHistoryViewItem.Row["HistoryID", DataRowVersion.Original];
 			  deleteCommand.Parameters["HistoryID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
@@ -537,10 +602,10 @@ namespace TeamSupport.Data
     public void BulkSave()
     {
 
-      foreach (AssetHistoryItem assetHistoryItem in this)
+      foreach (AssetHistoryViewItem assetHistoryViewItem in this)
       {
-        if (assetHistoryItem.Row.Table.Columns.Contains("CreatorID") && (int)assetHistoryItem.Row["CreatorID"] == 0) assetHistoryItem.Row["CreatorID"] = LoginUser.UserID;
-        if (assetHistoryItem.Row.Table.Columns.Contains("ModifierID")) assetHistoryItem.Row["ModifierID"] = LoginUser.UserID;
+        if (assetHistoryViewItem.Row.Table.Columns.Contains("CreatorID") && (int)assetHistoryViewItem.Row["CreatorID"] == 0) assetHistoryViewItem.Row["CreatorID"] = LoginUser.UserID;
+        if (assetHistoryViewItem.Row.Table.Columns.Contains("ModifierID")) assetHistoryViewItem.Row["ModifierID"] = LoginUser.UserID;
       }
     
       SqlBulkCopy copy = new SqlBulkCopy(LoginUser.ConnectionString);
@@ -553,45 +618,45 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public AssetHistoryItem FindByHistoryID(int historyID)
+    public AssetHistoryViewItem FindByHistoryID(int historyID)
     {
-      foreach (AssetHistoryItem assetHistoryItem in this)
+      foreach (AssetHistoryViewItem assetHistoryViewItem in this)
       {
-        if (assetHistoryItem.HistoryID == historyID)
+        if (assetHistoryViewItem.HistoryID == historyID)
         {
-          return assetHistoryItem;
+          return assetHistoryViewItem;
         }
       }
       return null;
     }
 
-    public virtual AssetHistoryItem AddNewAssetHistoryItem()
+    public virtual AssetHistoryViewItem AddNewAssetHistoryViewItem()
     {
-      if (Table.Columns.Count < 1) LoadColumns("AssetHistory");
+      if (Table.Columns.Count < 1) LoadColumns("AssetHistoryView");
       DataRow row = Table.NewRow();
       Table.Rows.Add(row);
-      return new AssetHistoryItem(row, this);
+      return new AssetHistoryViewItem(row, this);
     }
     
     public virtual void LoadByHistoryID(int historyID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [AssetID], [OrganizationID], [ActionTime], [ActionDescription], [ShippedFrom], [ShippedTo], [TrackingNumber], [ShippingMethod], [ReferenceNum], [Comments], [DateCreated], [Actor], [RefType], [DateModified], [ModifierID] FROM [dbo].[AssetHistory] WHERE ([HistoryID] = @HistoryID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [AssetID], [OrganizationID], [ActionTime], [ActionDescription], [ShippedFrom], [ShippedTo], [NameAssignedTo], [TrackingNumber], [ShippingMethod], [ReferenceNum], [Comments], [DateCreated], [Actor], [ActorName], [RefType], [DateModified], [ModifierID], [ModifierName] FROM [dbo].[AssetHistoryView] WHERE ([HistoryID] = @HistoryID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("HistoryID", historyID);
         Fill(command);
       }
     }
     
-    public static AssetHistoryItem GetAssetHistoryItem(LoginUser loginUser, int historyID)
+    public static AssetHistoryViewItem GetAssetHistoryViewItem(LoginUser loginUser, int historyID)
     {
-      AssetHistory assetHistory = new AssetHistory(loginUser);
-      assetHistory.LoadByHistoryID(historyID);
-      if (assetHistory.IsEmpty)
+      AssetHistoryView assetHistoryView = new AssetHistoryView(loginUser);
+      assetHistoryView.LoadByHistoryID(historyID);
+      if (assetHistoryView.IsEmpty)
         return null;
       else
-        return assetHistory[0];
+        return assetHistoryView[0];
     }
     
     
@@ -599,13 +664,13 @@ namespace TeamSupport.Data
 
     #endregion
 
-    #region IEnumerable<AssetHistoryItem> Members
+    #region IEnumerable<AssetHistoryViewItem> Members
 
-    public IEnumerator<AssetHistoryItem> GetEnumerator()
+    public IEnumerator<AssetHistoryViewItem> GetEnumerator()
     {
       foreach (DataRow row in Table.Rows)
       {
-        yield return new AssetHistoryItem(row, this);
+        yield return new AssetHistoryViewItem(row, this);
       }
     }
 

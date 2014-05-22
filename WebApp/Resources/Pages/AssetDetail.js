@@ -68,16 +68,17 @@ $(document).ready(function () {
     }
 
     $('#fieldName').text(asset.Name);
-    $('#fieldProduct').text(asset.ProductID);
+    $('#fieldProduct').text(asset.ProductName);
+    $('#fieldProductVersion').text(asset.ProductVersionNumber);
     $('#fieldSerialNumber').text(asset.SerialNumber);
-    $('#fieldWarrantyExpiration').text(asset.WarrantyExpiration);
+    $('#fieldWarrantyExpiration').text(top.Ts.Utils.getMsDate(asset.WarrantyExpiration).localeFormat(top.Ts.Utils.getDatePattern()));
     $('#fieldNotes').text(asset.Notes);
 
     $('#fieldAssetID').text(asset.AssetID);
-    $('#fieldCreator').text(asset.CreatorID);
-    $('#fieldDateCreated').text(asset.DateCreated);
-    $('#fieldModifier').text(asset.ModifierID);
-    $('#fieldDateModified').text(asset.DateModified);
+    $('#fieldCreator').text(asset.CreatorName);
+    $('#fieldDateCreated').text(top.Ts.Utils.getMsDate(asset.DateCreated).localeFormat(top.Ts.Utils.getDateTimePattern()));
+    $('#fieldModifier').text(asset.ModifierName);
+    $('#fieldDateModified').text(top.Ts.Utils.getMsDate(asset.DateModified).localeFormat(top.Ts.Utils.getDateTimePattern()));
   });
 
   $('#historyToggle').on('click', function () {
