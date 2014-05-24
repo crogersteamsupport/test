@@ -193,6 +193,67 @@ namespace TSWebServices
 
       return history.GetAssetHistoryViewItemProxies();
     }
+
+    [WebMethod]
+    public string SetAssetName(int assetID, string value)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Asset o = Assets.GetAsset(loginUser, assetID);
+      o.Name = value;
+      o.Collection.Save();
+      string description = String.Format("{0} set asset name to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+      return value != "" ? value : "Empty";
+    }
+
+    [WebMethod]
+    public int SetAssetProduct(int assetID, int value)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Asset o = Assets.GetAsset(loginUser, assetID);
+      o.ProductID = value;
+      o.ProductVersionID = null;
+      o.Collection.Save();
+      string description = String.Format("{0} set asset productID to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+      return value;
+    }
+
+    [WebMethod]
+    public int SetAssetProductVersion(int assetID, int value)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Asset o = Assets.GetAsset(loginUser, assetID);
+      o.ProductVersionID = value;
+      o.Collection.Save();
+      string description = String.Format("{0} set asset productVersionID to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+      return value;
+    }
+
+    [WebMethod]
+    public string SetAssetSerialNumber(int assetID, string value)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Asset o = Assets.GetAsset(loginUser, assetID);
+      o.SerialNumber = value;
+      o.Collection.Save();
+      string description = String.Format("{0} set asset Serial Number to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+      return value != "" ? value : "Empty";
+    }
+
+    [WebMethod]
+    public string SetAssetNotes(int assetID, string value)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Asset o = Assets.GetAsset(loginUser, assetID);
+      o.Notes = value;
+      o.Collection.Save();
+      string description = String.Format("{0} set asset Notes to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+      return value != "" ? value : "Empty";
+    }
   }
 
   public class NewAssetSave
