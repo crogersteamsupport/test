@@ -703,11 +703,7 @@ AdminPortal = function () {
   function loadAgentRating() {
 
       top.Ts.Services.Organizations.GetAgentRatingOptions(top.Ts.System.Organization.OrganizationID, function (o) {
-          if (o == null) {
-              alert("nothing");
-          } else
-          {
-              
+          if (o != null) {
               if (o.PositiveImage)
                   $('#agentrating-positive-img').attr('src', o.PositiveImage);
               if(o.NeutralImage)

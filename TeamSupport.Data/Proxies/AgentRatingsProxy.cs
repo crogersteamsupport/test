@@ -64,7 +64,7 @@ namespace TeamSupport.Data
 
               break;
           case 0:
-              if (options.IsEmpty)
+              if (!options.IsEmpty)
               {
                   if (options[0].NeutralImage == null)
                       result.RatingText = "<img class='imgsm' src='../Images/face-neutral.png' alt='neutral' />";
@@ -76,7 +76,7 @@ namespace TeamSupport.Data
 
               break;
           case 1:
-              if (options.IsEmpty)
+              if (!options.IsEmpty)
               {
                 if (options[0].PositiveImage == null)
                     result.RatingText = "<img class='imgsm' src='../Images/face-positive.png' alt='positive' />";

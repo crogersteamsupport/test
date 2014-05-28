@@ -152,7 +152,10 @@ namespace TSWebServices
     public AgentRatingsOptionProxy GetAgentRatingOptions(int organizationID)
     {
         AgentRatingsOption options = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), organizationID);
-        return options.GetProxy();
+        if (options == null)
+            return null;
+        else
+            return options.GetProxy();
     }
 
     [WebMethod]
@@ -249,12 +252,27 @@ namespace TSWebServices
       Settings.OrganizationDB.WriteString("ExternalPortalLink", externalLink);
 
       AgentRatingsOption agentRatingOption = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
-      agentRatingOption.PositiveRatingText = agentproxy.PositiveRatingText;
-      agentRatingOption.NeutralRatingText = agentproxy.NeutralRatingText;
-      agentRatingOption.NegativeRatingText = agentproxy.NegativeRatingText;
-      agentRatingOption.RedirectURL = agentproxy.RedirectURL;
+      if (agentRatingOption == null)
+      {
+          AgentRatingsOptions aro = new AgentRatingsOptions(TSAuthentication.GetLoginUser());
+          aro.AddNewAgentRatingsOption();
+          aro[0].OrganizationID = TSAuthentication.OrganizationID;
+            aro[0].PositiveRatingText = agentproxy.PositiveRatingText;
+              aro[0].NeutralRatingText = agentproxy.NeutralRatingText;
+              aro[0].NegativeRatingText = agentproxy.NegativeRatingText;
+              aro[0].RedirectURL = agentproxy.RedirectURL;
+              aro[0].Collection.Save();
+      }
+      else
+      {
+          agentRatingOption.PositiveRatingText = agentproxy.PositiveRatingText;
+          agentRatingOption.NeutralRatingText = agentproxy.NeutralRatingText;
+          agentRatingOption.NegativeRatingText = agentproxy.NegativeRatingText;
+          agentRatingOption.RedirectURL = agentproxy.RedirectURL;
+          agentRatingOption.Collection.Save();
+      }
 
-      agentRatingOption.Collection.Save();
+      
       return null;
     }
 
