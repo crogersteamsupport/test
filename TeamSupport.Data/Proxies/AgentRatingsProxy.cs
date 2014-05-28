@@ -57,7 +57,7 @@ namespace TeamSupport.Data
                   if (options[0].NegativeImage == null)
                       result.RatingText = "<img class='imgsm' src='../Images/face-negative.png' alt='negative' />";
                   else
-                      result.RatingText = "<img src='" + options[0].NegativeImage + "' />";
+                      result.RatingText = "<img style='width:20px;height:20px' src='" + options[0].NegativeImage + "' />";
               }
               else
                   result.RatingText = "<img class='imgsm' src='../Images/face-negative.png' alt='negative' />";
@@ -69,7 +69,7 @@ namespace TeamSupport.Data
                   if (options[0].NeutralImage == null)
                       result.RatingText = "<img class='imgsm' src='../Images/face-neutral.png' alt='neutral' />";
                   else
-                      result.RatingText = "<img src='" + options[0].NeutralImage + "' />";
+                      result.RatingText = "<img style='width:20px;height:20px' src='" + options[0].NeutralImage + "' />";
               }
               else
                   result.RatingText = "<img class='imgsm' src='../Images/face-neutral.png' alt='neutral' />";
@@ -81,7 +81,7 @@ namespace TeamSupport.Data
                 if (options[0].PositiveImage == null)
                     result.RatingText = "<img class='imgsm' src='../Images/face-positive.png' alt='positive' />";
                 else
-                  result.RatingText = "<img src='" + options[0].PositiveImage + "' />";
+                    result.RatingText = "<img style='width:20px;height:20px' src='" + options[0].PositiveImage + "' />";
               }
               else
                   result.RatingText = "<img class='imgsm' src='../Images/face-positive.png' alt='positive' />";

@@ -148,23 +148,39 @@ namespace TeamSupport.Handlers
 
               if (ratingoptions.IsEmpty)
               {
-                  ratingoptions.AddNewAgentRatingsOption();
-                  ratingoptions[0].OrganizationID = TSAuthentication.OrganizationID;
+                  AgentRatingsOption opt = (new AgentRatingsOptions(TSAuthentication.GetLoginUser())).AddNewAgentRatingsOption();
+                  opt.OrganizationID = TSAuthentication.OrganizationID;
+                  switch (_ratingImage)
+                  {
+                      case "ratingpositive":
+                          opt.PositiveImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingpositive";
+                          break;
+                      case "ratingneutral":
+                          opt.NeutralImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingneutral";
+                          break;
+                      case "ratingnegative":
+                          opt.NegativeImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingnegative";
+                          break;
+                  }
+                  opt.Collection.Save();
               }
-
-              switch (_ratingImage)
+              else
               {
-                  case "ratingpositive":
-                      ratingoptions[0].PositiveImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingpositive";
-                      break;
-                  case "ratingneutral":
-                      ratingoptions[0].NeutralImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingneutral";
-                      break;
-                  case "ratingnegative":
-                      ratingoptions[0].NegativeImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingnegative";
-                      break;
+                  switch (_ratingImage)
+                  {
+                      case "ratingpositive":
+                          ratingoptions[0].PositiveImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingpositive";
+                          break;
+                      case "ratingneutral":
+                          ratingoptions[0].NeutralImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingneutral";
+                          break;
+                      case "ratingnegative":
+                          ratingoptions[0].NegativeImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingnegative";
+                          break;
+                  }
+                  ratingoptions[0].Collection.Save();
               }
-              ratingoptions[0].Collection.Save();
+              
               
 
           }
