@@ -49,7 +49,7 @@ namespace TeamSupport.Data
       } 
     }
 
-    private static string GetConnectionString(int userID)
+    public static string GetConnectionString(int userID)
     {
       string result = System.Web.Configuration.WebConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
       return result;

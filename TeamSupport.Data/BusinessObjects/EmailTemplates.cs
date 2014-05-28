@@ -109,14 +109,28 @@ namespace TeamSupport.Data
       return Body.IndexOf(parameterName) > -1 || Subject.IndexOf(parameterName) > -1;
     }
 
-    public EmailTemplate ReplaceParameter(string parameterName, string value)
+    private void ReplaceField(string objectName, string fieldName, string value)
+    {
+      ReplaceParameter(objectName + "." + fieldName, value);
+    }
+
+    public static string ReplaceFieldText(string objectName, string fieldName, string value, string text)
+    {
+      return ReplaceParameterText(objectName + "." + fieldName, value, text);
+    }
+
+    public static string ReplaceParameterText(string parameterName, string value, string text)
     {
       value = value ?? "";
-      // Ticket 11256 fix.
       value = value.Replace("$", "$$");
       parameterName = "{{" + parameterName + "}}";
-      Subject = Regex.Replace(Subject, parameterName, value, RegexOptions.IgnoreCase);
-      Body = Regex.Replace(Body, parameterName, value, RegexOptions.IgnoreCase);
+      return Regex.Replace(text, parameterName, value, RegexOptions.IgnoreCase);
+    }
+
+    public EmailTemplate ReplaceParameter(string parameterName, string value)
+    {
+      Subject = ReplaceParameterText(parameterName, value, Subject);
+      Body = ReplaceParameterText(parameterName, value, Body);
       return this;
     }
 
@@ -156,7 +170,56 @@ namespace TeamSupport.Data
             ReplaceField(objectName, column.ColumnName, row[column].ToString());
         }
       }
+      else
+      {
+        Subject = ClearFieldPlaceHolders(objectName, Subject);
+        Body = ClearFieldPlaceHolders(objectName, Body);
+      }
       return this;
+    }
+
+    public static void ReplaceMessageFields(LoginUser loginUser, string objectName, BaseItem baseItem, MailMessage message, int localUserID, int localOrgID) 
+    {
+      ReplaceMessageFields(loginUser, objectName, baseItem.Row, message, localUserID, localOrgID);
+    }
+
+    public static void ReplaceMessageFields(LoginUser loginUser, string objectName, DataRow row, MailMessage message, int localUserID, int localOrgID)
+    {
+      if (row != null)
+      {
+        LoginUser localUser = new LoginUser(loginUser.ConnectionString, localUserID, localOrgID, null);
+
+        foreach (DataColumn column in row.Table.Columns)
+        {
+          if (column.DataType == System.Type.GetType("System.DateTime") && row[column] != DBNull.Value)
+            try
+            {
+              message.Body = ReplaceFieldText(objectName, column.ColumnName, DataUtils.DateToLocal(localUser, (DateTime)row[column]).ToString("g", localUser.OrganizationCulture), message.Body);
+              message.Subject = ReplaceFieldText(objectName, column.ColumnName, DataUtils.DateToLocal(localUser, (DateTime)row[column]).ToString("g", localUser.OrganizationCulture), message.Subject);
+            }
+            catch (Exception ex)
+            {
+              ExceptionLogs.LogException(localUser, ex, "EmailTemplates");
+              message.Body = ReplaceFieldText(objectName, column.ColumnName, DataUtils.DateToLocal(localUser, (DateTime)row[column]).ToString("g"), message.Body);
+              message.Subject = ReplaceFieldText(objectName, column.ColumnName, DataUtils.DateToLocal(localUser, (DateTime)row[column]).ToString("g"), message.Subject);
+            }
+          else
+          {
+            message.Body = ReplaceFieldText(objectName, column.ColumnName, row[column].ToString(), message.Body);
+            message.Subject = ReplaceFieldText(objectName, column.ColumnName, row[column].ToString(), message.Subject);
+          }
+        }
+      }
+      else
+      {
+        message.Body = ClearFieldPlaceHolders(objectName, message.Body);
+        message.Subject = ClearFieldPlaceHolders(objectName, message.Subject);
+      }
+    }
+
+    public static string ClearFieldPlaceHolders(string objectName, string text)
+    {
+      return Regex.Replace(text, "({{"+objectName+"\\..*}})+", "", RegexOptions.IgnoreCase);
     }
 
     public EmailTemplate ReplaceContacts(TicketsViewItem ticket)
@@ -189,11 +252,6 @@ namespace TeamSupport.Data
 
       }
       return this;
-    }
-
-    private void ReplaceField(string objectName, string fieldName, string value)
-    {
-      ReplaceParameter(objectName + "." + fieldName, value);
     }
 
     public MailMessage GetMessage()

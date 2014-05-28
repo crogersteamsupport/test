@@ -24,10 +24,12 @@ namespace TeamSupport.ServiceLibrary
   {
     class UserEmail
     {
-      public UserEmail(int userID, string name, string address, bool sendTicketsOnlyAfterHours)
+      public UserEmail(int userID, string fname, string lname, string address, bool sendTicketsOnlyAfterHours)
       {
         this.UserID = userID;
-        this.Name = name;
+        this.Name = fname + " " + lname;
+        this.FirstName = fname;
+        this.LastName = lname;
         this.Address = address;
         this.SendTicketsOnlyAfterHours = sendTicketsOnlyAfterHours;
       }
@@ -35,6 +37,8 @@ namespace TeamSupport.ServiceLibrary
       public bool SendTicketsOnlyAfterHours { get; set; }
       public string Address { get; set; }
       public string Name { get; set; }
+      public string FirstName { get; set; }
+      public string LastName { get; set; }
       public int UserID { get; set; }
 
       public override string ToString()
@@ -54,7 +58,7 @@ namespace TeamSupport.ServiceLibrary
     {
       EmailPost result;
       LoginUser loginUser = new LoginUser(connectionString, -1, -1, null);
-      lock (_staticLock) { result = EmailPosts.GetNextWaiting(loginUser, lockID.ToString()); }
+      lock (_staticLock) { result = EmailPosts.GetDebugNextWaiting(loginUser, lockID.ToString(), 13679); }
       return result;
     }
 
@@ -561,7 +565,7 @@ namespace TeamSupport.ServiceLibrary
           {
             Logs.WriteEvent("Adding portal email to list");
 
-            userList.Add(new UserEmail(-2, "", ticket.PortalEmail, false));
+            userList.Add(new UserEmail(-2, "", "", ticket.PortalEmail, false));
           }
         }
         else
@@ -656,17 +660,36 @@ namespace TeamSupport.ServiceLibrary
         messageType = isBasic ? "Basic portal email" : "Advanced portal email";
       }
 
-      AddUsersToAddresses(message.To, userList, modifierID);
-      
-
-      foreach (MailAddress mailAddress in message.To)
-      {
-        Logs.WriteEvent("Adding action logs to ticket");
-        ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, messageType + " sent to " + mailAddress.Address);
-      }
-
       if (ticketOrganization.AddEmailViaTS) message.Body = message.Body + GetViaTSHtmlAd(ticketOrganization.Name);
-      AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
+
+      string subject = message.Subject;
+      string body = message.Body;
+
+      foreach (UserEmail userEmail in userList)
+	    {
+        Logs.WriteEvent("Adding address to email message.");
+        try
+        {
+          if (userEmail != null && modifierID != userEmail.UserID)
+          {
+            message.Body = body;
+            message.Subject = subject;
+            message.To.Clear();
+            MailAddress mailAddress = new MailAddress(userEmail.Address, userEmail.Name);
+            message.To.Add(mailAddress);
+            //collection.Add(new MailAddress(userEmail.Address, userEmail.Name));
+            ContactsViewItem contact = ContactsView.GetContactsViewItem(_loginUser, userEmail.UserID);
+            EmailTemplate.ReplaceMessageFields(_loginUser, "Recipient", contact, message, -1, ticket.OrganizationID);
+            Logs.WriteEvent(string.Format("Email: {0} <{1}>", userEmail.Name, userEmail.Address));
+            AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
+            Logs.WriteEvent("Adding action log to ticket");
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, messageType + " sent to " + mailAddress.Address);
+          }
+        }
+        catch
+        {
+        }
+	    }
 
     }
 
@@ -915,7 +938,7 @@ namespace TeamSupport.ServiceLibrary
     {
       if (user == null || user.Email == null) return;
       if (IsUserAlreadyInList(list, user.UserID) || (!user.ReceiveTicketNotifications && honorTicketNotifications)) return;
-      list.Add(new UserEmail(user.UserID, user.DisplayName, user.Email, user.OnlyEmailAfterHours));
+      list.Add(new UserEmail(user.UserID, user.FirstName, user.LastName, user.Email, user.OnlyEmailAfterHours));
     }
 
     private void RemoveUser(List<UserEmail> list, int userID)

@@ -34,12 +34,46 @@ UPDATE EmailPosts
 SET LockProcessID = @ProcessID 
 OUTPUT Inserted.*
 WHERE EmailPostID IN (
-  SELECT TOP 1 EmailPostID FROM EmailPosts WHERE LockProcessID IS NULL AND DATEADD(SECOND, HoldTime, DateCreated) < GETUTCDATE() ORDER BY DateCreated
+  SELECT TOP 1 EmailPostID FROM EmailPosts WHERE LockProcessID IS NULL AND DATEADD(SECOND, HoldTime, DateCreated) < GETUTCDATE() AND OrganizationID ORDER BY DateCreated
 )
 ";
 
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ProcessID", processID);
+        emails.Fill(command);
+      }
+
+      if (emails.IsEmpty)
+        return null;
+      else
+        return emails[0];
+    }
+
+    public static EmailPost GetDebugNextWaiting(LoginUser loginUser, string processID, int orgID)
+    {
+      EmailPosts emails = new EmailPosts(loginUser);
+
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+UPDATE EmailPosts 
+SET LockProcessID = @ProcessID 
+OUTPUT Inserted.*
+WHERE EmailPostID IN (
+  SELECT TOP 1 ep.EmailPostID 
+  FROM EmailPosts AS ep
+  LEFT JOIN Tickets t ON t.TicketID = CAST(ep.Param1 AS INT)
+  LEFT JOIN Users u ON u.UserID = ep.CreatorID
+  WHERE ep.LockProcessID IS NULL 
+  AND DATEADD(SECOND, 15, ep.DateCreated) < GETUTCDATE() 
+  AND (u.OrganizationID = @OrganizationID OR t.OrganizationID = @OrganizationID)
+  ORDER BY ep.DateCreated
+)
+";
+
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProcessID", processID);
+        command.Parameters.AddWithValue("@OrganizationID", orgID);
         emails.Fill(command);
       }
 
