@@ -11,7 +11,7 @@ $(document).ready(function () {
     var activeID;
 
     var organizationID = top.Ts.System.User.OrganizationID;
-    if (organizationID != 1078) {
+    if (organizationID != 1078 && organizationID != 13679 && organizationID != 1088) {
         $('#ratingsTab').hide();
     }
 

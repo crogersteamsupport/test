@@ -58,12 +58,13 @@ namespace TeamSupport.Handlers
         {
           switch (segments[1])
           {
-            case "images": ProcessImages(context, segments.ToArray(), organizationID); break;
+            case "images":  ProcessImages(context, segments.ToArray(), organizationID); break;
             case "chat": ProcessChat(context, segments[2], organizationID); break;
             case "reports": ProcessReport(context, int.Parse(segments[2]), (context.Request["Type"] == null ? "old" : context.Request["Type"])); break;
             case "ticketexport": ProcessTicketExport(context); break;
             case "attachments": ProcessAttachment(context, int.Parse(segments[2])); break;
             case "avatar": ProcessAvatar(context, segments.ToArray(), organizationID); break;
+            case "agentrating": ProcessRatingImages(context, segments.ToArray(), organizationID); break;
             default: context.Response.End(); break;
           }
         }
@@ -119,6 +120,39 @@ namespace TeamSupport.Handlers
         fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
       }
       if (File.Exists(fileName)) WriteImage(context, fileName);
+    }
+
+
+    private void ProcessRatingImages(HttpContext context, string[] segments, int organizationID)
+    {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 1; i < segments.Length; i++)
+        {
+            if(i != 1)
+                builder.Append("\\");
+            builder.Append(segments[i]);
+        }
+        string path = builder.ToString();
+        string fileName = "";
+        if (Path.GetExtension(path) == "")
+        {
+            path = Path.ChangeExtension(path, ".png");
+            string imageFile = Path.GetFileName(path);
+            path = Path.GetDirectoryName(path);
+            string imagePath = AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.AgentRating);
+            fileName = Path.Combine(imagePath, imageFile);
+            if (!File.Exists(fileName))
+            {
+                imagePath = Path.Combine(AttachmentPath.GetDefaultPath(LoginUser.Anonymous, AttachmentPath.Folder.AgentRating), path);
+                fileName = AttachmentPath.GetImageFileName(imagePath, imageFile);
+            }
+
+        }
+        else
+        {
+            fileName = Path.Combine(AttachmentPath.GetPath(LoginUser.Anonymous, organizationID, AttachmentPath.Folder.Images), path);
+        }
+        if (File.Exists(fileName)) WriteImage(context, fileName);
     }
 
     private void ProcessChat(HttpContext context, string command, int organizationID)

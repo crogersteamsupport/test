@@ -22,7 +22,7 @@
         } else if ($('.customers-filter-contacts').parent().hasClass('active')) {
             searchContacts = true;
         }
-
+        top.Ts.System.logAction('Customer Page - Search Executed');
         top.Ts.Services.Search.SearchCompaniesAndContacts($('#searchString').val(), start, 20, searchCompanies, searchContacts, function (items) {
             $('.searchresults').fadeTo(0, 1);
 
@@ -203,12 +203,14 @@
         e.preventDefault();
         $('.customers-filter li.active').removeClass('active');
         $(this).parent().addClass('active');
+        top.Ts.System.logAction('Customer Page - Change Filter');
         fetchItems();
     });
 
 
     $('.action-new').click(function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Customer Page - New Customer');
         top.Ts.MainPage.newCustomer();
 
     });
@@ -218,6 +220,7 @@
         e.preventDefault();
 
         var id = $(this).data('userid');
+        top.Ts.System.logAction('Customer Page - View Recent Contact');
         top.Ts.MainPage.openNewContact(id);
 
         top.Ts.Services.Customers.UpdateRecentlyViewed('u'+id, function (resultHtml) {
@@ -231,6 +234,7 @@
         e.preventDefault();
 
         var id = $(this).data('organizationid');
+        top.Ts.System.logAction('Customer Page - View Recent Company');
         top.Ts.MainPage.openNewCustomer(id);
 
         top.Ts.Services.Customers.UpdateRecentlyViewed('o'+id, function (resultHtml) {

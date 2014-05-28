@@ -57,6 +57,7 @@ $(document).ready(function () {
     }));
 
     $('#contactEdit').click(function (e) {
+        top.Ts.System.logAction('Contact Detail - Edit Contact');
         $('.userProperties p').toggleClass("editable");
         $('.customProperties p').toggleClass("editable");
         $("#phonePanel #editmenu").toggleClass("hiddenmenu");
@@ -97,10 +98,12 @@ $(document).ready(function () {
         $('#contactDelete').hide();
 
     $('#contactRefresh').click(function (e) {
+        top.Ts.System.logAction('Contact Detail - Refresh Window');
         window.location = window.location;
     });
 
     $('#historyToggle').on('click', function () {
+        top.Ts.System.logAction('Contact Detail - Toggle History View');
         if (historyLoaded == 0) {
             historyLoaded = 1;
             LoadHistory(1);
@@ -108,10 +111,12 @@ $(document).ready(function () {
     });
 
     $('#historyRefresh').on('click', function () {
+        top.Ts.System.logAction('Contact Detail - Refresh History');
             LoadHistory(1);
     });
 
     $("#btnSaveReminder").click(function (e) {
+        top.Ts.System.logAction('Contact Detail - Save Reminder');
         if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
             top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Contacts, userID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val(), function () { });
             $('#modalReminder').modal('hide');
@@ -123,6 +128,7 @@ $(document).ready(function () {
     $('#contactDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this contact?')) {
             top.privateServices.DeleteUser(userID, function (e) {
+                top.Ts.System.logAction('Contact Detail - Delete  Contact');
                 if (window.parent.document.getElementById('iframe-mniCustomers'))
                     window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
                 top.Ts.MainPage.closeNewContactTab(userID);
@@ -165,7 +171,7 @@ $(document).ready(function () {
             var header = $(this).hide();
             top.Ts.Services.Customers.GetUser(userID, function (user) {
 
-
+                top.Ts.System.logAction('Contact Detail - Edit Contact Name');
                 var container = $('<form>')
                   .addClass('form-inline')
                   .insertAfter(header);
@@ -237,6 +243,8 @@ $(document).ready(function () {
             e.preventDefault();
             if (!$(this).hasClass('editable'))
                 return false;
+
+            top.Ts.System.logAction('Contact Detail - Edit Contact Email');
             var header = $(this).hide();
             var container = $('<div>')
               .insertAfter(header);
@@ -282,6 +290,8 @@ $(document).ready(function () {
         e.preventDefault();
         if (!$(this).hasClass('editable'))
             return false;
+
+        top.Ts.System.logAction('Contact Detail - Edit Contact Title');
         var header = $(this).hide();
         var container = $('<div>')
           .insertAfter(header);
@@ -329,6 +339,7 @@ $(document).ready(function () {
             return false;
         top.Ts.Services.Customers.SetContactActive(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldActive').text((result === true ? 'Yes' : 'No'));
+            top.Ts.System.logAction('Contact Detail - Edit Contact Active State');
         },
         function (error) {
             header.show();
@@ -340,7 +351,7 @@ $(document).ready(function () {
             return false;
         top.Ts.Services.Customers.SetContactPortalUser(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldPortalUser').text((result == 0 ? 'No' : 'Yes'));
-
+            top.Ts.System.logAction('Contact Detail - Edit Contact Portal User');
             if (result == 1 || _isAdmin || top.Ts.System.User.CanEditContact)
                 $('#btnSendNewPW').show();
             else
@@ -358,6 +369,7 @@ $(document).ready(function () {
     });
     $('.userProperties').on('click', '#fieldCompany', function (e) {
         if ($(this).hasClass('link')) {
+            top.Ts.System.logAction('Contact Detail - Open Contacts Company');
             top.Ts.MainPage.openNewCustomer($(this).attr('orgID'));
             return;
         }
@@ -366,6 +378,8 @@ $(document).ready(function () {
             e.preventDefault();
             if (!$(this).hasClass('editable'))
                 return false;
+
+            top.Ts.System.logAction('Contact Detail - Edit Contact Company');
             var header = $(this).hide();
             var container = $('<div>')
               .insertAfter(header);
@@ -425,6 +439,7 @@ $(document).ready(function () {
             return false;
         top.Ts.Services.Customers.SetContactPreventEmail(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldPreventemailfromcreatingtickets').text((result === true ? 'Yes' : 'No'));
+            top.Ts.System.logAction('Contact Detail - Edit Prevent Email From Creating Tickets');
         },
         function (error) {
             header.show();
@@ -436,6 +451,7 @@ $(document).ready(function () {
             return false;
         top.Ts.Services.Customers.SetContactSystemAdmin(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldSystemAdministrator').text((result === true ? 'Yes' : 'No'));
+            top.Ts.System.logAction('Contact Detail - Edit Is Contact System Administrator');
         },
         function (error) {
             header.show();
@@ -447,6 +463,7 @@ $(document).ready(function () {
             return false;
         top.Ts.Services.Customers.SetContactFinancialAdmin(userID, ($(this).text() !== 'Yes'), function (result) {
             $('#fieldFinancialAdministrator').text((result === true ? 'Yes' : 'No'));
+            top.Ts.System.logAction('Contact Detail - Edit Contact Financial Administrator');
         },
         function (error) {
             header.show();
@@ -459,9 +476,11 @@ $(document).ready(function () {
     $('#noteToggle').click(function (e) {
         $('#noteForm').toggle();
         $('#fieldNoteTitle').focus();
+        top.Ts.System.logAction('Contact Detail - Toggle Note Form');
     });
 
     $('#fileToggle').click(function (e) {
+        top.Ts.System.logAction('Contact Detail - Toggle File Form');
         $('#fileForm').toggle();
     });
 
@@ -479,6 +498,7 @@ $(document).ready(function () {
     $('#phonePanel').on('click', '.delphone', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this phone number?')) {
+            top.Ts.System.logAction('Contact Detail - Delete Phone Number');
             top.privateServices.DeletePhone($(this).attr('id'), function (e) {
                 LoadPhoneNumbers(1);
             });
@@ -487,6 +507,7 @@ $(document).ready(function () {
 
     $("#phonePanel").on("click", '.editphone', function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Contact Detail - Edit Phone Number');
         top.Ts.Services.Customers.LoadPhoneNumber($(this).attr('id'), function (phone) {
             $('#phoneType').val(phone[0].PhoneTypeID);
             $('#phoneNumber').val(phone[0].Number);
@@ -499,6 +520,7 @@ $(document).ready(function () {
         $('#addressPanel').on('click', '.deladdress', function (e) {
             e.preventDefault();
             if (confirm('Are you sure you would like to remove this address?')) {
+                top.Ts.System.logAction('Contact Detail - Delete Address');
                 top.privateServices.DeleteAddress($(this).attr('id'), function (e) {
                     LoadAddresses(1);
                 });
@@ -508,6 +530,7 @@ $(document).ready(function () {
 
     $("#addressPanel").on("click", '.editaddress', function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Contact Detail - Edit Address');
         top.Ts.Services.Customers.LoadAddress($(this).attr('id'), function (phone) {
             $('#addressDesc').val(phone[0].Description);
             $('#address1').val(phone[0].Addr1);
@@ -524,7 +547,7 @@ $(document).ready(function () {
 
     $("#btnPhoneSave").click(function (e) {
         var phoneInfo = new Object();
-
+        top.Ts.System.logAction('Contact Detail - Save Phone Number');
         phoneInfo.PhoneTypeID = $('#phoneType').val();
         phoneInfo.Number = $('#phoneNumber').val();
         phoneInfo.Extension = $('#phoneExt').val();
@@ -555,6 +578,7 @@ $(document).ready(function () {
 
     $("#btnAddressSave").click(function (e) {
         var addressInfo = new Object();
+        top.Ts.System.logAction('Contact Detail - Save Address');
         addressInfo.Description = $('#addressDesc').val();
         addressInfo.Addr1 = $('#address1').val();
         addressInfo.Addr2 = $('#address2').val();
@@ -590,6 +614,7 @@ $(document).ready(function () {
 
     $('#tblFiles').on('click', '.viewFile', function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Contact Detail - View File Attachment');
         top.Ts.MainPage.openNewAttachment($(this).parent().attr('id'));
     });
 
@@ -597,6 +622,7 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this attachment?')) {
+            top.Ts.System.logAction('Contact Detail - Delete File Attachment');
             top.privateServices.DeleteAttachment($(this).parent().parent().attr('id'), function (e) {
                 LoadFiles();
             });
@@ -607,6 +633,7 @@ $(document).ready(function () {
     $('#tblNotes').on('click', '.editNote', function (e) {
         e.stopPropagation();
         $(this).prop('disabled', true);
+        top.Ts.System.logAction('Contact Detail - Edit Note');
         top.Ts.Services.Customers.LoadNote($(this).parent().parent().attr('id'), function (note) {
             $('#fieldNoteTitle').val(note.Title);
             var desc = note.Description;
@@ -626,6 +653,7 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this note?')) {
+            top.Ts.System.logAction('Contact Detail - Delete Note');
             top.privateServices.DeleteNote($(this).parent().parent().attr('id'), function () {;
                 LoadNotes();
                 $('.noteDesc').toggle(false);
@@ -641,6 +669,7 @@ $(document).ready(function () {
         $(this).addClass("active");
         $('.noteDesc').toggle();
         $('.noteDesc').html("<strong>Description</strong> <p>" + desc + "</p>");
+        top.Ts.System.logAction('Contact Detail - View Note');
     });
 
     $("#btnNotesCancel").click(function (e) {
@@ -651,6 +680,7 @@ $(document).ready(function () {
         $('#noteContactAlert').prop('checked', false);
         $('#btnNotesSave').text("Save Note");
         $('#noteForm').toggle();
+        top.Ts.System.logAction('Contact Detail - Cancel Note Edit / Add');
     });
 
     $("#btnNotesSave").click(function (e) {
@@ -665,6 +695,7 @@ $(document).ready(function () {
             return;
         }
         $(this).prop('disabled', true);
+        top.Ts.System.logAction('Contact Detail - Save Note');
         top.Ts.Services.Customers.SaveNote(title, description, noteID, userID, top.Ts.ReferenceTypes.Users, isAlert, function (note) {
             $('#fieldNoteTitle').val('');
             $('#fieldNoteDesc').val('');
@@ -681,10 +712,12 @@ $(document).ready(function () {
         $('.upload-queue').empty();
         $('#attachmentDescription').val('');
         $('#fileForm').toggle();
+        top.Ts.System.logAction('Contact Detail - Cancel File Upload');
     });
 
     $('#btnFilesSave').click(function (e) {
         $(this).prop('disabled', true);
+        top.Ts.System.logAction('Contact Detail - Save Files');
         if ($('.upload-queue li').length > 0) {
             $('.upload-queue li').each(function (i, o) {
                 var data = $(o).data('data');
@@ -786,12 +819,14 @@ $(document).ready(function () {
     });
 
     $('#btnSendWelcome').click(function (e) {
+        top.Ts.System.logAction('Contact Detail - Send Welcome Message');
         top.Ts.Services.Customers.SendWelcome(userID, function (msg) {
             alert(msg);
         });
     });
 
     $('#btnSendNewPW').click(function (e) {
+        top.Ts.System.logAction('Contact Detail - Send New Password');
         top.Ts.Services.Customers.PasswordReset(userID, function (msg) {
             alert(msg);
         });
@@ -1190,10 +1225,12 @@ $(document).ready(function () {
     $('#alertSnooze').click(function (e) {
         top.Ts.Services.Customers.SnoozeAlert(userID, top.Ts.ReferenceTypes.Users);
         $('#modalAlert').modal('hide');
+        top.Ts.System.logAction('Contact Detail - Snooze Alert');
     });
 
     $('#alertDismiss').click(function (e) {
         top.Ts.Services.Customers.DismissAlert(userID, top.Ts.ReferenceTypes.Users);
+        top.Ts.System.logAction('Contact Detail - Dismiss Alert');
         $('#modalAlert').modal('hide');
     });
 });
@@ -1377,7 +1414,7 @@ var appendCustomEditCombo = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Contact Detail - Edit Custom Combobox');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -1413,6 +1450,7 @@ var appendCustomEditCombo = function (field, element) {
               else {
                   result.parent().removeClass('has-error');
               }
+              top.Ts.System.logAction('Contact Detail - Save Custom Edit Change');
               top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
                   parent.closest('.form-group').data('field', result);
                   parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
@@ -1446,7 +1484,7 @@ var appendCustomEditNumber = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Contact Detail - Edit Custom Number');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -1480,6 +1518,7 @@ var appendCustomEditNumber = function (field, element) {
                 else {
                     result.parent().removeClass('has-error');
                 }
+                top.Ts.System.logAction('Contact Detail - Save Custom Number Edit');
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
@@ -1514,6 +1553,7 @@ var appendCustomEditBool = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           //$('.form-group').prev().show().next().remove();
+          top.Ts.System.logAction('Contact Detail - Edit Custom Boolean Value');
           var parent = $(this);
           var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
           top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
@@ -1544,7 +1584,7 @@ var appendCustomEdit = function (field, element) {
               if (!$(this).hasClass('editable'))
                   return false;
               var parent = $(this).hide();
-
+              top.Ts.System.logAction('Contact Detail - Edit Custom Textbox');
               var container = $('<div>')
                 .insertAfter(parent);
 
@@ -1583,6 +1623,7 @@ var appendCustomEdit = function (field, element) {
                     else {
                         result.parent().removeClass('has-error');
                     }
+                    top.Ts.System.logAction('Contact Detail - Save Custom Textbox Edit');
                     top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
                         parent.closest('.form-group').data('field', result);
                         parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
@@ -1619,7 +1660,7 @@ var appendCustomEditDate = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Contact Detail - Edit Custom Date');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -1654,6 +1695,7 @@ var appendCustomEditDate = function (field, element) {
                 else {
                     result.parent().removeClass('has-error');
                 }
+                top.Ts.System.logAction('Contact Detail - Save Custom Date Change');
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
@@ -1690,7 +1732,7 @@ var appendCustomEditDateTime = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Contact Detail - Edit Custom DateTime');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -1727,6 +1769,7 @@ var appendCustomEditDateTime = function (field, element) {
                 else {
                     result.parent().removeClass('has-error');
                 }
+                top.Ts.System.logAction('Contact Detail - Save Custom DateTime');
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
@@ -1763,7 +1806,7 @@ var appendCustomEditTime = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Contact Detail - Edit Custom Time');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -1799,6 +1842,7 @@ var appendCustomEditTime = function (field, element) {
                 else {
                     result.parent().removeClass('has-error');
                 }
+                top.Ts.System.logAction('Contact Detail - Save Custom Time');
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);

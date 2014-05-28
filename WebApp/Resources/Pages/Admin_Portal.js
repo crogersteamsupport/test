@@ -34,7 +34,7 @@ AdminPortal = function () {
     $('#tabs-advanced').hide();
   }
 
-  if (top.Ts.System.User.OrganizationID != 1078)
+  if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) 
       $('#tab-rating').hide();
 
 
@@ -253,9 +253,13 @@ AdminPortal = function () {
     // show some indicator
 
 
+    var _agentratingOption = new top.TeamSupport.Data.AgentRatingsOptionProxy();;
+    _agentratingOption.PositiveRatingText = $('#agentrating-positive').val();
+    _agentratingOption.NeutralRatingText = $('#agentrating-neutral').val();
+    _agentratingOption.NegativeRatingText = $('#agentrating-negative').val();
+    _agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
 
-
-    top.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), function (result) {
+    top.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(),$('#agentrating-enabled').prop('checked'), _agentratingOption, function (result) {
       if (result != null) {
         alert(result);
       }
@@ -265,13 +269,8 @@ AdminPortal = function () {
       }
     });
 
-    var _agentratingOption = new top.TeamSupport.Data.AgentRatingsOptionProxy();;
-    _agentratingOption.PositiveRatingText = $('#agentrating-positive').val();
-    _agentratingOption.NeutralRatingText = $('#agentrating-neutral').val();
-    _agentratingOption.NegativeRatingText = $('#agentrating-negative').val();
-    _agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
 
-    top.Ts.Services.Organizations.SaveAgentRatingOptions($('#agentrating-enabled').prop('checked'), _agentratingOption, top.Ts.System.Organization.OrganizationID);
+
 
   }
 
@@ -728,7 +727,7 @@ AdminPortal = function () {
       });
     }
   var isFilevalid = true;
-  $('.file-upload').fileupload({
+  $('.positive-file-upload').fileupload({
       namespace: 'custom_attachment',
       dropZone: $('.file-upload'),
       previewMaxWidth: 100,
@@ -744,7 +743,7 @@ AdminPortal = function () {
               }
 
               var item = $('<li>')
-                .appendTo($('.upload-queue'));
+                .appendTo($('.positive-upload-queue'));
 
               data.context = item;
               item.data('data', data);
@@ -803,17 +802,184 @@ AdminPortal = function () {
       },
       start: function (e, data) {
           $('.progress').show();
-          $('.upload-queue .ui-icon-close').hide();
-          $('.upload-queue .ui-icon-cancel').show();
+          $('.positive-upload-queue .ui-icon-close').hide();
+          $('.positive-upload-queue .ui-icon-cancel').show();
       },
       stop: function (e, data) {
           //data.context.find('.progress-bar').css('width', '100%');
-          LoadFiles();
-          $('.upload-queue').empty();
+          $('.positive-upload-queue').empty();
       }
   });
 
 
+  $('.neutral-file-upload').fileupload({
+      namespace: 'custom_attachment',
+      dropZone: $('.neutral-file-upload'),
+      previewMaxWidth: 100,
+      previewMaxHeight: 100,
+      previewCrop: true,
+      add: function (e, data) {
+          for (var i = 0; i < data.files.length; i++) {
+
+              if (!(/\.(gif|jpg|jpeg|tiff|png)$/i).test(data.files[i].name)) {
+                  alert('Please select a valid image file. (jpg, jpeg, gif, tiff, png)');
+                  isFilevalid = false;
+                  return;
+              }
+
+              var item = $('<li>')
+                .appendTo($('.neutral-upload-queue'));
+
+              data.context = item;
+              item.data('data', data);
+
+              var bg = $('<div>')
+                .addClass('ts-color-bg-accent')
+                .appendTo(item);
+
+              $('<div>')
+                .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                .addClass('filename')
+                .appendTo(bg);
+
+              $('<span>')
+                .addClass('icon-remove')
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                })
+                .appendTo(bg);
+
+              $('<span>')
+                .addClass('icon-remove')
+                .hide()
+                .click(function (e) {
+                    e.preventDefault();
+                    var data = $(this).closest('li').data('data');
+                    data.jqXHR.abort();
+                })
+                .appendTo(bg);
+
+              var progress = $('<div>')
+                .addClass('progress progress-striped active')
+                .hide();
+
+              $('<div>')
+                  .addClass('progress-bar')
+                  .attr('role', 'progressbar')
+                  .appendTo(progress);
+
+              progress.appendTo(bg);
+          }
+
+      },
+      send: function (e, data) {
+          if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
+              data.context.find('.progress-bar').css('width', '50%');
+          }
+      },
+      fail: function (e, data) {
+          if (data.errorThrown === 'abort') return;
+          alert('There was an error uploading "' + data.files[0].name + '".');
+      },
+      progress: function (e, data) {
+          data.context.find('.progress-bar').css('width', parseInt(data.loaded / data.total * 100, 10) + '%');
+      },
+      start: function (e, data) {
+          $('.progress').show();
+          $('.neutral-upload-queue .ui-icon-close').hide();
+          $('.neutral-upload-queue .ui-icon-cancel').show();
+      },
+      stop: function (e, data) {
+          //data.context.find('.progress-bar').css('width', '100%');
+          $('.neutral-upload-queue').empty();
+      }
+  });
+
+
+  $('.negative-file-upload').fileupload({
+      namespace: 'custom_attachment',
+      dropZone: $('.negative-file-upload'),
+      previewMaxWidth: 100,
+      previewMaxHeight: 100,
+      previewCrop: true,
+      add: function (e, data) {
+          for (var i = 0; i < data.files.length; i++) {
+
+              if (!(/\.(gif|jpg|jpeg|tiff|png)$/i).test(data.files[i].name)) {
+                  alert('Please select a valid image file. (jpg, jpeg, gif, tiff, png)');
+                  isFilevalid = false;
+                  return;
+              }
+
+              var item = $('<li>')
+                .appendTo($('.negative-upload-queue'));
+
+              data.context = item;
+              item.data('data', data);
+
+              var bg = $('<div>')
+                .addClass('ts-color-bg-accent')
+                .appendTo(item);
+
+              $('<div>')
+                .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                .addClass('filename')
+                .appendTo(bg);
+
+              $('<span>')
+                .addClass('icon-remove')
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                })
+                .appendTo(bg);
+
+              $('<span>')
+                .addClass('icon-remove')
+                .hide()
+                .click(function (e) {
+                    e.preventDefault();
+                    var data = $(this).closest('li').data('data');
+                    data.jqXHR.abort();
+                })
+                .appendTo(bg);
+
+              var progress = $('<div>')
+                .addClass('progress progress-striped active')
+                .hide();
+
+              $('<div>')
+                  .addClass('progress-bar')
+                  .attr('role', 'progressbar')
+                  .appendTo(progress);
+
+              progress.appendTo(bg);
+          }
+
+      },
+      send: function (e, data) {
+          if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
+              data.context.find('.progress-bar').css('width', '50%');
+          }
+      },
+      fail: function (e, data) {
+          if (data.errorThrown === 'abort') return;
+          alert('There was an error uploading "' + data.files[0].name + '".');
+      },
+      progress: function (e, data) {
+          data.context.find('.progress-bar').css('width', parseInt(data.loaded / data.total * 100, 10) + '%');
+      },
+      start: function (e, data) {
+          $('.progress').show();
+          $('.neutral-upload-queue .ui-icon-close').hide();
+          $('.neutral-upload-queue .ui-icon-cancel').show();
+      },
+      stop: function (e, data) {
+          //data.context.find('.progress-bar').css('width', '100%');
+          $('.negative-upload-queue').empty();
+      }
+  });
   function readURL(input, target) {
       if (input.files && input.files[0]) {
           var reader = new FileReader();
@@ -828,16 +994,48 @@ AdminPortal = function () {
   }
 
   $(".hiddenfile-positive").change(function () {
-      if (isFilevalid)
-        readURL(this, $('#agentrating-positive-img'));
+      if (isFilevalid) {
+          var attcontainer = $('.positive-upload-queue li');
+          if (attcontainer.length > 0) {
+              attcontainer.each(function (i, o) {
+                  var data = $(o).data('data');
+                  data.url = '../../../Upload/AgentRating/ratingpositive';
+                  data.jqXHR = data.submit();
+                  $(o).data('data', data);
+              });
+          }
+          readURL(this, $('#agentrating-positive-img'));
+      }
+
   });
   $(".hiddenfile-neutral").change(function () {
-      if (isFilevalid)
+      if (isFilevalid){
+          var attcontainer = $('.neutral-upload-queue li');
+      if (attcontainer.length > 0) {
+          attcontainer.each(function (i, o) {
+              var data = $(o).data('data');
+              data.url = '../../../Upload/AgentRating/ratingneutral';
+              data.jqXHR = data.submit();
+              $(o).data('data', data);
+          });
+      }
       readURL(this, $('#agentrating-neutral-img'));
+      }
   });
   $(".hiddenfile-negative").change(function () {
-      if (isFilevalid)
-      readURL(this, $('#agentrating-negative-img'));
+      if (isFilevalid) {
+          
+          var attcontainer = $('.negative-upload-queue li');
+          if (attcontainer.length > 0) {
+              attcontainer.each(function (i, o) {
+                  var data = $(o).data('data');
+                  data.url = '../../../Upload/AgentRating/ratingnegative';
+                  data.jqXHR = data.submit();
+                  $(o).data('data', data);
+              });
+          }
+          readURL(this, $('#agentrating-negative-img'));
+      }
   });
 
 };

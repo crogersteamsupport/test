@@ -1159,7 +1159,7 @@ namespace TSWebServices
                 OrganizationCustomProduct test = new OrganizationCustomProduct();
                 test.ProductName = row["ProductName"].ToString();
                 test.VersionNumber = row["VersionNumber"].ToString();
-                test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? ((DateTime)row["SupportExpiration"]).ToString(GetDateFormatNormal()) : "";
+                test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(TSAuthentication.GetLoginUser(),(((DateTime)row["SupportExpiration"]))).ToString(GetDateFormatNormal()) : "";
                 test.VersionStatus = row["VersionStatus"].ToString();
                 test.IsReleased = row["IsReleased"].ToString();
                 test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";

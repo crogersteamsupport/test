@@ -45,7 +45,7 @@ $(document).ready(function () {
     top.privateServices.SetUserSetting('SelectedOrganizationID', organizationID);
     top.privateServices.SetUserSetting('SelectedContactID', -1);
 
-    if (top.Ts.System.User.OrganizationID != 1078) {
+    if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
         $('#ratingsTab').hide();
     }
 
@@ -115,6 +115,7 @@ $(document).ready(function () {
     }));
 
     $('#historyToggle').on('click', function () {
+        top.Ts.System.logAction('Customer Detail - History Toggle');
         if (historyLoaded == 0) {
             historyLoaded = 1;
             LoadHistory(1);
@@ -122,6 +123,7 @@ $(document).ready(function () {
     });
 
     $('#historyRefresh').on('click', function () {
+        top.Ts.System.logAction('Customer Detail - History Refresh');
             LoadHistory(1);
     });
 
@@ -162,6 +164,7 @@ $(document).ready(function () {
     }
     
     $('#customerEdit').click(function (e) {
+        top.Ts.System.logAction('Customer Detail - Customer Edit');
         $('.userProperties p').toggleClass("editable");
         $('.customProperties p').toggleClass("editable");
         $("#phonePanel #editmenu").toggleClass("hiddenmenu");
@@ -179,6 +182,8 @@ $(document).ready(function () {
         e.preventDefault();
         if (!$(this).hasClass('editable'))
             return false;
+
+        top.Ts.System.logAction('Customer Detail - Edit Name');
         var header = $(this).hide();
         var container = $('<div>')
           .insertAfter(header);
@@ -204,6 +209,7 @@ $(document).ready(function () {
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
+              top.Ts.System.logAction('Customer Detail - Save Name Edit');
               top.Ts.Services.Customers.SetCompanyName(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
                   $('#companyName').text(result);
@@ -229,7 +235,7 @@ $(document).ready(function () {
         var header = $(this).hide();
         var container = $('<div>')
           .insertAfter(header);
-
+        top.Ts.System.logAction('Customer Detail - Edit Website');
         var container1 = $('<div>')
             .addClass('col-xs-9')
           .appendTo(container);
@@ -251,6 +257,7 @@ $(document).ready(function () {
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
+              top.Ts.System.logAction('Customer Detail - Save Website Edit');
               top.Ts.Services.Customers.SetCompanyWeb(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
                   $('#customerEdit').removeClass("disabled");
@@ -274,7 +281,7 @@ $(document).ready(function () {
         var header = $(this).hide();
         var container = $('<div>')
           .insertAfter(header);
-
+        top.Ts.System.logAction('Customer Detail - Edit Domain');
         var container1 = $('<div>')
             .addClass('col-xs-9')
           .appendTo(container);
@@ -296,6 +303,7 @@ $(document).ready(function () {
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
+              top.Ts.System.logAction('Customer Detail - Save Domain Edit');
               top.Ts.Services.Customers.SetCompanyDomain(organizationID, $(this).prev().find('input').val(), function (result) {
                   header.text(result);
                   $('#customerEdit').removeClass("disabled");
@@ -319,7 +327,7 @@ $(document).ready(function () {
         var header = $(this).hide();
         var container = $('<div>')
           .insertAfter(header);
-
+        top.Ts.System.logAction('Customer Detail - Edit Support Hours');
         var container1 = $('<div>')
             .addClass('col-xs-9')
           .appendTo(container);
@@ -342,6 +350,7 @@ $(document).ready(function () {
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
               var value = $(this).prev().find('input').val();
+              top.Ts.System.logAction('Customer Detail - Save Support Hours Edit');
               top.Ts.Services.Customers.SetCompanySupportHours(organizationID, value != "" ? value : 0 , function (result) {
                   header.text(result);
                   $('#customerEdit').removeClass("disabled");
@@ -365,7 +374,7 @@ $(document).ready(function () {
         var header = $(this).hide();
         var container = $('<div>')
           .insertAfter(header);
-
+        top.Ts.System.logAction('Customer Detail - Edit Description');
         var container1 = $('<div>')
             .addClass('col-xs-9')
           .appendTo(container);
@@ -387,6 +396,7 @@ $(document).ready(function () {
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
+              top.Ts.System.logAction('Customer Detail - Save Description Edit');
               top.Ts.Services.Customers.SetCompanyDescription(organizationID, $(this).prev().find('textarea').val(), function (result) {
                   header.text(result);
                   $('#customerEdit').removeClass("disabled");
@@ -410,7 +420,7 @@ $(document).ready(function () {
         var header = $(this).hide();
         var container = $('<div>')
           .insertAfter(header);
-
+        top.Ts.System.logAction('Customer Detail - Edit Inactive');
         var container1 = $('<div>')
             .addClass('col-xs-9')
           .appendTo(container);
@@ -432,6 +442,7 @@ $(document).ready(function () {
         $('<i>')
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
+              top.Ts.System.logAction('Customer Detail - Save Company Inactive Edit');
               top.Ts.Services.Customers.SetCompanyInactive(organizationID, $(this).prev().find('textarea').val(), function (result) {
                   header.text(result);
                   $('#customerEdit').removeClass("disabled");
@@ -455,7 +466,7 @@ $(document).ready(function () {
         var header = $(this).hide();
         var container = $('<div>')
           .insertAfter(header);
-
+        top.Ts.System.logAction('Customer Detail - Edit Service Agreement Expiration Date');
         var container1 = $('<div>')
             .addClass('col-xs-9')
           .appendTo(container);
@@ -482,6 +493,7 @@ $(document).ready(function () {
           .addClass('col-xs-1 fa fa-check')
           .click(function (e) {
               //var value = top.Ts.Utils.getMsDate($(this).prev().find('input').val());
+              top.Ts.System.logAction('Customer Detail - Save Service Agreement Expiration Date Edit');
               top.Ts.Services.Customers.SetCompanySAE(organizationID, $(this).prev().find('input').val(), function (result) {
                   //var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                   header.text(result == "" ? "[None]" : result);
@@ -504,7 +516,7 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         var header = $(this).hide();
-
+        top.Ts.System.logAction('Customer Detail - Edit Primary Contact');
         var container = $('<div>')
           .insertAfter(header);
 
@@ -536,7 +548,7 @@ $(document).ready(function () {
             var value = $(this).val();
             var name = this.options[this.selectedIndex].innerHTML;
             container.remove();
-
+            top.Ts.System.logAction('Customer Detail - Save Primary Contact Edit');
             top.Ts.Services.Customers.SetCompanyPrimaryContact(organizationID, value, function (result) {
                 header.data('field', result);
                 header.text(name);
@@ -555,7 +567,7 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         var header = $(this).hide();
-
+        top.Ts.System.logAction('Customer Detail - Edit Default User');
         var container = $('<div>')
           .insertAfter(header);
 
@@ -587,7 +599,7 @@ $(document).ready(function () {
             var value = $(this).val();
             var name = this.options[this.selectedIndex].innerHTML;
             container.remove();
-
+            top.Ts.System.logAction('Customer Detail - Save Default User Edit');
             top.Ts.Services.Customers.SetCompanyDefaultSupportUser(organizationID, value, function (result) {
                 header.data('field', result);
                 header.text(name);
@@ -606,7 +618,7 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         var header = $(this).hide();
-
+        top.Ts.System.logAction('Customer Detail - Edit Timezone');
         var container = $('<div>')
           .insertAfter(header);
 
@@ -636,6 +648,7 @@ $(document).ready(function () {
             var name = this.options[this.selectedIndex].innerHTML;
             container.remove();
 
+            top.Ts.System.logAction('Customer Detail - Save Timezone Edit');
             top.Ts.Services.Customers.SetCompanyTimezone(organizationID, value, function (result) {
                 header.data('field', result);
                 header.text(result);
@@ -654,7 +667,7 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         var header = $(this).hide();
-
+        top.Ts.System.logAction('Customer Detail - Edit Default Group');
         var container = $('<div>')
           .insertAfter(header);
 
@@ -686,7 +699,7 @@ $(document).ready(function () {
             var value = $(this).val();
             var name = this.options[this.selectedIndex].innerHTML;
             container.remove();
-
+            top.Ts.System.logAction('Customer Detail - Save Default Group Edit');
             top.Ts.Services.Customers.SetCompanyDefaultSupportGroup(organizationID, value, function (result) {
                 header.data('field', result);
                 header.text(name);
@@ -705,7 +718,7 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         var header = $(this).hide();
-
+        top.Ts.System.logAction('Customer Detail - Edit Default Portal Group');
         var container = $('<div>')
           .insertAfter(header);
 
@@ -737,7 +750,7 @@ $(document).ready(function () {
             var value = $(this).val();
             var name = this.options[this.selectedIndex].innerHTML;
             container.remove();
-
+            top.Ts.System.logAction('Customer Detail - Save Default Portal Group Edit');
             top.Ts.Services.Customers.SetCompanyDefaultPortalGroup(organizationID, value, function (result) {
                 header.data('field', result);
                 header.text(name);
@@ -756,7 +769,7 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         var header = $(this).hide();
-
+        top.Ts.System.logAction('Customer Detail - Edit SLA');
         var container = $('<div>')
           .insertAfter(header);
 
@@ -788,7 +801,7 @@ $(document).ready(function () {
             var value = $(this).val();
             var name = this.options[this.selectedIndex].innerHTML;
             container.remove();
-
+            top.Ts.System.logAction('Customer Detail - Save SLA Edit');
             top.Ts.Services.Customers.SetCompanySLA(organizationID, value, function (result) {
                 header.data('field', result);
                 header.text(name);
@@ -806,6 +819,7 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         top.Ts.Services.Customers.SetCompanyActive(organizationID, ($(this).text() !== 'true'), function (result) {
+            top.Ts.System.logAction('Customer Detail - Toggle Active State');
             $('#fieldActive').text((result === true ? 'true' : 'false'));
         },
         function (error) {
@@ -818,6 +832,7 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable'))
             return false;
         top.Ts.Services.Customers.SetCompanyAPIEnabled(organizationID, ($(this).text() !== 'true'), function (result) {
+            top.Ts.System.logAction('Customer Detail - Toggle Enabled State');
             $('#fieldAPIEnabled').text((result === true ? 'true' : 'false'));
         },
         function (error) {
@@ -830,6 +845,7 @@ $(document).ready(function () {
         if (!$(this).hasClass('editable') || (!_isAdmin && !top.Ts.System.User.HasPortalRights) || !top.Ts.System.User.CanEditCompany)
             return false;
         top.Ts.Services.Customers.SetCompanyPortalAccess(organizationID, ($(this).text() !== 'true'), function (result) {
+            top.Ts.System.logAction('Customer Detail - Toggle Portal Access State');
             $('#fieldPortalAccess').text((result === true ? 'true' : 'false'));
         },
         function (error) {
@@ -839,15 +855,18 @@ $(document).ready(function () {
     });
 
     $('#productToggle').click(function (e) {
+        top.Ts.System.logAction('Customer Detail - Toggle Product Form');
         $('#productForm').toggle();
     });
 
     $('#noteToggle').click(function (e) {
+        top.Ts.System.logAction('Customer Detail - Toggle Note Form');
         $('#noteForm').toggle();
         $('#fieldNoteTitle').focus();
     });
 
     $('#fileToggle').click(function (e) {
+        top.Ts.System.logAction('Customer Detail - Toggle File Form');
         $('#fileForm').toggle();
     });
 
@@ -879,7 +898,7 @@ $(document).ready(function () {
     $('#btnProductSave').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
-
+        top.Ts.System.logAction('Customer Detail - Save Product');
         var productInfo = new Object();
         productInfo.OrganizationID = $("#productCustomer").val();
         productInfo.ProductID = $("#productProduct").val();
@@ -934,6 +953,7 @@ $(document).ready(function () {
 
     $('.userList').on('click', '.contactlink', function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Customer Detail - Open Contact From List');
         top.Ts.MainPage.openNewContact(this.id);
     });
 
@@ -941,7 +961,7 @@ $(document).ready(function () {
         e.preventDefault();
         var product = $(this).parent().parent().attr('id');
         var orgproductID;
-
+        top.Ts.System.logAction('Customer Detail - Edit Product');
         top.Ts.Services.Customers.LoadProduct(product, function (prod) {
             orgproductID = prod.OrganizationProductID;
             LoadProductVersions(prod.ProductID, prod.VersionNumber);
@@ -968,6 +988,7 @@ $(document).ready(function () {
     $("#btnProductCancel").click(function (e) {
         e.preventDefault();
         LoadProductTypes();
+        top.Ts.System.logAction('Customer Detail - Cancel Product Edit');
         $('#productExpiration').val('');
         $('#fieldProductID').val('-1');
         $('#btnProductSave').text("Associate Product");
@@ -986,6 +1007,7 @@ $(document).ready(function () {
     $('#tblProducts').on('click', '.productDelete', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this product association?')) {
+            top.Ts.System.logAction('Customer Detail - Delete Product');
             top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), function (e) {
                 LoadProducts(true);
             });
@@ -995,6 +1017,7 @@ $(document).ready(function () {
 
     $('#tblProducts').on('click', '.productView', function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Customer Detail - View Product');
         top.Ts.MainPage.openOrganizationProduct($(this).parent().parent().attr('id'))
         //top.location = "../../../Default.aspx?OrganizationProductID=" + ;
 
@@ -1015,12 +1038,14 @@ $(document).ready(function () {
     });
 
     $('#customerRefresh').click(function (e) {
+        top.Ts.System.logAction('Customer Detail - Refresh Page');
         window.location = window.location;
     });
 
 
     $('#customerDelete').click(function (e) {
         if (confirm('Are you sure you would like to remove this organization?')) {
+            top.Ts.System.logAction('Customer Detail - Delete Customer');
             top.privateServices.DeleteOrganization(organizationID, function (e) {
                 if (window.parent.document.getElementById('iframe-mniCustomers'))
                     window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
@@ -1032,6 +1057,7 @@ $(document).ready(function () {
     $('#phonePanel').on('click', '.delphone', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this phone number?')) {
+            top.Ts.System.logAction('Customer Detail - Delete Phone Number');
             top.privateServices.DeletePhone($(this).attr('id'), function (e) {
                 LoadPhoneNumbers(1);
                 $("#phonePanel #editmenu").toggleClass("hiddenmenu");
@@ -1042,6 +1068,7 @@ $(document).ready(function () {
 
     $("#phonePanel").on("click", '.editphone', function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Customer Detail - Edit Phone Number');
         top.Ts.Services.Customers.LoadPhoneNumber($(this).attr('id'), function (phone) {
             $('#phoneType').val(phone[0].PhoneTypeID);
             $('#phoneNumber').val(phone[0].Number);
@@ -1054,6 +1081,7 @@ $(document).ready(function () {
     $('#addressPanel').on('click', '.deladdress', function (e) {
         e.preventDefault();
         if (confirm('Are you sure you would like to remove this address?')) {
+            top.Ts.System.logAction('Customer Detail - Delete Address');
             top.privateServices.DeleteAddress($(this).attr('id'), function (e) {
                 LoadAddresses(1);
                 $("#addressPanel #editmenu").toggleClass("hiddenmenu");
@@ -1064,6 +1092,7 @@ $(document).ready(function () {
 
     $("#addressPanel").on("click", '.editaddress', function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Customer Detail - Edit Address');
         top.Ts.Services.Customers.LoadAddress($(this).attr('id'), function (phone) {
             $('#addressDesc').val(phone[0].Description);
             $('#address1').val(phone[0].Addr1);
@@ -1082,6 +1111,7 @@ $(document).ready(function () {
 
     $("#btnSaveReminder").click(function (e) {
         if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
+            top.Ts.System.logAction('Customer Detail - Save Reminder');
             top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
             $('#modalReminder').modal('hide');
         }
@@ -1092,7 +1122,7 @@ $(document).ready(function () {
 
     $("#btnPhoneSave").click(function (e) {
         var phoneInfo = new Object();
-
+        top.Ts.System.logAction('Customer Detail - Save Phone Number');
         phoneInfo.PhoneTypeID = $('#phoneType').val();
         phoneInfo.Number = $('#phoneNumber').val();
         phoneInfo.Extension = $('#phoneExt').val();
@@ -1124,6 +1154,7 @@ $(document).ready(function () {
 
     $("#btnAddressSave").click(function (e) {
         var addressInfo = new Object();
+        top.Ts.System.logAction('Customer Detail - Save Address');
         addressInfo.Description = $('#addressDesc').val();
         addressInfo.Addr1 = $('#address1').val();
         addressInfo.Addr2 = $('#address2').val();
@@ -1159,6 +1190,7 @@ $(document).ready(function () {
 
     $('#tblNotes').on('click', '.editNote', function (e) {
         e.stopPropagation();
+        top.Ts.System.logAction('Customer Detail - Edit Note');
         top.Ts.Services.Customers.LoadNote($(this).parent().parent().attr('id'), function (note) {
             $('#fieldNoteTitle').val(note.Title);
             var desc = note.Description;
@@ -1178,6 +1210,7 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this note?')) {
+            top.Ts.System.logAction('Customer Detail - Delete Note');
             top.privateServices.DeleteNote($(this).parent().parent().attr('id'), function(){
                 LoadNotes();
                 $('.noteDesc').toggle(false);
@@ -1187,6 +1220,7 @@ $(document).ready(function () {
 
     $('#tblNotes').on('click', '.viewNote', function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Customer Detail - View Note');
         var desc = $(this).data('description');
         $('#tblNotes tbody tr').removeClass("active");
 
@@ -1205,6 +1239,7 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
         if (confirm('Are you sure you would like to remove this attachment?')) {
+            top.Ts.System.logAction('Customer Detail - Delete File');
             top.privateServices.DeleteAttachment($(this).parent().parent().attr('id'), function (e) {
                 LoadFiles();
             });
@@ -1214,6 +1249,7 @@ $(document).ready(function () {
 
     $("#btnNotesCancel").click(function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Customer Detail - Note Form Cancel');
         $('#fieldNoteTitle').val('');
         $('#fieldNoteDesc').val('');
         $('#fieldNoteID').val('-1');
@@ -1224,6 +1260,7 @@ $(document).ready(function () {
 
     $("#btnNotesSave").click(function (e) {
         e.preventDefault();
+        top.Ts.System.logAction('Customer Detail - Save Note');
         var title = $('#fieldNoteTitle').val();
         var description = $('#fieldNoteDesc').val();
         var noteID = $('#fieldNoteID').val();
@@ -1246,13 +1283,14 @@ $(document).ready(function () {
     });
 
     $("#btnFilesCancel").click(function (e) {
+        top.Ts.System.logAction('Customer Detail - Cancel File Form');
         $('.upload-queue').empty();
         $('#attachmentDescription').val('');
         $('#fileForm').toggle();
     });
 
     $('#btnFilesSave').click(function (e) {
-
+        top.Ts.System.logAction('Customer Detail - Save Files');
         if ($('.upload-queue li').length > 0) {
             $('.upload-queue li').each(function (i, o) {
                 var data = $(o).data('data');
@@ -1978,11 +2016,13 @@ $(document).ready(function () {
 
     $('#alertSnooze').click(function (e) {
         top.Ts.Services.Customers.SnoozeAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
+        top.Ts.System.logAction('Customer Detail - Snooze Alert');
         $('#modalAlert').modal('hide');
     });
 
     $('#alertDismiss').click(function (e) {
         top.Ts.Services.Customers.DismissAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
+        top.Ts.System.logAction('Customer Detail - Dismiss Alert');
         $('#modalAlert').modal('hide');
     });
 });
@@ -2159,7 +2199,7 @@ var appendCustomEditCombo = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Customer Detail - Edit Custom Combobox');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -2188,7 +2228,7 @@ var appendCustomEditCombo = function (field, element) {
           $('#' + field.Name.replace(/\W/g, '')).on('change', function () {
               var value = $(this).val();
               container.remove();
-
+              top.Ts.System.logAction('Customer Detail - Save Custom Combobox Edit');
               if (field.IsRequired && field.IsFirstIndexSelect == true && $(this).find('option:selected').index() < 1) {
                   result.parent().addClass('has-error');
               }
@@ -2227,7 +2267,7 @@ var appendCustomEditNumber = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Customer Detail - Edit Custom Number');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -2261,6 +2301,7 @@ var appendCustomEditNumber = function (field, element) {
                 else {
                     result.parent().removeClass('has-error');
                 }
+                top.Ts.System.logAction('Customer Detail - Save Custom Number Edit');
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
@@ -2294,6 +2335,7 @@ var appendCustomEditBool = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           //$('.form-group').prev().show().next().remove();
+          top.Ts.System.logAction('Customer Detail - Edit Custom Boolean');
           var parent = $(this);
           var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
           top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
@@ -2326,7 +2368,7 @@ var appendCustomEdit = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Customer Detail - Edit Custom Textbox');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -2365,6 +2407,7 @@ var appendCustomEdit = function (field, element) {
                 else {
                     result.parent().removeClass('has-error');
                 }
+                top.Ts.System.logAction('Customer Detail - Save Custom Textbox Edit');
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
@@ -2400,7 +2443,7 @@ var appendCustomEditDate = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Customer Detail - Edit Custom Date');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -2435,6 +2478,7 @@ var appendCustomEditDate = function (field, element) {
                 else {
                     result.parent().removeClass('has-error');
                 }
+                top.Ts.System.logAction('Customer Detail - Save Custom  Date Edit');
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
@@ -2471,7 +2515,7 @@ var appendCustomEditDateTime = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Customer Detail - Edit Custom DateTime');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -2508,6 +2552,7 @@ var appendCustomEditDateTime = function (field, element) {
                 else {
                     result.parent().removeClass('has-error');
                 }
+                top.Ts.System.logAction('Customer Detail - Save Custom DateTime Edit');
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
@@ -2544,7 +2589,7 @@ var appendCustomEditTime = function (field, element) {
           if (!$(this).hasClass('editable'))
               return false;
           var parent = $(this).hide();
-
+          top.Ts.System.logAction('Customer Detail - Edit Custom Time');
           var container = $('<div>')
             .insertAfter(parent);
 
@@ -2580,6 +2625,7 @@ var appendCustomEditTime = function (field, element) {
                 else {
                     result.parent().removeClass('has-error');
                 }
+                top.Ts.System.logAction('Customer Detail - Save Custom DateTime Edit');
                 top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, organizationID, value, function (result) {
                     parent.closest('.form-group').data('field', result);
                     var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);

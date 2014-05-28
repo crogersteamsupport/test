@@ -26,6 +26,7 @@ namespace TeamSupport.Handlers
     }
 
     private int? _id = null;
+    private string _ratingImage = "";
 
     public void ProcessRequest(HttpContext context)
     {
@@ -38,6 +39,12 @@ namespace TeamSupport.Handlers
         {
           _id = id;
           segments.RemoveAt(segments.Count - 1);
+        }
+
+        if (segments[segments.Count - 1] == "ratingpositive" || segments[segments.Count - 1] == "ratingneutral" || segments[segments.Count - 1] == "ratingnegative")
+        {
+            _ratingImage = segments[segments.Count - 1];
+            segments.RemoveAt(segments.Count - 1);
         }
 
         AttachmentPath.Folder folder = GetFolder(context, segments.ToArray());
@@ -88,6 +95,11 @@ namespace TeamSupport.Handlers
         {
           string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
 
+          if (_ratingImage != "")
+          {
+
+          }
+
           files[i].SaveAs(Path.Combine(path, fileName));
           if (refType != ReferenceType.None && _id != null)
           {
@@ -127,6 +139,36 @@ namespace TeamSupport.Handlers
           string fileName = RemoveSpecialCharacters(DataUtils.VerifyUniqueUrlFileName(path, Path.GetFileName(files[i].FileName)));
           if (builder.Length > 0) builder.Append(",");
           builder.Append(fileName);
+
+          if (_ratingImage != "")
+          {
+              fileName = _ratingImage + ".png";
+              AgentRatingsOptions ratingoptions = new AgentRatingsOptions(TSAuthentication.GetLoginUser());
+              ratingoptions.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+              if (ratingoptions.IsEmpty)
+              {
+                  ratingoptions.AddNewAgentRatingsOption();
+                  ratingoptions[0].OrganizationID = TSAuthentication.OrganizationID;
+              }
+
+              switch (_ratingImage)
+              {
+                  case "ratingpositive":
+                      ratingoptions[0].PositiveImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingpositive";
+                      break;
+                  case "ratingneutral":
+                      ratingoptions[0].NeutralImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingneutral";
+                      break;
+                  case "ratingnegative":
+                      ratingoptions[0].NegativeImage = "/dc/" + TSAuthentication.OrganizationID + "/agentrating/ratingnegative";
+                      break;
+              }
+              ratingoptions[0].Collection.Save();
+              
+
+          }
+
           fileName = Path.Combine(path, fileName); 
           files[i].SaveAs(fileName);
         }

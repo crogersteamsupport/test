@@ -156,25 +156,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void SaveAgentRatingOptions(bool agentRatingEnabled, AgentRatingsOptionProxy proxy, int organizationID)
-    {
-        AgentRatingsOption option = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), organizationID);
-        Organization org = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);
-
-        org.AgentRating = agentRatingEnabled;
-        org.AddEmailViaTS = true;
-        org.Collection.Save();
-
-        option.PositiveRatingText = proxy.PositiveRatingText;
-        option.NeutralRatingText = proxy.NeutralRatingText;
-        option.NegativeRatingText = proxy.NegativeRatingText;
-        option.RedirectURL = proxy.RedirectURL;
-
-        option.Collection.Save();
-    }
-
-    [WebMethod]
-    public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles, int? groupID)
+    public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles, int? groupID, bool agentRatingEnabled, AgentRatingsOptionProxy agentproxy)
     {
       Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
       if (organization.OrganizationID != TSAuthentication.OrganizationID || !TSAuthentication.IsSystemAdmin) return null;
@@ -256,6 +238,7 @@ namespace TSWebServices
 
       option.Collection.Save();
 
+      organization.AgentRating = agentRatingEnabled;
       organization.IsPublicArticles = isPublicArticles;
       organization.DefaultPortalGroupID = groupID;
       organization.UseForums = proxy.DisplayForum == null ? false : (bool)proxy.DisplayForum;
@@ -265,6 +248,13 @@ namespace TSWebServices
       if (externalLink.IndexOf("http") < 0 && externalLink != "") externalLink = "http://" + externalLink;
       Settings.OrganizationDB.WriteString("ExternalPortalLink", externalLink);
 
+      AgentRatingsOption agentRatingOption = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
+      agentRatingOption.PositiveRatingText = agentproxy.PositiveRatingText;
+      agentRatingOption.NeutralRatingText = agentproxy.NeutralRatingText;
+      agentRatingOption.NegativeRatingText = agentproxy.NegativeRatingText;
+      agentRatingOption.RedirectURL = agentproxy.RedirectURL;
+
+      agentRatingOption.Collection.Save();
       return null;
     }
 

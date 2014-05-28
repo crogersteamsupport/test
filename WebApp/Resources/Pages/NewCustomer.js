@@ -171,7 +171,7 @@ $(document).ready(function () {
         if(isValid)
             {
                 var customerInfo = new Object();
-
+                top.Ts.System.logAction('New Customer Page - Added New Customer');
                 customerInfo.Name = $("#inputName").val();
                 customerInfo.Website = $("#inputWebSite").val();
                 customerInfo.CompanyDomains = $("#inputDomains").val();
@@ -239,7 +239,7 @@ $(document).ready(function () {
         if(isValid)
         {
             var contactInfo = new Object();
-
+            top.Ts.System.logAction('New Customer Page - Added New Contact');
             contactInfo.FirstName = $("#inputContactFname").val();
             contactInfo.MiddleName = $("#inputContactMname").val();
             contactInfo.LastName = $("#inputContactLname").val();
