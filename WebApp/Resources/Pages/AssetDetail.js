@@ -10,6 +10,7 @@
 
 var _assetDetailPage = null;
 var _assetID = null;
+var _execGetCustomer = null;
 
 $(document).ready(function () {
   _assetDetailPage = new AssetDetailPage();
@@ -378,6 +379,66 @@ $(document).ready(function () {
           .insertAfter(container1);
     $('#assetEdit').addClass("disabled");
   });
+
+  var getCustomers = function (request, response) {
+    if (_execGetCustomer) { _execGetCustomer._executor.abort(); }
+    _execGetCustomer = top.Ts.Services.Organizations.GetUserOrOrganizationForTicket(request.term, function (result) { response(result); });
+  }
+
+  $('#inputCustomer').autocomplete({
+    open: function () {
+      $('.ui-menu').width($('#inputCustomer').width());
+    },
+    minLength: 2,
+    source: getCustomers,
+    defaultDate: new Date(),
+    select: function (event, ui) {
+      $(this).data('item', ui.item);
+    }
+  });
+
+  $("#dateShipped").datetimepicker();
+
+  $("#btnSaveAssign").click(function (e) {
+    if ($('#inputCustomer').data('item') && $('#dateShipped').val()) {
+      var refType = 9;
+      if ($('#inputCustomer').data('item').data == 'u') {
+        refType = 32;
+      }
+
+      var assetAssignmentInfo = new Object();
+
+      assetAssignmentInfo.RefID = $('#inputCustomer').data('item').id;
+      assetAssignmentInfo.RefType = refType;
+      assetAssignmentInfo.DateShipped = $('#dateShipped').val();
+      assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
+      assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
+      assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
+      assetAssignmentInfo.Comments = $('#comments').val();
+
+      top.Ts.Services.Assets.AssignAsset(_assetID, top.JSON.stringify(assetAssignmentInfo), function (assetID) {
+        top.Ts.System.logAction('Asset Assigned');
+        $('#modalAssign').modal('hide');
+      }, function () {
+        alert('There was an error assigning this asset.  Please try again.');
+      });
+    }
+    else {
+      if (!$('#inputCustomer').data('item')) {
+        alert("Please select a valid customer or contact to assign this asset to.");
+      }
+      else {
+        alert("Please enter a valid date assigned.");
+      }
+    }
+    //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
+    //      top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
+    //      $('#modalReminder').modal('hide');
+    //    }
+    //    else
+    //      alert("Please fill in all the fields");
+  });
+
 
   function LoadHistory(start) {
 

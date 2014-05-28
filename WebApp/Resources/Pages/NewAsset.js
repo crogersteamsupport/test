@@ -95,7 +95,7 @@
       top.Ts.MainPage.openNewAsset(assetID);
       //      top.Ts.MainPage.closenewCustomerTab();
     }, function () {
-      alert('There was an error saving this customer.  Please try again.');
+      alert('There was an error saving this asset.  Please try again.');
     });
   });
   $('#assetCancelBtn').click(function (e) {

@@ -106,3 +106,5 @@
 .list-group-item-text a{
     word-wrap:break-word;
 }
+
+.ui-autocomplete { height: 200px; overflow-y: scroll; overflow-x: hidden;}
