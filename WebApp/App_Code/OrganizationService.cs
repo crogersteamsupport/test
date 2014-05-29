@@ -151,6 +151,7 @@ namespace TSWebServices
     [WebMethod]
     public AgentRatingsOptionProxy GetAgentRatingOptions(int organizationID)
     {
+        
         AgentRatingsOption options = AgentRatingsOptions.GetAgentRatingsOption(TSAuthentication.GetLoginUser(), organizationID);
         if (options == null)
             return null;
@@ -275,6 +276,33 @@ namespace TSWebServices
       
       return null;
     }
+
+    [WebMethod]
+    public void ResetRatingImage(int ratingID)
+    {
+        AgentRatingsOptions ratingOptions = new AgentRatingsOptions(TSAuthentication.GetLoginUser());
+        ratingOptions.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+
+        switch(ratingID)
+        {
+            case -1:
+                ratingOptions[0].NegativeImage = null;
+                break;
+            case 0:
+                ratingOptions[0].NeutralImage = null;
+                break;
+            case 1:
+                ratingOptions[0].PositiveImage = null;
+                break;
+        }
+
+        ratingOptions[0].Collection.Save();
+       
+
+        return;
+    }
+
 
     [WebMethod]
     public bool? UpdateUseCommunity(bool value) 

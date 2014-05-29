@@ -1034,6 +1034,21 @@ AdminPortal = function () {
       }
   });
 
+  $('#resetPositiveImage').click(function () {
+      top.Ts.Services.Organizations.ResetRatingImage(1, function () {
+          $('#agentrating-positive-img').attr("src","../Images/face-positive.png");
+      });
+  });
+  $('#resetNegativeImage').click(function () {
+      top.Ts.Services.Organizations.ResetRatingImage(-1, function () {
+          $('#agentrating-negative-img').attr("src", "../Images/face-negative.png");
+      });
+  });
+  $('#resetNeutralImage').click(function () {
+      top.Ts.Services.Organizations.ResetRatingImage(0, function () {
+          $('#agentrating-neutral-img').attr("src", "../Images/face-neutral.png");
+      });
+  });
 };
 
 

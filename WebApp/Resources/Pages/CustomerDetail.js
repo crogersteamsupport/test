@@ -1590,9 +1590,9 @@ $(document).ready(function () {
         });
     }
 
-    function LoadRatings() {
+    function LoadRatings(ratingOption) {
         $('#tblRatings tbody').empty();
-        top.Ts.Services.Customers.LoadAgentRatings(organizationID, $('#ddlRatingFilter').val(), function (ratings) {
+        top.Ts.Services.Customers.LoadAgentRatings(organizationID, ratingOption, function (ratings) {
             var agents = "";
             for (var i = 0; i < ratings.length; i++) {
                     for (var j = 0; j < ratings[i].users.length; j++)
@@ -1604,15 +1604,43 @@ $(document).ready(function () {
                 }
 
                 var tr = $('<tr>')
-                .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td>' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
-                .appendTo('#tblRatings > tbody:last');
+                //.html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td>' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
+                    .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="top.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
+                    .appendTo('#tblRatings > tbody:last');
+
+                agents = "";
             }
+        });
+
+        top.Ts.Services.Organizations.GetAgentRatingOptions(top.Ts.System.Organization.OrganizationID, function (o) {
+            if (o != null) {
+                if (o.PositiveImage)
+                    $('#positiveImage').attr('src', o.PositiveImage);
+                if (o.NeutralImage)
+                    $('#neutralImage').attr('src', o.NeutralImage);
+                if (o.NegativeImage)
+                    $('#negativeImage').attr('src', o.NegativeImage);
+            }
+        });
+
+        top.Ts.Services.Customers.LoadRatingPercents(organizationID, function (results) {
+            $('#negativePercent').text(results[0] + "%");
+            $('#neutralPercent').text(results[1] + "%");
+            $('#positivePercent').text(results[2] + "%" );
         });
     }
 
-
-    $('#ddlRatingFilter').on('change', function () {
-        LoadRatings();
+    $('#positiveImage').click(function () {
+        LoadRatings(1);
+    });
+    $('#neutralImage').click(function () {
+        LoadRatings(0);
+    });
+    $('#negativeImage').click(function () {
+        LoadRatings(-1);
+    });
+    $('#viewAll').click(function () {
+        LoadRatings('');
     });
 
     function LoadPhoneNumbers(reload)
@@ -1980,7 +2008,7 @@ $(document).ready(function () {
         else if (e.target.innerHTML == "Files")
             LoadFiles();
         else if (e.target.innerHTML == "Ratings")
-            LoadRatings();
+            LoadRatings('');
     })
 
     $('#inventoryIframe').attr("src", "../../../Inventory/CustomerInventory.aspx?CustID=" + organizationID);

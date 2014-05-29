@@ -62,7 +62,7 @@ $(document).ready(function () {
         else if (e.target.innerHTML == "History")
             $('#historyIframe').attr("src", "../../../Frames/History.aspx?RefType=22&RefID=" + userID);
         else if (e.target.innerHTML == "Ratings")
-            LoadRatings();
+            LoadRatings('');
     });
 
     var _tmrSearch = null;
@@ -117,7 +117,7 @@ $(document).ready(function () {
         $('#queueIframe').attr("src", "/vcr/1_9_0/Pages/TicketGrid.html?tf_IsEnqueued=true&tf_ViewerID=" + userID);
         $('#historyIframe').attr("src", "../../../Frames/History.aspx?RefType=22&RefID=" + userID);
         $('#userName').text($(this).text());
-        LoadRatings();
+        LoadRatings('');
         activeID = userID;
         
     });
@@ -166,15 +166,11 @@ $(document).ready(function () {
         ;
     });
 
-    $('#ddlRatingFilter').on('change', function () {
-        LoadRatings();
-    });
+    LoadRatings('');
 
-    LoadRatings();
-
-    function LoadRatings() {
+    function LoadRatings(ratingOption) {
         $('#tblRatings tbody').empty();
-        top.Ts.Services.Customers.LoadAgentRatingsUser(userID, $('#ddlRatingFilter').val(), function (ratings) {
+        top.Ts.Services.Customers.LoadAgentRatingsUser(userID, ratingOption, function (ratings) {
             var agents = "";
             for (var i = 0; i < ratings.length; i++) {
                 for (var j = 0; j < ratings[i].users.length; j++) {
@@ -185,11 +181,43 @@ $(document).ready(function () {
                 }
 
                 var tr = $('<tr>')
-                .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td>' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
+                .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="top.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
                 .appendTo('#tblRatings > tbody:last');
+                agents = "";
             }
         });
+
+        top.Ts.Services.Organizations.GetAgentRatingOptions(top.Ts.System.Organization.OrganizationID, function (o) {
+            if (o != null) {
+                if (o.PositiveImage)
+                    $('#positiveImage').attr('src', o.PositiveImage);
+                if (o.NeutralImage)
+                    $('#neutralImage').attr('src', o.NeutralImage);
+                if (o.NegativeImage)
+                    $('#negativeImage').attr('src', o.NegativeImage);
+            }
+        });
+
+        top.Ts.Services.Customers.LoadRatingPercentsUser(userID, function (results) {
+            $('#negativePercent').text(results[0] + "%");
+            $('#neutralPercent').text(results[1] + "%");
+            $('#positivePercent').text(results[2] + "%");
+        });
+
     }
+
+    $('#positiveImage').click(function () {
+        LoadRatings(1);
+    });
+    $('#neutralImage').click(function () {
+        LoadRatings(0);
+    });
+    $('#negativeImage').click(function () {
+        LoadRatings(-1);
+    });
+    $('#viewAll').click(function () {
+        LoadRatings('');
+    });
 
 });
 

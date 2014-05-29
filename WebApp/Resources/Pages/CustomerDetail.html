@@ -534,15 +534,20 @@
               <div class="box">
                 <div class="box-header">
                     <div class="row">
-                        <div class="col-xs-2">
-                            <div class="form-group">
-                                <select id="ddlRatingFilter" class="form-control">
-                                <option value="">No Filter</option>
-                                <option value="-1">Negative</option>
-                                <option value="0">Neutral</option>
-                                <option value="1">Positive</option>
-                                </select>
-                            </div>
+                        <div class="col-xs-1">
+                            <p class="percent" id="positivePercent">0%</p>
+                            <a href="#"><img id="positiveImage" src="../Images/face-positive.png" style="width:50px;height:50px"  /></a>
+                        </div>
+                        <div class="col-xs-1">
+                            <p class="percent" id="neutralPercent">0%</p>
+                            <a href="#"><img id="neutralImage" src="../Images/face-neutral.png" style="width:50px;height:50px"  /></a>
+                        </div>
+                        <div class="col-xs-1">
+                            <p class="percent" id="negativePercent">0%</p>                        
+                            <a href="#"><img id="negativeImage" src="../Images/face-negative.png" style="width:50px;height:50px"  /></a>
+                        </div>
+                        <div class="col-xs-1">
+                            <a href="#" id="viewAll">View All</a>
                         </div>
                     </div>
                 </div>

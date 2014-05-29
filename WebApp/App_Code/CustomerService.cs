@@ -2112,6 +2112,82 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public int[] LoadRatingPercents(int organizationID)
+        {
+                List<int> results = new List<int>();
+
+            AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
+            ratings.LoadByOrganizationIDFilter(organizationID, "");
+            double negativeRating = 0, neutralRating = 0, positiveRating = 0, total =0;
+            foreach (AgentRating rate in ratings)
+            {
+                switch (rate.Rating)
+                {
+                    case -1:
+                        negativeRating++;
+                        break;
+                    case 0:
+                        neutralRating++;
+                        break;
+                    case 1:
+                        positiveRating++;
+                        break;
+                }
+            }
+
+            total = ratings.Count;
+
+            results.Add((int)((negativeRating / total) * 100));
+            results.Add((int)((neutralRating / total) * 100));
+            results.Add((int)((positiveRating / total) * 100));
+
+            return results.ToArray();
+
+        }
+
+
+        [WebMethod]
+        public int[] LoadRatingPercentsUser(int userID)
+        {
+            List<int> results = new List<int>();
+
+            AgentRatingUsers aru = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+            aru.LoadByUserID(userID);
+
+            double negativeRating = 0, neutralRating = 0, positiveRating = 0, total = 0;
+
+
+            foreach (AgentRatingUser user in aru)
+            {
+                AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
+                ratings.LoadByAgentRatingIDFilter(user.AgentRatingID, "");
+                
+                switch (ratings[0].Rating)
+                {
+                    case -1:
+                        negativeRating++;
+                        break;
+                    case 0:
+                        neutralRating++;
+                        break;
+                    case 1:
+                        positiveRating++;
+                        break;
+                }
+
+
+            }
+
+            total = aru.Count;
+            results.Add((int)((negativeRating / total) * 100));
+            results.Add((int)((neutralRating / total) * 100));
+            results.Add((int)((positiveRating / total) * 100));
+
+            return results.ToArray();
+
+        }
+
+        [WebMethod]
         public CustomRatingClass[] LoadAgentRatings(int organizationID, string filter)
         {
             List<CustomRatingClass> list = new List<CustomRatingClass>();
@@ -2161,32 +2237,32 @@ namespace TSWebServices
             {
                 AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
                 ratings.LoadByAgentRatingIDFilter(user.AgentRatingID, filter);
-
-                Users users = new Users(TSAuthentication.GetLoginUser());
-
-                CustomRatingClass ratingclass = new CustomRatingClass();
-                ratingclass.rating = ratings[0].GetProxy();
-
-                AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
-                agents.LoadByAgentRatingID(ratings[0].AgentRatingID);
-
-                ratingclass.users = new List<UserProxy>();
-                foreach (AgentRatingUser u in agents)
+                if (!ratings.IsEmpty)
                 {
+                    Users users = new Users(TSAuthentication.GetLoginUser());
 
-                    users.LoadByUserID(u.UserID);
+                    CustomRatingClass ratingclass = new CustomRatingClass();
+                    ratingclass.rating = ratings[0].GetProxy();
 
-                    ratingclass.users.Add(users[0].GetProxy());
+                    AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+                    agents.LoadByAgentRatingID(ratings[0].AgentRatingID);
+
+                    ratingclass.users = new List<UserProxy>();
+                    foreach (AgentRatingUser u in agents)
+                    {
+
+                        users.LoadByUserID(u.UserID);
+
+                        ratingclass.users.Add(users[0].GetProxy());
+                    }
+
+                    users.LoadByUserID(ratings[0].ContactID);
+
+                    ratingclass.reporter = users[0].GetProxy();
+
+                    list.Add(ratingclass);
                 }
-
-                users.LoadByUserID(ratings[0].ContactID);
-
-                ratingclass.reporter = users[0].GetProxy();
-
-                list.Add(ratingclass);
-
             }
-
             return list.ToArray();
         }
 
@@ -2498,6 +2574,7 @@ namespace TSWebServices
             public List<UserProxy> users;
             [DataMember]
             public UserProxy reporter;
+    
         }
 
     }

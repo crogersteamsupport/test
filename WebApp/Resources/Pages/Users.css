@@ -59,6 +59,11 @@
 }
 
 .imgsm{
-    width:16px;
-    height: 16px;
+    width:20px;
+    height: 20px;
+}
+
+.percent{
+    font-weight:bold;
+    margin-left: 15px;
 }
