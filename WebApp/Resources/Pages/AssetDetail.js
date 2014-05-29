@@ -11,6 +11,7 @@
 var _assetDetailPage = null;
 var _assetID = null;
 var _execGetCustomer = null;
+var _assetAssignments = null;
 
 $(document).ready(function () {
   _assetDetailPage = new AssetDetailPage();
@@ -37,7 +38,7 @@ $(document).ready(function () {
   var historyLoaded = 0;
   top.privateServices.SetUserSetting('SelectedAssetID', _assetID);
 
-  $('#customerRefresh').click(function (e) {
+  $('#assetRefresh').click(function (e) {
     window.location = window.location;
   });
 
@@ -95,17 +96,37 @@ $(document).ready(function () {
     $('#fieldDateCreated').text(top.Ts.Utils.getMsDate(asset.DateCreated).localeFormat(top.Ts.Utils.getDateTimePattern()));
     $('#fieldModifier').text(asset.ModifierName);
     $('#fieldDateModified').text(top.Ts.Utils.getMsDate(asset.DateModified).localeFormat(top.Ts.Utils.getDateTimePattern()));
-  });
 
-  $('#historyToggle').on('click', function () {
-    if (historyLoaded == 0) {
-      historyLoaded = 1;
-      LoadHistory(1);
+    switch (asset.Location) {
+      case '1':
+        $('#locationHeader').text('Assigned');
+        $('.assignedDetails').show();
+        $('.junkyardDetails').hide();
+        $('#assetToJunkyard').hide();
+        top.Ts.Services.Assets.GetAssetAssignments(_assetID, function (assetAssignments) {
+          _assetAssignments = assetAssignments;
+          for (var i = 0; i < assetAssignments.length; i++) {
+            $('<tr>').html('<td>' +
+            assetAssignments[i].NameAssignedTo + '</td><td>' +
+            top.Ts.Utils.getMsDate(assetAssignments[i].ActionTime).localeFormat(top.Ts.Utils.getDatePattern()) + '</td><td>' +
+            assetAssignments[i].ActorName + '</td><td>' +
+            assetAssignments[i].Comments + '</td><td>' +
+            '</td>').appendTo('#assignedTable > tbody:last');
+          }
+        });
+        break;
+      case '2':
+        $('#locationHeader').text('Warehouse');
+        $('#locationDetails').hide();
+        $('#returnAsset').hide();
+        break;
+      case '3':
+        $('#locationHeader').text('Junkyard');
+        $('.assignedDetails').hide();
+        $('.junkyardDetails').show();
+        $('#assetToJunkyard').hide();
+        break;
     }
-  });
-
-  $('#historyRefresh').on('click', function () {
-    LoadHistory(1);
   });
 
   $('#assetEdit').click(function (e) {
@@ -120,6 +141,92 @@ $(document).ready(function () {
     //      $('#fieldPortalAccess').removeClass('editable');
     //    }
 
+  });
+
+  $('#assetAssign').click(function (e) {
+    $('#modalAssignTitle').text('Assign asset');
+    $('#btnSaveReturn').hide();
+    $('#btnSaveAssign').show();
+  });
+
+  $('#returnAsset').click(function (e) {
+    $('#modalAssignTitle').text('Return asset');
+    $('#btnSaveAssign').hide();
+    $('#btnSaveReturn').show();
+    $('#inputCustomerDiv').hide();
+  });
+
+  $('#btnSaveAssign').click(function (e) {
+    if ($('#inputCustomer').data('item') && $('#dateShipped').val()) {
+      var refType = 9;
+      if ($('#inputCustomer').data('item').data == 'u') {
+        refType = 32;
+      }
+
+      var assetAssignmentInfo = new Object();
+
+      assetAssignmentInfo.RefID = $('#inputCustomer').data('item').id;
+      assetAssignmentInfo.RefType = refType;
+      assetAssignmentInfo.DateShipped = $('#dateShipped').val();
+      assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
+      assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
+      assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
+      assetAssignmentInfo.Comments = $('#comments').val();
+
+      top.Ts.Services.Assets.AssignAsset(_assetID, top.JSON.stringify(assetAssignmentInfo), function (assetID) {
+        top.Ts.System.logAction('Asset Assigned');
+        $('#modalAssign').modal('hide');
+        window.location = window.location;
+      }, function () {
+        alert('There was an error assigning this asset.  Please try again.');
+      });
+    }
+    else {
+      if (!$('#inputCustomer').data('item')) {
+        alert("Please select a valid customer or contact to assign this asset to.");
+      }
+      else {
+        alert("Please enter a valid date shipped.");
+      }
+    }
+    //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
+    //      top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
+    //      $('#modalReminder').modal('hide');
+    //    }
+    //    else
+    //      alert("Please fill in all the fields");
+  });
+
+  $('#btnSaveReturn').click(function (e) {
+    if ($('#dateShipped').val()) {
+      var confirmed = true;
+      if (_assetAssignments && _assetAssignments.length > 1) {
+        confirmed = confirm("Returning the asset will unassigned it from all customers. Are you sure you want to proceed?");
+      }
+      if (confirmed) {
+        var assetReturnInfo = new Object();
+
+        assetReturnInfo.DateShipped = $('#dateShipped').val();
+        assetReturnInfo.TrackingNumber = $('#trackingNumber').val();
+        assetReturnInfo.ShippingMethod = $('#shippingMethod').val();
+        assetReturnInfo.ReferenceNumber = $('#referenceNumber').val();
+        assetReturnInfo.Comments = $('#comments').val();
+
+        top.Ts.Services.Assets.ReturnAsset(_assetID, top.JSON.stringify(assetReturnInfo), function (assetID) {
+          top.Ts.System.logAction('Asset Returned');
+          $('#modalAssign').modal('hide');
+          window.location = window.location;
+        }, function () {
+          alert('There was an error returning this asset.  Please try again.');
+        });
+      }
+      else {
+        window.location = window.location;
+      }
+    }
+    else {
+      alert("Please enter a valid date shipped.");
+    }
   });
 
   $('#fieldName').click(function (e) {
@@ -399,46 +506,16 @@ $(document).ready(function () {
 
   $("#dateShipped").datetimepicker();
 
-  $("#btnSaveAssign").click(function (e) {
-    if ($('#inputCustomer').data('item') && $('#dateShipped').val()) {
-      var refType = 9;
-      if ($('#inputCustomer').data('item').data == 'u') {
-        refType = 32;
-      }
-
-      var assetAssignmentInfo = new Object();
-
-      assetAssignmentInfo.RefID = $('#inputCustomer').data('item').id;
-      assetAssignmentInfo.RefType = refType;
-      assetAssignmentInfo.DateShipped = $('#dateShipped').val();
-      assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
-      assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
-      assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
-      assetAssignmentInfo.Comments = $('#comments').val();
-
-      top.Ts.Services.Assets.AssignAsset(_assetID, top.JSON.stringify(assetAssignmentInfo), function (assetID) {
-        top.Ts.System.logAction('Asset Assigned');
-        $('#modalAssign').modal('hide');
-      }, function () {
-        alert('There was an error assigning this asset.  Please try again.');
-      });
+  $('#historyToggle').on('click', function () {
+    if (historyLoaded == 0) {
+      historyLoaded = 1;
+      LoadHistory(1);
     }
-    else {
-      if (!$('#inputCustomer').data('item')) {
-        alert("Please select a valid customer or contact to assign this asset to.");
-      }
-      else {
-        alert("Please enter a valid date assigned.");
-      }
-    }
-    //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
-    //      top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
-    //      $('#modalReminder').modal('hide');
-    //    }
-    //    else
-    //      alert("Please fill in all the fields");
   });
 
+  $('#historyRefresh').on('click', function () {
+    LoadHistory(1);
+  });
 
   function LoadHistory(start) {
 

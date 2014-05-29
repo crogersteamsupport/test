@@ -108,3 +108,16 @@
 }
 
 .ui-autocomplete { height: 200px; overflow-y: scroll; overflow-x: hidden;}
+
+#locationHeader
+{
+  color: #444;
+  display: inline-block;
+  line-height: 18px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 300;  
+  margin-left: 10px;
+  font-family: Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-weight: 400;
+}

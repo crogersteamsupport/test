@@ -43,6 +43,7 @@
               <button class="btn btn-default asset-tooltip" type="button" title="Refresh this asset" id="assetRefresh"><i class="fa fa-refresh"></i></button>
               <button class="btn btn-default asset-tooltip" type="button" title="Assign this asset to a customer" id="assetAssign" data-target="#modalAssign" data-toggle="modal"><i class="fa fa-truck"></i></button>
               <button class="btn btn-default asset-tooltip" type="button" title="Assign this asset To Junkyard" id="assetToJunkyard"><i class="fa fa-trash-o"></i></button>
+              <button class="btn btn-default asset-tooltip" type="button" title="Return Asset" id="returnAsset" data-target="#modalAssign" data-toggle="modal"><i class="fa fa-arrow-right"></i></button>
             </div>
           </div>
         </div>
@@ -62,6 +63,29 @@
         <div class="tab-pane fade in active" id="asset-overview">
           <div class="row">
             <div class="col-xs-8">
+              <div class="box mb10">
+                <div class="box-header" style="padding-bottom: 10px;">
+                  <h3>Location:</h3><label id="locationHeader"></label>
+                </div>
+                <div class="box-content assignedDetails" id="locationDetails">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <table class="table table-hover assignedDetails" id="assignedTable">
+                        <thead>
+                          <tr>
+                            <th>Assigned to</th>
+                            <th>Assigned on</th>
+                            <th>Assigned by</th>
+                            <th>Comments</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div id="customPropRow">
                 <div class="box">
                   <div class="box-header">
@@ -234,11 +258,11 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title">Assign asset</h4>
+            <h4 class="modal-title" id="modalAssignTitle">Assign asset</h4>
         </div>
         <div class="modal-body">
           <form class="form-horizontal">
-          <div class="form-group">
+          <div class="form-group" id="inputCustomerDiv">
             <label for="inputCustomer" class="col-md-4 control-label">Assign Asset to:</label>
             <div class="col-md-8">
               <input class="col-md-10 form-control" id="inputCustomer" placeholder="Enter partial name then select name from list">
@@ -283,7 +307,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" id="btnSaveAssign">Save</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="btnSaveReturn">Save</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" id="btnClose">Close</button>
         </div>
       </div>
       <!-- /.modal-content -->

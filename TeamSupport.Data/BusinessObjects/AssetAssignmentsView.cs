@@ -13,6 +13,16 @@ namespace TeamSupport.Data
   
   public partial class AssetAssignmentsView
   {
+    public void LoadByAssetID(int assetID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"SELECT * FROM AssetAssignmentsView WHERE AssetID = @assetID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@assetID", assetID);
+        Fill(command);
+      }
+    }
   }
   
 }
