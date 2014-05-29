@@ -25,6 +25,11 @@ namespace TeamSupport.Data
     }
         
     
+    public string NameAssignedFrom
+    {
+      get { return Row["NameAssignedFrom"] != DBNull.Value ? (string)Row["NameAssignedFrom"] : null; }
+    }
+    
     public string NameAssignedTo
     {
       get { return Row["NameAssignedTo"] != DBNull.Value ? (string)Row["NameAssignedTo"] : null; }
@@ -102,6 +107,12 @@ namespace TeamSupport.Data
     {
       get { return Row["ModifierID"] != DBNull.Value ? (int?)Row["ModifierID"] : null; }
       set { Row["ModifierID"] = CheckValue("ModifierID", value); }
+    }
+    
+    public int? ShippedFromRefType
+    {
+      get { return Row["ShippedFromRefType"] != DBNull.Value ? (int?)Row["ShippedFromRefType"] : null; }
+      set { Row["ShippedFromRefType"] = CheckValue("ShippedFromRefType", value); }
     }
     
 
@@ -266,7 +277,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AssetAssignmentsView] SET     [HistoryID] = @HistoryID,    [AssetID] = @AssetID,    [OrganizationID] = @OrganizationID,    [ActionTime] = @ActionTime,    [ActionDescription] = @ActionDescription,    [ShippedFrom] = @ShippedFrom,    [ShippedTo] = @ShippedTo,    [NameAssignedTo] = @NameAssignedTo,    [TrackingNumber] = @TrackingNumber,    [ShippingMethod] = @ShippingMethod,    [ReferenceNum] = @ReferenceNum,    [Comments] = @Comments,    [Actor] = @Actor,    [ActorName] = @ActorName,    [RefType] = @RefType,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ModifierName] = @ModifierName  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AssetAssignmentsView] SET     [HistoryID] = @HistoryID,    [AssetID] = @AssetID,    [OrganizationID] = @OrganizationID,    [ActionTime] = @ActionTime,    [ActionDescription] = @ActionDescription,    [ShippedFrom] = @ShippedFrom,    [NameAssignedFrom] = @NameAssignedFrom,    [ShippedTo] = @ShippedTo,    [NameAssignedTo] = @NameAssignedTo,    [TrackingNumber] = @TrackingNumber,    [ShippingMethod] = @ShippingMethod,    [ReferenceNum] = @ReferenceNum,    [Comments] = @Comments,    [Actor] = @Actor,    [ActorName] = @ActorName,    [RefType] = @RefType,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ModifierName] = @ModifierName,    [ShippedFromRefType] = @ShippedFromRefType  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("AssetAssignmentsID", SqlDbType.Int, 4);
@@ -316,6 +327,13 @@ namespace TeamSupport.Data
 		{
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("NameAssignedFrom", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = updateCommand.Parameters.Add("ShippedTo", SqlDbType.Int, 4);
@@ -402,13 +420,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ShippedFromRefType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AssetAssignmentsView] (    [AssetAssignmentsID],    [HistoryID],    [AssetID],    [OrganizationID],    [ActionTime],    [ActionDescription],    [ShippedFrom],    [ShippedTo],    [NameAssignedTo],    [TrackingNumber],    [ShippingMethod],    [ReferenceNum],    [Comments],    [DateCreated],    [Actor],    [ActorName],    [RefType],    [DateModified],    [ModifierID],    [ModifierName]) VALUES ( @AssetAssignmentsID, @HistoryID, @AssetID, @OrganizationID, @ActionTime, @ActionDescription, @ShippedFrom, @ShippedTo, @NameAssignedTo, @TrackingNumber, @ShippingMethod, @ReferenceNum, @Comments, @DateCreated, @Actor, @ActorName, @RefType, @DateModified, @ModifierID, @ModifierName); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AssetAssignmentsView] (    [AssetAssignmentsID],    [HistoryID],    [AssetID],    [OrganizationID],    [ActionTime],    [ActionDescription],    [ShippedFrom],    [NameAssignedFrom],    [ShippedTo],    [NameAssignedTo],    [TrackingNumber],    [ShippingMethod],    [ReferenceNum],    [Comments],    [DateCreated],    [Actor],    [ActorName],    [RefType],    [DateModified],    [ModifierID],    [ModifierName],    [ShippedFromRefType]) VALUES ( @AssetAssignmentsID, @HistoryID, @AssetID, @OrganizationID, @ActionTime, @ActionDescription, @ShippedFrom, @NameAssignedFrom, @ShippedTo, @NameAssignedTo, @TrackingNumber, @ShippingMethod, @ReferenceNum, @Comments, @DateCreated, @Actor, @ActorName, @RefType, @DateModified, @ModifierID, @ModifierName, @ShippedFromRefType); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ShippedFromRefType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierName", SqlDbType.VarChar, 201);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -499,6 +531,13 @@ namespace TeamSupport.Data
 		{
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("NameAssignedFrom", SqlDbType.VarChar, 255);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("ShippedFrom", SqlDbType.Int, 4);
@@ -662,7 +701,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [AssetAssignmentsID], [HistoryID], [AssetID], [OrganizationID], [ActionTime], [ActionDescription], [ShippedFrom], [ShippedTo], [NameAssignedTo], [TrackingNumber], [ShippingMethod], [ReferenceNum], [Comments], [DateCreated], [Actor], [ActorName], [RefType], [DateModified], [ModifierID], [ModifierName] FROM [dbo].[AssetAssignmentsView] WHERE ([AssetAssignmentsID] = @AssetAssignmentsID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [AssetAssignmentsID], [HistoryID], [AssetID], [OrganizationID], [ActionTime], [ActionDescription], [ShippedFrom], [NameAssignedFrom], [ShippedTo], [NameAssignedTo], [TrackingNumber], [ShippingMethod], [ReferenceNum], [Comments], [DateCreated], [Actor], [ActorName], [RefType], [DateModified], [ModifierID], [ModifierName], [ShippedFromRefType] FROM [dbo].[AssetAssignmentsView] WHERE ([AssetAssignmentsID] = @AssetAssignmentsID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("AssetAssignmentsID", assetAssignmentsID);
         Fill(command);

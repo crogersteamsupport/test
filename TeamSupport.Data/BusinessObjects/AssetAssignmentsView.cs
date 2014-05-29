@@ -17,7 +17,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = @"SELECT * FROM AssetAssignmentsView WHERE AssetID = @assetID";
+        command.CommandText = @"SELECT * FROM AssetAssignmentsView WHERE AssetID = @assetID ORDER BY AssetAssignmentsID DESC";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@assetID", assetID);
         Fill(command);

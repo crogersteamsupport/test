@@ -121,3 +121,8 @@
   font-family: Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
   font-weight: 400;
 }
+
+.historyTableAdjustment
+{
+  padding-left: 0px !important;
+}

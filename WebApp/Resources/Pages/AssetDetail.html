@@ -42,7 +42,7 @@
             <div class="btn-group">
               <button class="btn btn-default asset-tooltip" type="button" title="Refresh this asset" id="assetRefresh"><i class="fa fa-refresh"></i></button>
               <button class="btn btn-default asset-tooltip" type="button" title="Assign this asset to a customer" id="assetAssign" data-target="#modalAssign" data-toggle="modal"><i class="fa fa-truck"></i></button>
-              <button class="btn btn-default asset-tooltip" type="button" title="Assign this asset To Junkyard" id="assetToJunkyard"><i class="fa fa-trash-o"></i></button>
+              <button class="btn btn-default asset-tooltip" type="button" title="Assign this asset To Junkyard" id="assetToJunkyard" data-target="#modalJunk" data-toggle="modal"><i class="fa fa-trash-o"></i></button>
               <button class="btn btn-default asset-tooltip" type="button" title="Return Asset" id="returnAsset" data-target="#modalAssign" data-toggle="modal"><i class="fa fa-arrow-right"></i></button>
             </div>
           </div>
@@ -115,9 +115,9 @@
                     <a id="historyRefresh" href="#"><i class="fa fa-refresh"></i></a>
                   </div>
                 </div>
-                <div class="box-content collapse" id="historyContent">
+                <div class="box-content collapse historyTableAdjustment" id="historyContent">
                   <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-12 historyTableAdjustment">
                       <table class="table table-hover" id="tblHistory">
                         <thead>
                           <tr>
@@ -125,6 +125,7 @@
                             <th>Time</th>
                             <th>User</th>
                             <th>Comments</th>
+                            <th>Shipped From</th>
                             <th>Shipped To</th>
                             <th>Shipping Method</th>
                             <th>Tracking Number</th>
@@ -309,6 +310,31 @@
           <button type="button" class="btn btn-primary" id="btnSaveAssign">Save</button>
           <button type="button" class="btn btn-primary" id="btnSaveReturn">Save</button>
           <button type="button" class="btn btn-default" data-dismiss="modal" id="btnClose">Close</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+  </div>
+  <div class="modal fade" id="modalJunk">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Are you sure you want to assign this asset to the junkyard?</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal">
+          <div class="form-group">
+            <label for="comments" class="col-md-2 control-label">Comments:</label>
+            <div class="col-md-10">
+              <textarea class="col-md-12 form-control" id="junkingComments" placeholder="Comments about why this asset is being assigned to junkyard"></textarea>
+            </div>
+          </div>
+        </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="btnJunkSave">Yes - Junk it!</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
         </div>
       </div>
       <!-- /.modal-content -->

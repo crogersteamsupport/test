@@ -29,6 +29,7 @@ namespace TeamSupport.Data
     [DataMember] public int? RefType { get; set; }
     [DataMember] public DateTime? DateModified { get; set; }
     [DataMember] public int? ModifierID { get; set; }
+    [DataMember] public int? ShippedFromRefType { get; set; }
           
   }
   
@@ -37,6 +38,7 @@ namespace TeamSupport.Data
     public AssetHistoryItemProxy GetProxy()
     {
       AssetHistoryItemProxy result = new AssetHistoryItemProxy();
+      result.ShippedFromRefType = this.ShippedFromRefType;
       result.ModifierID = this.ModifierID;
       result.RefType = this.RefType;
       result.Actor = this.Actor;

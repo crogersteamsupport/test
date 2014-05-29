@@ -93,6 +93,7 @@ namespace TSWebServices
       asset.SerialNumber =        info.SerialNumber;
       asset.WarrantyExpiration =  DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), info.WarrantyExpiration);
       asset.Notes =               info.Notes;
+      //Location 1=assigned (shipped), 2=warehouse, 3=junkyard
       asset.Location =            "2";
 
       asset.DateCreated =   DateTime.UtcNow;
@@ -152,6 +153,167 @@ namespace TSWebServices
 
       return asset.AssetID;
 
+    }
+
+    [WebMethod]
+    public int AssignAsset(int assetID, string data)
+    {
+      AssignAssetSave info;
+      try
+      {
+        info = Newtonsoft.Json.JsonConvert.DeserializeObject<AssignAssetSave>(data);
+      }
+      catch (Exception e)
+      {
+        return -1;
+      }
+
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Asset o = Assets.GetAsset(loginUser, assetID);
+      //Location 1=assigned (shipped), 2=warehouse, 3=junkyard
+      o.Location = "1";
+      o.AssignedTo = info.RefID;
+      DateTime now = DateTime.UtcNow;
+      o.DateModified = now;
+      o.ModifierID = loginUser.UserID;
+      o.Collection.Save();
+
+      AssetHistory assetHistory = new AssetHistory(loginUser);
+      AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+
+      assetHistoryItem.AssetID = assetID;
+      assetHistoryItem.OrganizationID = loginUser.OrganizationID;
+      assetHistoryItem.ActionTime = DateTime.UtcNow;
+      assetHistoryItem.ActionDescription = "Asset Shipped on " + info.DateShipped.Month.ToString() + "/" + info.DateShipped.Day.ToString() + "/" + info.DateShipped.Year.ToString();
+      assetHistoryItem.ShippedFrom = loginUser.OrganizationID;
+      assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
+      assetHistoryItem.ShippedTo = info.RefID;
+      assetHistoryItem.TrackingNumber = info.TrackingNumber;
+      assetHistoryItem.ShippingMethod = info.ShippingMethod;
+      assetHistoryItem.ReferenceNum = info.ReferenceNumber;
+      assetHistoryItem.Comments = info.Comments;
+
+      assetHistoryItem.DateCreated = now;
+      assetHistoryItem.Actor = loginUser.UserID;
+      assetHistoryItem.RefType = info.RefType;
+      assetHistoryItem.DateModified = now;
+      assetHistoryItem.ModifierID = loginUser.UserID;
+
+      assetHistory.Save();
+
+      AssetAssignments assetAssignments = new AssetAssignments(loginUser);
+      AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
+
+      assetAssignment.HistoryID = assetHistoryItem.HistoryID;
+
+      assetAssignments.Save();
+
+      string description = String.Format("{0} assigned asset to refID: {1} and refType: {2}", TSAuthentication.GetUser(loginUser).FirstLastName, info.RefID.ToString(), info.RefType.ToString());
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+
+      return assetAssignment.AssetAssignmentsID;
+    }
+
+    [WebMethod]
+    public int ReturnAsset(int assetID, string data)
+    {
+      AssignAssetSave info;
+      try
+      {
+        info = Newtonsoft.Json.JsonConvert.DeserializeObject<AssignAssetSave>(data);
+      }
+      catch (Exception e)
+      {
+        return -1;
+      }
+
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Asset o = Assets.GetAsset(loginUser, assetID);
+      //Location 1=assigned (shipped), 2=warehouse, 3=junkyard
+      o.Location = "2";
+      DateTime now = DateTime.UtcNow;
+      o.DateModified = now;
+      o.ModifierID = loginUser.UserID;
+      o.Collection.Save();
+
+      AssetAssignmentsView assetAssignmentsView = new AssetAssignmentsView(loginUser);
+      assetAssignmentsView.LoadByAssetID(assetID);
+
+      AssetHistory assetHistory = new AssetHistory(loginUser);
+      AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+
+      assetHistoryItem.AssetID = assetID;
+      assetHistoryItem.OrganizationID = loginUser.OrganizationID;
+      assetHistoryItem.ActionTime = DateTime.UtcNow;
+      assetHistoryItem.ActionDescription = "Item returned to warehouse on " + info.DateShipped.Month.ToString() + "/" + info.DateShipped.Day.ToString() + "/" + info.DateShipped.Year.ToString();
+      assetHistoryItem.ShippedFrom = o.AssignedTo;
+      assetHistoryItem.ShippedFromRefType = assetAssignmentsView[0].RefType;
+      assetHistoryItem.ShippedTo = loginUser.OrganizationID;
+      assetHistoryItem.RefType = (int)ReferenceType.Organizations;
+      assetHistoryItem.TrackingNumber = info.TrackingNumber;
+      assetHistoryItem.ShippingMethod = info.ShippingMethod;
+      assetHistoryItem.ReferenceNum = info.ReferenceNumber;
+      assetHistoryItem.Comments = info.Comments;
+
+      assetHistoryItem.DateCreated = now;
+      assetHistoryItem.Actor = loginUser.UserID;
+      assetHistoryItem.DateModified = now;
+      assetHistoryItem.ModifierID = loginUser.UserID;
+
+      assetHistory.Save();
+
+      AssetAssignments assetAssignments = new AssetAssignments(loginUser);
+      foreach (AssetAssignmentsViewItem assetAssignmentViewItem in assetAssignmentsView)
+      {
+        assetAssignments.DeleteFromDB(assetAssignmentViewItem.AssetAssignmentsID);
+      }
+
+      string description = String.Format("{0} returned asset.", TSAuthentication.GetUser(loginUser).FirstLastName);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+
+      return assetID;
+    }
+
+    [WebMethod]
+    public int JunkAsset(int assetID, string comments)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Asset o = Assets.GetAsset(loginUser, assetID);
+      //Location 1=assigned (shipped), 2=warehouse, 3=junkyard
+      o.Location = "3";
+      o.AssignedTo = null;
+      DateTime now = DateTime.UtcNow;
+      o.DateModified = now;
+      o.ModifierID = loginUser.UserID;
+      o.Collection.Save();
+
+      AssetHistory assetHistory = new AssetHistory(loginUser);
+      AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+
+      assetHistoryItem.AssetID = assetID;
+      assetHistoryItem.OrganizationID = loginUser.OrganizationID;
+      assetHistoryItem.ActionTime = DateTime.UtcNow;
+      assetHistoryItem.ActionDescription = "Asset assigned to Junkyard";
+      assetHistoryItem.ShippedFrom = -1;
+      assetHistoryItem.ShippedFromRefType = -1;
+      assetHistoryItem.ShippedTo = -1;
+      assetHistoryItem.RefType = -1;
+      assetHistoryItem.TrackingNumber = string.Empty;
+      assetHistoryItem.ShippingMethod = string.Empty;
+      assetHistoryItem.ReferenceNum = string.Empty;
+      assetHistoryItem.Comments = comments;
+
+      assetHistoryItem.DateCreated = now;
+      assetHistoryItem.Actor = loginUser.UserID;
+      assetHistoryItem.DateModified = now;
+      assetHistoryItem.ModifierID = loginUser.UserID;
+
+      assetHistory.Save();
+
+      string description = String.Format("{0} junked asset.", TSAuthentication.GetUser(loginUser).FirstLastName);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+
+      return assetID;
     }
 
     private string GetAssetReference(Asset asset)
@@ -276,119 +438,6 @@ namespace TSWebServices
       string description = String.Format("{0} set asset Notes to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
       return value != "" ? value : "Empty";
-    }
-
-    [WebMethod]
-    public int AssignAsset(int assetID, string data)
-    {
-      AssignAssetSave info;
-      try
-      {
-        info = Newtonsoft.Json.JsonConvert.DeserializeObject<AssignAssetSave>(data);
-      }
-      catch (Exception e)
-      {
-        return -1;
-      }
-
-      LoginUser loginUser = TSAuthentication.GetLoginUser();
-      Asset o = Assets.GetAsset(loginUser, assetID);
-      o.Location = "1";
-      o.AssignedTo = info.RefID;
-      DateTime now = DateTime.UtcNow;
-      o.DateModified = now;
-      o.ModifierID = loginUser.UserID;
-      o.Collection.Save();
-
-      AssetHistory assetHistory = new AssetHistory(loginUser);
-      AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
-
-      assetHistoryItem.AssetID = assetID;
-      assetHistoryItem.OrganizationID = loginUser.OrganizationID;
-      assetHistoryItem.ActionTime = DateTime.UtcNow;
-      assetHistoryItem.ActionDescription = "Asset Shipped on " + info.DateShipped.Month.ToString() + "/" + info.DateShipped.Day.ToString() + "/" + info.DateShipped.Year.ToString();
-      assetHistoryItem.ShippedFrom = loginUser.OrganizationID;
-      assetHistoryItem.ShippedTo = info.RefID;
-      assetHistoryItem.TrackingNumber = info.TrackingNumber;
-      assetHistoryItem.ShippingMethod = info.ShippingMethod;
-      assetHistoryItem.ReferenceNum = info.ReferenceNumber;
-      assetHistoryItem.Comments = info.Comments;
-
-      assetHistoryItem.DateCreated = now;
-      assetHistoryItem.Actor = loginUser.UserID;
-      assetHistoryItem.RefType = info.RefType;
-      assetHistoryItem.DateModified = now;
-      assetHistoryItem.ModifierID = loginUser.UserID;
-
-      assetHistory.Save();
-
-      AssetAssignments assetAssignments = new AssetAssignments(loginUser);
-      AssetAssignment assetAssignment = assetAssignments.AddNewAssetAssignment();
-
-      assetAssignment.HistoryID = assetHistoryItem.HistoryID;
-
-      assetAssignments.Save();
-
-      string description = String.Format("{0} assigned asset to refID: {1} and refType: {2}", TSAuthentication.GetUser(loginUser).FirstLastName, info.RefID.ToString(), info.RefType.ToString());
-      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
-
-      return assetAssignment.AssetAssignmentsID;
-    }
-
-    [WebMethod]
-    public int ReturnAsset(int assetID, string data)
-    {
-      AssignAssetSave info;
-      try
-      {
-        info = Newtonsoft.Json.JsonConvert.DeserializeObject<AssignAssetSave>(data);
-      }
-      catch (Exception e)
-      {
-        return -1;
-      }
-
-      LoginUser loginUser = TSAuthentication.GetLoginUser();
-      Asset o = Assets.GetAsset(loginUser, assetID);
-      o.Location = "2";
-      DateTime now = DateTime.UtcNow;
-      o.DateModified = now;
-      o.ModifierID = loginUser.UserID;
-      o.Collection.Save();
-
-      AssetHistory assetHistory = new AssetHistory(loginUser);
-      AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
-
-      assetHistoryItem.AssetID = assetID;
-      assetHistoryItem.OrganizationID = loginUser.OrganizationID;
-      assetHistoryItem.ActionTime = DateTime.UtcNow;
-      assetHistoryItem.ActionDescription = "Item returned to warehouse on " + info.DateShipped.Month.ToString() + "/" + info.DateShipped.Day.ToString() + "/" + info.DateShipped.Year.ToString();
-      assetHistoryItem.ShippedFrom = o.AssignedTo;
-      assetHistoryItem.ShippedTo = loginUser.OrganizationID;
-      assetHistoryItem.TrackingNumber = info.TrackingNumber;
-      assetHistoryItem.ShippingMethod = info.ShippingMethod;
-      assetHistoryItem.ReferenceNum = info.ReferenceNumber;
-      assetHistoryItem.Comments = info.Comments;
-
-      assetHistoryItem.DateCreated = now;
-      assetHistoryItem.Actor = loginUser.UserID;
-      assetHistoryItem.RefType = info.RefType;
-      assetHistoryItem.DateModified = now;
-      assetHistoryItem.ModifierID = loginUser.UserID;
-
-      assetHistory.Save();
-
-      AssetAssignments assetAssignments = new AssetAssignments(loginUser);
-      assetAssignments.LoadByAssetID(assetID);
-      foreach (AssetAssignment assetAssignment in assetAssignments)
-      {
-        assetAssignments.DeleteFromDB(assetAssignment.AssetAssignmentsID);
-      }
-
-      string description = String.Format("{0} returned asset.", TSAuthentication.GetUser(loginUser).FirstLastName);
-      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
-
-      return assetID;
     }
   }
 

@@ -1,880 +1,950 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectAssetAssignmentsViewItem
 
 (
-  @AssetID int
+  @AssetAssignmentsID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
+    [AssetAssignmentsID],
+    [HistoryID],
     [AssetID],
-    [ProductID],
-    [ProductName],
-    [ProductVersionID],
-    [ProductVersionNumber],
     [OrganizationID],
-    [SerialNumber],
-    [Name],
-    [Location],
-    [Notes],
-    [WarrantyExpiration],
+    [ActionTime],
+    [ActionDescription],
+    [ShippedFrom],
+    [NameAssignedFrom],
+    [ShippedTo],
+    [NameAssignedTo],
+    [TrackingNumber],
+    [ShippingMethod],
+    [ReferenceNum],
+    [Comments],
     [DateCreated],
+    [Actor],
+    [ActorName],
+    [RefType],
     [DateModified],
-    [CreatorID],
-    [CreatorName],
     [ModifierID],
     [ModifierName],
-    [SubPartOf],
-    [Status],
-    [ImportID]
-  FROM [dbo].[AssetsView]
-  WHERE ([AssetID] = @AssetID)
+    [ShippedFromRefType]
+  FROM [dbo].[AssetAssignmentsView]
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertAssetAssignmentsViewItem
 
 (
+  @AssetAssignmentsID int,
+  @HistoryID int,
   @AssetID int,
-  @ProductID int,
-  @ProductName varchar(255),
-  @ProductVersionID int,
-  @ProductVersionNumber varchar(50),
   @OrganizationID int,
-  @SerialNumber varchar(500),
-  @Name varchar(500),
-  @Location varchar(500),
-  @Notes text,
-  @WarrantyExpiration datetime,
+  @ActionTime datetime,
+  @ActionDescription varchar(500),
+  @ShippedFrom int,
+  @NameAssignedFrom varchar(255),
+  @ShippedTo int,
+  @NameAssignedTo varchar(255),
+  @TrackingNumber varchar(200),
+  @ShippingMethod varchar(200),
+  @ReferenceNum varchar(200),
+  @Comments text,
   @DateCreated datetime,
+  @Actor int,
+  @ActorName varchar(201),
+  @RefType int,
   @DateModified datetime,
-  @CreatorID int,
-  @CreatorName varchar(201),
   @ModifierID int,
   @ModifierName varchar(201),
-  @SubPartOf int,
-  @Status varchar(500),
-  @ImportID varchar(500),
+  @ShippedFromRefType int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AssetsView]
+  INSERT INTO [dbo].[AssetAssignmentsView]
   (
+    [AssetAssignmentsID],
+    [HistoryID],
     [AssetID],
-    [ProductID],
-    [ProductName],
-    [ProductVersionID],
-    [ProductVersionNumber],
     [OrganizationID],
-    [SerialNumber],
-    [Name],
-    [Location],
-    [Notes],
-    [WarrantyExpiration],
+    [ActionTime],
+    [ActionDescription],
+    [ShippedFrom],
+    [NameAssignedFrom],
+    [ShippedTo],
+    [NameAssignedTo],
+    [TrackingNumber],
+    [ShippingMethod],
+    [ReferenceNum],
+    [Comments],
     [DateCreated],
+    [Actor],
+    [ActorName],
+    [RefType],
     [DateModified],
-    [CreatorID],
-    [CreatorName],
     [ModifierID],
     [ModifierName],
-    [SubPartOf],
-    [Status],
-    [ImportID])
+    [ShippedFromRefType])
   VALUES (
+    @AssetAssignmentsID,
+    @HistoryID,
     @AssetID,
-    @ProductID,
-    @ProductName,
-    @ProductVersionID,
-    @ProductVersionNumber,
     @OrganizationID,
-    @SerialNumber,
-    @Name,
-    @Location,
-    @Notes,
-    @WarrantyExpiration,
+    @ActionTime,
+    @ActionDescription,
+    @ShippedFrom,
+    @NameAssignedFrom,
+    @ShippedTo,
+    @NameAssignedTo,
+    @TrackingNumber,
+    @ShippingMethod,
+    @ReferenceNum,
+    @Comments,
     @DateCreated,
+    @Actor,
+    @ActorName,
+    @RefType,
     @DateModified,
-    @CreatorID,
-    @CreatorName,
     @ModifierID,
     @ModifierName,
-    @SubPartOf,
-    @Status,
-    @ImportID)
+    @ShippedFromRefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateAssetAssignmentsViewItem
 
 (
+  @AssetAssignmentsID int,
+  @HistoryID int,
   @AssetID int,
-  @ProductID int,
-  @ProductName varchar(255),
-  @ProductVersionID int,
-  @ProductVersionNumber varchar(50),
   @OrganizationID int,
-  @SerialNumber varchar(500),
-  @Name varchar(500),
-  @Location varchar(500),
-  @Notes text,
-  @WarrantyExpiration datetime,
+  @ActionTime datetime,
+  @ActionDescription varchar(500),
+  @ShippedFrom int,
+  @NameAssignedFrom varchar(255),
+  @ShippedTo int,
+  @NameAssignedTo varchar(255),
+  @TrackingNumber varchar(200),
+  @ShippingMethod varchar(200),
+  @ReferenceNum varchar(200),
+  @Comments text,
+  @Actor int,
+  @ActorName varchar(201),
+  @RefType int,
   @DateModified datetime,
-  @CreatorName varchar(201),
   @ModifierID int,
   @ModifierName varchar(201),
-  @SubPartOf int,
-  @Status varchar(500),
-  @ImportID varchar(500)
+  @ShippedFromRefType int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[AssetsView]
+  UPDATE [dbo].[AssetAssignmentsView]
   SET
-    [ProductID] = @ProductID,
-    [ProductName] = @ProductName,
-    [ProductVersionID] = @ProductVersionID,
-    [ProductVersionNumber] = @ProductVersionNumber,
+    [HistoryID] = @HistoryID,
+    [AssetID] = @AssetID,
     [OrganizationID] = @OrganizationID,
-    [SerialNumber] = @SerialNumber,
-    [Name] = @Name,
-    [Location] = @Location,
-    [Notes] = @Notes,
-    [WarrantyExpiration] = @WarrantyExpiration,
+    [ActionTime] = @ActionTime,
+    [ActionDescription] = @ActionDescription,
+    [ShippedFrom] = @ShippedFrom,
+    [NameAssignedFrom] = @NameAssignedFrom,
+    [ShippedTo] = @ShippedTo,
+    [NameAssignedTo] = @NameAssignedTo,
+    [TrackingNumber] = @TrackingNumber,
+    [ShippingMethod] = @ShippingMethod,
+    [ReferenceNum] = @ReferenceNum,
+    [Comments] = @Comments,
+    [Actor] = @Actor,
+    [ActorName] = @ActorName,
+    [RefType] = @RefType,
     [DateModified] = @DateModified,
-    [CreatorName] = @CreatorName,
     [ModifierID] = @ModifierID,
     [ModifierName] = @ModifierName,
-    [SubPartOf] = @SubPartOf,
-    [Status] = @Status,
-    [ImportID] = @ImportID
-  WHERE ([AssetID] = @AssetID)
+    [ShippedFromRefType] = @ShippedFromRefType
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteAssetAssignmentsViewItem
 
 (
-  @AssetID int
+  @AssetAssignmentsID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AssetsView]
-  WHERE ([AssetID] = @AssetID)
+  DELETE FROM [dbo].[AssetAssignmentsView]
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectAssetAssignmentsViewItem
 
 (
-  @AssetID int
+  @AssetAssignmentsID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
+    [AssetAssignmentsID],
+    [HistoryID],
     [AssetID],
-    [ProductID],
-    [ProductName],
-    [ProductVersionID],
-    [ProductVersionNumber],
     [OrganizationID],
-    [SerialNumber],
-    [Name],
-    [Location],
-    [Notes],
-    [WarrantyExpiration],
+    [ActionTime],
+    [ActionDescription],
+    [ShippedFrom],
+    [NameAssignedFrom],
+    [ShippedTo],
+    [NameAssignedTo],
+    [TrackingNumber],
+    [ShippingMethod],
+    [ReferenceNum],
+    [Comments],
     [DateCreated],
+    [Actor],
+    [ActorName],
+    [RefType],
     [DateModified],
-    [CreatorID],
-    [CreatorName],
     [ModifierID],
     [ModifierName],
-    [SubPartOf],
-    [Status],
-    [ImportID]
-  FROM [dbo].[AssetsView]
-  WHERE ([AssetID] = @AssetID)
+    [ShippedFromRefType]
+  FROM [dbo].[AssetAssignmentsView]
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertAssetAssignmentsViewItem
 
 (
+  @AssetAssignmentsID int,
+  @HistoryID int,
   @AssetID int,
-  @ProductID int,
-  @ProductName varchar(255),
-  @ProductVersionID int,
-  @ProductVersionNumber varchar(50),
   @OrganizationID int,
-  @SerialNumber varchar(500),
-  @Name varchar(500),
-  @Location varchar(500),
-  @Notes text,
-  @WarrantyExpiration datetime,
+  @ActionTime datetime,
+  @ActionDescription varchar(500),
+  @ShippedFrom int,
+  @NameAssignedFrom varchar(255),
+  @ShippedTo int,
+  @NameAssignedTo varchar(255),
+  @TrackingNumber varchar(200),
+  @ShippingMethod varchar(200),
+  @ReferenceNum varchar(200),
+  @Comments text,
   @DateCreated datetime,
+  @Actor int,
+  @ActorName varchar(201),
+  @RefType int,
   @DateModified datetime,
-  @CreatorID int,
-  @CreatorName varchar(201),
   @ModifierID int,
   @ModifierName varchar(201),
-  @SubPartOf int,
-  @Status varchar(500),
-  @ImportID varchar(500),
+  @ShippedFromRefType int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AssetsView]
+  INSERT INTO [dbo].[AssetAssignmentsView]
   (
+    [AssetAssignmentsID],
+    [HistoryID],
     [AssetID],
-    [ProductID],
-    [ProductName],
-    [ProductVersionID],
-    [ProductVersionNumber],
     [OrganizationID],
-    [SerialNumber],
-    [Name],
-    [Location],
-    [Notes],
-    [WarrantyExpiration],
+    [ActionTime],
+    [ActionDescription],
+    [ShippedFrom],
+    [NameAssignedFrom],
+    [ShippedTo],
+    [NameAssignedTo],
+    [TrackingNumber],
+    [ShippingMethod],
+    [ReferenceNum],
+    [Comments],
     [DateCreated],
+    [Actor],
+    [ActorName],
+    [RefType],
     [DateModified],
-    [CreatorID],
-    [CreatorName],
     [ModifierID],
     [ModifierName],
-    [SubPartOf],
-    [Status],
-    [ImportID])
+    [ShippedFromRefType])
   VALUES (
+    @AssetAssignmentsID,
+    @HistoryID,
     @AssetID,
-    @ProductID,
-    @ProductName,
-    @ProductVersionID,
-    @ProductVersionNumber,
     @OrganizationID,
-    @SerialNumber,
-    @Name,
-    @Location,
-    @Notes,
-    @WarrantyExpiration,
+    @ActionTime,
+    @ActionDescription,
+    @ShippedFrom,
+    @NameAssignedFrom,
+    @ShippedTo,
+    @NameAssignedTo,
+    @TrackingNumber,
+    @ShippingMethod,
+    @ReferenceNum,
+    @Comments,
     @DateCreated,
+    @Actor,
+    @ActorName,
+    @RefType,
     @DateModified,
-    @CreatorID,
-    @CreatorName,
     @ModifierID,
     @ModifierName,
-    @SubPartOf,
-    @Status,
-    @ImportID)
+    @ShippedFromRefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateAssetAssignmentsViewItem
 
 (
+  @AssetAssignmentsID int,
+  @HistoryID int,
   @AssetID int,
-  @ProductID int,
-  @ProductName varchar(255),
-  @ProductVersionID int,
-  @ProductVersionNumber varchar(50),
   @OrganizationID int,
-  @SerialNumber varchar(500),
-  @Name varchar(500),
-  @Location varchar(500),
-  @Notes text,
-  @WarrantyExpiration datetime,
+  @ActionTime datetime,
+  @ActionDescription varchar(500),
+  @ShippedFrom int,
+  @NameAssignedFrom varchar(255),
+  @ShippedTo int,
+  @NameAssignedTo varchar(255),
+  @TrackingNumber varchar(200),
+  @ShippingMethod varchar(200),
+  @ReferenceNum varchar(200),
+  @Comments text,
+  @Actor int,
+  @ActorName varchar(201),
+  @RefType int,
   @DateModified datetime,
-  @CreatorName varchar(201),
   @ModifierID int,
   @ModifierName varchar(201),
-  @SubPartOf int,
-  @Status varchar(500),
-  @ImportID varchar(500)
+  @ShippedFromRefType int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[AssetsView]
+  UPDATE [dbo].[AssetAssignmentsView]
   SET
-    [ProductID] = @ProductID,
-    [ProductName] = @ProductName,
-    [ProductVersionID] = @ProductVersionID,
-    [ProductVersionNumber] = @ProductVersionNumber,
+    [HistoryID] = @HistoryID,
+    [AssetID] = @AssetID,
     [OrganizationID] = @OrganizationID,
-    [SerialNumber] = @SerialNumber,
-    [Name] = @Name,
-    [Location] = @Location,
-    [Notes] = @Notes,
-    [WarrantyExpiration] = @WarrantyExpiration,
+    [ActionTime] = @ActionTime,
+    [ActionDescription] = @ActionDescription,
+    [ShippedFrom] = @ShippedFrom,
+    [NameAssignedFrom] = @NameAssignedFrom,
+    [ShippedTo] = @ShippedTo,
+    [NameAssignedTo] = @NameAssignedTo,
+    [TrackingNumber] = @TrackingNumber,
+    [ShippingMethod] = @ShippingMethod,
+    [ReferenceNum] = @ReferenceNum,
+    [Comments] = @Comments,
+    [Actor] = @Actor,
+    [ActorName] = @ActorName,
+    [RefType] = @RefType,
     [DateModified] = @DateModified,
-    [CreatorName] = @CreatorName,
     [ModifierID] = @ModifierID,
     [ModifierName] = @ModifierName,
-    [SubPartOf] = @SubPartOf,
-    [Status] = @Status,
-    [ImportID] = @ImportID
-  WHERE ([AssetID] = @AssetID)
+    [ShippedFromRefType] = @ShippedFromRefType
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteAssetAssignmentsViewItem
 
 (
-  @AssetID int
+  @AssetAssignmentsID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AssetsView]
-  WHERE ([AssetID] = @AssetID)
+  DELETE FROM [dbo].[AssetAssignmentsView]
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectAssetAssignmentsViewItem
 
 (
-  @AssetID int
+  @AssetAssignmentsID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
+    [AssetAssignmentsID],
+    [HistoryID],
     [AssetID],
-    [ProductID],
-    [ProductName],
-    [ProductVersionID],
-    [ProductVersionNumber],
     [OrganizationID],
-    [SerialNumber],
-    [Name],
-    [Location],
-    [Notes],
-    [WarrantyExpiration],
+    [ActionTime],
+    [ActionDescription],
+    [ShippedFrom],
+    [NameAssignedFrom],
+    [ShippedTo],
+    [NameAssignedTo],
+    [TrackingNumber],
+    [ShippingMethod],
+    [ReferenceNum],
+    [Comments],
     [DateCreated],
+    [Actor],
+    [ActorName],
+    [RefType],
     [DateModified],
-    [CreatorID],
-    [CreatorName],
     [ModifierID],
     [ModifierName],
-    [SubPartOf],
-    [Status],
-    [ImportID]
-  FROM [dbo].[AssetsView]
-  WHERE ([AssetID] = @AssetID)
+    [ShippedFromRefType]
+  FROM [dbo].[AssetAssignmentsView]
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertAssetAssignmentsViewItem
 
 (
+  @AssetAssignmentsID int,
+  @HistoryID int,
   @AssetID int,
-  @ProductID int,
-  @ProductName varchar(255),
-  @ProductVersionID int,
-  @ProductVersionNumber varchar(50),
   @OrganizationID int,
-  @SerialNumber varchar(500),
-  @Name varchar(500),
-  @Location varchar(500),
-  @Notes text,
-  @WarrantyExpiration datetime,
+  @ActionTime datetime,
+  @ActionDescription varchar(500),
+  @ShippedFrom int,
+  @NameAssignedFrom varchar(255),
+  @ShippedTo int,
+  @NameAssignedTo varchar(255),
+  @TrackingNumber varchar(200),
+  @ShippingMethod varchar(200),
+  @ReferenceNum varchar(200),
+  @Comments text,
   @DateCreated datetime,
+  @Actor int,
+  @ActorName varchar(201),
+  @RefType int,
   @DateModified datetime,
-  @CreatorID int,
-  @CreatorName varchar(201),
   @ModifierID int,
   @ModifierName varchar(201),
-  @SubPartOf int,
-  @Status varchar(500),
-  @ImportID varchar(500),
+  @ShippedFromRefType int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AssetsView]
+  INSERT INTO [dbo].[AssetAssignmentsView]
   (
+    [AssetAssignmentsID],
+    [HistoryID],
     [AssetID],
-    [ProductID],
-    [ProductName],
-    [ProductVersionID],
-    [ProductVersionNumber],
     [OrganizationID],
-    [SerialNumber],
-    [Name],
-    [Location],
-    [Notes],
-    [WarrantyExpiration],
+    [ActionTime],
+    [ActionDescription],
+    [ShippedFrom],
+    [NameAssignedFrom],
+    [ShippedTo],
+    [NameAssignedTo],
+    [TrackingNumber],
+    [ShippingMethod],
+    [ReferenceNum],
+    [Comments],
     [DateCreated],
+    [Actor],
+    [ActorName],
+    [RefType],
     [DateModified],
-    [CreatorID],
-    [CreatorName],
     [ModifierID],
     [ModifierName],
-    [SubPartOf],
-    [Status],
-    [ImportID])
+    [ShippedFromRefType])
   VALUES (
+    @AssetAssignmentsID,
+    @HistoryID,
     @AssetID,
-    @ProductID,
-    @ProductName,
-    @ProductVersionID,
-    @ProductVersionNumber,
     @OrganizationID,
-    @SerialNumber,
-    @Name,
-    @Location,
-    @Notes,
-    @WarrantyExpiration,
+    @ActionTime,
+    @ActionDescription,
+    @ShippedFrom,
+    @NameAssignedFrom,
+    @ShippedTo,
+    @NameAssignedTo,
+    @TrackingNumber,
+    @ShippingMethod,
+    @ReferenceNum,
+    @Comments,
     @DateCreated,
+    @Actor,
+    @ActorName,
+    @RefType,
     @DateModified,
-    @CreatorID,
-    @CreatorName,
     @ModifierID,
     @ModifierName,
-    @SubPartOf,
-    @Status,
-    @ImportID)
+    @ShippedFromRefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateAssetAssignmentsViewItem
 
 (
+  @AssetAssignmentsID int,
+  @HistoryID int,
   @AssetID int,
-  @ProductID int,
-  @ProductName varchar(255),
-  @ProductVersionID int,
-  @ProductVersionNumber varchar(50),
   @OrganizationID int,
-  @SerialNumber varchar(500),
-  @Name varchar(500),
-  @Location varchar(500),
-  @Notes text,
-  @WarrantyExpiration datetime,
+  @ActionTime datetime,
+  @ActionDescription varchar(500),
+  @ShippedFrom int,
+  @NameAssignedFrom varchar(255),
+  @ShippedTo int,
+  @NameAssignedTo varchar(255),
+  @TrackingNumber varchar(200),
+  @ShippingMethod varchar(200),
+  @ReferenceNum varchar(200),
+  @Comments text,
+  @Actor int,
+  @ActorName varchar(201),
+  @RefType int,
   @DateModified datetime,
-  @CreatorName varchar(201),
   @ModifierID int,
   @ModifierName varchar(201),
-  @SubPartOf int,
-  @Status varchar(500),
-  @ImportID varchar(500)
+  @ShippedFromRefType int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[AssetsView]
+  UPDATE [dbo].[AssetAssignmentsView]
   SET
-    [ProductID] = @ProductID,
-    [ProductName] = @ProductName,
-    [ProductVersionID] = @ProductVersionID,
-    [ProductVersionNumber] = @ProductVersionNumber,
+    [HistoryID] = @HistoryID,
+    [AssetID] = @AssetID,
     [OrganizationID] = @OrganizationID,
-    [SerialNumber] = @SerialNumber,
-    [Name] = @Name,
-    [Location] = @Location,
-    [Notes] = @Notes,
-    [WarrantyExpiration] = @WarrantyExpiration,
+    [ActionTime] = @ActionTime,
+    [ActionDescription] = @ActionDescription,
+    [ShippedFrom] = @ShippedFrom,
+    [NameAssignedFrom] = @NameAssignedFrom,
+    [ShippedTo] = @ShippedTo,
+    [NameAssignedTo] = @NameAssignedTo,
+    [TrackingNumber] = @TrackingNumber,
+    [ShippingMethod] = @ShippingMethod,
+    [ReferenceNum] = @ReferenceNum,
+    [Comments] = @Comments,
+    [Actor] = @Actor,
+    [ActorName] = @ActorName,
+    [RefType] = @RefType,
     [DateModified] = @DateModified,
-    [CreatorName] = @CreatorName,
     [ModifierID] = @ModifierID,
     [ModifierName] = @ModifierName,
-    [SubPartOf] = @SubPartOf,
-    [Status] = @Status,
-    [ImportID] = @ImportID
-  WHERE ([AssetID] = @AssetID)
+    [ShippedFromRefType] = @ShippedFromRefType
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteAssetAssignmentsViewItem
 
 (
-  @AssetID int
+  @AssetAssignmentsID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AssetsView]
-  WHERE ([AssetID] = @AssetID)
+  DELETE FROM [dbo].[AssetAssignmentsView]
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectAssetAssignmentsViewItem
 
 (
-  @AssetID int
+  @AssetAssignmentsID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
+    [AssetAssignmentsID],
+    [HistoryID],
     [AssetID],
-    [ProductID],
-    [ProductName],
-    [ProductVersionID],
-    [ProductVersionNumber],
     [OrganizationID],
-    [SerialNumber],
-    [Name],
-    [Location],
-    [Notes],
-    [WarrantyExpiration],
+    [ActionTime],
+    [ActionDescription],
+    [ShippedFrom],
+    [NameAssignedFrom],
+    [ShippedTo],
+    [NameAssignedTo],
+    [TrackingNumber],
+    [ShippingMethod],
+    [ReferenceNum],
+    [Comments],
     [DateCreated],
+    [Actor],
+    [ActorName],
+    [RefType],
     [DateModified],
-    [CreatorID],
-    [CreatorName],
     [ModifierID],
     [ModifierName],
-    [SubPartOf],
-    [Status],
-    [ImportID]
-  FROM [dbo].[AssetsView]
-  WHERE ([AssetID] = @AssetID)
+    [ShippedFromRefType]
+  FROM [dbo].[AssetAssignmentsView]
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertAssetAssignmentsViewItem
 
 (
+  @AssetAssignmentsID int,
+  @HistoryID int,
   @AssetID int,
-  @ProductID int,
-  @ProductName varchar(255),
-  @ProductVersionID int,
-  @ProductVersionNumber varchar(50),
   @OrganizationID int,
-  @SerialNumber varchar(500),
-  @Name varchar(500),
-  @Location varchar(500),
-  @Notes text,
-  @WarrantyExpiration datetime,
+  @ActionTime datetime,
+  @ActionDescription varchar(500),
+  @ShippedFrom int,
+  @NameAssignedFrom varchar(255),
+  @ShippedTo int,
+  @NameAssignedTo varchar(255),
+  @TrackingNumber varchar(200),
+  @ShippingMethod varchar(200),
+  @ReferenceNum varchar(200),
+  @Comments text,
   @DateCreated datetime,
+  @Actor int,
+  @ActorName varchar(201),
+  @RefType int,
   @DateModified datetime,
-  @CreatorID int,
-  @CreatorName varchar(201),
   @ModifierID int,
   @ModifierName varchar(201),
-  @SubPartOf int,
-  @Status varchar(500),
-  @ImportID varchar(500),
+  @ShippedFromRefType int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AssetsView]
+  INSERT INTO [dbo].[AssetAssignmentsView]
   (
+    [AssetAssignmentsID],
+    [HistoryID],
     [AssetID],
-    [ProductID],
-    [ProductName],
-    [ProductVersionID],
-    [ProductVersionNumber],
     [OrganizationID],
-    [SerialNumber],
-    [Name],
-    [Location],
-    [Notes],
-    [WarrantyExpiration],
+    [ActionTime],
+    [ActionDescription],
+    [ShippedFrom],
+    [NameAssignedFrom],
+    [ShippedTo],
+    [NameAssignedTo],
+    [TrackingNumber],
+    [ShippingMethod],
+    [ReferenceNum],
+    [Comments],
     [DateCreated],
+    [Actor],
+    [ActorName],
+    [RefType],
     [DateModified],
-    [CreatorID],
-    [CreatorName],
     [ModifierID],
     [ModifierName],
-    [SubPartOf],
-    [Status],
-    [ImportID])
+    [ShippedFromRefType])
   VALUES (
+    @AssetAssignmentsID,
+    @HistoryID,
     @AssetID,
-    @ProductID,
-    @ProductName,
-    @ProductVersionID,
-    @ProductVersionNumber,
     @OrganizationID,
-    @SerialNumber,
-    @Name,
-    @Location,
-    @Notes,
-    @WarrantyExpiration,
+    @ActionTime,
+    @ActionDescription,
+    @ShippedFrom,
+    @NameAssignedFrom,
+    @ShippedTo,
+    @NameAssignedTo,
+    @TrackingNumber,
+    @ShippingMethod,
+    @ReferenceNum,
+    @Comments,
     @DateCreated,
+    @Actor,
+    @ActorName,
+    @RefType,
     @DateModified,
-    @CreatorID,
-    @CreatorName,
     @ModifierID,
     @ModifierName,
-    @SubPartOf,
-    @Status,
-    @ImportID)
+    @ShippedFromRefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateAssetAssignmentsViewItem
 
 (
+  @AssetAssignmentsID int,
+  @HistoryID int,
   @AssetID int,
-  @ProductID int,
-  @ProductName varchar(255),
-  @ProductVersionID int,
-  @ProductVersionNumber varchar(50),
   @OrganizationID int,
-  @SerialNumber varchar(500),
-  @Name varchar(500),
-  @Location varchar(500),
-  @Notes text,
-  @WarrantyExpiration datetime,
+  @ActionTime datetime,
+  @ActionDescription varchar(500),
+  @ShippedFrom int,
+  @NameAssignedFrom varchar(255),
+  @ShippedTo int,
+  @NameAssignedTo varchar(255),
+  @TrackingNumber varchar(200),
+  @ShippingMethod varchar(200),
+  @ReferenceNum varchar(200),
+  @Comments text,
+  @Actor int,
+  @ActorName varchar(201),
+  @RefType int,
   @DateModified datetime,
-  @CreatorName varchar(201),
   @ModifierID int,
   @ModifierName varchar(201),
-  @SubPartOf int,
-  @Status varchar(500),
-  @ImportID varchar(500)
+  @ShippedFromRefType int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[AssetsView]
+  UPDATE [dbo].[AssetAssignmentsView]
   SET
-    [ProductID] = @ProductID,
-    [ProductName] = @ProductName,
-    [ProductVersionID] = @ProductVersionID,
-    [ProductVersionNumber] = @ProductVersionNumber,
+    [HistoryID] = @HistoryID,
+    [AssetID] = @AssetID,
     [OrganizationID] = @OrganizationID,
-    [SerialNumber] = @SerialNumber,
-    [Name] = @Name,
-    [Location] = @Location,
-    [Notes] = @Notes,
-    [WarrantyExpiration] = @WarrantyExpiration,
+    [ActionTime] = @ActionTime,
+    [ActionDescription] = @ActionDescription,
+    [ShippedFrom] = @ShippedFrom,
+    [NameAssignedFrom] = @NameAssignedFrom,
+    [ShippedTo] = @ShippedTo,
+    [NameAssignedTo] = @NameAssignedTo,
+    [TrackingNumber] = @TrackingNumber,
+    [ShippingMethod] = @ShippingMethod,
+    [ReferenceNum] = @ReferenceNum,
+    [Comments] = @Comments,
+    [Actor] = @Actor,
+    [ActorName] = @ActorName,
+    [RefType] = @RefType,
     [DateModified] = @DateModified,
-    [CreatorName] = @CreatorName,
     [ModifierID] = @ModifierID,
     [ModifierName] = @ModifierName,
-    [SubPartOf] = @SubPartOf,
-    [Status] = @Status,
-    [ImportID] = @ImportID
-  WHERE ([AssetID] = @AssetID)
+    [ShippedFromRefType] = @ShippedFromRefType
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteAssetAssignmentsViewItem
 
 (
-  @AssetID int
+  @AssetAssignmentsID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AssetsView]
-  WHERE ([AssetID] = @AssetID)
+  DELETE FROM [dbo].[AssetAssignmentsView]
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectAssetAssignmentsViewItem
 
 (
-  @AssetID int
+  @AssetAssignmentsID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
+    [AssetAssignmentsID],
+    [HistoryID],
     [AssetID],
-    [ProductID],
-    [ProductName],
-    [ProductVersionID],
-    [ProductVersionNumber],
     [OrganizationID],
-    [SerialNumber],
-    [Name],
-    [Location],
-    [Notes],
-    [WarrantyExpiration],
+    [ActionTime],
+    [ActionDescription],
+    [ShippedFrom],
+    [NameAssignedFrom],
+    [ShippedTo],
+    [NameAssignedTo],
+    [TrackingNumber],
+    [ShippingMethod],
+    [ReferenceNum],
+    [Comments],
     [DateCreated],
+    [Actor],
+    [ActorName],
+    [RefType],
     [DateModified],
-    [CreatorID],
-    [CreatorName],
     [ModifierID],
     [ModifierName],
-    [SubPartOf],
-    [Status],
-    [ImportID]
-  FROM [dbo].[AssetsView]
-  WHERE ([AssetID] = @AssetID)
+    [ShippedFromRefType]
+  FROM [dbo].[AssetAssignmentsView]
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertAssetAssignmentsViewItem
 
 (
+  @AssetAssignmentsID int,
+  @HistoryID int,
   @AssetID int,
-  @ProductID int,
-  @ProductName varchar(255),
-  @ProductVersionID int,
-  @ProductVersionNumber varchar(50),
   @OrganizationID int,
-  @SerialNumber varchar(500),
-  @Name varchar(500),
-  @Location varchar(500),
-  @Notes text,
-  @WarrantyExpiration datetime,
+  @ActionTime datetime,
+  @ActionDescription varchar(500),
+  @ShippedFrom int,
+  @NameAssignedFrom varchar(255),
+  @ShippedTo int,
+  @NameAssignedTo varchar(255),
+  @TrackingNumber varchar(200),
+  @ShippingMethod varchar(200),
+  @ReferenceNum varchar(200),
+  @Comments text,
   @DateCreated datetime,
+  @Actor int,
+  @ActorName varchar(201),
+  @RefType int,
   @DateModified datetime,
-  @CreatorID int,
-  @CreatorName varchar(201),
   @ModifierID int,
   @ModifierName varchar(201),
-  @SubPartOf int,
-  @Status varchar(500),
-  @ImportID varchar(500),
+  @ShippedFromRefType int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[AssetsView]
+  INSERT INTO [dbo].[AssetAssignmentsView]
   (
+    [AssetAssignmentsID],
+    [HistoryID],
     [AssetID],
-    [ProductID],
-    [ProductName],
-    [ProductVersionID],
-    [ProductVersionNumber],
     [OrganizationID],
-    [SerialNumber],
-    [Name],
-    [Location],
-    [Notes],
-    [WarrantyExpiration],
+    [ActionTime],
+    [ActionDescription],
+    [ShippedFrom],
+    [NameAssignedFrom],
+    [ShippedTo],
+    [NameAssignedTo],
+    [TrackingNumber],
+    [ShippingMethod],
+    [ReferenceNum],
+    [Comments],
     [DateCreated],
+    [Actor],
+    [ActorName],
+    [RefType],
     [DateModified],
-    [CreatorID],
-    [CreatorName],
     [ModifierID],
     [ModifierName],
-    [SubPartOf],
-    [Status],
-    [ImportID])
+    [ShippedFromRefType])
   VALUES (
+    @AssetAssignmentsID,
+    @HistoryID,
     @AssetID,
-    @ProductID,
-    @ProductName,
-    @ProductVersionID,
-    @ProductVersionNumber,
     @OrganizationID,
-    @SerialNumber,
-    @Name,
-    @Location,
-    @Notes,
-    @WarrantyExpiration,
+    @ActionTime,
+    @ActionDescription,
+    @ShippedFrom,
+    @NameAssignedFrom,
+    @ShippedTo,
+    @NameAssignedTo,
+    @TrackingNumber,
+    @ShippingMethod,
+    @ReferenceNum,
+    @Comments,
     @DateCreated,
+    @Actor,
+    @ActorName,
+    @RefType,
     @DateModified,
-    @CreatorID,
-    @CreatorName,
     @ModifierID,
     @ModifierName,
-    @SubPartOf,
-    @Status,
-    @ImportID)
+    @ShippedFromRefType)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateAssetAssignmentsViewItem
 
 (
+  @AssetAssignmentsID int,
+  @HistoryID int,
   @AssetID int,
-  @ProductID int,
-  @ProductName varchar(255),
-  @ProductVersionID int,
-  @ProductVersionNumber varchar(50),
   @OrganizationID int,
-  @SerialNumber varchar(500),
-  @Name varchar(500),
-  @Location varchar(500),
-  @Notes text,
-  @WarrantyExpiration datetime,
+  @ActionTime datetime,
+  @ActionDescription varchar(500),
+  @ShippedFrom int,
+  @NameAssignedFrom varchar(255),
+  @ShippedTo int,
+  @NameAssignedTo varchar(255),
+  @TrackingNumber varchar(200),
+  @ShippingMethod varchar(200),
+  @ReferenceNum varchar(200),
+  @Comments text,
+  @Actor int,
+  @ActorName varchar(201),
+  @RefType int,
   @DateModified datetime,
-  @CreatorName varchar(201),
   @ModifierID int,
   @ModifierName varchar(201),
-  @SubPartOf int,
-  @Status varchar(500),
-  @ImportID varchar(500)
+  @ShippedFromRefType int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[AssetsView]
+  UPDATE [dbo].[AssetAssignmentsView]
   SET
-    [ProductID] = @ProductID,
-    [ProductName] = @ProductName,
-    [ProductVersionID] = @ProductVersionID,
-    [ProductVersionNumber] = @ProductVersionNumber,
+    [HistoryID] = @HistoryID,
+    [AssetID] = @AssetID,
     [OrganizationID] = @OrganizationID,
-    [SerialNumber] = @SerialNumber,
-    [Name] = @Name,
-    [Location] = @Location,
-    [Notes] = @Notes,
-    [WarrantyExpiration] = @WarrantyExpiration,
+    [ActionTime] = @ActionTime,
+    [ActionDescription] = @ActionDescription,
+    [ShippedFrom] = @ShippedFrom,
+    [NameAssignedFrom] = @NameAssignedFrom,
+    [ShippedTo] = @ShippedTo,
+    [NameAssignedTo] = @NameAssignedTo,
+    [TrackingNumber] = @TrackingNumber,
+    [ShippingMethod] = @ShippingMethod,
+    [ReferenceNum] = @ReferenceNum,
+    [Comments] = @Comments,
+    [Actor] = @Actor,
+    [ActorName] = @ActorName,
+    [RefType] = @RefType,
     [DateModified] = @DateModified,
-    [CreatorName] = @CreatorName,
     [ModifierID] = @ModifierID,
     [ModifierName] = @ModifierName,
-    [SubPartOf] = @SubPartOf,
-    [Status] = @Status,
-    [ImportID] = @ImportID
-  WHERE ([AssetID] = @AssetID)
+    [ShippedFromRefType] = @ShippedFromRefType
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAssetsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAssetsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteAssetAssignmentsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteAssetAssignmentsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteAssetsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteAssetAssignmentsViewItem
 
 (
-  @AssetID int
+  @AssetAssignmentsID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[AssetsView]
-  WHERE ([AssetID] = @AssetID)
+  DELETE FROM [dbo].[AssetAssignmentsView]
+  WHERE ([AssetAssignmentsID] = @AssetAssignmentsID)
 GO
 
 

@@ -147,6 +147,7 @@ $(document).ready(function () {
     $('#modalAssignTitle').text('Assign asset');
     $('#btnSaveReturn').hide();
     $('#btnSaveAssign').show();
+    $('#comments').attr('placeholder', 'Comments about assigning this asset.');
   });
 
   $('#returnAsset').click(function (e) {
@@ -154,6 +155,7 @@ $(document).ready(function () {
     $('#btnSaveAssign').hide();
     $('#btnSaveReturn').show();
     $('#inputCustomerDiv').hide();
+    $('#comments').attr('placeholder', 'Comments about returning this asset.');
   });
 
   $('#btnSaveAssign').click(function (e) {
@@ -227,6 +229,16 @@ $(document).ready(function () {
     else {
       alert("Please enter a valid date shipped.");
     }
+  });
+
+  $('#btnJunkSave').click(function (e) {
+    top.Ts.Services.Assets.JunkAsset(_assetID, $('#junkingComments').val(), function (assetID) {
+      top.Ts.System.logAction('Asset Junked');
+      $('#modalJunk').modal('hide');
+      window.location = window.location;
+    }, function () {
+      alert('There was an error assigning this asset to the Junkyard.  Please try again.');
+    });
   });
 
   $('#fieldName').click(function (e) {
@@ -524,12 +536,14 @@ $(document).ready(function () {
 
     top.Ts.Services.Assets.LoadHistory(_assetID, start, function (history) {
       for (var i = 0; i < history.length; i++) {
+        var nameAssignedFromValue = history[i].NameAssignedFrom == null ? '' : history[i].NameAssignedFrom;
         var nameAssignedToValue = history[i].NameAssignedTo == null ? '' : history[i].NameAssignedTo;
         $('<tr>').html('<td>' +
         history[i].ActionDescription + '</td><td>' +
         history[i].ActionTime.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</td><td>' +
         history[i].ActorName + '</td><td>' +
         history[i].Comments + '</td><td>' +
+        nameAssignedFromValue + '</td><td>' +
         nameAssignedToValue + '</td><td>' +
         history[i].ShippingMethod + '</td><td>' +
         history[i].TrackingNumber + '</td><td>' +

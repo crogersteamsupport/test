@@ -20,6 +20,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? ActionTime { get; set; }
     [DataMember] public string ActionDescription { get; set; }
     [DataMember] public int? ShippedFrom { get; set; }
+    [DataMember] public string NameAssignedFrom { get; set; }
     [DataMember] public int? ShippedTo { get; set; }
     [DataMember] public string NameAssignedTo { get; set; }
     [DataMember] public string TrackingNumber { get; set; }
@@ -33,6 +34,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? DateModified { get; set; }
     [DataMember] public int? ModifierID { get; set; }
     [DataMember] public string ModifierName { get; set; }
+    [DataMember] public int? ShippedFromRefType { get; set; }
           
   }
   
@@ -41,6 +43,7 @@ namespace TeamSupport.Data
     public AssetAssignmentsViewItemProxy GetProxy()
     {
       AssetAssignmentsViewItemProxy result = new AssetAssignmentsViewItemProxy();
+      result.ShippedFromRefType = this.ShippedFromRefType;
       result.ModifierName = this.ModifierName;
       result.ModifierID = this.ModifierID;
       result.RefType = this.RefType;
@@ -52,6 +55,7 @@ namespace TeamSupport.Data
       result.TrackingNumber = this.TrackingNumber;
       result.NameAssignedTo = this.NameAssignedTo;
       result.ShippedTo = this.ShippedTo;
+      result.NameAssignedFrom = this.NameAssignedFrom;
       result.ShippedFrom = this.ShippedFrom;
       result.ActionDescription = this.ActionDescription;
       result.OrganizationID = this.OrganizationID;

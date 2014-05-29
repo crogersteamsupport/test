@@ -19,6 +19,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ActionTime", "ActionTime", false, false, false);
       _fieldMap.AddMap("ActionDescription", "ActionDescription", false, false, false);
       _fieldMap.AddMap("ShippedFrom", "ShippedFrom", false, false, false);
+      _fieldMap.AddMap("NameAssignedFrom", "NameAssignedFrom", false, false, false);
       _fieldMap.AddMap("ShippedTo", "ShippedTo", false, false, false);
       _fieldMap.AddMap("NameAssignedTo", "NameAssignedTo", false, false, false);
       _fieldMap.AddMap("TrackingNumber", "TrackingNumber", false, false, false);
@@ -32,6 +33,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DateModified", "DateModified", false, false, false);
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, false);
       _fieldMap.AddMap("ModifierName", "ModifierName", false, false, false);
+      _fieldMap.AddMap("ShippedFromRefType", "ShippedFromRefType", false, false, false);
             
     }
   }

@@ -94,6 +94,12 @@ namespace TeamSupport.Data
       set { Row["ModifierID"] = CheckValue("ModifierID", value); }
     }
     
+    public int? ShippedFromRefType
+    {
+      get { return Row["ShippedFromRefType"] != DBNull.Value ? (int?)Row["ShippedFromRefType"] : null; }
+      set { Row["ShippedFromRefType"] = CheckValue("ShippedFromRefType", value); }
+    }
+    
 
     
     public int OrganizationID
@@ -244,7 +250,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AssetHistory] SET     [AssetID] = @AssetID,    [OrganizationID] = @OrganizationID,    [ActionTime] = @ActionTime,    [ActionDescription] = @ActionDescription,    [ShippedFrom] = @ShippedFrom,    [ShippedTo] = @ShippedTo,    [TrackingNumber] = @TrackingNumber,    [ShippingMethod] = @ShippingMethod,    [ReferenceNum] = @ReferenceNum,    [Comments] = @Comments,    [Actor] = @Actor,    [RefType] = @RefType,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID  WHERE ([HistoryID] = @HistoryID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[AssetHistory] SET     [AssetID] = @AssetID,    [OrganizationID] = @OrganizationID,    [ActionTime] = @ActionTime,    [ActionDescription] = @ActionDescription,    [ShippedFrom] = @ShippedFrom,    [ShippedTo] = @ShippedTo,    [TrackingNumber] = @TrackingNumber,    [ShippingMethod] = @ShippingMethod,    [ReferenceNum] = @ReferenceNum,    [Comments] = @Comments,    [Actor] = @Actor,    [RefType] = @RefType,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ShippedFromRefType] = @ShippedFromRefType  WHERE ([HistoryID] = @HistoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("HistoryID", SqlDbType.Int, 4);
@@ -352,13 +358,27 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ShippedFromRefType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AssetHistory] (    [AssetID],    [OrganizationID],    [ActionTime],    [ActionDescription],    [ShippedFrom],    [ShippedTo],    [TrackingNumber],    [ShippingMethod],    [ReferenceNum],    [Comments],    [DateCreated],    [Actor],    [RefType],    [DateModified],    [ModifierID]) VALUES ( @AssetID, @OrganizationID, @ActionTime, @ActionDescription, @ShippedFrom, @ShippedTo, @TrackingNumber, @ShippingMethod, @ReferenceNum, @Comments, @DateCreated, @Actor, @RefType, @DateModified, @ModifierID); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[AssetHistory] (    [AssetID],    [OrganizationID],    [ActionTime],    [ActionDescription],    [ShippedFrom],    [ShippedTo],    [TrackingNumber],    [ShippingMethod],    [ReferenceNum],    [Comments],    [DateCreated],    [Actor],    [RefType],    [DateModified],    [ModifierID],    [ShippedFromRefType]) VALUES ( @AssetID, @OrganizationID, @ActionTime, @ActionDescription, @ShippedFrom, @ShippedTo, @TrackingNumber, @ShippingMethod, @ReferenceNum, @Comments, @DateCreated, @Actor, @RefType, @DateModified, @ModifierID, @ShippedFromRefType); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ShippedFromRefType", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifierID", SqlDbType.Int, 4);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -577,7 +597,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [AssetID], [OrganizationID], [ActionTime], [ActionDescription], [ShippedFrom], [ShippedTo], [TrackingNumber], [ShippingMethod], [ReferenceNum], [Comments], [DateCreated], [Actor], [RefType], [DateModified], [ModifierID] FROM [dbo].[AssetHistory] WHERE ([HistoryID] = @HistoryID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [AssetID], [OrganizationID], [ActionTime], [ActionDescription], [ShippedFrom], [ShippedTo], [TrackingNumber], [ShippingMethod], [ReferenceNum], [Comments], [DateCreated], [Actor], [RefType], [DateModified], [ModifierID], [ShippedFromRefType] FROM [dbo].[AssetHistory] WHERE ([HistoryID] = @HistoryID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("HistoryID", historyID);
         Fill(command);
