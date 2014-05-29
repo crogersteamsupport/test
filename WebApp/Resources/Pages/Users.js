@@ -1,6 +1,7 @@
 ﻿
 
-var userID
+var userID;
+var ratingFilter = '';
 $(document).ready(function () {
     $('body').layout({
         applyDemoStyles: true
@@ -62,7 +63,7 @@ $(document).ready(function () {
         else if (e.target.innerHTML == "History")
             $('#historyIframe').attr("src", "../../../Frames/History.aspx?RefType=22&RefID=" + userID);
         else if (e.target.innerHTML == "Ratings")
-            LoadRatings('');
+            LoadRatings('', 1);
     });
 
     var _tmrSearch = null;
@@ -117,7 +118,7 @@ $(document).ready(function () {
         $('#queueIframe').attr("src", "/vcr/1_9_0/Pages/TicketGrid.html?tf_IsEnqueued=true&tf_ViewerID=" + userID);
         $('#historyIframe').attr("src", "../../../Frames/History.aspx?RefType=22&RefID=" + userID);
         $('#userName').text($(this).text());
-        LoadRatings('');
+        LoadRatings('', 1);
         activeID = userID;
         
     });
@@ -166,11 +167,12 @@ $(document).ready(function () {
         ;
     });
 
-    LoadRatings('');
+    LoadRatings('', 1);
 
-    function LoadRatings(ratingOption) {
-        $('#tblRatings tbody').empty();
-        top.Ts.Services.Customers.LoadAgentRatingsUser(userID, ratingOption, function (ratings) {
+    function LoadRatings(ratingOption, start) {
+        if (start == 1)
+            $('#tblRatings tbody').empty();
+        top.Ts.Services.Customers.LoadAgentRatingsUser(userID, ratingOption, $('#tblRatings tbody > tr').length + 1, function (ratings) {
             var agents = "";
             for (var i = 0; i < ratings.length; i++) {
                 for (var j = 0; j < ratings[i].users.length; j++) {
@@ -185,6 +187,15 @@ $(document).ready(function () {
                 .appendTo('#tblRatings > tbody:last');
                 agents = "";
             }
+
+            if (ratings.length == 3)
+                $('<button>').text("Load More").addClass('btn-link')
+                .click(function (e) {
+                    LoadRatings(ratingFilter, $('#tblRatings tbody > tr').length + 1);
+                    $(this).remove();
+                })
+               .appendTo('#tblRatings > tbody:last');
+
         });
 
         top.Ts.Services.Organizations.GetAgentRatingOptions(top.Ts.System.Organization.OrganizationID, function (o) {
@@ -207,16 +218,20 @@ $(document).ready(function () {
     }
 
     $('#positiveImage').click(function () {
-        LoadRatings(1);
+        LoadRatings(1, 1);
+        ratingFilter = 1;
     });
     $('#neutralImage').click(function () {
-        LoadRatings(0);
+        LoadRatings(0, 1);
+        ratingFilter = 0;
     });
     $('#negativeImage').click(function () {
-        LoadRatings(-1);
+        LoadRatings(-1, 1);
+        ratingFilter = -1;
     });
     $('#viewAll').click(function () {
-        LoadRatings('');
+        LoadRatings('', 1);
+        ratingFilter = '';
     });
 
 });

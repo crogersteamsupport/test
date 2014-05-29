@@ -414,32 +414,63 @@ namespace TeamSupport.Data
       }
     }
 
-    public virtual void LoadByAgentRatingIDFilter(int agentRatingID, string filter)
+    public virtual void LoadByAgentRatingIDFilter(int[] agentRatingIDs, string filter, int start)
     {
+        int end = start + 2;
         using (SqlCommand command = new SqlCommand())
         {
-            if (filter != "")
-                command.CommandText = "SET NOCOUNT OFF; SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID] FROM [dbo].[AgentRatings] WHERE ([AgentRatingID] = @AgentRatingID and [Rating]=@filter);";
+            if (start != -1)
+            {
+                if (filter != "")
+                    command.CommandText = "SET NOCOUNT OFF; select * from (SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID], ROW_NUMBER() OVER (ORDER BY DateCreated Desc) AS rownum FROM [dbo].[AgentRatings] WHERE ([AgentRatingID] in (" + DataUtils.IntArrayToCommaString(agentRatingIDs) + ") and [Rating]=@filter)) as temp where rownum between @start and @end order by rownum asc;";
+                else
+                    command.CommandText = "SET NOCOUNT OFF; select * from (SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID], ROW_NUMBER() OVER (ORDER BY DateCreated Desc) AS rownum FROM [dbo].[AgentRatings] WHERE ([AgentRatingID] in (" + DataUtils.IntArrayToCommaString(agentRatingIDs)+ "))) as temp where rownum between @start and @end order by rownum asc;";
+            }
             else
-                command.CommandText = "SET NOCOUNT OFF; SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID] FROM [dbo].[AgentRatings] WHERE ([AgentRatingID] = @AgentRatingID);";
+            {
+                if (filter != "")
+                    command.CommandText = "SET NOCOUNT OFF; SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID], ROW_NUMBER() OVER (ORDER BY DateCreated Desc) AS rownum FROM [dbo].[AgentRatings] WHERE ([AgentRatingID] in (" + DataUtils.IntArrayToCommaString(agentRatingIDs) + ") and [Rating]=@filter);";
+                else
+                    command.CommandText = "SET NOCOUNT OFF; SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID], ROW_NUMBER() OVER (ORDER BY DateCreated Desc) AS rownum FROM [dbo].[AgentRatings] WHERE ([AgentRatingID] in (" + DataUtils.IntArrayToCommaString(agentRatingIDs) + "));";
+            }
             command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("AgentRatingID", agentRatingID);
+            //command.Parameters.AddWithValue("AgentRatingID", );
             command.Parameters.AddWithValue("filter", filter);
-            Fill(command);
+            command.Parameters.AddWithValue("start", start);
+            command.Parameters.AddWithValue("end", end);
+                Fill(command);
+
         }
     }
 
-    public virtual void LoadByOrganizationIDFilter(int organizationID, string filter)
+    public virtual void LoadByOrganizationIDFilter(int organizationID, string filter, int start)
     {
+        int end = start + 29;
         using (SqlCommand command = new SqlCommand())
         {
-            if (filter != "")
-                command.CommandText = "SET NOCOUNT OFF; SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID] FROM [dbo].[AgentRatings] WHERE ([CompanyID] = @CompanyID and [Rating]=@filter);";
+
+            if (start != -1)
+            {
+                if (filter != "")
+                    command.CommandText = "SET NOCOUNT OFF; select * from (SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID], ROW_NUMBER() OVER (ORDER BY DateCreated Desc) AS rownum FROM [dbo].[AgentRatings] WHERE ([CompanyID] = @CompanyID and [Rating]=@filter)) as temp where rownum between @start and @end order by rownum asc;";
+                else
+                    command.CommandText = "SET NOCOUNT OFF; select * from (SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID], ROW_NUMBER() OVER (ORDER BY DateCreated Desc) AS rownum FROM [dbo].[AgentRatings] WHERE ([CompanyID] = @CompanyID)) as temp where rownum between @start and @end order by rownum asc;";
+            }
             else
-                command.CommandText = "SET NOCOUNT OFF; SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID] FROM [dbo].[AgentRatings] WHERE ([CompanyID] = @CompanyID);";
+            {
+                if (filter != "")
+                    command.CommandText = "SET NOCOUNT OFF; SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID] FROM [dbo].[AgentRatings] WHERE ([CompanyID] = @CompanyID and [Rating]=@filter);";
+                else
+                    command.CommandText = "SET NOCOUNT OFF; SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID] FROM [dbo].[AgentRatings] WHERE ([CompanyID] = @CompanyID)";
+
+            }
+
+
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("CompanyID", organizationID);
             command.Parameters.AddWithValue("filter", filter);
+            command.Parameters.AddWithValue("start", start);
+            command.Parameters.AddWithValue("end", end);
             Fill(command);
         }
     }

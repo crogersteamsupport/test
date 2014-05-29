@@ -10,7 +10,7 @@
 
 var customerDetailPage = null;
 var organizationID = null;
-
+var ratingFilter = '';
 $(document).ready(function () {
     customerDetailPage = new CustomerDetailPage();
     customerDetailPage.refresh();
@@ -1590,9 +1590,11 @@ $(document).ready(function () {
         });
     }
 
-    function LoadRatings(ratingOption) {
-        $('#tblRatings tbody').empty();
-        top.Ts.Services.Customers.LoadAgentRatings(organizationID, ratingOption, function (ratings) {
+    function LoadRatings(ratingOption, start) {
+
+        if(start == 1)
+            $('#tblRatings tbody').empty();
+        top.Ts.Services.Customers.LoadAgentRatings(organizationID, ratingOption, $('#tblRatings tbody > tr').length + 1, function (ratings) {
             var agents = "";
             for (var i = 0; i < ratings.length; i++) {
                     for (var j = 0; j < ratings[i].users.length; j++)
@@ -1610,6 +1612,16 @@ $(document).ready(function () {
 
                 agents = "";
             }
+
+            if (ratings.length == 30)
+                $('<button>').text("Load More").addClass('btn-link')
+                .click(function (e) {
+                    LoadRatings(ratingFilter, $('#tblRatings tbody > tr').length + 1);
+                    $(this).remove();
+                })
+               .appendTo('#tblRatings > tbody:last');
+
+
         });
 
         top.Ts.Services.Organizations.GetAgentRatingOptions(top.Ts.System.Organization.OrganizationID, function (o) {
@@ -1631,16 +1643,20 @@ $(document).ready(function () {
     }
 
     $('#positiveImage').click(function () {
-        LoadRatings(1);
+        LoadRatings(1, 1);
+        ratingFilter = 1;
     });
     $('#neutralImage').click(function () {
-        LoadRatings(0);
+        LoadRatings(0, 1);
+        ratingFilter = 0;
     });
     $('#negativeImage').click(function () {
-        LoadRatings(-1);
+        LoadRatings(-1,1 );
+        ratingFilter = -1;
     });
     $('#viewAll').click(function () {
-        LoadRatings('');
+        LoadRatings('', 1);
+        ratingFilter = '';
     });
 
     function LoadPhoneNumbers(reload)
@@ -2008,7 +2024,7 @@ $(document).ready(function () {
         else if (e.target.innerHTML == "Files")
             LoadFiles();
         else if (e.target.innerHTML == "Ratings")
-            LoadRatings('');
+            LoadRatings('', 1);
     })
 
     $('#inventoryIframe').attr("src", "../../../Inventory/CustomerInventory.aspx?CustID=" + organizationID);
