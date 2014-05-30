@@ -720,6 +720,8 @@ AdminPortal = function () {
                   $('#agentrating-negative').text(o.NegativeRatingText);
               if (o.RedirectURL != null)
                   $('#agentrating-redirecturl').val(o.RedirectURL);
+              if (o.ExternalPageLink != null)
+                  $('#agentrating-externalurl').val(o.ExternalPageLink);
           }
       });
     }
