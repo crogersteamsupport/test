@@ -217,6 +217,12 @@ namespace TeamSupport.Data
       }
     }
 
+    public static void ReplaceMessageParameter(LoginUser loginUser, string objectName, string value, MailMessage message, int localUserID, int localOrgID)
+    {
+        message.Body = ReplaceParameterText(objectName, value, message.Body);
+        message.Subject = ReplaceParameterText(objectName, value, message.Subject);
+    }
+
     public static string ClearFieldPlaceHolders(string objectName, string text)
     {
       return Regex.Replace(text, "({{"+objectName+"\\..*}})+", "", RegexOptions.IgnoreCase);

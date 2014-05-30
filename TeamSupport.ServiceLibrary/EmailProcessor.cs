@@ -680,6 +680,36 @@ namespace TeamSupport.ServiceLibrary
             //collection.Add(new MailAddress(userEmail.Address, userEmail.Name));
             ContactsViewItem contact = ContactsView.GetContactsViewItem(_loginUser, userEmail.UserID);
             EmailTemplate.ReplaceMessageFields(_loginUser, "Recipient", contact, message, -1, ticket.OrganizationID);
+            AgentRatingsOptions options = new AgentRatingsOptions(_loginUser);
+            options.LoadByOrganizationID(ticket.OrganizationID);
+            string baseUrl = SystemSettings.ReadString(_loginUser, "AppDomain", "https://app.teamsupport.com");
+            string redirectUrl = "https://portal.teamsupport.com/rating.aspx";
+            string positiveUrl = baseUrl + "/vcr/1_9_0/images/face-positive.png";
+            string neutralUrl = baseUrl + "/vcr/1_9_0/images/face-neutral.png";
+            string negativeUrl = baseUrl + "/vcr/1_9_0/images/face-negative.png";
+
+            if (!options.IsEmpty)
+            {
+              AgentRatingsOption option = options[0];
+              if (!string.IsNullOrWhiteSpace(option.RedirectURL)) redirectUrl = option.RedirectURL;
+              if (!string.IsNullOrWhiteSpace(option.PositiveImage)) positiveUrl = baseUrl + option.PositiveImage;
+              if (!string.IsNullOrWhiteSpace(option.NeutralImage)) neutralUrl = baseUrl + option.NeutralImage;
+              if (!string.IsNullOrWhiteSpace(option.NegativeImage)) negativeUrl = baseUrl + option.NegativeImage;
+            }
+
+            StringBuilder ratingLink = new StringBuilder();
+            ratingLink.Append("<a href=\"");
+            ratingLink.Append(redirectUrl);
+            ratingLink.Append(redirectUrl.IndexOf("?") > -1 ? "&" : "?");
+            ratingLink.Append("OrganizationID=" + ticket.OrganizationID.ToString());
+            ratingLink.Append("&TicketID=" + ticket.TicketID.ToString());
+            ratingLink.Append("&Rating={0}");
+            ratingLink.Append("&CustomerID=" + (contact == null ? "-1" : contact.UserID.ToString()));
+            ratingLink.Append("\"><img src=\"{1}\" width=\"50\" height=\"50\" /></a>");
+            string link = ratingLink.ToString();
+            EmailTemplate.ReplaceMessageParameter(_loginUser, "AgentRatingsImageLink.Positive", string.Format(link, "1", positiveUrl), message, -1, ticket.OrganizationID);
+            EmailTemplate.ReplaceMessageParameter(_loginUser, "AgentRatingsImageLink.Neutral", string.Format(link, "0", neutralUrl), message, -1, ticket.OrganizationID);
+            EmailTemplate.ReplaceMessageParameter(_loginUser, "AgentRatingsImageLink.Negative", string.Format(link, "-1", negativeUrl), message, -1, ticket.OrganizationID);
             Logs.WriteEvent(string.Format("Email: {0} <{1}>", userEmail.Name, userEmail.Address));
             AddMessage(ticketOrganization.OrganizationID, "Portal Ticket Modified [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
             Logs.WriteEvent("Adding action log to ticket");
