@@ -2112,12 +2112,16 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public int[] LoadRatingPercents(int organizationID)
+        public int[] LoadRatingPercents(int organizationID, ReferenceType type)
         {
                 List<int> results = new List<int>();
 
             AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
-            ratings.LoadByOrganizationIDFilter(organizationID, "", -1);
+            if (type == ReferenceType.Organizations)
+                ratings.LoadByOrganizationIDFilter(organizationID, "", -1);
+            else if (type == ReferenceType.Users)
+                ratings.LoadByContactIDFilter(organizationID, "", -1);
+
             double negativeRating = 0, neutralRating = 0, positiveRating = 0, total =0;
             foreach (AgentRating rate in ratings)
             {
@@ -2200,12 +2204,15 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public CustomRatingClass[] LoadAgentRatings(int organizationID, string filter, int start)
+        public CustomRatingClass[] LoadAgentRatings(int organizationID, string filter, int start, ReferenceType type)
         {
             List<CustomRatingClass> list = new List<CustomRatingClass>();
 
             AgentRatings ratings = new AgentRatings(TSAuthentication.GetLoginUser());
-            ratings.LoadByOrganizationIDFilter(organizationID, filter, start);
+            if (type == ReferenceType.Organizations)
+                ratings.LoadByOrganizationIDFilter(organizationID, filter, start);
+            else if (type == ReferenceType.Users)
+                ratings.LoadByContactIDFilter(organizationID, filter, start);
 
             Users users = new Users(TSAuthentication.GetLoginUser());
 
@@ -2217,6 +2224,9 @@ namespace TSWebServices
                 AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
                 agents.LoadByAgentRatingID(a.AgentRatingID);
 
+                Organizations org = new Organizations(TSAuthentication.GetLoginUser());
+                org.LoadByOrganizationID(a.CompanyID);
+
                 ratingclass.users = new List<UserProxy>();
                 foreach (AgentRatingUser u in agents)
                 {
@@ -2227,8 +2237,10 @@ namespace TSWebServices
                 }
 
                 users.LoadByUserID(a.ContactID);
-
+                ratingclass.org = org[0].GetProxy();
                 ratingclass.reporter = users[0].GetProxy();
+
+
 
                 list.Add(ratingclass);
             }
@@ -2264,6 +2276,9 @@ namespace TSWebServices
                     AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
                     agents.LoadByAgentRatingID(a.AgentRatingID);
 
+                    Organizations org = new Organizations(TSAuthentication.GetLoginUser());
+                    org.LoadByOrganizationID(a.CompanyID);
+
                     ratingclass.users = new List<UserProxy>();
                     foreach (AgentRatingUser u in agents)
                     {
@@ -2273,8 +2288,8 @@ namespace TSWebServices
                         ratingclass.users.Add(users[0].GetProxy());
                     }
 
+                    ratingclass.org = org[0].GetProxy();
                     users.LoadByUserID(ratings[0].ContactID);
-
                     ratingclass.reporter = users[0].GetProxy();
 
                     list.Add(ratingclass);
@@ -2592,6 +2607,8 @@ namespace TSWebServices
             public List<UserProxy> users;
             [DataMember]
             public UserProxy reporter;
+            [DataMember]
+            public OrganizationProxy org;
     
         }
 

@@ -1,7 +1,7 @@
 ﻿
 .ui-layout-resizer { background:#8AAEDE;}
 
-.tab-content {background-color: #D5E5F7;height: 100%}
+.tab-content {background-color: #D5E5F7;height: 88%;overflow: scroll;}
 
 .user-container > li {
     border-bottom: 1px solid #EEEEEE;

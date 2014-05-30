@@ -1594,7 +1594,7 @@ $(document).ready(function () {
 
         if(start == 1)
             $('#tblRatings tbody').empty();
-        top.Ts.Services.Customers.LoadAgentRatings(organizationID, ratingOption, $('#tblRatings tbody > tr').length + 1, function (ratings) {
+        top.Ts.Services.Customers.LoadAgentRatings(organizationID, ratingOption, $('#tblRatings tbody > tr').length + 1,top.Ts.ReferenceTypes.Organizations, function (ratings) {
             var agents = "";
             for (var i = 0; i < ratings.length; i++) {
                     for (var j = 0; j < ratings[i].users.length; j++)
@@ -1612,16 +1612,6 @@ $(document).ready(function () {
 
                 agents = "";
             }
-
-            if (ratings.length == 30)
-                $('<button>').text("Load More").addClass('btn-link')
-                .click(function (e) {
-                    LoadRatings(ratingFilter, $('#tblRatings tbody > tr').length + 1);
-                    $(this).remove();
-                })
-               .appendTo('#tblRatings > tbody:last');
-
-
         });
 
         top.Ts.Services.Organizations.GetAgentRatingOptions(top.Ts.System.Organization.OrganizationID, function (o) {
@@ -1635,7 +1625,7 @@ $(document).ready(function () {
             }
         });
 
-        top.Ts.Services.Customers.LoadRatingPercents(organizationID, function (results) {
+        top.Ts.Services.Customers.LoadRatingPercents(organizationID, top.Ts.ReferenceTypes.Organizations, function (results) {
             $('#negativePercent').text(results[0] + "%");
             $('#neutralPercent').text(results[1] + "%");
             $('#positivePercent').text(results[2] + "%" );
@@ -2069,6 +2059,13 @@ $(document).ready(function () {
         top.Ts.System.logAction('Customer Detail - Dismiss Alert');
         $('#modalAlert').modal('hide');
     });
+
+    $('.tab-content').bind('scroll', function () {
+        if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+            LoadRatings(ratingFilter, $('#tblRatings tbody > tr').length + 1);
+        }
+    });
+
 });
 
 var initEditor = function (element, init) {

@@ -56,6 +56,7 @@
                 <li><a href="#contact-tickets" data-toggle="tab">Tickets</a></li>
                 <li><a href="#contact-notes" data-toggle="tab">Notes</a></li>
                 <li><a href="#contact-files" data-toggle="tab">Files</a></li>
+                <li id="ratingsTab"><a href="#contact-ratings" data-toggle="tab">Ratings</a></li>
                 
             </ul>
         </div>
@@ -306,6 +307,53 @@
                 </div>
                 </div>
             </div>
+            <div class="tab-pane fade" id="contact-ratings">
+            <div class="row">
+            <div class="col-xs-12">
+              <div class="box">
+                <div class="box-header">
+                    <div class="row">
+                        <div class="col-xs-1">
+                            <p class="percent" id="positivePercent">0%</p>
+                            <a href="#"><img id="positiveImage" src="../Images/face-positive.png" style="width:50px;height:50px"  /></a>
+                        </div>
+                        <div class="col-xs-1">
+                            <p class="percent" id="neutralPercent">0%</p>
+                            <a href="#"><img id="neutralImage" src="../Images/face-neutral.png" style="width:50px;height:50px"  /></a>
+                        </div>
+                        <div class="col-xs-1">
+                            <p class="percent" id="negativePercent">0%</p>                        
+                            <a href="#"><img id="negativeImage" src="../Images/face-negative.png" style="width:50px;height:50px"  /></a>
+                        </div>
+                        <div class="col-xs-1">
+                            <a href="#" id="viewAll">View All</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-content">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <table class="table table-hover" id="tblRatings">
+                        <thead>
+                          <tr>
+                            <th class="col-xs-1">Ticket</th>
+                            <th class="col-xs-2">Agents</th>
+                            <th class="col-xs-1">Reported By</th>
+                            <th class="col-xs-1">Date Reported</th>
+                            <th class="col-xs-1">Rating</th>
+                            <th class="col-xs-5">Comments</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         </div>  
     </div>
     </div>

@@ -8,7 +8,7 @@
 /// <reference path="ts/ts.grids.models.tickets.js" />
 /// <reference path="~/Default.aspx" />
 var userID = null;
-
+var ratingFilter = '';
 $(document).ready(function () {
     userID = top.Ts.Utils.getQueryValue("user", window);
     noteID = top.Ts.Utils.getQueryValue("noteid", window);
@@ -47,6 +47,10 @@ $(document).ready(function () {
             maskContents: true
         }
     });
+
+    if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
+        $('#ratingsTab').hide();
+    }
 
     $(".maincontainer").on("keypress", "input", (function (evt) {
         //Deterime where our character code is coming from within the event
@@ -118,7 +122,7 @@ $(document).ready(function () {
     $("#btnSaveReminder").click(function (e) {
         top.Ts.System.logAction('Contact Detail - Save Reminder');
         if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
-            top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Contacts, userID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val(), function () { });
+            top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Users, userID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val(), function () { });
             $('#modalReminder').modal('hide');
         }
         else
@@ -493,6 +497,8 @@ $(document).ready(function () {
             LoadNotes();
         else if (e.target.innerHTML == "Files")
             LoadFiles();
+        else if (e.target.innerHTML == "Ratings")
+            LoadRatings('', 1);
     })
 
     $('#phonePanel').on('click', '.delphone', function (e) {
@@ -1007,6 +1013,65 @@ $(document).ready(function () {
         }
     });
 
+    function LoadRatings(ratingOption, start) {
+
+        if (start == 1)
+            $('#tblRatings tbody').empty();
+        top.Ts.Services.Customers.LoadAgentRatings(userID, ratingOption, $('#tblRatings tbody > tr').length + 1, top.Ts.ReferenceTypes.Users, function (ratings) {
+            var agents = "";
+            for (var i = 0; i < ratings.length; i++) {
+                for (var j = 0; j < ratings[i].users.length; j++) {
+                    if (j != 0)
+                        agents = agents + ", ";
+
+                    agents = agents + '<a href="#" target="_blank" onclick="top.Ts.MainPage.openUser(' + ratings[i].users[j].UserID + '); return false;">' + ratings[i].users[j].FirstName + ' ' + ratings[i].users[j].LastName + '</a>';
+                }
+
+                var tr = $('<tr>')
+                //.html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td>' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
+                    .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="top.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
+                    .appendTo('#tblRatings > tbody:last');
+
+                agents = "";
+            }
+
+        });
+
+        top.Ts.Services.Organizations.GetAgentRatingOptions(top.Ts.System.Organization.OrganizationID, function (o) {
+            if (o != null) {
+                if (o.PositiveImage)
+                    $('#positiveImage').attr('src', o.PositiveImage);
+                if (o.NeutralImage)
+                    $('#neutralImage').attr('src', o.NeutralImage);
+                if (o.NegativeImage)
+                    $('#negativeImage').attr('src', o.NegativeImage);
+            }
+        });
+
+        top.Ts.Services.Customers.LoadRatingPercents(userID, top.Ts.ReferenceTypes.Users, function (results) {
+            $('#negativePercent').text(results[0] + "%");
+            $('#neutralPercent').text(results[1] + "%");
+            $('#positivePercent').text(results[2] + "%");
+        });
+    }
+
+    $('#positiveImage').click(function () {
+        LoadRatings(1, 1);
+        ratingFilter = 1;
+    });
+    $('#neutralImage').click(function () {
+        LoadRatings(0, 1);
+        ratingFilter = 0;
+    });
+    $('#negativeImage').click(function () {
+        LoadRatings(-1, 1);
+        ratingFilter = -1;
+    });
+    $('#viewAll').click(function () {
+        LoadRatings('', 1);
+        ratingFilter = '';
+    });
+
     top.Ts.Services.Tickets.Load5MostRecentByContactID(userID, function (tickets) {
         var max = 5;
         if (tickets.length < 5)
@@ -1232,6 +1297,12 @@ $(document).ready(function () {
         top.Ts.Services.Customers.DismissAlert(userID, top.Ts.ReferenceTypes.Users);
         top.Ts.System.logAction('Contact Detail - Dismiss Alert');
         $('#modalAlert').modal('hide');
+    });
+
+    $('.tab-content').bind('scroll', function () {
+        if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+            LoadRatings(ratingFilter, $('#tblRatings tbody > tr').length + 1);
+        }
     });
 });
 

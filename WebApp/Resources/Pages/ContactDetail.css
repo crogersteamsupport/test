@@ -91,3 +91,13 @@
 }
 
 .userProperties p, .customProperties p{word-wrap:break-word;}
+
+.imgsm{
+    width:20px;
+    height: 20px;
+}
+
+.percent{
+    font-weight:bold;
+    margin-left: 15px;
+}

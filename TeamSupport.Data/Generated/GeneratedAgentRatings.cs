@@ -416,7 +416,7 @@ namespace TeamSupport.Data
 
     public virtual void LoadByAgentRatingIDFilter(int[] agentRatingIDs, string filter, int start)
     {
-        int end = start + 2;
+        int end = start + 50;
         using (SqlCommand command = new SqlCommand())
         {
             if (start != -1)
@@ -445,7 +445,7 @@ namespace TeamSupport.Data
 
     public virtual void LoadByOrganizationIDFilter(int organizationID, string filter, int start)
     {
-        int end = start + 29;
+        int end = start + 50;
         using (SqlCommand command = new SqlCommand())
         {
 
@@ -468,6 +468,39 @@ namespace TeamSupport.Data
 
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("CompanyID", organizationID);
+            command.Parameters.AddWithValue("filter", filter);
+            command.Parameters.AddWithValue("start", start);
+            command.Parameters.AddWithValue("end", end);
+            Fill(command);
+        }
+    }
+
+
+    public virtual void LoadByContactIDFilter(int userID, string filter, int start)
+    {
+        int end = start + 50;
+        using (SqlCommand command = new SqlCommand())
+        {
+
+            if (start != -1)
+            {
+                if (filter != "")
+                    command.CommandText = "SET NOCOUNT OFF; select * from (SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID], ROW_NUMBER() OVER (ORDER BY DateCreated Desc) AS rownum FROM [dbo].[AgentRatings] WHERE ([ContactID] = @userID and [Rating]=@filter)) as temp where rownum between @start and @end order by rownum asc;";
+                else
+                    command.CommandText = "SET NOCOUNT OFF; select * from (SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID], ROW_NUMBER() OVER (ORDER BY DateCreated Desc) AS rownum FROM [dbo].[AgentRatings] WHERE ([ContactID] = @userID)) as temp where rownum between @start and @end order by rownum asc;";
+            }
+            else
+            {
+                if (filter != "")
+                    command.CommandText = "SET NOCOUNT OFF; SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID] FROM [dbo].[AgentRatings] WHERE ([ContactID] = @userID and [Rating]=@filter);";
+                else
+                    command.CommandText = "SET NOCOUNT OFF; SELECT [AgentRatingID], [OrganizationID], [CompanyID], [ContactID], [Rating], [Comment], [DateCreated], [TicketID] FROM [dbo].[AgentRatings] WHERE ([ContactID] = @userID)";
+
+            }
+
+
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("userID", userID);
             command.Parameters.AddWithValue("filter", filter);
             command.Parameters.AddWithValue("start", start);
             command.Parameters.AddWithValue("end", end);

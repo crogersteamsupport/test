@@ -262,6 +262,7 @@ namespace TSWebServices
               aro[0].NeutralRatingText = agentproxy.NeutralRatingText;
               aro[0].NegativeRatingText = agentproxy.NegativeRatingText;
               aro[0].RedirectURL = agentproxy.RedirectURL;
+              aro[0].ExternalPageLink = agentproxy.ExternalPageLink;
               aro[0].Collection.Save();
       }
       else
@@ -270,6 +271,7 @@ namespace TSWebServices
           agentRatingOption.NeutralRatingText = agentproxy.NeutralRatingText;
           agentRatingOption.NegativeRatingText = agentproxy.NegativeRatingText;
           agentRatingOption.RedirectURL = agentproxy.RedirectURL;
+          agentRatingOption.ExternalPageLink = agentproxy.ExternalPageLink;
           agentRatingOption.Collection.Save();
       }
 
@@ -893,6 +895,39 @@ namespace TSWebServices
         }
 
         return list;
+    }
+
+    [WebMethod]
+    public GroupProxy GetGroupInfo(int groupID)
+    {
+        Groups group = new Groups(TSAuthentication.GetLoginUser());
+        group.LoadByGroupID(groupID);
+
+        return group[0].GetProxy();
+    }
+
+    [WebMethod]
+    public string GetGroups()
+    {
+        StringBuilder html = new StringBuilder();
+        Groups groups = new Groups(TSAuthentication.GetLoginUser());
+        groups.LoadByOrganizationIDForGrid(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser().UserID);
+
+        foreach (GroupProxy group in groups.GetGroupProxies())
+        {
+            html.AppendFormat(@"<li>
+                                <div class='row'>
+                                <div class='col-xs-12'>
+                                    <strong><a class='group' gid='{0}'>{1} (count here)</a></strong>
+                                    <div>{2}</div>
+                                </div>
+                                </div>
+                                </li>
+                                ", group.GroupID, group.Name, group.Description);
+        }
+
+
+        return html.ToString();
     }
 
 

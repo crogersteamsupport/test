@@ -258,6 +258,7 @@ AdminPortal = function () {
     _agentratingOption.NeutralRatingText = $('#agentrating-neutral').val();
     _agentratingOption.NegativeRatingText = $('#agentrating-negative').val();
     _agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
+    _agentratingOption.ExternalPageLink = $('#agentrating-externalurl').val();
 
     top.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(),$('#agentrating-enabled').prop('checked'), _agentratingOption, function (result) {
       if (result != null) {
