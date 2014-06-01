@@ -58,7 +58,7 @@ namespace TeamSupport.ServiceLibrary
     {
       EmailPost result;
       LoginUser loginUser = new LoginUser(connectionString, -1, -1, null);
-      lock (_staticLock) { result = EmailPosts.GetDebugNextWaiting(loginUser, lockID.ToString(), 13679); }
+      lock (_staticLock) { result = EmailPosts.GetNextWaiting(loginUser, lockID.ToString()); }
       return result;
     }
 
