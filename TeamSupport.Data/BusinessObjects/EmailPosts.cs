@@ -34,7 +34,7 @@ UPDATE EmailPosts
 SET LockProcessID = @ProcessID 
 OUTPUT Inserted.*
 WHERE EmailPostID IN (
-  SELECT TOP 1 EmailPostID FROM EmailPosts WHERE LockProcessID IS NULL AND DATEADD(SECOND, HoldTime, DateCreated) < GETUTCDATE() AND OrganizationID ORDER BY DateCreated
+  SELECT TOP 1 EmailPostID FROM EmailPosts WHERE LockProcessID IS NULL AND DATEADD(SECOND, HoldTime, DateCreated) < GETUTCDATE() ORDER BY DateCreated
 )
 ";
 
