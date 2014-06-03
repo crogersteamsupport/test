@@ -1465,7 +1465,7 @@ $(document).ready(function () {
             $('#fieldPortalAccess').text(result.orgproxy.HasPortalAccess);
             $('#fieldAPIEnabled').text(result.orgproxy.IsApiActive && result.orgproxy.IsApiEnabled);
             $('#fieldSAED').text(result.SAED == null ? "Empty" : result.SAED);
-            $('#fieldSLA').text(top.Ts.Utils.getMsDate(result.SLA));
+            $('#fieldSLA').text(result.SLA);
             $('#fieldSLA').data('field', result.orgproxy.SlaLevelID);
             $('#fieldSupportHours').text(result.orgproxy.SupportHoursMonth);
             $('#fieldDescription').html(result.orgproxy.Description != null && result.orgproxy.Description != ""? result.orgproxy.Description : "Empty");
@@ -1607,7 +1607,7 @@ $(document).ready(function () {
 
                 var tr = $('<tr>')
                 //.html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td>' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
-                    .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">Ticket ' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="top.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
+                    .html('<td><a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ratings[i].rating.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ratings[i].rating.TicketNumber + '); return false;">' + ratings[i].rating.TicketNumber + '</a></td><td>' + agents + '</td><td><a href="#" onclick="top.Ts.MainPage.openNewContact(' + ratings[i].reporter.UserID + '); return false;">' + ratings[i].reporter.FirstName + ' ' + ratings[i].reporter.LastName + '</a></td><td>' + ratings[i].rating.DateCreated.toDateString() + '</td><td>' + ratings[i].rating.RatingText + '</td><td>' + (ratings[i].rating.Comment === null ? "None" : ratings[i].rating.Comment) + '</td>')
                     .appendTo('#tblRatings > tbody:last');
 
                 agents = "";
