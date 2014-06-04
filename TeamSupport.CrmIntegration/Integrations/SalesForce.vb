@@ -1371,7 +1371,27 @@ Namespace TeamSupport
                     Dim findCustom As New CustomValues(User)
                     findCustom.LoadByFieldID(cRMLinkField.CustomFieldID, ticket.TicketID)
                     If findCustom.Count > 0 AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                      result.Add(GetNewXmlElement(field.name, findCustom(0).Value))
+                      Dim value As String = findCustom(0).Value
+                      If field.type = fieldType.date Then
+                        Dim dateValue As Date
+                        If Date.TryParse(value, dateValue) Then
+                          value = dateValue.ToString("yyyy'-'MM'-'dd")
+                        Else
+                          Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because is mapped to a date field and the value is not a valid date.")
+                          Log.Write(message.ToString())
+                          Continue For                                            
+                        End If
+                      ElseIf field.type = fieldType.datetime Then
+                        Dim dateValue As DateTime
+                        If DateTime.TryParse(value, dateValue) Then
+                          value = dateValue.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'") 
+                        Else
+                          Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because is mapped to a datetime field and the value is not a valid datetime.")
+                          Log.Write(message.ToString())
+                          Continue For                                            
+                        End If
+                      End If
+                      result.Add(GetNewXmlElement(field.name, value))
                     Else
                       Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
                       If findCustom.Count = 0 Then
@@ -1387,7 +1407,27 @@ Namespace TeamSupport
                     End If
                   ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
                     If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                      result.Add(GetNewXmlElement(field.name, If(IsDbNull(ticket.Row(cRMLinkField.TSFieldName)), String.Empty, ticket.Row(cRMLinkField.TSFieldName))))
+                      Dim value As String = If(IsDbNull(ticket.Row(cRMLinkField.TSFieldName)), String.Empty, ticket.Row(cRMLinkField.TSFieldName))
+                      If field.type = fieldType.date Then
+                        Dim dateValue As Date
+                        If Date.TryParse(value, dateValue) Then
+                          value = dateValue.ToString("yyyy'-'MM'-'dd")
+                        Else
+                          Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because is mapped to a date field and the value is not a valid date.")
+                          Log.Write(message.ToString())
+                          Continue For                                            
+                        End If
+                      ElseIf field.type = fieldType.datetime Then
+                        Dim dateValue As DateTime
+                        If DateTime.TryParse(value, dateValue) Then
+                          value = dateValue.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'") 
+                        Else
+                          Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because is mapped to a datetime field and the value is not a valid datetime.")
+                          Log.Write(message.ToString())
+                          Continue For                                            
+                        End If
+                      End If
+                      result.Add(GetNewXmlElement(field.name, value))
                     Else
                       Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
                       If ticket.Row(cRMLinkField.TSFieldName) Is Nothing Then
