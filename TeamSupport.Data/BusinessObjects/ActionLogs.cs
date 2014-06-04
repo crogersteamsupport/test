@@ -265,14 +265,16 @@ namespace TeamSupport.Data
         int end = start + 49;
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = @"select *  from (SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+            command.CommandText = @"select * from (
+                                select *, ROW_NUMBER() OVER (ORDER BY DateModified Desc) AS rownum  from (
+                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
                                 FROM ActionLogs al
                                 LEFT JOIN Users u ON u.UserID = al.CreatorID
                                 WHERE (al.RefType = 9) AND (al.RefID = @OrganizationID)
                                 
                                 UNION 
                                 
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
                                 FROM ActionLogs al
                                 LEFT JOIN Users u ON u.UserID = al.CreatorID
                                 LEFT JOIN Tickets t ON t.TicketID = al.RefID
@@ -281,7 +283,7 @@ namespace TeamSupport.Data
                                 
                                 UNION 
                                 
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
                                 FROM ActionLogs al
                                 LEFT JOIN Users u ON u.UserID = al.CreatorID
                                 LEFT JOIN Actions a ON a.ActionID = al.RefID
@@ -291,10 +293,10 @@ namespace TeamSupport.Data
                                 
                                 UNION 
 
-                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName, ROW_NUMBER() OVER (ORDER BY al.DateCreated Desc) AS rownum
+                                SELECT al.*, u.FirstName + ' ' + u.LastName AS CreatorName
                                 FROM ActionLogs al
                                 LEFT JOIN Users u ON u.UserID = al.CreatorID
-                                WHERE (al.OrganizationID = @OrganizationID)) as temp
+                                WHERE (al.OrganizationID = @OrganizationID)) as temp) as results
                                 where rownum between @start and @end
 								order by rownum asc
 
