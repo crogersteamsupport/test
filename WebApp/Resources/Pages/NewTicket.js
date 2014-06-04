@@ -1665,14 +1665,72 @@ $(document).ready(function () {
               if (contactID > -1) {
                 top.Ts.Services.Tickets.GetTicketCustomer('u', contactID, function (result) {
                   if (!result.Flag) {
-                    appendCustomer(result);
+                      appendCustomer(result);
+                      top.Ts.Services.Customers.LoadAlert(result.UserID, top.Ts.ReferenceTypes.Users, function (note) {
+                          if (note != null) {
+                              $('#modalAlertMessage').html(note.Description);
+                              $('#alertID').val(note.RefID);
+                              $('#alertType').val(note.RefType);
+                              $("#dialog").dialog({
+                                  resizable: false,
+                                  width: 'auto',
+                                  height: 'auto',
+                                  create: function () {
+                                      $(this).css('maxWidth', '800px');
+                                  },
+                                  modal: true,
+                                  buttons: {
+                                      "Close": function () {
+                                          $(this).dialog("close");
+                                      },
+                                      "Snooze": function () {
+                                          top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                                          $(this).dialog("close");
+                                      },
+                                      "Dismiss": function () {
+                                          top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                                          $(this).dialog("close");
+                                      }
+                                  }
+                              });
+                          }
+                      });
                   }
                 });
               }
               else {
                 top.Ts.Services.Tickets.GetTicketCustomer('o', organizationID, function (result) {
                   if (!result.Flag) {
-                    appendCustomer(result);
+                      appendCustomer(result);
+                      top.Ts.Services.Customers.LoadAlert(result.OrganizationID, top.Ts.ReferenceTypes.Organizations, function (note) {
+                          if (note != null) {
+                              $('#modalAlertMessage').html(note.Description);
+                              $('#alertID').val(note.RefID);
+                              $('#alertType').val(note.RefType);
+                              $("#dialog").dialog({
+                                  resizable: false,
+                                  width: 'auto',
+                                  height: 'auto',
+                                  create: function () {
+                                      $(this).css('maxWidth', '800px');
+                                  },
+                                  modal: true,
+                                  buttons: {
+                                      "Close": function () {
+                                          $(this).dialog("close");
+                                      },
+                                      "Snooze": function () {
+                                          top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                                          $(this).dialog("close");
+                                      },
+                                      "Dismiss": function () {
+                                          top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                                          $(this).dialog("close");
+                                      }
+                                  }
+                              });
+                          }
+                      });
                   }
                 });
               }

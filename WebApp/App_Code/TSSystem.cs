@@ -189,7 +189,8 @@ namespace TSWebServices
 
         if (IsMenuItemActive(user, "mniGroups"))
         {
-          items.Add(new TsMenuItem("groups", "mniGroups", "Groups", "vcr/1_9_0/images/nav/20/groups.png", string.Format(data, "Frames/Groups.aspx", "vcr/1_9_0/PaneInfo/Groups.html")));
+            items.Add(new TsMenuItem("groups", "mniGroups", "Groups", "vcr/1_9_0/images/nav/20/groups.png", string.Format(data, "vcr/1_9_0/Pages/Groups.html", "vcr/1_9_0/PaneInfo/Groups.html")));
+            //items.Add(new TsMenuItem("groups1", "mniGroups1", "Groups1", "vcr/1_9_0/images/nav/20/groups.png", string.Format(data, "Frames/Groups.aspx", "vcr/1_9_0/PaneInfo/Groups.html")));
         }
 
         if ((org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.HelpDesk) && IsMenuItemActive(user, "mniCustomers"))
@@ -505,11 +506,15 @@ namespace TSWebServices
       Reminder reminder;
       if (reminderID == null)
       {
+        string logdescription;
         reminder = (new Reminders(TSAuthentication.GetLoginUser())).AddNewReminder();
         reminder.OrganizationID = TSAuthentication.OrganizationID;
         User reminderUser = (User)Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+        if(refType == ReferenceType.Tickets)
+            logdescription = String.Format("Added Reminder for {0} , for {1}", reminderUser.FirstLastName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), refID));
+        else
+            logdescription = String.Format("Added Reminder for {0}", reminderUser.FirstLastName);
 
-        string logdescription = String.Format("Added Reminder for {0} , for {1}", reminderUser.FirstLastName, Tickets.GetTicketLink(TSAuthentication.GetLoginUser(), refID));
         ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Tickets, refID, logdescription);
         ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Users, userID, logdescription);
 

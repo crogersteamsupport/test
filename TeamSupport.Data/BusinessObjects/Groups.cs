@@ -81,6 +81,18 @@ namespace TeamSupport.Data
       }
     }
 
+    public int GetGroupCount(int groupID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"SELECT COUNT(*) FROM TicketGridView tgv WHERE (tgv.GroupID = @groupID) AND (tgv.IsClosed = 0)";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@groupID", groupID);
+            return (int)ExecuteScalar(command);
+        }
+
+    }
+
     public void LoadByOrganizationIDForGrid(int organizationID, int userID)
     {
       using (SqlCommand command = new SqlCommand())

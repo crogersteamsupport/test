@@ -1,0 +1,43 @@
+﻿
+.ui-layout-resizer { background:#8AAEDE;}
+
+.tab-content {/*background-color: #D5E5F7;*/height: 88%; overflow: scroll;}
+
+.group-container > li {
+    border-bottom: 1px solid #EEEEEE;
+    list-style: none outside none;
+    padding: 10px;
+    font-size: 12px;
+}
+
+.group-container > li>.active{
+    background-color:#D5E5F7;
+}
+
+.group-container i{
+    cursor: pointer;
+}
+
+.main-nav{
+    padding: 10px 10px 0px 10px;
+    border-bottom: 1px solid #DDDDDD;
+}
+
+.nav-tabs{
+    margin-top: 10px;
+    border-bottom: none !important;
+}
+
+.groupName{
+    font-size:25px;
+    margin: 0px 0px 10px 0px;
+}
+
+.group {
+    cursor: pointer;
+}
+
+.maincontainer{
+    overflow:hidden;
+}
+

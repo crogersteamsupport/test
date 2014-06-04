@@ -898,12 +898,20 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public GroupProxy GetGroupInfo(int groupID)
+    public GroupProxy GetGroupInfo(string groupID)
     {
-        Groups group = new Groups(TSAuthentication.GetLoginUser());
-        group.LoadByGroupID(groupID);
+        Groups groups = new Groups(TSAuthentication.GetLoginUser());
+        if (groupID == null)
+        {
+            groups.LoadByOrganizationIDForGrid(TSAuthentication.OrganizationID, TSAuthentication.GetLoginUser().UserID);
+            return groups[0].GetProxy();
+        }
+        else
+        {
+            groups.LoadByGroupID(Convert.ToInt16(groupID));
+            return groups[0].GetProxy();
+        }
 
-        return group[0].GetProxy();
     }
 
     [WebMethod]
@@ -918,12 +926,12 @@ namespace TSWebServices
             html.AppendFormat(@"<li>
                                 <div class='row'>
                                 <div class='col-xs-12'>
-                                    <strong><a class='group' gid='{0}'>{1} (count here)</a></strong>
+                                    <strong><a class='group' gid='{0}'>{1} ({3})</a></strong> 
                                     <div>{2}</div>
                                 </div>
                                 </div>
                                 </li>
-                                ", group.GroupID, group.Name, group.Description);
+                                ", group.GroupID, group.Name, group.Description, group.TicketCount);
         }
 
 

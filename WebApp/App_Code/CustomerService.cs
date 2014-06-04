@@ -2122,29 +2122,37 @@ namespace TSWebServices
             else if (type == ReferenceType.Users)
                 ratings.LoadByContactIDFilter(organizationID, "", -1);
 
-            double negativeRating = 0, neutralRating = 0, positiveRating = 0, total =0;
-            foreach (AgentRating rate in ratings)
+            if (ratings.Count > 0)
             {
-                switch (rate.Rating)
+                double negativeRating = 0, neutralRating = 0, positiveRating = 0, total = 0;
+                foreach (AgentRating rate in ratings)
                 {
-                    case -1:
-                        negativeRating++;
-                        break;
-                    case 0:
-                        neutralRating++;
-                        break;
-                    case 1:
-                        positiveRating++;
-                        break;
+                    switch (rate.Rating)
+                    {
+                        case -1:
+                            negativeRating++;
+                            break;
+                        case 0:
+                            neutralRating++;
+                            break;
+                        case 1:
+                            positiveRating++;
+                            break;
+                    }
                 }
+
+                total = ratings.Count;
+
+                results.Add((int)((negativeRating / total) * 100));
+                results.Add((int)((neutralRating / total) * 100));
+                results.Add((int)((positiveRating / total) * 100));
             }
-
-            total = ratings.Count;
-
-            results.Add((int)((negativeRating / total) * 100));
-            results.Add((int)((neutralRating / total) * 100));
-            results.Add((int)((positiveRating / total) * 100));
-
+            else
+            {
+                results.Add(0);
+                results.Add(0);
+                results.Add(0);
+            }
             return results.ToArray();
 
         }

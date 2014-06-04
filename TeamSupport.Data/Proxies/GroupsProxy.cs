@@ -17,6 +17,8 @@ namespace TeamSupport.Data
     //[DataMember] public int OrganizationID { get; set; }
     [DataMember] public string Name { get; set; }
     [DataMember] public string Description { get; set; }
+    [DataMember]
+    public int TicketCount { get; set; }
     //[DataMember] public string ImportID { get; set; }
     //[DataMember] public DateTime DateCreated { get; set; }
     //[DataMember] public DateTime DateModified { get; set; }
@@ -37,7 +39,11 @@ namespace TeamSupport.Data
       result.Name = this.Name;
       //result.OrganizationID = this.OrganizationID;
       result.GroupID = this.GroupID;
-       
+      
+      Groups groups = new Groups(BaseCollection.LoginUser);
+      result.TicketCount = groups.GetGroupCount(this.GroupID);
+
+
 //      result.DateCreated = DateTime.SpecifyKind(this.DateCreatedUtc, DateTimeKind.Utc);
       //result.DateModified = DateTime.SpecifyKind(this.DateModifiedUtc, DateTimeKind.Utc);
        
