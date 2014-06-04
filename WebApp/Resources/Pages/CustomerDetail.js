@@ -11,6 +11,7 @@
 var customerDetailPage = null;
 var organizationID = null;
 var ratingFilter = '';
+var _isUnknown = false;
 $(document).ready(function () {
     customerDetailPage = new CustomerDetailPage();
     customerDetailPage.refresh();
@@ -165,10 +166,19 @@ $(document).ready(function () {
     
     $('#customerEdit').click(function (e) {
         top.Ts.System.logAction('Customer Detail - Customer Edit');
-        $('.userProperties p').toggleClass("editable");
-        $('.customProperties p').toggleClass("editable");
-        $("#phonePanel #editmenu").toggleClass("hiddenmenu");
-        $("#addressPanel #editmenu").toggleClass("hiddenmenu");
+        if (_isUnknown)
+        {
+            $('#fieldActive').toggleClass("editable");
+            $('#fieldPortalAccess').toggleClass("editable");
+        }
+        else
+        {
+            $('.userProperties p').toggleClass("editable");
+            $('.customProperties p').toggleClass("editable");
+            $("#phonePanel #editmenu").toggleClass("hiddenmenu");
+            $("#addressPanel #editmenu").toggleClass("hiddenmenu");
+        }
+
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
         $('#companyTabs a:first').tab('show');
@@ -1488,8 +1498,9 @@ $(document).ready(function () {
             }
 
             if (result.orgproxy.Name == "_Unknown Company") {
+                _isUnknown = true;
                 $('#customPropRow').hide();
-                $('#customerEdit').hide();
+                //$('#customerEdit').hide();
                 $('#customerDelete').hide();
             }
 
