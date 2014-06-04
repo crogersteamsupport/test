@@ -1050,7 +1050,7 @@ namespace TeamSupport.ServiceLibrary
       {
         User user =  Users.GetUser(LoginUser, (int)ticket.UserID);
         AddUser(userList, user, true);
-        Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
+        if (user != null) Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
       }
       
       if (ticket.GroupID != null)
