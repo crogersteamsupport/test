@@ -132,7 +132,7 @@ namespace TeamSupport.ServiceLibrary
       if (!IsStopped) return;
       _isStopped = false;
       _thread = new Thread(new ThreadStart(Process));
-      _thread.Priority = ThreadPriority.Lowest;
+      //_thread.Priority = ThreadPriority.Lowest;
 
       if (IsLoop)
       {
