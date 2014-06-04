@@ -109,7 +109,8 @@ $(document).ready(function () {
         wnd.show();
     }
 
-    function autoResize() {
-        $('#infoIframe').attr('height', $('.maincontainer').outerHeight() - $('.main-nav').outerHeight());
-    }
 });
+
+function autoResize() {
+    $('#infoIframe').attr('height', $('.maincontainer').outerHeight() - $('.main-nav').outerHeight());
+}
