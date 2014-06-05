@@ -30,6 +30,7 @@ namespace TeamSupport.Data
     [DataMember] public string Status { get; set; }
     [DataMember] public string ImportID { get; set; }
     [DataMember] public int? ProductVersionID { get; set; }
+    [DataMember] public bool NeedsIndexing { get; set; }
           
   }
   
@@ -38,6 +39,7 @@ namespace TeamSupport.Data
     public AssetProxy GetProxy()
     {
       AssetProxy result = new AssetProxy();
+      result.NeedsIndexing = this.NeedsIndexing;
       result.ProductVersionID = this.ProductVersionID;
       result.ImportID = this.ImportID;
       result.Status = this.Status;

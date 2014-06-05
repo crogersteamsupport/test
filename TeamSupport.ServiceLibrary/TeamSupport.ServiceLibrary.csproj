@@ -124,6 +124,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssetIndexDataSource.cs" />
     <Compile Include="IndexDataSource.cs" />
     <Compile Include="NoteIndexDataSource.cs" />
     <Compile Include="CustomerIndexDataSource.cs" />

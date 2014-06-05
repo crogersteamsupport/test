@@ -48,6 +48,23 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByAssetID(int assetID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+          SELECT
+	          *
+          FROM
+	          AssetHistoryView
+          WHERE
+	          AssetID = @AssetID
+                                ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@AssetID", assetID);
+        Fill(command);
+      }
+    }
   }
   
 }

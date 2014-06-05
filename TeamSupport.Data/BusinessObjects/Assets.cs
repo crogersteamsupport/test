@@ -67,6 +67,41 @@ namespace TeamSupport.Data
       return null;
     }
 
+    public void LoadForIndexing(int organizationID, int max, bool isRebuilding)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        string text = @"
+        SELECT 
+          TOP {0} 
+          AssetID
+        FROM 
+          Assets a WITH(NOLOCK)
+        WHERE 
+          a.NeedsIndexing = 1
+          AND a.OrganizationID = @OrganizationID
+        ORDER BY 
+          a.DateModified DESC";
+
+        if (isRebuilding)
+        {
+          text = @"
+          SELECT 
+            AssetID
+          FROM 
+            Assets a WITH(NOLOCK)
+          WHERE 
+            a.OrganizationID = @OrganizationID
+          ORDER BY 
+            a.DateModified DESC";
+        }
+
+        command.CommandText = string.Format(text, max.ToString());
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
   }
   
 }

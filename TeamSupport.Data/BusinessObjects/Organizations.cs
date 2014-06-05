@@ -1877,9 +1877,10 @@ OR EXISTS (SELECT * FROM ProductVersionsView pvv WHERE pvv.OrganizationID = o.Or
 OR EXISTS (SELECT * FROM WatercoolerMsg wcm WHERE wcm.OrganizationID = o.OrganizationID AND wcm.NeedsIndexing=1)
 OR EXISTS (SELECT * FROM Organizations o2 WHERE o2.ParentID = o.OrganizationID AND o2.NeedsIndexing=1)
 OR EXISTS (SELECT * FROM ContactsView cv WHERE cv.OrganizationParentID = o.OrganizationID AND cv.NeedsIndexing=1)
+OR EXISTS (SELECT * FROM Assets a WHERE a.OrganizationID = o.OrganizationID AND a.NeedsIndexing=1)
 OR EXISTS (
   SELECT * FROM DeletedIndexItems dii 
-  WHERE dii.RefType IN (9, 14, 17, 32, 38, 39, 40)
+  WHERE dii.RefType IN (9, 14, 17, 32, 38, 39, 40, 34)
   AND dii.OrganizationID = o.OrganizationID
 )";
         command.CommandType = CommandType.Text;

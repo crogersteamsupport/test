@@ -29,6 +29,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("SubPartOf", "SubPartOf", false, false, false);
       _fieldMap.AddMap("Status", "Status", false, false, false);
       _fieldMap.AddMap("ProductVersionID", "ProductVersionID", false, false, false);
+      _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
             
     }
   }
