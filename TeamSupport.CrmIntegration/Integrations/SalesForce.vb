@@ -1273,13 +1273,16 @@ Namespace TeamSupport
 
                   Dim isNotCollidingWithACaseToPull = false
 
+                  Dim impersonation = true
+
                   salesForceCase.Any  = GetSalesForceCaseData(
                                           ticket, 
                                           isNewCase, 
                                           salesForceCustomer, 
                                           casesToPullAsTickets, 
                                           isNotCollidingWithACaseToPull,
-                                          numberOfCasesToPullAsTickets)
+                                          numberOfCasesToPullAsTickets,
+                                          impersonation)
 
                   If isNotCollidingWithACaseToPull Then
                     Dim updateTicket As Tickets = New Tickets(User)
@@ -1291,6 +1294,26 @@ Namespace TeamSupport
                           updateTicket(0).SalesForceID = result.id
                           Dim actionLogDescription As String = "Sent Ticket to SalesForce as new Case with ID: '" + result.id + "'."
                           ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
+                        Else If result.errors(0).message.Contains("cross-reference") Then
+                            Log.Write("Creating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
+                            Log.Write("Attempting without impersonation...")
+                            impersonation = False
+                            salesForceCase.Any  = GetSalesForceCaseData(
+                                                    ticket, 
+                                                    isNewCase, 
+                                                    salesForceCustomer, 
+                                                    casesToPullAsTickets, 
+                                                    isNotCollidingWithACaseToPull,
+                                                    numberOfCasesToPullAsTickets,
+                                                    impersonation)
+                            result = Binding.create(New sObject() {salesForceCase})(0)
+                            If result.errors Is Nothing Then
+                              updateTicket(0).SalesForceID = result.id
+                              Dim actionLogDescription As String = "Sent Ticket to SalesForce as new Case with ID: '" + result.id + "'."
+                              ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
+                            Else
+                              Throw(New Exception(result.errors(0).message))
+                            End If
                         Else
                           Throw(New Exception(result.errors(0).message))
                         End If
@@ -1306,7 +1329,29 @@ Namespace TeamSupport
                         If result.errors Is Nothing Then
                           Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
                           ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
-                        Else If result.errors(0).message.ToLower() = "invalid cross reference id" OrElse result.errors(0).message.ToLower() = "entity is deleted" OrElse result.errors(0).message.Contains("insufficient access rights on cross-reference id") Then
+                        Else If result.errors(0).message.Contains("cross-reference") Then
+                          Log.Write("Updating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
+                          Log.Write("Attempting without impersonation...")
+                          impersonation = False
+                          salesForceCase.Any  = GetSalesForceCaseData(
+                                                  ticket, 
+                                                  isNewCase, 
+                                                  salesForceCustomer, 
+                                                  casesToPullAsTickets, 
+                                                  isNotCollidingWithACaseToPull,
+                                                  numberOfCasesToPullAsTickets,
+                                                  impersonation)
+                          result = Binding.update(New sObject() {salesForceCase})(0)
+                          If result.errors Is Nothing Then
+                            Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
+                            ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
+                          Else If result.errors(0).message.ToLower() = "invalid cross reference id" OrElse result.errors(0).message.ToLower() = "entity is deleted" Then
+                            Dim actionLogDescription As String = "SalesForce Case ID: '" + ticket.SalesForceID + "' was not found. No update applied. Error: " + result.errors(0).message
+                            ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
+                          Else
+                            Throw(New Exception(result.errors(0).message))
+                          End If
+                        Else If result.errors(0).message.ToLower() = "invalid cross reference id" OrElse result.errors(0).message.ToLower() = "entity is deleted" Then
                           Dim actionLogDescription As String = "SalesForce Case ID: '" + ticket.SalesForceID + "' was not found. No update applied. Error: " + result.errors(0).message
                           ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
                         Else
@@ -1343,7 +1388,8 @@ Namespace TeamSupport
               ByVal salesForceCustomer As SalesForceCustomer,
               ByVal casesToPullAsTickets As List(Of QueryResult),
               ByRef isNotCollidingWithACaseToPull As Boolean,
-              ByVal numberOfCasesToPullAsTickets As Integer) As XmlElement()
+              ByVal numberOfCasesToPullAsTickets As Integer,
+              ByVal impersonation As Boolean) As XmlElement()
               Dim result As New List(Of XmlElement)
 
               Dim customFields As New CRMLinkFields(User)
@@ -1602,6 +1648,7 @@ Namespace TeamSupport
                     '    Log.Write(message.ToString())
                     '  End If
                     Case "ownerid"
+                      If impersonation Then
                       'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
                       If ticket.UserID IsNot Nothing Then
                         Dim owner As User = Users.GetUser(User, ticket.UserID)
@@ -1633,7 +1680,11 @@ Namespace TeamSupport
                       Else
                         Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no owner.")                      
                       End If
+                      Else
+                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because impersonation flag is false.")                                            
+                      End If
                     Case "createdbyid"
+                      If impersonation Then
                       'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
                       Dim creator As User = Users.GetUser(User, ticket.CreatorID)
                       'Ticket 14381. SalesForce does not allow contact to create cases. Therefore we only try to add the creator if is not a contact.
@@ -1662,7 +1713,11 @@ Namespace TeamSupport
                       Else
                         Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no creator.")                      
                       End If
+                      Else
+                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because impersonation flag is false.")                                            
+                      End If
                     Case "lastmodifiedbyid"
+                      If impersonation Then
                       'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
                       Dim modifier As User = Users.GetUser(User, ticket.ModifierID)
                       'Ticket 14381. SalesForce does not allow contacts to modify cases. Therefore we only try to add the modifier if is not a contact.
@@ -1690,6 +1745,9 @@ Namespace TeamSupport
                         End If
                       Else
                         Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no modifier.")                                            
+                      End If
+                      Else
+                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because impersonation flag is false.")                                                                  
                       End If
                   End Select
                 End If
@@ -1756,7 +1814,8 @@ Namespace TeamSupport
                   isNewCaseComment = True
                 End If
                 Dim hasParentID As Boolean = False
-                salesForceCaseComment.Any  = GetSalesForceCaseCommentData(action, isNewCaseComment, hasParentID)
+                Dim impersonation As Boolean = True
+                salesForceCaseComment.Any  = GetSalesForceCaseCommentData(action, isNewCaseComment, hasParentID, impersonation)
 
                 If hasParentID Then
                   If isNewCaseComment Then
@@ -1766,7 +1825,23 @@ Namespace TeamSupport
                         action.SalesForceID = result.id
                         Dim actionLogDescription As String = "Sent Action to SalesForce as new CaseComment with ID: '" + result.id + "'."
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
-                      Else If result.errors(0).message.ToLower() = "entity is deleted" OrElse result.errors(0).message.Contains("insufficient access rights on cross-reference id") Then
+                      Else If result.errors(0).message.Contains("cross-reference") Then
+                        Log.Write("Creating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
+                        Log.Write("Attempting without impersonation...")
+                        impersonation = False
+                        salesForceCaseComment.Any  = GetSalesForceCaseCommentData(action, isNewCaseComment, hasParentID, impersonation)
+                        result = Binding.create(New sObject() {salesForceCaseComment})(0)
+                        If result.errors Is Nothing Then
+                          action.SalesForceID = result.id
+                          Dim actionLogDescription As String = "Sent Action to SalesForce as new CaseComment with ID: '" + result.id + "'."
+                          ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+                        Else If result.errors(0).message.ToLower() = "entity is deleted" Then
+                          Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
+                          ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+                        Else
+                          Throw(New Exception(result.errors(0).message))
+                        End If
+                      Else If result.errors(0).message.ToLower() = "entity is deleted" Then
                         Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
                       Else
@@ -1784,7 +1859,23 @@ Namespace TeamSupport
                       If result.errors Is Nothing Then
                         Dim actionLogDescription As String = "Updated SalesForce CaseComment ID: '" + action.SalesForceID + "' with action changes."
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)                                  
-                      Else If result.errors(0).message.ToLower() = "entity is deleted" OrElse result.errors(0).message.Contains("insufficient access rights on cross-reference id") Then
+                      Else If result.errors(0).message.Contains("cross-reference") Then
+                        Log.Write("Updating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
+                        Log.Write("Attempting without impersonation...")
+                        impersonation = False
+                        salesForceCaseComment.Any  = GetSalesForceCaseCommentData(action, isNewCaseComment, hasParentID, impersonation)
+                        result = Binding.update(New sObject() {salesForceCaseComment})(0)
+                        If result.errors Is Nothing Then
+                          action.SalesForceID = result.id
+                          Dim actionLogDescription As String = "Updated SalesForce CaseComment ID: '" + action.SalesForceID + "' with action changes."
+                          ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+                        Else If result.errors(0).message.ToLower() = "entity is deleted" Then
+                          Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
+                          ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+                        Else
+                          Throw(New Exception(result.errors(0).message))
+                        End If
+                      Else If result.errors(0).message.ToLower() = "entity is deleted" Then
                         Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
                       Else
@@ -1810,7 +1901,11 @@ Namespace TeamSupport
               Next
             End Sub
 
-            Private Function GetSalesForceCaseCommentData(ByVal action As Action, ByVal isNewCaseComment As Boolean, ByRef hasParentID As Boolean) As XmlElement()
+            Private Function GetSalesForceCaseCommentData(
+              ByVal action As Action, 
+              ByVal isNewCaseComment As Boolean, 
+              ByRef hasParentID As Boolean,
+              ByVal impersonation As Boolean) As XmlElement()
               Dim result As New List(Of XmlElement)
 
               Dim caseCommentObjectDescription = Binding.describeSObject("CaseComment")
@@ -1855,6 +1950,7 @@ Namespace TeamSupport
                       Log.Write(message.ToString())
                     End If
                   Case "createdbyid"
+                    If impersonation Then
                     'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
                     Dim creator As User = Users.GetUser(User, action.CreatorID)
                     If creator IsNot Nothing AndAlso creator.OrganizationID = CRMLinkRow.OrganizationID Then
@@ -1877,7 +1973,11 @@ Namespace TeamSupport
                     Else
                       Log.Write("TicketID " + action.ActionID.ToString() + "'s field '" + field.name + "' was not included because there is no creator.")                    
                     End If
+                    Else
+                      Log.Write("TicketID " + action.ActionID.ToString() + "'s field '" + field.name + "' was not included because the impersonation flag is false.")                                        
+                    End If
                   Case "lastmodifiedbyid"
+                    If impersonation Then
                     'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
                     Dim modifier As User = Users.GetUser(User, action.ModifierID)
                     If modifier IsNot Nothing AndAlso modifier.OrganizationID = CRMLinkRow.OrganizationID Then
@@ -1900,6 +2000,9 @@ Namespace TeamSupport
                     Else
                       Log.Write("TicketID " + action.ActionID.ToString() + "'s field '" + field.name + "' was not included because there is no modifier.")                    
                     End If 
+                    Else
+                      Log.Write("TicketID " + action.ActionID.ToString() + "'s field '" + field.name + "' was not included because the impersonation flag is false.")                                                            
+                    End If
                 End Select
               Next 
 
