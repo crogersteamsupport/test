@@ -660,6 +660,12 @@ namespace TeamSupport.ServiceLibrary
         messageType = isBasic ? "Basic portal email" : "Advanced portal email";
       }
 
+      if (string.IsNullOrWhiteSpace(message.Body))
+      {
+        Logs.WriteEvent("Exiting portal email because it was blank.");
+        return;
+      }
+
       if (ticketOrganization.AddEmailViaTS && !string.IsNullOrWhiteSpace(message.Body)) message.Body = message.Body + GetViaTSHtmlAd(ticketOrganization.Name);
 
       string subject = message.Subject;
@@ -727,8 +733,9 @@ namespace TeamSupport.ServiceLibrary
             ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, messageType + " sent to " + mailAddress.Address);
           }
         }
-        catch
+        catch (Exception ex)
         {
+          Logs.WriteException(ex);
         }
 	    }
 
