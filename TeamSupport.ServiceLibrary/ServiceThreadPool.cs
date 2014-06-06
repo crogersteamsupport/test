@@ -60,7 +60,7 @@ namespace TeamSupport.ServiceLibrary
       service.LastError = "";
       service.LastResult = "";
       service.Collection.Save();
-      int maxThreads = Settings.ReadInt("Max Worker Processes", 1);
+      int maxThreads = 1;// Settings.ReadInt("Max Worker Processes", 1);
       _threads = new T[maxThreads];
       GetProcessObject().ReleaseAllLocks();
       base.Start();

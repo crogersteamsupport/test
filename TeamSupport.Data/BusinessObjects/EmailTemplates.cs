@@ -121,10 +121,14 @@ namespace TeamSupport.Data
 
     public static string ReplaceParameterText(string parameterName, string value, string text)
     {
-      value = value ?? "";
-      value = value.Replace("$", "$$");
       parameterName = "{{" + parameterName + "}}";
-      return Regex.Replace(text, parameterName, value, RegexOptions.IgnoreCase);
+      if (text.ToLower().Contains(parameterName.ToLower()))
+      {
+        value = value ?? "";
+        value = value.Replace("$", "$$");
+        return Regex.Replace(text, parameterName, value, RegexOptions.IgnoreCase);
+      }
+      return text;
     }
 
     public EmailTemplate ReplaceParameter(string parameterName, string value)

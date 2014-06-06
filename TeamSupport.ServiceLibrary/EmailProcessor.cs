@@ -660,7 +660,7 @@ namespace TeamSupport.ServiceLibrary
         messageType = isBasic ? "Basic portal email" : "Advanced portal email";
       }
 
-      if (ticketOrganization.AddEmailViaTS) message.Body = message.Body + GetViaTSHtmlAd(ticketOrganization.Name);
+      if (ticketOrganization.AddEmailViaTS && !string.IsNullOrWhiteSpace(message.Body)) message.Body = message.Body + GetViaTSHtmlAd(ticketOrganization.Name);
 
       string subject = message.Subject;
       string body = message.Body;
@@ -738,9 +738,31 @@ namespace TeamSupport.ServiceLibrary
     {
       Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
       User modifier = Users.GetUser(LoginUser, modifierID);
-      if (ticket == null || modifier == null || ticket.UserID == null) return;
+      if (ticket == null)
+      {
+        Logs.WriteEvent("Unable to find Ticket, TicketID: " + ticketID.ToString());
+        return;
+      }
+
+      if (modifier == null)
+      {
+        Logs.WriteEvent("Unable to find Modifying User, UserID: " + modifierID.ToString());
+        return;
+      }
+
+      if (ticket.UserID == null)
+      {
+        Logs.WriteEvent("Assigned Ticket User is null");
+        return;
+      }
+
       Organization ticketOrganization = Organizations.GetOrganization(LoginUser, ticket.OrganizationID);
-      if (ticketOrganization == null) return;
+
+      if (ticketOrganization == null)
+      {
+        Logs.WriteEvent("Ticket's Organization IS NULL!!!!");
+        return;
+      }
 
       User owner = Users.GetUser(LoginUser, (int)ticket.UserID);
 
