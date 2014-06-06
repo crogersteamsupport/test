@@ -783,7 +783,7 @@ namespace TSWebServices
       Tags tags = new Tags(TSAuthentication.GetLoginUser());
       Tag tag = Tags.GetTag(tags.LoginUser, tagID);
       tags.LoadByValue(TSAuthentication.OrganizationID, name);
-      if (tags.Count > 0)
+      if (tags.Count > 0 && tag.TagID != tags[0].TagID)
       {
         TagLinks links = new TagLinks(tags.LoginUser);
         links.ReplaceTags(tag.TagID, tags[0].TagID);
