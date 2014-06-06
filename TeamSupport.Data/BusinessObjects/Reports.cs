@@ -2045,6 +2045,7 @@ ORDER BY r.Name
 
     public void LoadList(int organizationID, int userID, string[] ids)
     {
+      if (ids.Length < 1) return;
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = @"
