@@ -839,14 +839,44 @@ namespace TeamSupport.ServiceLibrary
 
     private void AddMessageNewTicket(Ticket ticket, User modifier, Organization ticketOrganization)
     {
-      if (string.IsNullOrEmpty(ticket.TicketSource)) return;
+      if (string.IsNullOrEmpty(ticket.TicketSource))
+      {
+        Logs.WriteEvent("No Ticket Source");
+        return;
+      }
 
       string source = ticket.TicketSource.ToLower().Trim();
-      if (source != "web" && source != "email" && source != "chatoffline") return;
+      if (source != "web" && source != "email" && source != "chatoffline")
+      {
+        Logs.WriteEvent("Source not (web, email, chatoffline)");
+        return;
+      }
 
-      if (!ticket.IsVisibleOnPortal || ticket.GetTicketView().IsClosed) return;
 
-      if (modifier == null && string.IsNullOrEmpty(ticket.PortalEmail)) return;
+      if (!ticket.IsVisibleOnPortal || ticket.GetTicketView().IsClosed)
+      {
+        Logs.WriteEvent("Not visible on portal or closed");
+        return;
+      }
+
+
+      if (modifier == null && string.IsNullOrEmpty(ticket.PortalEmail))
+      {
+        Logs.WriteEvent("No modifier or portal email to send");
+        return;
+      }
+
+      if (modifier != null)
+      {
+        Organization modifierOrg = Organizations.GetOrganization(_loginUser, modifier.OrganizationID);
+        if (!modifierOrg.IsActive)
+        {
+          Logs.WriteEvent("Modifier Org is inactive");
+          return;
+        }
+
+      }
+
       MailAddress modifierAddress = (modifier == null) ? new MailAddress(ticket.PortalEmail) : new MailAddress(modifier.Email, modifier.FirstLastName);
 
       if (modifier != null && modifier.OrganizationID == ticketOrganization.OrganizationID) // internal
