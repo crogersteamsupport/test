@@ -24,6 +24,7 @@
 .searchresults { width:100%; border-collapse:collapse;} 
 .searchresults ul {padding: 0; margin: 0;}
 .searchresults td { border-bottom: 1px solid #eee; padding: 10px 10px;}
+.result-icon { width: 50px;}
 
 .assetinfo h4{display:inline; font-size:16px;}
 .assetinfo p { margin: 0; text-align:right;}

@@ -1090,6 +1090,54 @@ namespace TSWebServices
         }
     }
 
+    public SearchResults GetAssetsSearchResults(LoginUser loginUser, string searchTerm, bool searchAssigned, bool searchWarehouse, bool searchJunkyard, int max)
+    {
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+      using (SearchJob job = new SearchJob())
+      {
+
+        job.Request = searchTerm;
+        job.FieldWeights = "Name:20,SerialNumber:10";
+        job.MaxFilesToRetrieve = max;
+        job.AutoStopLimit = 10000000;
+        job.TimeoutSeconds = 30;
+
+        job.Fuzziness = 0;
+        job.Request = "*" + job.Request + "*";
+
+        if (!searchAssigned || !searchWarehouse || !searchJunkyard)
+        {
+          StringBuilder conditions = new StringBuilder();
+          if (searchAssigned)
+          {
+            conditions.Append("(Location::1) ");
+            if (searchWarehouse) conditions.Append("OR (Location::2) ");
+            if (searchJunkyard) conditions.Append("OR (Location::3) ");
+          }
+          else if (searchWarehouse)
+          {
+            conditions.Append("(Location::2) ");
+            if (searchJunkyard) conditions.Append("OR (Location::3) ");
+          }
+          else if (searchJunkyard)
+          {
+            conditions.Append("(Location::3) ");
+          }
+          job.BooleanConditions = conditions.ToString();
+        }
+
+        job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchDelayDocInfo;
+
+        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+
+        job.IndexesToSearch.Add(DataUtils.GetAssetsIndexPath(loginUser));
+        job.Execute();
+        job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortDescending, "");
+        return job.Results;
+      }
+    }
+
     [WebMethod]
     public string[] SearchCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts)
     {      
@@ -1254,6 +1302,38 @@ SELECT
     {
       if (o == null || o == DBNull.Value) return "";
       return o.ToString();
+    }
+
+    [WebMethod]
+    public string[] SearchAssets(string searchTerm, int from, int count, bool searchAssigned, bool searchWarehouse, bool searchJunkyard)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      List<string> resultItems = new List<string>();
+      if (string.IsNullOrWhiteSpace(searchTerm))
+      {
+        //return GetAllAssets(from, count, searchAssigned, searchWarehouse, searchJunkyard);
+        searchTerm = "xfirstword";
+      }
+
+      //if (searchCompanies || searchContacts)
+      //{
+        SearchResults results = GetAssetsSearchResults(loginUser, searchTerm, searchAssigned, searchWarehouse, searchJunkyard, 0);
+        int topLimit = from + count;
+        if (topLimit > results.Count)
+        {
+          topLimit = results.Count;
+        }
+
+        for (int i = from; i < topLimit; i++)
+        {
+          results.GetNthDoc(i);
+          if (results.CurrentItem.UserFields["JSON"] != null)
+            resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+        }
+
+      //}
+
+      return resultItems.ToArray();
     }
 
   }

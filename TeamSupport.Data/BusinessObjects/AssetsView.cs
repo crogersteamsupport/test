@@ -26,6 +26,7 @@ namespace TeamSupport.Data
       productVersionNumber  = item.ProductVersionNumber;
       serialNumber          = item.SerialNumber;
       name                  = item.Name;
+      location              = item.Location;  
       notes                 = item.Notes;
       warrantyExpiration    = item.WarrantyExpiration;
       dateCreated           = item.DateCreated;
@@ -41,6 +42,7 @@ namespace TeamSupport.Data
     public string productVersionNumber { get; set; }
     public string serialNumber { get; set; }
     public string name { get; set; }
+    public string location { get; set; }
     public string notes { get; set; }
     public DateTime? warrantyExpiration { get; set; }
     public DateTime? dateCreated { get; set; }
