@@ -439,6 +439,80 @@ namespace TSWebServices
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
       return value != "" ? value : "Empty";
     }
+
+    [WebMethod]
+    public string UpdateRecentlyViewed(string viewid)
+    {
+      int refType, refID;
+
+      refType = (int)ReferenceType.Assets;
+      refID = Convert.ToInt32(viewid.Substring(1));
+
+      RecentlyViewedItem recent = (new RecentlyViewedItems(TSAuthentication.GetLoginUser()).AddNewRecentlyViewedItem());
+
+
+      recent.RefID = refID;
+      recent.RefType = refType;
+      recent.DateViewed = DateTime.UtcNow;
+      recent.UserID = TSAuthentication.GetLoginUser().UserID;
+      recent.BaseCollection.Save();
+
+      return GetRecentlyViewed();
+    }
+
+    [WebMethod]
+    public string GetRecentlyViewed()
+    {
+      StringBuilder builder = new StringBuilder();
+      RecentlyViewedItems recent = new RecentlyViewedItems(TSAuthentication.GetLoginUser());
+      recent.LoadRecent(TSAuthentication.GetLoginUser().UserID, (int)ReferenceType.Assets);
+
+      builder.Append(@"<ul class=""recent-list"">");
+      foreach (RecentlyViewedItem item in recent)
+      {
+        builder.Append(CreateRecentlyViewed(item));
+      }
+      builder.Append("</ul>");
+      return builder.ToString();
+    }
+
+    public string CreateRecentlyViewed(RecentlyViewedItem recent)
+    {
+      string recentHTML;
+      AssetsView assetsView = new AssetsView(TSAuthentication.GetLoginUser());
+      assetsView.LoadByAssetID(recent.RefID);
+      recentHTML = @" 
+        <li>
+          <div class=""recent-info"">
+            <h4><a class=""assetlink"" data-assetid=""{0}"" href=""""><i class=""fa {1} {2}""></i>{3}</a></h4>
+          </div>
+        </li>";
+      string icon = "fa-truck";
+      string color = "color-green";
+      switch (assetsView[0].Location)
+      {
+        case "2":
+          icon = "fa-home";
+          color = "color-yellow";
+          break;
+        case "3":
+          icon = "fa-trash-o";
+          color = "color-red";
+          break;
+      }
+      var displayName = assetsView[0].Name;
+      if (String.IsNullOrEmpty(displayName))
+      {
+        displayName = assetsView[0].SerialNumber;
+        if (String.IsNullOrEmpty(displayName))
+        {
+          displayName = assetsView[0].AssetID.ToString();
+        }
+      }
+
+      return string.Format(recentHTML, assetsView[0].AssetID, icon, color, displayName);
+    }
+
   }
 
   public class NewAssetSave

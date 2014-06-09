@@ -49,3 +49,11 @@
     outline-style:none !important;
 }
 
+.recent-info h4 { font-size: 16px; }
+.recent-info ul { list-style: none; color: #666; margin-left:0px; }
+.recent-info ul li { line-height: 18px; }
+.recent-info ul li span { line-height: 18px; }
+.recent-info {word-wrap:break-word; font-size: 12px;}
+.recent-info i.fa { padding-right: 10px;}
+.recent-info li a { color: #999;}
+

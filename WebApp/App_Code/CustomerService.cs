@@ -624,12 +624,12 @@ namespace TSWebServices
         {
             StringBuilder builder = new StringBuilder();
             RecentlyViewedItems recent = new RecentlyViewedItems(TSAuthentication.GetLoginUser());
-            recent.LoadRecent(TSAuthentication.GetLoginUser().UserID);
+            recent.LoadRecentForCustomerPage(TSAuthentication.GetLoginUser().UserID);
 
             builder.Append(@"<ul class=""recent-list"">");
             foreach (RecentlyViewedItem item in recent)
             {
-                builder.Append(CreateRecentlyViewed(item));
+              builder.Append(CreateRecentlyViewed(item));
             }
             builder.Append("</ul>");
             return builder.ToString();

@@ -22,9 +22,15 @@
       searchJunkyard = true;
     } else if ($('.inventory-filter-assigned').parent().hasClass('active')) {
       searchAssigned = true;
+      searchWarehouse = false;
+      searchJunkyard = false;
     } else if ($('.inventory-filter-warehouse').parent().hasClass('active')) {
+      searchAssigned = false;
       searchWarehouse = true;
+      searchJunkyard = false;
     } else if ($('.inventory-filter-junkyard').parent().hasClass('active')) {
+      searchAssigned = false;
+      searchWarehouse = false;
       searchJunkyard = true;
     }
 
@@ -32,12 +38,12 @@
       $('.searchresults').fadeTo(0, 1);
 
       if (start == 0) {
-        insertSearchResults(items);
+        insertSearchResults(items, searchAssigned, searchWarehouse, searchJunkyard);
         /*$('.frame-container').animate({
         scrollTop: 1
         }, 600);*/
       } else {
-        appendSearchResults(items);
+        appendSearchResults(items, searchAssigned, searchWarehouse, searchJunkyard);
       }
 
     });
@@ -48,7 +54,7 @@
     $('.results-loading').show();
   }
 
-  function insertSearchResults(items) {
+  function insertSearchResults(items, searchAssigned, searchWarehouse, searchJunkyard) {
     $('.searchresults').empty();
 
     if (items.length < 1) {
@@ -56,12 +62,12 @@
       $('.results-done').hide();
       $('.results-empty').show();
     } else {
-      appendSearchResults(items);
+      appendSearchResults(items, searchAssigned, searchWarehouse, searchJunkyard);
     }
     _isLoading = false;
   }
 
-  function appendSearchResults(items) {
+  function appendSearchResults(items, searchAssigned, searchWarehouse, searchJunkyard) {
     $('.results-loading').hide();
     $('.results-empty').hide();
     $('.results-done').hide();
@@ -71,7 +77,10 @@
     } else {
       var container = $('.searchresults');
       for (var i = 0; i < items.length; i++) {
-        appendItem(container, JSON.parse(items[i]));
+        var parsedItem = JSON.parse(items[i]);
+        if ((searchAssigned && parsedItem.location == "1") || (searchWarehouse && parsedItem.location == "2") || (searchJunkyard && parsedItem.location == "3")) {
+          appendItem(container, parsedItem);
+        }
       }
     }
     _isLoading = false;
@@ -155,6 +164,7 @@
     e.preventDefault();
     $('.inventory-filter li.active').removeClass('active');
     $(this).parent().addClass('active');
+    top.Ts.System.logAction('Inventory Page - Change Filter');
     fetchItems();
   });
 
@@ -171,13 +181,60 @@
     top.Ts.System.logAction('Inventory Page - View Recent Asset');
     top.Ts.MainPage.openNewAsset(id);
 
-    top.Ts.Services.Customers.UpdateRecentlyViewed('o' + id, function (resultHtml) {
+    top.Ts.Services.Assets.UpdateRecentlyViewed('o' + id, function (resultHtml) {
       $('.recent-container').empty();
       $('.recent-container').html(resultHtml);
     });
 
   });
 
+  top.Ts.Services.Assets.GetRecentlyViewed(function (resultHtml) {
+    $('.recent-container').empty();
+    $('.recent-container').html(resultHtml);
+  });
+
+  var _tmrSearch = null;
+  $('#searchString').keyup(function () {
+    if (_tmrSearch != null) {
+      clearTimeout(_tmrSearch);
+    }
+    $('.searchresults').fadeTo(200, 0.5);
+
+    function getResults() {
+      _isLoading = true;
+      $('.results-loading').hide();
+      $('.results-empty').hide();
+      $('.results-done').hide();
+
+      fetchItems();
+    }
+
+    _tmrSearch = setTimeout(getResults, 500);
+
+  });
+
+  var _isLoading = false;
+  $('.frame-container').bind('scroll', function () {
+    if (_isLoading == true) return;
+    if ($('.results-done').is(':visible')) return;
+
+    if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+      fetchItems($('.assetinfo').length);
+    }
+
+    if ($(this).scrollTop() > 100) {
+      $('.scrollup').fadeIn();
+    } else {
+      $('.scrollup').fadeOut();
+    }
+  });
+
+  $('.scrollup').click(function () {
+    $('.frame-container').animate({
+      scrollTop: 0
+    }, 600);
+    return false;
+  });
 
   fetchItems();
 });

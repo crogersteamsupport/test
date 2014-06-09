@@ -13,18 +13,35 @@ namespace TeamSupport.Data
   
   public partial class RecentlyViewedItems
   {
-      public void LoadRecent(int userID)
+      public void LoadRecentForCustomerPage(int userID)
       {
           using (SqlCommand command = new SqlCommand())
           {
               command.CommandText =
                 @"SELECT TOP 5 * FROM RecentlyViewedItems
                 WHERE (UserID = @UserID) 
+                AND refType IN (0,1)
                 ORDER BY DateViewed Desc";
               command.CommandType = CommandType.Text;
               command.Parameters.AddWithValue("@UserID", userID);
               Fill(command);
           }
+      }
+
+      public void LoadRecent(int userID, int refType)
+      {
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText =
+            @"SELECT TOP 5 * FROM RecentlyViewedItems
+                WHERE (UserID = @UserID) 
+                AND refType = @RefType
+                ORDER BY DateViewed Desc";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@UserID", userID);
+          command.Parameters.AddWithValue("@RefType", refType);
+          Fill(command);
+        }
       }
 
       public void DeleteRecentOrg(int organizationID)
