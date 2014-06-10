@@ -287,6 +287,7 @@ Namespace TeamSupport
 
             Dim updateFieldRequestBody As StringBuilder
 
+            If issueFields IsNot Nothing Then
             For Each field As KeyValuePair(Of String, JToken) In issueFields
               Dim cRMLinkField As CRMLinkField = customMappingFields.FindByCRMFieldName(field.Value("name").ToString())
               If cRMLinkField IsNot Nothing Then
@@ -335,6 +336,7 @@ Namespace TeamSupport
                 End If
               End If
             Next
+            End If
 
           End If
         Next
