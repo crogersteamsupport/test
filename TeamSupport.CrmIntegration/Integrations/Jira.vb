@@ -190,7 +190,7 @@ Namespace TeamSupport
             Try
               Log.Write("No JiraKey. Creating issue...")
               URI = _baseURI + "/issue"
-              issue = GetAPIJObject(URI, "POST", GetTicketData(ticket, issueFields))
+              issue = GetAPIJObject(URI, "POST", GetTicketData(ticket))
               'The create issue response does not include status and we need it to initialize the synched ticket. So, we do a GET on the recently created issue.
               URI = _baseURI + "/issue/" + issue("key").ToString()
               issue = GetAPIJObject(URI, "GET", String.Empty)
@@ -352,18 +352,16 @@ Namespace TeamSupport
           Return result
         End Function
 
-        Private Function GetTicketData(ByVal ticket As TicketsViewItem, ByRef issueFields As JObject) As String
+        Private Function GetTicketData(ByVal ticket As TicketsViewItem) As String
           Dim result As StringBuilder = new StringBuilder()
 
           result.Append("{")
           result.Append("""fields"":{")
-
-          Dim preffix As String = String.Empty
-
-          For Each field As KeyValuePair(Of String, JToken) In issueFields
-            result.Append(GetDataLine(field, ticket, preffix))
-          Next
-
+          result.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTML(ticket.Name))) + """,")
+          result.Append("""issuetype"":{""name"":""" + ticket.TicketTypeName + """},")
+          result.Append("""project"":{""key"":""" + GetProjectKey(ticket.ProductName) + """},")
+          Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTML(Actions.GetTicketDescription(User, ticket.TicketID).Description))
+          result.Append("""description"":""" + DataUtils.GetJsonCompatibleString(description) + """")
           result.Append("}")
           result.Append("}")
        
@@ -394,7 +392,9 @@ Namespace TeamSupport
                 End If
               Next
               If issueTypeIndex Is Nothing Then
-                Throw New Exception("type mismatch")
+                'Throw New Exception("type mismatch")
+                'See ticket #16955
+                Log.Write("Type was not found in list of project types. If an exception ahead, chances are it was caused by missing type.")
               Else
                 result = CType(fields("projects")(0)("issuetypes")(issueTypeIndex)("fields"), JObject)
               End If
@@ -403,11 +403,12 @@ Namespace TeamSupport
               Log.Write(ex.Message)
               Log.Write("URI: " + URI)
               Log.Write("Type: " + issueTypeName)
-              If ex.Message <> "type mismatch" Then
+              'See ticket #16955
+              'If ex.Message <> "type mismatch" Then
                 Throw New Exception("project mismatch")
-              Else
-                Throw ex
-              End If
+              'Else
+              '  Throw ex
+              'End If
             End Try
 
             Return result
