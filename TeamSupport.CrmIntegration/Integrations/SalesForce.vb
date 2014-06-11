@@ -2198,10 +2198,118 @@ Namespace TeamSupport
                         ticketValuesChanged = True
                       End If
                     ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
+                      Try
                       If ticket.Row(cRMLinkField.TSFieldName) <> TranslateFieldValue(value, ticket.Row(cRMLinkField.TSFieldName).GetType().Name) Then
                         ticket.Row(cRMLinkField.TSFieldName) = TranslateFieldValue(value, ticket.Row(cRMLinkField.TSFieldName).GetType().Name)
                         ticketValuesChanged = True
                       End If
+                      Catch ex As Exception
+                        'An exception here is probably caused by a ticketview field mapped that does not exists in the tickets table.
+                        Select Case cRMLinkField.TSFieldName.Trim().ToLower()
+                          Case "productname"
+                            Dim products As Products = New Products(User)
+                            products.LoadByOrganizationID(CRMLinkRow.OrganizationID)
+                            'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                            Dim product As Product = products.FindByName(value)
+                            If product IsNot Nothing Then
+                              If ticket.ProductID <> product.ProductID Then
+                                ticket.ProductID = product.ProductID
+                                ticketValuesChanged = True
+                              End If
+                            Else
+                              Log.Write(caseField.LocalName + " not updated because value: '" + value + "' was not found.")
+                            End If
+                          Case "reportedversion"
+                            Dim productVersions As ProductVersions = New ProductVersions(User)
+                            productVersions.LoadByProductID(ticket.ProductID)
+                            'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                            Dim productVersion As ProductVersion = productVersions.FindByVersionNumber(value, ticket.ProductID)
+                            If productVersion IsNot Nothing Then
+                              If ticket.ReportedVersionID <> productVersion.ProductVersionID Then
+                                ticket.ReportedVersionID = productVersion.ProductVersionID
+                                ticketValuesChanged = True
+                              End If
+                            Else
+                              Log.Write(caseField.LocalName + " not updated because value: '" + value + "' was not found.")
+                            End If
+                          Case "solvedversion"
+                            Dim productVersions As ProductVersions = New ProductVersions(User)
+                            productVersions.LoadByProductID(ticket.ProductID)
+                            'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                            Dim productVersion As ProductVersion = productVersions.FindByVersionNumber(value, ticket.ProductID)
+                            If productVersion IsNot Nothing Then
+                              If ticket.SolvedVersionID <> productVersion.ProductVersionID Then
+                                ticket.SolvedVersionID = productVersion.ProductVersionID
+                                ticketValuesChanged = True
+                              End If
+                            Else
+                              Log.Write(caseField.LocalName + " not updated because value: '" + value + "' was not found.")
+                            End If
+                          Case "groupname"
+                            Dim groups As Groups = New Groups(User)
+                            groups.LoadByOrganizationID(CRMLinkRow.OrganizationID)
+                            'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                            Dim group As Group = groups.FindByName(value)
+                            If group IsNot Nothing Then
+                              If ticket.GroupID <> group.GroupID Then
+                                ticket.GroupID = group.GroupID
+                                ticketValuesChanged = True
+                              End If
+                            Else
+                              Log.Write(caseField.LocalName + " not updated because value: '" + value + "' was not found.")
+                            End If
+                          Case "tickettypename"
+                            Dim types As TicketTypes = New TicketTypes(User)
+                            types.LoadAllPositions(CRMLinkRow.OrganizationID)
+                            'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                            Dim type As TicketType = types.FindByName(value)
+                            If type IsNot Nothing Then
+                              If ticket.TicketTypeID <> type.TicketTypeID Then
+                                ticket.TicketTypeID = type.TicketTypeID
+                                ticketValuesChanged = True
+                              End If
+                            Else
+                              Log.Write(caseField.LocalName + " not updated because value: '" + value + "' was not found.")
+                            End If
+                          Case "status"
+                            Dim statuses As TicketStatuses = New TicketStatuses(User)
+                            statuses.LoadAllPositions(ticket.TicketTypeID)
+                            'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                            Dim status As TicketStatus = statuses.FindByName(value, ticket.TicketTypeID)
+                            If status IsNot Nothing Then
+                              If ticket.TicketStatusID <> status.TicketStatusID Then
+                                ticket.TicketStatusID = status.TicketStatusID
+                                ticketValuesChanged = True
+                              End If
+                            Else
+                              Log.Write(caseField.LocalName + " not updated because value: '" + value + "' was not found.")
+                            End If
+                          Case "severity"
+                            Dim severities As TicketSeverities = New TicketSeverities(User)
+                            severities.LoadAllPositions(CRMLinkRow.OrganizationID)
+                            'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                            Dim severity As TicketSeverity = severities.FindByName(value)
+                            If severity IsNot Nothing Then
+                              If ticket.TicketSeverityID <> severity.TicketSeverityID Then
+                                ticket.TicketSeverityID = severity.TicketSeverityID
+                                ticketValuesChanged = True
+                              End If
+                            Else
+                              Log.Write(caseField.LocalName + " not updated because value: '" + value + "' was not found.")
+                            End If
+                          'Any change made for the UserName will be overriden by the AssignCustomerToTicket call made ahead.
+                          'If ever needed a bigger change will be required to get it working.
+                          'Case "username"
+                          'Tags, Contacts and Customers require also a bigger change. Therefore I'll implement if ever needed.
+                          'Case "tags"
+                          'Case "contacts"
+                          'Case "customers"
+                          Case "statusposition", "severityposition", "isclosed", "daysclosed", "daysopened", "closername", "creatorname", "modifiername", "hoursspent", "slawarninghours", "slaviolationhours", "minssincecreated", "dayssincecreated", "minssincemodified", "dayssincemodified", "slaviolationdate", "slawarningdate"
+                            Throw(New Exception("This is a read only field"))
+                          Case Else
+                            Throw(New Exception("This must be a new field in the ReportTableFields. Add support for it."))
+                        End Select
+                      End Try
                     End If
                   Catch mappingException As Exception
                     Log.Write(
