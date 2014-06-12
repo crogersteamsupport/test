@@ -142,6 +142,7 @@ namespace TSWebServices
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             o.IsApiActive = value;
+            o.IsApiEnabled = value;
             o.Collection.Save();
             string description = String.Format("{0} set company api enabled to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
@@ -283,6 +284,18 @@ namespace TSWebServices
             return value;
         }
         [WebMethod]
+        public bool SetContactPortalLimitOrgTickets(int userID, bool value)
+        {
+            User u = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            u.PortalLimitOrgTickets = value;
+            u.Collection.Save();
+            string description = String.Format("{0} set contact Portal Limit Org Tickets to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+            ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Users, userID, description);
+            return value;
+        }
+        
+
+        [WebMethod]
         public int SetContactPortalUser(int userID, bool value)
         {
             //0 = false
@@ -387,6 +400,7 @@ namespace TSWebServices
             html.AppendLine(CreateFormElement("Active", user.IsActive, "editable"));
             html.AppendLine(CreateFormElement("Portal User", user.IsPortalUser, "editable"));
             html.AppendLine(CreateFormElement("Prevent email from creating tickets", user.BlockInboundEmail, "editable"));
+            html.AppendLine(CreateFormElement("Portal Limit Org Tickets", user.PortalLimitOrgTickets, "editable"));
 
             if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null)
             {

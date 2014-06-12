@@ -40,8 +40,9 @@ WelcomePage = function () {
     top.Ts.MainPage.openNewContact(top.Ts.System.User.UserID);
   });
   $('.welcome-new-customer').click(function (e) {
-    e.preventDefault();
-    top.Ts.MainPage.openNewCustomer(-1);
+      e.preventDefault();
+      top.Ts.MainPage.newCustomer(null, top.Ts.System.User.OrganizationID);
+    //top.Ts.MainPage.openNewCustomer(-1);
   });
   $('.welcome-new-ticket').click(function (e) {
     e.preventDefault();

@@ -1,8 +1,10 @@
 ﻿
 .ui-layout-resizer { background:#8AAEDE;}
 
-.tab-content {background-color: #D5E5F7;height: 88%;overflow: scroll;}
+.tab-content {background-color: #D5E5F7;height: 88%;}
 
+
+.tab-content #user-ratings {overflow: auto;height: 100%}
 .user-container > li {
     border-bottom: 1px solid #EEEEEE;
     list-style: none outside none;
