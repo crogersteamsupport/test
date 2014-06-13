@@ -1294,7 +1294,7 @@ Namespace TeamSupport
                           updateTicket(0).SalesForceID = result.id
                           Dim actionLogDescription As String = "Sent Ticket to SalesForce as new Case with ID: '" + result.id + "'."
                           ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
-                        Else If result.errors(0).message.Contains("cross-reference") Then
+                        Else If result.errors(0).message.Contains("insufficient access rights") Then
                             Log.Write("Creating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                             Log.Write("Attempting without impersonation...")
                             impersonation = False
@@ -1329,7 +1329,7 @@ Namespace TeamSupport
                         If result.errors Is Nothing Then
                           Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
                           ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
-                        Else If result.errors(0).message.Contains("cross-reference") Then
+                        Else If result.errors(0).message.Contains("insufficient access rights") Then
                           Log.Write("Updating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                           Log.Write("Attempting without impersonation...")
                           impersonation = False
@@ -1825,7 +1825,7 @@ Namespace TeamSupport
                         action.SalesForceID = result.id
                         Dim actionLogDescription As String = "Sent Action to SalesForce as new CaseComment with ID: '" + result.id + "'."
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
-                      Else If result.errors(0).message.Contains("cross-reference") Then
+                      Else If result.errors(0).message.Contains("insufficient access rights") Then
                         Log.Write("Creating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                         Log.Write("Attempting without impersonation...")
                         impersonation = False
@@ -1859,7 +1859,7 @@ Namespace TeamSupport
                       If result.errors Is Nothing Then
                         Dim actionLogDescription As String = "Updated SalesForce CaseComment ID: '" + action.SalesForceID + "' with action changes."
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)                                  
-                      Else If result.errors(0).message.Contains("cross-reference") Then
+                      Else If result.errors(0).message.Contains("insufficient access rights") Then
                         Log.Write("Updating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                         Log.Write("Attempting without impersonation...")
                         impersonation = False
