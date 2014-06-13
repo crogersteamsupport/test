@@ -78,7 +78,7 @@
     font-size: 24px;
 }
 
-.userProperties i, .customProperties i{line-height: 2em;cursor:pointer}
+.assetProperties i, .customProperties i{line-height: 2em;cursor:pointer}
 
 .form-group p.editable, .editable {
     color:#428BCA;
@@ -101,7 +101,7 @@
 
 .w-wrap{word-wrap:break-word;}
 
-.userProperties p, .customProperties p{word-wrap:break-word;font-size: 12px}
+.assetProperties p, .customProperties p{word-wrap:break-word;font-size: 12px}
 
 .list-group-item-text a{
     word-wrap:break-word;

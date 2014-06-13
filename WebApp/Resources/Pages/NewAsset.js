@@ -38,6 +38,7 @@
 
   LoadProducts();
   LoadProductVersions();
+  LoadCustomControls();
 
   $('#ddlProduct').change(function (e) {
     LoadProductVersions();
@@ -59,35 +60,35 @@
     assetInfo.WarrantyExpiration = $("#inputWarrantyExpiration").val();
     assetInfo.Notes = $("#Notes").val();
 
-    //    assetInfo.Fields = new Array();
-    //    $('.customField:visible').each(function () {
-    //      var field = new Object();
-    //      field.CustomFieldID = $(this).attr("id");
-    //      switch ($(this).attr("type")) {
-    //        case "checkbox":
-    //          field.Value = $(this).prop('checked');
-    //          break;
-    //        case "date":
-    //          //    var dt = $(this).find('input').datepicker('getDate');
-    //          field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
-    //          break;
-    //        case "time":
-    //          //    var time = new Date("January 1, 1970 00:00:00");
-    //          //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
-    //          //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
-    //          field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
-    //          break;
-    //        case "datetime":
-    //          //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
-    //          //    var dt = $(this).find('input').datetimepicker('getDate');
-    //          //    field.Value = dt == null ? null : dt.toUTCString();
-    //          field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
-    //          break;
-    //        default:
-    //          field.Value = $(this).val();
-    //      }
-    //      customerInfo.Fields[customerInfo.Fields.length] = field;
-    //    });
+    assetInfo.Fields = new Array();
+    $('.customField:visible').each(function () {
+      var field = new Object();
+      field.CustomFieldID = $(this).attr("id");
+      switch ($(this).attr("type")) {
+        case "checkbox":
+          field.Value = $(this).prop('checked');
+          break;
+        case "date":
+          //    var dt = $(this).find('input').datepicker('getDate');
+          field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+          break;
+        case "time":
+          //    var time = new Date("January 1, 1970 00:00:00");
+          //    time.setHours($(this).find('input').timepicker('getDate')[0].value.substring(0, 2));
+          //    time.setMinutes($(this).find('input').timepicker('getDate')[0].value.substring(3, 5));
+          field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+          break;
+        case "datetime":
+          //    //field.Value = top.Ts.Utils.getMsDate($(this).find('input').datetimepicker('getDate'));
+          //    var dt = $(this).find('input').datetimepicker('getDate');
+          //    field.Value = dt == null ? null : dt.toUTCString();
+          field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+          break;
+        default:
+          field.Value = $(this).val();
+      }
+      assetInfo.Fields[assetInfo.Fields.length] = field;
+    });
 
 
     top.Ts.Services.Assets.SaveAsset(top.JSON.stringify(assetInfo), function (assetID) {
@@ -98,10 +99,17 @@
       alert('There was an error saving this asset.  Please try again.');
     });
   });
+
   $('#assetCancelBtn').click(function (e) {
     top.Ts.System.logAction('New Asset - Cancelled');
     top.Ts.MainPage.closenewCustomerTab();
   });
+
+  function LoadCustomControls() {
+    top.Ts.Services.Assets.LoadCustomControls(function (html) {
+      $('#customerCustomInfo').append(html);
+    });
+  }
 
   top.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
     //$('.datepicker').datepicker({ format: dateformat });

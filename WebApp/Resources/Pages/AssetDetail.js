@@ -38,207 +38,36 @@ $(document).ready(function () {
   var historyLoaded = 0;
   top.privateServices.SetUserSetting('SelectedAssetID', _assetID);
 
-  $('#assetRefresh').click(function (e) {
-    window.location = window.location;
-  });
+  LoadProperties();
+  LoadCustomProperties();
 
-  //  As below lets do if in Junkyard then set delete button to delete for admins only
-  //  if (!_isAdmin)
-  //    $('#customerDelete').hide();
-
-
-  // To implement once we've figure out the two types of asset functionality
-  //  $('#customerDelete').click(function (e) {
-  //    if (confirm('Are you sure you would like to remove this organization?')) {
-  //      top.privateServices.DeleteOrganization(organizationID, function (e) {
-  //        if (window.parent.document.getElementById('iframe-mniCustomers'))
-  //          window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
-  //        top.Ts.MainPage.closeNewCustomerTab(organizationID);
-  //      });
-  //    }
-  //  });
-
-  top.Ts.Services.Assets.GetAsset(_assetID, function (asset) {
-    if (asset.Name) {
-      $('#assetTitle').html(asset.Name);
+  $(".maincontainer").on("keypress", "input", (function (evt) {
+    //Deterime where our character code is coming from within the event
+    var charCode = evt.charCode || evt.keyCode;
+    if (charCode == 13) { //Enter key's keycode
+      return false;
     }
-    else if (asset.SerialNumber) {
-      $('#assetTitle').html(asset.SerialNumber);
-    }
-    else {
-      $('#assetTitle').html(asset.AssetID);
-    }
+  }));
 
-    $('#fieldName').text(asset.Name);
-    $('#fieldProduct').data('productID', asset.ProductID);
-    $('#fieldProduct').text(asset.ProductName);
-    $('#fieldProductVersion').data('productVersionID', asset.ProductVersionID);
-    if (asset.ProductVersionID == null) {
-      var product = top.Ts.Cache.getProduct(asset.ProductID);
-      if (product.Versions.length == 0) {
-        $('#fieldProductVersion').text('N/A');
-        $('#fieldProductVersion').removeClass("editable");
-      }
-      else {
-        $('#fieldProductVersion').text('Unassigned');
-        $('#fieldProductVersion').addClass("editable");
-      }
-    }
-    else {
-      $('#fieldProductVersion').text(asset.ProductVersionNumber);
-    }
-    $('#fieldSerialNumber').text(asset.SerialNumber);
-    $('#fieldWarrantyExpiration').text(top.Ts.Utils.getMsDate(asset.WarrantyExpiration).localeFormat(top.Ts.Utils.getDatePattern()));
-    $('#fieldNotes').text(asset.Notes);
-
-    $('#fieldAssetID').text(asset.AssetID);
-    $('#fieldCreator').text(asset.CreatorName);
-    $('#fieldDateCreated').text(top.Ts.Utils.getMsDate(asset.DateCreated).localeFormat(top.Ts.Utils.getDateTimePattern()));
-    $('#fieldModifier').text(asset.ModifierName);
-    $('#fieldDateModified').text(top.Ts.Utils.getMsDate(asset.DateModified).localeFormat(top.Ts.Utils.getDateTimePattern()));
-
-    switch (asset.Location) {
-      case '1':
-        $('#locationHeader').text('Assigned');
-        $('.assignedDetails').show();
-        $('.junkyardDetails').hide();
-        $('#assetToJunkyard').hide();
-        top.Ts.Services.Assets.GetAssetAssignments(_assetID, function (assetAssignments) {
-          _assetAssignments = assetAssignments;
-          for (var i = 0; i < assetAssignments.length; i++) {
-            $('<tr>').html('<td>' +
-            assetAssignments[i].NameAssignedTo + '</td><td>' +
-            top.Ts.Utils.getMsDate(assetAssignments[i].ActionTime).localeFormat(top.Ts.Utils.getDatePattern()) + '</td><td>' +
-            assetAssignments[i].ActorName + '</td><td>' +
-            assetAssignments[i].Comments + '</td><td>' +
-            '</td>').appendTo('#assignedTable > tbody:last');
-          }
-        });
-        break;
-      case '2':
-        $('#locationHeader').text('Warehouse');
-        $('#locationDetails').hide();
-        $('#returnAsset').hide();
-        break;
-      case '3':
-        $('#locationHeader').text('Junkyard');
-        $('.assignedDetails').hide();
-        $('.junkyardDetails').show();
-        $('#assetToJunkyard').hide();
-        break;
+  $('#historyToggle').on('click', function () {
+    if (historyLoaded == 0) {
+      historyLoaded = 1;
+      LoadHistory(1);
     }
   });
+
+  $('#historyRefresh').on('click', function () {
+    LoadHistory(1);
+  });
+
+  $('#assetTabs a:first').tab('show');
 
   $('#assetEdit').click(function (e) {
-    $('.userProperties p').toggleClass("editable");
-    //    $('.customProperties p').toggleClass("editable");
-    //    $("#phonePanel #editmenu").toggleClass("hiddenmenu");
-    //    $("#addressPanel #editmenu").toggleClass("hiddenmenu");
-    //    $(this).toggleClass("btn-primary");
-    //    $(this).toggleClass("btn-success");
-    //    $('#companyTabs a:first').tab('show');
-    //    if ((!_isAdmin && !top.Ts.System.User.HasPortalRights) || !top.Ts.System.User.CanEditCompany) {
-    //      $('#fieldPortalAccess').removeClass('editable');
-    //    }
-
-  });
-
-  $('#assetAssign').click(function (e) {
-    $('#modalAssignTitle').text('Assign asset');
-    $('#btnSaveReturn').hide();
-    $('#btnSaveAssign').show();
-    $('#comments').attr('placeholder', 'Comments about assigning this asset.');
-  });
-
-  $('#returnAsset').click(function (e) {
-    $('#modalAssignTitle').text('Return asset');
-    $('#btnSaveAssign').hide();
-    $('#btnSaveReturn').show();
-    $('#inputCustomerDiv').hide();
-    $('#comments').attr('placeholder', 'Comments about returning this asset.');
-  });
-
-  $('#btnSaveAssign').click(function (e) {
-    if ($('#inputCustomer').data('item') && $('#dateShipped').val()) {
-      var refType = 9;
-      if ($('#inputCustomer').data('item').data == 'u') {
-        refType = 32;
-      }
-
-      var assetAssignmentInfo = new Object();
-
-      assetAssignmentInfo.RefID = $('#inputCustomer').data('item').id;
-      assetAssignmentInfo.RefType = refType;
-      assetAssignmentInfo.DateShipped = $('#dateShipped').val();
-      assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
-      assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
-      assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
-      assetAssignmentInfo.Comments = $('#comments').val();
-
-      top.Ts.Services.Assets.AssignAsset(_assetID, top.JSON.stringify(assetAssignmentInfo), function (assetID) {
-        top.Ts.System.logAction('Asset Assigned');
-        $('#modalAssign').modal('hide');
-        window.location = window.location;
-      }, function () {
-        alert('There was an error assigning this asset.  Please try again.');
-      });
-    }
-    else {
-      if (!$('#inputCustomer').data('item')) {
-        alert("Please select a valid customer or contact to assign this asset to.");
-      }
-      else {
-        alert("Please enter a valid date shipped.");
-      }
-    }
-    //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
-    //      top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
-    //      $('#modalReminder').modal('hide');
-    //    }
-    //    else
-    //      alert("Please fill in all the fields");
-  });
-
-  $('#btnSaveReturn').click(function (e) {
-    if ($('#dateShipped').val()) {
-      var confirmed = true;
-      if (_assetAssignments && _assetAssignments.length > 1) {
-        confirmed = confirm("Returning the asset will unassigned it from all customers. Are you sure you want to proceed?");
-      }
-      if (confirmed) {
-        var assetReturnInfo = new Object();
-
-        assetReturnInfo.DateShipped = $('#dateShipped').val();
-        assetReturnInfo.TrackingNumber = $('#trackingNumber').val();
-        assetReturnInfo.ShippingMethod = $('#shippingMethod').val();
-        assetReturnInfo.ReferenceNumber = $('#referenceNumber').val();
-        assetReturnInfo.Comments = $('#comments').val();
-
-        top.Ts.Services.Assets.ReturnAsset(_assetID, top.JSON.stringify(assetReturnInfo), function (assetID) {
-          top.Ts.System.logAction('Asset Returned');
-          $('#modalAssign').modal('hide');
-          window.location = window.location;
-        }, function () {
-          alert('There was an error returning this asset.  Please try again.');
-        });
-      }
-      else {
-        window.location = window.location;
-      }
-    }
-    else {
-      alert("Please enter a valid date shipped.");
-    }
-  });
-
-  $('#btnJunkSave').click(function (e) {
-    top.Ts.Services.Assets.JunkAsset(_assetID, $('#junkingComments').val(), function (assetID) {
-      top.Ts.System.logAction('Asset Junked');
-      $('#modalJunk').modal('hide');
-      window.location = window.location;
-    }, function () {
-      alert('There was an error assigning this asset to the Junkyard.  Please try again.');
-    });
+    $('.assetProperties p').toggleClass("editable");
+    $('.customProperties p').toggleClass("editable");
+    $(this).toggleClass("btn-primary");
+    $(this).toggleClass("btn-success");
+    $('#assetTabs a:first').tab('show');
   });
 
   $('#fieldName').click(function (e) {
@@ -499,6 +328,132 @@ $(document).ready(function () {
     $('#assetEdit').addClass("disabled");
   });
 
+  top.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
+    $('.datepicker').attr("data-format", dateformat);
+    $('.datepicker').datetimepicker({ pickTime: false });
+
+    $('#productExpiration').attr("data-format", dateformat);
+    $('.datetimepicker').datetimepicker({});
+  });
+
+  $('#assetRefresh').click(function (e) {
+    window.location = window.location;
+  });
+
+  $('#assetAssign').click(function (e) {
+    $('#modalAssignTitle').text('Assign asset');
+    $('#btnSaveReturn').hide();
+    $('#btnSaveAssign').show();
+    $('#comments').attr('placeholder', 'Comments about assigning this asset.');
+  });
+
+  $('#returnAsset').click(function (e) {
+    $('#modalAssignTitle').text('Return asset');
+    $('#btnSaveAssign').hide();
+    $('#btnSaveReturn').show();
+    $('#inputCustomerDiv').hide();
+    $('#comments').attr('placeholder', 'Comments about returning this asset.');
+  });
+
+  //  As below lets do if in Junkyard then set delete button to delete for admins only
+  //  if (!_isAdmin)
+  //    $('#customerDelete').hide();
+
+
+  // To implement once we've figure out the two types of asset functionality
+  //  $('#customerDelete').click(function (e) {
+  //    if (confirm('Are you sure you would like to remove this organization?')) {
+  //      top.privateServices.DeleteOrganization(organizationID, function (e) {
+  //        if (window.parent.document.getElementById('iframe-mniCustomers'))
+  //          window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
+  //        top.Ts.MainPage.closeNewCustomerTab(organizationID);
+  //      });
+  //    }
+  //  });
+
+  $('#btnSaveAssign').click(function (e) {
+    if ($('#inputCustomer').data('item') && $('#dateShipped').val()) {
+      var refType = 9;
+      if ($('#inputCustomer').data('item').data == 'u') {
+        refType = 32;
+      }
+
+      var assetAssignmentInfo = new Object();
+
+      assetAssignmentInfo.RefID = $('#inputCustomer').data('item').id;
+      assetAssignmentInfo.RefType = refType;
+      assetAssignmentInfo.DateShipped = $('#dateShipped').val();
+      assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
+      assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
+      assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
+      assetAssignmentInfo.Comments = $('#comments').val();
+
+      top.Ts.Services.Assets.AssignAsset(_assetID, top.JSON.stringify(assetAssignmentInfo), function (assetID) {
+        top.Ts.System.logAction('Asset Assigned');
+        $('#modalAssign').modal('hide');
+        window.location = window.location;
+      }, function () {
+        alert('There was an error assigning this asset.  Please try again.');
+      });
+    }
+    else {
+      if (!$('#inputCustomer').data('item')) {
+        alert("Please select a valid customer or contact to assign this asset to.");
+      }
+      else {
+        alert("Please enter a valid date shipped.");
+      }
+    }
+    //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
+    //      top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
+    //      $('#modalReminder').modal('hide');
+    //    }
+    //    else
+    //      alert("Please fill in all the fields");
+  });
+
+  $('#btnSaveReturn').click(function (e) {
+    if ($('#dateShipped').val()) {
+      var confirmed = true;
+      if (_assetAssignments && _assetAssignments.length > 1) {
+        confirmed = confirm("Returning the asset will unassigned it from all customers. Are you sure you want to proceed?");
+      }
+      if (confirmed) {
+        var assetReturnInfo = new Object();
+
+        assetReturnInfo.DateShipped = $('#dateShipped').val();
+        assetReturnInfo.TrackingNumber = $('#trackingNumber').val();
+        assetReturnInfo.ShippingMethod = $('#shippingMethod').val();
+        assetReturnInfo.ReferenceNumber = $('#referenceNumber').val();
+        assetReturnInfo.Comments = $('#comments').val();
+
+        top.Ts.Services.Assets.ReturnAsset(_assetID, top.JSON.stringify(assetReturnInfo), function (assetID) {
+          top.Ts.System.logAction('Asset Returned');
+          $('#modalAssign').modal('hide');
+          window.location = window.location;
+        }, function () {
+          alert('There was an error returning this asset.  Please try again.');
+        });
+      }
+      else {
+        window.location = window.location;
+      }
+    }
+    else {
+      alert("Please enter a valid date shipped.");
+    }
+  });
+
+  $('#btnJunkSave').click(function (e) {
+    top.Ts.Services.Assets.JunkAsset(_assetID, $('#junkingComments').val(), function (assetID) {
+      top.Ts.System.logAction('Asset Junked');
+      $('#modalJunk').modal('hide');
+      window.location = window.location;
+    }, function () {
+      alert('There was an error assigning this asset to the Junkyard.  Please try again.');
+    });
+  });
+
   var getCustomers = function (request, response) {
     if (_execGetCustomer) { _execGetCustomer._executor.abort(); }
     _execGetCustomer = top.Ts.Services.Organizations.GetUserOrOrganizationForTicket(request.term, function (result) { response(result); });
@@ -516,18 +471,86 @@ $(document).ready(function () {
     }
   });
 
-  $("#dateShipped").datetimepicker();
+  function LoadCustomProperties() {
+    top.Ts.Services.Assets.GetCustomValues(_assetID, function (html) {
+      //$('#customProperties').append(html);
+      appendCustomValues(html);
 
-  $('#historyToggle').on('click', function () {
-    if (historyLoaded == 0) {
-      historyLoaded = 1;
-      LoadHistory(1);
-    }
-  });
+    });
+  }
 
-  $('#historyRefresh').on('click', function () {
-    LoadHistory(1);
-  });
+  function LoadProperties() {
+    top.Ts.Services.Assets.GetAsset(_assetID, function (asset) {
+      if (asset.Name) {
+        $('#assetTitle').html(asset.Name);
+      }
+      else if (asset.SerialNumber) {
+        $('#assetTitle').html(asset.SerialNumber);
+      }
+      else {
+        $('#assetTitle').html(asset.AssetID);
+      }
+
+      $('#fieldName').text(asset.Name);
+      $('#fieldProduct').data('productID', asset.ProductID);
+      $('#fieldProduct').text(asset.ProductName);
+      $('#fieldProductVersion').data('productVersionID', asset.ProductVersionID);
+      if (asset.ProductVersionID == null) {
+        var product = top.Ts.Cache.getProduct(asset.ProductID);
+        if (product.Versions.length == 0) {
+          $('#fieldProductVersion').text('N/A');
+          $('#fieldProductVersion').removeClass("editable");
+        }
+        else {
+          $('#fieldProductVersion').text('Unassigned');
+          $('#fieldProductVersion').addClass("editable");
+        }
+      }
+      else {
+        $('#fieldProductVersion').text(asset.ProductVersionNumber);
+      }
+      $('#fieldSerialNumber').text(asset.SerialNumber);
+      $('#fieldWarrantyExpiration').text(top.Ts.Utils.getMsDate(asset.WarrantyExpiration).localeFormat(top.Ts.Utils.getDatePattern()));
+      $('#fieldNotes').text(asset.Notes);
+
+      $('#fieldAssetID').text(asset.AssetID);
+      $('#fieldCreator').text(asset.CreatorName);
+      $('#fieldDateCreated').text(top.Ts.Utils.getMsDate(asset.DateCreated).localeFormat(top.Ts.Utils.getDateTimePattern()));
+      $('#fieldModifier').text(asset.ModifierName);
+      $('#fieldDateModified').text(top.Ts.Utils.getMsDate(asset.DateModified).localeFormat(top.Ts.Utils.getDateTimePattern()));
+
+      switch (asset.Location) {
+        case '1':
+          $('#locationHeader').text('Assigned');
+          $('.assignedDetails').show();
+          $('.junkyardDetails').hide();
+          $('#assetToJunkyard').hide();
+          top.Ts.Services.Assets.GetAssetAssignments(_assetID, function (assetAssignments) {
+            _assetAssignments = assetAssignments;
+            for (var i = 0; i < assetAssignments.length; i++) {
+              $('<tr>').html('<td>' +
+              assetAssignments[i].NameAssignedTo + '</td><td>' +
+              top.Ts.Utils.getMsDate(assetAssignments[i].ActionTime).localeFormat(top.Ts.Utils.getDatePattern()) + '</td><td>' +
+              assetAssignments[i].ActorName + '</td><td>' +
+              assetAssignments[i].Comments + '</td><td>' +
+              '</td>').appendTo('#assignedTable > tbody:last');
+            }
+          });
+          break;
+        case '2':
+          $('#locationHeader').text('Warehouse');
+          $('#locationDetails').hide();
+          $('#returnAsset').hide();
+          break;
+        case '3':
+          $('#locationHeader').text('Junkyard');
+          $('.assignedDetails').hide();
+          $('.junkyardDetails').show();
+          $('#assetToJunkyard').hide();
+          break;
+      }
+    });
+  }
 
   function LoadHistory(start) {
 
@@ -560,8 +583,561 @@ $(document).ready(function () {
     });
   }
 
+  $("#dateShipped").datetimepicker();
 
+  $('.customProperties, .assetProperties').on('keydown', '.number', function (event) {
+    // Allow only backspace and delete
+    if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 190 || event.keyCode == 109 || event.keyCode == 173 || (event.keyCode >= 96 && event.keyCode <= 105)) {
+      // let it happen, don't do anything
+    }
+    else {
+      // Ensure that it is a number and stop the keypress
+      if (event.keyCode < 48 || event.keyCode > 57) {
+        event.preventDefault();
+      }
+    }
+  });
+
+  $('#asset-overview').on('keydown', '.number', function (event) {
+    // Allow only backspace and delete
+    if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 190 || event.keyCode == 109 || event.keyCode == 173 || (event.keyCode >= 96 && event.keyCode <= 105)) {
+      // let it happen, don't do anything
+    }
+    else {
+      // Ensure that it is a number and stop the keypress
+      if (event.keyCode < 48 || event.keyCode > 57) {
+        event.preventDefault();
+      }
+    }
+  });
+
+  $('.assetProperties p').toggleClass("editable");
 });
+
+var getUrls = function (input) {
+  var source = (input || '').toString();
+  var url;
+  var matchArray;
+  var result = '';
+
+  // Regular expression to find FTP, HTTP(S) and email URLs. Updated to include urls without http
+  var regexToken = /(((ftp|https?|www):?\/?\/?)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g;
+
+  // Iterate through any URLs in the text.
+  while ((matchArray = regexToken.exec(source)) !== null) {
+    url = matchArray[0];
+    if (url.length > 2 && url.substring(0, 3) == 'www') {
+      url = 'http://' + url;
+    }
+    result = result + '<a target="_blank" class="valueLink" href="' + url + '" title="' + matchArray[0] + '">' + matchArray[0] + '</a>'
+  }
+
+  return result == '' ? input : result;
+}
+
+var appendCustomValues = function (fields) {
+  if (fields === null || fields.length < 1) {
+    $('.customProperties').empty();
+    return;
+  }
+  var containerL = $('#customPropertiesL').empty();
+  var containerR = $('#customPropertiesR').empty();
+
+
+  for (var i = 0; i < fields.length; i++) {
+    var item = null;
+
+    var field = fields[i];
+
+    var div = $('<div>').addClass('form-group').data('field', field);
+    $('<label>')
+          .addClass('col-md-4 control-label')
+          .text(field.Name)
+          .appendTo(div);
+
+    switch (field.FieldType) {
+      case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+      case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+      case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+      case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
+      case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+      case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+      case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
+      default:
+    }
+
+    if (i % 2)
+      containerR.append(div);
+    else
+      containerL.append(div);
+
+  }
+  $('.customProperties p').toggleClass("editable");
+  //$('#contactName').toggleClass("editable");
+}
+
+var appendCustomEditCombo = function (field, element) {
+  var div = $('<div>')
+    .addClass('col-md-8')
+    .appendTo(element);
+
+  var result = $('<p>')
+      .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+        e.preventDefault();
+        if (!$(this).hasClass('editable'))
+          return false;
+        var parent = $(this).hide();
+        top.Ts.System.logAction('Contact Detail - Edit Custom Combobox');
+        var container = $('<div>')
+            .insertAfter(parent);
+
+        var container1 = $('<div>')
+          .addClass('col-md-9')
+          .appendTo(container);
+
+        var fieldValue = parent.closest('.form-group').data('field').Value;
+        var select = $('<select>').addClass('form-control').attr('id', field.Name.replace(/\W/g, '')).appendTo(container1);
+
+        var items = field.ListValues.split('|');
+        for (var i = 0; i < items.length; i++) {
+          var option = $('<option>').text(items[i]).appendTo(select);
+          if (fieldValue === items[i]) { option.attr('selected', 'selected'); }
+        }
+
+        $('<i>')
+            .addClass('col-xs-1 fa fa-times')
+            .click(function (e) {
+              $(this).closest('div').remove();
+              parent.show();
+              $('#customerEdit').removeClass("disabled");
+            })
+            .insertAfter(container1);
+
+        $('#' + field.Name.replace(/\W/g, '')).on('change', function () {
+          var value = $(this).val();
+          container.remove();
+
+          if (field.IsRequired && field.IsFirstIndexSelect == true && $(this).find('option:selected').index() < 1) {
+            result.parent().addClass('has-error');
+          }
+          else {
+            result.parent().removeClass('has-error');
+          }
+          top.Ts.System.logAction('Contact Detail - Save Custom Edit Change');
+          top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+            parent.closest('.form-group').data('field', result);
+            parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+            parent.show();
+            $('#contactEdit').removeClass("disabled");
+          }, function () {
+            alert("There was a problem saving your contact property.");
+            $('#contactEdit').removeClass("disabled");
+          });
+        });
+
+        $('#contactEdit').addClass("disabled");
+      });
+  var items = field.ListValues.split('|');
+  if (field.IsRequired && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
+    result.parent().addClass('has-error');
+  }
+}
+
+var appendCustomEditNumber = function (field, element) {
+  var div = $('<div>')
+    .addClass('col-md-8')
+    .appendTo(element);
+
+  var result = $('<p>')
+      .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+        e.preventDefault();
+        if (!$(this).hasClass('editable'))
+          return false;
+        var parent = $(this).hide();
+        top.Ts.System.logAction('Contact Detail - Edit Custom Number');
+        var container = $('<div>')
+            .insertAfter(parent);
+
+        var container1 = $('<div>')
+          .addClass('col-md-9')
+          .appendTo(container);
+
+        var fieldValue = parent.closest('.form-group').data('field').Value;
+        var input = $('<input type="text">')
+            .addClass('col-md-10 form-control number')
+            .val(fieldValue)
+            .appendTo(container1)
+            .focus();
+
+        $('<i>')
+            .addClass('col-md-1 fa fa-times')
+            .click(function (e) {
+              $(this).closest('div').remove();
+              parent.show();
+              $('#contactEdit').removeClass("disabled");
+            })
+            .insertAfter(container1);
+        $('<i>')
+            .addClass('col-md-1 fa fa-check')
+            .click(function (e) {
+              var value = input.val();
+              container.remove();
+              if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                result.parent().addClass('has-error');
+              }
+              else {
+                result.parent().removeClass('has-error');
+              }
+              top.Ts.System.logAction('Contact Detail - Save Custom Number Edit');
+              top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                parent.closest('.form-group').data('field', result);
+                parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+                $('#contactEdit').removeClass("disabled");
+              }, function () {
+                alert("There was a problem saving your contact property.");
+                $('#contactEdit').removeClass("disabled");
+              });
+              parent.show();
+              $('#contactEdit').removeClass("disabled");
+            })
+            .insertAfter(container1);
+        $('#contactEdit').addClass("disabled");
+      });
+  if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+    result.parent().addClass('has-error');
+  }
+}
+
+var appendCustomEditBool = function (field, element) {
+
+  var div = $('<div>')
+    .addClass('col-md-8')
+    .appendTo(element);
+
+  var result = $('<p>')
+      .text((field.Value === null || $.trim(field.Value) === '' ? 'False' : field.Value))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+        e.preventDefault();
+        if (!$(this).hasClass('editable'))
+          return false;
+        //$('.form-group').prev().show().next().remove();
+        top.Ts.System.logAction('Contact Detail - Edit Custom Boolean Value');
+        var parent = $(this);
+        var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
+        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+          parent.closest('.form-group').data('field', result);
+          parent.text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
+        }, function () {
+          alert("There was a problem saving your contact property.");
+        });
+      });
+}
+
+var appendCustomEdit = function (field, element) {
+
+  var div = $('<div>')
+    .addClass('col-md-8')
+    .appendTo(element);
+
+  var result = $('<p>')
+      .html((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : getUrls(field.Value)))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+        if ($(this).has('a') && !$(this).hasClass('editable')) {
+          return;
+        }
+        else {
+          e.preventDefault();
+          if (!$(this).hasClass('editable'))
+            return false;
+          var parent = $(this).hide();
+          top.Ts.System.logAction('Contact Detail - Edit Custom Textbox');
+          var container = $('<div>')
+                .insertAfter(parent);
+
+          var container1 = $('<div>')
+              .addClass('col-md-9')
+              .appendTo(container);
+
+          var fieldValue = parent.closest('.form-group').data('field').Value;
+          var input = $('<input type="text">')
+                .addClass('col-md-10 form-control')
+                .val(fieldValue)
+                .appendTo(container1)
+                .focus();
+
+          if (field.Mask) {
+            input.mask(field.Mask);
+            input.attr("placeholder", field.Mask);
+          }
+
+          $('<i>')
+                .addClass('col-md-1 fa fa-times')
+                .click(function (e) {
+                  $(this).closest('div').remove();
+                  parent.show();
+                  $('#contactEdit').removeClass("disabled");
+                })
+                .insertAfter(container1);
+          $('<i>')
+                .addClass('col-md-1 fa fa-check')
+                .click(function (e) {
+                  var value = input.val();
+                  container.remove();
+                  if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                    result.parent().addClass('has-error');
+                  }
+                  else {
+                    result.parent().removeClass('has-error');
+                  }
+                  top.Ts.System.logAction('Contact Detail - Save Custom Textbox Edit');
+                  top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                    parent.closest('.form-group').data('field', result);
+                    parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
+                    $('#contactEdit').removeClass("disabled");
+                  }, function () {
+                    alert("There was a problem saving your contact property.");
+                    $('#contactEdit').removeClass("disabled");
+                  });
+                  parent.show();
+                })
+                .insertAfter(container1);
+          $('#contactEdit').addClass("disabled");
+        }
+      });
+
+  if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+    result.parent().addClass('has-error');
+  }
+}
+
+var appendCustomEditDate = function (field, element) {
+  var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+
+  var div = $('<div>')
+    .addClass('col-xs-8')
+    .appendTo(element);
+
+  var result = $('<p>')
+      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+        e.preventDefault();
+        if (!$(this).hasClass('editable'))
+          return false;
+        var parent = $(this).hide();
+        top.Ts.System.logAction('Contact Detail - Edit Custom Date');
+        var container = $('<div>')
+            .insertAfter(parent);
+
+        var container1 = $('<div>')
+          .addClass('col-xs-9')
+          .appendTo(container);
+
+        var fieldValue = parent.closest('.form-group').data('field').Value;
+        var input = $('<input type="text">')
+            .addClass('col-xs-10 form-control')
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getDatePattern()))
+            .datetimepicker({ pickTime: false })
+            .appendTo(container1)
+            .focus();
+
+        $('<i>')
+            .addClass('col-xs-1 fa fa-times')
+            .click(function (e) {
+              $(this).closest('div').remove();
+              parent.show();
+              $('#contactEdit').removeClass("disabled");
+            })
+            .insertAfter(container1);
+        $('<i>')
+            .addClass('col-xs-1 fa fa-check')
+            .click(function (e) {
+              var value = top.Ts.Utils.getMsDate(input.val());
+              container.remove();
+              if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                result.parent().addClass('has-error');
+              }
+              else {
+                result.parent().removeClass('has-error');
+              }
+              top.Ts.System.logAction('Contact Detail - Save Custom Date Change');
+              top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                parent.closest('.form-group').data('field', result);
+                var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                $('#contactEdit').removeClass("disabled");
+              }, function () {
+                alert("There was a problem saving your contact property.");
+                $('#contactEdit').removeClass("disabled");
+              });
+              parent.show();
+            })
+            .insertAfter(container1);
+        $('#contactEdit').addClass("disabled");
+      });
+  if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+    result.parent().addClass('has-error');
+  }
+
+}
+
+var appendCustomEditDateTime = function (field, element) {
+  var date = field.Value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+
+  var div = $('<div>')
+    .addClass('col-xs-8')
+    .appendTo(element);
+
+  var result = $('<p>')
+      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+        e.preventDefault();
+        if (!$(this).hasClass('editable'))
+          return false;
+        var parent = $(this).hide();
+        top.Ts.System.logAction('Contact Detail - Edit Custom DateTime');
+        var container = $('<div>')
+            .insertAfter(parent);
+
+        var container1 = $('<div>')
+          .addClass('col-xs-9')
+          .appendTo(container);
+
+        var fieldValue = parent.closest('.form-group').data('field').Value;
+        var input = $('<input type="text">')
+            .addClass('col-xs-10 form-control')
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getDateTimePattern()))
+            .datetimepicker({
+            })
+
+            .appendTo(container1)
+            .focus();
+
+        $('<i>')
+            .addClass('col-xs-1 fa fa-times')
+            .click(function (e) {
+              $(this).closest('div').remove();
+              parent.show();
+              $('#contactEdit').removeClass("disabled");
+            })
+            .insertAfter(container1);
+        $('<i>')
+            .addClass('col-xs-1 fa fa-check')
+            .click(function (e) {
+              var value = top.Ts.Utils.getMsDate(input.val());
+              container.remove();
+              if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                result.parent().addClass('has-error');
+              }
+              else {
+                result.parent().removeClass('has-error');
+              }
+              top.Ts.System.logAction('Contact Detail - Save Custom DateTime');
+              top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                parent.closest('.form-group').data('field', result);
+                var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                $('#contactEdit').removeClass("disabled");
+              }, function () {
+                alert("There was a problem saving your contact property.");
+                $('#contactEdit').removeClass("disabled");
+              });
+              parent.show();
+            })
+            .insertAfter(container1);
+        $('#contactEdit').addClass("disabled");
+      });
+  if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+    result.parent().addClass('has-error');
+  }
+
+}
+
+var appendCustomEditTime = function (field, element) {
+  var date = field.Value == null ? null : field.Value;
+
+  var div = $('<div>')
+    .addClass('col-xs-8')
+    .appendTo(element);
+
+  var result = $('<p>')
+      .text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+      .addClass('form-control-static editable')
+      .appendTo(div)
+      .click(function (e) {
+        e.preventDefault();
+        if (!$(this).hasClass('editable'))
+          return false;
+        var parent = $(this).hide();
+        top.Ts.System.logAction('Contact Detail - Edit Custom Time');
+        var container = $('<div>')
+            .insertAfter(parent);
+
+        var container1 = $('<div>')
+          .addClass('col-xs-9')
+          .appendTo(container);
+
+        var fieldValue = parent.closest('.form-group').data('field').Value;
+        var input = $('<input type="text">')
+            .addClass('col-xs-10 form-control')
+            .val(fieldValue === null ? '' : fieldValue.localeFormat(top.Ts.Utils.getTimePattern()))
+            .datetimepicker({ pickDate: false })
+
+            .appendTo(container1)
+            .focus();
+
+        $('<i>')
+            .addClass('col-xs-1 fa fa-times')
+            .click(function (e) {
+              $(this).closest('div').remove();
+              parent.show();
+              $('#contactEdit').removeClass("disabled");
+            })
+            .insertAfter(container1);
+        $('<i>')
+            .addClass('col-xs-1 fa fa-check')
+            .click(function (e) {
+              var value = top.Ts.Utils.getMsDate("1/1/1900 " + input.val());
+              container.remove();
+              if (field.IsRequired && (value === null || $.trim(value) === '')) {
+                result.parent().addClass('has-error');
+              }
+              else {
+                result.parent().removeClass('has-error');
+              }
+              top.Ts.System.logAction('Contact Detail - Save Custom Time');
+              top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+                parent.closest('.form-group').data('field', result);
+                var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+                $('#contactEdit').removeClass("disabled");
+              }, function () {
+                alert("There was a problem saving your contact property.");
+                $('#contactEdit').removeClass("disabled");
+              });
+              parent.show();
+            })
+            .insertAfter(container1);
+        $('#contactEdit').addClass("disabled");
+      });
+  if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
+    result.parent().addClass('has-error');
+  }
+
+}
 
 function onShow() {
   _assetDetailPage.refresh();

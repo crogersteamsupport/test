@@ -106,33 +106,33 @@ namespace TSWebServices
       string description = String.Format("{0} created asset {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, GetAssetReference(asset));
       ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Assets, asset.AssetID, description);
 
-      //foreach (CustomFieldSaveInfo field in info.Fields)
-      //{
-      //  CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organization.OrganizationID);
-      //  if (field.Value == null)
-      //  {
-      //    customValue.Value = "";
-      //  }
-      //  else
-      //  {
-      //    if (customValue.FieldType == CustomFieldType.DateTime)
-      //    {
-      //      customValue.Value = ((DateTime)field.Value).ToString();
-      //      //DateTime dt;
-      //      //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
-      //      //{
-      //      //    customValue.Value = dt.ToUniversalTime().ToString();
-      //      //}
-      //    }
-      //    else
-      //    {
-      //      customValue.Value = field.Value.ToString();
-      //    }
+      foreach (CustomFieldSaveInfo field in info.Fields)
+      {
+        CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, asset.AssetID);
+        if (field.Value == null)
+        {
+          customValue.Value = "";
+        }
+        else
+        {
+          if (customValue.FieldType == CustomFieldType.DateTime)
+          {
+            customValue.Value = ((DateTime)field.Value).ToString();
+            //DateTime dt;
+            //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+            //{
+            //    customValue.Value = dt.ToUniversalTime().ToString();
+            //}
+          }
+          else
+          {
+            customValue.Value = field.Value.ToString();
+          }
 
-      //  }
+        }
 
-      //  customValue.Collection.Save();
-      //}
+        customValue.Collection.Save();
+      }
 
       AssetHistory history = new AssetHistory(loginUser);
       AssetHistoryItem historyItem = history.AddNewAssetHistoryItem();
@@ -513,6 +513,209 @@ namespace TSWebServices
       return string.Format(recentHTML, assetsView[0].AssetID, icon, color, displayName);
     }
 
+    [WebMethod]
+    public string LoadCustomControls()
+    {
+      CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+      fields.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Assets, -1);
+      int count = 0;
+
+      StringBuilder htmltest = new StringBuilder("");
+
+      htmltest.Append("<div class='form-group'>");
+
+      foreach (CustomField field in fields)
+      {
+        if (count == 0)
+        {
+          htmltest.Append("<div class='row'>");
+          count++;
+        }
+
+        htmltest.AppendFormat("<div class='col-xs-4'><label for='{0}' class='col-xs-4 control-label'>{1}</label>", field.CustomFieldID, field.Name);
+        switch (field.FieldType)
+        {
+          case CustomFieldType.Text: htmltest.AppendLine(CreateTextControl(field)); break;
+          case CustomFieldType.Number: htmltest.AppendLine(CreateNumberControl(field)); break;
+          case CustomFieldType.Time: htmltest.AppendLine(CreateTimeControl(field)); break;
+          case CustomFieldType.Date: htmltest.AppendLine(CreateDateControl(field)); break;
+          case CustomFieldType.DateTime: htmltest.AppendLine(CreateDateTimeControl(field)); break;
+          case CustomFieldType.Boolean: htmltest.AppendLine(CreateBooleanControl(field)); break;
+          case CustomFieldType.PickList: htmltest.AppendLine(CreatePickListControl(field)); break;
+          default: break;
+        }
+        htmltest.Append("</div>");
+        count++;
+
+        if (count % 4 == 0)
+        {
+          htmltest.Append("</div>"); //end row
+          count = 0;
+        }
+      }
+      if (count != 0)
+      {
+        count = 0;
+        htmltest.Append("</div>"); // end row if not closed
+      }
+      htmltest.Append("</div>"); //end form-group
+
+      count = 0;
+
+      return htmltest.ToString();
+    }
+
+    public string CreateTextControl(CustomField field, bool isEditable = false, int organizationID = -1)
+    {
+      StringBuilder html = new StringBuilder();
+
+      if (isEditable)
+      {
+        CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
+        html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
+                                    </div>", field.CustomFieldID, field.Name, value.Value);
+      }
+      else
+      {
+        html.AppendFormat("<div class='col-xs-8'><input class='form-control col-xs-10 customField {1}' id='{0}' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+      }
+      return html.ToString();
+    }
+
+    public string CreateNumberControl(CustomField field, bool isEditable = false, int organizationID = -1)
+    {
+      StringBuilder html = new StringBuilder();
+      if (isEditable)
+      {
+        CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
+        html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
+                                    </div>", field.CustomFieldID, field.Name, value.Value);
+      }
+      else
+        html.AppendFormat("<div class='col-xs-8'><input class='form-control col-xs-10 customField number {1}' id='{0}'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+
+      return html.ToString();
+    }
+
+    public string CreateDateControl(CustomField field, bool isEditable = false, int organizationID = -1)
+    {
+      StringBuilder html = new StringBuilder();
+      if (isEditable)
+      {
+        CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
+        html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
+                                    </div>", field.CustomFieldID, field.Name, value.Value);
+      }
+      else
+        html.AppendFormat("<div class='col-xs-8'><input class='form-control datepicker col-xs-10 customField {1}' id='{0}' type='date' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+
+      return html.ToString();
+    }
+
+    public string CreateTimeControl(CustomField field, bool isEditable = false, int organizationID = -1)
+    {
+      StringBuilder html = new StringBuilder();
+      if (isEditable)
+      {
+        CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
+        html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
+                                    </div>", field.CustomFieldID, field.Name, value.Value);
+      }
+      else
+        html.AppendFormat("<div class='col-xs-8'><input class='form-control timepicker col-xs-10 customField {1}' id='{0}' type='time'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+
+      return html.ToString();
+    }
+
+    public string CreateDateTimeControl(CustomField field, bool isEditable = false, int organizationID = -1)
+    {
+      StringBuilder html = new StringBuilder();
+      if (isEditable)
+      {
+        CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
+        html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
+                                    </div>", field.CustomFieldID, field.Name, value.Value);
+      }
+      else
+        html.AppendFormat("<div class='col-xs-8'><input class='form-control datetimepicker col-xs-10 customField {1}' id='{0}' type='datetime'  name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+
+      return html.ToString();
+    }
+
+    public string CreateBooleanControl(CustomField field, bool isEditable = false, int organizationID = -1)
+    {
+      StringBuilder html = new StringBuilder();
+      if (isEditable)
+      {
+        CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
+        html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='text'>{2}</a></p> 
+                                        </div> 
+                                    </div>", field.CustomFieldID, field.Name, value.Value);
+      }
+      else
+      {
+        html.AppendFormat("<div class='col-xs-1'><label><input class='customField' id='{0}' type='checkbox'></label></div>", field.CustomFieldID);
+      }
+      return html.ToString();
+    }
+
+    public string CreatePickListControl(CustomField field, bool isEditable = false, int organizationID = -1)
+    {
+      StringBuilder html = new StringBuilder();
+      string[] items = field.ListValues.Split('|');
+      if (isEditable)
+      {
+        CustomValue value = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, organizationID);
+        html.AppendFormat(@"<div class='form-group'> 
+                                        <label for='{0}' class='col-xs-4 control-label'>{1}</label> 
+                                        <div class='col-xs-8'> 
+                                            <p class='form-control-static'><a class='editable' id='{0}' data-type='select'>{2}</a></p> 
+                                        </div> 
+                                    </div>", field.CustomFieldID, field.Name, value.Value);
+      }
+      else
+      {
+        html.AppendFormat("<div class='col-xs-8'><select class='form-control customField' id='{0}'  name='{0}' type='picklist'>", field.CustomFieldID);
+        foreach (string item in items)
+        {
+          html.AppendFormat("<option value='{0}'>{1}</option>", item, item);
+        }
+        html.Append("</select></div>");
+      }
+      return html.ToString();
+    }
+
+    [WebMethod]
+    public CustomValueProxy[] GetCustomValues(int assetID)
+    {
+      CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
+      values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Assets, assetID);
+      return values.GetCustomValueProxies();
+    }
+
   }
 
   public class NewAssetSave
@@ -552,4 +755,5 @@ namespace TSWebServices
     [DataMember]
     public string Comments { get; set; }
   }
+
 }
