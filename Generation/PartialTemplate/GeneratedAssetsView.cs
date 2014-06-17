@@ -45,6 +45,12 @@ namespace TeamSupport.Data
       set { Row["ProductID"] = CheckValue("ProductID", value); }
     }
     
+    public string ProductName
+    {
+      get { return Row["ProductName"] != DBNull.Value ? (string)Row["ProductName"] : null; }
+      set { Row["ProductName"] = CheckValue("ProductName", value); }
+    }
+    
     public int? ProductVersionID
     {
       get { return Row["ProductVersionID"] != DBNull.Value ? (int?)Row["ProductVersionID"] : null; }
@@ -117,12 +123,6 @@ namespace TeamSupport.Data
     {
       get { return (int)Row["OrganizationID"]; }
       set { Row["OrganizationID"] = CheckValue("OrganizationID", value); }
-    }
-    
-    public string ProductName
-    {
-      get { return (string)Row["ProductName"]; }
-      set { Row["ProductName"] = CheckValue("ProductName", value); }
     }
     
     public int AssetID
