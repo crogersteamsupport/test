@@ -2011,9 +2011,9 @@ Namespace TeamSupport
 
             Private Function TruncateCaseCommentBody(ByVal input As String) As String
               'The official CaseComment limit is 4000 bytes but while testing a 3994 character count exceeded the limit. So I set it to 3900.
-              If input IsNot Nothing AndAlso input.Length > 3800 Then
-                Log.Write("Truncated too large case comment.")
-                Return input.Substring(0, 3650) + "... (This comment has been truncated because it exceeds SalesForce max length of 4000 characters. The full comment is available in TeamSupport.)"
+              If input IsNot Nothing AndAlso input.Length > 3700 Then
+                Log.Write("Truncated to 3550 too large case comment.")
+                Return input.Substring(0, 3550) + "... (This comment has been truncated because it exceeds SalesForce max length of 4000 characters. The full comment is available in TeamSupport.)"
               Else
                 Return input
               End If
