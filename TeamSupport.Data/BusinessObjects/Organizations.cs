@@ -2172,23 +2172,39 @@ ORDER BY o.Name";
       }
     }
 
-    public static void SetAllPortalUsers(LoginUser loginUser, int organizationID, bool value)
+    public static void SetAllPortalUsers(LoginUser loginUser, int organizationID, bool sendEmails)
     {
+      Users users = new Users(loginUser);
+      users.LoadContacts(organizationID, true);
+      Random random = new Random();
+      foreach (User user in users)
+      {
+        if (!user.IsPortalUser)
+        {
+          user.IsPortalUser = true;
+          if (sendEmails)
+          {
+            string password = DataUtils.GenerateRandomPassword(random);
+            user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
+            user.IsPasswordExpired = true;
+            user.Collection.Save();
+            EmailPosts.SendWelcomePortalUser(loginUser, user.UserID, password);
+          }
+        }
+      }
+
       SqlCommand command = new SqlCommand();
+      command.CommandText = "UPDATE Organizations SET HasPortalAccess = 1 WHERE ParentID = @OrganizationID";
+      command.Parameters.AddWithValue("OrganizationID", organizationID);
+      SqlExecutor.ExecuteNonQuery(loginUser, command);
+/*
+      //EmailPosts.SendWelcomePortalUser(TSAuthentication.GetLoginUser(), user.UserID, password);
+
+      command = new SqlCommand();
       command.CommandText = "UPDATE Users SET IsPortalUser = @Value WHERE OrganizationID IN (SELECT OrganizationID FROM Organizations WHERE ParentID=@OrganizationID)";
       command.Parameters.AddWithValue("OrganizationID", organizationID);
       command.Parameters.AddWithValue("Value", value ? 1 : 0);
-      SqlExecutor.ExecuteNonQuery(loginUser, command);
-      
-      command = new SqlCommand();
-      command.CommandText = "UPDATE Organizations SET HasPortalAccess = @Value WHERE ParentID = @OrganizationID";
-      command.Parameters.AddWithValue("OrganizationID", organizationID);
-      command.Parameters.AddWithValue("Value", value ? 1 : 0);
-      SqlExecutor.ExecuteNonQuery(loginUser, command);
-
-      //Organization organization = Organizations.GetOrganization(loginUser, organizationID);
-      //organization.HasPortalAccess = value;
-      //organization.Collection.Save();
+      SqlExecutor.ExecuteNonQuery(loginUser, command);*/
     }
 
     public Organization FindByImportID(string importID)

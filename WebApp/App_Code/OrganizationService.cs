@@ -523,10 +523,10 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public void AdminSetAllPortalUsers(int organizationID, bool value)
+    public void AdminSetAllPortalUsers(int organizationID, bool sendEmails)
     {
       if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
-      Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, value);
+      Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails);
     }
 
 

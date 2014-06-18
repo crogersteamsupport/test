@@ -626,6 +626,11 @@ namespace TeamSupport.Data
     public static string GenerateRandomPassword()
     {
       Random random = new Random();
+      return GenerateRandomPassword(random);
+    }
+
+    public static string GenerateRandomPassword(Random random)
+    {
       string[] chars = { "abcdefgijkmnopqrstwxyz", "ABCDEFGHJKLMNPQRSTWXYZ", "123456789", "*$-+?_&=!%{}/" };
       StringBuilder builder = new StringBuilder();
       int length = random.Next(8, 12);
