@@ -93,6 +93,7 @@ namespace TeamSupport.Api
           case "/tickets/{id}/actions/{id}/": data = RestActions.GetAction(_command, GetId(3)); break;
           case "/tickets/{id}/actions/{id}/attachments/": data = RestAttachments.GetAttachments(_command, GetId(3)); break;
           case "/tickets/{id}/actions/{id}/attachments/{id}/": data = RestAttachments.GetAttachment(_command, GetId(5)); break;
+          case "/tickets/{id}/relatedtickets/": data = RestTickets.GetRelatedTickets(_command, GetId(1)); break;
           case "/customers/": data = RestOrganizations.GetOrganizations(_command); break;
           case "/customers/{id}/": data = RestOrganizations.GetOrganization(_command, GetId(1)); break;
           case "/customers/{id}/history/": data = RestActionLogs.GetItems(_command, ReferenceType.Organizations, GetId(1)); break;

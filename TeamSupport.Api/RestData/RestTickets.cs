@@ -246,5 +246,15 @@ namespace TeamSupport.Api
       ticket = Tickets.GetTicket(command.LoginUser, ticket.TicketID);
       return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
     }
+
+    public static string GetRelatedTickets(RestCommand command, int ticketID)
+    {
+      TicketsView tickets = new TicketsView(command.LoginUser);
+      tickets.LoadRelated(ticketID);
+      if (tickets.Count > 0 && tickets[0].OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+
+      return tickets.GetXml("Tickets", "Ticket", true, command.Filters);
+    }
+
   }
 }
