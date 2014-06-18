@@ -355,6 +355,11 @@ $(document).ready(function () {
     $('#comments').attr('placeholder', 'Comments about returning this asset.');
   });
 
+  $('#fileToggle').click(function (e) {
+    top.Ts.System.logAction('Asset Detail - Toggle File Form');
+    $('#fileForm').toggle();
+  });
+
   //  As below lets do if in Junkyard then set delete button to delete for admins only
   //  if (!_isAdmin)
   //    $('#customerDelete').hide();
@@ -452,6 +457,104 @@ $(document).ready(function () {
     }, function () {
       alert('There was an error assigning this asset to the Junkyard.  Please try again.');
     });
+  });
+
+  $("#btnFilesCancel").click(function (e) {
+    top.Ts.System.logAction('Asset Detail - Cancel File Form');
+    $('.upload-queue').empty();
+    $('#attachmentDescription').val('');
+    $('#fileForm').toggle();
+  });
+
+  $('#btnFilesSave').click(function (e) {
+    top.Ts.System.logAction('Asset Detail - Save Files');
+    if ($('.upload-queue li').length > 0) {
+      $('.upload-queue li').each(function (i, o) {
+        var data = $(o).data('data');
+        data.formData = { description: $('#attachmentDescription').val().replace(/<br\s?\/?>/g, "\n") };
+        data.url = '../../../Upload/AssetAttachments/' + _assetID;
+        data.jqXHR = data.submit();
+        $(o).data('data', data);
+      });
+    }
+    //$('#fileForm').toggle();
+  });
+
+  $('.file-upload').fileupload({
+    namespace: 'asset_attachment',
+    dropZone: $('.file-upload'),
+    add: function (e, data) {
+      for (var i = 0; i < data.files.length; i++) {
+        var item = $('<li>')
+                  .appendTo($('.upload-queue'));
+
+        data.context = item;
+        item.data('data', data);
+
+        var bg = $('<div>')
+                  .addClass('ts-color-bg-accent')
+                  .appendTo(item);
+
+        $('<div>')
+                  .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                  .addClass('filename')
+                  .appendTo(bg);
+
+        $('<span>')
+                  .addClass('icon-remove')
+                  .click(function (e) {
+                    e.preventDefault();
+                    $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                  })
+                  .appendTo(bg);
+
+        $('<span>')
+                  .addClass('icon-remove')
+                  .hide()
+                  .click(function (e) {
+                    e.preventDefault();
+                    var data = $(this).closest('li').data('data');
+                    data.jqXHR.abort();
+                  })
+                  .appendTo(bg);
+
+        var progress = $('<div>')
+                  .addClass('progress progress-striped active')
+                  .hide();
+
+        $('<div>')
+                    .addClass('progress-bar')
+                    .attr('role', 'progressbar')
+                    .appendTo(progress);
+
+        progress.appendTo(bg);
+      }
+
+    },
+    send: function (e, data) {
+      if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
+        data.context.find('.progress-bar').css('width', '50%');
+      }
+    },
+    fail: function (e, data) {
+      if (data.errorThrown === 'abort') return;
+      alert('There was an error uploading "' + data.files[0].name + '".');
+    },
+    progress: function (e, data) {
+      data.context.find('.progress-bar').css('width', parseInt(data.loaded / data.total * 100, 10) + '%');
+    },
+    start: function (e, data) {
+      $('.progress').show();
+      $('.upload-queue .ui-icon-close').hide();
+      $('.upload-queue .ui-icon-cancel').show();
+    },
+    stop: function (e, data) {
+      //data.context.find('.progress-bar').css('width', '100%');
+      LoadFiles();
+      $('.upload-queue').empty();
+      $('#attachmentDescription').val('');
+      $('#fileForm').toggle();
+    }
   });
 
   var getCustomers = function (request, response) {

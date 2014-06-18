@@ -53,6 +53,7 @@
         <ul class="nav nav-tabs" id="assetTabs">
           <li><a href="#asset-overview" data-toggle="tab">Details</a></li>
           <li><a href="#asset-tickets" data-toggle="tab">Tickets</a></li>
+          <li><a href="#asset-attachments" data-toggle="tab">Files</a></li>
         </ul>
       </div>
     </div>
@@ -250,6 +251,66 @@
         <div class="tab-pane fade" id="asset-tickets">
           <iframe id="ticketIframe" frameborder="0" scrolling="no" src="" width="100%" style="height: 96%;
             position: absolute"></iframe>
+        </div>
+        <div class="tab-pane fade" id="asset-attachments">
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="box" id="fileForm" style="display: none;">
+                <div class="box-header">
+                </div>
+                <div class="box-content">
+                  <form 
+                    class="form-horizontal file-upload" 
+                    action="Upload/Actions/555" 
+                    method="POST"
+                    enctype="multipart/form-data" 
+                    title="You can drag and drop your attachments here.">
+                  <div class="form-group">
+                    <label for="inputName" class="col-md-1 control-label">File</label>
+                    <div class="col-md-10">
+                      <input class="hiddenfile" type="file" name="file[]">
+                      <p class="form-control-static"><a class="ui-state-default ts-link" href="#" title="You can drag and drop your attachments here.">
+                        Click to select your file or drag and drop files here.</a></p>
+                      <ul class="upload-queue"></ul>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputName" class="col-md-1 control-label">Description</label>
+                    <div class="col-md-10">
+                      <textarea class="col-md-3 form-control" id="attachmentDescription"></textarea>
+                    </div>
+                  </div>
+                  </form>
+                  <button id="btnFilesSave" class="btn btn-primary col-md-offset-1">Upload</button>
+                  <button id="btnFilesCancel" class="btn btn-default">Cancel</button>
+                </div>
+              </div>
+              <div class="box">
+                <div class="box-header">
+                  <button id="fileToggle" class="btn btn-primary">Add Files</button>
+                </div>
+                <div class="box-content">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <table class="table table-hover" id="tblFiles">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>File Name</th>
+                            <th>Description</th>
+                            <th>Attached By</th>
+                            <th>Date Attached</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
