@@ -40,6 +40,7 @@ $(document).ready(function () {
 
   LoadProperties();
   LoadCustomProperties();
+  LoadFiles();
 
   $(".maincontainer").on("keypress", "input", (function (evt) {
     //Deterime where our character code is coming from within the event
@@ -459,6 +460,23 @@ $(document).ready(function () {
     });
   });
 
+  $('#tblFiles').on('click', '.viewFile', function (e) {
+    e.preventDefault();
+    top.Ts.MainPage.openNewAttachment($(this).parent().attr('id'));
+  });
+
+  $('#tblFiles').on('click', '.delFile', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm('Are you sure you would like to remove this attachment?')) {
+      top.Ts.System.logAction('Asset Detail - Delete File');
+      top.privateServices.DeleteAttachment($(this).parent().parent().attr('id'), function (e) {
+        LoadFiles();
+      });
+
+    }
+  });
+
   $("#btnFilesCancel").click(function (e) {
     top.Ts.System.logAction('Asset Detail - Cancel File Form');
     $('.upload-queue').empty();
@@ -685,6 +703,38 @@ $(document).ready(function () {
                    .appendTo('#tblHistory > tbody:last');
     });
   }
+
+  function LoadFiles() {
+    $('#tblFiles tbody').empty();
+    top.Ts.Services.Assets.LoadFiles(_assetID, top.Ts.ReferenceTypes.Assets, function (files) {
+      for (var i = 0; i < files.length; i++) {
+        var tr = $('<tr>')
+                .attr('id', files[i].AttachmentID)
+                .html('<td><i class="fa fa-trash-o delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>')
+                .appendTo('#tblFiles > tbody:last');
+
+
+        //$('#tblFiles > tbody:last').appendTo('<tr id=' +  + '></tr>');
+      }
+    });
+  }
+
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    if (e.target.innerHTML == "Tickets")
+      $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_CustomerID=" + organizationID);
+//    else if (e.target.innerHTML == "Watercooler")
+//      $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=2&pageid=" + organizationID);
+//    else if (e.target.innerHTML == "Details")
+//      createTestChart();
+//    else if (e.target.innerHTML == "Contacts")
+//      LoadContacts();
+//    else if (e.target.innerHTML == "Notes")
+//      LoadNotes();
+    else if (e.target.innerHTML == "Files")
+      LoadFiles();
+//    else if (e.target.innerHTML == "Ratings")
+//      LoadRatings('', 1);
+  })
 
   $("#dateShipped").datetimepicker();
 

@@ -716,6 +716,15 @@ namespace TSWebServices
       return values.GetCustomValueProxies();
     }
 
+    [WebMethod]
+    public AttachmentProxy[] LoadFiles(int refID, ReferenceType refType)
+    {
+      Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
+      attachments.LoadByReference(refType, refID);
+
+      return attachments.GetAttachmentProxies();
+    }
+
   }
 
   public class NewAssetSave
