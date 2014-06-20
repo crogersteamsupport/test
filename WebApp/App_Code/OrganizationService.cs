@@ -1012,6 +1012,16 @@ namespace TSWebServices
             return organizations[0].Name.ToString();
     }
 
+    [WebMethod]
+    public string GetEvergageData(int orgID)
+    {
+      using (WebClient client = new WebClient())
+      {
+        return client.DownloadString("https://teamsupport.evergage.com/api/dataset/MainApp/accounts.json?_at=AD84A537-E376-65FC-3351-767A6DC6EB12&extCompanyID=" + orgID.ToString());
+      }
+    
+    }
+
   }
 
 

@@ -61,6 +61,8 @@
           appendProperty('Inventory Enabled', '<a href="#" class="action-toggle-inventory">' + org.IsInventoryEnabled.toString() + '</a>');
           appendProperty('API Request Limit', org.APIRequestLimit);
           appendProperty('User Seats', org.UserSeats);
+          appendProperty('Engagement Score', '<span class="evergage-prop eng-score"><i class="fa fa-spinner fa-spin"></i></span>');
+          appendProperty('Total Actions', '<span class="evergage-prop total-actions"><i class="fa fa-spinner fa-spin"></i></span>');
           top.Ts.Services.Organizations.AdminGetUserCount(orgID, function (count) {
             appendProperty('Active Users', count);
           });
@@ -70,6 +72,25 @@
 
           $('.evergage-company').attr('href', getEGCompanyLink());
           showUsers(org);
+          getEngagementScore(org.OrganizationID);
+
+        });
+      }
+
+      function getEngagementScore(orgID) {
+
+        top.Ts.Services.Organizations.GetEvergageData(orgID, function (data) {
+          $('.evergage-prop').html('');
+          var o = JSON.parse(data);
+          for (var i = 0; i < o.length; i++) {
+            if (o[i].attributes.extCompanyID == orgID) {
+              $('.eng-score').html(o[i].engagementScore);
+              $('.total-actions').html(o[i].totalActions);
+              return;
+            }
+          }
+          $('.evergage-prop').html('Error Retrieving');
+
 
         });
       }
