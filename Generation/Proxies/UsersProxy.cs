@@ -80,6 +80,7 @@ namespace TeamSupport.Data
     [DataMember] public bool RestrictUserFromEditingAnyActions { get; set; }
     [DataMember] public bool AllowUserToEditAnyAction { get; set; }
     [DataMember] public bool UserCanPinAction { get; set; }
+    [DataMember] public bool PortalLimitOrgTickets { get; set; }
           
   }
   
@@ -88,6 +89,7 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
+      result.PortalLimitOrgTickets = this.PortalLimitOrgTickets;
       result.UserCanPinAction = this.UserCanPinAction;
       result.AllowUserToEditAnyAction = this.AllowUserToEditAnyAction;
       result.RestrictUserFromEditingAnyActions = this.RestrictUserFromEditingAnyActions;

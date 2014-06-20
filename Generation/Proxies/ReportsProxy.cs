@@ -34,6 +34,7 @@ namespace TeamSupport.Data
     [DataMember] public ReportType ReportDefType { get; set; }
     [DataMember] public DateTime DateEdited { get; set; }
     [DataMember] public int EditorID { get; set; }
+    [DataMember] public int? FolderID { get; set; }
           
   }
   
@@ -42,6 +43,7 @@ namespace TeamSupport.Data
     public ReportProxy GetProxy()
     {
       ReportProxy result = new ReportProxy();
+      result.FolderID = this.FolderID;
       result.EditorID = this.EditorID;
       result.ReportDefType = this.ReportDefType;
       result.ReportDef = this.ReportDef;

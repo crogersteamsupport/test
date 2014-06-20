@@ -80,6 +80,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("RestrictUserFromEditingAnyActions", "RestrictUserFromEditingAnyActions", false, false, false);
       _fieldMap.AddMap("AllowUserToEditAnyAction", "AllowUserToEditAnyAction", false, false, false);
       _fieldMap.AddMap("UserCanPinAction", "UserCanPinAction", false, false, false);
+      _fieldMap.AddMap("PortalLimitOrgTickets", "PortalLimitOrgTickets", false, false, false);
             
     }
   }

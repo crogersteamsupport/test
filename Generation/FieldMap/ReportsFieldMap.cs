@@ -34,6 +34,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ReportDefType", "ReportDefType", false, false, false);
       _fieldMap.AddMap("DateEdited", "DateEdited", false, false, false);
       _fieldMap.AddMap("EditorID", "EditorID", false, false, false);
+      _fieldMap.AddMap("FolderID", "FolderID", false, false, false);
             
     }
   }

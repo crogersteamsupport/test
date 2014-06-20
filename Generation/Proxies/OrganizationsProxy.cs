@@ -102,6 +102,7 @@ namespace TeamSupport.Data
     [DataMember] public bool ReplyToAlternateEmailAddresses { get; set; }
     [DataMember] public bool ForceUseOfReplyTo { get; set; }
     [DataMember] public bool AddEmailViaTS { get; set; }
+    [DataMember] public bool AgentRating { get; set; }
           
   }
   
@@ -110,6 +111,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.AgentRating = this.AgentRating;
       result.AddEmailViaTS = this.AddEmailViaTS;
       result.ForceUseOfReplyTo = this.ForceUseOfReplyTo;
       result.ReplyToAlternateEmailAddresses = this.ReplyToAlternateEmailAddresses;

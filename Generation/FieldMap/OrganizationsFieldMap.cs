@@ -102,6 +102,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ReplyToAlternateEmailAddresses", "ReplyToAlternateEmailAddresses", false, false, false);
       _fieldMap.AddMap("ForceUseOfReplyTo", "ForceUseOfReplyTo", false, false, false);
       _fieldMap.AddMap("AddEmailViaTS", "AddEmailViaTS", false, false, false);
+      _fieldMap.AddMap("AgentRating", "AgentRating", false, false, false);
             
     }
   }
