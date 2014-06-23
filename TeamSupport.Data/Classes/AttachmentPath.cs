@@ -128,6 +128,7 @@ namespace TeamSupport.Data
         case Folder.WaterCooler: result = ReferenceType.WaterCooler; break;
         case Folder.OrganizationAttachments: result = ReferenceType.Organizations; break;
         case Folder.UserAttachments: result = ReferenceType.Users; break;
+        case Folder.AssetAttachments: result = ReferenceType.Assets; break;
         default: result = ReferenceType.None; break;
       }
       return result;
