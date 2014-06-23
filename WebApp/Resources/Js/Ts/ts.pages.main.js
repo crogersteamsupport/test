@@ -560,6 +560,7 @@ Ts.Pages.Main.prototype = {
         if ((!isMain || menuID != 'mniChat') && (chatMessageCount < result.ChatMessageCount || chatRequestCount < result.ChatRequestCount)) {
           self.MainMenu.find('mniChat', 'chat').setIsHighlighted(true);
           for (var i = 0; i < result.NewChatMessages.length; i++) {
+              $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
             $.jGrowl(result.NewChatMessages[i].Message, {
               life: 5000,
               theme: result.NewChatMessages[i].State,
@@ -569,6 +570,7 @@ Ts.Pages.Main.prototype = {
         }
 
         for (var i = 0; i < result.NewChatRequests.length; i++) {
+          $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
           $.jGrowl(result.NewChatRequests[i].Message, {
             life: 5000,
             theme: result.NewChatRequests[i].State,
