@@ -82,14 +82,13 @@
         top.Ts.Services.Organizations.GetEvergageData(orgName, function (data) {
           $('.evergage-prop').html('');
           var o = JSON.parse(data);
-          for (var i = 0; i < o.length; i++) {
-            if (o[i].attributes.extCompanyID == orgID) {
-              $('.eng-score').html(o[i].engagementScore);
-              $('.total-actions').html(o[i].totalActions);
-              return;
-            }
+          if (o) {
+            $('.eng-score').html(o.engagementScore);
+            $('.total-actions').html(o.totalActions);
           }
-          $('.evergage-prop').html('Error Retrieving');
+          else {
+            $('.evergage-prop').html('Error Retrieving');
+          }
 
 
         });
