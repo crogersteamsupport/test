@@ -72,14 +72,14 @@
 
           $('.evergage-company').attr('href', getEGCompanyLink());
           showUsers(org);
-          getEngagementScore(org.OrganizationID);
+          getEngagementScore(org.Name);
 
         });
       }
 
-      function getEngagementScore(orgID) {
+      function getEngagementScore(orgName) {
 
-        top.Ts.Services.Organizations.GetEvergageData(orgID, function (data) {
+        top.Ts.Services.Organizations.GetEvergageData(orgName, function (data) {
           $('.evergage-prop').html('');
           var o = JSON.parse(data);
           for (var i = 0; i < o.length; i++) {
