@@ -106,6 +106,7 @@ namespace TeamSupport.Data
         case Folder.OrganizationAttachments: result = "OrganizationAttachments"; break;
         case Folder.UserAttachments: result = "UserAttachments"; break;
         case Folder.AgentRating: result = "AgentRating"; break;
+        case Folder.AssetAttachments: result = "AssetAttachments"; break;
         default: result = ""; break;
       }
       return result;
