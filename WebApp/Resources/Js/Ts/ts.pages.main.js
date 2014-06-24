@@ -589,6 +589,7 @@ Ts.Pages.Main.prototype = {
 
         if (result.NewChatRequests.length > 0) {
           window.focus();
+          $("#jquery_jplayer_1").jPlayer("setMedia", { mp3: "vcr/1_9_0/Audio/drop.mp3" }).jPlayer("play", 0);
           alert(result.NewChatRequests[0].Message);
           Ts.Services.System.GetChatUpdate(lastChatMessageID, lastChatRequestID, function (result2) {
             if (result2.ChatRequestCount < 1) {

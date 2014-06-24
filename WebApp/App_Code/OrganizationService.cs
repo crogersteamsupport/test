@@ -1017,8 +1017,8 @@ namespace TSWebServices
     {
       using (WebClient client = new WebClient())
       {
-        //https://teamsupport.evergage.com/api/dataset/MainApp/account/teamsupport?_at=AD84A537-E376-65FC-3351-767A6DC6EB12
-        return client.DownloadString(string.Format("https://teamsupport.evergage.com/api/dataset/MainApp/account/{0}?_at=AD84A537-E376-65FC-3351-767A6DC6EB12", orgName.ToLower()));
+                                                  //https://teamsupport.evergage.com/api/dataset/MainApp/account/muroc%20systems%2C%20inc.?_at=AD84A537-E376-65FC-3351-767A6DC6EB12
+        return client.DownloadString(string.Format("https://teamsupport.evergage.com/api/dataset/MainApp/account/{0}?_at=AD84A537-E376-65FC-3351-767A6DC6EB12", Uri.EscapeDataString(orgName.ToLower())));
       }
     
     }
