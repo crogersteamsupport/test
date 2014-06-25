@@ -153,9 +153,9 @@ namespace TSWebServices
         {
             Organization o = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), orgID);
             if (value != "" && value != null)
-              o.SAExpirationDate = Convert.ToDateTime(value + " 12:00:00");
+                o.SAExpirationDate = DataUtils.DateToUtc(TSAuthentication.GetLoginUser(), Convert.ToDateTime(value + " 12:00:00"));
             else
-              o.SAExpirationDate = null;
+                o.SAExpirationDate = null;
             o.Collection.Save();
             string description = String.Format("{0} set company service expirated date to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
             ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Organizations, orgID, description);
