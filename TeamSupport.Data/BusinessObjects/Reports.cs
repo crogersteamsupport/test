@@ -444,14 +444,14 @@ namespace TeamSupport.Data
           if (fieldName != "")
           {
             fieldName = DataUtils.GetCustomFieldColumn(loginUser, customField, fieldName, true, false);
-           /* if (customField.FieldType == CustomFieldType.DateTime)
+            if (customField.FieldType == CustomFieldType.DateTime)
             {
               fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
               fieldName,
               offset < TimeSpan.Zero ? "-" : "+",
               Math.Abs(offset.Hours),
               Math.Abs(offset.Minutes));
-            }*/
+            }
 
             builder.Append(builder.Length < 1 ? "SELECT " : ", ");
 
@@ -482,7 +482,7 @@ namespace TeamSupport.Data
           string fieldName = table.TableName + "." + tableField.FieldName;
           if (tableField.DataType.Trim().ToLower() == "text")
             fieldName = "dbo.StripHTML(" + fieldName + ")";
-         /* if (tableField.DataType.Trim().ToLower() == "datetime")
+          if (tableField.DataType.Trim().ToLower() == "datetime")
           {
             fieldName = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
               fieldName,
@@ -490,7 +490,7 @@ namespace TeamSupport.Data
               Math.Abs(offset.Hours),
               Math.Abs(offset.Minutes));
 
-          }*/
+          }
           if (builder.Length < 1)
           {
             builder.Append("SELECT " + fieldName + " AS [" + tableField.Alias + "]");
