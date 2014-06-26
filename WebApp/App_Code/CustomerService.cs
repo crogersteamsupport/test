@@ -2276,6 +2276,7 @@ namespace TSWebServices
         {
             List<CustomRatingClass> list = new List<CustomRatingClass>();
             List<int> ratingIDS = new List<int>();
+            int count = 0;
 
             AgentRatingUsers aru = new AgentRatingUsers(TSAuthentication.GetLoginUser());
             aru.LoadByUserID(userID);
@@ -2311,10 +2312,11 @@ namespace TSWebServices
                     }
 
                     ratingclass.org = org[0].GetProxy();
-                    users.LoadByUserID(ratings[0].ContactID);
+                    users.LoadByUserID(ratings[count].ContactID);
                     ratingclass.reporter = users[0].GetProxy();
 
                     list.Add(ratingclass);
+                    count++;
                 }
             }
 
