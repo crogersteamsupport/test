@@ -364,7 +364,9 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         organization.HasPortalAccess = sourceOrg.HasPortalAccess;
         organization.IsApiEnabled = sourceOrg.IsApiEnabled;
         organization.SetNewActionsVisibleToCustomers = sourceOrg.SetNewActionsVisibleToCustomers;
+        organization.AgentRating = true;
         organization.Collection.Save();
+        
         //374,826,378,703,377
 
         Users users = new Users(LoginUser.Anonymous);
