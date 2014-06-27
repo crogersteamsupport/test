@@ -1608,7 +1608,7 @@ Namespace TeamSupport
                       If action IsNot Nothing Then
                         description = Actions.GetTicketDescription(User, ticket.TicketID).Description
                         If description IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          result.Add(GetNewXmlElement(field.name, HtmlUtility.StripHTML(description)))
+                          result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(description))))
                         Else
                           logError = True
                         End If
