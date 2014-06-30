@@ -274,7 +274,16 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
         command.Parameters.AddWithValue("@DateModified", item.LastLink == null ? new DateTime(1753, 1, 1) : item.LastLinkUtc.Value.AddHours(-1));
 
-        Fill(command, "Actions");
+        using (SqlConnection connection = new SqlConnection(this.LoginUser.ConnectionString))
+        {
+          connection.Open();
+          SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+          command.Connection = connection;
+          command.Transaction = transaction;
+          SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+          this.Table.Load(reader);
+        }
       }
     }
 
