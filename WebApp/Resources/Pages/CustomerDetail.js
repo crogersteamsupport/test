@@ -12,6 +12,7 @@ var customerDetailPage = null;
 var organizationID = null;
 var ratingFilter = '';
 var _isUnknown = false;
+var _execGetAsset = null;
 $(document).ready(function () {
     customerDetailPage = new CustomerDetailPage();
     customerDetailPage.refresh();
@@ -967,6 +968,70 @@ $(document).ready(function () {
         top.Ts.MainPage.openNewContact(this.id);
     });
 
+    $('.asset-action-assign').click(function (e) {
+        e.preventDefault();
+    });
+
+    $("#dateShipped").datetimepicker();
+
+    $('.assetList').on('click', '.assetLink', function (e) {
+        e.preventDefault();
+        top.Ts.System.logAction('Customer Detail - Open Asset From List');
+        top.Ts.MainPage.openNewAsset(this.id);
+    });
+
+    var getAssets = function (request, response) {
+      if (_execGetAsset) { _execGetAsset._executor.abort(); }
+      _execGetAsset = top.Ts.Services.Organizations.GetWarehouseAssets(request.term, function (result) { response(result); });
+    }
+
+    $('#inputAsset').autocomplete({
+      open: function () {
+        $('.ui-menu').width($('#inputAsset').width());
+      },
+      minLength: 2,
+      source: getAssets,
+      select: function (event, ui) {
+        $(this).data('item', ui.item);
+      }
+    });
+
+    $('#btnSaveAssign').click(function (e) {
+      if ($('#inputAsset').data('item') && $('#dateShipped').val()) {
+        var assetAssignmentInfo = new Object();
+
+        assetAssignmentInfo.RefID = organizationID;
+        assetAssignmentInfo.RefType = 9;
+        assetAssignmentInfo.DateShipped = $('#dateShipped').val();
+        assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
+        assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
+        assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
+        assetAssignmentInfo.Comments = $('#comments').val();
+
+        top.Ts.Services.Assets.AssignAsset($('#inputAsset').data('item').id, top.JSON.stringify(assetAssignmentInfo), function (assetHtml) {
+          top.Ts.System.logAction('Customer Detail - Asset Assigned');
+          $('#modalAssign').modal('hide');
+          $('.assetList').prepend(assetHtml);
+        }, function () {
+          alert('There was an error assigning this asset.  Please try again.');
+        });
+      }
+      else {
+        if (!$('#inputAsset').data('item')) {
+          alert("Please select a valid asset to assign to this customer.");
+        }
+        else {
+          alert("Please enter a valid date shipped.");
+        }
+      }
+      //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
+      //      top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
+      //      $('#modalReminder').modal('hide');
+      //    }
+      //    else
+      //      alert("Please fill in all the fields");
+    });
+
     $('#tblProducts').on('click', '.productEdit', function (e) {
         e.preventDefault();
         var product = $(this).parent().parent().attr('id');
@@ -1767,6 +1832,16 @@ $(document).ready(function () {
 
     }
 
+    function LoadInventory() {
+        $('.assetList').empty();
+        top.Ts.Services.Customers.LoadAssets(organizationID, top.Ts.ReferenceTypes.Organizations, function (assets) {
+            $('.assetList').append(assets)
+            //for (var i = 0; i < users.length; i++) {
+            //    $('<a>').attr('class', 'list-group-item').text(users[i].FirstName + ' ' + users[i].LastName).appendTo('.userList');
+            //}
+        });
+    }
+
     function LoadCustomControls(refType) {
         top.Ts.Services.Customers.LoadCustomControls(refType, function (html) {
             $('#customProductsControls').append(html);
@@ -2024,11 +2099,12 @@ $(document).ready(function () {
             LoadNotes();
         else if (e.target.innerHTML == "Files")
             LoadFiles();
+        else if (e.target.innerHTML == "Inventory")
+            LoadInventory();
         else if (e.target.innerHTML == "Ratings")
             LoadRatings('', 1);
     })
 
-    $('#inventoryIframe').attr("src", "../../../Inventory/CustomerInventory.aspx?CustID=" + organizationID);
     $("input[type=text], textarea").autoGrow();
 
     $('.customProperties, .userProperties').on('keydown', '.number', function (event) {

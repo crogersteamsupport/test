@@ -9,6 +9,7 @@
 /// <reference path="~/Default.aspx" />
 var userID = null;
 var ratingFilter = '';
+var _execGetAsset = null;
 $(document).ready(function () {
     userID = top.Ts.Utils.getQueryValue("user", window);
     noteID = top.Ts.Utils.getQueryValue("noteid", window);
@@ -509,6 +510,8 @@ $(document).ready(function () {
             LoadNotes();
         else if (e.target.innerHTML == "Files")
             LoadFiles();
+        else if (e.target.innerHTML == "Inventory")
+            LoadInventory();
         else if (e.target.innerHTML == "Ratings")
             LoadRatings('', 1);
     })
@@ -1316,6 +1319,81 @@ $(document).ready(function () {
             LoadRatings(ratingFilter, $('#tblRatings tbody > tr').length + 1);
         }
     });
+
+    $('.asset-action-assign').click(function (e) {
+        e.preventDefault();
+    });
+
+    $("#dateShipped").datetimepicker();
+
+    $('.assetList').on('click', '.assetLink', function (e) {
+        e.preventDefault();
+        top.Ts.System.logAction('Contact Detail - Open Asset From List');
+        top.Ts.MainPage.openNewAsset(this.id);
+    });
+
+    var getAssets = function (request, response) {
+      if (_execGetAsset) { _execGetAsset._executor.abort(); }
+      _execGetAsset = top.Ts.Services.Organizations.GetWarehouseAssets(request.term, function (result) { response(result); });
+    }
+
+    $('#inputAsset').autocomplete({
+      open: function () {
+        $('.ui-menu').width($('#inputAsset').width());
+      },
+      minLength: 2,
+      source: getAssets,
+      select: function (event, ui) {
+        $(this).data('item', ui.item);
+      }
+    });
+
+    $('#btnSaveAssign').click(function (e) {
+      if ($('#inputAsset').data('item') && $('#dateShipped').val()) {
+        var assetAssignmentInfo = new Object();
+
+        assetAssignmentInfo.RefID = userID;
+        assetAssignmentInfo.RefType = 32;
+        assetAssignmentInfo.DateShipped = $('#dateShipped').val();
+        assetAssignmentInfo.TrackingNumber = $('#trackingNumber').val();
+        assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
+        assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
+        assetAssignmentInfo.Comments = $('#comments').val();
+
+        top.Ts.Services.Assets.AssignAsset($('#inputAsset').data('item').id, top.JSON.stringify(assetAssignmentInfo), function (assetHtml) {
+          top.Ts.System.logAction('Contact Detail - Asset Assigned');
+          $('#modalAssign').modal('hide');
+          $('.assetList').prepend(assetHtml);
+        }, function () {
+          alert('There was an error assigning this asset.  Please try again.');
+        });
+      }
+      else {
+        if (!$('#inputAsset').data('item')) {
+          alert("Please select a valid asset to assign to this customer.");
+        }
+        else {
+          alert("Please enter a valid date shipped.");
+        }
+      }
+      //    if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
+      //      top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Organizations, organizationID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val());
+      //      $('#modalReminder').modal('hide');
+      //    }
+      //    else
+      //      alert("Please fill in all the fields");
+    });
+
+    function LoadInventory() {
+        $('.assetList').empty();
+        top.Ts.Services.Customers.LoadAssets(userID, top.Ts.ReferenceTypes.Contacts, function (assets) {
+            $('.assetList').append(assets)
+            //for (var i = 0; i < users.length; i++) {
+            //    $('<a>').attr('class', 'list-group-item').text(users[i].FirstName + ' ' + users[i].LastName).appendTo('.userList');
+            //}
+        });
+    }
+
 });
 
 var initEditor = function (element, init) {

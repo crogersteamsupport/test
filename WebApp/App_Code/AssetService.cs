@@ -156,7 +156,7 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public int AssignAsset(int assetID, string data)
+    public string AssignAsset(int assetID, string data)
     {
       AssignAssetSave info;
       try
@@ -165,7 +165,7 @@ namespace TSWebServices
       }
       catch (Exception e)
       {
-        return -1;
+        return "error";
       }
 
       LoginUser loginUser = TSAuthentication.GetLoginUser();
@@ -211,7 +211,23 @@ namespace TSWebServices
       string description = String.Format("{0} assigned asset to refID: {1} and refType: {2}", TSAuthentication.GetUser(loginUser).FirstLastName, info.RefID.ToString(), info.RefType.ToString());
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
 
-      return assetAssignment.AssetAssignmentsID;
+      AssetsView assetsView = new AssetsView(loginUser);
+      assetsView.LoadByAssetID(assetID);
+
+      return string.Format(@"<div class='list-group-item'>
+                            <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
+                            <div class='row'>
+                                <div class='col-xs-6'>
+                                    <p class='list-group-item-text'>{2}</p>
+                                    {3}
+                                </div>
+                            </div>
+                            </div>"
+
+          , assetID
+          , assetsView[0].DisplayName
+          , assetsView[0].ProductName
+          , assetsView[0].ProductVersionNumber);
     }
 
     [WebMethod]

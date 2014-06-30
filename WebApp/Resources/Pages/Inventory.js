@@ -136,7 +136,7 @@
     $('<a>')
           .attr('href', '#')
           .addClass('assetlink')
-          .data('assetID', item.assetID)
+          .data('assetid', item.assetID)
           .text(displayName)
           .appendTo($('<h4>').appendTo(el));
 
@@ -177,7 +177,7 @@
   $('.searchresults, .recent-container').on('click', '.assetlink', function (e) {
     e.preventDefault();
 
-    var id = $(this).data('assetID');
+    var id = $(this).data('assetid');
     top.Ts.System.logAction('Inventory Page - View Recent Asset');
     top.Ts.MainPage.openNewAsset(id);
 

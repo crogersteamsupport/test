@@ -521,8 +521,23 @@
           </div>
         </div>
         <div class="tab-pane fade" id="company-inventory">
-          <iframe id="inventoryIframe" frameborder="0" scrolling="no" src="" width="100%" height="850">
-          </iframe>
+          <div class="row">
+              <div class="col-xs-12">
+                  <div class="box">
+                <div class="box-header">
+                </div>
+                <div class="box-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                          <button class="btn btn-primary asset-action-assign" data-toggle="modal" data-target="#modalAssign" >Assign Asset</button>
+                          <div class="list-group assetList">
+                          </div>
+                        </div>
+                      </div>
+                  </div>   
+              </div>
+              </div>
+          </div>
         </div>
         <div class="tab-pane fade" id="company-watercooler">
           <iframe id="watercoolerIframe" frameborder="0" scrolling="no" src="" width="100%"
@@ -611,6 +626,66 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" id="btnSaveReminder">Save</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+  </div>
+  <div class="modal fade" id="modalAssign">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="modalAssignTitle">Assign asset</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal">
+          <div class="form-group" id="inputAssetDiv">
+            <label for="inputAsset" class="col-md-4 control-label">Asset to assign:</label>
+            <div class="col-md-8">
+              <input class="col-md-10 form-control" id="inputAsset" placeholder="Enter partial name or serial number then select asset from list">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="dateShipped" class="col-md-4 control-label">Date Shipped:</label>
+            <div class="col-md-8">
+              <input class="col-md-10 form-control" id="dateShipped">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="shippingMethod" class="col-md-4 control-label">Shipping method:</label>
+            <div class="col-md-8">
+              <select class="form-control" id="shippingMethod">
+                <option value="FedEx">FedEx</option>              
+                <option value="UPS">UPS</option>              
+                <option value="USPS">USPS</option>              
+                <option value="Other">Other</option>              
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="trackingNumber" class="col-md-4 control-label">Tracking Number:</label>
+            <div class="col-md-8">
+              <input class="col-md-10 form-control" id="trackingNumber" placeholder="Tracking Number">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="referenceNumber" class="col-md-4 control-label">Reference Number:</label>
+            <div class="col-md-8">
+              <input class="col-md-10 form-control" id="referenceNumber" placeholder="Reference Number (PO etc.)">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="comments" class="col-md-4 control-label">Comments:</label>
+            <div class="col-md-8">
+              <textarea class="col-md-10 form-control" id="comments" placeholder="Comments about assigning this asset."></textarea>
+            </div>
+          </div>
+        </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="btnSaveAssign">Save</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" id="btnClose">Close</button>
         </div>
       </div>
       <!-- /.modal-content -->

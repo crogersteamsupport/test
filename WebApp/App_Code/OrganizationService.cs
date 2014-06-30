@@ -853,6 +853,27 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public AutocompleteItem[] GetWarehouseAssets(string searchTerm)
+    {
+      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      return GetWarehouseAssetsFiltered(searchTerm);
+    }
+
+    public AutocompleteItem[] GetWarehouseAssetsFiltered(string searchTerm)
+    {
+      AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
+      assets.LoadByLikeAssetDisplayName(TSAuthentication.OrganizationID, searchTerm, 50);
+
+      List<AutocompleteItem> list = new List<AutocompleteItem>();
+      foreach (AssetsViewItem asset in assets)
+      {
+        list.Add(new AutocompleteItem(asset.DisplayName, asset.AssetID.ToString()));
+      }
+
+      return list.ToArray();
+    }
+
+    [WebMethod]
     public AutocompleteItem[] SearchOrganization(string searchTerm)
     {
       Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());

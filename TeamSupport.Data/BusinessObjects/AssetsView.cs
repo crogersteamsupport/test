@@ -9,10 +9,79 @@ namespace TeamSupport.Data
 {
   public partial class AssetsViewItem
   {
+    public string DisplayName
+    {
+      get
+      {
+        if (String.IsNullOrEmpty(this.Name))
+        {
+          if (String.IsNullOrEmpty(this.SerialNumber))
+          {
+            return this.AssetID.ToString();
+          }
+          else
+          {
+            return this.SerialNumber;
+          }
+        }
+        else
+        {
+          return this.Name;
+        }
+      }
+    }
   }
   
   public partial class AssetsView
   {
+    public void LoadByRefID(int refID, ReferenceType refType)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+          SELECT
+            a.* 
+          FROM
+            AssetsView a
+            JOIN AssetHistory h
+              ON a.AssetID = h.AssetID
+            JOIN AssetAssignments aa
+              ON h.HistoryID = aa.HistoryID
+          WHERE 
+            h.ShippedTo = @RefID
+            AND h.RefType = @RefType
+          ORDER BY 
+            aa.AssetAssignmentsID DESC";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@RefID", refID);
+        command.Parameters.AddWithValue("@RefType", refType);
+        Fill(command);
+      }
+    }
+
+    public void LoadByLikeAssetDisplayName(int organizationID, string name, int maxRows)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        StringBuilder text = new StringBuilder(@"
+        SELECT 
+          TOP (@MaxRows) * 
+        FROM 
+          Assets 
+        WHERE 
+          OrganizationID = @OrganizationID
+          AND Location = 2
+          AND (Name LIKE '%'+@Name+'%' OR SerialNumber LIKE '%'+@Name+'%')
+        ");
+        command.CommandText = text.ToString();
+        command.CommandType = CommandType.Text;
+
+        command.Parameters.AddWithValue("@Name", name.Trim());
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@MaxRows", maxRows);
+        Fill(command);
+      }
+    }
   }
   
   public class InventorySearchAsset
