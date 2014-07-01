@@ -34,8 +34,8 @@ AdminPortal = function () {
     $('#tabs-advanced').hide();
   }
 
-  if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) 
-      $('#tab-rating').hide();
+  //if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) 
+  //  $('#tab-rating').hide();
 
 
   //$('a').addClass('ui-state-default ts-link');

@@ -47,9 +47,9 @@ $(document).ready(function () {
     top.privateServices.SetUserSetting('SelectedOrganizationID', organizationID);
     top.privateServices.SetUserSetting('SelectedContactID', -1);
 
-    if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
-        $('#ratingsTab').hide();
-    }
+    //if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
+        //$('#ratingsTab').hide();
+    //}
 
     LoadNotes();
     //LoadHistory();
@@ -180,6 +180,7 @@ $(document).ready(function () {
             $("#addressPanel #editmenu").toggleClass("hiddenmenu");
         }
 
+        $(".userProperties #fieldWebsite").toggleClass("link");
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
         $('#companyTabs a:first').tab('show');
@@ -240,49 +241,60 @@ $(document).ready(function () {
     });
 
     $('#fieldWebsite').click(function (e) {
-        e.preventDefault();
-        if (!$(this).hasClass('editable'))
-            return false;
-        var header = $(this).hide();
-        var container = $('<div>')
-          .insertAfter(header);
-        top.Ts.System.logAction('Customer Detail - Edit Website');
-        var container1 = $('<div>')
-            .addClass('col-xs-9')
-          .appendTo(container);
+        if ($(this).hasClass('link')) {
+            if ($('#fieldWebsite').text().toLowerCase().lastIndexOf('http://', 0) === 0)
+                window.open($('#fieldWebsite').text(), '_blank');
+            else
+                window.open('http://' + $('#fieldWebsite').text(), '_blank');
 
-        $('<input type="text">')
-          .addClass('col-xs-10 form-control')
-          .val($(this).text() == "Empty" ? "" : $(this).text())
-          .appendTo(container1)
-          .focus();
+            
+            return;
+        }
+        else {
+            e.preventDefault();
+            if (!$(this).hasClass('editable'))
+                return false;
+            var header = $(this).hide();
+            var container = $('<div>')
+              .insertAfter(header);
+            top.Ts.System.logAction('Customer Detail - Edit Website');
+            var container1 = $('<div>')
+                .addClass('col-xs-9')
+              .appendTo(container);
 
-        $('<i>')
-          .addClass('col-xs-1 fa fa-times')
-          .click(function (e) {
-              $(this).closest('div').remove();
-              header.show();
-              $('#customerEdit').removeClass("disabled");
-          })
-          .insertAfter(container1);
-        $('<i>')
-          .addClass('col-xs-1 fa fa-check')
-          .click(function (e) {
-              top.Ts.System.logAction('Customer Detail - Save Website Edit');
-              top.Ts.Services.Customers.SetCompanyWeb(organizationID, $(this).prev().find('input').val(), function (result) {
-                  header.text(result);
+            $('<input type="text">')
+              .addClass('col-xs-10 form-control')
+              .val($(this).text() == "Empty" ? "" : $(this).text())
+              .appendTo(container1)
+              .focus();
+
+            $('<i>')
+              .addClass('col-xs-1 fa fa-times')
+              .click(function (e) {
+                  $(this).closest('div').remove();
+                  header.show();
                   $('#customerEdit').removeClass("disabled");
-              },
-                            function (error) {
-                                header.show();
-                                alert('There was an error saving the company website.');
-                                $('#customerEdit').removeClass("disabled");
-                            });
-              $(this).closest('div').remove();
-              header.show();
-          })
-          .insertAfter(container1);
-        $('#customerEdit').addClass("disabled");
+              })
+              .insertAfter(container1);
+            $('<i>')
+              .addClass('col-xs-1 fa fa-check')
+              .click(function (e) {
+                  top.Ts.System.logAction('Customer Detail - Save Website Edit');
+                  top.Ts.Services.Customers.SetCompanyWeb(organizationID, $(this).prev().find('input').val(), function (result) {
+                      header.text(result);
+                      $('#customerEdit').removeClass("disabled");
+                  },
+                                function (error) {
+                                    header.show();
+                                    alert('There was an error saving the company website.');
+                                    $('#customerEdit').removeClass("disabled");
+                                });
+                  $(this).closest('div').remove();
+                  header.show();
+              })
+              .insertAfter(container1);
+            $('#customerEdit').addClass("disabled");
+        }
     });
 
     $('#fieldDomains').click(function (e) {

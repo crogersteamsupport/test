@@ -27,6 +27,11 @@
 
 #tblNotes, #tblProducts, #tblFiles i {cursor:pointer;}
 
+.form-group p.editable, .editable, .link {
+    color:#428BCA;
+    cursor:pointer;
+}
+
 .user-active{
     color: #808080;
 }

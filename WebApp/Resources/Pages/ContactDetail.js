@@ -49,9 +49,9 @@ $(document).ready(function () {
         }
     });
 
-    if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
-        $('#ratingsTab').hide();
-    }
+    //if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) {
+        //$('#ratingsTab').hide();
+    //}
 
     $(".maincontainer").on("keypress", "input", (function (evt) {
         //Deterime where our character code is coming from within the event

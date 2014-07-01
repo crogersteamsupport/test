@@ -37,7 +37,10 @@ WelcomePage = function () {
 
   $('.welcome-new-user').click(function (e) {
     e.preventDefault();
-    top.Ts.MainPage.openNewContact(top.Ts.System.User.UserID);
+      //top.Ts.MainPage.openNewContact(top.Ts.System.User.UserID);
+    top.Ts.MainPage.openUser(top.Ts.System.User.UserID);
+    
+
   });
   $('.welcome-new-customer').click(function (e) {
       e.preventDefault();

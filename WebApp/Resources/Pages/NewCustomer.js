@@ -179,7 +179,7 @@ $(document).ready(function () {
                 customerInfo.DefaultSupportGroupID = $("#ddlSGroup").val();
                 customerInfo.TimeZoneID = $("#ddlTz").val();
                 customerInfo.SAExpirationDate = $("#inputSAE").val();
-                customerInfo.SlaLevelID = $("#inputSLA").val();
+                customerInfo.SlaLevelID = $("#ddSla").val();
                 customerInfo.SupportHoursMonth = $("#inputSupportHours").val();
                 customerInfo.Active = $("#cbActive").prop('checked');
                 customerInfo.PortalAccess = $("#cbPortalAccess").prop('checked');

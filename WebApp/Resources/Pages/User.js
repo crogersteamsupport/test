@@ -95,7 +95,7 @@ UserPage = function () {
         });
 
     $('#userTitle').html(user.Title == '' || user.Title == null ? 'None' : user.Title);
-    $('#userTimeZone').html(user.timeZoneDisplay);
+    $('#userTimeZone').html(user.timeZoneDisplay == null ? 'None' : user.timeZoneDisplay);
     $('#userFontFamily').html(user.FontFamilyDescription);
     $('#userFontSize').html(user.FontSizeDescription);
     $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Yes' : 'No'));
