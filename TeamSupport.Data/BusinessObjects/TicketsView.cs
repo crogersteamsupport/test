@@ -35,6 +35,7 @@ namespace TeamSupport.Data
     [DataMember] public int? GroupID { get; set; }
     [DataMember] public int? CustomerID { get; set; }
     [DataMember] public int? ContactID { get; set; }
+    [DataMember] public int? AssetID { get; set; }
     [DataMember] public int? ForumCategoryID { get; set; }
     [DataMember] public bool? IsVisibleOnPortal { get; set; }
     [DataMember] public bool? IsKnowledgeBase { get; set; }
@@ -640,6 +641,12 @@ namespace TeamSupport.Data
       {
         builder.Append(" AND (EXISTS(SELECT * FROM UserTickets ut WHERE (ut.UserID = @ContactID) AND (ut.TicketID = tv.TicketID)))");
         command.Parameters.AddWithValue("ContactID", filter.ContactID);
+      }
+
+      if (filter.CustomerID != null)
+      {
+        builder.Append(" AND (EXISTS(SELECT * FROM AssetTickets asst WHERE (asst.AssetID = @AssetID) AND (asst.TicketID = tv.TicketID)))");
+        command.Parameters.AddWithValue("AssetID", filter.AssetID);
       }
 
       if (!String.IsNullOrEmpty(filter.SearchText.Trim()))
