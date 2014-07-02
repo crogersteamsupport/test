@@ -933,13 +933,13 @@ namespace TeamSupport.ServiceLibrary
       message.Bcc.Add(new MailAddress("dropbox@79604342.murocsystems.highrisehq.com"));
       message.From = new MailAddress(from);
       AddMessage(1078, "New Sign Up - Welcome [" + organization.Name + "]", message);
-
+      /*
       message = EmailTemplates.GetWelcomeNewSignUp(LoginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 27);
       message.To.Add(new MailAddress(user.Email));
       message.Bcc.Add(new MailAddress("eharrington@teamsupport.com"));
       message.From = new MailAddress("eharrington@teamsupport.com", "Eric Harrington");
       AddMessage(1078, "New Sign Up - Check In[" + organization.Name + "]", message, null, null, DateTime.UtcNow.AddDays(1));
-
+      */
       message = EmailTemplates.GetWelcomeNewSignUp(LoginUser, user.GetUserView(), password, DateTime.Now.AddDays(14).ToString("MMMM d, yyyy"), 28);
       message.To.Add(new MailAddress(user.Email));
       message.Bcc.Add(new MailAddress("eharrington@teamsupport.com"));
