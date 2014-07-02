@@ -12,9 +12,9 @@ $(document).ready(function () {
     var activeID;
 
     var organizationID = top.Ts.System.User.OrganizationID;
-    if (organizationID != 1078 && organizationID != 13679 && organizationID != 1088) {
-        $('#ratingsTab').hide();
-    }
+    //if (organizationID != 1078 && organizationID != 13679 && organizationID != 1088) {
+    //    $('#ratingsTab').hide();
+    //}
 
     if (!top.Ts.System.User.IsSystemAdmin)
     {
@@ -232,6 +232,10 @@ $(document).ready(function () {
 
 
     });
+
+    //$('#cbActive').click(function (e){
+    //    Search();
+    //});
 
 });
 
