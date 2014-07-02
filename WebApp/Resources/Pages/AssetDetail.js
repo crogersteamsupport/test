@@ -721,7 +721,7 @@ $(document).ready(function () {
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     if (e.target.innerHTML == "Tickets")
-      $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_CustomerID=" + organizationID);
+      $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_AssetID=" + _assetID);
 //    else if (e.target.innerHTML == "Watercooler")
 //      $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=2&pageid=" + organizationID);
 //    else if (e.target.innerHTML == "Details")

@@ -643,7 +643,7 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("ContactID", filter.ContactID);
       }
 
-      if (filter.CustomerID != null)
+      if (filter.AssetID != null)
       {
         builder.Append(" AND (EXISTS(SELECT * FROM AssetTickets asst WHERE (asst.AssetID = @AssetID) AND (asst.TicketID = tv.TicketID)))");
         command.Parameters.AddWithValue("AssetID", filter.AssetID);
