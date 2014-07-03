@@ -863,6 +863,12 @@ namespace TeamSupport.Data
       {
         _currentRow = row;
         if (existing.FindByImportID(row["UserID"].ToString().Trim()) != null) continue;
+        User foundUser = existing.FindByEmail(row["Email"].ToString());
+        if (foundUser != null)
+        {
+          foundUser.ImportID = row["UserID"].ToString().Trim();
+          foundUser.Collection.Save();
+        }
         User user = users.AddNewUser();
         user.ActivatedOn = DateTime.UtcNow;
         user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(row["Password"].ToString().Trim(), "MD5");
@@ -1416,7 +1422,7 @@ AND RTRIM(LastName) = @LastName
         ticket.DateClosed = GetDBDate(row["DateClosed"], true);
         ticket.GroupID = null;
         ticket.ImportID = row["TicketID"].ToString().Trim();
-        ticket.IsKnowledgeBase = GetDBBool(row["IsKnowledgeBase"]); 
+        ticket.IsKnowledgeBase = row.Table.Columns.Contains("IsKnowledgeBase") ? GetDBBool(row["IsKnowledgeBase"]) : false; 
         ticket.IsVisibleOnPortal = false;
         ticket.ModifierID = _loginUser.UserID;
         ticket.Name = GetDBString(row["Name"], 250, false);
