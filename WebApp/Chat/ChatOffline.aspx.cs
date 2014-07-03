@@ -66,7 +66,14 @@ public partial class Chat_ChatOffline : System.Web.UI.Page
         pnlQuestion.Visible = false;
         headTitle.Visible = false;
       }
-      
+
+      if (_organization.OrganizationID == 748444)
+      {
+        pnlChatForm.Visible = false;
+        pnlCustom.InnerHtml = "<p style=\"font-weight:bold;\">Lo sentimos, por el momento no hay un ejecutivo disponible.</p><p>Por favor de click <a href=\"https://ticket.teamsupport.com/iditic\" target=\"_blank\">aquí</a> para solicitar asistencia y nos comunicaremos con usted en un máximo de 24 horas.</p>";
+        pnlQuestion.Visible = false;
+        headTitle.Visible = false;
+      }
 
     }
   }
