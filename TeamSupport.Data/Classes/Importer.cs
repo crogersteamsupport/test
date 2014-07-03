@@ -868,6 +868,7 @@ namespace TeamSupport.Data
         {
           foundUser.ImportID = row["UserID"].ToString().Trim();
           foundUser.Collection.Save();
+          continue;
         }
         User user = users.AddNewUser();
         user.ActivatedOn = DateTime.UtcNow;
