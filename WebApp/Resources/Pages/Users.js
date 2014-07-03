@@ -240,7 +240,7 @@ $(document).ready(function () {
 });
 
 function Search() {
-    top.Ts.Services.Users.GetUsersSearch(top.Ts.System.User.OrganizationID, $('#searchString').val(),$('#portal_deflection').prop('checked'), function (html) {
+    top.Ts.Services.Users.GetUsersSearch(top.Ts.System.User.OrganizationID, $('#searchString').val(), $('#cbActive').prop('checked'), function (html) {
         $('.user-container').empty();
         $('.user-container').fadeTo(0, 1);
         $('.user-container').append(html);
