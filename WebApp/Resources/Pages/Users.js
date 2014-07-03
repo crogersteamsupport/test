@@ -233,14 +233,14 @@ $(document).ready(function () {
 
     });
 
-    //$('#cbActive').click(function (e){
-    //    Search();
-    //});
+    $('#cbActive').click(function (e){
+        Search();
+    });
 
 });
 
 function Search() {
-    top.Ts.Services.Users.GetUsersSearch(top.Ts.System.User.OrganizationID, $('#searchString').val(), function (html) {
+    top.Ts.Services.Users.GetUsersSearch(top.Ts.System.User.OrganizationID, $('#searchString').val(),$('#portal_deflection').prop('checked'), function (html) {
         $('.user-container').empty();
         $('.user-container').fadeTo(0, 1);
         $('.user-container').append(html);

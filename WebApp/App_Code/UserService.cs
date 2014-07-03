@@ -989,14 +989,14 @@ namespace TSWebServices
 
 
         [WebMethod]
-        public string GetUsersSearch(int orgID, string query)
+        public string GetUsersSearch(int orgID, string query, bool showInactive)
         {
             Users users = new Users(TSAuthentication.GetLoginUser());
 
             if (query == "")
-                users.LoadByOrganizationID(orgID, false);
+                users.LoadByOrganizationID(orgID, !showInactive);
             else
-                users.LoadByName(query, orgID, false, false, false);
+                users.LoadByName(query, orgID, !showInactive, false, false);
 
             StringBuilder html = new StringBuilder();
 
