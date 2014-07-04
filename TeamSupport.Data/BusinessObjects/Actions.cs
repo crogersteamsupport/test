@@ -281,6 +281,7 @@ namespace TeamSupport.Data
 
           command.Connection = connection;
           command.Transaction = transaction;
+          command.CommandTimeout = 300;
           SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
           this.Table.Load(reader);
         }
