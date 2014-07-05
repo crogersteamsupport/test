@@ -92,6 +92,14 @@ Namespace TeamSupport
         Dim recentClause As String = String.Empty
         If CRMLinkRow.LastLink IsNot Nothing Then
           recentClause = "updated>-" + GetMinutesSinceLastLink().ToString() + "m+"
+        Else
+          Dim minutesSinceFirstSyncedTicket As Integer = GetMinutesSinceFirstSyncedTicket()
+          If minutesSinceFirstSyncedTicket > 0 Then
+            recentClause = "updated>-" + minutesSinceFirstSyncedTicket.ToString() + "m+"
+          Else
+            Log.Write("No tickets have been synced, therefore no issues to pull exist.")
+            Return result  
+          End If
         End If
         Dim needToGetMore As Boolean = True
         Dim startAt As String = String.Empty
@@ -123,6 +131,17 @@ Namespace TeamSupport
         Private Function GetMinutesSinceLastLink() As Integer
           Dim datesDifference As TimeSpan = DateTime.UtcNow.Subtract(CRMLinkRow.LastLinkUtc)
           Return datesDifference.TotalMinutes + 30
+        End Function
+
+        Private Function GetMinutesSinceFirstSyncedTicket() As Integer
+          Dim firstSyncedTicket As Tickets = New Tickets(MyBase.User)
+          firstSyncedTicket.LoadFirstJiraSynced(CRMLinkRow.OrganizationID)
+          Dim result As Integer = 0
+          If firstSyncedTicket.Count > 0 Then
+            Dim datesDifference As TimeSpan = DateTime.UtcNow.Subtract(firstSyncedTicket(0).DateCreatedUtc)
+            result = datesDifference.TotalMinutes + 30
+          End If
+          Return result
         End Function
 
         Private Function GetAPIJObject(ByVal URI As String, ByVal verb As String, ByVal body As String) As JObject

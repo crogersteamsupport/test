@@ -2041,6 +2041,17 @@ WHERE
         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Users, newticketID, description);           
     }
 
+    public void LoadFirstJiraSynced(int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT TOP 1 t.* FROM Tickets t JOIN TicketLinkToJira j ON t.TicketID = j.TicketID WHERE t.OrganizationID = @OrganizationID ORDER BY t.DateCreated";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
   }
 }
 
