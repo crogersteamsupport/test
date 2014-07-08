@@ -141,7 +141,7 @@ WHERE EmailPostID IN (
     }
     public static void SendWelcomePortalUser(LoginUser loginUser, int userID, string password)
     {
-      PostEmail(loginUser, EmailPostType.WelcomePortalUser, -1, userID.ToString(), password, null, null, null, null, null, null);
+      PostEmail(loginUser, EmailPostType.WelcomePortalUser, 120, userID.ToString(), password, null, null, null, null, null, null);
     }
     public static void SendResetTSPassword(LoginUser loginUser, int userID, string password)
     {
