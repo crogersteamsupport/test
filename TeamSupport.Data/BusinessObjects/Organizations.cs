@@ -2189,9 +2189,9 @@ ORDER BY o.Name";
             string password = DataUtils.GenerateRandomPassword(random);
             user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");
             user.IsPasswordExpired = true;
-            user.Collection.Save();
             EmailPosts.SendWelcomePortalUser(loginUser, user.UserID, password);
           }
+          user.Collection.Save();
         }
       }
 
