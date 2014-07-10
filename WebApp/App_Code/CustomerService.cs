@@ -1382,11 +1382,11 @@ namespace TSWebServices
 
 
         [WebMethod]
-        public string LoadContacts(int organizationID){
+        public string LoadContacts(int organizationID, bool isActive){
             StringBuilder htmlresults = new StringBuilder("");
             StringBuilder phoneResults = new StringBuilder("");
             Users users = new Users(TSAuthentication.GetLoginUser());
-            users.LoadByOrganizationIDLastName(organizationID, false);
+            users.LoadByOrganizationIDLastName(organizationID, !isActive);
 
             foreach (User u in users)
             {

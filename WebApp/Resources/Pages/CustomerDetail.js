@@ -180,7 +180,9 @@ $(document).ready(function () {
             $("#addressPanel #editmenu").toggleClass("hiddenmenu");
         }
 
-        $(".userProperties #fieldWebsite").toggleClass("link");
+        if ($('#fieldWebsite').text() != "Empty")
+            $(".userProperties #fieldWebsite").toggleClass("link");
+
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
         $('#companyTabs a:first').tab('show');
@@ -282,6 +284,8 @@ $(document).ready(function () {
                   top.Ts.System.logAction('Customer Detail - Save Website Edit');
                   top.Ts.Services.Customers.SetCompanyWeb(organizationID, $(this).prev().find('input').val(), function (result) {
                       header.text(result);
+                      if ($('#fieldWebsite').text() == "Empty")
+                          $('#fieldWebsite').removeClass("link");
                       $('#customerEdit').removeClass("disabled");
                   },
                                 function (error) {
@@ -896,7 +900,7 @@ $(document).ready(function () {
     $('#productCustomer').val(organizationID);
 
     top.Ts.Services.Organizations.GetOrganization(organizationID, function (org) {
-        $('#companyName').html(org.Name);
+        $('#companyName').text(org.Name);
     });
 
     $("input[type=text], textarea").autoGrow();
@@ -923,6 +927,7 @@ $(document).ready(function () {
         e.stopPropagation();
         top.Ts.System.logAction('Customer Detail - Save Product');
         var productInfo = new Object();
+        var hasError = 0;
         productInfo.OrganizationID = $("#productCustomer").val();
         productInfo.ProductID = $("#productProduct").val();
         productInfo.Version = $("#productVersion").val();
@@ -933,36 +938,56 @@ $(document).ready(function () {
         $('.customField:visible').each(function () {
             var field = new Object();
             field.CustomFieldID = $(this).attr("id");
+
+            if ($(this).hasClass("required") && ($(this).val() === null || $.trim($(this).val()) === '')) {
+                $(this).parent().addClass('has-error');
+                hasError = 1;
+            }
+            else {
+                $(this).parent().removeClass('has-error');
+            }
+
             switch ($(this).attr("type")) {
                 case "checkbox":
                     field.Value = $(this).prop('checked');
                     break;
+                //case "date":
+                //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+                //    break;
+                //case "time":
+                //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate("1/1/1900 " + $(this).val());
+                //    break;
+                //case "datetime":
+                //    field.Value = $(this).val() == "" ? null : top.Ts.Utils.getMsDate($(this).val());
+                //    break;
                 default:
                     field.Value = $(this).val();
             }
             productInfo.Fields[productInfo.Fields.length] = field;
         });
 
-
-        top.Ts.Services.Customers.SaveProduct(top.JSON.stringify(productInfo), function (prod) {
-            LoadProducts(true);
-            $('#btnProductSave').text("Save Product");
-            $('#productExpiration').val('');
-            $('#fieldProductID').val('-1');
-            $('#btnProductSave').text("Associate Product");
-            $('.customField:visible').each(function () {
-                switch ($(this).attr("type")) {
-                    case "checkbox":
-                        $(this).prop('checked', false);
-                        break;
-                    default:
-                        $(this).val('');
-                }
+        if (hasError == 0)
+        {
+            top.Ts.Services.Customers.SaveProduct(top.JSON.stringify(productInfo), function (prod) {
+                LoadProducts(true);
+                $('#btnProductSave').text("Save Product");
+                $('#productExpiration').val('');
+                $('#fieldProductID').val('-1');
+                $('#btnProductSave').text("Associate Product");
+                $('.customField:visible').each(function () {
+                    switch ($(this).attr("type")) {
+                        case "checkbox":
+                            $(this).prop('checked', false);
+                            break;
+                        default:
+                            $(this).val('');
+                    }
+                });
+                $('#productForm').toggle();
+            }, function () {
+                alert('There was an error saving this product association. Please try again.');
             });
-            $('#productForm').toggle();
-        }, function () {
-            alert('There was an error saving this product association. Please try again.');
-        });
+        }
 
     });
 
@@ -1059,7 +1084,13 @@ $(document).ready(function () {
             top.Ts.Services.Customers.LoadCustomProductFields(product, function (custField) {
                 for (var i = 0; i < custField.length; i++) {
                     if (custField[i].FieldType == 2)
-                        $('#' + custField[i].CustomFieldID).attr('checked',custField[i].Value);
+                        $('#' + custField[i].CustomFieldID).attr('checked', custField[i].Value);
+                    //else if (custField[i].FieldType == 5)
+                    //{
+                    //    var date = field.value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+                    //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(top.Ts.Utils.getDatePattern()));
+                    //}
+                        
                     else
                         $('#' + custField[i].CustomFieldID).val(custField[i].Value);
                 }
@@ -1483,6 +1514,10 @@ $(document).ready(function () {
         }
     });
 
+    $('#cbActive').click(function (e) {
+        LoadContacts();
+    });
+
     $("#modalPhone").on('hidden.bs.modal', function () {
         $('#modalPhone input').val('');
     });
@@ -1547,6 +1582,8 @@ $(document).ready(function () {
         top.Ts.Services.Customers.GetProperties(organizationID, function (result) {
             $('#fieldName').text(result.orgproxy.Name);
             $('#fieldWebsite').text(result.orgproxy.Website != null && result.orgproxy.Website != "" ? result.orgproxy.Website : "Empty");
+            if ($('#fieldWebsite').text() == "Empty")
+                $('#fieldWebsite').removeClass("link");
             $('#fieldDomains').text(result.orgproxy.CompanyDomains != "" ? result.orgproxy.CompanyDomains : "Empty");
             $('#fieldActive').text(result.orgproxy.IsActive);
             $('#fieldPortalAccess').text(result.orgproxy.HasPortalAccess);
@@ -1795,7 +1832,7 @@ $(document).ready(function () {
 
     function LoadContacts() {
         $('.userList').empty();
-        top.Ts.Services.Customers.LoadContacts(organizationID, function (users) {
+        top.Ts.Services.Customers.LoadContacts(organizationID, $('#cbActive').prop('checked'), function (users) {
             $('.userList').append(users)
             //for (var i = 0; i < users.length; i++) {
             //    $('<a>').attr('class', 'list-group-item').text(users[i].FirstName + ' ' + users[i].LastName).appendTo('.userList');
@@ -1857,6 +1894,10 @@ $(document).ready(function () {
     function LoadCustomControls(refType) {
         top.Ts.Services.Customers.LoadCustomControls(refType, function (html) {
             $('#customProductsControls').append(html);
+
+            $('#customProductsControls .datepicker').datetimepicker({ pickTime: false });
+            $('#customProductsControls .datetimepicker').datetimepicker({});
+            $('#customProductsControls .timepicker ').datetimepicker({ pickDate: false });
         });
     }
 
@@ -2119,7 +2160,7 @@ $(document).ready(function () {
 
     $("input[type=text], textarea").autoGrow();
 
-    $('.customProperties, .userProperties').on('keydown', '.number', function (event) {
+    $('.customProperties, .userProperties, #customProductsControls').on('keydown', '.number', function (event) {
         // Allow only backspace and delete
         if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 190 || event.keyCode == 109 || event.keyCode == 173 || (event.keyCode >= 96 && event.keyCode <= 105)) {
             // let it happen, don't do anything
