@@ -1364,6 +1364,9 @@ AND RTRIM(LastName) = @LastName
 
       Tickets tickets = new Tickets(_loginUser);
 
+      KnowledgeBaseCategories kbCats = new KnowledgeBaseCategories(_loginUser);
+      kbCats.LoadAllCategories(_organizationID);
+
       int maxTicketNumber = tickets.GetMaxTicketNumber(_organizationID);
       if (maxTicketNumber < 0) maxTicketNumber++;
       int count = 0;
@@ -1423,7 +1426,38 @@ AND RTRIM(LastName) = @LastName
         ticket.DateClosed = GetDBDate(row["DateClosed"], true);
         ticket.GroupID = null;
         ticket.ImportID = row["TicketID"].ToString().Trim();
-        ticket.IsKnowledgeBase = row.Table.Columns.Contains("IsKnowledgeBase") ? GetDBBool(row["IsKnowledgeBase"]) : false; 
+        ticket.IsKnowledgeBase = row.Table.Columns.Contains("IsKnowledgeBase") ? GetDBBool(row["IsKnowledgeBase"]) : false;
+        if (ticket.IsKnowledgeBase)
+        {
+          string parentCatName = GetDBString(row["KBParentCatName"], 250, true);
+          string catName = GetDBString(row["KBCatName"], 250, true);
+          KnowledgeBaseCategory cat = null;
+          if (catName != null)
+          {
+            if (parentCatName == null)
+            {
+              cat = kbCats.FindByName(catName, -1);
+            }
+            else
+            {
+              KnowledgeBaseCategory parent = kbCats.FindByName(parentCatName, -1);
+              if (parent != null)
+              {
+                cat = kbCats.FindByName(catName, parent.CategoryID);
+              }
+            }
+
+            if (cat == null)
+            {
+              _log.AppendMessage("Ticket category not found for ticket " + ticketNumber.ToString() + " category: " + catName);
+            }
+          }
+
+          if (cat != null)
+          {
+            ticket.KnowledgeBaseCategoryID = cat.CategoryID;
+          }
+        }
         ticket.IsVisibleOnPortal = false;
         ticket.ModifierID = _loginUser.UserID;
         ticket.Name = GetDBString(row["Name"], 250, false);
@@ -1484,10 +1518,16 @@ AND RTRIM(LastName) = @LastName
           continue;
         }
 
-        User creator = users.FindByImportID(row["CreatorID"].ToString());
-        if (creator == null)
+
+        string creatorString = row["CreatorID"].ToString().Trim();
+        User creator = null;
+        if (creatorString != "")
         {
-          creator = contacts.FindByImportID(row["CreatorID"].ToString());
+          creator = users.FindByImportID(creatorString);
+          if (creator == null)
+          {
+            creator = contacts.FindByImportID(creatorString);
+          }
         }
 
         int creatorID = creator == null ? -1 : creator.UserID;
