@@ -579,7 +579,7 @@ namespace TeamSupport.Data
         actionType.OrganizationID = _organizationID;
         actionType.Position = actionTypes.GetMaxPosition(_organizationID) + 1;
         actionTypes.Save();
-        actionTypes.LoadAllPositions(_organizationID);
+        //actionTypes.LoadAllPositions(_organizationID);
       }
 
       return actionType.ActionTypeID;
@@ -1566,7 +1566,7 @@ AND RTRIM(LastName) = @LastName
         action.ActionSource = "Import";
         action.IsVisibleOnPortal = row["VisibleOnPortal"].ToString().ToLower().IndexOf("t") > -1;
         action.ModifierID = _loginUser.UserID;
-        action.Name = GetDBString(row["Name"], 500, false);
+        action.Name = "";// GetDBString(row["Name"], 500, false);
         if (action.Name.Length > 499) action.Name = action.Name.Substring(0, 499);
         action.TicketID = ticket.TicketID;
         action.ImportID = row["ActionID"].ToString().Trim();
