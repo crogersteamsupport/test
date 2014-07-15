@@ -579,7 +579,8 @@ namespace TeamSupport.Data
         actionType.OrganizationID = _organizationID;
         actionType.Position = actionTypes.GetMaxPosition(_organizationID) + 1;
         actionTypes.Save();
-        //actionTypes.LoadAllPositions(_organizationID);
+        actionTypes = new ActionTypes(_loginUser);
+        actionTypes.LoadAllPositions(_organizationID);
       }
 
       return actionType.ActionTypeID;
