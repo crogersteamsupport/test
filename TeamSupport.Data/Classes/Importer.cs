@@ -571,16 +571,15 @@ namespace TeamSupport.Data
 
       if (actionType == null)
       {
-        actionTypes = new ActionTypes(_loginUser);
-        actionType = actionTypes.AddNewActionType();
+        ActionTypes ats = new ActionTypes(_loginUser);
+        actionType = ats.AddNewActionType();
         actionType.Name = name;
         actionType.Description = "";
         actionType.IsTimed = true;
         actionType.OrganizationID = _organizationID;
         actionType.Position = actionTypes.GetMaxPosition(_organizationID) + 1;
-        actionTypes.Save();
+        ats.Save();
         int? result = actionType.ActionTypeID;
-        actionTypes = new ActionTypes(_loginUser);
         actionTypes.LoadAllPositions(_organizationID);
         return result;
       }
