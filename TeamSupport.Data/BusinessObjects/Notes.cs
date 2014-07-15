@@ -40,7 +40,7 @@ namespace TeamSupport.Data
                                 LEFT JOIN Users u ON n.CreatorID = u.UserID 
                                 WHERE (n.RefID = @ReferenceID)
                                 AND (n.RefType = @ReferenceType)
-                                ORDER BY n." + orderBy;
+                                ORDER BY n." + orderBy + " desc";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ReferenceType", refType);
         command.Parameters.AddWithValue("@ReferenceID", refID);
