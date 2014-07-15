@@ -579,11 +579,15 @@ namespace TeamSupport.Data
         actionType.OrganizationID = _organizationID;
         actionType.Position = actionTypes.GetMaxPosition(_organizationID) + 1;
         actionTypes.Save();
+        int? result = actionType.ActionTypeID;
         actionTypes = new ActionTypes(_loginUser);
         actionTypes.LoadAllPositions(_organizationID);
+        return result;
       }
-
-      return actionType.ActionTypeID;
+      else
+      {
+        return actionType.ActionTypeID;
+      }
     }
 
     #endregion
