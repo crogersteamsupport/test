@@ -325,9 +325,7 @@ namespace TeamSupport.Data
               GC.WaitForPendingFinalizers();
               ImportTickets();
               GC.WaitForPendingFinalizers();
-              
               ImportActions();
-              
               GC.WaitForPendingFinalizers();
               ImportAttachments();
               GC.WaitForPendingFinalizers();
@@ -342,6 +340,8 @@ namespace TeamSupport.Data
               ImportCustomerTickets();
               GC.WaitForPendingFinalizers();
               ImportContactTickets();
+              GC.WaitForPendingFinalizers();
+              ImportTicketSubscriptions();
               GC.WaitForPendingFinalizers();
               ImportWiki();
               GC.WaitForPendingFinalizers();
@@ -974,6 +974,15 @@ namespace TeamSupport.Data
         _currentRow = row;
         //if (list.ContainsKey(row["CustomerID"].ToString().Trim())) continue;
         if (existing.FindByImportID(row["CustomerID"].ToString().Trim()) != null) continue;
+
+        Organization foundOrg = existing.FindByName(row["Name"].ToString());
+        if (foundOrg != null)
+        {
+          foundOrg.ImportID = row["CustomerID"].ToString().Trim();
+          foundOrg.Collection.Save();
+          continue;
+        }
+
         Organization organization = organizations.AddNewOrganization();
         organization.Description = "";
         organization.ExtraStorageUnits = 0;
@@ -1024,9 +1033,21 @@ namespace TeamSupport.Data
           continue;
         }
 
+
+        Users existingUsers = new Users(_loginUser);
+        existingUsers.LoadByName(row["FirstName"].ToString().Trim() + " " + row["LastName"].ToString().Trim(), organization.OrganizationID, false, false, false);
+
+        if (existingUsers.Count > 0)
+        {
+          existingUsers[0].ImportID = "[contact]" + row["ContactID"].ToString().Trim();
+          existingUsers.Save();
+          _log.AppendError(row, "Contact skipped due to already exists.");
+          continue;
+        }
+        /*
         SqlCommand command = new SqlCommand();
         command.CommandText = @"
-SELECT COUNT(*) 
+SELECT COUNT(*)
 FROM Users
 WHERE OrganizationID = @OrganizationID
 AND RTRIM(FirstName) = @FirstName
@@ -1035,11 +1056,11 @@ AND RTRIM(LastName) = @LastName
         command.Parameters.AddWithValue("OrganizationID", organization.OrganizationID);
         command.Parameters.AddWithValue("FirstName", row["FirstName"].ToString().Trim());
         command.Parameters.AddWithValue("LastName", row["LastName"].ToString().Trim());
-        object o = SqlExecutor.ExecuteScalar(_loginUser, command);
+        object o = SqlExecutor.exe(_loginUser, command);
         if (o == null || o == DBNull.Value || (int)o > 0) {
           _log.AppendError(row, "Contact skipped due to already exists.");
           continue;
-        }
+        }*/
 
         //Organization organization = organizations.FindByImportID(row["CustomerID"].ToString().Trim());
         //if (organization == null) { _log.AppendError(row, "Contact skipped due to missing organization."); continue; }
@@ -2075,9 +2096,9 @@ AND RTRIM(LastName) = @LastName
         }
 
         tickets.AddSubscription(user.UserID, ticket.TicketID);
+        EmailPosts.DeleteImportEmails(_loginUser);
 
       }
-      EmailPosts.DeleteImportEmails(_loginUser);
     }
 
     private void ImportContactTickets()
