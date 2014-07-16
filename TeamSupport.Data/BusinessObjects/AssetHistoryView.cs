@@ -65,6 +65,17 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    public void LoadByOrganizationID(int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM AssetHistoryView WHERE OrganizationID = @OrganizationID ORDER BY DateCreated DESC";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
   }
   
 }

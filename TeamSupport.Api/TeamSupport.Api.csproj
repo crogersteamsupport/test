@@ -131,6 +131,11 @@
     <Compile Include="RestData\RestActionLogs.cs" />
     <Compile Include="RestData\RestActions.cs" />
     <Compile Include="RestData\RestAddresses.cs" />
+    <Compile Include="RestData\RestAssetAssignments.cs" />
+    <Compile Include="RestData\RestAssetAssignmentsView.cs" />
+    <Compile Include="RestData\RestAssetHistoryView.cs" />
+    <Compile Include="RestData\RestAssets.cs" />
+    <Compile Include="RestData\RestAssetsView.cs" />
     <Compile Include="RestData\RestAttachments.cs" />
     <Compile Include="RestData\RestContacts.cs" />
     <Compile Include="RestData\RestGroups.cs" />

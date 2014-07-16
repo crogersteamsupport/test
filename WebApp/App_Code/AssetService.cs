@@ -247,6 +247,7 @@ namespace TSWebServices
       Asset o = Assets.GetAsset(loginUser, assetID);
       //Location 1=assigned (shipped), 2=warehouse, 3=junkyard
       o.Location = "2";
+      o.AssignedTo = null;
       DateTime now = DateTime.UtcNow;
       o.DateModified = now;
       o.ModifierID = loginUser.UserID;
@@ -262,7 +263,7 @@ namespace TSWebServices
       assetHistoryItem.OrganizationID = loginUser.OrganizationID;
       assetHistoryItem.ActionTime = DateTime.UtcNow;
       assetHistoryItem.ActionDescription = "Item returned to warehouse on " + info.DateShipped.Month.ToString() + "/" + info.DateShipped.Day.ToString() + "/" + info.DateShipped.Year.ToString();
-      assetHistoryItem.ShippedFrom = o.AssignedTo;
+      assetHistoryItem.ShippedFrom = assetAssignmentsView[0].ShippedTo;
       assetHistoryItem.ShippedFromRefType = assetAssignmentsView[0].RefType;
       assetHistoryItem.ShippedTo = loginUser.OrganizationID;
       assetHistoryItem.RefType = (int)ReferenceType.Organizations;

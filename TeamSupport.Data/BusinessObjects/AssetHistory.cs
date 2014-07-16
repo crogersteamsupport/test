@@ -4,11 +4,47 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace TeamSupport.Data
 {
   public partial class AssetHistoryItem
   {
+    public void FullReadFromXml(string data, bool isInsert)
+    {
+      //Of the 7 writeable fields only 2 are IDs. So we'll do a normal read and then add code for the 2 ID fields.
+      this.ReadFromXml(data, isInsert);
+
+      LoginUser user = Collection.LoginUser;
+      FieldMap fieldMap = Collection.FieldMap;
+
+      StringReader reader = new StringReader(data);
+      DataSet dataSet = new DataSet();
+      dataSet.ReadXml(reader);
+
+      try
+      {
+        if (this.ShippedTo == null && this.RefType != null)
+        {
+          if ((ReferenceType)this.RefType == ReferenceType.Organizations)
+          {
+            object organizationID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "ShippedTo", "NameAssignedTo", Organization.GetIDByName, false, user.OrganizationID);
+            if (organizationID != null) this.ShippedTo = Convert.ToInt32(organizationID);
+          }
+          else if ((ReferenceType)this.RefType == ReferenceType.Contacts)
+          {
+            //The get contactID by name cannot be used
+          }
+        }
+      }
+      catch
+      {
+      }
+
+      // chances are the update is also going to use this
+      // if that is the case we might need to add support for assignments
+      // we'll find out once we reach the update code
+    }
   }
   
   public partial class AssetHistory

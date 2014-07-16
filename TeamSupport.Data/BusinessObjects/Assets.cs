@@ -4,11 +4,42 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace TeamSupport.Data
 {
   public partial class Asset
   {
+    public void FullReadFromXml(string data, bool isInsert)
+    {
+      this.ReadFromXml(data, isInsert);
+
+      LoginUser user = Collection.LoginUser;
+      FieldMap fieldMap = Collection.FieldMap;
+
+      StringReader reader = new StringReader(data);
+      DataSet dataSet = new DataSet();
+      dataSet.ReadXml(reader);
+
+      try
+      {
+        object productID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "ProductID", "ProductName", Product.GetIDByName, false, null);
+        if (productID != null) this.ProductID = Convert.ToInt32(productID);
+      }
+      catch
+      {
+      }
+
+      try
+      {
+        object productVersionID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "ProductVersionID", "ProductVersionNumber", ProductVersion.GetIDByName, false, this.ProductID);
+        if (productVersionID != null) this.ProductVersionID = Convert.ToInt32(productVersionID);
+      }
+      catch
+      {
+      }
+    }
+
   }
   
   public partial class Assets
@@ -102,6 +133,7 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
   }
   
 }

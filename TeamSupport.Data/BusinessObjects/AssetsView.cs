@@ -82,6 +82,18 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    public void LoadByOrganizationID(int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM AssetsView WHERE OrganizationID = @OrganizationID ORDER BY DateCreated DESC";
+        command.CommandText = InjectCustomFields(command.CommandText, "AssetID", ReferenceType.Assets);
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
   }
   
   public class InventorySearchAsset

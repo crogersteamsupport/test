@@ -109,7 +109,14 @@ namespace TeamSupport.Data
     public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
     {
       Users users = new Users(loginUser);
-      users.LoadByName(name, loginUser.OrganizationID, true, false, false);
+      if (parentID != null)
+      {
+        users.LoadByName(name, (int)parentID, true, false, false);
+      }
+      else
+      {
+        users.LoadByName(name, loginUser.OrganizationID, true, false, false);
+      }
       if (users.IsEmpty) return null;
       else return users[0].UserID;
     }

@@ -1356,5 +1356,19 @@ WHERE tgv.OrganizationID = @OrganizationID"
       }
     }
 
+    /// <summary>
+    /// Loads tickets that are associated with a asset's assetid
+    /// </summary>
+    /// <param name="assetID"></param>
+    public void LoadByAssetID(int assetID, string orderBy = "AssetID")
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT tv.* FROM TicketsView tv JOIN AssetTickets at ON at.TicketID = tv.TicketID WHERE at.AssetID = @AssetID ORDER BY " + orderBy;
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@AssetID", assetID);
+        Fill(command);
+      }
+    }
   } 
 }

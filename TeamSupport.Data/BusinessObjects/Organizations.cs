@@ -168,7 +168,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
       try
       {
-        object defaultSupportUserID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "DefaultSupportUserID", "DefaultSupportUser", User.GetIDByName, false, null);
+        object defaultSupportUserID = DataUtils.GetValueFromObject(user, fieldMap, dataSet, "DefaultSupportUserID", "DefaultSupportUser", User.GetIDByName, false, user.OrganizationID);
         if (defaultSupportUserID != null) this.DefaultSupportUserID = Convert.ToInt32(defaultSupportUserID);
       }
       catch
@@ -294,6 +294,13 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       get { return Enums.GetDescription((FontFamily)Row["FontFamily"]); }
     }
 
+    public static int? GetIDByName(LoginUser loginUser, string name, int? parentID)
+    {
+      Organizations organizations = new Organizations(loginUser);
+      organizations.LoadByOrganizationNameActive(name, (int)parentID);
+      if (organizations.IsEmpty) return null;
+      else return organizations[0].OrganizationID;
+    }
   }
 
   public partial class Organizations

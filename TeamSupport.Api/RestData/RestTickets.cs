@@ -256,5 +256,19 @@ namespace TeamSupport.Api
       return tickets.GetXml("Tickets", "Ticket", true, command.Filters);
     }
 
+    public static string GetTicketsByAssetID(RestCommand command, int assetID, bool orderByDateCreated = false)
+    {
+      TicketsView tickets = new TicketsView(command.LoginUser);
+      if (orderByDateCreated)
+      {
+        tickets.LoadByAssetID(assetID, "at.DateCreated DESC");
+      }
+      else
+      {
+        tickets.LoadByAssetID(assetID);
+      }
+
+      return tickets.GetXml("Tickets", "Ticket", command.Filters["TicketTypeID"] != null, command.Filters);
+    }
   }
 }

@@ -132,6 +132,13 @@ namespace TeamSupport.Api
           case "/products/{id}/versions/{id}/history/": data = RestActionLogs.GetItems(_command, ReferenceType.ProductVersions, GetId(3)); break;
           case "/products/{id}/versions/{id}/customers/": data = RestOrganizations.GetVersionOrganizations(_command, GetId(3)); break;
           case "/products/{id}/versions/{id}/customers/{id}/": data = RestOrganizationProducts.GetOrganizationProductVersionItems(_command, GetId(5), GetId(1), GetId(3)); break;
+          case "/assets/": data = RestAssetsView.GetAssetsView(_command); break;
+          case "/assets/{id}/": data = RestAssetsView.GetAssetsViewItem(_command, GetId(1)); break;
+          case "/assets/{id}/history/": data = RestAssetHistoryView.GetAssetHistoryView(_command, GetId(1)); break;
+          case "/assets/{id}/assignments/": data = RestAssetAssignmentsView.GetAssetAssignmentsView(_command, GetId(1)); break;
+          case "/assets/{id}/tickets/": data = RestTickets.GetTicketsByAssetID(_command, GetId(1), true); break;
+          case "/assets/{id}/attachments/": data = RestAttachments.GetAttachmentsByAssetID(_command, GetId(1), true); break;
+          case "/assets/{id}/attachments/{id}/": data = RestAttachments.GetAttachment(_command, GetId(3)); break;
           case "/groups/": data = RestGroups.GetGroups(_command); break;
           case "/groups/{id}/": data = RestGroups.GetGroup(_command, GetId(1)); break;
           case "/users/": data = RestUsers.GetUsers(_command); break;
@@ -295,6 +302,10 @@ namespace TeamSupport.Api
           case "/contacts/{id}/phonenumbers/": data = RestPhoneNumbers.AddPhoneNumber(_command, ReferenceType.Users, GetId(1)); break;
           case "/products/": data = RestProducts.CreateProduct(_command); break;
           case "/products/{id}/versions/": data = RestVersions.CreateVersion(_command, GetId(1)); break;
+          case "/assets/": data = RestAssets.CreateAsset(_command); break;
+          case "/assets/{id}/assignments/": data = RestAssetAssignments.AddAssetAssignment(_command, GetId(1)); break;
+          case "/assets/{id}/tickets/{id}/": data = RestAssets.AddTicketAsset(_command, GetId(1), GetId(3)); break;
+          case "/assets/{id}/attachments/": data = RestAttachments.CreateAttachment(_command, GetId(1)); break;
           case "/users/": data = RestUsers.CreateUser(_command); break;
           default: throw new RestException(HttpStatusCode.NotFound);
         }
@@ -342,6 +353,7 @@ namespace TeamSupport.Api
           case "/contacts/{id}/": data = RestContacts.UpdateContact(_command, GetId(1)); break;
           case "/contacts/{id}/phonenumbers/{id}/": RestPhoneNumbers.UpdatePhoneNumber(_command, GetId(3)); break;
           case "/contacts/{id}/addresses/{id}/": RestAddresses.UpdateAddress(_command, GetId(3)); break;
+          case "/assets/{id}/": data = RestAssets.UpdateAsset(_command, GetId(1)); break;
           case "/users/{id}/": data = RestUsers.UpdateUser(_command, GetId(1)); break;
           case "/products/{id}/": data = RestProducts.UpdateProduct(_command, GetId(1)); break;
           case "/products/{id}/versions/{id}/": data = RestVersions.UpdateVersion(_command, GetId(3)); break;
@@ -391,6 +403,10 @@ namespace TeamSupport.Api
           case "/contacts/{id}/": RestContacts.DeleteContact(_command, GetId(1)); break;
           case "/contacts/{id}/phonenumbers/{id}/": RestPhoneNumbers.RemovePhoneNumber(_command, ReferenceType.Users, GetId(1), GetId(3)); break;
           case "/contacts/{id}/addresses/{id}/": RestAddresses.RemoveAddress(_command, ReferenceType.Users, GetId(1), GetId(3)); break;
+          case "/assets/{id}/": data = RestAssets.JunkAsset(_command, GetId(1)); break;
+          case "/assets/{id}/assignments/": data = RestAssetAssignments.ReturnAsset(_command, GetId(1)); break;
+          case "/assets/{id}/tickets/{id}/": data = RestAssets.DeleteTicketAsset(_command, GetId(1), GetId(3)); break;
+          case "/assets/{id}/attachments/{id}/": data = RestAttachments.DeleteAttachment(_command, GetId(1), GetId(3)); break;
           case "/users/{id}/": RestUsers.DeleteUser(_command, GetId(1)); break;
           default: throw new RestException(HttpStatusCode.NotFound);
         }
