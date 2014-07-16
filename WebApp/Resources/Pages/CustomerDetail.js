@@ -2152,13 +2152,12 @@ $(document).ready(function () {
             LoadNotes();
         else if (e.target.innerHTML == "Files")
             LoadFiles();
-//        else if (e.target.innerHTML == "Inventory")
-//            LoadInventory();
+        else if (e.target.innerHTML == "Inventory")
+            LoadInventory();
         else if (e.target.innerHTML == "Ratings")
             LoadRatings('', 1);
     })
 
-    $('#inventoryIframe').attr("src", "../../../Inventory/CustomerInventory.aspx?CustID=" + organizationID);
     $("input[type=text], textarea").autoGrow();
 
     $('.customProperties, .userProperties, #customProductsControls').on('keydown', '.number', function (event) {
