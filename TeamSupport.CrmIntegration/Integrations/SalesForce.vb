@@ -1294,7 +1294,7 @@ Namespace TeamSupport
                           updateTicket(0).SalesForceID = result.id
                           Dim actionLogDescription As String = "Sent Ticket to SalesForce as new Case with ID: '" + result.id + "'."
                           ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
-                        Else If result.errors(0).message.Contains("insufficient access rights") Then
+                        Else
                             Log.Write("Creating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                             Log.Write("Attempting without impersonation...")
                             impersonation = False
@@ -1314,8 +1314,6 @@ Namespace TeamSupport
                             Else
                               Throw(New Exception(result.errors(0).message))
                             End If
-                        Else
-                          Throw(New Exception(result.errors(0).message))
                         End If
                       Catch ex As Exception
                         Log.Write("Creating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + ex.Message)
@@ -1329,7 +1327,10 @@ Namespace TeamSupport
                         If result.errors Is Nothing Then
                           Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
                           ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
-                        Else If result.errors(0).message.Contains("insufficient access rights") Then
+                        Else If result.errors(0).message.ToLower() = "entity is deleted" Then
+                          Dim actionLogDescription As String = "SalesForce Case ID: '" + ticket.SalesForceID + "' was not found. No update applied. Error: " + result.errors(0).message
+                          ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
+                        Else
                           Log.Write("Updating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                           Log.Write("Attempting without impersonation...")
                           impersonation = False
@@ -1351,11 +1352,6 @@ Namespace TeamSupport
                           Else
                             Throw(New Exception(result.errors(0).message))
                           End If
-                        Else If result.errors(0).message.ToLower() = "invalid cross reference id" OrElse result.errors(0).message.ToLower() = "entity is deleted" Then
-                          Dim actionLogDescription As String = "SalesForce Case ID: '" + ticket.SalesForceID + "' was not found. No update applied. Error: " + result.errors(0).message
-                          ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
-                        Else
-                          Throw(New Exception(result.errors(0).message))
                         End If
                       Catch ex As Exception
                         Log.Write("Updating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + ex.Message)
@@ -1825,7 +1821,10 @@ Namespace TeamSupport
                         action.SalesForceID = result.id
                         Dim actionLogDescription As String = "Sent Action to SalesForce as new CaseComment with ID: '" + result.id + "'."
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
-                      Else If result.errors(0).message.Contains("insufficient access rights") Then
+                      Else If result.errors(0).message.ToLower() = "entity is deleted" Then
+                        Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
+                        ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+                      Else
                         Log.Write("Creating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                         Log.Write("Attempting without impersonation...")
                         impersonation = False
@@ -1841,11 +1840,6 @@ Namespace TeamSupport
                         Else
                           Throw(New Exception(result.errors(0).message))
                         End If
-                      Else If result.errors(0).message.ToLower() = "entity is deleted" Then
-                        Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
-                        ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
-                      Else
-                        Throw(New Exception(result.errors(0).message))
                       End If
                     Catch ex As Exception
                       Log.Write("Creating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + ex.Message)
@@ -1859,7 +1853,10 @@ Namespace TeamSupport
                       If result.errors Is Nothing Then
                         Dim actionLogDescription As String = "Updated SalesForce CaseComment ID: '" + action.SalesForceID + "' with action changes."
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)                                  
-                      Else If result.errors(0).message.Contains("insufficient access rights") Then
+                      Else If result.errors(0).message.ToLower() = "entity is deleted" Then
+                        Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
+                        ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+                      Else
                         Log.Write("Updating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                         Log.Write("Attempting without impersonation...")
                         impersonation = False
@@ -1875,11 +1872,6 @@ Namespace TeamSupport
                         Else
                           Throw(New Exception(result.errors(0).message))
                         End If
-                      Else If result.errors(0).message.ToLower() = "entity is deleted" Then
-                        Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
-                        ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
-                      Else
-                        Throw(New Exception(result.errors(0).message))
                       End If
                     Catch ex As Exception
                       Log.Write("Updating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + ex.Message)
