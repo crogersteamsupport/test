@@ -154,6 +154,9 @@ Namespace TeamSupport
         End Function
 
         Private Function GetAPIJArray(ByVal URI As String, ByVal verb As String, ByVal body As String) As JArray
+          Log.Write("URI: " + URI)
+          Log.Write("verb: " + verb)
+          Log.Write("body: " + body)
           Dim response As HttpWebResponse = MakeHTTPRequest(_encodedCredentials, URI, verb, "application/json", Client, body)
           Dim responseReader As New StreamReader(response.GetResponseStream())
           Return Jarray.Parse(responseReader.ReadToEnd)
@@ -759,9 +762,11 @@ Namespace TeamSupport
           Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/remotelink"
           Dim remoteLinks As JArray = GetAPIJArray(URI, "GET", String.Empty)
           'For i = 0 To CType(remoteLinks("total"), Integer)
+          Log.Write("remoteLinks.Count: " + remoteLinks.Count.ToString())
           For i = 0 To remoteLinks.Count - 1
             If remoteLinks(i)("application")("name") = "Team Support" Then
               Dim remoteLinkURL As String = remoteLinks(i)("object")("url").ToString()
+              Log.Write("remoteLinkURL: " + remoteLinkURL)
               result.Add(CType(remoteLinks(i)("object")("url").ToString().Substring(49), Integer))
             End If
           Next
