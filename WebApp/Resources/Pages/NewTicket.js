@@ -367,7 +367,7 @@ $(document).ready(function () {
 
     select.combobox({ selected: function (e, ui) {
       top.Ts.Services.Tickets.GetValueTemplateText(ui.item.value, function (result) {
-        if (result != null) {
+          if (result != null && result != "") {
 
           $('.newticket-desc').html($('.newticket-desc').html() + '<br/><br/>' + result);
         }
