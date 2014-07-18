@@ -82,7 +82,7 @@ Namespace TeamSupport
 
         'Load the waiting links to process
         Dim links As New CRMLinkTable(_loginUser)
-        links.LoadActive()
+        links.LoadActive(Settings.ReadInt("CRMLinkTable Process Interval", 15))
 
         MyBase.Logs.WriteEvent("Active links count: " + links.Count().ToString(), true)
         Dim isAlreadyProcessingValue As Boolean = False

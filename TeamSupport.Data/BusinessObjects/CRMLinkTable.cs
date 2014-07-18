@@ -61,7 +61,7 @@ namespace TeamSupport.Data
     /// <summary>
     /// Loads all the active CRM Link Table Items and sorts them by LastProcessed date
     /// </summary>
-    public void LoadActive()
+    public void LoadActive(int processInterval)
     {
       //This Query loads all the active CRMLinkTable items
       using (SqlCommand command = new SqlCommand())
@@ -72,10 +72,11 @@ FROM CRMLinkTable clt
 INNER JOIN Organizations o 
 ON clt.OrganizationID = o.OrganizationID 
 WHERE clt.Active = 1 AND o.IsActive=1
-	AND clt.LastProcessed < DATEADD(MINUTE, -15, GETUTCDATE())
+	AND clt.LastProcessed < DATEADD(MINUTE, @ProcessInterval, GETUTCDATE())
 ORDER BY clt.LastProcessed ASC
 ";
         command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProcessInterval", processInterval * -1);
         Fill(command);
       }
     }
