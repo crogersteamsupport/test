@@ -1398,10 +1398,31 @@ namespace TSWebServices
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
       if (!CanEditTicket(ticket)) return null;
-      string description = "Changed Due Date from '" + ticket.DueDate == null ? "Unassigned" : ticket.DueDate.ToString() + "' to '" + dueDate == null ? "Unassigned" : dueDate.ToString() + "'.";
+      StringBuilder fromValue = new StringBuilder();
+      if (ticket.DueDate == null)
+      {
+        fromValue.Append("Unassigned");
+      }
+      else
+      {
+        fromValue.Append(ticket.DueDate.ToString());
+      }
+
+      StringBuilder toValue = new StringBuilder();
+      if (dueDate == string.Empty)
+      {
+        toValue.Append("Unassigned");
+        ticket.DueDate = null;
+      }
+      else
+      {
+        toValue.Append(dueDate.ToString());
+        ticket.DueDate = (DateTime?)dueDate;
+      }
+
+      string description = "Changed Due Date from '" + fromValue.ToString() + "' to '" + toValue.ToString() + "'.";
       ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketID, description);
 
-      ticket.DueDate = (DateTime?)dueDate;
       ticket.Collection.Save();
       return ticket.DueDate;
     }

@@ -241,71 +241,69 @@ $(document).ready(function () {
             var item = $(this).data('item');
             alertMessage = item;
             top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, item.data, item.id, function (customers) {
-                appendCustomers(customers);
-                if (alertMessage.data == "u")
-                {
-                    top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Users, function (note) {
-                        if (note != null) {
-                            $('#modalAlertMessage').html(note.Description);
-                            $('#alertID').val(note.RefID);
-                            $('#alertType').val(note.RefType);
-                            $("#dialog").dialog({
-                                resizable: false,
-                                width: 'auto',
-                                height: 'auto',
-                                create: function () {
-                                    $(this).css('maxWidth', '800px');
-                                },
-                                modal: true,
-                                buttons: {
-                                    "Close": function () {
-                                        $(this).dialog("close");
-                                    },
-                                    "Snooze": function () {
-                                        top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                                        $(this).dialog("close");
-                                    },
-                                    "Dismiss": function () {
-                                        top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                                        $(this).dialog("close");
-                                    }
-                                }
-                            });
+              appendCustomers(customers);
+              if (alertMessage.data == "u") {
+                top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Users, function (note) {
+                  if (note != null) {
+                    $('#modalAlertMessage').html(note.Description);
+                    $('#alertID').val(note.RefID);
+                    $('#alertType').val(note.RefType);
+                    $("#dialog").dialog({
+                      resizable: false,
+                      width: 'auto',
+                      height: 'auto',
+                      create: function () {
+                        $(this).css('maxWidth', '800px');
+                      },
+                      modal: true,
+                      buttons: {
+                        "Close": function () {
+                          $(this).dialog("close");
+                        },
+                        "Snooze": function () {
+                          top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                          $(this).dialog("close");
+                        },
+                        "Dismiss": function () {
+                          top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                          $(this).dialog("close");
                         }
+                      }
                     });
-                }
-                else
-                {
-                    top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Organizations, function (note) {
-                        if (note != null) {
-                            $('#modalAlertMessage').html(note.Description);
-                            $('#alertID').val(note.RefID);
-                            $('#alertType').val(note.RefType);
-                            $("#dialog").dialog({
-                                resizable: false,
-                                width: 'auto',
-                                height: 'auto',
-                                create: function () {
-                                    $(this).css('maxWidth', '800px');
-                                },
-                                modal: true,
-                                buttons: {
-                                    "Close": function () {
-                                        $(this).dialog("close");
-                                    },
-                                    "Snooze": function () {
-                                        top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                                        $(this).dialog("close");
-                                    },
-                                    "Dismiss": function () {
-                                        top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                                        $(this).dialog("close");
-                                    }
-                                }
-                            });
+                  }
+                });
+              }
+              else {
+                top.Ts.Services.Customers.LoadAlert(alertMessage.id, top.Ts.ReferenceTypes.Organizations, function (note) {
+                  if (note != null) {
+                    $('#modalAlertMessage').html(note.Description);
+                    $('#alertID').val(note.RefID);
+                    $('#alertType').val(note.RefType);
+                    $("#dialog").dialog({
+                      resizable: false,
+                      width: 'auto',
+                      height: 'auto',
+                      create: function () {
+                        $(this).css('maxWidth', '800px');
+                      },
+                      modal: true,
+                      buttons: {
+                        "Close": function () {
+                          $(this).dialog("close");
+                        },
+                        "Snooze": function () {
+                          top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                          $(this).dialog("close");
+                        },
+                        "Dismiss": function () {
+                          top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                          $(this).dialog("close");
                         }
+                      }
                     });
-                }
+                  }
+                });
+              }
               window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addcustomer", userFullName);
               $(this).parent().remove();
             }, function () {
@@ -1227,82 +1225,85 @@ $(document).ready(function () {
       select.combobox('search', '');
     });
 
-    $('#dueDate')
+  $('#dueDate')
     .addClass('value ui-state-default ts-link')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
-          e.preventDefault();
-          var parent = $(this).parent().hide();
-          var container = $('<div>')
+      e.preventDefault();
+      var parent = $(this).parent().hide();
+      var container = $('<div>')
           .css('marginTop', '1em')
           .insertAfter(parent);
-          var input = $('<input type="text">')
+      var input = $('<input type="text">')
             .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
             .css('width', '100%')
             .appendTo(container)
             .datetimepicker()
             .focus();
 
-          if (_dueDate != null) {
-            input.datetimepicker('setDate', top.Ts.Utils.getMsDate(_dueDate));
-          }
+      if (_dueDate != null) {
+        input.datetimepicker('setDate', top.Ts.Utils.getMsDate(_dueDate));
+      }
 
-          var buttons = $('<div>')
+      var buttons = $('<div>')
           .addClass('ticket-custom-edit-buttons')
           .appendTo(container);
 
-          $('<button>')
+      $('<button>')
           .text('Cancel')
           .click(function (e) {
-              parent.show();
-              container.remove();
+            parent.show();
+            container.remove();
           })
           .appendTo(buttons)
           .button();
 
-          $('<button>')
+      $('<button>')
           .text('Save')
           .click(function (e) {
-              parent.show().find('img').show();
-              var value = top.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
-              container.remove();
-              //how can i check if the date is in the past
-//              if (field.IsRequired && (value === null || $.trim(value) === '')) {
-//                item.addClass('nonrequired-field-error ui-corner-all');
-//                var anchor = item.find('a');
-//                anchor.addClass('nonrequired-field-error-font');
-//              }
-//need to test what is this for apparently makes no sense
-//              if (value === null || $.trim(value) === '') {
-//                result.parent().addClass('is-empty');
-//              }
-//              else {
-//                result.parent().removeClass('is-empty');
-//              }
-              top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
-                  parent.find('img').hide().next().show().delay(800).fadeOut(400);
-                  var date = result === null ? null : top.Ts.Utils.getMsDate(result);
-                  var anchor = parent.find('a');
-                  anchor.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
-                  _dueDate = result;
-                  if (date != null && date < Date.now()) {
-                    parent.addClass('nonrequired-field-error ui-corner-all');
-                    anchor.addClass('nonrequired-field-error-font');
-                  }
-                  else {
-                    parent.removeClass('nonrequired-field-error ui-corner-all');
-                    anchor.removeClass('nonrequired-field-error-font');
-                  }
-                  window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeduedate", userFullName);
-                }, function () {
-                  alert("There was a problem saving your ticket property.");
-              });
+            parent.show().find('img').show();
+            var value = '';
+            if (input.val()) {
+              value = top.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
+            }
+            container.remove();
+            //how can i check if the date is in the past
+            //              if (field.IsRequired && (value === null || $.trim(value) === '')) {
+            //                item.addClass('nonrequired-field-error ui-corner-all');
+            //                var anchor = item.find('a');
+            //                anchor.addClass('nonrequired-field-error-font');
+            //              }
+            //need to test what is this for apparently makes no sense
+            //              if (value === null || $.trim(value) === '') {
+            //                result.parent().addClass('is-empty');
+            //              }
+            //              else {
+            //                result.parent().removeClass('is-empty');
+            //              }
+            top.Ts.Services.Tickets.SetDueDate(_ticketID, value, function (result) {
+              parent.find('img').hide().next().show().delay(800).fadeOut(400);
+              var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+              var anchor = parent.find('a');
+              anchor.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+              _dueDate = result;
+              if (date != null && date < Date.now()) {
+                parent.addClass('nonrequired-field-error ui-corner-all');
+                anchor.addClass('nonrequired-field-error-font');
+              }
+              else {
+                parent.removeClass('nonrequired-field-error ui-corner-all');
+                anchor.removeClass('nonrequired-field-error-font');
+              }
+              window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeduedate", userFullName);
+            }, function () {
+              alert("There was a problem saving your ticket property.");
+            });
           })
           .appendTo(buttons)
           .button();
-      });
+    });
 
-    $('#userName')
+  $('#userName')
     .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
     .click(function (e) {
       e.preventDefault();
@@ -1980,13 +1981,13 @@ $(document).ready(function () {
   top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 
   $('#alertSnooze').click(function (e) {
-      top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-      $('#modalAlert').modal('hide');
+    top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+    $('#modalAlert').modal('hide');
   });
 
   $('#alertDismiss').click(function (e) {
-      top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-      $('#modalAlert').modal('hide');
+    top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+    $('#modalAlert').modal('hide');
   });
 
 });
