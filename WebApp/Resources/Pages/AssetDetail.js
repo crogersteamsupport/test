@@ -843,7 +843,7 @@ var appendCustomEditCombo = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         var parent = $(this).hide();
-        top.Ts.System.logAction('Contact Detail - Edit Custom Combobox');
+        top.Ts.System.logAction('Asset Detail - Edit Custom Combobox');
         var container = $('<div>')
             .insertAfter(parent);
 
@@ -874,28 +874,38 @@ var appendCustomEditCombo = function (field, element) {
           container.remove();
 
           if (field.IsRequired && field.IsFirstIndexSelect == true && $(this).find('option:selected').index() < 1) {
-            result.parent().addClass('has-error');
+            alert("This field is required and the first value is not a valid selection for a required field.");
           }
           else {
+            top.Ts.System.logAction('Asset Detail - Save Custom Edit Change');
+            top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+              parent.closest('.form-group').data('field', result);
+              parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+              $('#assetEdit').removeClass("disabled");
+            }, function () {
+              alert("There was a problem saving your asset property.");
+              $('#assetEdit').removeClass("disabled");
+            });
             result.parent().removeClass('has-error');
+            result.removeClass('form-control');
+            result.parent().children('.help-block').remove();
           }
-          top.Ts.System.logAction('Contact Detail - Save Custom Edit Change');
-          top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-            parent.closest('.form-group').data('field', result);
-            parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
-            parent.show();
-            $('#contactEdit').removeClass("disabled");
-          }, function () {
-            alert("There was a problem saving your contact property.");
-            $('#contactEdit').removeClass("disabled");
-          });
+          parent.show();
+          $('#assetEdit').removeClass("disabled");
         });
 
-        $('#contactEdit').addClass("disabled");
+        $('#assetEdit').addClass("disabled");
       });
   var items = field.ListValues.split('|');
   if (field.IsRequired && ((field.IsFirstIndexSelect == true && (items[0] == field.Value || field.Value == null || $.trim(field.Value) === '')) || (field.Value == null || $.trim(field.Value) === ''))) {
     result.parent().addClass('has-error');
+    result.addClass('form-control');
+    if (result.parent().children('.help-block').length == 0) {
+      $('<label>')
+        .addClass('help-block')
+        .text('This field is required')
+        .appendTo(result.parent());
+    }
   }
 }
 
@@ -913,7 +923,7 @@ var appendCustomEditNumber = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         var parent = $(this).hide();
-        top.Ts.System.logAction('Contact Detail - Edit Custom Number');
+        top.Ts.System.logAction('Asset Detail - Edit Custom Number');
         var container = $('<div>')
             .insertAfter(parent);
 
@@ -933,7 +943,7 @@ var appendCustomEditNumber = function (field, element) {
             .click(function (e) {
               $(this).closest('div').remove();
               parent.show();
-              $('#contactEdit').removeClass("disabled");
+              $('#assetEdit').removeClass("disabled");
             })
             .insertAfter(container1);
         $('<i>')
@@ -942,28 +952,37 @@ var appendCustomEditNumber = function (field, element) {
               var value = input.val();
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                result.parent().addClass('has-error');
+                alert("This field is required");
               }
               else {
+                top.Ts.System.logAction('Asset Detail - Save Custom Number Edit');
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+                  parent.closest('.form-group').data('field', result);
+                  parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+                  $('#assetEdit').removeClass("disabled");
+                }, function () {
+                  alert("There was a problem saving your asset property.");
+                  $('#assetEdit').removeClass("disabled");
+                });
                 result.parent().removeClass('has-error');
+                result.removeClass('form-control');
+                result.parent().children('.help-block').remove();
               }
-              top.Ts.System.logAction('Contact Detail - Save Custom Number Edit');
-              top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-                parent.closest('.form-group').data('field', result);
-                parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
-                $('#contactEdit').removeClass("disabled");
-              }, function () {
-                alert("There was a problem saving your contact property.");
-                $('#contactEdit').removeClass("disabled");
-              });
               parent.show();
-              $('#contactEdit').removeClass("disabled");
+              $('#assetEdit').removeClass("disabled");
             })
             .insertAfter(container1);
-        $('#contactEdit').addClass("disabled");
+        $('#assetEdit').addClass("disabled");
       });
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
     result.parent().addClass('has-error');
+    result.addClass('form-control');
+    if (result.parent().children('.help-block').length == 0) {
+      $('<label>')
+        .addClass('help-block')
+        .text('This field is required')
+        .appendTo(result.parent());
+    }
   }
 }
 
@@ -982,14 +1001,14 @@ var appendCustomEditBool = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         //$('.form-group').prev().show().next().remove();
-        top.Ts.System.logAction('Contact Detail - Edit Custom Boolean Value');
+        top.Ts.System.logAction('Asset Detail - Edit Custom Boolean Value');
         var parent = $(this);
         var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
-        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
+        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
           parent.closest('.form-group').data('field', result);
           parent.text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
         }, function () {
-          alert("There was a problem saving your contact property.");
+          alert("There was a problem saving your asset property.");
         });
       });
 }
@@ -1013,7 +1032,7 @@ var appendCustomEdit = function (field, element) {
           if (!$(this).hasClass('editable'))
             return false;
           var parent = $(this).hide();
-          top.Ts.System.logAction('Contact Detail - Edit Custom Textbox');
+          top.Ts.System.logAction('Asset Detail - Edit Custom Textbox');
           var container = $('<div>')
                 .insertAfter(parent);
 
@@ -1038,7 +1057,7 @@ var appendCustomEdit = function (field, element) {
                 .click(function (e) {
                   $(this).closest('div').remove();
                   parent.show();
-                  $('#contactEdit').removeClass("disabled");
+                  $('#assetEdit').removeClass("disabled");
                 })
                 .insertAfter(container1);
           $('<i>')
@@ -1047,29 +1066,38 @@ var appendCustomEdit = function (field, element) {
                   var value = input.val();
                   container.remove();
                   if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                    result.parent().addClass('has-error');
+                    alert("This field is required");
                   }
                   else {
+                    top.Ts.System.logAction('Asset Detail - Save Custom Textbox Edit');
+                    top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+                      parent.closest('.form-group').data('field', result);
+                      parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
+                      $('#assetEdit').removeClass("disabled");
+                    }, function () {
+                      alert("There was a problem saving your asset property.");
+                      $('#assetEdit').removeClass("disabled");
+                    });
                     result.parent().removeClass('has-error');
+                    result.removeClass('form-control');
+                    result.parent().children('.help-block').remove();
                   }
-                  top.Ts.System.logAction('Contact Detail - Save Custom Textbox Edit');
-                  top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-                    parent.closest('.form-group').data('field', result);
-                    parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
-                    $('#contactEdit').removeClass("disabled");
-                  }, function () {
-                    alert("There was a problem saving your contact property.");
-                    $('#contactEdit').removeClass("disabled");
-                  });
                   parent.show();
                 })
                 .insertAfter(container1);
-          $('#contactEdit').addClass("disabled");
+          $('#assetEdit').addClass("disabled");
         }
       });
 
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
     result.parent().addClass('has-error');
+    result.addClass('form-control');
+    if (result.parent().children('.help-block').length == 0) {
+      $('<label>')
+        .addClass('help-block')
+        .text('This field is required')
+        .appendTo(result.parent());
+    }
   }
 }
 
@@ -1089,7 +1117,7 @@ var appendCustomEditDate = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         var parent = $(this).hide();
-        top.Ts.System.logAction('Contact Detail - Edit Custom Date');
+        top.Ts.System.logAction('Asset Detail - Edit Custom Date');
         var container = $('<div>')
             .insertAfter(parent);
 
@@ -1110,7 +1138,7 @@ var appendCustomEditDate = function (field, element) {
             .click(function (e) {
               $(this).closest('div').remove();
               parent.show();
-              $('#contactEdit').removeClass("disabled");
+              $('#assetEdit').removeClass("disabled");
             })
             .insertAfter(container1);
         $('<i>')
@@ -1119,28 +1147,39 @@ var appendCustomEditDate = function (field, element) {
               var value = top.Ts.Utils.getMsDate(input.val());
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                result.parent().addClass('has-error');
+                // Currently there is no way to clear a Date.
+                // If ever implemented this alert will prevent clearing a required date.
+                alert("This field is required");
               }
               else {
+                top.Ts.System.logAction('Asset Detail - Save Custom Date Change');
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+                  parent.closest('.form-group').data('field', result);
+                  var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                  parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+                  $('#assetEdit').removeClass("disabled");
+                }, function () {
+                  alert("There was a problem saving your asset property.");
+                  $('#assetEdit').removeClass("disabled");
+                });
                 result.parent().removeClass('has-error');
+                result.removeClass('form-control');
+                result.parent().children('.help-block').remove();
               }
-              top.Ts.System.logAction('Contact Detail - Save Custom Date Change');
-              top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-                parent.closest('.form-group').data('field', result);
-                var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
-                parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
-                $('#contactEdit').removeClass("disabled");
-              }, function () {
-                alert("There was a problem saving your contact property.");
-                $('#contactEdit').removeClass("disabled");
-              });
               parent.show();
             })
             .insertAfter(container1);
-        $('#contactEdit').addClass("disabled");
+        $('#assetEdit').addClass("disabled");
       });
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
     result.parent().addClass('has-error');
+    result.addClass('form-control');
+    if (result.parent().children('.help-block').length == 0) {
+      $('<label>')
+        .addClass('help-block')
+        .text('This field is required')
+        .appendTo(result.parent());
+    }
   }
 
 }
@@ -1161,7 +1200,7 @@ var appendCustomEditDateTime = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         var parent = $(this).hide();
-        top.Ts.System.logAction('Contact Detail - Edit Custom DateTime');
+        top.Ts.System.logAction('Asset Detail - Edit Custom DateTime');
         var container = $('<div>')
             .insertAfter(parent);
 
@@ -1184,7 +1223,7 @@ var appendCustomEditDateTime = function (field, element) {
             .click(function (e) {
               $(this).closest('div').remove();
               parent.show();
-              $('#contactEdit').removeClass("disabled");
+              $('#assetEdit').removeClass("disabled");
             })
             .insertAfter(container1);
         $('<i>')
@@ -1193,28 +1232,39 @@ var appendCustomEditDateTime = function (field, element) {
               var value = top.Ts.Utils.getMsDate(input.val());
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                result.parent().addClass('has-error');
+                // Currently there is no way to clear a Date.
+                // If ever implemented this alert will prevent clearing a required date.
+                alert("This field is required");
               }
               else {
+                top.Ts.System.logAction('Asset Detail - Save Custom DateTime');
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+                  parent.closest('.form-group').data('field', result);
+                  var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                  parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                  $('#assetEdit').removeClass("disabled");
+                }, function () {
+                  alert("There was a problem saving your asset property.");
+                  $('#assetEdit').removeClass("disabled");
+                });
                 result.parent().removeClass('has-error');
+                result.removeClass('form-control');
+                result.parent().children('.help-block').remove();
               }
-              top.Ts.System.logAction('Contact Detail - Save Custom DateTime');
-              top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-                parent.closest('.form-group').data('field', result);
-                var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
-                parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
-                $('#contactEdit').removeClass("disabled");
-              }, function () {
-                alert("There was a problem saving your contact property.");
-                $('#contactEdit').removeClass("disabled");
-              });
               parent.show();
             })
             .insertAfter(container1);
-        $('#contactEdit').addClass("disabled");
+        $('#assetEdit').addClass("disabled");
       });
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
     result.parent().addClass('has-error');
+    result.addClass('form-control');
+    if (result.parent().children('.help-block').length == 0) {
+      $('<label>')
+        .addClass('help-block')
+        .text('This field is required')
+        .appendTo(result.parent());
+    }
   }
 
 }
@@ -1235,7 +1285,7 @@ var appendCustomEditTime = function (field, element) {
         if (!$(this).hasClass('editable'))
           return false;
         var parent = $(this).hide();
-        top.Ts.System.logAction('Contact Detail - Edit Custom Time');
+        top.Ts.System.logAction('Asset Detail - Edit Custom Time');
         var container = $('<div>')
             .insertAfter(parent);
 
@@ -1257,7 +1307,7 @@ var appendCustomEditTime = function (field, element) {
             .click(function (e) {
               $(this).closest('div').remove();
               parent.show();
-              $('#contactEdit').removeClass("disabled");
+              $('#assetEdit').removeClass("disabled");
             })
             .insertAfter(container1);
         $('<i>')
@@ -1266,28 +1316,39 @@ var appendCustomEditTime = function (field, element) {
               var value = top.Ts.Utils.getMsDate("1/1/1900 " + input.val());
               container.remove();
               if (field.IsRequired && (value === null || $.trim(value) === '')) {
-                result.parent().addClass('has-error');
+                // Currently there is no way to clear a Date.
+                // If ever implemented this alert will prevent clearing a required date.
+                alert("This field is required");
               }
               else {
+                top.Ts.System.logAction('Asset Detail - Save Custom Time');
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _assetID, value, function (result) {
+                  parent.closest('.form-group').data('field', result);
+                  var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
+                  parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
+                  $('#assetEdit').removeClass("disabled");
+                }, function () {
+                  alert("There was a problem saving your asset property.");
+                  $('#assetEdit').removeClass("disabled");
+                });
                 result.parent().removeClass('has-error');
+                result.removeClass('form-control');
+                result.parent().children('.help-block').remove();
               }
-              top.Ts.System.logAction('Contact Detail - Save Custom Time');
-              top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, userID, value, function (result) {
-                parent.closest('.form-group').data('field', result);
-                var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
-                parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
-                $('#contactEdit').removeClass("disabled");
-              }, function () {
-                alert("There was a problem saving your contact property.");
-                $('#contactEdit').removeClass("disabled");
-              });
               parent.show();
             })
             .insertAfter(container1);
-        $('#contactEdit').addClass("disabled");
+        $('#assetEdit').addClass("disabled");
       });
   if (field.IsRequired && (field.Value === null || $.trim(field.Value) === '')) {
     result.parent().addClass('has-error');
+    result.addClass('form-control');
+    if (result.parent().children('.help-block').length == 0) {
+      $('<label>')
+        .addClass('help-block')
+        .text('This field is required')
+        .appendTo(result.parent());
+    }
   }
 
 }

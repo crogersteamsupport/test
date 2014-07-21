@@ -42,7 +42,10 @@ public partial class Dialogs_CustomField : BaseDialogPage
     if (!IsPostBack)
     {
       LoadFieldTypes();
-      if (_customFieldID > -1) LoadCustomField(_customFieldID);
+      if (_customFieldID > -1)
+      {
+        LoadCustomField(_customFieldID);
+      }
     }
 
     _manager.AjaxSettings.AddAjaxSetting(comboFieldType, divMain);
@@ -50,7 +53,20 @@ public partial class Dialogs_CustomField : BaseDialogPage
     CustomFieldType selectedFieldType = GetSelectedFieldType();
     pnlPickList.Visible = selectedFieldType == CustomFieldType.PickList;
     cbIsRequired.Visible = selectedFieldType != CustomFieldType.Boolean;
-    cbIsRequiredToClose.Visible = selectedFieldType != CustomFieldType.Boolean;
+    if (_refType == ReferenceType.Tickets)
+    {
+      cbIsRequiredToClose.Visible = selectedFieldType != CustomFieldType.Boolean;
+    }
+    else
+    {
+      cbIsRequiredToClose.Visible = false;
+    }
+
+    if (_refType == ReferenceType.Assets)
+    {
+      cbIsVisibleOnPortal.Visible = false;
+    }
+
     maskDiv.Visible = selectedFieldType == CustomFieldType.Text;
   }
 
@@ -94,6 +110,7 @@ public partial class Dialogs_CustomField : BaseDialogPage
     cbFirstSelect.Checked = fields[0].IsFirstIndexSelect;
     cbIsRequiredToClose.Checked = fields[0].IsRequiredToClose;
     textMask.Text = fields[0].Mask;
+    _refType = fields[0].RefType;
   }
 
   public override bool Save()

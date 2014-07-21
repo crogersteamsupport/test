@@ -598,7 +598,12 @@ namespace TSWebServices
       }
       else
       {
-        html.AppendFormat("<div class='col-xs-8'><input class='form-control col-xs-10 customField {1}' id='{0}' name='{0}'></div>", field.CustomFieldID, field.IsRequired ? "required" : "");
+        StringBuilder mask = new StringBuilder();
+        if (!String.IsNullOrEmpty(field.Mask))
+        {
+          mask.Append("placeholder='" + field.Mask + "'");
+        }
+        html.AppendFormat("<div class='col-xs-8'><input class='form-control col-xs-10 customField {1}' id='{0}' name='{0}' {2}></div>", field.CustomFieldID, field.IsRequired ? "required" : "", mask.ToString());
       }
       return html.ToString();
     }
