@@ -363,5 +363,20 @@ END";
     
     
     }
+
+    public static void UpdateByAPIFieldName(LoginUser loginUser, CustomFields customFields, int refID, string apiFieldName, string value)
+    {
+      CustomField field = customFields.FindByApiFieldName(apiFieldName);
+      //if (field == null) throw new Exception("Unable to find field '" + apiFieldName + "'");
+      if (field != null) UpdateValue(loginUser, field.CustomFieldID, refID, value);
+    }
+
+    public static void UpdateByAPIFieldName(LoginUser loginUser, int refID, string apiFieldName, string value)
+    {
+      CustomFields customFields = new CustomFields(loginUser);
+      customFields.LoadByOrganization(loginUser.OrganizationID);
+      UpdateByAPIFieldName(loginUser, customFields, refID, apiFieldName, value);
+    }
+
   }
 }

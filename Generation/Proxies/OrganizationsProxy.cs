@@ -103,6 +103,8 @@ namespace TeamSupport.Data
     [DataMember] public bool ForceUseOfReplyTo { get; set; }
     [DataMember] public bool AddEmailViaTS { get; set; }
     [DataMember] public bool AgentRating { get; set; }
+    [DataMember] public string SignUpToken { get; set; }
+    [DataMember] public bool IsValidated { get; set; }
           
   }
   
@@ -111,6 +113,8 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.IsValidated = this.IsValidated;
+      result.SignUpToken = this.SignUpToken;
       result.AgentRating = this.AgentRating;
       result.AddEmailViaTS = this.AddEmailViaTS;
       result.ForceUseOfReplyTo = this.ForceUseOfReplyTo;

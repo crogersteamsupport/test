@@ -10802,7 +10802,9 @@ AS
     [ReplyToAlternateEmailAddresses],
     [ForceUseOfReplyTo],
     [AddEmailViaTS],
-    [AgentRating]
+    [AgentRating],
+    [SignUpToken],
+    [IsValidated]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -10902,6 +10904,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @ForceUseOfReplyTo bit,
   @AddEmailViaTS bit,
   @AgentRating bit,
+  @SignUpToken varchar(250),
+  @IsValidated bit,
   @Identity int OUT
 )
 AS
@@ -10996,7 +11000,9 @@ AS
     [ReplyToAlternateEmailAddresses],
     [ForceUseOfReplyTo],
     [AddEmailViaTS],
-    [AgentRating])
+    [AgentRating],
+    [SignUpToken],
+    [IsValidated])
   VALUES (
     @Name,
     @Description,
@@ -11086,7 +11092,9 @@ AS
     @ReplyToAlternateEmailAddresses,
     @ForceUseOfReplyTo,
     @AddEmailViaTS,
-    @AgentRating)
+    @AgentRating,
+    @SignUpToken,
+    @IsValidated)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -11184,7 +11192,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @ReplyToAlternateEmailAddresses bit,
   @ForceUseOfReplyTo bit,
   @AddEmailViaTS bit,
-  @AgentRating bit
+  @AgentRating bit,
+  @SignUpToken varchar(250),
+  @IsValidated bit
 )
 AS
   SET NOCOUNT OFF;
@@ -11276,7 +11286,9 @@ AS
     [ReplyToAlternateEmailAddresses] = @ReplyToAlternateEmailAddresses,
     [ForceUseOfReplyTo] = @ForceUseOfReplyTo,
     [AddEmailViaTS] = @AddEmailViaTS,
-    [AgentRating] = @AgentRating
+    [AgentRating] = @AgentRating,
+    [SignUpToken] = @SignUpToken,
+    [IsValidated] = @IsValidated
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -24286,7 +24298,9 @@ AS
     [ReplyToAlternateEmailAddresses],
     [ForceUseOfReplyTo],
     [AddEmailViaTS],
-    [AgentRating]
+    [AgentRating],
+    [SignUpToken],
+    [IsValidated]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -24386,6 +24400,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @ForceUseOfReplyTo bit,
   @AddEmailViaTS bit,
   @AgentRating bit,
+  @SignUpToken varchar(250),
+  @IsValidated bit,
   @Identity int OUT
 )
 AS
@@ -24480,7 +24496,9 @@ AS
     [ReplyToAlternateEmailAddresses],
     [ForceUseOfReplyTo],
     [AddEmailViaTS],
-    [AgentRating])
+    [AgentRating],
+    [SignUpToken],
+    [IsValidated])
   VALUES (
     @Name,
     @Description,
@@ -24570,7 +24588,9 @@ AS
     @ReplyToAlternateEmailAddresses,
     @ForceUseOfReplyTo,
     @AddEmailViaTS,
-    @AgentRating)
+    @AgentRating,
+    @SignUpToken,
+    @IsValidated)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -24668,7 +24688,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @ReplyToAlternateEmailAddresses bit,
   @ForceUseOfReplyTo bit,
   @AddEmailViaTS bit,
-  @AgentRating bit
+  @AgentRating bit,
+  @SignUpToken varchar(250),
+  @IsValidated bit
 )
 AS
   SET NOCOUNT OFF;
@@ -24760,7 +24782,9 @@ AS
     [ReplyToAlternateEmailAddresses] = @ReplyToAlternateEmailAddresses,
     [ForceUseOfReplyTo] = @ForceUseOfReplyTo,
     [AddEmailViaTS] = @AddEmailViaTS,
-    [AgentRating] = @AgentRating
+    [AgentRating] = @AgentRating,
+    [SignUpToken] = @SignUpToken,
+    [IsValidated] = @IsValidated
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -37770,7 +37794,9 @@ AS
     [ReplyToAlternateEmailAddresses],
     [ForceUseOfReplyTo],
     [AddEmailViaTS],
-    [AgentRating]
+    [AgentRating],
+    [SignUpToken],
+    [IsValidated]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -37870,6 +37896,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @ForceUseOfReplyTo bit,
   @AddEmailViaTS bit,
   @AgentRating bit,
+  @SignUpToken varchar(250),
+  @IsValidated bit,
   @Identity int OUT
 )
 AS
@@ -37964,7 +37992,9 @@ AS
     [ReplyToAlternateEmailAddresses],
     [ForceUseOfReplyTo],
     [AddEmailViaTS],
-    [AgentRating])
+    [AgentRating],
+    [SignUpToken],
+    [IsValidated])
   VALUES (
     @Name,
     @Description,
@@ -38054,7 +38084,9 @@ AS
     @ReplyToAlternateEmailAddresses,
     @ForceUseOfReplyTo,
     @AddEmailViaTS,
-    @AgentRating)
+    @AgentRating,
+    @SignUpToken,
+    @IsValidated)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -38152,7 +38184,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @ReplyToAlternateEmailAddresses bit,
   @ForceUseOfReplyTo bit,
   @AddEmailViaTS bit,
-  @AgentRating bit
+  @AgentRating bit,
+  @SignUpToken varchar(250),
+  @IsValidated bit
 )
 AS
   SET NOCOUNT OFF;
@@ -38244,7 +38278,9 @@ AS
     [ReplyToAlternateEmailAddresses] = @ReplyToAlternateEmailAddresses,
     [ForceUseOfReplyTo] = @ForceUseOfReplyTo,
     [AddEmailViaTS] = @AddEmailViaTS,
-    [AgentRating] = @AgentRating
+    [AgentRating] = @AgentRating,
+    [SignUpToken] = @SignUpToken,
+    [IsValidated] = @IsValidated
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -51254,7 +51290,9 @@ AS
     [ReplyToAlternateEmailAddresses],
     [ForceUseOfReplyTo],
     [AddEmailViaTS],
-    [AgentRating]
+    [AgentRating],
+    [SignUpToken],
+    [IsValidated]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -51354,6 +51392,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @ForceUseOfReplyTo bit,
   @AddEmailViaTS bit,
   @AgentRating bit,
+  @SignUpToken varchar(250),
+  @IsValidated bit,
   @Identity int OUT
 )
 AS
@@ -51448,7 +51488,9 @@ AS
     [ReplyToAlternateEmailAddresses],
     [ForceUseOfReplyTo],
     [AddEmailViaTS],
-    [AgentRating])
+    [AgentRating],
+    [SignUpToken],
+    [IsValidated])
   VALUES (
     @Name,
     @Description,
@@ -51538,7 +51580,9 @@ AS
     @ReplyToAlternateEmailAddresses,
     @ForceUseOfReplyTo,
     @AddEmailViaTS,
-    @AgentRating)
+    @AgentRating,
+    @SignUpToken,
+    @IsValidated)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -51636,7 +51680,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @ReplyToAlternateEmailAddresses bit,
   @ForceUseOfReplyTo bit,
   @AddEmailViaTS bit,
-  @AgentRating bit
+  @AgentRating bit,
+  @SignUpToken varchar(250),
+  @IsValidated bit
 )
 AS
   SET NOCOUNT OFF;
@@ -51728,7 +51774,9 @@ AS
     [ReplyToAlternateEmailAddresses] = @ReplyToAlternateEmailAddresses,
     [ForceUseOfReplyTo] = @ForceUseOfReplyTo,
     [AddEmailViaTS] = @AddEmailViaTS,
-    [AgentRating] = @AgentRating
+    [AgentRating] = @AgentRating,
+    [SignUpToken] = @SignUpToken,
+    [IsValidated] = @IsValidated
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -64738,7 +64786,9 @@ AS
     [ReplyToAlternateEmailAddresses],
     [ForceUseOfReplyTo],
     [AddEmailViaTS],
-    [AgentRating]
+    [AgentRating],
+    [SignUpToken],
+    [IsValidated]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -64838,6 +64888,8 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @ForceUseOfReplyTo bit,
   @AddEmailViaTS bit,
   @AgentRating bit,
+  @SignUpToken varchar(250),
+  @IsValidated bit,
   @Identity int OUT
 )
 AS
@@ -64932,7 +64984,9 @@ AS
     [ReplyToAlternateEmailAddresses],
     [ForceUseOfReplyTo],
     [AddEmailViaTS],
-    [AgentRating])
+    [AgentRating],
+    [SignUpToken],
+    [IsValidated])
   VALUES (
     @Name,
     @Description,
@@ -65022,7 +65076,9 @@ AS
     @ReplyToAlternateEmailAddresses,
     @ForceUseOfReplyTo,
     @AddEmailViaTS,
-    @AgentRating)
+    @AgentRating,
+    @SignUpToken,
+    @IsValidated)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -65120,7 +65176,9 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @ReplyToAlternateEmailAddresses bit,
   @ForceUseOfReplyTo bit,
   @AddEmailViaTS bit,
-  @AgentRating bit
+  @AgentRating bit,
+  @SignUpToken varchar(250),
+  @IsValidated bit
 )
 AS
   SET NOCOUNT OFF;
@@ -65212,7 +65270,9 @@ AS
     [ReplyToAlternateEmailAddresses] = @ReplyToAlternateEmailAddresses,
     [ForceUseOfReplyTo] = @ForceUseOfReplyTo,
     [AddEmailViaTS] = @AddEmailViaTS,
-    [AgentRating] = @AgentRating
+    [AgentRating] = @AgentRating,
+    [SignUpToken] = @SignUpToken,
+    [IsValidated] = @IsValidated
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 

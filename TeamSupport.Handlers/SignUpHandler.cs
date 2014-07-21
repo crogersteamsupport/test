@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -47,12 +48,19 @@ namespace TeamSupport.Handlers
       context.Response.AddHeader("Expires", "-1");
       context.Response.AddHeader("Pragma", "no-cache");
 
+      if (context.Request.Url.Segments[context.Request.Url.Segments.Length - 1] == "xx")
+      { 
+      
+      
+      }
+
+
       using (Stream receiveStream = context.Request.InputStream)
       {
         using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
         {
           string requestContent = readStream.ReadToEnd();
-          System.Collections.Specialized.NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
+          NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
           string name = GetValueString(values["name"]);
           string email = GetValueString(values["email"]);
           string company = GetValueString(values["company"]);
@@ -85,11 +93,79 @@ namespace TeamSupport.Handlers
             string[] names = name.Split(' ');
             string fname = names[0];
             string lname = string.Join(" ", names.Skip(1).ToArray());
+            HttpCookieCollection cookies = context.Request.Cookies;
+            SignUpParams prams = new SignUpParams();
+            if (cookies["_tsm"] != null)
+            {
+              try
+              {
+                prams.utmSource = cookies["_tsm"]["src"] ?? "";
+                prams.utmCampaign = cookies["_tsm"]["camp"] ?? "";
+                prams.utmContent = cookies["_tsm"]["cont"] ?? "";
+                prams.utmMedium = cookies["_tsm"]["med"] ?? "";
+                prams.utmTerm = cookies["_tsm"]["term"] ?? "";
+              }
+              catch (Exception)
+              {
+              }
+            }
 
-            User user = Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, password, promo, "", "", "");
+            if (cookies["__utmz"] != null)
+            {
+              try
+              {
+                string utmz = cookies["__utmz"].Value;
+                //string utmz = "252527244.1405639771.1.1.utmcsr=GetApp|utmccn=GetApp|utmcmd=cpc";
+                prams.gaCampaign = parseGAString(utmz, "utmccn");
+                prams.gaContent = parseGAString(utmz, "utmcct");
+                prams.gaTerm = parseGAString(utmz, "utmctr");
+                prams.gaMedium = parseGAString(utmz, "utmcmd");
+                prams.gaSource = parseGAString(utmz, "utmcsr");
+
+                if (parseGAString(utmz, "utmgclid") != "")
+                {
+                  prams.gaSource = "Google";
+                  prams.gaMedium = "cpc";
+                }
+              }
+              catch (Exception)
+              {
+                
+              }
+            }
+
+            if (cookies["__utma"] != null)
+            {
+              try
+              {
+                string utma = cookies["__utma"].Value;
+                //string utma = "252527244.1199382232.1405639771.1405639771.1405639771.1";
+                string[] sessionValues = utma.Split('.');
+                prams.gaVisits = int.Parse(sessionValues[5]);
+              }
+              catch (Exception)
+              {
+                
+              }
+            }
+
+            User user = Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
           }
         }
       }
+    }
+
+    
+    private static string parseGAString(string cookieValue, string key)
+    {
+      //252527244.1405639771.1.1.utmcsr=GetApp|utmccn=GetApp|utmcmd=cpc
+      int i = cookieValue.IndexOf(key + "=");
+      if (i < 0) return "";
+      string s = cookieValue.Substring(i + key.Length + 1);
+      int j = s.IndexOf("|");
+      if (j > -1) { s = s.Substring(0, j); }
+
+      return s;
     }
 
     private static string GetValueString(string value)

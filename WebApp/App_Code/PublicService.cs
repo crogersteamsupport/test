@@ -25,7 +25,7 @@ namespace TSWebServices
 
        public PublicService() { }
 
-
+      /*
        [WebMethod]
        public bool IsCompanyValid(string company)
        {
@@ -108,6 +108,6 @@ namespace TSWebServices
          }
        }
 
-
+      */
     }
 }

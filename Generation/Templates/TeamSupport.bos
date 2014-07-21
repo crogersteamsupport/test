@@ -131,6 +131,16 @@
     <IsDBReadOnly>true</IsDBReadOnly>
   </TableNames>
   <TableNames>
+    <Include>false</Include>
+    <TableName>AssetAssignments</TableName>
+    <ItemName>AssetAssignment</ItemName>
+    <CollectionName>AssetAssignments</CollectionName>
+    <BaseItemClass>BaseItem</BaseItemClass>
+    <BaseCollectionClass>BaseCollection</BaseCollectionClass>
+    <Conditions />
+    <IsDBReadOnly>false</IsDBReadOnly>
+  </TableNames>
+  <TableNames>
     <Include>true</Include>
     <TableName>Users</TableName>
     <ItemName>User</ItemName>
@@ -155,6 +165,16 @@
     <TableName>OrganizationProducts</TableName>
     <ItemName>OrganizationProduct</ItemName>
     <CollectionName>OrganizationProducts</CollectionName>
+    <BaseItemClass>BaseItem</BaseItemClass>
+    <BaseCollectionClass>BaseCollection</BaseCollectionClass>
+    <Conditions />
+    <IsDBReadOnly>false</IsDBReadOnly>
+  </TableNames>
+  <TableNames>
+    <Include>false</Include>
+    <TableName>AssetHistoryView</TableName>
+    <ItemName>AssetHistoryViewItem</ItemName>
+    <CollectionName>AssetHistoryView</CollectionName>
     <BaseItemClass>BaseItem</BaseItemClass>
     <BaseCollectionClass>BaseCollection</BaseCollectionClass>
     <Conditions />
@@ -221,6 +241,26 @@
     <IsDBReadOnly>false</IsDBReadOnly>
   </TableNames>
   <TableNames>
+    <Include>false</Include>
+    <TableName>AgentRatingUsers</TableName>
+    <ItemName>AgentRatingUser</ItemName>
+    <CollectionName>AgentRatingUsers</CollectionName>
+    <BaseItemClass>BaseItem</BaseItemClass>
+    <BaseCollectionClass>BaseCollection</BaseCollectionClass>
+    <Conditions />
+    <IsDBReadOnly>false</IsDBReadOnly>
+  </TableNames>
+  <TableNames>
+    <Include>false</Include>
+    <TableName>AssetAssignmentsView</TableName>
+    <ItemName>AssetAssignmentsViewItem</ItemName>
+    <CollectionName>AssetAssignmentsView</CollectionName>
+    <BaseItemClass>BaseItem</BaseItemClass>
+    <BaseCollectionClass>BaseCollection</BaseCollectionClass>
+    <Conditions />
+    <IsDBReadOnly>false</IsDBReadOnly>
+  </TableNames>
+  <TableNames>
     <Include>true</Include>
     <TableName>TicketTemplates</TableName>
     <ItemName>TicketTemplate</ItemName>
@@ -251,10 +291,30 @@
     <IsDBReadOnly>false</IsDBReadOnly>
   </TableNames>
   <TableNames>
+    <Include>false</Include>
+    <TableName>TagsView</TableName>
+    <ItemName>TagsViewItem</ItemName>
+    <CollectionName>TagsView</CollectionName>
+    <BaseItemClass>BaseItem</BaseItemClass>
+    <BaseCollectionClass>BaseCollection</BaseCollectionClass>
+    <Conditions />
+    <IsDBReadOnly>false</IsDBReadOnly>
+  </TableNames>
+  <TableNames>
     <Include>true</Include>
     <TableName>ReportFields</TableName>
     <ItemName>ReportField</ItemName>
     <CollectionName>ReportFields</CollectionName>
+    <BaseItemClass>BaseItem</BaseItemClass>
+    <BaseCollectionClass>BaseCollection</BaseCollectionClass>
+    <Conditions />
+    <IsDBReadOnly>false</IsDBReadOnly>
+  </TableNames>
+  <TableNames>
+    <Include>false</Include>
+    <TableName>ReportAgentRatingsView</TableName>
+    <ItemName>ReportAgentRatingsViewItem</ItemName>
+    <CollectionName>ReportAgentRatingsView</CollectionName>
     <BaseItemClass>BaseItem</BaseItemClass>
     <BaseCollectionClass>BaseCollection</BaseCollectionClass>
     <Conditions />
@@ -1581,6 +1641,16 @@
     <IsDBReadOnly>false</IsDBReadOnly>
   </TableNames>
   <TableNames>
+    <Include>false</Include>
+    <TableName>AgentRatings</TableName>
+    <ItemName>AgentRating</ItemName>
+    <CollectionName>AgentRatings</CollectionName>
+    <BaseItemClass>BaseItem</BaseItemClass>
+    <BaseCollectionClass>BaseCollection</BaseCollectionClass>
+    <Conditions />
+    <IsDBReadOnly>false</IsDBReadOnly>
+  </TableNames>
+  <TableNames>
     <Include>true</Include>
     <TableName>OrganizationSettings</TableName>
     <ItemName>OrganizationSetting</ItemName>
@@ -1645,6 +1715,16 @@
     <TableName>ForumLogs</TableName>
     <ItemName>ForumLog</ItemName>
     <CollectionName>ForumLogs</CollectionName>
+    <BaseItemClass>BaseItem</BaseItemClass>
+    <BaseCollectionClass>BaseCollection</BaseCollectionClass>
+    <Conditions />
+    <IsDBReadOnly>false</IsDBReadOnly>
+  </TableNames>
+  <TableNames>
+    <Include>false</Include>
+    <TableName>AgentRatingsOptions</TableName>
+    <ItemName>AgentRatingsOption</ItemName>
+    <CollectionName>AgentRatingsOptions</CollectionName>
     <BaseItemClass>BaseItem</BaseItemClass>
     <BaseCollectionClass>BaseCollection</BaseCollectionClass>
     <Conditions />
@@ -3847,6 +3927,23 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>Notes</TableName>
+    <FieldName>IsAlert</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>ServiceSettings</TableName>
     <FieldName>ServiceSettingID</FieldName>
     <CustomType>int</CustomType>
@@ -4380,6 +4477,40 @@
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>true</AllowDBNull>
     <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignments</TableName>
+    <FieldName>AssetAssignmentsID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsIdentity>true</IsIdentity>
+    <IsAutoInc>true</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignments</TableName>
+    <FieldName>HistoryID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
     <IsPrimaryKey>false</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
@@ -5530,6 +5661,23 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>Users</TableName>
+    <FieldName>PortalLimitOrgTickets</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>Reports</TableName>
     <FieldName>ReportID</FieldName>
     <CustomType>int</CustomType>
@@ -5887,6 +6035,23 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>Reports</TableName>
+    <FieldName>FolderID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>OrganizationProducts</TableName>
     <FieldName>OrganizationProductID</FieldName>
     <CustomType>int</CustomType>
@@ -6063,6 +6228,363 @@
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>false</AllowDBNull>
     <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>HistoryID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>AssetID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>OrganizationID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>ActionTime</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>ActionDescription</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>500</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>ShippedFrom</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>NameAssignedFrom</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>255</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>ShippedTo</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>NameAssignedTo</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>255</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>TrackingNumber</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>200</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>ShippingMethod</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>200</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>ReferenceNum</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>200</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>Comments</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>text</DBType>
+    <SqlDbType>SqlDbType.Text</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>2147483647</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>DateCreated</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>Actor</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>ActorName</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>201</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>RefType</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>DateModified</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>ModifierID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>ModifierName</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>201</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistoryView</TableName>
+    <FieldName>ShippedFromRefType</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
     <IsPrimaryKey>false</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
@@ -6737,6 +7259,414 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>AgentRatingUsers</TableName>
+    <FieldName>AgentRatingID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatingUsers</TableName>
+    <FieldName>UserID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>AssetAssignmentsID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>HistoryID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>AssetID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>OrganizationID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>ActionTime</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>ActionDescription</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>500</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>ShippedFrom</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>NameAssignedFrom</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>255</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>ShippedTo</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>NameAssignedTo</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>255</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>TrackingNumber</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>200</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>ShippingMethod</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>200</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>ReferenceNum</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>200</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>Comments</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>text</DBType>
+    <SqlDbType>SqlDbType.Text</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>2147483647</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>DateCreated</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>Actor</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>ActorName</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>201</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>RefType</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>DateModified</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>ModifierID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>ModifierName</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>201</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetAssignmentsView</TableName>
+    <FieldName>ShippedFromRefType</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>TicketTemplates</TableName>
     <FieldName>TicketTemplateID</FieldName>
     <CustomType>int</CustomType>
@@ -7094,6 +8024,142 @@
     <Scale>3</Scale>
   </Fields>
   <Fields>
+    <TableName>TagsView</TableName>
+    <FieldName>TagID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>TagsView</TableName>
+    <FieldName>RefID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>TagsView</TableName>
+    <FieldName>RefType</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>TagsView</TableName>
+    <FieldName>DateCreated</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>TagsView</TableName>
+    <FieldName>CreatorID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>TagsView</TableName>
+    <FieldName>Creator</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>201</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>TagsView</TableName>
+    <FieldName>OrganizationID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>TagsView</TableName>
+    <FieldName>Value</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>200</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>ReportFields</TableName>
     <FieldName>ReportFieldID</FieldName>
     <CustomType>int</CustomType>
@@ -7158,6 +8224,227 @@
     <SqlDbType>SqlDbType.Bit</SqlDbType>
     <SystemType>System.Boolean</SystemType>
     <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>AgentRatingID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>OrganizationID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>CompanyID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>ContactID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>Rating</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>Comment</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>8000</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>DateCreated</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>TicketID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>Agent</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>201</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>Rated Ticket Number</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>Rated Ticket Name</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>255</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>Rating Contact</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>201</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>Rating Company</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>255</Size>
     <Precision>255</Precision>
     <Scale>255</Scale>
   </Fields>
@@ -11447,6 +12734,40 @@
   </Fields>
   <Fields>
     <TableName>OrganizationsView</TableName>
+    <FieldName>SupportHoursUsed</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>OrganizationsView</TableName>
+    <FieldName>SupportHoursRemaining</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>OrganizationsView</TableName>
     <FieldName>NeedsIndexing</FieldName>
     <CustomType>bool</CustomType>
     <IsReadOnly>false</IsReadOnly>
@@ -13826,6 +15147,74 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>AssetHistory</TableName>
+    <FieldName>RefType</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistory</TableName>
+    <FieldName>DateModified</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistory</TableName>
+    <FieldName>ModifierID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetHistory</TableName>
+    <FieldName>ShippedFromRefType</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>EMailStatus</TableName>
     <FieldName>LastUpdate</FieldName>
     <CustomType>DateTime</CustomType>
@@ -14162,6 +15551,40 @@
     <SqlDbType>SqlDbType.VarChar</SqlDbType>
     <SystemType>System.String</SystemType>
     <Size>500</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Assets</TableName>
+    <FieldName>ProductVersionID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Assets</TableName>
+    <FieldName>NeedsIndexing</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
     <Precision>255</Precision>
     <Scale>255</Scale>
   </Fields>
@@ -15064,6 +16487,23 @@
     <SystemType>System.Int32</SystemType>
     <Size>4</Size>
     <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Attachments</TableName>
+    <FieldName>SentToJira</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
     <Scale>255</Scale>
   </Fields>
   <Fields>
@@ -18023,6 +19463,40 @@
     <Size>1</Size>
     <Precision>255</Precision>
     <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ContactsView</TableName>
+    <FieldName>OrganizationActive</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ContactsView</TableName>
+    <FieldName>OrganizationSAExpirationDate</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
   </Fields>
   <Fields>
     <TableName>ChatRequests</TableName>
@@ -21306,6 +22780,40 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>CRMLinkTable</TableName>
+    <FieldName>UseSandBoxServer</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>CRMLinkTable</TableName>
+    <FieldName>AlwaysUseDefaultProjectKey</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>UserTickets</TableName>
     <FieldName>TicketID</FieldName>
     <CustomType>int</CustomType>
@@ -21392,11 +22900,28 @@
   </Fields>
   <Fields>
     <TableName>AssetsView</TableName>
-    <FieldName>OrganizationID</FieldName>
+    <FieldName>AssetID</FieldName>
     <CustomType>int</CustomType>
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>false</AllowDBNull>
     <IsNullable>false</IsNullable>
+    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetsView</TableName>
+    <FieldName>ProductID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
     <IsPrimaryKey>false</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
@@ -21409,12 +22934,63 @@
   </Fields>
   <Fields>
     <TableName>AssetsView</TableName>
-    <FieldName>AssetID</FieldName>
+    <FieldName>ProductName</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>255</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetsView</TableName>
+    <FieldName>ProductVersionID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetsView</TableName>
+    <FieldName>ProductVersionNumber</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>50</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetsView</TableName>
+    <FieldName>OrganizationID</FieldName>
     <CustomType>int</CustomType>
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>false</AllowDBNull>
     <IsNullable>false</IsNullable>
-    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsPrimaryKey>false</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
     <DBType>int</DBType>
@@ -21494,23 +23070,6 @@
   </Fields>
   <Fields>
     <TableName>AssetsView</TableName>
-    <FieldName>ProductID</FieldName>
-    <CustomType>int</CustomType>
-    <IsReadOnly>false</IsReadOnly>
-    <AllowDBNull>true</AllowDBNull>
-    <IsNullable>true</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
-    <IsIdentity>false</IsIdentity>
-    <IsAutoInc>false</IsAutoInc>
-    <DBType>int</DBType>
-    <SqlDbType>SqlDbType.Int</SqlDbType>
-    <SystemType>System.Int32</SystemType>
-    <Size>4</Size>
-    <Precision>10</Precision>
-    <Scale>255</Scale>
-  </Fields>
-  <Fields>
-    <TableName>AssetsView</TableName>
     <FieldName>WarrantyExpiration</FieldName>
     <CustomType>DateTime</CustomType>
     <IsReadOnly>false</IsReadOnly>
@@ -21525,23 +23084,6 @@
     <Size>8</Size>
     <Precision>23</Precision>
     <Scale>3</Scale>
-  </Fields>
-  <Fields>
-    <TableName>AssetsView</TableName>
-    <FieldName>AssignedTo</FieldName>
-    <CustomType>int</CustomType>
-    <IsReadOnly>false</IsReadOnly>
-    <AllowDBNull>true</AllowDBNull>
-    <IsNullable>true</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
-    <IsIdentity>false</IsIdentity>
-    <IsAutoInc>false</IsAutoInc>
-    <DBType>int</DBType>
-    <SqlDbType>SqlDbType.Int</SqlDbType>
-    <SystemType>System.Int32</SystemType>
-    <Size>4</Size>
-    <Precision>10</Precision>
-    <Scale>255</Scale>
   </Fields>
   <Fields>
     <TableName>AssetsView</TableName>
@@ -21596,6 +23138,23 @@
   </Fields>
   <Fields>
     <TableName>AssetsView</TableName>
+    <FieldName>CreatorName</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>201</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetsView</TableName>
     <FieldName>ModifierID</FieldName>
     <CustomType>int</CustomType>
     <IsReadOnly>false</IsReadOnly>
@@ -21609,6 +23168,23 @@
     <SystemType>System.Int32</SystemType>
     <Size>4</Size>
     <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AssetsView</TableName>
+    <FieldName>ModifierName</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>201</Size>
+    <Precision>255</Precision>
     <Scale>255</Scale>
   </Fields>
   <Fields>
@@ -21647,7 +23223,7 @@
   </Fields>
   <Fields>
     <TableName>AssetsView</TableName>
-    <FieldName>Customer</FieldName>
+    <FieldName>ImportID</FieldName>
     <CustomType>string</CustomType>
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>true</AllowDBNull>
@@ -21658,75 +23234,7 @@
     <DBType>varchar</DBType>
     <SqlDbType>SqlDbType.VarChar</SqlDbType>
     <SystemType>System.String</SystemType>
-    <Size>255</Size>
-    <Precision>255</Precision>
-    <Scale>255</Scale>
-  </Fields>
-  <Fields>
-    <TableName>AssetsView</TableName>
-    <FieldName>Product</FieldName>
-    <CustomType>string</CustomType>
-    <IsReadOnly>false</IsReadOnly>
-    <AllowDBNull>true</AllowDBNull>
-    <IsNullable>false</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
-    <IsIdentity>false</IsIdentity>
-    <IsAutoInc>false</IsAutoInc>
-    <DBType>varchar</DBType>
-    <SqlDbType>SqlDbType.VarChar</SqlDbType>
-    <SystemType>System.String</SystemType>
-    <Size>255</Size>
-    <Precision>255</Precision>
-    <Scale>255</Scale>
-  </Fields>
-  <Fields>
-    <TableName>AssetsView</TableName>
-    <FieldName>Creator</FieldName>
-    <CustomType>string</CustomType>
-    <IsReadOnly>true</IsReadOnly>
-    <AllowDBNull>true</AllowDBNull>
-    <IsNullable>false</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
-    <IsIdentity>false</IsIdentity>
-    <IsAutoInc>false</IsAutoInc>
-    <DBType>varchar</DBType>
-    <SqlDbType>SqlDbType.VarChar</SqlDbType>
-    <SystemType>System.String</SystemType>
-    <Size>201</Size>
-    <Precision>255</Precision>
-    <Scale>255</Scale>
-  </Fields>
-  <Fields>
-    <TableName>AssetsView</TableName>
-    <FieldName>Modifier</FieldName>
-    <CustomType>string</CustomType>
-    <IsReadOnly>true</IsReadOnly>
-    <AllowDBNull>true</AllowDBNull>
-    <IsNullable>false</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
-    <IsIdentity>false</IsIdentity>
-    <IsAutoInc>false</IsAutoInc>
-    <DBType>varchar</DBType>
-    <SqlDbType>SqlDbType.VarChar</SqlDbType>
-    <SystemType>System.String</SystemType>
-    <Size>201</Size>
-    <Precision>255</Precision>
-    <Scale>255</Scale>
-  </Fields>
-  <Fields>
-    <TableName>AssetsView</TableName>
-    <FieldName>AssetLocation</FieldName>
-    <CustomType>string</CustomType>
-    <IsReadOnly>true</IsReadOnly>
-    <AllowDBNull>false</AllowDBNull>
-    <IsNullable>false</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
-    <IsIdentity>false</IsIdentity>
-    <IsAutoInc>false</IsAutoInc>
-    <DBType>varchar</DBType>
-    <SqlDbType>SqlDbType.VarChar</SqlDbType>
-    <SystemType>System.String</SystemType>
-    <Size>9</Size>
+    <Size>500</Size>
     <Precision>255</Precision>
     <Scale>255</Scale>
   </Fields>
@@ -22799,6 +24307,23 @@
     <SystemType>System.String</SystemType>
     <Size>8000</Size>
     <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>TicketLinkToJira</TableName>
+    <FieldName>CreatorID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
     <Scale>255</Scale>
   </Fields>
   <Fields>
@@ -24657,6 +26182,40 @@
   <Fields>
     <TableName>ReportTicketsView</TableName>
     <FieldName>MinutesToInitialResponse</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportTicketsView</TableName>
+    <FieldName>DayOfWeekCreated</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>nvarchar</DBType>
+    <SqlDbType>SqlDbType.NVarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>30</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportTicketsView</TableName>
+    <FieldName>HourOfDayCreated</FieldName>
     <CustomType>int</CustomType>
     <IsReadOnly>true</IsReadOnly>
     <AllowDBNull>true</AllowDBNull>
@@ -29524,7 +31083,7 @@
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>false</AllowDBNull>
     <IsNullable>false</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsPrimaryKey>true</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
     <DBType>int</DBType>
@@ -29541,7 +31100,7 @@
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>false</AllowDBNull>
     <IsNullable>false</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsPrimaryKey>true</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
     <DBType>int</DBType>
@@ -29558,7 +31117,7 @@
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>false</AllowDBNull>
     <IsNullable>false</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsPrimaryKey>true</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
     <DBType>int</DBType>
@@ -32992,7 +34551,7 @@
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>false</AllowDBNull>
     <IsNullable>false</IsNullable>
-    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsPrimaryKey>true</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
     <DBType>int</DBType>
@@ -35026,6 +36585,91 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>ForceUseOfReplyTo</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>AddEmailViaTS</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>AgentRating</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>SignUpToken</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>250</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>IsValidated</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>TicketAutomationTriggerLogic</TableName>
     <FieldName>TriggerLogicID</FieldName>
     <CustomType>int</CustomType>
@@ -35978,6 +37622,142 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>AgentRatings</TableName>
+    <FieldName>AgentRatingID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsIdentity>true</IsIdentity>
+    <IsAutoInc>true</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatings</TableName>
+    <FieldName>OrganizationID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatings</TableName>
+    <FieldName>CompanyID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatings</TableName>
+    <FieldName>ContactID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatings</TableName>
+    <FieldName>Rating</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatings</TableName>
+    <FieldName>Comment</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>8000</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatings</TableName>
+    <FieldName>DateCreated</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatings</TableName>
+    <FieldName>TicketID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>OrganizationSettings</TableName>
     <FieldName>OrganizationSettingID</FieldName>
     <CustomType>int</CustomType>
@@ -36809,6 +38589,159 @@
     <Size>8</Size>
     <Precision>23</Precision>
     <Scale>3</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatingsOptions</TableName>
+    <FieldName>OrganizationID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatingsOptions</TableName>
+    <FieldName>PositiveRatingText</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>-1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatingsOptions</TableName>
+    <FieldName>NeutralRatingText</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>-1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatingsOptions</TableName>
+    <FieldName>NegativeRatingText</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>-1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatingsOptions</TableName>
+    <FieldName>PositiveImage</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>100</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatingsOptions</TableName>
+    <FieldName>NeutralImage</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>100</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatingsOptions</TableName>
+    <FieldName>NegativeImage</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>100</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatingsOptions</TableName>
+    <FieldName>RedirectURL</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>250</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>AgentRatingsOptions</TableName>
+    <FieldName>ExternalPageLink</FieldName>
+    <CustomType>string</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>250</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
   </Fields>
   <Fields>
     <TableName>TicketAutomationConditions</TableName>

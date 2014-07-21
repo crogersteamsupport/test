@@ -103,6 +103,8 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ForceUseOfReplyTo", "ForceUseOfReplyTo", false, false, false);
       _fieldMap.AddMap("AddEmailViaTS", "AddEmailViaTS", false, false, false);
       _fieldMap.AddMap("AgentRating", "AgentRating", false, false, false);
+      _fieldMap.AddMap("SignUpToken", "SignUpToken", false, false, false);
+      _fieldMap.AddMap("IsValidated", "IsValidated", false, false, false);
             
     }
   }

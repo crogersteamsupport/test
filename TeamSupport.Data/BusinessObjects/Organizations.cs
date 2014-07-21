@@ -303,6 +303,22 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
     }
   }
 
+  public class SignUpParams
+  {
+    public string utmSource { get; set; }
+    public string utmMedium { get; set; }
+    public string utmTerm { get; set; }
+    public string utmContent { get; set; }
+    public string utmCampaign { get; set; }
+
+    public string gaSource { get; set; }
+    public string gaMedium { get; set; }
+    public string gaTerm { get; set; }
+    public string gaContent { get; set; }
+    public string gaCampaign { get; set; }
+    public int gaVisits { get; set; }
+  }
+
   public partial class Organizations
   {
 
@@ -320,7 +336,8 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       return orgTemplate.IsEmpty ? null : orgTemplate[0];
     }
 
-    public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, ProductType productType, string password, string promo, string interest, string seats, string process)
+    //public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, ProductType productType, string password, string promo, string interest, string seats, string process)
+    public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, ProductType productType, SignUpParams signUpParams)
     {
       try
       {
@@ -350,10 +367,10 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         organization.ChatSeats = 999999;
         organization.APIRequestLimit = 5000;
         organization.CultureName = "en-US";
-        organization.PromoCode = promo.Trim();
-        organization.PrimaryInterest = interest;
-        organization.PotentialSeats = seats;
-        organization.EvalProcess = process;
+        organization.PromoCode = "";
+        organization.PrimaryInterest = "";
+        organization.PotentialSeats = "";
+        organization.EvalProcess = "";
         organization.AddEmailViaTS = true;
         organization.RequireKnownUserForNewEmail = sourceOrg.RequireKnownUserForNewEmail;
         organization.RequireNewKeyword = sourceOrg.RequireNewKeyword;
@@ -372,6 +389,8 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         organization.IsApiEnabled = sourceOrg.IsApiEnabled;
         organization.SetNewActionsVisibleToCustomers = sourceOrg.SetNewActionsVisibleToCustomers;
         organization.AgentRating = true;
+        organization.IsValidated = false;
+        organization.SignUpToken = Guid.NewGuid().ToString();
         organization.Collection.Save();
         
         //374,826,378,703,377
@@ -379,7 +398,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         Users users = new Users(LoginUser.Anonymous);
         User user = users.AddNewUser();
         user.ActivatedOn = DateTime.UtcNow;
-        user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password.Trim(), "MD5");
+        user.CryptedPassword = "UNVALIDATED";
         user.Email = email.Trim();
         user.FirstName = firstName.Trim();
         user.InOffice = true;
@@ -398,6 +417,8 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         user.ReceiveTicketNotifications = true;
         user.ShowWelcomePage = true;
         user.Collection.Save();
+
+        
 
         LoginUser loginUser = new LoginUser(user.UserID, user.OrganizationID);
 
@@ -649,9 +670,11 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         UserSettings.WriteString(loginUser, "Dashboard", UserSettings.ReadString(loginUser, (int)sourceOrg.PrimaryUserID, "Dashboard"));
         sourceOrg.Collection.Save();
 
-        EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, password);
+        EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, "");
         EmailPosts.SendSignUpNotification(loginUser, user.UserID);
-        AddToMuroc(organization, user, phoneNumber.Number);
+        AddToMuroc(organization, user, phoneNumber.Number, signUpParams);
+
+
         return user;
       }
       catch (Exception ex)
@@ -662,9 +685,10 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
     }
 
 
-    private static void AddToMuroc(Organization tsOrg, User tsUser, string phoneNumber)
+    private static void AddToMuroc(Organization tsOrg, User tsUser, string phoneNumber, SignUpParams signUpParams = null)
     {
-      Organization mOrg = (new Organizations(tsOrg.Collection.LoginUser)).AddNewOrganization();
+      LoginUser loginUser = tsOrg.Collection.LoginUser;
+      Organization mOrg = (new Organizations(loginUser)).AddNewOrganization();
       mOrg.ParentID = 1078;
       mOrg.Name = tsOrg.Name;
       mOrg.ImportID = tsOrg.OrganizationID.ToString();
@@ -672,7 +696,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       mOrg.IsActive = true;
       mOrg.Collection.Save();
 
-      User mUser = (new Users(tsOrg.Collection.LoginUser)).AddNewUser();
+      User mUser = (new Users(loginUser)).AddNewUser();
       mUser.OrganizationID = mOrg.OrganizationID;
       mUser.FirstName = tsUser.FirstName;
       mUser.LastName = tsUser.LastName;
@@ -685,22 +709,33 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       mOrg.PrimaryUserID = mUser.UserID;
       mOrg.Collection.Save();
 
-      PhoneNumber phone = (new PhoneNumbers(tsOrg.Collection.LoginUser)).AddNewPhoneNumber();
+      PhoneNumber phone = (new PhoneNumbers(loginUser)).AddNewPhoneNumber();
       phone.RefID = mOrg.OrganizationID;
       phone.RefType = ReferenceType.Organizations;
       phone.Number = phoneNumber;
       phone.Collection.Save();
 
-      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 219); //TeamSupport
-      /*
-      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 233); //Email Handler
-      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 234); //Adv Portal
-      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 1068); //Basic Portal
-      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 1970); //Chat
-      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 2580); //KB
-      AddMurocProduct(tsOrg.Collection.LoginUser, mOrg.OrganizationID, 1877); //API
-       */
+      AddMurocProduct(loginUser, mOrg.OrganizationID, 219); //TeamSupport
+
+      if (signUpParams != null)
+      {
+        CustomFields customFields = new CustomFields(loginUser);
+        customFields.LoadByOrganization(1078);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmSource", signUpParams.utmSource);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmMedium", signUpParams.utmMedium);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmTerm", signUpParams.utmTerm);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmContent", signUpParams.utmContent);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmCampaign", signUpParams.utmCampaign);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaSource", signUpParams.gaSource);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaMedium", signUpParams.gaMedium);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaTerm", signUpParams.gaTerm);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaContent", signUpParams.gaContent);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaCampaign", signUpParams.gaCampaign);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaVisits", signUpParams.gaVisits.ToString());
+
+      }
     }
+
 
     private static void AddMurocProduct(LoginUser loginUser, int organizationID, int productID)
     {
@@ -1669,6 +1704,16 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       }
     }
 
+    public void LoadBySignUpToken(string token) {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM Organizations WHERE SignUpToken = @SignUpToken AND ParentID = 1 AND IsValidated = 0";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@SignUpToken", token);
+        Fill(command);
+      }
+    
+    }
 
     public void LoadByOrganizationName(string name)
     {
