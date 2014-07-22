@@ -572,7 +572,8 @@ $(document).ready(function () {
               top.Ts.MainPage.selectTicket(null, function (ticketID) {
                 top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
                   ed.focus();
-
+                  ticket.IsParent = null;
+                  appendRelated(ticket);
                   var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
                   ed.selection.setContent(html);
                   ed.execCommand('mceAutoResize');
