@@ -498,6 +498,20 @@ $(document).ready(function () {
     //$('#fileForm').toggle();
   });
 
+  $('#assignedTable > tbody').on('click', '.companylink', function (e) {
+    e.preventDefault();
+
+    top.Ts.System.logAction('Asset Detail - View assigned company');
+    top.Ts.MainPage.openNewCustomer(this.id);
+  });
+
+  $('#assignedTable > tbody').on('click', '.contactlink', function (e) {
+    e.preventDefault();
+
+    top.Ts.System.logAction('Asset Detail - View assigned contact');
+    top.Ts.MainPage.openNewContact(this.id);
+  });
+
   $('.file-upload').fileupload({
     namespace: 'asset_attachment',
     dropZone: $('.file-upload'),
@@ -649,8 +663,12 @@ $(document).ready(function () {
           top.Ts.Services.Assets.GetAssetAssignments(_assetID, function (assetAssignments) {
             _assetAssignments = assetAssignments;
             for (var i = 0; i < assetAssignments.length; i++) {
+              var refTypeClass = 'contactlink';
+              if (assetAssignments[i].RefType == 9) {
+                refTypeClass = 'companylink'
+              }
               $('<tr>').html('<td>' +
-              assetAssignments[i].NameAssignedTo + '</td><td>' +
+              "<a href='#' id='" + assetAssignments[i].ShippedTo + "' class='" + refTypeClass + "'>" + assetAssignments[i].NameAssignedTo + '</a></td><td>' +
               top.Ts.Utils.getMsDate(assetAssignments[i].ActionTime).localeFormat(top.Ts.Utils.getDatePattern()) + '</td><td>' +
               assetAssignments[i].ActorName + '</td><td>' +
               assetAssignments[i].Comments + '</td><td>' +
@@ -667,6 +685,8 @@ $(document).ready(function () {
           $('#locationHeader').text('Junkyard');
           $('.assignedDetails').hide();
           $('.junkyardDetails').show();
+          $('#assetAssign').hide();
+          $('#returnAsset').hide();
           $('#assetToJunkyard').hide();
           break;
       }
@@ -722,18 +742,18 @@ $(document).ready(function () {
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     if (e.target.innerHTML == "Tickets")
       $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_AssetID=" + _assetID);
-//    else if (e.target.innerHTML == "Watercooler")
-//      $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=2&pageid=" + organizationID);
-//    else if (e.target.innerHTML == "Details")
-//      createTestChart();
-//    else if (e.target.innerHTML == "Contacts")
-//      LoadContacts();
-//    else if (e.target.innerHTML == "Notes")
-//      LoadNotes();
+    //    else if (e.target.innerHTML == "Watercooler")
+    //      $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=2&pageid=" + organizationID);
+    //    else if (e.target.innerHTML == "Details")
+    //      createTestChart();
+    //    else if (e.target.innerHTML == "Contacts")
+    //      LoadContacts();
+    //    else if (e.target.innerHTML == "Notes")
+    //      LoadNotes();
     else if (e.target.innerHTML == "Files")
       LoadFiles();
-//    else if (e.target.innerHTML == "Ratings")
-//      LoadRatings('', 1);
+    //    else if (e.target.innerHTML == "Ratings")
+    //      LoadRatings('', 1);
   })
 
   $("#dateShipped").datetimepicker();
