@@ -117,6 +117,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\HtmlAgilityPack.1.4.6\Net40\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NewtonSoft.Json\Bin\Net40\Newtonsoft.Json.dll</HintPath>
@@ -247,6 +248,7 @@
     <Compile Include="Classes\LookupField.cs" />
     <Compile Include="Classes\NamedGZipStream.cs" />
     <Compile Include="Classes\SqlExecutor.cs" />
+    <Compile Include="Classes\TSHighrise.cs" />
     <Compile Include="FieldMaps\ActionLinkToJiraFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsFieldMap.cs" />
     <Compile Include="FieldMaps\AgentRatingsOptionsFieldMap.cs" />

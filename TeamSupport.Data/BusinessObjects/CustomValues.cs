@@ -366,6 +366,8 @@ END";
 
     public static void UpdateByAPIFieldName(LoginUser loginUser, CustomFields customFields, int refID, string apiFieldName, string value)
     {
+      value = value ?? "";
+
       CustomField field = customFields.FindByApiFieldName(apiFieldName);
       //if (field == null) throw new Exception("Unable to find field '" + apiFieldName + "'");
       if (field != null) UpdateValue(loginUser, field.CustomFieldID, refID, value);

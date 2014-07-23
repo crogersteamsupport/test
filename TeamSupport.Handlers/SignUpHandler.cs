@@ -47,14 +47,45 @@ namespace TeamSupport.Handlers
       context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
       context.Response.AddHeader("Expires", "-1");
       context.Response.AddHeader("Pragma", "no-cache");
+      //http://trunk.tsdev.com/signup/validateCompany?name=Muroc%20Systems,%20Inc.
+      string segment = context.Request.Url.Segments[context.Request.Url.Segments.Length - 1].ToLower();
 
-      if (context.Request.Url.Segments[context.Request.Url.Segments.Length - 1] == "xx")
-      { 
-      
-      
+        
+      if (segment == "validatecompany")
+      {
+        ValidateCompany(context);
+      }
+      else if (segment == "processsignup")
+      {
+        User user = ProcessSignUp(context);
+        context.Response.ContentType = "application/json; charset=utf-8";
+        context.Response.Write("{ \"result\": "+user.UserID.ToString()+" }");
+      }
+      else
+      {
+        User user = ProcessSignUp(context);
+        context.Response.Redirect("http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=" + user.UserID.ToString(), false);
       }
 
 
+    }
+
+    private static void ValidateCompany(HttpContext context)
+    {
+      context.Response.ContentType = "application/json; charset=utf-8";
+
+      if (IsCompanyValid(context.Request.QueryString["name"]))
+      {
+        context.Response.Write("{ \"result\": true }");
+      }
+      else
+      {
+        context.Response.Write("{ \"result\": false }");
+      }
+    }
+
+    private static User ProcessSignUp(HttpContext context)
+    {
       using (Stream receiveStream = context.Request.InputStream)
       {
         using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
@@ -83,7 +114,7 @@ namespace TeamSupport.Handlers
             {
               version = (int)ProductType.Enterprise;
             }
-          
+
           }
 
 
@@ -130,7 +161,7 @@ namespace TeamSupport.Handlers
               }
               catch (Exception)
               {
-                
+
               }
             }
 
@@ -145,16 +176,18 @@ namespace TeamSupport.Handlers
               }
               catch (Exception)
               {
-                
+
               }
             }
 
             User user = Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
+            return user;
           }
         }
       }
+      return null;
+      
     }
-
     
     private static string parseGAString(string cookieValue, string key)
     {
@@ -170,8 +203,7 @@ namespace TeamSupport.Handlers
 
     private static string GetValueString(string value)
     {
-      return string.IsNullOrWhiteSpace(value) ? "" : HttpUtility.HtmlEncode(value);
-
+      return string.IsNullOrWhiteSpace(value) ? "" : value;
     }
 
     public static bool IsCompanyValid(string company)

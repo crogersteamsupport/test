@@ -305,6 +305,21 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
   public class SignUpParams
   {
+    public SignUpParams()
+    {
+      utmCampaign = "";
+      utmContent = "";
+      utmMedium = "";
+      utmSource = "";
+      utmTerm = "";
+      gaCampaign = "";
+      gaContent = "";
+      gaMedium = "";
+      gaSource = "";
+      gaTerm = "";
+      gaVisits = 0;
+    }
+    
     public string utmSource { get; set; }
     public string utmMedium { get; set; }
     public string utmTerm { get; set; }
@@ -336,13 +351,10 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       return orgTemplate.IsEmpty ? null : orgTemplate[0];
     }
 
-    //public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, ProductType productType, string password, string promo, string interest, string seats, string process)
     public static User SetupNewAccount(string firstName, string lastName, string email, string company, string phone, ProductType productType, SignUpParams signUpParams)
     {
       try
       {
-
-
         Organization sourceOrg = GetTemplateOrganization(LoginUser.Anonymous, productType);
         int sourceOrgID = sourceOrg.OrganizationID;
 
@@ -672,8 +684,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
         EmailPosts.SendWelcomeNewSignup(loginUser, user.UserID, "");
         EmailPosts.SendSignUpNotification(loginUser, user.UserID);
-        AddToMuroc(organization, user, phoneNumber.Number, signUpParams);
-
+        AddToMuroc(organization, user, phoneNumber.Number, productType, signUpParams);
 
         return user;
       }
@@ -684,8 +695,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       return null;
     }
 
-
-    private static void AddToMuroc(Organization tsOrg, User tsUser, string phoneNumber, SignUpParams signUpParams = null)
+    private static void AddToMuroc(Organization tsOrg, User tsUser, string phoneNumber, ProductType productType, SignUpParams signUpParams = null)
     {
       LoginUser loginUser = tsOrg.Collection.LoginUser;
       Organization mOrg = (new Organizations(loginUser)).AddNewOrganization();
@@ -717,10 +727,11 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
       AddMurocProduct(loginUser, mOrg.OrganizationID, 219); //TeamSupport
 
+      CustomFields customFields = new CustomFields(loginUser);
+      customFields.LoadByOrganization(1078);
+
       if (signUpParams != null)
       {
-        CustomFields customFields = new CustomFields(loginUser);
-        customFields.LoadByOrganization(1078);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmSource", signUpParams.utmSource);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmMedium", signUpParams.utmMedium);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmTerm", signUpParams.utmTerm);
@@ -732,10 +743,42 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaContent", signUpParams.gaContent);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaCampaign", signUpParams.gaCampaign);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaVisits", signUpParams.gaVisits.ToString());
-
+        //
       }
-    }
 
+      
+      CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "Version", productType == ProductType.HelpDesk ? "Support Desk" : "Enterprise");
+
+      try
+      {
+        
+        string[] salesGuys = SystemSettings.ReadString(loginUser, "SalesGuys", "Jesus:1045957|Leon:1045958").Split('|');
+        int nextSalesGuy = int.Parse(SystemSettings.ReadString(loginUser, "NextSalesGuy", "0"));
+        if (nextSalesGuy >= salesGuys.Length || nextSalesGuy < 0) nextSalesGuy = 0;
+        string salesGuy = salesGuys[nextSalesGuy].Split(':')[0];
+        string salesGuyID = salesGuys[nextSalesGuy].Split(':')[1];
+        nextSalesGuy++;
+        if (nextSalesGuy >= salesGuys.Length) nextSalesGuy = 0;
+        SystemSettings.WriteString(loginUser, "NextSalesGuy", nextSalesGuy.ToString());
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "SalesRep", salesGuy);
+
+        List<string> tags = new List<string>();
+        tags.Add("trial");
+        tags.Add(salesGuy);
+        int hrCompanyID = TSHighrise.CreateCompany(mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.utmSource : "", signUpParams != null ? signUpParams.utmCampaign : "", "", tags.ToArray());
+        int hrContactID = TSHighrise.CreatePerson(mUser.FirstName, mUser.LastName, mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.utmSource : "", signUpParams != null ? signUpParams.utmCampaign : "", "", tags.ToArray());
+        //1. New Trial Check In:1496359
+        //3. End of trial: 1496361
+        //Eric's ID 159931
+        TSHighrise.CreateTaskFrame("", "today", "1496359", "Party", hrContactID.ToString(), salesGuyID, true, true);
+        TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Party", hrContactID.ToString(), "159931", false, false);
+      }
+      catch (Exception ex)
+      {
+        ExceptionLogs.LogException(loginUser, ex, "Sign Up - Highrise", "UserID: " + tsUser.UserID.ToString());
+      }
+
+    }
 
     private static void AddMurocProduct(LoginUser loginUser, int organizationID, int productID)
     {
@@ -754,7 +797,6 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       {
       }
     }
-
 
     public static void CreateStandardData(LoginUser loginUser, Organization organization, bool createTypes, bool createWorkflow)
     {
