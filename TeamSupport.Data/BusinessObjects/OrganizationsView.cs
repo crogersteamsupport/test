@@ -37,6 +37,7 @@ namespace TeamSupport.Data
         if (includeCustomFields) sql = InjectCustomFields(sql, "OrganizationID", ReferenceType.Organizations);
         command.CommandText = sql;
         command.CommandType = CommandType.Text;
+        command.CommandTimeout = 300;
         command.Parameters.AddWithValue("@ParentID", parentID);
         Fill(command);
       }
