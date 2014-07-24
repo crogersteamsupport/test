@@ -124,7 +124,7 @@ UPDATE Emails
 SET LockProcessID = @ProcessID 
 OUTPUT Inserted.*
 WHERE EmailID IN (
-  SELECT TOP 1 EmailID FROM Emails WHERE LockProcessID IS NULL AND IsWaiting = 1 AND NextAttempt < GETUTCDATE() ORDER BY DateCreated
+  SELECT TOP 1 EmailID FROM Emails WHERE LockProcessID IS NULL AND IsWaiting = 1 AND NextAttempt < GETUTCDATE() ORDER BY Attempts, Size, DateCreated
 )
 ";
 
