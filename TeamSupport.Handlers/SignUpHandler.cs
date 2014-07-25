@@ -44,31 +44,31 @@ namespace TeamSupport.Handlers
     /// Session, and Server) used to service HTTP requests.</param>
     public void ProcessRequest(HttpContext context)
     {
-      string segment = context.Request.Url.Segments[context.Request.Url.Segments.Length - 1].ToLower();
-
-        
-      if (segment == "validatecompany")
+      //http://trunk.tsdev.com/signup/validateCompany?name=Muroc%20Systems,%20Inc.
+      string fn = context.Request.Url.Segments[2].ToLower();
+      if (fn == "fn/")
       {
+        string segment = context.Request.Url.Segments[3].ToLower();
         context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
         context.Response.AddHeader("Expires", "-1");
         context.Response.AddHeader("Pragma", "no-cache");
 
-        ValidateCompany(context);
-      }
-      else if (segment == "processsignup")
-      {
-        context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-        context.Response.AddHeader("Expires", "-1");
-        context.Response.AddHeader("Pragma", "no-cache");
 
-        User user = ProcessSignUp(context);
-        context.Response.ContentType = "application/json; charset=utf-8";
-        context.Response.Write("{ \"result\": "+user.UserID.ToString()+" }");
-      }
-      else if (segment == "post")
-      {
-        User user = ProcessSignUp(context);
-        context.Response.Redirect("http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=" + user.UserID.ToString(), false);
+        if (segment == "validatecompany")
+        {
+          ValidateCompany(context);
+        }
+        else if (segment == "processsignup")
+        {
+          User user = ProcessSignUp(context);
+          context.Response.ContentType = "application/json; charset=utf-8";
+          context.Response.Write("{ \"result\": " + user.UserID.ToString() + " }");
+        }
+        else if (segment == "post")
+        {
+          User user = ProcessSignUp(context);
+          context.Response.Redirect("http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=" + user.UserID.ToString(), false);
+        }
       }
     }
 
