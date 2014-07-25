@@ -626,9 +626,9 @@ $(document).ready(function () {
         $('#assetTitle').html(asset.AssetID);
       }
 
-      $('#fieldName').text(asset.Name);
+      $('#fieldName').text((asset.Name === null || $.trim(asset.Name) === '' ? 'Unassigned' : asset.Name));
       $('#fieldProduct').data('productID', asset.ProductID);
-      $('#fieldProduct').text(asset.ProductName);
+      $('#fieldProduct').text((asset.ProductName === null || $.trim(asset.ProductName) === '' ? 'Unassigned' : asset.ProductName));
       $('#fieldProductVersion').data('productVersionID', asset.ProductVersionID);
       if (asset.ProductVersionID == null) {
         var product = top.Ts.Cache.getProduct(asset.ProductID);
@@ -644,9 +644,9 @@ $(document).ready(function () {
       else {
         $('#fieldProductVersion').text(asset.ProductVersionNumber);
       }
-      $('#fieldSerialNumber').text(asset.SerialNumber);
+      $('#fieldSerialNumber').text((asset.SerialNumber === null || $.trim(asset.SerialNumber) === '' ? 'Unassigned' : asset.SerialNumber));
       $('#fieldWarrantyExpiration').text(top.Ts.Utils.getMsDate(asset.WarrantyExpiration).localeFormat(top.Ts.Utils.getDatePattern()));
-      $('#fieldNotes').text(asset.Notes);
+      $('#fieldNotes').text((asset.Notes === null || $.trim(asset.Notes) === '' ? 'Unassigned' : asset.Notes));
 
       $('#fieldAssetID').text(asset.AssetID);
       $('#fieldCreator').text(asset.CreatorName);

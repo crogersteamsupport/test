@@ -1885,9 +1885,9 @@ $(document).ready(function () {
         $('.assetList').empty();
         top.Ts.Services.Customers.LoadAssets(organizationID, top.Ts.ReferenceTypes.Organizations, function (assets) {
             $('.assetList').append(assets)
-            //for (var i = 0; i < users.length; i++) {
-            //    $('<a>').attr('class', 'list-group-item').text(users[i].FirstName + ' ' + users[i].LastName).appendTo('.userList');
-            //}
+            top.Ts.Services.Customers.LoadContactAssets(organizationID, function (assets) {
+                $('.assetList').append(assets)
+            });
         });
     }
 

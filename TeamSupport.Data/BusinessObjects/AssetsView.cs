@@ -59,6 +59,35 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadAssignedToContactsByOrganizationID(int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+          SELECT
+            a.* 
+          FROM
+            AssetsView a
+            JOIN AssetHistory h
+              ON a.AssetID = h.AssetID
+            JOIN AssetAssignments aa
+              ON h.HistoryID = aa.HistoryID
+            JOIN Users u
+              ON h.ShippedTo = u.UserID
+              AND h.RefType = 32
+            JOIN Organizations o
+              ON u.OrganizationID = o.OrganizationID
+	            AND o.Name <> '_Unknown Company'	
+          WHERE 
+            o.OrganizationID = @OrganizationID
+          ORDER BY 
+            aa.AssetAssignmentsID DESC";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
     public void LoadByLikeAssetDisplayName(int organizationID, string name, int maxRows)
     {
       using (SqlCommand command = new SqlCommand())

@@ -1273,6 +1273,34 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string LoadContactAssets(int organizationID)
+        {
+          StringBuilder htmlresults = new StringBuilder("");
+          AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
+          assets.LoadAssignedToContactsByOrganizationID(organizationID);
+
+          foreach (AssetsViewItem asset in assets)
+          {
+            htmlresults.AppendFormat(@"<div class='list-group-item'>
+                            <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
+                            <div class='row'>
+                                <div class='col-xs-6'>
+                                    <p class='list-group-item-text'>{2}</p>
+                                    {3}
+                                </div>
+                            </div>
+                            </div>"
+
+                , asset.AssetID
+                , asset.DisplayName
+                , asset.ProductName
+                , asset.ProductVersionNumber);
+          }
+
+          return htmlresults.ToString();
+        }
+
+        [WebMethod]
         public List<CustomValueProxy> LoadCustomProductFields(int productID)
         {
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
