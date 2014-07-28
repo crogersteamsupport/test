@@ -56,7 +56,9 @@
 
       assetInfo.Name = $("#inputName").val();
       assetInfo.ProductID = $("#ddlProduct").val();
-      assetInfo.ProductVersionID = $('#ddlProductVersion').val();
+      if ($('#ddlProductVersion').val().isNumeric) {
+        assetInfo.ProductVersionID = $('#ddlProductVersion').val();
+      }
       assetInfo.SerialNumber = $("#inputSerialNumber").val();
       assetInfo.WarrantyExpiration = $("#inputWarrantyExpiration").val();
       assetInfo.Notes = $("#Notes").val();
