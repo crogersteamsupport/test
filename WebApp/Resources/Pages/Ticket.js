@@ -381,6 +381,10 @@ $(document).ready(function () {
               appendAssets(assets);
               window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addasset", userFullName);
               $(this).parent().remove();
+              //here we need to implement a refresh of the ticket customers and contacts.
+              top.Ts.Services.Tickets.GetTicketCustomers(_ticketID, function (customers) {
+                appendCustomers(customers);
+              });
             }, function () {
               $(this).parent().remove();
               alert('There was an error adding the asset.');

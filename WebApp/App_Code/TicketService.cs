@@ -1841,6 +1841,38 @@ namespace TSWebServices
       if (asset.OrganizationID != TSAuthentication.OrganizationID) return null;
       ticket.Collection.AddAsset(assetID, ticketID);
 
+      if (asset.Location == "1")
+      {
+        try
+        {
+          AssetAssignmentsView assetAssignments = new AssetAssignmentsView(TSAuthentication.GetLoginUser());
+          assetAssignments.LoadByAssetID(assetID);
+          foreach (AssetAssignmentsViewItem assetAssignment in assetAssignments)
+          {
+            if (assetAssignment.RefType != null && (ReferenceType)assetAssignment.RefType == ReferenceType.Contacts)
+            {
+              ContactsViewItem contact = ContactsView.GetContactsViewItem(TSAuthentication.GetLoginUser(), (int)assetAssignment.ShippedTo);
+              if (contact.OrganizationParentID == TSAuthentication.OrganizationID)
+              {
+                ticket.Collection.AddContact((int)assetAssignment.ShippedTo, ticketID); 
+              }           
+            }
+            else
+            {
+              Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), (int)assetAssignment.ShippedTo);
+              if (organization.ParentID == TSAuthentication.OrganizationID)
+              {
+                ticket.Collection.AddOrganization((int)assetAssignment.ShippedTo, ticketID);
+              }
+            }
+          }
+        }
+        catch(Exception e)
+        {
+          //We tried to add the customers and or contacts assigned to the asset, but if something goes wrong, we just move on.
+        }
+      }
+
       Assets assets = new Assets(ticket.Collection.LoginUser);
       assets.LoadByTicketID(ticketID);
       return assets.GetAssetProxies();
@@ -2665,7 +2697,8 @@ namespace TSWebServices
       return relatedTickets.ToArray();
     }
 
-    private TicketCustomer[] GetTicketCustomers(int ticketID)
+    [WebMethod]
+    public TicketCustomer[] GetTicketCustomers(int ticketID)
     {
       List<TicketCustomer> customers = new List<TicketCustomer>();
 

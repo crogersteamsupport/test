@@ -1753,6 +1753,22 @@ $(document).ready(function () {
           if (assetID > -1) {
             top.Ts.Services.Assets.GetAsset(assetID, function (asset) {
               appendAsset(asset);
+              if (asset.Location == "1") {
+                top.Ts.Services.Assets.GetAssetAssignments(assetID, function (assetAssignments) {
+                  for (var i = 0; i < assetAssignments.length; i++) {
+                    if (assetAssignments[i].RefType == 32) {
+                      top.Ts.Services.Tickets.GetTicketCustomer("u", assetAssignments[i].ShippedTo, function (result) {
+                        appendCustomer(result);
+                      });
+                    }
+                    else {
+                      top.Ts.Services.Tickets.GetTicketCustomer("o", assetAssignments[i].ShippedTo, function (result) {
+                        appendCustomer(result);
+                      });
+                    }
+                  }
+                });
+              }
             });
           }
         });
