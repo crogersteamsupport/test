@@ -172,13 +172,13 @@ namespace TeamSupport.Data
   <due-at type=""datetime"">{1}</due-at>
 
   <!-- optional -->
-  <subject-type>{3}</subject-type>
-  <subject-id>{4}</subject-id>
-  <category-id type=""integer"">{5}</category-id>
+  <subject-type>{2}</subject-type>
+  <subject-id>{3}</subject-id>
+  <category-id type=""integer"">{4}</category-id>
   <recording-id type=""integer""></recording-id>
-  <owner-id type=""integer"">{6}</owner-id>
-  <public type=""boolean"">{7}</public>
-  <notify type=""boolean"">{8}</notify>
+  <owner-id type=""integer"">{5}</owner-id>
+  <public type=""boolean"">{6}</public>
+  <notify type=""boolean"">{7}</notify>
 </task>
 ";
       task = string.Format(task, body, dt, subjectType, subjectID, categoryID, ownerID, isPublic ? "true" : "false", doNotify ? "true" : "false");

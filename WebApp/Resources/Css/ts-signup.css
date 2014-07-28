@@ -1,0 +1,6 @@
+﻿form { margin:0;}
+.form-group {margin-bottom: 10px; }
+.form-group label { display:inline-block; margin-right 10px; text-align:right; vertical-align:middle; width: 120px; }
+.form-group input, .form-group select { vertical-align:middle; line-height:normal; font-size: 100%; margin: 0; display:inline-block; width: 200px;}
+.form-group p, .form-group button { margin-left: 120px;}
+

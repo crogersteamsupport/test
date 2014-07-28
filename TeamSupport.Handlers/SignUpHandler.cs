@@ -130,13 +130,15 @@ namespace TeamSupport.Handlers
             SignUpParams prams = new SignUpParams();
             if (cookies["_tsm"] != null)
             {
+
               try
               {
-                prams.utmSource = cookies["_tsm"]["src"] ?? "";
-                prams.utmCampaign = cookies["_tsm"]["camp"] ?? "";
-                prams.utmContent = cookies["_tsm"]["cont"] ?? "";
-                prams.utmMedium = cookies["_tsm"]["med"] ?? "";
-                prams.utmTerm = cookies["_tsm"]["term"] ?? "";
+                MarketingCookie mc = JsonConvert.DeserializeObject<MarketingCookie>(cookies["_tsm"].Value);
+                prams.utmCampaign = mc.Campaign;
+                prams.utmContent = mc.Content;
+                prams.utmMedium = mc.Medium;
+                prams.utmSource = mc.Source;
+                prams.utmTerm = mc.Term;
               }
               catch (Exception)
               {
@@ -219,6 +221,13 @@ namespace TeamSupport.Handlers
       return true;
     }
 
-
+    public class MarketingCookie {
+      public string Source { get; set; }
+      public string Medium { get; set; }
+      public string Term { get; set; }
+      public string Content { get; set; }
+      public string Campaign { get; set; }
+    
+    }
   }
 }
