@@ -18,7 +18,7 @@
         // Browser globals
         factory(jQuery);
     }
-} (function ($) {
+} (function (jQuery) {
 
     var pluses = /\+/g;
 
@@ -51,15 +51,15 @@
 
     function read(s, converter) {
         var value = config.raw ? s : parseCookieValue(s);
-        return $.isFunction(converter) ? converter(value) : value;
+        return jQuery.isFunction(converter) ? converter(value) : value;
     }
 
-    var config = $.cookie = function (key, value, options) {
+    var config = jQuery.cookie = function (key, value, options) {
 
         // Write
 
-        if (value !== undefined && !$.isFunction(value)) {
-            options = $.extend({}, config.defaults, options);
+        if (value !== undefined && !jQuery.isFunction(value)) {
+            options = jQuery.extend({}, config.defaults, options);
 
             if (typeof options.expires === 'number') {
                 var days = options.expires, t = options.expires = new Date();
@@ -106,19 +106,19 @@
 
     config.defaults = {};
 
-    $.removeCookie = function (key, options) {
-        if ($.cookie(key) === undefined) {
+    jQuery.removeCookie = function (key, options) {
+        if (jQuery.cookie(key) === undefined) {
             return false;
         }
 
         // Must not alter options, thus extending a fresh object...
-        $.cookie(key, '', $.extend({}, options, { expires: -1 }));
-        return !$.cookie(key);
+        jQuery.cookie(key, '', jQuery.extend({}, options, { expires: -1 }));
+        return !jQuery.cookie(key);
     };
 
 }));
 
-$(document).ready(function () {
+jQuery(document).ready(function () {
     function getURLParameter(name) { return decodeURIComponent((RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1]); }
     var params = new Object();
     params.Source = getURLParameter("utm_source");
@@ -126,5 +126,5 @@ $(document).ready(function () {
     params.Term = getURLParameter("utm_term");
     params.Content = getURLParameter("utm_content");
     params.Campaign = getURLParameter("utm_campaign");
-    if (params.Source) { $.cookie("_tsm", JSON.stringify(params), {expires: 7, path: '/', domain: 'teamsupport.com'}); }
+    if (params.Source) { jQuery.cookie("_tsm", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' }); }
 });

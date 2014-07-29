@@ -203,8 +203,7 @@ namespace TeamSupport.Handlers
           }
         }
 
-        //return Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
-        return null;
+        return Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
       }
       return null;
 

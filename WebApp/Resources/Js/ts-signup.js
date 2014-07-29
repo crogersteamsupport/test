@@ -1,27 +1,33 @@
-﻿$(document).ready(function () {
+﻿jQuery(document).ready(function () {
+    var baseUrl=
     function getURLParameter(name) {
         var val = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1];
         return val ? decodeURIComponent(val) : null;
     }
 
-    if (getURLParameter("suerrors") != null) { alert("There was an error processing your sign up request.  Please review your information and try again."); }
+    if (getURLParameter("suerror") != null) {
+        validateCompany();
+        validateEmail();
+        validateName();
+        alert("There was an error processing your sign up request.  Please review your information and try again."); 
+    }
 
-    $('#submit').click(function (e) {
+    jQuery('#submit').click(function (e) {
         validateCompany();
         validateEmail();
         validateName();
 
-        if ($('.form-group.has-error').length > 0) {
+        if (jQuery('.form-group.has-error').length > 0) {
             e.preventDefault();
             return;
         }
 
-        var btn = $(this).hide();
-        if ($('.img-busy').length < 1) {
-            $('<img>').attr('src', 'http://www.teamsupport.com/images/dots64.gif').insertAfter(btn);
+        var btn = jQuery(this).hide();
+        if (jQuery('.img-busy').length < 1) {
+            jQuery('<img>').attr('src', 'http://www.teamsupport.com/images/dots64.gif').insertAfter(btn);
         }
         else {
-            $('.img-busy').show();
+            jQuery('.img-busy').show();
         }
 
 
@@ -29,14 +35,14 @@
 
     });
 
-    $('input[name="name"]').keyup(function (e) { validateName(); }).change(function (e) { validateName(); });
-    $('input[name="email"]').keyup(function (e) { validateEmail(); }).change(function (e) { validateEmail(); });
-    $('input[name="company"]').keyup(function (e) { validateCompany(); }).change(function (e) { validateCompany(); });
+    jQuery('input[name="name"]').keyup(function (e) { validateName(); }).change(function (e) { validateName(); });
+    jQuery('input[name="email"]').keyup(function (e) { validateEmail(); }).change(function (e) { validateEmail(); });
+    jQuery('input[name="company"]').keyup(function (e) { validateCompany(); }).change(function (e) { validateCompany(); });
 
     function validateName() {
-        var el = $('input[name="name"]');
+        var el = jQuery('input[name="name"]');
         var nameReg = /\w+\s+\w+/;
-        var name = $.trim(el.val());
+        var name = jQuery.trim(el.val());
         if (!nameReg.test(name)) {
             el.closest('.form-group').addClass('has-error');
         } else {
@@ -45,9 +51,9 @@
     }
 
     function validateEmail() {
-        var el = $('input[name="email"]');
+        var el = jQuery('input[name="email"]');
         var emailReg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        var email = $.trim(el.val());
+        var email = jQuery.trim(el.val());
         if (!emailReg.test(email) || email == '') {
             el.closest('.form-group').addClass('has-error');
         } else {
@@ -56,8 +62,8 @@
     }
 
     function validateCompany(callback) {
-        var el = $('input[name="company"]');
-        var company = $.trim(el.val());
+        var el = jQuery('input[name="company"]');
+        var company = jQuery.trim(el.val());
         var group = el.closest('.form-group');
         var help = group.find('.help-block');
         if (company == '') {
@@ -67,7 +73,7 @@
         }
 
 
-        $.ajax({
+        jQuery.ajax({
             type: "GET",
             url: "http://trunk.tsdev.com/signup/fn/validatecompany",
             data: { name: company },
@@ -87,9 +93,9 @@
     }
 
     function validatePhone() {
-        var el = $('input[name="phone"]');
+        var el = jQuery('input[name="phone"]');
         var intRegex = /[0-9 -()+]+$/;
-        var phone = $.trim(el.val());
+        var phone = jQuery.trim(el.val());
         if ((phone.length < 6) || (!intRegex.test(phone))) {
             el.closest('.form-group').addClass('has-error');
         } else {
