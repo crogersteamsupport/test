@@ -307,7 +307,7 @@ Namespace TeamSupport
           If sendCustomMappingFields Then
             'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
             Dim customMappingFields As New CRMLinkFields(User)
-            customMappingFields.LoadByObjectType("Ticket", CRMLinkRow.CRMLinkID)
+            customMappingFields.LoadByObjectTypeAndCustomFieldAuxID("Ticket", CRMLinkRow.CRMLinkID, ticket.TicketTypeID)
 
             Dim updateFieldRequestBody As StringBuilder
 
@@ -556,6 +556,12 @@ Namespace TeamSupport
                         'text field (single-line)
                         Case "string"
                           result = "{""" + fieldValue + """}"
+                        Case "radiobuttons"
+                          If fieldValue = "True" Then
+                            result = "{""value"":""Yes""}"
+                          Else
+                            result = "{""value"":""No""}"
+                          End If
                       End Select
                     End If
                   End If                                               

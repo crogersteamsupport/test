@@ -39,7 +39,32 @@ namespace TeamSupport.Data
           }
       }
 
-      public CRMLinkField FindByCRMFieldName(string name) {
+      public void LoadByObjectTypeAndCustomFieldAuxID(string objType, int CRMLinkID, int customFieldAuxID)
+      {
+
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText = @"
+          SELECT 
+            crm.* 
+          FROM 
+            CRMLinkFields crm
+            LEFT JOIN CustomFields cf
+              ON crm.CustomFieldID = cf.CustomFieldID
+          WHERE 
+            crm.CRMLinkID = @CRMLinkID 
+            AND crm.CRMObjectName = @objectType
+            AND (crm.CustomFieldID IS NULL OR cf.AuxID = @CustomFieldAuxID)";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@objectType", objType);
+          command.Parameters.AddWithValue("@CRMLinkID", CRMLinkID);
+          command.Parameters.AddWithValue("@CustomFieldAuxID", customFieldAuxID);
+          Fill(command, "CRMLinkFields");
+        }
+      }
+
+      public CRMLinkField FindByCRMFieldName(string name)
+      {
           foreach (CRMLinkField field in this) { 
               if (field.CRMFieldName.Trim().ToLower() == name.Trim().ToLower()){
                   return field;
