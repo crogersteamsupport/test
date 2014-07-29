@@ -80,6 +80,8 @@ namespace TeamSupport.Data
       MailMessage message = new MailMessage();
       message.From = new MailAddress("support@teamsupport.com");
       message.To.Add("eharrington@teamsupport.com");
+      message.To.Add("lchoi@teamsupport.com");
+      message.To.Add("jgutierrez@teamsupport.com");
       message.To.Add("jhathaway@teamsupport.com");
       message.Subject = isNew ? "TeamSupport User Added" : "TeamSupport User Removed";
       message.Subject += " - " + o.Name;
