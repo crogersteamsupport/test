@@ -58,141 +58,158 @@ namespace TeamSupport.Handlers
         {
           ValidateCompany(context);
         }
-        else if (segment == "processsignup")
-        {
-          User user = ProcessSignUp(context);
-          context.Response.ContentType = "application/json; charset=utf-8";
-          context.Response.Write("{ \"result\": " + user.UserID.ToString() + " }");
-        }
         else if (segment == "post")
         {
-          User user = ProcessSignUp(context);
-          context.Response.Redirect("http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=" + user.UserID.ToString(), false);
+          try
+          {
+            using (Stream receiveStream = context.Request.InputStream)
+            {
+              using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+              {
+                string requestContent = readStream.ReadToEnd();
+                try
+                {
+                  User user = ProcessSignUp(context, requestContent);
+                  context.Response.Redirect("http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=" + user.UserID.ToString(), false);
+
+                }
+                catch (Exception ex)
+                {
+                  ExceptionLogs.LogException(LoginUser.Anonymous, ex, "SIGN UP", requestContent);
+                  context.Response.Redirect(GetErrorUrl(context), false);
+                }
+              }
+            }
+          }
+          catch (Exception ex2)
+          {
+            ExceptionLogs.LogException(LoginUser.Anonymous, ex2, "SIGN UP");
+            context.Response.Redirect(GetErrorUrl(context), false);
+          }
         }
       }
+    }
+
+    private static string GetErrorUrl(HttpContext context)
+    {
+      string url = context.Request.UrlReferrer.AbsoluteUri;
+      if (url.IndexOf("suerror=1") > -1) return url;
+
+      if (url.IndexOf("?") > -1)
+        return url + "&suerror=1";
+      else
+        return url + "?suerror=1";
     }
 
     private static void ValidateCompany(HttpContext context)
     {
-      context.Response.ContentType = "application/json; charset=utf-8";
 
-      if (IsCompanyValid(context.Request.QueryString["name"]))
-      {
-        context.Response.Write("{ \"result\": true }");
-      }
-      else
-      {
-        context.Response.Write("{ \"result\": false }");
-      }
+      context.Response.ContentType = "application/json; charset=utf-8";
+      NameValueCollection values = context.Request.QueryString;
+      context.Response.Write(string.Format("{0}({{\"isValid\": {1}}})", values["callback"], IsCompanyValid(values["name"]) ? "true" : "false"));
+
     }
 
-    private static User ProcessSignUp(HttpContext context)
+    private static User ProcessSignUp(HttpContext context, string requestContent)
     {
-      using (Stream receiveStream = context.Request.InputStream)
+      NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
+      string name = GetValueString(values["name"]);
+      string email = GetValueString(values["email"]);
+      string company = GetValueString(values["company"]);
+      string phone = GetValueString(values["phone"]);
+      string password = GetValueString(values["password"]);
+      string promo = GetValueString(values["promo"]);
+      string product = GetValueString(values["product"]);
+
+      int version = (int)ProductType.Enterprise;
+      if (product != "")
       {
-        using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+        if (int.TryParse(product, out version))
         {
-          string requestContent = readStream.ReadToEnd();
-          NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
-          string name = GetValueString(values["name"]);
-          string email = GetValueString(values["email"]);
-          string company = GetValueString(values["company"]);
-          string phone = GetValueString(values["phone"]);
-          string password = GetValueString(values["password"]);
-          string promo = GetValueString(values["promo"]);
-          string product = GetValueString(values["product"]);
-
-          int version = (int)ProductType.Enterprise;
-          if (product != "")
+          if (version != (int)ProductType.Enterprise || version != (int)ProductType.HelpDesk)
           {
-            if (int.TryParse(product, out version))
-            {
-              if (version != (int)ProductType.Enterprise || version != (int)ProductType.HelpDesk)
-              {
-                version = (int)ProductType.Enterprise;
-              }
-            }
-            else
-            {
-              version = (int)ProductType.Enterprise;
-            }
-
-          }
-
-
-          if (IsCompanyValid(company))
-          {
-
-            string[] names = name.Split(' ');
-            string fname = names[0];
-            string lname = string.Join(" ", names.Skip(1).ToArray());
-            HttpCookieCollection cookies = context.Request.Cookies;
-            SignUpParams prams = new SignUpParams();
-            if (cookies["_tsm"] != null)
-            {
-
-              try
-              {
-                MarketingCookie mc = JsonConvert.DeserializeObject<MarketingCookie>(cookies["_tsm"].Value);
-                prams.utmCampaign = mc.Campaign;
-                prams.utmContent = mc.Content;
-                prams.utmMedium = mc.Medium;
-                prams.utmSource = mc.Source;
-                prams.utmTerm = mc.Term;
-              }
-              catch (Exception)
-              {
-              }
-            }
-
-            if (cookies["__utmz"] != null)
-            {
-              try
-              {
-                string utmz = cookies["__utmz"].Value;
-                //string utmz = "252527244.1405639771.1.1.utmcsr=GetApp|utmccn=GetApp|utmcmd=cpc";
-                prams.gaCampaign = parseGAString(utmz, "utmccn");
-                prams.gaContent = parseGAString(utmz, "utmcct");
-                prams.gaTerm = parseGAString(utmz, "utmctr");
-                prams.gaMedium = parseGAString(utmz, "utmcmd");
-                prams.gaSource = parseGAString(utmz, "utmcsr");
-
-                if (parseGAString(utmz, "utmgclid") != "")
-                {
-                  prams.gaSource = "Google";
-                  prams.gaMedium = "cpc";
-                }
-              }
-              catch (Exception)
-              {
-
-              }
-            }
-
-            if (cookies["__utma"] != null)
-            {
-              try
-              {
-                string utma = cookies["__utma"].Value;
-                //string utma = "252527244.1199382232.1405639771.1405639771.1405639771.1";
-                string[] sessionValues = utma.Split('.');
-                prams.gaVisits = int.Parse(sessionValues[5]);
-              }
-              catch (Exception)
-              {
-
-              }
-            }
-
-            User user = Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
-            return user;
+            version = (int)ProductType.Enterprise;
           }
         }
+        else
+        {
+          version = (int)ProductType.Enterprise;
+        }
+
+      }
+
+
+      if (IsCompanyValid(company))
+      {
+
+        string[] names = name.Split(' ');
+        string fname = names[0];
+        string lname = string.Join(" ", names.Skip(1).ToArray());
+        HttpCookieCollection cookies = context.Request.Cookies;
+        SignUpParams prams = new SignUpParams();
+        if (cookies["_tsm"] != null)
+        {
+
+          try
+          {
+            MarketingCookie mc = JsonConvert.DeserializeObject<MarketingCookie>(cookies["_tsm"].Value);
+            prams.utmCampaign = mc.Campaign;
+            prams.utmContent = mc.Content;
+            prams.utmMedium = mc.Medium;
+            prams.utmSource = mc.Source;
+            prams.utmTerm = mc.Term;
+          }
+          catch (Exception)
+          {
+          }
+        }
+
+        if (cookies["__utmz"] != null)
+        {
+          try
+          {
+            string utmz = cookies["__utmz"].Value;
+            //string utmz = "252527244.1405639771.1.1.utmcsr=GetApp|utmccn=GetApp|utmcmd=cpc";
+            prams.gaCampaign = parseGAString(utmz, "utmccn");
+            prams.gaContent = parseGAString(utmz, "utmcct");
+            prams.gaTerm = parseGAString(utmz, "utmctr");
+            prams.gaMedium = parseGAString(utmz, "utmcmd");
+            prams.gaSource = parseGAString(utmz, "utmcsr");
+
+            if (parseGAString(utmz, "utmgclid") != "")
+            {
+              prams.gaSource = "Google";
+              prams.gaMedium = "cpc";
+            }
+          }
+          catch (Exception)
+          {
+
+          }
+        }
+
+        if (cookies["__utma"] != null)
+        {
+          try
+          {
+            string utma = cookies["__utma"].Value;
+            //string utma = "252527244.1199382232.1405639771.1405639771.1405639771.1";
+            string[] sessionValues = utma.Split('.');
+            prams.gaVisits = int.Parse(sessionValues[5]);
+          }
+          catch (Exception)
+          {
+
+          }
+        }
+
+        //return Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
+        return null;
       }
       return null;
-      
+
     }
-    
+
     private static string parseGAString(string cookieValue, string key)
     {
       //252527244.1405639771.1.1.utmcsr=GetApp|utmccn=GetApp|utmcmd=cpc
@@ -221,13 +238,14 @@ namespace TeamSupport.Handlers
       return true;
     }
 
-    public class MarketingCookie {
+    public class MarketingCookie
+    {
       public string Source { get; set; }
       public string Medium { get; set; }
       public string Term { get; set; }
       public string Content { get; set; }
       public string Campaign { get; set; }
-    
+
     }
   }
 }

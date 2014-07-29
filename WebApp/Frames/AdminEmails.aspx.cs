@@ -73,7 +73,6 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
         cmbTemplate.Items.Add(new Telerik.Web.UI.RadComboBoxItem(template.Name, template.EmailTemplateID.ToString()));
       }
 
-      //divSubject.Visible = UserSession.LoginUser.UserID == 34;
       LoadEAICombos();
     
     }
@@ -213,7 +212,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     result.Footer = template.Footer;
     result.Subject = template.Subject;
 
-    if (!emails.IsEmpty && UserSession.LoginUser.UserID != 34)
+    if (!emails.IsEmpty && UserSession.LoginUser.UserID != -34)
     {
       result.Body = emails[0].Body;
       result.IsHtml = emails[0].IsHtml;
@@ -258,7 +257,7 @@ public partial class Frames_AdminEmails : System.Web.UI.Page
     EmailTemplate template = EmailTemplates.GetEmailTemplate(UserSession.LoginUser, emailTemplateID);
     subject = template.IsEmail ? subject : "";
 
-    if (UserSession.LoginUser.UserID == 34)
+    if (UserSession.LoginUser.UserID == -34)
     {
       template.Body = body;
       template.EmailTemplateID = emailTemplateID;
