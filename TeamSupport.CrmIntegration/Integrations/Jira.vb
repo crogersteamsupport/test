@@ -791,7 +791,7 @@ Namespace TeamSupport
 
           If updateTicket.Count > 0 Then
             Dim customFields As New CRMLinkFields(User)
-            customFields.LoadByObjectType("Ticket", CRMLinkRow.CRMLinkID)
+            customFields.LoadByObjectTypeAndCustomFieldAuxID("Ticket", CRMLinkRow.CRMLinkID, updateTicket(0).TicketTypeID)
 
             Dim ticketValuesChanged = False
 
