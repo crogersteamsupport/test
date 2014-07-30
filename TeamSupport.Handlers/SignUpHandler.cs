@@ -133,9 +133,8 @@ namespace TeamSupport.Handlers
         }
         else
         {
-          version = (int)ProductType.Enterprise;
+          if (product.ToLower().Trim() == "support desk") version = (int)ProductType.HelpDesk;
         }
-
       }
 
 
