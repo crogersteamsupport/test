@@ -46,6 +46,7 @@ namespace TeamSupport.Api
       asset.Location = "2";
       // This is normally not necessary, but as the CreatorID is defined as a null field in this table it is needed.
       asset.CreatorID = command.LoginUser.UserID;
+      asset.NeedsIndexing = true;
       asset.Collection.Save();
       asset.UpdateCustomFieldsFromXml(command.Data);
 

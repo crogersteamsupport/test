@@ -129,6 +129,7 @@ namespace TeamSupport.Api
       int? contactID = null;
       ticket.FullReadFromXml(command.Data, true, ref description, ref contactID);
       ticket.TicketSource = "API";
+      ticket.NeedsIndexing = true;
       ticket.Collection.Save();
       ticket.UpdateCustomFieldsFromXml(command.Data);
 

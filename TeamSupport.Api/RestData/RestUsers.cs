@@ -56,6 +56,7 @@ namespace TeamSupport.Api
       user.LastLogin = DateTime.UtcNow.AddHours(-1);
       user.LastActivity = DateTime.UtcNow.AddHours(-1);
       user.EnforceSingleSession = true;
+      user.NeedsIndexing = true;
       user.Collection.Save();
       user.UpdateCustomFieldsFromXml(command.Data);
 
