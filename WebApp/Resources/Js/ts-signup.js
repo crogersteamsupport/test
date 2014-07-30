@@ -109,4 +109,3 @@
 
 });
 
-//window.top.location = 'http://www.teamsupport.com/thank-you-for-trying-teamsupport/?userid=' + result;

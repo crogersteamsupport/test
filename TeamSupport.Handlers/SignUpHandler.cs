@@ -218,7 +218,7 @@ namespace TeamSupport.Handlers
       int j = s.IndexOf("|");
       if (j > -1) { s = s.Substring(0, j); }
 
-      return s;
+      return HttpUtility.UrlDecode(s);
     }
 
     private static string GetValueString(string value)
