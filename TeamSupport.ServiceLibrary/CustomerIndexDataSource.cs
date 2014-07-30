@@ -65,6 +65,7 @@ namespace TeamSupport.ServiceLibrary
         DocFields += "Name\t" + (string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim()) + "\t";
         DocFields += "Description\t" + (string.IsNullOrWhiteSpace(organization.Description) ? "" : organization.Description.Trim()) + "\t";
         DocFields += "Website\t" + (string.IsNullOrWhiteSpace(organization.Website) ? "" : organization.Website.Trim()) + "\t";
+        DocFields += "IsActive\t" + organization.IsActive.ToString() + "\t";
         DocFields += "PrimaryContact\t" + (string.IsNullOrWhiteSpace(organization.PrimaryContact) ? "" : organization.PrimaryContact.Trim()) + "\t";
 
         CustomerSearchCompany companyItem = new CustomerSearchCompany(organization);
