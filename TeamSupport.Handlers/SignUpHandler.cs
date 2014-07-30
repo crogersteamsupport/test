@@ -92,7 +92,7 @@ namespace TeamSupport.Handlers
 
     private static string GetErrorUrl(HttpContext context)
     {
-      string url = context.Request.UrlReferrer.AbsoluteUri;
+      string url = "https://www.teamsupport.com/web-help-desk-support-free-trial";//context.Request.UrlReferrer.AbsoluteUri;
       if (url.IndexOf("suerror=1") > -1) return url;
 
       if (url.IndexOf("?") > -1)
