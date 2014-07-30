@@ -1068,7 +1068,7 @@ namespace TSWebServices
             job.BooleanConditions = conditions.ToString();
           }
 
-          job.BooleanConditions = "(IsActive::false)";
+          job.BooleanConditions = "(OrganizationID::310469) ";
 
           job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchDelayDocInfo;
 
