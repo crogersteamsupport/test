@@ -77,6 +77,7 @@ namespace TeamSupport.ServiceLibrary
 
         DocFields += "Organization\t" + (string.IsNullOrWhiteSpace(contact.Organization) ? "" : contact.Organization.Trim()) + "\t";
         DocFields += "Email\t" + (string.IsNullOrWhiteSpace(contact.Email) ? "" : contact.Email.Trim()) + "\t";
+        DocFields += "Email\t" + contact.IsActive.ToString() + "\t";
         CustomerSearchContact contactItem = new CustomerSearchContact(contact);
         contactItem.phones = phones.ToArray();
         TicketsView tickets = new TicketsView(_loginUser);
