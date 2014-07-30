@@ -1626,7 +1626,8 @@ namespace TSWebServices
     private bool CanEditAction(TeamSupport.Data.Action action)
     {
       Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), action.TicketID);
-      return (ticket.OrganizationID == TSAuthentication.OrganizationID && (action.CreatorID == TSAuthentication.UserID || TSAuthentication.IsSystemAdmin));
+      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      return (ticket.OrganizationID == TSAuthentication.OrganizationID && (action.CreatorID == TSAuthentication.UserID || TSAuthentication.IsSystemAdmin || user.AllowUserToEditAnyAction));
     }
 
     private bool CanDeleteAction(TeamSupport.Data.Action action)
