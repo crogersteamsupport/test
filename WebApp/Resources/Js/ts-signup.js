@@ -1,5 +1,5 @@
 ﻿jQuery(document).ready(function () {
-    var baseUrl=
+    
     function getURLParameter(name) {
         var val = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1];
         return val ? decodeURIComponent(val) : null;
@@ -75,7 +75,7 @@
 
         jQuery.ajax({
             type: "GET",
-            url: "http://trunk.tsdev.com/signup/fn/validatecompany",
+            url: "http://app.teamsupport.com/signup/fn/validatecompany",
             data: { name: company },
             crossDomain: true,
             dataType: 'jsonp'
@@ -83,7 +83,7 @@
             .done(function (result) {
                 if (result.isValid == false) {
                     group.addClass('has-error');
-                    help.text("That company name alread exists.  Please choose another one.");
+                    help.text("That company name already exists.  Please choose another one.");
                 }
                 else {
                     group.removeClass('has-error');

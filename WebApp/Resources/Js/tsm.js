@@ -119,7 +119,11 @@
 }));
 
 jQuery(document).ready(function () {
-    function getURLParameter(name) { return decodeURIComponent((RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1]); }
+    function getURLParameter(name) {
+        var val = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1];
+        return val ? decodeURIComponent(val) : null;
+    }
+    
     var params = new Object();
     params.Source = getURLParameter("utm_source");
     params.Medium = getURLParameter("utm_medium");

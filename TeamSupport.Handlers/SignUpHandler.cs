@@ -152,7 +152,7 @@ namespace TeamSupport.Handlers
 
           try
           {
-            MarketingCookie mc = JsonConvert.DeserializeObject<MarketingCookie>(cookies["_tsm"].Value);
+            MarketingCookie mc = JsonConvert.DeserializeObject<MarketingCookie>(HttpUtility.UrlDecode(cookies["_tsm"].Value));
             prams.utmCampaign = mc.Campaign;
             prams.utmContent = mc.Content;
             prams.utmMedium = mc.Medium;
