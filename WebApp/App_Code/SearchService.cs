@@ -1068,6 +1068,8 @@ namespace TSWebServices
             job.BooleanConditions = conditions.ToString();
           }
 
+          job.BooleanConditions = "(IsActive::false)";
+
           job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchDelayDocInfo;
 
           if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
