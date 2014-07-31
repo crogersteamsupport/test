@@ -6,6 +6,10 @@
     }
     $('input, textarea').placeholder();
 
+    $('#cbActive').click(function (e) {
+        fetchItems();
+    });
+
     function fetchItems(start) {
         start = start || 0;
         showLoadingIndicator();
@@ -23,7 +27,7 @@
             searchContacts = true;
         }
         top.Ts.System.logAction('Customer Page - Search Executed');
-        top.Ts.Services.Search.SearchCompaniesAndContacts($('#searchString').val(), start, 20, searchCompanies, searchContacts, null, function (items) {
+        top.Ts.Services.Search.SearchCompaniesAndContacts($('#searchString').val(), start, 20, searchCompanies, searchContacts, $('#cbActive').prop('checked'), function (items) {
             $('.searchresults').fadeTo(0, 1);
 
             if (start == 0) {
