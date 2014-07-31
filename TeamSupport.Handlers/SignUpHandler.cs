@@ -96,12 +96,12 @@ namespace TeamSupport.Handlers
       if (requestContent != null)
       {
         NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
-        result = appendUrlParam(result, "name", GetValueString(values["name"]));
-        result = appendUrlParam(result, "email", GetValueString(values["email"]));
-        result = appendUrlParam(result, "company", GetValueString(values["company"]));
-        result = appendUrlParam(result, "phone", GetValueString(values["phone"]));
-        result = appendUrlParam(result, "product", GetValueString(values["product"]));
-        result = appendUrlParam(result, "promo", GetValueString(values["promo"]));
+        result = appendUrlParam(result, "_name", GetValueString(values["name"]));
+        result = appendUrlParam(result, "_email", GetValueString(values["email"]));
+        result = appendUrlParam(result, "_company", GetValueString(values["company"]));
+        result = appendUrlParam(result, "_phone", GetValueString(values["phone"]));
+        result = appendUrlParam(result, "_product", GetValueString(values["product"]));
+        result = appendUrlParam(result, "_promo", GetValueString(values["promo"]));
       }
 
       if (result.IndexOf("suerror=1") < 0) result = appendUrlParam(result, "suerror", "1");
