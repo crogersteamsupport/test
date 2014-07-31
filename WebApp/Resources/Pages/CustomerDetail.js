@@ -1832,7 +1832,7 @@ $(document).ready(function () {
 
     function LoadContacts() {
         $('.userList').empty();
-        top.Ts.Services.Customers.LoadContacts(organizationID, $('#cbActive').prop('checked'), function (users) {
+        top.Ts.Services.Customers.LoadContacts(organizationID, $('#cbActive').prop('checked') ? false : null , function (users) {
             $('.userList').append(users)
             //for (var i = 0; i < users.length; i++) {
             //    $('<a>').attr('class', 'list-group-item').text(users[i].FirstName + ' ' + users[i].LastName).appendTo('.userList');
