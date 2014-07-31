@@ -59,6 +59,9 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("KnowledgeBaseCategoryName", "KnowledgeBaseCategoryName", false, false, true);
       _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
       _fieldMap.AddMap("DateModifiedBySalesForceSync", "DateModifiedBySalesForceSync", false, false, false);
+      _fieldMap.AddMap("ChildTicketCount", "ChildTicketCount", false, false, true);
+      _fieldMap.AddMap("RelatedTicketCount", "RelatedTicketCount", false, false, true);
+      _fieldMap.AddMap("MinutesToInitialResponse", "MinutesToInitialResponse", false, false, false);
             
     }
   }

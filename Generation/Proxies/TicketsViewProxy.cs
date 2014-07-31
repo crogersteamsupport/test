@@ -87,6 +87,9 @@ namespace TeamSupport.Data
     [DataMember] public string JiraKey { get; set; }
     [DataMember] public string JiraLinkURL { get; set; }
     [DataMember] public string JiraStatus { get; set; }
+    [DataMember] public int? ChildTicketCount { get; set; }
+    [DataMember] public int? RelatedTicketCount { get; set; }
+    [DataMember] public int? MinutesToInitialResponse { get; set; }
           
   }
   
@@ -95,6 +98,9 @@ namespace TeamSupport.Data
     public TicketsViewItemProxy GetProxy()
     {
       TicketsViewItemProxy result = new TicketsViewItemProxy();
+      result.MinutesToInitialResponse = this.MinutesToInitialResponse;
+      result.RelatedTicketCount = this.RelatedTicketCount;
+      result.ChildTicketCount = this.ChildTicketCount;
       result.JiraStatus = this.JiraStatus;
       result.JiraLinkURL = this.JiraLinkURL;
       result.JiraKey = this.JiraKey;
