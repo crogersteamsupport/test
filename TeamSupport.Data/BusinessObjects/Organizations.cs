@@ -734,8 +734,8 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       {
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmSource", signUpParams.utmSource);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmMedium", signUpParams.utmMedium);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmTerm", signUpParams.utmTerm);
-        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmContent", signUpParams.utmContent);
+        //CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmTerm", signUpParams.utmTerm);
+        //CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmContent", signUpParams.utmContent);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmCampaign", signUpParams.utmCampaign);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaSource", signUpParams.gaSource);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaMedium", signUpParams.gaMedium);
@@ -765,8 +765,8 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         List<string> tags = new List<string>();
         tags.Add("trial");
         tags.Add(salesGuy);
-        int hrCompanyID = TSHighrise.CreateCompany(mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.utmSource : "", signUpParams != null ? signUpParams.utmCampaign : "", "", tags.ToArray());
-        int hrContactID = TSHighrise.CreatePerson(mUser.FirstName, mUser.LastName, mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.utmSource : "", signUpParams != null ? signUpParams.utmCampaign : "", "", tags.ToArray());
+        int hrCompanyID = TSHighrise.CreateCompany(mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "", "", tags.ToArray());
+        int hrContactID = TSHighrise.CreatePerson(mUser.FirstName, mUser.LastName, mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "", "", tags.ToArray());
         //1. New Trial Check In:1496359
         //3. End of trial: 1496361
         //Eric's ID 159931
