@@ -786,14 +786,17 @@ Namespace TeamSupport
           Dim updateTicket As Tickets = New Tickets(User)
           updateTicket.LoadByTicketID(ticketID)
 
+          If updateTicket.Count > 0 AndAlso updateTicket(0).OrganizationID = CRMLinkRow.OrganizationID Then
           Dim ticketLinkToJira As TicketLinkToJira = New TicketLinkToJira(User)
           ticketLinkToJira.LoadByTicketID(updateTicket(0).TicketID)
 
-          If updateTicket.Count > 0 Then
             Dim customFields As New CRMLinkFields(User)
             customFields.LoadByObjectTypeAndCustomFieldAuxID("Ticket", CRMLinkRow.CRMLinkID, updateTicket(0).TicketTypeID)
 
             Dim ticketValuesChanged = False
+            Dim ticketView As TicketsView = New TicketsView(User)
+            ticketView.LoadByTicketID(ticketID)
+            Dim issueFields As JObject = GetIssueFields(ticketView(0))
 
             For Each field As KeyValuePair(Of String, JToken) In CType(issue("fields"), JObject)
               Dim value As String = Nothing
@@ -805,7 +808,7 @@ Namespace TeamSupport
                 Continue For
               End Try
 
-              Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(field.Key.ToString())
+              Dim cRMLinkField As CRMLinkField = customFields.FindByCRMFieldName(GetFieldNameByKey(field.Key.ToString(), issueFields))
               If cRMLinkField IsNot Nothing Then
                 Try
                   Dim translatedFieldValue As String = value
@@ -926,10 +929,27 @@ Namespace TeamSupport
           End If
         End Sub
 
+          Private Function GetFieldNameByKey(ByVal fieldKey As String, ByVal issueFields As JObject)
+            Dim result As StringBuilder = New StringBuilder()
+            For Each field As KeyValuePair(Of String, JToken) In issueFields
+              If fieldKey = field.Key Then
+                result.Append(field.Value("name").ToString())
+                Exit For
+              End If
+            Next
+            
+            Return result.ToString()
+          End Function
+
           Private Function GetFieldValue(ByVal field As KeyValuePair(Of String, JToken)) As String
             Dim result As String = Nothing
             If field.Key.ToString().ToLower().Contains("customfield") = True Then
-              result = field.Value.ToString()
+              result = field.Value("value").ToString()
+              If result.ToLower() = "yes" Then
+                result = "True"
+              Else If result.ToLower() = "no" Then
+                result = "False"
+              End If
             Else
               Select field.Key.ToString().ToLower()
                 Case "aggregatetimeestimate",
