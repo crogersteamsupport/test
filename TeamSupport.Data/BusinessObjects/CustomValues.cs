@@ -324,6 +324,15 @@ ORDER BY cf.Position";
         
     }
 
+    public static CustomValue GetValue(LoginUser loginUser, int refID, string apiFieldName)
+    {
+      CustomFields customFields = new CustomFields(loginUser);
+      customFields.LoadByOrganization(loginUser.OrganizationID);
+      CustomField field = customFields.FindByApiFieldName(apiFieldName);
+      if (field == null) return null;
+      return GetValue(loginUser, field.CustomFieldID, refID);
+    }
+
     public static void UpdateValue(LoginUser loginUser, int customFieldID, int refID, string value)
     {
       if (value == null) value = "";

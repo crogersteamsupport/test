@@ -90,15 +90,29 @@ namespace TeamSupport.Handlers
       }
     }
 
-    private static string GetErrorUrl(HttpContext context)
+    private static string GetErrorUrl(HttpContext context, string requestContent = null)
     {
-      string url = "https://www.teamsupport.com/web-help-desk-support-free-trial";//context.Request.UrlReferrer.AbsoluteUri;
-      if (url.IndexOf("suerror=1") > -1) return url;
+      string result = "https://www.teamsupport.com/web-help-desk-support-free-trial";//context.Request.UrlReferrer.AbsoluteUri;
+      if (requestContent != null)
+      {
+        NameValueCollection values = HttpUtility.ParseQueryString(requestContent);
+        result = appendUrlParam(result, "name", GetValueString(values["name"]));
+        result = appendUrlParam(result, "email", GetValueString(values["email"]));
+        result = appendUrlParam(result, "company", GetValueString(values["company"]));
+        result = appendUrlParam(result, "phone", GetValueString(values["phone"]));
+        result = appendUrlParam(result, "product", GetValueString(values["product"]));
+        result = appendUrlParam(result, "promo", GetValueString(values["promo"]));
+      }
 
-      if (url.IndexOf("?") > -1)
-        return url + "&suerror=1";
-      else
-        return url + "?suerror=1";
+      if (result.IndexOf("suerror=1") < 0) result = appendUrlParam(result, "suerror", "1");
+
+      return result;
+    }
+
+    private static string appendUrlParam(string url, string param, string value)
+    {
+      if (string.IsNullOrWhiteSpace(value)) return url;
+      return url + (url.IndexOf("?") > -1 ? "&" : "?") + param + "=" + HttpUtility.UrlEncode(value);
     }
 
     private static void ValidateCompany(HttpContext context)

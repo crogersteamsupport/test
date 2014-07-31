@@ -1,15 +1,17 @@
 ﻿jQuery(document).ready(function () {
-    
+
     function getURLParameter(name) {
         var val = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1];
         return val ? decodeURIComponent(val) : null;
     }
+    
+    initFromParams();
 
     if (getURLParameter("suerror") != null) {
         validateCompany();
         validateEmail();
         validateName();
-        alert("There was an error processing your sign up request.  Please review your information and try again."); 
+        alert("There was an error processing your sign up request.  Please review your information and try again.");
     }
 
     jQuery('#submit').click(function (e) {
@@ -38,6 +40,19 @@
     jQuery('input[name="name"]').keyup(function (e) { validateName(); }).change(function (e) { validateName(); });
     jQuery('input[name="email"]').keyup(function (e) { validateEmail(); }).change(function (e) { validateEmail(); });
     jQuery('input[name="company"]').keyup(function (e) { validateCompany(); }).change(function (e) { validateCompany(); });
+
+    function initFromParams() {
+        function initParam(param) {
+            var val = getURLParameter(param);
+            if (val != null) jQuery('input[name="' + param + '"]').val(val);
+        }
+        initParam('name');
+        initParam('email');
+        initParam('company');
+        initParam('phone');
+        initParam('promo');
+        initParam('product');
+    }
 
     function validateName() {
         var el = jQuery('input[name="name"]');
