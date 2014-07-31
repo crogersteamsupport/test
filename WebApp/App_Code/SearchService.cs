@@ -969,7 +969,7 @@ namespace TSWebServices
     {
       if (TSAuthentication.OrganizationID != 1078) return null;
       LoginUser loginUser = new LoginUser(TSAuthentication.GetLoginUser().ConnectionString, TSAuthentication.UserID, organizationID, null);
-      SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, true, true, 50);
+      SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, true, true, 50, null);
       return GetSearchReport(results);
     }
 
@@ -1036,7 +1036,7 @@ namespace TSWebServices
       }
     }
 
-    public SearchResults GetCustomerSearchResults(LoginUser loginUser, string searchTerm, bool searchCompanies, bool searchContacts, int max)
+    public SearchResults GetCustomerSearchResults(LoginUser loginUser, string searchTerm, bool searchCompanies, bool searchContacts, int max, bool? active)
     { 
         Options options = new Options();
         options.TextFlags = TextFlags.dtsoTfRecognizeDates;
@@ -1068,7 +1068,27 @@ namespace TSWebServices
             job.BooleanConditions = conditions.ToString();
           }
 
-          job.BooleanConditions = "(IsActive::false) ";
+          if (active != null)
+          {
+            StringBuilder activeCondition = new StringBuilder();
+            if ((bool)active)
+            {
+              activeCondition.Append("(IsActive::true) ");
+            }
+            else
+            {
+              activeCondition.Append("(IsActive::false) ");
+            }
+
+            if (job.BooleanConditions != null)
+            {
+              job.BooleanConditions = job.BooleanConditions + " AND " + activeCondition.ToString();
+            }
+            else
+            {
+              job.BooleanConditions = activeCondition.ToString();
+            }
+          }
 
           job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchDelayDocInfo;
 
@@ -1141,18 +1161,18 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public string[] SearchCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts)
+    public string[] SearchCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active)
     {      
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       List<string> resultItems = new List<string>();
       if (string.IsNullOrWhiteSpace(searchTerm))
       {
-        return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts);
+        return GetAllCompaniesAndContacts(from, count, searchCompanies, searchContacts, active);
       }
 
       if (searchCompanies || searchContacts)
       {
-          SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0);
+          SearchResults results = GetCustomerSearchResults(loginUser, searchTerm, searchCompanies, searchContacts, 0, active);
           int topLimit = from + count;
           if (topLimit > results.Count)
           {
@@ -1162,7 +1182,7 @@ namespace TSWebServices
           for (int i = from; i < topLimit; i++)
           {
             results.GetNthDoc(i);
-            if (results.CurrentItem.UserFields["JSON"] != null)
+            if (results.CurrentItem.UserFields != null && results.CurrentItem.UserFields["JSON"] != null)
               resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
           }
         
@@ -1171,7 +1191,7 @@ namespace TSWebServices
       return resultItems.ToArray();
     }
 
-    private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts)
+    private string[] GetAllCompaniesAndContacts(int from, int count, bool searchCompanies, bool searchContacts, bool? active)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       List<string> results = new List<string>();
@@ -1223,6 +1243,13 @@ SELECT
       {
         companyQuery = companyQuery + " AND o.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
         contactQuery = contactQuery + " AND u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = " + user.UserID.ToString() + ")";
+      }
+
+      if (active != null)
+      {
+        companyQuery = companyQuery + " AND o.IsActive = @IsActive";
+        contactQuery = contactQuery + " AND u.IsActive = @IsActive";
+        command.Parameters.AddWithValue("@IsActive", (bool)active);
       }
 
       if (searchContacts && searchCompanies)
