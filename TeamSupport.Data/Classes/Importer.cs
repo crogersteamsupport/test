@@ -954,7 +954,13 @@ namespace TeamSupport.Data
         if (user != null && group != null)
         {
           count++;
-          users.AddUserGroup(user.UserID, group.GroupID);
+          try
+          {
+            users.AddUserGroup(user.UserID, group.GroupID);
+          }
+          catch (Exception)
+          {
+          }
         }
         else
         {
