@@ -983,7 +983,7 @@ namespace TeamSupport.Data
       {
         _currentRow = row;
         //if (list.ContainsKey(row["CustomerID"].ToString().Trim())) continue;
-        if (existing.FindByImportID(row["CustomerID"].ToString().Trim()) != null) continue;
+        //if (existing.FindByImportID(row["CustomerID"].ToString().Trim()) != null) continue;
 
         Organization foundOrg = existing.FindByName(row["Name"].ToString());
         if (foundOrg != null)
