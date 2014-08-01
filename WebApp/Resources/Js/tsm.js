@@ -123,12 +123,42 @@ jQuery(document).ready(function () {
         var val = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1];
         return val ? decodeURIComponent(val) : null;
     }
-    
+
     var params = new Object();
     params.Source = getURLParameter("utm_source");
-    params.Medium = getURLParameter("utm_medium");
-    params.Term = getURLParameter("utm_term");
-    params.Content = getURLParameter("utm_content");
-    params.Campaign = getURLParameter("utm_campaign");
-    if (params.Source) { jQuery.cookie("_tsm", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' }); }
+    if (params.Source) {
+        params.Medium = getURLParameter("utm_medium");
+        params.Term = getURLParameter("utm_term");
+        params.Content = getURLParameter("utm_content");
+        params.Campaign = getURLParameter("utm_campaign");
+        jQuery.cookie("_tsm", JSON.stringify(params), { expires: 7, path: '/', domain: 'tsdev.com' });
+    }
+
+    if (!jQuery.cookie("_tsmi")) {
+        var ga = jQuery.cookie("__utmz");
+        if (ga) {
+            function parseGAString(key) {
+                var i = ga.indexOf(key + '=');
+                if (i < 0) return null;
+                var s = ga.substr(i + key.length + 1);
+                var j = s.indexOf("|");
+                if (j > -1) { s = s.substr(0, j); }
+                return decodeURIComponent(s);
+            }
+
+            params = new Object();
+            params.Campaign = parseGAString("utmccn");
+            params.Content = parseGAString("utmcct");
+            params.Term = parseGAString("utmctr");
+            params.Medium = parseGAString("utmcmd");
+            params.Source = parseGAString("utmcsr");
+
+            if (parseGAString("utmgclid") != "") {
+                params.Source = "Google";
+                params.Medium = "cpc";
+            }
+
+            jQuery.cookie("_tsmi", JSON.stringify(params), { expires: 7, path: '/', domain: 'tsdev.com' });
+        }
+    }
 });

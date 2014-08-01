@@ -734,8 +734,8 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       {
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmSource", signUpParams.utmSource);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmMedium", signUpParams.utmMedium);
-        //CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmTerm", signUpParams.utmTerm);
-        //CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmContent", signUpParams.utmContent);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmTerm", signUpParams.utmTerm);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmContent", signUpParams.utmContent);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmCampaign", signUpParams.utmCampaign);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaSource", signUpParams.gaSource);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "gaMedium", signUpParams.gaMedium);
