@@ -700,7 +700,7 @@ namespace TeamSupport.Data
               builder.Append(string.Format("{0} > @{1}", dateSql, paramName));
               command.Parameters.Add(paramName, SqlDbType.Date).Value = DateTime.Parse(condition.Value1);
               break;
-            case "IS EMPY":
+            case "IS EMPTY":
               builder.Append(string.Format("{0} IS NULL", fieldName));
               break;
             case "IS NOT EMPTY":
