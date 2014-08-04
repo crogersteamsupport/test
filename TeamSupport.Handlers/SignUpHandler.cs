@@ -174,6 +174,25 @@ namespace TeamSupport.Handlers
           }
           catch (Exception)
           {
+            prams.utmCampaign = "Error";
+          }
+        }
+
+        if (cookies["_tsmi"] != null)
+        {
+
+          try
+          {
+            MarketingCookie mc = JsonConvert.DeserializeObject<MarketingCookie>(HttpUtility.UrlDecode(cookies["_tsmi"].Value));
+            prams.initialCampaign = mc.Campaign;
+            prams.initialContent = mc.Content;
+            prams.initialMedium = mc.Medium;
+            prams.initialSource = mc.Source;
+            prams.initialTerm = mc.Term;
+          }
+          catch (Exception)
+          {
+            prams.initialCampaign = "Error";
           }
         }
 

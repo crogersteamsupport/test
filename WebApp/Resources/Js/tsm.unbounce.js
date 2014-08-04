@@ -123,26 +123,28 @@ jQuery(document).ready(function () {
         var val = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1];
         return val ? decodeURIComponent(val) : null;
     }
-    
+
     var params = new Object();
     params.Source = getURLParameter("utm_source");
     params.Medium = getURLParameter("utm_medium");
     params.Term = getURLParameter("utm_term");
     params.Content = getURLParameter("utm_content");
     params.Campaign = getURLParameter("utm_campaign");
-        if (params.Source) {
-            jQuery.cookie("_tsm", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' });
-        }
-        else {
-            params = new Object();
-            params.Source = jQuery('input[name="utm_source"]').val();
-            params.Medium = jQuery('input[name="utm_medium"]').val();
-            params.Term = jQuery('input[name="utm_term"]').val();
-            params.Content = jQuery('input[name="utm_content"]').val();
+    if (params.Source) {
+        jQuery.cookie("_tsm", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' });
+        if (!jQuery.cookie("_tsmi")) { jQuery.cookie("_tsmi", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' }); }
+    }
+    else {
+        params = new Object();
+        params.Source = jQuery('input[name="utm_source"]').val();
+        params.Medium = jQuery('input[name="utm_medium"]').val();
+        params.Term = jQuery('input[name="utm_term"]').val();
+        params.Content = jQuery('input[name="utm_content"]').val();
         params.Campaign = jQuery('input[name="utm_campaign"]').val();
 
         if (params.Source) {
             jQuery.cookie("_tsm", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' });
+            if (!jQuery.cookie("_tsmi")) { jQuery.cookie("_tsmi", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' }); }
         }
     }
 });

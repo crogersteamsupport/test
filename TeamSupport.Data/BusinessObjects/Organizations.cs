@@ -307,6 +307,11 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
   {
     public SignUpParams()
     {
+      initialCampaign = "";
+      initialContent = "";
+      initialMedium = "";
+      initialSource = "";
+      initialTerm = "";
       utmCampaign = "";
       utmContent = "";
       utmMedium = "";
@@ -319,6 +324,12 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       gaTerm = "";
       gaVisits = 0;
     }
+
+    public string initialSource { get; set; }
+    public string initialMedium { get; set; }
+    public string initialTerm { get; set; }
+    public string initialContent { get; set; }
+    public string initialCampaign { get; set; }
     
     public string utmSource { get; set; }
     public string utmMedium { get; set; }
@@ -732,6 +743,11 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
 
       if (signUpParams != null)
       {
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialSource", signUpParams.initialSource);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialMedium", signUpParams.initialMedium);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialTerm", signUpParams.initialTerm);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialContent", signUpParams.initialContent);
+        CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "initialCampaign", signUpParams.initialCampaign);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmSource", signUpParams.utmSource);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmMedium", signUpParams.utmMedium);
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "utmTerm", signUpParams.utmTerm);
