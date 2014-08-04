@@ -131,7 +131,7 @@ jQuery(document).ready(function () {
         params.Term = getURLParameter("utm_term");
         params.Content = getURLParameter("utm_content");
         params.Campaign = getURLParameter("utm_campaign");
-        jQuery.cookie("_tsm", JSON.stringify(params), { expires: 7, path: '/', domain: 'tsdev.com' });
+        jQuery.cookie("_tsm", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' });
     }
 
     if (!jQuery.cookie("_tsmi")) {
@@ -153,12 +153,13 @@ jQuery(document).ready(function () {
             params.Medium = parseGAString("utmcmd");
             params.Source = parseGAString("utmcsr");
 
-            if (parseGAString("utmgclid") != "") {
+            /*if (parseGAString("utmgclid") != "") {
                 params.Source = "Google";
                 params.Medium = "cpc";
             }
+            */
 
-            jQuery.cookie("_tsmi", JSON.stringify(params), { expires: 7, path: '/', domain: 'tsdev.com' });
+            jQuery.cookie("_tsmi", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' });
         }
     }
 });
