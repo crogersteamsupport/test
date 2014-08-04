@@ -1133,18 +1133,18 @@ namespace TSWebServices
           StringBuilder conditions = new StringBuilder();
           if (searchAssigned)
           {
-            conditions.Append("(Location::1) ");
-            if (searchWarehouse) conditions.Append("OR (Location::2) ");
-            if (searchJunkyard) conditions.Append("OR (Location::3) ");
+            conditions.Append("(Location::Assigned) ");
+            if (searchWarehouse) conditions.Append("OR (Location::Warehouse) ");
+            if (searchJunkyard) conditions.Append("OR (Location::Junkyard) ");
           }
           else if (searchWarehouse)
           {
-            conditions.Append("(Location::2) ");
-            if (searchJunkyard) conditions.Append("OR (Location::3) ");
+            conditions.Append("(Location::Warehouse) ");
+            if (searchJunkyard) conditions.Append("OR (Location::Junkyard) ");
           }
           else if (searchJunkyard)
           {
-            conditions.Append("(Location::3) ");
+            conditions.Append("(Location::Junkyard) ");
           }
           job.BooleanConditions = conditions.ToString();
         }

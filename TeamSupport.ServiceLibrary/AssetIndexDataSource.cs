@@ -57,6 +57,21 @@ namespace TeamSupport.ServiceLibrary
         DocFields = string.Empty;
 
         DocFields += "AssetID\t" + asset.AssetID.ToString() + "\t";
+        StringBuilder assetLocationString = new StringBuilder();
+        switch (asset.Location)
+        {
+          case "1":
+            assetLocationString.Append("Assigned");
+            break;
+          case "2":
+            assetLocationString.Append("Warehouse");
+            break;
+          case "3":
+            assetLocationString.Append("Junkyard");
+            break;
+        }
+
+        DocFields += "Location\t" + assetLocationString.ToString() + "\t";
 
         if (string.IsNullOrWhiteSpace(asset.Name))
         {
