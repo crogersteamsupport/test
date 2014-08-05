@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using TeamSupport.Data;
+using System.Configuration;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -22,7 +24,18 @@ namespace TeamSupport.ServiceLibrary
 
     public string ReadString(string key, string defaultValue)
     {
-      return ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, defaultValue).SettingValue;
+      NameValueCollection settings = ConfigurationManager.AppSettings;
+
+      string result = settings[key];
+
+      if (string.IsNullOrWhiteSpace(result))
+      { 
+        // look up in old system settings table, we can take out after all the services have been updated
+        result = ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, defaultValue).SettingValue;
+        WriteString(key, result);
+      }
+
+      return result;
     }
 
 
@@ -52,6 +65,21 @@ namespace TeamSupport.ServiceLibrary
     public void WriteBool(string key, bool value) { WriteString(key, value.ToString()); }
     public void WriteString(string key, string value) 
     {
+      var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+      var settings = configFile.AppSettings.Settings;
+
+      if (settings[key] == null)
+      {
+        settings.Add(key, value);
+      }
+      else
+      {
+        settings[key].Value = value;
+      }
+
+      configFile.Save(ConfigurationSaveMode.Modified);
+      ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+      
       ServiceSetting setting = ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, "");
       setting.SettingValue = value;
       setting.Collection.Save();

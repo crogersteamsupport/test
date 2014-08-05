@@ -11,181 +11,225 @@ using System.Configuration;
 namespace TeamSupport.ServiceLibrary
 {
   [Serializable]
-  public class Indexer : ServiceThread
+  public class Indexer : ServiceThreadPoolProcess
   {
-    public override void Run()
+
+    private static object _staticLock = new object();
+
+    private static Organization GetNextOrganization(string connectionString, int lockID, bool isRebuilder)
     {
-      try
+      Organization result = null;
+      lock (_staticLock)
       {
-        bool isRebuilder = ConfigurationManager.AppSettings["RebuilderMode"] != null && ConfigurationManager.AppSettings["RebuilderMode"] == "1";
-        Organizations orgs = new Organizations(LoginUser);
+        Organizations orgs = new Organizations(LoginUser.Anonymous);
         if (!isRebuilder)
         {
           orgs.LoadByNeedsIndexing();
+          result = orgs.IsEmpty ? null : orgs[0];
         }
-        else 
+        else
         {
           int daysSinceLastRebuild = ConfigurationManager.AppSettings["DaysSinceLastRebuild"] == null ? 14 : int.Parse(ConfigurationManager.AppSettings["DaysSinceLastRebuild"]);
           int minutesSinceLastActive = ConfigurationManager.AppSettings["MinutesSinceLastActive"] == null ? 30 : int.Parse(ConfigurationManager.AppSettings["MinutesSinceLastActive"]);
           orgs.LoadByNeedsIndexRebuilt(minutesSinceLastActive, daysSinceLastRebuild);
+          result = orgs.IsEmpty ? null : orgs[0];
           //Logs.WriteEvent(string.Format("Running in rebuilding mode.  Days since last rebuild: {0}, Minutes Since Last Active: {1}", daysSinceLastRebuild.ToString(), minutesSinceLastActive.ToString()));
         }
-        int cnt = 0;
-        foreach (Organization org in orgs)
+      }
+
+      return result;
+    }
+
+    private static void UnlockIndex(int organizationID)
+    {
+      SqlCommand command = new SqlCommand();
+      command.CommandText = "UPDATE Organizations SET IsIndexLocked = 0 WHERE OrganizationID = @OrganizationID";
+      command.Parameters.AddWithValue("OrganizationID", organizationID);
+      SqlExecutor.ExecuteNonQuery(LoginUser.Anonymous, command);
+    }
+
+    private static void UnmarkIndexRebuild(int organizationID)
+    {
+      SqlCommand command = new SqlCommand();
+      command.CommandText = "UPDATE Organizations SET IsRebuildingIndex = 0 WHERE OrganizationID = @OrganizationID";
+      command.Parameters.AddWithValue("OrganizationID", organizationID);
+      SqlExecutor.ExecuteNonQuery(LoginUser.Anonymous, command);
+    }
+
+    private static bool ObtainLock(int organizationID)
+    {
+      bool result = false;
+      lock (_staticLock)
+      {
+        SqlCommand command = new SqlCommand();
+        command.CommandText = "UPDATE Organizations SET IsIndexLocked = 1 WHERE IsIndexLocked = 0 AND OrganizationID = @OrganizationID";
+        command.Parameters.AddWithValue("OrganizationID", organizationID);
+        result = SqlExecutor.ExecuteNonQuery(LoginUser.Anonymous, command) > 0;
+      }
+      return result;
+    }
+
+    public override void ReleaseAllLocks()
+    {
+      bool isRebuilder = ConfigurationManager.AppSettings["RebuilderMode"] != null && ConfigurationManager.AppSettings["RebuilderMode"] == "1";
+      if (isRebuilder)
+      {
+        SqlExecutor.ExecuteNonQuery(LoginUser, "UPDATE Organizations SET IsRebuildingIndex = 0 WHERE IsRebuildingIndex=1");
+      }
+      else
+      {
+        SqlExecutor.ExecuteNonQuery(LoginUser, "UPDATE Organizations SET IsIndexLocked = 0 WHERE IsIndexLocked=1");
+      }
+
+      base.Start();
+    }
+
+    public override void Run()
+    {
+      bool isRebuilder = ConfigurationManager.AppSettings["RebuilderMode"] != null && ConfigurationManager.AppSettings["RebuilderMode"] == "1";
+
+      while (!IsStopped)
+      {
+        try
         {
           UpdateHealth();
-          Logs.WriteLine();
-          Logs.WriteLine();
-          Logs.WriteEvent(string.Format("Started Indexing for org: {0}, [{1}/{2}]", org.OrganizationID.ToString(), cnt.ToString(), orgs.Count.ToString()));
-
+          Organization organization = GetNextOrganization(LoginUser.ConnectionString, (int)_threadPosition, isRebuilder);
+          if (organization == null) return;
           try
           {
-            if (!isRebuilder)
-            {
-              if (IsLocked(org.OrganizationID))
-              {
-                Logs.WriteEvent("Skipped because the index was locked.");
-                continue;
-              }
-              else
-              {
-                LockIndex(org.OrganizationID, true);
-              }
-            }
-            else
-            {
-              org.IsRebuildingIndex = true;
-              org.Collection.Save();
-              Logs.WriteEvent("IsRebuildingIndex set to TRUE");
-            }
-
-            cnt++;
-            ProcessIndex(org, ReferenceType.Tickets, isRebuilder);
-            ProcessIndex(org, ReferenceType.Wikis, isRebuilder);
-            ProcessIndex(org, ReferenceType.Notes, isRebuilder);
-            ProcessIndex(org, ReferenceType.ProductVersions, isRebuilder);
-            ProcessIndex(org, ReferenceType.WaterCooler, isRebuilder);
-            ProcessIndex(org, ReferenceType.Organizations, isRebuilder);
-            ProcessIndex(org, ReferenceType.Contacts, isRebuilder);
-            ProcessIndex(org, ReferenceType.Assets, isRebuilder);
-
-            if (isRebuilder && !IsStopped)
-            {
-              org.LastIndexRebuilt = DateTime.UtcNow;
-              Logs.WriteEvent("LastIndexRebuilt Updated");
-              org.Collection.Save();
-            }
+            ProcessOrganization(organization, isRebuilder);
           }
           finally
           {
             if (isRebuilder)
             {
-              org.IsRebuildingIndex = false;
-              org.Collection.Save();
-              Logs.WriteEvent("IsRebuildingIndex set to FALSE");
+              UnmarkIndexRebuild(organization.OrganizationID);
             }
             else
             {
-              LockIndex(org.OrganizationID, false);
+              UnlockIndex(organization.OrganizationID);
             }
           }
         }
+        catch (Exception ex)
+        {
+          Logs.WriteEvent("Error processing organization");
+          Logs.WriteException(ex);
+          ExceptionLogs.LogException(LoginUser, ex, "Indexer", "Error processing organization");
+        }
+      }
+    }
 
-        
+    private void ProcessOrganization(Organization org, bool isRebuilder)
+    {
+
+      try
+      {
+        Logs.WriteLine();
+        Logs.WriteLine();
+        Logs.WriteEvent(string.Format("Started Indexing for org: {0}", org.OrganizationID.ToString()));
+
+        ProcessIndex(org, ReferenceType.Tickets, isRebuilder);
+        ProcessIndex(org, ReferenceType.Wikis, isRebuilder);
+        ProcessIndex(org, ReferenceType.Notes, isRebuilder);
+        ProcessIndex(org, ReferenceType.ProductVersions, isRebuilder);
+        ProcessIndex(org, ReferenceType.WaterCooler, isRebuilder);
+        ProcessIndex(org, ReferenceType.Organizations, isRebuilder);
+        ProcessIndex(org, ReferenceType.Contacts, isRebuilder);
+        ProcessIndex(org, ReferenceType.Assets, isRebuilder);
+
+        if (isRebuilder && !IsStopped)
+        {
+          org.LastIndexRebuilt = DateTime.UtcNow;
+          Logs.WriteEvent("LastIndexRebuilt Updated");
+          org.Collection.Save();
+        }
       }
       catch (Exception ex)
       {
         Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Indexer"); 
+        ExceptionLogs.LogException(LoginUser, ex, "Indexer");
       }
-    }
-
-    public override void Start()
-    {
-      bool isRebuilder = ConfigurationManager.AppSettings["RebuilderMode"] != null && ConfigurationManager.AppSettings["RebuilderMode"] == "1";
-      if (isRebuilder) SqlExecutor.ExecuteNonQuery(LoginUser, "UPDATE Organizations SET IsIndexLocked = 0 WHERE IsIndexLocked=1");
-      base.Start();
-
     }
 
     private void ProcessIndex(Organization organization, ReferenceType referenceType, bool isRebuilder)
     {
       if (IsStopped) return;
-      string indexPath                            = string.Empty;
-      string deletedIndexItemsFileName            = string.Empty;
-      string storedFields                         = string.Empty;
-      string tableName                            = string.Empty;
-      string primaryKeyName                       = string.Empty;
+      string indexPath = string.Empty;
+      string deletedIndexItemsFileName = string.Empty;
+      string storedFields = string.Empty;
+      string tableName = string.Empty;
+      string primaryKeyName = string.Empty;
 
       IndexDataSource indexDataSource = null;
       int maxRecords = Settings.ReadInt("Max Records", 1000);
-      
 
-      switch(referenceType)
+
+      switch (referenceType)
       {
         case ReferenceType.Tickets:
-           indexPath                            = "\\Tickets";
-           deletedIndexItemsFileName            = "DeletedTickets.txt";
-           storedFields                         = "TicketID OrganizationID TicketNumber Name IsKnowledgeBase Status Severity DateModified DateCreated DateClosed SlaViolationDate SlaWarningDate";
-           tableName                            = "Tickets";
-           primaryKeyName                       = "TicketID";
-           indexDataSource                      = new TicketIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
-           break;
+          indexPath = "\\Tickets";
+          deletedIndexItemsFileName = "DeletedTickets.txt";
+          storedFields = "TicketID OrganizationID TicketNumber Name IsKnowledgeBase Status Severity DateModified DateCreated DateClosed SlaViolationDate SlaWarningDate";
+          tableName = "Tickets";
+          primaryKeyName = "TicketID";
+          indexDataSource = new TicketIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+          break;
         case ReferenceType.Wikis:
-           indexPath                            = "\\Wikis";
-           deletedIndexItemsFileName            = "DeletedWikis.txt";
-           storedFields                         = "OrganizationID Creator Modifier";
-           tableName                            = "WikiArticles";
-           primaryKeyName                       = "ArticleID";
-           indexDataSource = new WikiIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
-           break;
+          indexPath = "\\Wikis";
+          deletedIndexItemsFileName = "DeletedWikis.txt";
+          storedFields = "OrganizationID Creator Modifier";
+          tableName = "WikiArticles";
+          primaryKeyName = "ArticleID";
+          indexDataSource = new WikiIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+          break;
         case ReferenceType.Notes:
-           indexPath                            = "\\Notes";
-           deletedIndexItemsFileName            = "DeletedNotes.txt";
-           tableName                            = "Notes";
-           primaryKeyName                       = "NoteID";
-           indexDataSource = new NoteIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
-           break;
+          indexPath = "\\Notes";
+          deletedIndexItemsFileName = "DeletedNotes.txt";
+          tableName = "Notes";
+          primaryKeyName = "NoteID";
+          indexDataSource = new NoteIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+          break;
         case ReferenceType.ProductVersions:
-           indexPath                            = "\\ProductVersions";
-           deletedIndexItemsFileName            = "DeletedProductVersions.txt";
-           tableName                            = "ProductVersions";
-           primaryKeyName                       = "ProductVersionID";
-           indexDataSource = new ProductVersionIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
-           break;
+          indexPath = "\\ProductVersions";
+          deletedIndexItemsFileName = "DeletedProductVersions.txt";
+          tableName = "ProductVersions";
+          primaryKeyName = "ProductVersionID";
+          indexDataSource = new ProductVersionIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+          break;
         case ReferenceType.WaterCooler:
-           indexPath                            = "\\WaterCooler";
-           deletedIndexItemsFileName            = "DeletedWaterCoolerMessages.txt";
-           tableName                            = "WatercoolerMsg";
-           primaryKeyName                       = "MessageID";
-           indexDataSource = new WaterCoolerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
-           break;
+          indexPath = "\\WaterCooler";
+          deletedIndexItemsFileName = "DeletedWaterCoolerMessages.txt";
+          tableName = "WatercoolerMsg";
+          primaryKeyName = "MessageID";
+          indexDataSource = new WaterCoolerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+          break;
         case ReferenceType.Organizations:
-           indexPath                            = "\\Customers";
-           deletedIndexItemsFileName            = "DeletedCustomers.txt";
-           storedFields                         = "Name JSON";
-           tableName                            = "Organizations";
-           primaryKeyName                       = "OrganizationID";
-           indexDataSource = new CustomerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
-           break;
+          indexPath = "\\Customers";
+          deletedIndexItemsFileName = "DeletedCustomers.txt";
+          storedFields = "Name JSON";
+          tableName = "Organizations";
+          primaryKeyName = "OrganizationID";
+          indexDataSource = new CustomerIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+          break;
         case ReferenceType.Contacts:
-           indexPath                            = "\\Contacts";
-           deletedIndexItemsFileName            = "DeletedContacts.txt";
-           storedFields                         = "Name JSON";
-           tableName                            = "Users";
-           primaryKeyName                       = "UserID";
-           indexDataSource = new ContactIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
-           break;
+          indexPath = "\\Contacts";
+          deletedIndexItemsFileName = "DeletedContacts.txt";
+          storedFields = "Name JSON";
+          tableName = "Users";
+          primaryKeyName = "UserID";
+          indexDataSource = new ContactIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+          break;
         case ReferenceType.Assets:
-           indexPath                            = "\\Assets";
-           deletedIndexItemsFileName            = "DeletedAssets.txt";
-           storedFields                         = "Name JSON";
-           tableName                            = "Assets";
-           primaryKeyName                       = "AssetID";
-           indexDataSource = new AssetIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
-           break;
+          indexPath = "\\Assets";
+          deletedIndexItemsFileName = "DeletedAssets.txt";
+          storedFields = "Name JSON";
+          tableName = "Assets";
+          primaryKeyName = "AssetID";
+          indexDataSource = new AssetIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder);
+          break;
         default:
-          throw new System.ArgumentException("ReferenceType " + referenceType.ToString() + " is not supported by indexer."); 
+          throw new System.ArgumentException("ReferenceType " + referenceType.ToString() + " is not supported by indexer.");
       }
 
       string mainIndexPath = Path.Combine(Settings.ReadString("Tickets Index Path", "c:\\Indexes"), organization.OrganizationID.ToString() + indexPath);
@@ -195,7 +239,8 @@ namespace TeamSupport.ServiceLibrary
 
       bool isNew = !System.IO.Directory.Exists(path);
 
-      if (isNew) { 
+      if (isNew)
+      {
         Directory.CreateDirectory(path);
         Logs.WriteEvent("Createing path: " + path);
       }
@@ -209,7 +254,7 @@ namespace TeamSupport.ServiceLibrary
       catch (Exception ex)
       {
         Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Indexer.RemoveOldIndexItems - " + referenceType.ToString() + " - " + organization.OrganizationID.ToString()); 
+        ExceptionLogs.LogException(LoginUser, ex, "Indexer.RemoveOldIndexItems - " + referenceType.ToString() + " - " + organization.OrganizationID.ToString());
       }
 
       Options options = new Options();
@@ -242,7 +287,8 @@ namespace TeamSupport.ServiceLibrary
           IndexProgressInfo status = new IndexProgressInfo();
           while (job.IsThreadDone(1000, status) == false)
           {
-            if (IsStopped) { 
+            if (IsStopped)
+            {
               job.AbortThread();
             }
           }
@@ -266,7 +312,7 @@ namespace TeamSupport.ServiceLibrary
           }
         }
 
-        
+
       }
     }
 
@@ -299,7 +345,7 @@ namespace TeamSupport.ServiceLibrary
             throw;
           }
         }
-        
+
       }
 
     }
@@ -307,7 +353,7 @@ namespace TeamSupport.ServiceLibrary
     private void MoveRebuiltIndex(int organizationID, string indexPath, string rebuiltPath)
     {
       int count = 0;
-      while (IsLocked(organizationID))
+      while (!ObtainLock(organizationID))
       {
         Logs.WriteEvent("Index Locked, trying again...");
         count++;
@@ -320,25 +366,24 @@ namespace TeamSupport.ServiceLibrary
           return;
         }
       }
-      LockIndex(organizationID, true);
       try
       {
         try
         {
           DeleteIndex(indexPath);
 
-            if (Directory.Exists(indexPath))
-            {
-              Logs.WriteEvent("Deleting: " + indexPath);
-              Directory.Delete(indexPath, true);
-            }
+          if (Directory.Exists(indexPath))
+          {
+            Logs.WriteEvent("Deleting: " + indexPath);
+            Directory.Delete(indexPath, true);
+          }
 
-            Logs.WriteEvent(string.Format("Moving files from {0} to {1}", rebuiltPath, indexPath));
-            Directory.Move(rebuiltPath, indexPath);
+          Logs.WriteEvent(string.Format("Moving files from {0} to {1}", rebuiltPath, indexPath));
+          Directory.Move(rebuiltPath, indexPath);
         }
         finally
         {
-          LockIndex(organizationID, false);
+          UnlockIndex(organizationID);
         }
       }
       catch (Exception ex)
@@ -349,31 +394,14 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
-    private void LockIndex(int organizationID, bool value)
-    {
-      Logs.WriteEvent(string.Format("Setting Index Lock, OrganizationID: {0:D}  Value: {1}", organizationID, value.ToString()));
-      SqlCommand command = new SqlCommand();
-      command.CommandText = "UPDATE Organizations SET IsIndexLocked = @value WHERE OrganizationID = @OrganizationID";
-      command.Parameters.AddWithValue("value", value);
-      command.Parameters.AddWithValue("OrganizationID", organizationID);
-      SqlExecutor.ExecuteNonQuery(LoginUser, command);
-    }
 
-    private bool IsLocked(int organizationID)
-    {
-      SqlCommand command = new SqlCommand();
-      command.CommandText = "SELECT IsIndexLocked FROM Organizations WHERE OrganizationID = @OrganizationID";
-      command.Parameters.AddWithValue("OrganizationID", organizationID);
-      object o = SqlExecutor.ExecuteScalar(LoginUser, command);
-      return o != null && (bool)o;
-    }
 
     private void UpdateItems(IndexDataSource dataSource, string tableName, string primaryKeyName)
     {
       UpdateHealth();
 
       if (dataSource.UpdatedItems.Count < 1) return;
-      
+
       string updateSql = "UPDATE " + tableName + " SET NeedsIndexing = 0 WHERE " + primaryKeyName + " IN (" + DataUtils.IntArrayToCommaString(dataSource.UpdatedItems.ToArray()) + ")";
       Logs.WriteEvent(updateSql);
       SqlCommand command = new SqlCommand();
@@ -384,13 +412,7 @@ namespace TeamSupport.ServiceLibrary
       Logs.WriteEvent(tableName + " Indexes Statuses UPdated");
     }
 
-    private void RemoveOldIndexItems(
-      LoginUser loginUser
-      , string indexPath
-      , Organization organization
-      , ReferenceType referenceType
-      , string deletedIndexItemsFileName
-    )
+    private void RemoveOldIndexItems(LoginUser loginUser, string indexPath, Organization organization, ReferenceType referenceType, string deletedIndexItemsFileName)
     {
       Logs.WriteEvent("Removing deleted items:  " + referenceType.ToString());
       if (!Directory.Exists(indexPath))
@@ -407,7 +429,7 @@ namespace TeamSupport.ServiceLibrary
         return;
       }
 
-      
+
       StringBuilder builder = new StringBuilder();
       foreach (DeletedIndexItem item in items)
       {

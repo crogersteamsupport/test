@@ -90,21 +90,24 @@ namespace TeamSupport.Data
       return result == null ? -1 : (int)result;
     }
 
-    public static void ExecuteNonQuery(LoginUser loginUser, string commandText)
+    public static int ExecuteNonQuery(LoginUser loginUser, string commandText)
     {
-      ExecuteNonQuery(loginUser, new SqlCommand(commandText));
+      return ExecuteNonQuery(loginUser, new SqlCommand(commandText));
     }
     
-    public static void ExecuteNonQuery(LoginUser loginUser, SqlCommand command)
+    public static int ExecuteNonQuery(LoginUser loginUser, SqlCommand command)
     {
       BaseCollection.FixCommandParameters(command);
+      int rows = 0;
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
       {
         connection.Open();
         command.Connection = connection;
-        command.ExecuteNonQuery();
+        rows = command.ExecuteNonQuery();
         connection.Close();
       }
+
+      return rows;
     }
   }
 
