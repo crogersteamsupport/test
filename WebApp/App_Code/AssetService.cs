@@ -444,6 +444,20 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public string SetAssetWarrantyExpiration(int assetID, object value)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Asset o = Assets.GetAsset(loginUser, assetID);
+      o.WarrantyExpiration = (DateTime)value;
+      o.DateModified = DateTime.UtcNow;
+      o.ModifierID = loginUser.UserID;
+      o.Collection.Save();
+      string description = String.Format("{0} set asset Warranty Expiration to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+      return value.ToString() != "" ? value.ToString() : null;
+    }
+
+    [WebMethod]
     public string SetAssetNotes(int assetID, string value)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();

@@ -280,6 +280,59 @@ $(document).ready(function () {
     $('#assetEdit').addClass("disabled");
   });
 
+  $('#fieldWarrantyExpiration').click(function (e) {
+    e.preventDefault();
+    if (!$(this).hasClass('editable'))
+      return false;
+    top.Ts.System.logAction('Asset Detail - Warranty Expiration clicked');
+    var parent = $(this).hide();
+    var container = $('<div>')
+          .insertAfter(parent);
+
+    var container1 = $('<div>')
+            .addClass('col-xs-9')
+          .appendTo(container);
+
+    var input = $('<input type="text">')
+            .addClass('col-xs-10 form-control')
+            .val($(this).val())
+            .datetimepicker({ pickTime: false })
+            .appendTo(container1)
+            .focus();
+
+    $('<i>')
+          .addClass('col-xs-1 fa fa-times')
+          .click(function (e) {
+            $(this).closest('div').remove();
+            parent.show();
+            $('#assetEdit').removeClass("disabled");
+            top.Ts.System.logAction('Asset Detail - Warranty Expiration change cancelled');
+          })
+          .insertAfter(container1);
+    $('<i>')
+          .addClass('col-xs-1 fa fa-check')
+          .click(function (e) {
+            var value = top.Ts.Utils.getMsDate(input.val());
+            container.remove();
+            top.Ts.Services.Assets.SetAssetWarrantyExpiration(_assetID, value, function (result) {
+              var date = result === null ? null : top.Ts.Utils.getMsDate(result);
+              parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
+              $('#assetEdit').removeClass("disabled");
+              top.Ts.System.logAction('Asset Detail - Warranty Expiration Change');
+            },
+            function (error) {
+              parent.show();
+              alert('There was an error saving the asset Warranty Expiration.');
+              $('#assetEdit').removeClass("disabled");
+            });
+            $('#assetEdit').removeClass("disabled");
+            $(this).closest('div').remove();
+            parent.show();
+          })
+          .insertAfter(container1);
+    $('#assetEdit').addClass("disabled");
+  });
+
   $('#fieldNotes').click(function (e) {
     e.preventDefault();
     if (!$(this).hasClass('editable'))
