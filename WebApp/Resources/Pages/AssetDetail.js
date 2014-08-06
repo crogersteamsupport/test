@@ -95,7 +95,7 @@ $(document).ready(function () {
           .click(function (e) {
             $(this).closest('div').remove();
             header.show();
-            $('#customerEdit').removeClass("disabled");
+            $('#assetEdit').removeClass("disabled");
             top.Ts.System.logAction('Asset Detail - Change Name cancelled');
           })
           .insertAfter(container1);
@@ -152,7 +152,7 @@ $(document).ready(function () {
         .click(function (e) {
           $(this).closest('div').remove();
           header.show();
-          $('#customerEdit').removeClass("disabled");
+          $('#assetEdit').removeClass("disabled");
           top.Ts.System.logAction('Asset Detail - Product changed cancelled');
         })
         .insertAfter(container1);
@@ -211,7 +211,7 @@ $(document).ready(function () {
         .click(function (e) {
           $(this).closest('div').remove();
           header.show();
-          $('#customerEdit').removeClass("disabled");
+          $('#assetEdit').removeClass("disabled");
           top.Ts.System.logAction('Asset Detail - Product Version changed cancelled');
         })
         .insertAfter(container1);
@@ -255,7 +255,7 @@ $(document).ready(function () {
           .click(function (e) {
             $(this).closest('div').remove();
             header.show();
-            $('#customerEdit').removeClass("disabled");
+            $('#assetEdit').removeClass("disabled");
             top.Ts.System.logAction('Asset Detail - Serial Number change cancelled');
           })
           .insertAfter(container1);
@@ -357,7 +357,7 @@ $(document).ready(function () {
           .click(function (e) {
             $(this).closest('div').remove();
             header.show();
-            $('#customerEdit').removeClass("disabled");
+            $('#assetEdit').removeClass("disabled");
             top.Ts.System.logAction('Asset Detail - Notes change cancelled');
           })
           .insertAfter(container1);
@@ -938,7 +938,7 @@ var appendCustomEditCombo = function (field, element) {
             .click(function (e) {
               $(this).closest('div').remove();
               parent.show();
-              $('#customerEdit').removeClass("disabled");
+              $('#assetEdit').removeClass("disabled");
             })
             .insertAfter(container1);
 
