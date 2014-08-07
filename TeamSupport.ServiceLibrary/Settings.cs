@@ -13,11 +13,13 @@ namespace TeamSupport.ServiceLibrary
   {
     private LoginUser _loginUser;
     private int _serviceID;
+    private string _serviceName;
 
     public Settings(LoginUser loginUser, string serviceName)
     {
       _loginUser = loginUser;
       _serviceID = Services.GetService(loginUser, serviceName).ServiceID;
+      _serviceName = serviceName;
     }
 
     public string ReadString(string key) { return ReadString(key, ""); }
@@ -27,6 +29,7 @@ namespace TeamSupport.ServiceLibrary
       NameValueCollection settings = ConfigurationManager.AppSettings;
 
       bool useDBSettings = false;
+      string fileKey = GetFileKey(key);
 
       if (settings["UseDBSettings"] == null)
       {
@@ -42,13 +45,13 @@ namespace TeamSupport.ServiceLibrary
         return ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, defaultValue).SettingValue;
       }
 
-      string result = settings[key];
+      string result = settings[fileKey];
 
       if (string.IsNullOrWhiteSpace(result))
       { 
         // look up in old system settings table, we can take out after all the services have been updated
         result = ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, defaultValue).SettingValue;
-        WriteString(key, result);
+        WriteString(fileKey, result);
       }
 
       return result;
@@ -89,14 +92,14 @@ namespace TeamSupport.ServiceLibrary
     {
       var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
       var settings = configFile.AppSettings.Settings;
-
-      if (settings[key] == null)
+      string fileKey = GetFileKey(key);
+      if (settings[fileKey] == null)
       {
-        settings.Add(key, value);
+        settings.Add(fileKey, value);
       }
       else
       {
-        settings[key].Value = value;
+        settings[fileKey].Value = value;
       }
 
       configFile.Save(ConfigurationSaveMode.Modified);
@@ -105,6 +108,11 @@ namespace TeamSupport.ServiceLibrary
       ServiceSetting setting = ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, "");
       setting.SettingValue = value;
       setting.Collection.Save();
+    }
+
+    private string GetFileKey(string key)
+    {
+      return string.Format("{0}_{1}", _serviceName, key);
     }
 
   }

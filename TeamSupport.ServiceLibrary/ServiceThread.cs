@@ -156,12 +156,21 @@ namespace TeamSupport.ServiceLibrary
 
     protected virtual void Process()
     {
+
       try
       {
         DateTime lastTime = DateTime.Now;
         while (true)
         {
           Service service = Services.GetService(_loginUser, ServiceName);
+
+          int interval = Settings.ReadInt("Interval", -1);
+          if (interval < 0)
+          {
+            interval = service.Interval;
+            Settings.WriteInt("Interval", interval);
+          }
+
           try
           {
             if (IsStopped && !_runHandlesStop) return;
@@ -213,7 +222,7 @@ namespace TeamSupport.ServiceLibrary
 
       }
     }
-    
+
     ///<summary>This function is called by the service to run a specified interval.  This function is called in its own thread.</summary>
     ///<remarks>Check the property IsStopped to see if you need to stop processing.</remarks>
     public abstract void Run();
