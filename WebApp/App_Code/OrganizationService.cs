@@ -529,6 +529,14 @@ namespace TSWebServices
       Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails);
     }
 
+    [WebMethod]
+    public void AdminRebuildIndexes(int organizationID)
+    {
+      if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
+      Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails);
+    }
+    
+
 
     [WebMethod]
     public void AdminQueryOrganizations(int parentID, string query)

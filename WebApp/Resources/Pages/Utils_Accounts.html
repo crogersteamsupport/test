@@ -205,6 +205,14 @@
         });
       });
 
+      $('.action-index').click(function (e) {
+        e.preventDefault();
+        var org = $('.org-info').data('o');
+        top.Ts.Services.Organizations.AdminRebuildIndexes(org.OrganizationID, function () {
+          alert("Indexes are rebuilding.");
+        });
+      });
+
       $('#selectProduct').change(function (e) {
         e.preventDefault();
         top.Ts.Services.Organizations.AdminUpdateProductType(organizationID, $('#selectProduct').val(), function () {
@@ -253,6 +261,7 @@
               <div class="btn-group org-tools">
                 <button class="btn btn-warning action-toggle-active">Disable</button>
                 <button class="btn btn-default action-rename">Rename</button>
+                <button class="btn btn-default action-index">Rebuild Indexes</button>
                 <button class="btn btn-default action-seats">Change Seat Count</button>
                 <button class="btn btn-default action-api">Change API Request Count</button>
                 <button class="btn btn-default action-portal">Turn all portal users on</button>

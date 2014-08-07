@@ -64,6 +64,29 @@
         top.Ts.Services.Reports.AdminUpdateQuery(report.ReportID, $('#query').val())
       });
 
+
+      $('.btn-clone').click(function (e) {
+        e.preventDefault();
+        var report = $('.report-list li.active').data('report');
+        var name = prompt("Enter a new report name", report.Name + ' Copy');
+        if (name != null) {
+          top.Ts.Services.Reports.AdminCloneReport(report.ReportID, name, function (id) {
+            alert('Cloned.  Refresh to see it.');
+          });
+        }
+      });
+
+      $('.btn-rename').click(function (e) {
+        e.preventDefault();
+        var report = $('.report-list li.active').data('report');
+        var name = prompt("Enter a new report name", report.Name + ' Copy');
+        if (name != null) {
+          top.Ts.Services.Reports.AdminRenameReport(report.ReportID, name, function () {
+            alert('Renamed.  Refresh to see it.');
+          })
+        }
+      });
+
       $('.btn-test').click(function (e) {
         e.preventDefault();
         var li = $('.report-list li.active');
@@ -106,6 +129,8 @@
       <form>
       <h3 class="title"></h3>
       <button class="btn-test btn btn-primary">Test</button>
+      <button class="btn-clone btn btn-default">Clone</button>
+      <button class="btn-rename btn btn-default">Rename</button>
       <button class="btn-save btn btn-default pull-right">Save</button>
       <div class="checkbox">
         <label>

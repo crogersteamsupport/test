@@ -2338,6 +2338,14 @@ ORDER BY o.Name";
       }
     }
 
+    public static void SetAllPortalUsers(LoginUser loginUser, int organizationID)
+    {
+      SqlCommand command = new SqlCommand();
+      command.CommandText = "UPDATE Organizations SET LastIndexRebuilt = '01/01/2000' WHERE OrganizationID = @OrganizationID";
+      command.Parameters.AddWithValue("OrganizationID", organizationID);
+      SqlExecutor.ExecuteNonQuery(loginUser, command);
+    }
+
     public static void SetAllPortalUsers(LoginUser loginUser, int organizationID, bool sendEmails)
     {
       Users users = new Users(loginUser);

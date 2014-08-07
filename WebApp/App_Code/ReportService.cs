@@ -275,6 +275,23 @@ namespace TSWebServices
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
         return report.GetProxy();
       }
+      
+      [WebMethod]
+      public int AdminCloneReport(int reportID, string name)
+      {
+        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;
+        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+        return report.CloneReport(name);
+      }
+
+      [WebMethod]
+      public void AdminRenameReport(int reportID, string name)
+      {
+        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;
+        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+        report.Name = name;
+        report.Collection.Save();
+      }
 
       [WebMethod]
       public void AdminUpdateQuery(int reportID, string query)
