@@ -1046,7 +1046,7 @@ namespace TeamSupport.Data
 
 
         Users existingUsers = new Users(_loginUser);
-        existingUsers.LoadByName(row["FirstName"].ToString().Trim() + " " + row["LastName"].ToString().Trim(), organization.OrganizationID, false, false, false);
+        existingUsers.LoadByEmail(organization.OrganizationID, row["Email"].ToString().Trim());
 
         if (existingUsers.Count > 0)
         {
@@ -1055,27 +1055,19 @@ namespace TeamSupport.Data
           _log.AppendError(row, "Contact skipped due to already exists.");
           continue;
         }
-        /*
-        SqlCommand command = new SqlCommand();
-        command.CommandText = @"
-SELECT COUNT(*)
-FROM Users
-WHERE OrganizationID = @OrganizationID
-AND RTRIM(FirstName) = @FirstName
-AND RTRIM(LastName) = @LastName
-";
-        command.Parameters.AddWithValue("OrganizationID", organization.OrganizationID);
-        command.Parameters.AddWithValue("FirstName", row["FirstName"].ToString().Trim());
-        command.Parameters.AddWithValue("LastName", row["LastName"].ToString().Trim());
-        object o = SqlExecutor.exe(_loginUser, command);
-        if (o == null || o == DBNull.Value || (int)o > 0) {
-          _log.AppendError(row, "Contact skipped due to already exists.");
-          continue;
-        }*/
-
-        //Organization organization = organizations.FindByImportID(row["CustomerID"].ToString().Trim());
-        //if (organization == null) { _log.AppendError(row, "Contact skipped due to missing organization."); continue; }
-
+        else
+        {
+          existingUsers = new Users(_loginUser);
+          existingUsers.LoadByName(row["FirstName"].ToString().Trim() + " " + row["LastName"].ToString().Trim(), organization.OrganizationID, false, false, false);
+          if (existingUsers.Count > 0)
+          {
+            existingUsers[0].ImportID = "[contact]" + row["ContactID"].ToString().Trim();
+            existingUsers.Save();
+            _log.AppendError(row, "Contact skipped due to already exists.");
+            continue;
+          }
+        }
+        
         User user = users.AddNewUser();
         user.ActivatedOn = DateTime.UtcNow;
         user.CryptedPassword = "";
