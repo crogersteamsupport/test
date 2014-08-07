@@ -156,7 +156,7 @@ namespace TeamSupport.ServiceLibrary
 
     protected virtual void Process()
     {
-
+      Logs.WriteEvent("Process Starting");
       try
       {
         DateTime lastTime = DateTime.Now;
@@ -170,6 +170,8 @@ namespace TeamSupport.ServiceLibrary
             interval = service.Interval;
             Settings.WriteInt("Interval", interval);
           }
+
+          service.Interval = interval;
 
           try
           {
