@@ -87,8 +87,18 @@ namespace TeamSupport.ServiceLibrary
     public override void Run()
     {
       bool isRebuilder = GetIsRebuilderMode();
-      int daysSinceLastRebuild = Settings.ReadInt("DaysSinceLastRebuild", 14);
-      int minutesSinceLastActive = Settings.ReadInt("MinutesSinceLastActive", 30); 
+      Logs.WriteEvent("HEre");
+      try
+      {
+        int daysSinceLastRebuild = Settings.ReadInt("DaysSinceLastRebuild", 14);
+        int minutesSinceLastActive = Settings.ReadInt("MinutesSinceLastActive", 30); 
+
+      }
+      catch (Exception ex)
+      {
+        ExceptionLogs.LogException(LoginUser, ex, "");
+      }
+      Logs.WriteEvent("HEre2");
       
       if (isRebuilder)
       {

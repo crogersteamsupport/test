@@ -156,7 +156,6 @@ namespace TeamSupport.ServiceLibrary
 
     protected virtual void Process()
     {
-      Logs.WriteEvent("Process Starting");
       try
       {
         DateTime lastTime = DateTime.Now;
