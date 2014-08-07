@@ -63,7 +63,7 @@
           appendProperty('User Seats', org.UserSeats);
           appendProperty('Engagement Score', '<span class="evergage-prop eng-score"><i class="fa fa-spinner fa-spin"></i></span>');
           appendProperty('Total Actions', '<span class="evergage-prop total-actions"><i class="fa fa-spinner fa-spin"></i></span>');
-          appendProperty('Date Created', org.LastIndexRebuilt.toString());
+          appendProperty('Index Last Rebuilt', org.LastIndexRebuilt.toString());
           top.Ts.Services.Organizations.AdminGetUserCount(orgID, function (count) {
             appendProperty('Active Users', count);
           });
