@@ -1008,6 +1008,7 @@ namespace TeamSupport.Data
         organization.ProductType = ProductType.Express;
         organization.SystemEmailID = Guid.NewGuid();
         organization.UserSeats = 0;
+        organization.NeedsIndexing = true;
         organization.CompanyDomains = row["Domains"].ToString().Trim();
         organization.WebServiceID = Guid.NewGuid();
         organization.Website = row["Website"].ToString().Trim();
@@ -1091,6 +1092,7 @@ AND RTRIM(LastName) = @LastName
         user.IsSystemAdmin = false;
         user.LastActivity = DateTime.UtcNow;
         user.LastLogin = DateTime.UtcNow;
+        user.NeedsIndexing = true;
         user.LastName = row["LastName"].ToString().Trim();
         user.MiddleName = row["MiddleName"].ToString().Trim();
         user.OrganizationID = organization.OrganizationID;
@@ -1766,6 +1768,7 @@ AND RTRIM(LastName) = @LastName
         wiki.Private = row["Private"].ToString().ToLower().IndexOf("t") > -1;
         wiki.PublicEdit = row["PublicEdit"].ToString().ToLower().IndexOf("t") > -1;
         wiki.PublicView = row["PublicView"].ToString().ToLower().IndexOf("t") > -1;
+        wiki.NeedsIndexing = true;
         wiki.IsDeleted = row["IsDeleted"].ToString().ToLower().IndexOf("t") > -1;
         wiki.Version = GetDBInt(row["Version"], true) == null ? 1 : GetDBInt(row["Version"], true);
         wiki.Collection.Save();

@@ -20,7 +20,7 @@ namespace TeamSupport.ServiceTestApplication
     ServiceThreadPool<EmailProcessor> _emailProcessor;
     ServiceThreadPool<EmailSender> _emailSender;
     SlaProcessor _slaProcessor;
-    Indexer _indexer;
+    ServiceThreadPool<Indexer> _indexer;
     CrmPool _crmPool;
     ReminderProcessor _reminderProcessor;
     
@@ -102,7 +102,7 @@ namespace TeamSupport.ServiceTestApplication
 
     private void btnIndexer_Click(object sender, EventArgs e)
     {
-      if (_indexer == null || _indexer.IsStopped) StartProcess(_indexer = new Indexer(), sender as Button); else StopProcess(_indexer, sender as Button);
+      if (_indexer == null || _indexer.IsStopped) StartProcess(_indexer = new ServiceThreadPool<Indexer>("Indexer"), sender as Button); else StopProcess(_indexer, sender as Button);
     }
 
     private void btnCrmPool_Click(object sender, EventArgs e)

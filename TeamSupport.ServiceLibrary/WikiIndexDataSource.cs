@@ -11,10 +11,9 @@ namespace TeamSupport.ServiceLibrary
   {
     protected WikiIndexDataSource() {}
 
-    public WikiIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding)
-      : base(loginUser, maxCount, organizationID, isRebuilding)
+    public WikiIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding, string logName)
+      : base(loginUser, maxCount, organizationID, isRebuilding, logName)
     {
-      _logs = new Logs("Wiki Indexer DataSource");      
     }
 
     override public bool GetNextDoc()

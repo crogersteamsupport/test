@@ -14,10 +14,9 @@ namespace TeamSupport.ServiceLibrary
   {
     protected CustomerIndexDataSource() { }
 
-    public CustomerIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding)
-      : base(loginUser, maxCount, organizationID, isRebuilding)
+    public CustomerIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding, string logName)
+      : base(loginUser, maxCount, organizationID, isRebuilding, logName)
     {
-      _logs = new Logs("Customer Indexer DataSource");
     }
 
     override public bool GetNextDoc()

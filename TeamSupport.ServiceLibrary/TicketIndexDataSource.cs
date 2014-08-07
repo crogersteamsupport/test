@@ -11,10 +11,9 @@ namespace TeamSupport.ServiceLibrary
   {
     protected TicketIndexDataSource() { }
 
-    public TicketIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding)
-      : base(loginUser, maxCount, organizationID, isRebuilding)
+    public TicketIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding, string logName)
+      : base(loginUser, maxCount, organizationID, isRebuilding, logName)
     {
-      _logs = new Logs("Ticket Indexer DataSource");
     }
 
 

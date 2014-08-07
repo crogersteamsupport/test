@@ -11,10 +11,7 @@ namespace TeamSupport.ServiceLibrary
   {
     protected NoteIndexDataSource() { }
 
-    public NoteIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding) : base(loginUser, maxCount, organizationID, isRebuilding)
-    {
-      _logs = new Logs("Note Indexer DataSource");
-    }
+    public NoteIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding, string logName) : base(loginUser, maxCount, organizationID, isRebuilding, logName) {}
 
     override public bool GetNextDoc()
     {

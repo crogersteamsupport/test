@@ -26,11 +26,12 @@ namespace TeamSupport.ServiceLibrary
     
     protected IndexDataSource() { }
 
-    public IndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding)
+    public IndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding, string logName)
     {
       _organizationID = organizationID;
       _isRebuilding = isRebuilding;
       _loginUser      = new LoginUser(loginUser.ConnectionString, loginUser.UserID, loginUser.OrganizationID, null);
+      _logs = new Logs(logName);
 
       _maxCount = maxCount;
 

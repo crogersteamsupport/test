@@ -12,11 +12,9 @@ namespace TeamSupport.ServiceLibrary
   class AssetIndexDataSource : IndexDataSource
   {
     protected AssetIndexDataSource() { }
-
-    public AssetIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding)
-      : base(loginUser, maxCount, organizationID, isRebuilding)
+    public AssetIndexDataSource(LoginUser loginUser, int maxCount, int organizationID, bool isRebuilding, string logName)
+      : base(loginUser, maxCount, organizationID, isRebuilding, logName)
     {
-      _logs = new Logs("Asset Indexer DataSource");
     }
 
     override public bool GetNextDoc()

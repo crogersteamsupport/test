@@ -81,7 +81,7 @@ namespace TeamSupport.ServiceLibrary
             if (emailPost.CreatorID != -2)
             {
               _isDebug = Settings.ReadBool("Debug", false);
-              _logEnabled = ConfigurationManager.AppSettings["LoggingEnabled"] != null && ConfigurationManager.AppSettings["LoggingEnabled"] == "1";
+              _logEnabled = Settings.ReadInt("LoggingEnabled", 0) == 1;
 
               Logs.WriteLine();
               Logs.WriteEvent("***********************************************************************************");

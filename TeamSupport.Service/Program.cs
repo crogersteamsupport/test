@@ -37,8 +37,8 @@ namespace TeamSupport.Service
         case "TSEmailProcessor": result = new ServiceThreadPool<EmailProcessor>("EmailProcessor"); break;
         case "TSEmailSender": result = new ServiceThreadPool<EmailSender>("EmailSender"); break;
         case "TSSlaProcessor": result = new SlaProcessor(); break;
-        case "TSIndexer": result = new Indexer(); break;
-        case "TSIndexRebuilder": result = new Indexer(); break;
+        case "TSIndexer": result = new ServiceThreadPool<Indexer>("Indexer"); break;
+        case "TSIndexRebuilder": result = new ServiceThreadPool<Indexer>("Indexer"); break;
         case "TSCrmPool": result = new CrmPool(); break;
         case "TSReminderProcessor": result = new ReminderProcessor(); break;
         default: result = null; break;
