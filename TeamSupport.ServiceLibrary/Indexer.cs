@@ -95,7 +95,7 @@ namespace TeamSupport.ServiceLibrary
         try
         {
           UpdateHealth();
-          Organization organization = GetNextOrganization(LoginUser.ConnectionString, (int)_threadPosition, isRebuilder);
+          Organization organization = GetNextOrganization(LoginUser.ConnectionString, (int)_threadPosition, isRebuilder, daysSinceLastRebuild, minutesSinceLastActive);
           if (organization == null) return;
           try
           {

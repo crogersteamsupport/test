@@ -79,7 +79,7 @@
       $('.btn-rename').click(function (e) {
         e.preventDefault();
         var report = $('.report-list li.active').data('report');
-        var name = prompt("Enter a new report name", report.Name + ' Copy');
+        var name = prompt("Enter a new report name", report.Name);
         if (name != null) {
           top.Ts.Services.Reports.AdminRenameReport(report.ReportID, name, function () {
             alert('Renamed.  Refresh to see it.');
