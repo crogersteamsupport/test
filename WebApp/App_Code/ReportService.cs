@@ -277,9 +277,9 @@ namespace TSWebServices
       }
       
       [WebMethod]
-      public int AdminCloneReport(int reportID, string name)
+      public int? AdminCloneReport(int reportID, string name)
       {
-        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;
+        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return null;
         Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
         return report.CloneReport(name);
       }

@@ -533,7 +533,7 @@ namespace TSWebServices
     public void AdminRebuildIndexes(int organizationID)
     {
       if (TSAuthentication.OrganizationID != 1078 && TSAuthentication.OrganizationID != 1088) return;
-      Organizations.SetAllPortalUsers(TSAuthentication.GetLoginUser(), organizationID, sendEmails);
+      Organizations.SetRebuildIndexes(TSAuthentication.GetLoginUser(), organizationID);
     }
     
 

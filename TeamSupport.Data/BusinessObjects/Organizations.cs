@@ -2338,7 +2338,7 @@ ORDER BY o.Name";
       }
     }
 
-    public static void SetAllPortalUsers(LoginUser loginUser, int organizationID)
+    public static void SetRebuildIndexes(LoginUser loginUser, int organizationID)
     {
       SqlCommand command = new SqlCommand();
       command.CommandText = "UPDATE Organizations SET LastIndexRebuilt = '01/01/2000' WHERE OrganizationID = @OrganizationID";
