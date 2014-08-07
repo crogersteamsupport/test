@@ -5,7 +5,10 @@
 /// <reference path="ts/ts.pages.main.js" />
 
 $(document).ready(function () {
-  var _lastTicketTypeID = null;
+    var _lastTicketTypeID = null;
+    var _timerid;
+    var _timerElapsed = 0;
+    var speed = 50, counter = 0, start;
   var _ticketID = null;
   var _doClose = false;
   var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility;
@@ -74,6 +77,26 @@ $(document).ready(function () {
       setTicketTypeTemplateText();
     }
   });
+
+  var tickettimer = function () {
+      var element = $('.ticket-action-form');
+
+      //work out the real and ideal elapsed time
+      var real = (counter * speed),
+          ideal = (new Date().getTime() - start);
+
+      counter++;
+      //element.find('.timer').text(Math.floor(ideal / 60000));
+
+      var diff = (ideal - real);
+
+      if (_timerElapsed != Math.floor(ideal / 60000)) {
+          var oldVal = parseInt($('.ticket-action-form-minutes').val()) || 0;
+          $('.ticket-action-form-minutes').val(oldVal + 1);
+          _timerElapsed = Math.floor(ideal / 60000);
+      }
+      _timerid = setTimeout(tickettimer, (speed - diff));
+  }
 
   function setupProductType() {
     /*
@@ -1868,7 +1891,12 @@ $(document).ready(function () {
   $('.newticket-cancel').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    if (confirm('Are you sure you would like to cancel this ticket?')) { top.Ts.MainPage.closeNewTicketTab(); }
+    if (confirm('Are you sure you would like to cancel this ticket?')) {
+        clearTimeout(_timerid);
+        _timerElapsed = 0;
+        counter = 0;
+        top.Ts.MainPage.closeNewTicketTab();
+    }
     top.Ts.System.logAction('New Ticket - Canceled');
 
     //window.location = window.location;
@@ -2039,6 +2067,22 @@ $(document).ready(function () {
       })
     })
   });
+
+  $('.timerbutton').click(function (e) {
+      var togtext = $('.timerlabel').text() == 'Start Timing' ? 'Stop Timing' : 'Start Timing';
+
+      if (togtext == "Stop Timing") {
+          start = new Date().getTime()
+          tickettimer();
+      }
+      else {
+          clearTimeout(_timerid);
+      }
+
+      $('.timerlabel').text(togtext);
+      $('.timerlabel').toggleClass('redText');
+
+  }).attr('title', 'Start the Timer');
 
 
   $('.ticket-rail a').addClass('ui-state-default ts-link');

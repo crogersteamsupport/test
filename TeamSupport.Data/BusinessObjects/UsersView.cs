@@ -134,6 +134,7 @@ OR (RTRIM(o1.Name) LIKE '%'+@Name+'%')
 )
 AND (o2.OrganizationID = @OrganizationID)  
 AND (u.MarkDeleted = 0)
+AND (@ActiveOnly = 0 OR u.IsActive = 1) 
 AND (@UseFilter=0 OR (u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = @UserID)))
 ORDER BY u.LastName, u.FirstName";
         command.CommandType = CommandType.Text;
@@ -143,6 +144,7 @@ ORDER BY u.LastName, u.FirstName";
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@UserID", LoginUser.UserID);
         command.Parameters.AddWithValue("@UseFilter", doFilter);
+        command.Parameters.AddWithValue("@ActiveOnly", active);
         Fill(command);
       }
     }

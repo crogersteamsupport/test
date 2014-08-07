@@ -1011,7 +1011,7 @@ namespace TSWebServices
 
                 if (setting != null)
                 {
-                    chatsetting = setting.IsAvailable ? "<i class='user-tooltip fa-comments-o fa color-red' title='Customer Chat Online'></i>" : "";
+                    chatsetting = setting.IsAvailable  && u.IsChatUser ? "<i class='user-tooltip fa-comments-o fa color-red' title='Customer Chat Online'></i>" : "";
                 }
 
                 html.AppendFormat(@"<li>
