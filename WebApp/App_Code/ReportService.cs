@@ -294,6 +294,15 @@ namespace TSWebServices
       }
 
       [WebMethod]
+      public void AdminChangeOrg(int reportID, string orgID)
+      {
+        if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;
+        Report report = Reports.GetReport(TSAuthentication.GetLoginUser(), reportID);
+        report.OrganizationID = orgID.ToUpper() == "ALL" ? null : (int?)int.Parse(orgID);
+        report.Collection.Save();
+      }
+
+      [WebMethod]
       public void AdminUpdateQuery(int reportID, string query)
       {
         if (TSAuthentication.UserID != 34 && TSAuthentication.UserID != 47) return;

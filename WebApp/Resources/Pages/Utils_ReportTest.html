@@ -87,6 +87,20 @@
         }
       });
 
+      $('.btn-org').click(function (e) {
+        e.preventDefault();
+        var report = $('.report-list li.active').data('report');
+        var oldID = report.OrganizationID ? report.OrganizationID : 'ALL';
+        var orgID = prompt('Enter a new organization id or "ALL"', oldID);
+        if (orgID != null) {
+          top.Ts.Services.Reports.AdminChangeOrg(report.ReportID, orgID, function () {
+            alert('Renamed.  Refresh to see it.');
+          })
+        }
+      });
+
+
+
       $('.btn-test').click(function (e) {
         e.preventDefault();
         var li = $('.report-list li.active');
@@ -131,6 +145,7 @@
       <button class="btn-test btn btn-primary">Test</button>
       <button class="btn-clone btn btn-default">Clone</button>
       <button class="btn-rename btn btn-default">Rename</button>
+      <button class="btn-org btn btn-default">Change Organization</button>
       <button class="btn-save btn btn-default pull-right">Save</button>
       <div class="checkbox">
         <label>
