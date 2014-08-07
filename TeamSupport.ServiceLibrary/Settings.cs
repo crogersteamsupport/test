@@ -51,7 +51,7 @@ namespace TeamSupport.ServiceLibrary
       { 
         // look up in old system settings table, we can take out after all the services have been updated
         result = ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, defaultValue).SettingValue;
-        WriteString(fileKey, result);
+        WriteString(key, result);
       }
 
       return result;
