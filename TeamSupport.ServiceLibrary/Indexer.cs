@@ -90,15 +90,6 @@ namespace TeamSupport.ServiceLibrary
       int daysSinceLastRebuild = Settings.ReadInt("DaysSinceLastRebuild", 14);
       int minutesSinceLastActive = Settings.ReadInt("MinutesSinceLastActive", 30); 
       
-      if (isRebuilder)
-      {
-        Logs.WriteEvent("---- Starting Index Rebuilder ----");
-      }
-      else
-      {
-        Logs.WriteEvent("---- Starting Indexer ----");
-      }
-
       while (!IsStopped)
       {
         try
