@@ -14,6 +14,7 @@ namespace TeamSupport.ServiceLibrary
     private LoginUser _loginUser;
     private int _serviceID;
     private string _serviceName;
+    private static object _staticLock = new object();
 
     public Settings(LoginUser loginUser, string serviceName)
     {
@@ -26,34 +27,20 @@ namespace TeamSupport.ServiceLibrary
 
     public string ReadString(string key, string defaultValue)
     {
-      NameValueCollection settings = ConfigurationManager.AppSettings;
-
-      bool useDBSettings = false;
-      string fileKey = GetFileKey(key);
-
-      if (settings["UseDBSettings"] == null)
+      string result = defaultValue;
+      lock (_staticLock)
       {
-        WriteString("UseDBSettings", "0");
-      }
-      else
-      {
-        useDBSettings = settings["UseDBSettings"] == "1";
-      }
+        NameValueCollection settings = ConfigurationManager.AppSettings;
+        result = settings[GetFileKey(key)];
 
-      if (useDBSettings)
-      {
-        return ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, defaultValue).SettingValue;
+        if (string.IsNullOrWhiteSpace(result))
+        {
+          // look up in old system settings table, we can take out after all the services have been updated
+          result = ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, defaultValue).SettingValue;
+          WriteString(key, result);
+        }
+
       }
-
-      string result = settings[fileKey];
-
-      if (string.IsNullOrWhiteSpace(result))
-      { 
-        // look up in old system settings table, we can take out after all the services have been updated
-        result = ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, defaultValue).SettingValue;
-        WriteString(key, result);
-      }
-
       return result;
     }
 
@@ -90,24 +77,28 @@ namespace TeamSupport.ServiceLibrary
     public void WriteBool(string key, bool value) { WriteString(key, value.ToString()); }
     public void WriteString(string key, string value) 
     {
-      var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-      var settings = configFile.AppSettings.Settings;
-      string fileKey = GetFileKey(key);
-      if (settings[fileKey] == null)
+      lock (_staticLock)
       {
-        settings.Add(fileKey, value);
-      }
-      else
-      {
-        settings[fileKey].Value = value;
-      }
+        var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+        var settings = configFile.AppSettings.Settings;
+        string fileKey = GetFileKey(key);
+        if (settings[fileKey] == null)
+        {
+          settings.Add(fileKey, value);
+        }
+        else
+        {
+          if (settings[fileKey].Value == value) return;
+          settings[fileKey].Value = value;
+        }
 
-      configFile.Save(ConfigurationSaveMode.Modified);
-      ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
-      
-      ServiceSetting setting = ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, "");
-      setting.SettingValue = value;
-      setting.Collection.Save();
+        configFile.Save(ConfigurationSaveMode.Modified);
+        ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+
+        ServiceSetting setting = ServiceSettings.GetServiceSetting(_loginUser, _serviceID, key, "");
+        setting.SettingValue = value;
+        setting.Collection.Save();
+      }
     }
 
     private string GetFileKey(string key)
