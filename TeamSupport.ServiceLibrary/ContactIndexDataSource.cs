@@ -64,14 +64,6 @@ namespace TeamSupport.ServiceLibrary
         AddDocField("Organization", contact.Organization);
         AddDocField("Email", contact.Email);
         AddDocField("IsActive", contact.IsActive);
-        AddDocField("", contact.);
-        AddDocField("", contact.);
-        AddDocField("", contact.);
-        AddDocField("", contact.);
-        AddDocField("", contact.);
-        AddDocField("", contact.);
-        AddDocField("", contact.);
-        AddDocField("", contact.);
         
         if (string.IsNullOrWhiteSpace(contact.FirstName))
         {
