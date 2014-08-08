@@ -21,7 +21,6 @@ namespace TeamSupport.ServiceLibrary
       try
       {
         if (_itemIDList == null) { Rewind(); }
-        if (_lastItemID != null) { UpdatedItems.Add((int)_lastItemID); }
         _rowIndex++;
         if (_itemIDList.Count <= _rowIndex) { return false; }
 
@@ -29,6 +28,7 @@ namespace TeamSupport.ServiceLibrary
         _logs.WriteEvent("Started Processing Wiki ArticleID: " + wiki.ArticleID.ToString());
 
         _lastItemID = wiki.ArticleID;
+        UpdatedItems.Add((int)_lastItemID);
 
         DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(wiki.Body == null ? string.Empty : wiki.Body));
 

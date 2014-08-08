@@ -23,7 +23,6 @@ namespace TeamSupport.ServiceLibrary
       try
       {
         if (_itemIDList == null) { Rewind(); }
-        if (_lastItemID != null) { UpdatedItems.Add((int)_lastItemID); }
         _rowIndex++;
         if (_itemIDList.Count <= _rowIndex) { return false; }
 
@@ -31,6 +30,7 @@ namespace TeamSupport.ServiceLibrary
         _logs.WriteEvent("Started Processing UserID: " + contact.UserID.ToString());
 
         _lastItemID = contact.UserID;
+        UpdatedItems.Add((int)_lastItemID);
 
         List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
         StringBuilder builder = new StringBuilder();

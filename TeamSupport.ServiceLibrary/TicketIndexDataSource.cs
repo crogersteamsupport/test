@@ -22,7 +22,6 @@ namespace TeamSupport.ServiceLibrary
       try
       {
         if (_itemIDList == null) { Rewind(); }
-        if (_lastItemID != null) { UpdatedItems.Add((int)_lastItemID); }
         _rowIndex++;
         if (_itemIDList.Count <= _rowIndex) { return false; }
 
@@ -30,6 +29,7 @@ namespace TeamSupport.ServiceLibrary
         _logs.WriteEvent("Started Processing TicketID: " + ticket.TicketID.ToString());
 
         _lastItemID = ticket.TicketID;
+        UpdatedItems.Add((int)_lastItemID);
 
         StringBuilder actionsBuilder = new StringBuilder();
         Actions actions = new Actions(_loginUser);
