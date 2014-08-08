@@ -1986,6 +1986,8 @@ AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOr
 WITH X AS (
   SELECT OrganizationID, IsRebuildingIndex FROM Organizations o 
 	WHERE o.IsIndexLocked = 0
+	AND o.ParentID = 1
+	AND (IsRebuildingIndex = 0 OR DATEDIFF(MINUTE, DateLastIndexed, GETUTCDATE()) > 2)
 	AND o.IsActive = 1
 	AND (
 	  EXISTS (SELECT * FROM Tickets t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
@@ -2009,7 +2011,7 @@ Y AS (
   )
 
 UPDATE Organizations
-SET IsIndexLocked = 1
+SET IsIndexLocked = 1, DateLastIndexed = GETUTCDATE()
 OUTPUT inserted.OrganizationID
 INTO @TIndex
 WHERE OrganizationID IN (
