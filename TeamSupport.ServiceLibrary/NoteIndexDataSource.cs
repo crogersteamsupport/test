@@ -30,14 +30,14 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(note.Description));
 
-        DocFields = string.Empty;
+        _docFields.Clear();
         foreach (DataColumn column in note.Collection.Table.Columns)
         {
           object value = note.Row[column];
           string s = value == null || value == DBNull.Value ? "" : value.ToString();
-          DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
+          AddDocField(column.ColumnName, s);
         }
-
+        DocFields = _docFields.ToString();
         DocIsFile = false;
         DocName = note.NoteID.ToString();
         DocCreatedDate = note.DateCreatedUtc;

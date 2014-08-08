@@ -58,31 +58,38 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
-        DocFields = string.Empty;
-
-        DocFields += "UserID\t" + contact.UserID.ToString() + "\t";
-        DocFields += "OrganizationID\t" + contact.OrganizationID.ToString() + "\t";
+        _docFields.Clear();
+        AddDocField("UserID", contact.UserID);
+        AddDocField("OrganizationID", contact.OrganizationID);
+        AddDocField("Organization", contact.Organization);
+        AddDocField("Email", contact.Email);
+        AddDocField("IsActive", contact.IsActive);
+        AddDocField("", contact.);
+        AddDocField("", contact.);
+        AddDocField("", contact.);
+        AddDocField("", contact.);
+        AddDocField("", contact.);
+        AddDocField("", contact.);
+        AddDocField("", contact.);
+        AddDocField("", contact.);
         
-        if (string.IsNullOrWhiteSpace(contact.LastName))
+        if (string.IsNullOrWhiteSpace(contact.FirstName))
         {
-          DocFields += "Name\t" + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim()) + "\t";
+          AddDocField("Name", contact.LastName);
           DocDisplayName = string.IsNullOrWhiteSpace(contact.FirstName) ? "" : contact.FirstName.Trim();
         }
         else
         {
-          DocFields += "Name\t" + contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim()) + "\t";
+          AddDocField("Name", contact.FirstName + " " + contact.LastName);
           DocDisplayName = contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim());
         }
 
-        DocFields += "Organization\t" + (string.IsNullOrWhiteSpace(contact.Organization) ? "" : contact.Organization.Trim()) + "\t";
-        DocFields += "Email\t" + (string.IsNullOrWhiteSpace(contact.Email) ? "" : contact.Email.Trim()) + "\t";
-        DocFields += "IsActive\t" + contact.IsActive.ToString() + "\t";
         CustomerSearchContact contactItem = new CustomerSearchContact(contact);
         contactItem.phones = phones.ToArray();
         TicketsView tickets = new TicketsView(_loginUser);
         contactItem.openTicketCount = tickets.GetUserTicketCount(contact.UserID, 0);
         
-        DocFields += "**JSON\t" + JsonConvert.SerializeObject(contactItem) + "\t";
+        AddDocField("**JSON", JsonConvert.SerializeObject(contactItem));
 
         CustomValues customValues = new CustomValues(_loginUser);
         customValues.LoadByReferenceType(_organizationID, ReferenceType.Contacts, contact.UserID);
@@ -91,9 +98,10 @@ namespace TeamSupport.ServiceLibrary
         {
           object o = value.Row["CustomValue"];
           string s = o == null || o == DBNull.Value ? "" : o.ToString();
-          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
+          AddDocField(value.Row["Name"].ToString(), s);
         }
 
+        DocFields = _docFields.ToString();
         DocIsFile = false;
         DocName = contact.UserID.ToString();
         DocCreatedDate = (DateTime)contact.Row["DateCreated"];

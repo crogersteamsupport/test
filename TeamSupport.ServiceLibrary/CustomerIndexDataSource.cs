@@ -21,6 +21,8 @@ namespace TeamSupport.ServiceLibrary
 
     override public bool GetNextDoc()
     {
+      base.GetNextDoc();
+
       try
       {
         if (_itemIDList == null) { Rewind(); }
@@ -58,22 +60,20 @@ namespace TeamSupport.ServiceLibrary
         }
 
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
-
-        DocFields = string.Empty;
-        DocFields += "OrganizationID\t" + organization.OrganizationID.ToString() + "\t";
-        DocFields += "Name\t" + (string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim()) + "\t";
-        DocFields += "Description\t" + (string.IsNullOrWhiteSpace(organization.Description) ? "" : organization.Description.Trim()) + "\t";
-        DocFields += "Website\t" + (string.IsNullOrWhiteSpace(organization.Website) ? "" : organization.Website.Trim()) + "\t";
-        DocFields += "IsActive\t" + organization.IsActive.ToString() + "\t";
-        DocFields += "PrimaryContact\t" + (string.IsNullOrWhiteSpace(organization.PrimaryContact) ? "" : organization.PrimaryContact.Trim()) + "\t";
+        _docFields.Clear();
+        AddDocField("OrganizationID", organization.OrganizationID);
+        AddDocField("Name", organization.Name);
+        AddDocField("Description", organization.Description);
+        AddDocField("Website", organization.Website);
+        AddDocField("IsActive", organization.IsActive);
+        AddDocField("PrimaryContact", organization.PrimaryContact);
 
         CustomerSearchCompany companyItem = new CustomerSearchCompany(organization);
         companyItem.phones = phones.ToArray();
         TicketsView tickets = new TicketsView(_loginUser);
         companyItem.openTicketCount = tickets.GetOrganizationTicketCount(organization.OrganizationID, 0);
 
-        DocFields += "**JSON\t" + JsonConvert.SerializeObject(companyItem) + "\t";
-
+        AddDocField("**JSON", JsonConvert.SerializeObject(companyItem));
 
         CustomValues customValues = new CustomValues(_loginUser);
         customValues.LoadByReferenceType(_organizationID, ReferenceType.Organizations, organization.OrganizationID);
@@ -82,9 +82,10 @@ namespace TeamSupport.ServiceLibrary
         {
           object o = value.Row["CustomValue"];
           string s = o == null || o == DBNull.Value ? "" : o.ToString();
-          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
+          AddDocField(value.Row["Name"].ToString(), s);
         }
 
+        DocFields = _docFields.ToString();
         DocIsFile = false;
         DocName = organization.OrganizationID.ToString();
         DocDisplayName = string.IsNullOrWhiteSpace(organization.Name) ? "" : organization.Name.Trim();

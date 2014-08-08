@@ -32,16 +32,16 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(wiki.Body == null ? string.Empty : wiki.Body));
 
-        DocFields = string.Empty;
+        _docFields.Clear();
         foreach (DataColumn column in wiki.Collection.Table.Columns)
         {
           object value = wiki.Row[column];
           string s = value == null || value == DBNull.Value ? "" : value.ToString();
-          DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
+          AddDocField(column.ColumnName, s);
         }
+        DocFields = _docFields.ToString();
 
         DocId           = wiki.ArticleID;
-
         DocIsFile       = false;
         DocName         = wiki.ArticleID.ToString();
         DocDisplayName  = wiki.ArticleName;

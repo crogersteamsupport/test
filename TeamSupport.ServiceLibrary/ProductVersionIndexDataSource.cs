@@ -32,12 +32,12 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(productVersion.Description == null ? string.Empty : productVersion.Description));
 
-        DocFields = string.Empty;
+        _docFields.Clear();
         foreach (DataColumn column in productVersion.Collection.Table.Columns)
         {
           object value = productVersion.Row[column];
           string s = value == null || value == DBNull.Value ? "" : value.ToString();
-          DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
+          AddDocField(column.ColumnName, s);
         }
 
         CustomValues customValues = new CustomValues(_loginUser);
@@ -47,9 +47,9 @@ namespace TeamSupport.ServiceLibrary
         {
           object o = value.Row["CustomValue"];
           string s = o == null || o == DBNull.Value ? "" : o.ToString();
-          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
+          AddDocField(value.Row["Name"].ToString(), s);
         }
-
+        DocFields = _docFields.ToString();
         DocIsFile = false;
         DocName = productVersion.ProductVersionID.ToString();
         DocCreatedDate = productVersion.DateCreatedUtc;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TeamSupport.Data;
+using System.Text;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -18,6 +19,7 @@ namespace TeamSupport.ServiceLibrary
     protected   int       _rowIndex     = 0;
     protected   int?      _lastItemID   = null;
     protected bool _isRebuilding = false;
+    protected StringBuilder _docFields;
 
     public    List<int> UpdatedItems
     {
@@ -32,6 +34,7 @@ namespace TeamSupport.ServiceLibrary
       _isRebuilding = isRebuilding;
       _loginUser      = new LoginUser(loginUser.ConnectionString, loginUser.UserID, loginUser.OrganizationID, null);
       _logs = new Logs(logName);
+      _docFields = new StringBuilder();
 
       _maxCount = maxCount;
 
@@ -55,6 +58,29 @@ namespace TeamSupport.ServiceLibrary
     {
       return false;
     }
+
+    protected void AddDocField(string key, string value)
+    {
+      if (value == null) value = "";
+      _docFields.Append(string.Format("{0}\t{1}\t", key.Trim().Replace('\t', ' '), value.Trim().Replace('\t', ' ')));
+    }
+
+    protected void AddDocField(string key, int value)
+    {
+      AddDocField(key, value.ToString());
+    }
+
+    protected void AddDocField(string key, bool value)
+    {
+      AddDocField(key, value.ToString());
+    }
+
+    protected void AddDocField(string key, DateTime value)
+    {
+
+
+    }
+
   }
 }
 

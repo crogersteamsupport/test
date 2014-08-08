@@ -62,9 +62,6 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
-        DocFields = string.Empty;
-
-        DocFields += "AssetID\t" + asset.AssetID.ToString() + "\t";
         StringBuilder assetLocationString = new StringBuilder();
         switch (asset.Location)
         {
@@ -78,30 +75,32 @@ namespace TeamSupport.ServiceLibrary
             assetLocationString.Append("Junkyard");
             break;
         }
-
-        DocFields += "Location\t" + assetLocationString.ToString() + "\t";
+        _docFields.Clear();
+        AddDocField("AssetID", asset.AssetID);
+        AddDocField("Location", assetLocationString.ToString());
+        AddDocField("SerialNumber", asset.SerialNumber);
 
         if (string.IsNullOrWhiteSpace(asset.Name))
         {
           if (string.IsNullOrWhiteSpace(asset.SerialNumber))
           {
-            DocFields += "Name\t" + asset.AssetID.ToString() + "\t";
+            AddDocField("Name", asset.AssetID);
             DocDisplayName = asset.AssetID.ToString();
           }
           else
           {
-            DocFields += "Name\t" + asset.SerialNumber + "\t";
+            AddDocField("Name", asset.SerialNumber);
             DocDisplayName = asset.SerialNumber;
           }
         }
         else
         {
-          DocFields += "Name\t" + asset.Name + "\t";
+          AddDocField("Name", asset.Name);
           DocDisplayName = asset.Name;
         }
 
         InventorySearchAsset assetItem = new InventorySearchAsset(asset);
-        DocFields += "**JSON\t" + JsonConvert.SerializeObject(assetItem) + "\t";
+        AddDocField("**JSON", JsonConvert.SerializeObject(assetItem));
 
         CustomValues customValues = new CustomValues(_loginUser);
         customValues.LoadByReferenceType(_organizationID, ReferenceType.Assets, asset.AssetID);
@@ -110,9 +109,9 @@ namespace TeamSupport.ServiceLibrary
         {
           object o = value.Row["CustomValue"];
           string s = o == null || o == DBNull.Value ? "" : o.ToString();
-          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
+          AddDocField(value.Row["Name"].ToString(), s);
         }
-
+        DocFields = _docFields.ToString();
         DocIsFile = false;
         DocName = asset.AssetID.ToString();
         DocCreatedDate = (DateTime)asset.Row["DateCreated"];

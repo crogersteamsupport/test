@@ -51,13 +51,13 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", actionsBuilder.ToString());
 
-        DocFields = string.Empty;
+        _docFields.Clear();
         foreach (DataColumn column in ticket.Collection.Table.Columns)
 	      {
           object value = ticket.Row[column];
           string s = value == null || value == DBNull.Value ? "" : value.ToString();
-          DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
-	      }
+          AddDocField(column.ColumnName, s);
+        }
 
         CustomValues customValues = new CustomValues(_loginUser);
         customValues.LoadByReferenceType(_organizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID);
@@ -66,8 +66,9 @@ namespace TeamSupport.ServiceLibrary
         {
           object o = value.Row["CustomValue"];
           string s = o == null || o == DBNull.Value ? "" : o.ToString();
-          DocFields += value.Row["Name"].ToString() + "\t" + s.Replace("\t", " ") + "\t";
+          AddDocField(value.Row["Name"].ToString(), s);
         }
+        DocFields = _docFields.ToString();
 
         DocIsFile       = false;
         DocName         = ticket.TicketID.ToString();

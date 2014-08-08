@@ -32,14 +32,15 @@ namespace TeamSupport.ServiceLibrary
 
         DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(waterCooler.Message));
 
-        DocFields = string.Empty;
+        _docFields.Clear();
         foreach (DataColumn column in waterCooler.Collection.Table.Columns)
         {
           object value = waterCooler.Row[column];
           string s = value == null || value == DBNull.Value ? "" : value.ToString();
-          DocFields += column.ColumnName + "\t" + s.Replace("\t", " ") + "\t";
+          AddDocField(column.ColumnName, s);
         }
 
+        DocFields = _docFields.ToString();
         DocIsFile = false;
         DocName = waterCooler.MessageID.ToString();
         DocCreatedDate = waterCooler.TimeStampUtc;
