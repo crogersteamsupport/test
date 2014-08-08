@@ -32,6 +32,16 @@ namespace TeamSupport.ServiceLibrary
         _lastItemID = asset.AssetID;
 
         StringBuilder builder = new StringBuilder();
+        builder.AppendLine(asset.CreatorName
+        + " " + asset.DateCreated
+        + " " + asset.DateModified
+        + " " + asset.ModifierName
+        + " " + asset.Notes
+        + " " + asset.ProductName
+        + " " + asset.ProductVersionNumber
+        + " " + asset.SerialNumber
+        + " " + asset.WarrantyExpiration);
+
         AssetHistoryView assetHistoryView = new AssetHistoryView(_loginUser);
         assetHistoryView.LoadByAssetID(asset.AssetID);
         foreach (AssetHistoryViewItem assetHistoryViewItem in assetHistoryView)
