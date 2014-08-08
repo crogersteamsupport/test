@@ -1984,7 +1984,7 @@ AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOr
 @"DECLARE @TIndex TABLE (ID int);
 
 WITH X AS (
-  SELECT OrganizationID FROM Organizations o 
+  SELECT OrganizationID, IsRebuildingIndex FROM Organizations o 
 	WHERE o.IsIndexLocked = 0
 	AND o.IsActive = 1
 	AND (
@@ -2005,7 +2005,7 @@ WITH X AS (
 ),
 
 Y AS (
-  SELECT X.OrganizationID, ROW_NUMBER() OVER (ORDER BY X.OrganizationID) AS 'RowNum' FROM X
+  SELECT X.OrganizationID, X.IsRebuildingIndex, ROW_NUMBER() OVER (ORDER BY X.IsRebuildingIndex) AS 'RowNum' FROM X
   )
 
 UPDATE Organizations
