@@ -1987,7 +1987,7 @@ WITH X AS (
   SELECT OrganizationID, IsRebuildingIndex FROM Organizations o 
 	WHERE o.IsIndexLocked = 0
 	AND o.ParentID = 1
-	AND (IsRebuildingIndex = 0 OR DATEDIFF(MINUTE, DateLastIndexed, GETUTCDATE()) > 2)
+	AND (IsRebuildingIndex = 0 OR DATEDIFF(SECOND, DateLastIndexed, GETUTCDATE()) > 60)
 	AND o.IsActive = 1
 	AND (
 	  EXISTS (SELECT * FROM Tickets t WHERE t.OrganizationID = o.OrganizationID AND t.NeedsIndexing=1)
