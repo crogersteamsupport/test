@@ -103,7 +103,7 @@
     //              .append($('<p>').text(item.openTicketCount + ' open tickets'))
     //          );
 
-        $('<td>').append(div).appendTo(el);
+    $('<td>').append(div).appendTo(el);
 
     switch (item.location) {
       case "1":
@@ -126,10 +126,14 @@
 
   function appendAsset(el, item) {
     var displayName = item.name;
+    var displayNameIsSerialNumber = false;
     if (isNullOrWhiteSpace(displayName)) {
       displayName = item.serialNumber;
       if (isNullOrWhiteSpace(displayName)) {
         displayName = item.assetID;
+      }
+      else {
+        displayNameIsSerialNumber = true;
       }
     }
 
@@ -142,17 +146,41 @@
 
     var list = $('<ul>').appendTo(el);
 
+    var firstRow = $('<li>').appendTo(list);
+
     $('<a>')
           .attr('target', '_blank')
           .text(item.productName)
-          .appendTo($('<li>').appendTo(list));
+          .appendTo(firstRow);
 
     if (!isNullOrWhiteSpace(item.productVersionNumber)) {
+      firstRow.append(' - ');
       $('<a>')
             .attr('target', '_blank')
             .text(item.productVersionNumber)
-            .appendTo($('<li>').appendTo(list));
+            .appendTo(firstRow);
     }
+
+    var secondRow = $('<li>').appendTo(list);
+    if (!displayNameIsSerialNumber) {
+      secondRow.append('SN: ');
+      if (isNullOrWhiteSpace(item.serialNumber)) {
+        secondRow.append('Empty');
+      }
+      else {
+        secondRow.append(item.serialNumber);
+      }
+      secondRow.append(' - ');
+    }
+
+    secondRow.append('Warr. Exp.: ');
+    if (isNullOrWhiteSpace(item.warrantyExpiration)) {
+      secondRow.append('Empty');
+    }
+    else {
+      secondRow.append(top.Ts.Utils.getMsDate(item.warrantyExpiration).localeFormat(top.Ts.Utils.getDatePattern()));
+    }
+
   }
 
 

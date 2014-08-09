@@ -1251,22 +1251,55 @@ namespace TSWebServices
           AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
           assets.LoadByRefID(refID, referenceType);
 
+          StringBuilder productVersionNumberDisplayName = new StringBuilder();
+          if (!string.IsNullOrEmpty(assets[0].ProductVersionNumber))
+          {
+            productVersionNumberDisplayName.Append(" - " + assets[0].ProductVersionNumber);
+          }
+
+          StringBuilder serialNumberDisplayValue = new StringBuilder();
+          if (string.IsNullOrEmpty(assets[0].SerialNumber))
+          {
+            serialNumberDisplayValue.Append("Empty");
+          }
+          else
+          {
+            serialNumberDisplayValue.Append(assets[0].SerialNumber);
+          }
+
+          StringBuilder warrantyExpirationDisplayValue = new StringBuilder();
+          if (assets[0].WarrantyExpiration == null)
+          {
+            warrantyExpirationDisplayValue.Append("Empty");
+          }
+          else
+          {
+            warrantyExpirationDisplayValue.Append(((DateTime)assets[0].WarrantyExpiration).ToString(GetDateFormatNormal()));
+          }
+
           foreach (AssetsViewItem asset in assets)
           {
             htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
                             <div class='row'>
-                                <div class='col-xs-6'>
-                                    <p class='list-group-item-text'>{2}</p>
-                                    {3}
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>{2}{3}</p>
                                 </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>SN: {4} - Warr. Exp.: {5}</p>
+                                </div>
+                            </div>
                             </div>
                             </div>"
 
                 , asset.AssetID
                 , asset.DisplayName
                 , asset.ProductName
-                , asset.ProductVersionNumber);
+                , productVersionNumberDisplayName
+                , serialNumberDisplayValue
+                , warrantyExpirationDisplayValue);
           }
 
           return htmlresults.ToString();
@@ -1279,14 +1312,44 @@ namespace TSWebServices
           AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
           assets.LoadAssignedToContactsByOrganizationID(organizationID);
 
+          StringBuilder productVersionNumberDisplayName = new StringBuilder();
+          if (!string.IsNullOrEmpty(assets[0].ProductVersionNumber))
+          {
+            productVersionNumberDisplayName.Append(" - " + assets[0].ProductVersionNumber);
+          }
+
+          StringBuilder serialNumberDisplayValue = new StringBuilder();
+          if (string.IsNullOrEmpty(assets[0].SerialNumber))
+          {
+            serialNumberDisplayValue.Append("Empty");
+          }
+          else
+          {
+            serialNumberDisplayValue.Append(assets[0].SerialNumber);
+          }
+
+          StringBuilder warrantyExpirationDisplayValue = new StringBuilder();
+          if (assets[0].WarrantyExpiration == null)
+          {
+            warrantyExpirationDisplayValue.Append("Empty");
+          }
+          else
+          {
+            warrantyExpirationDisplayValue.Append(((DateTime)assets[0].WarrantyExpiration).ToString(GetDateFormatNormal()));
+          }
+
           foreach (AssetsViewItem asset in assets)
           {
             htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
                             <div class='row'>
-                                <div class='col-xs-6'>
-                                    <p class='list-group-item-text'>{2}</p>
-                                    {3}
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>{2}{3}</p>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>SN: {4} - Warr. Exp.: {5}</p>
                                 </div>
                             </div>
                             </div>"
@@ -1294,7 +1357,9 @@ namespace TSWebServices
                 , asset.AssetID
                 , asset.DisplayName
                 , asset.ProductName
-                , asset.ProductVersionNumber);
+                , productVersionNumberDisplayName
+                , serialNumberDisplayValue
+                , warrantyExpirationDisplayValue);
           }
 
           return htmlresults.ToString();

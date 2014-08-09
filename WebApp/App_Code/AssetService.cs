@@ -16,6 +16,7 @@ using System.Runtime.Serialization;
 using dtSearch.Engine;
 using System.Net;
 using System.IO;
+using System.Globalization;
 
 namespace TSWebServices
 {
@@ -214,12 +215,42 @@ namespace TSWebServices
       AssetsView assetsView = new AssetsView(loginUser);
       assetsView.LoadByAssetID(assetID);
 
+      StringBuilder productVersionNumberDisplayName = new StringBuilder();
+      if (!string.IsNullOrEmpty(assetsView[0].ProductVersionNumber))
+      {
+        productVersionNumberDisplayName.Append(" - " + assetsView[0].ProductVersionNumber);
+      }
+
+      StringBuilder serialNumberDisplayValue = new StringBuilder();
+      if (string.IsNullOrEmpty(assetsView[0].SerialNumber))
+      {
+        serialNumberDisplayValue.Append("Empty");
+      }
+      else
+      {
+        serialNumberDisplayValue.Append(assetsView[0].SerialNumber);
+      }
+
+      StringBuilder warrantyExpirationDisplayValue = new StringBuilder();
+      if (assetsView[0].WarrantyExpiration == null)
+      {
+        warrantyExpirationDisplayValue.Append("Empty");
+      }
+      else
+      {
+        warrantyExpirationDisplayValue.Append(((DateTime)assetsView[0].WarrantyExpiration).ToString(GetDateFormatNormal()));
+      }
+
       return string.Format(@"<div class='list-group-item'>
                             <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
                             <div class='row'>
-                                <div class='col-xs-6'>
-                                    <p class='list-group-item-text'>{2}</p>
-                                    {3}
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>{2}{3}</p>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>SN: {4} - Warr. Exp.: {5}</p>
                                 </div>
                             </div>
                             </div>"
@@ -227,7 +258,15 @@ namespace TSWebServices
           , assetID
           , assetsView[0].DisplayName
           , assetsView[0].ProductName
-          , assetsView[0].ProductVersionNumber);
+          , productVersionNumberDisplayName
+          , serialNumberDisplayValue
+          , warrantyExpirationDisplayValue);
+    }
+
+    public string GetDateFormatNormal()
+    {
+      CultureInfo us = new CultureInfo(TSAuthentication.GetLoginUser().CultureInfo.ToString());
+      return us.DateTimeFormat.ShortDatePattern;
     }
 
     [WebMethod]
