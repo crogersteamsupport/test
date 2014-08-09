@@ -1867,6 +1867,130 @@ namespace TSWebServices
               }
             }
           }
+
+          assetAssignments = new AssetAssignmentsView(ticket.Collection.LoginUser);
+          assetAssignments.LoadByAssetID(assetID);
+
+          DateTime now = DateTime.UtcNow;
+
+          ContactsView contacts = new ContactsView(ticket.Collection.LoginUser);
+          contacts.LoadByTicketID(ticketID);
+
+          Boolean assignContact = false;
+
+          foreach (ContactsViewItem contact in contacts)
+          {
+            assignContact = true;
+
+            foreach (AssetAssignmentsViewItem assetAssignment in assetAssignments)
+            {
+              if (assetAssignment.RefType == (int)ReferenceType.Contacts && assetAssignment.ShippedTo == contact.UserID)
+              {
+                assignContact = false;
+              }
+            }
+
+            if (assignContact)
+            {
+              AssetHistory assetHistory = new AssetHistory(ticket.Collection.LoginUser);
+              AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+
+              assetHistoryItem.AssetID = assetID;
+              assetHistoryItem.OrganizationID = ticket.OrganizationID;
+              assetHistoryItem.ActionTime = now;
+              assetHistoryItem.ActionDescription = "Asset assigned per ticket #" + ticket.TicketNumber.ToString() + " on " + now.Month.ToString() + "/" + now.Day.ToString() + "/" + now.Year.ToString();
+              assetHistoryItem.ShippedFrom = ticket.OrganizationID;
+              assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
+              assetHistoryItem.ShippedTo = contact.UserID;
+              assetHistoryItem.ShippingMethod = "Other";
+
+              assetHistoryItem.DateCreated = now;
+              assetHistoryItem.Actor = ticket.Collection.LoginUser.UserID;
+              assetHistoryItem.RefType = (int)ReferenceType.Contacts;
+              assetHistoryItem.DateModified = now;
+              assetHistoryItem.ModifierID = ticket.Collection.LoginUser.UserID;
+
+              assetHistory.Save();
+
+              AssetAssignments assetAssignmentsInsert = new AssetAssignments(ticket.Collection.LoginUser);
+              AssetAssignment assetAssignmentInsert = assetAssignmentsInsert.AddNewAssetAssignment();
+
+              assetAssignmentInsert.HistoryID = assetHistoryItem.HistoryID;
+
+              assetAssignmentsInsert.Save();
+
+              string description = String.Format("{0} assigned asset to refID: {1} and refType: {2} by adding asset to Ticket #{3}.", TSAuthentication.GetUser(ticket.Collection.LoginUser).FirstLastName, contact.UserID.ToString(), ReferenceType.Contacts.ToString(), ticket.TicketNumber.ToString());
+              ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+            }
+          }
+
+          Boolean assignCompany = false;
+
+          Organizations organizations = new Organizations(ticket.Collection.LoginUser);
+          organizations.LoadByNotContactTicketID(ticketID);
+          foreach (Organization organization in organizations)
+          {
+            assignCompany = true;
+
+            foreach (AssetAssignmentsViewItem assetAssignment in assetAssignments)
+            {
+              if (assetAssignment.RefType == (int)ReferenceType.Organizations && assetAssignment.ShippedTo == organization.OrganizationID)
+              {
+                assignCompany = false;
+                break;
+              }
+            }
+
+            if (assignCompany)
+            {
+              foreach (AssetAssignmentsViewItem assetAssignment in assetAssignments)
+              {
+                if (assetAssignment.RefType == (int)ReferenceType.Contacts && assetAssignment.ShippedTo != null)
+                {
+                  Users users = new Users(ticket.Collection.LoginUser);
+                  users.LoadByUserID((int)assetAssignment.ShippedTo);
+                  if (users[0].OrganizationID == organization.OrganizationID)
+                  {
+                    assignCompany = false;
+                    break;
+                  }
+                }
+              }
+            }
+
+            if (assignCompany)
+            {
+              AssetHistory assetHistory = new AssetHistory(ticket.Collection.LoginUser);
+              AssetHistoryItem assetHistoryItem = assetHistory.AddNewAssetHistoryItem();
+
+              assetHistoryItem.AssetID = assetID;
+              assetHistoryItem.OrganizationID = ticket.OrganizationID;
+              assetHistoryItem.ActionTime = now;
+              assetHistoryItem.ActionDescription = "Asset assigned per ticket #" + ticket.TicketNumber.ToString() + " on " + now.Month.ToString() + "/" + now.Day.ToString() + "/" + now.Year.ToString();
+              assetHistoryItem.ShippedFrom = ticket.OrganizationID;
+              assetHistoryItem.ShippedFromRefType = (int)ReferenceType.Organizations;
+              assetHistoryItem.ShippedTo = organization.OrganizationID;
+              assetHistoryItem.ShippingMethod = "Other";
+
+              assetHistoryItem.DateCreated = now;
+              assetHistoryItem.Actor = ticket.Collection.LoginUser.UserID;
+              assetHistoryItem.RefType = (int)ReferenceType.Organizations;
+              assetHistoryItem.DateModified = now;
+              assetHistoryItem.ModifierID = ticket.Collection.LoginUser.UserID;
+
+              assetHistory.Save();
+
+              AssetAssignments assetAssignmentsInsert = new AssetAssignments(ticket.Collection.LoginUser);
+              AssetAssignment assetAssignmentInsert = assetAssignmentsInsert.AddNewAssetAssignment();
+
+              assetAssignmentInsert.HistoryID = assetHistoryItem.HistoryID;
+
+              assetAssignmentsInsert.Save();
+
+              string description = String.Format("{0} assigned asset to refID: {1} and refType: {2} by adding asset to Ticket #{3}.", TSAuthentication.GetUser(ticket.Collection.LoginUser).FirstLastName, organization.OrganizationID.ToString(), ReferenceType.Contacts.ToString(), ticket.TicketNumber.ToString());
+              ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+            }
+          }
         }
         catch(Exception e)
         {
@@ -1919,7 +2043,7 @@ namespace TSWebServices
           assignedTo = contact.UserID;
         }
 
-        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+        Organizations organizations = new Organizations(ticket.Collection.LoginUser);
         organizations.LoadByNotContactTicketID(ticketID);
         foreach (Organization organization in organizations)
         {
@@ -2964,11 +3088,6 @@ namespace TSWebServices
         AddTag(ticket.TicketID, tag);
       }
 
-      foreach (int assetID in info.Assets)
-      {
-        AddTicketAsset(ticket.TicketID, assetID);
-      }
-
       foreach (int id in info.Customers)
       {
         AddTicketCustomer(ticket.TicketID, "o", id);
@@ -2977,6 +3096,11 @@ namespace TSWebServices
       foreach (int id in info.Contacts)
       {
         AddTicketCustomer(ticket.TicketID, "u", id);
+      }
+
+      foreach (int assetID in info.Assets)
+      {
+        AddTicketAsset(ticket.TicketID, assetID);
       }
 
       foreach (CustomFieldSaveInfo field in info.Fields)
