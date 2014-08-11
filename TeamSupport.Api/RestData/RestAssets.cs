@@ -38,6 +38,7 @@ namespace TeamSupport.Api
 
     public static string CreateAsset(RestCommand command)
     {
+      DateTime now = DateTime.UtcNow;
       Assets assets = new Assets(command.LoginUser);
       Asset asset = assets.AddNewAsset();
       asset.OrganizationID = command.Organization.OrganizationID;
@@ -47,6 +48,8 @@ namespace TeamSupport.Api
       // This is normally not necessary, but as the CreatorID is defined as a null field in this table it is needed.
       asset.CreatorID = command.LoginUser.UserID;
       asset.NeedsIndexing = true;
+      asset.DateCreated = now;
+      asset.DateModified = now;
       asset.Collection.Save();
       asset.UpdateCustomFieldsFromXml(command.Data);
 
@@ -65,6 +68,8 @@ namespace TeamSupport.Api
       historyItem.ShippingMethod = string.Empty;
       historyItem.ReferenceNum = string.Empty;
       historyItem.Comments = string.Empty;
+      historyItem.DateCreated = now;
+      historyItem.DateModified = now;
 
       history.Save();
 

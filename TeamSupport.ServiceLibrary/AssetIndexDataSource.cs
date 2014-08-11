@@ -33,6 +33,7 @@ namespace TeamSupport.ServiceLibrary
 
         StringBuilder builder = new StringBuilder();
         builder.AppendLine(asset.CreatorName
+        + " " + asset.DisplayName
         + " " + asset.DateCreated
         + " " + asset.DateModified
         + " " + asset.ModifierName
@@ -114,8 +115,15 @@ namespace TeamSupport.ServiceLibrary
         DocFields = _docFields.ToString();
         DocIsFile = false;
         DocName = asset.AssetID.ToString();
-        DocCreatedDate = (DateTime)asset.Row["DateCreated"];
-        DocModifiedDate = (DateTime)asset.Row["DateModified"];
+        try
+        {
+          DocCreatedDate = (DateTime)asset.Row["DateCreated"];
+          DocModifiedDate = (DateTime)asset.Row["DateModified"];
+        }
+        catch (Exception)
+        {
+
+        }
 
         return true;
       }
