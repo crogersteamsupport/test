@@ -34,7 +34,23 @@ namespace TeamSupport.Api
         throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
       }
       
-    }    
+    }
+
+    public static string GetAssetsView(RestCommand command, int ticketID)
+    {
+      AssetsView assetsView = new AssetsView(command.LoginUser);
+      assetsView.LoadByTicketID(ticketID);
+
+      if (command.Format == RestFormat.XML)
+      {
+        return assetsView.GetXml("Assets", "Asset", true, command.Filters);
+      }
+      else
+      {
+        throw new RestException(HttpStatusCode.BadRequest, "Invalid data format");
+      }
+
+    }
   }
   
 }
