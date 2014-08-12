@@ -56,7 +56,6 @@ namespace TeamSupport.ServiceLibrary
           + " " + address.Country);
         }
 
-        DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
 
         _docFields.Clear();
         AddDocField("UserID", contact.UserID);
@@ -75,6 +74,10 @@ namespace TeamSupport.ServiceLibrary
           AddDocField("Name", contact.FirstName + " " + contact.LastName);
           DocDisplayName = contact.LastName.Trim() + (string.IsNullOrWhiteSpace(contact.FirstName) ? "" : ", " + contact.FirstName.Trim());
         }
+
+        builder.AppendLine(Regex.Replace(DocDisplayName, "[^a-zA-Z0-9 -]", ""));
+
+        DocText = builder.ToString();
 
         CustomerSearchContact contactItem = new CustomerSearchContact(contact);
         contactItem.phones = phones.ToArray();

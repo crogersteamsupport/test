@@ -59,7 +59,9 @@ namespace TeamSupport.ServiceLibrary
           + " " + address.Country);
         }
 
-        DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
+        builder.AppendLine(Regex.Replace(organization.Name, "[^a-zA-Z0-9 -]", ""));
+
+        DocText = builder.ToString();
         _docFields.Clear();
         AddDocField("OrganizationID", organization.OrganizationID);
         AddDocField("Name", organization.Name);
