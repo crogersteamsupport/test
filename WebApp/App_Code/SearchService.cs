@@ -1053,7 +1053,7 @@ namespace TSWebServices
           job.Request = Regex.Replace(job.Request, "[,.]+", "");
           if (job.Request.IndexOf('"') < 0)
           {
-            job.Request = "*" + job.Request + "*";
+            job.Request = job.Request + "*";
           }
 
           User user = Users.GetUser(loginUser, loginUser.UserID);
