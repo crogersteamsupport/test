@@ -80,7 +80,22 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT ov.* FROM OrganizationsView ov LEFT JOIN OrganizationProducts op ON op.OrganizationID = ov.OrganizationID WHERE op.ProductVersionID = @VersionID ORDER BY " + orderBy;
+        command.CommandText = @"
+        SELECT 
+          ov.* 
+        FROM
+          OrganizationsView ov 
+        WHERE 
+	        ov.OrganizationID IN
+	        (
+		        SELECT
+			        op.OrganizationID
+		        FROM
+			        OrganizationProducts op
+		        WHERE
+			        op.ProductVersionID = @VersionID 
+          )
+        ORDER BY " + orderBy;
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@VersionID", versionID);
         Fill(command);
