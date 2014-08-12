@@ -266,8 +266,16 @@ namespace TeamSupport.ServiceLibrary
         ExceptionLogs.LogException(LoginUser, ex, "Indexer.RemoveOldIndexItems - " + referenceType.ToString() + " - " + organization.OrganizationID.ToString());
       }
 
+      string noiseFile = Path.Combine(path, "noise.dat");
+      if (!File.Exists(noiseFile))
+      {
+        File.Create(noiseFile).Dispose();
+      }
+
       Options options = new Options();
       options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+      options.NoiseWordFile = "noise.dat";
+      options.Save();
       Logs.WriteEvent("Processing " + tableName);
       using (IndexJob job = new IndexJob())
       {
@@ -402,8 +410,6 @@ namespace TeamSupport.ServiceLibrary
         return;
       }
     }
-
-
 
     private void UpdateItems(IndexDataSource dataSource, string tableName, string primaryKeyName)
     {
