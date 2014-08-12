@@ -1048,9 +1048,13 @@ namespace TSWebServices
           job.MaxFilesToRetrieve = max;
           job.AutoStopLimit = 10000000;
           job.TimeoutSeconds = 30;
-
           job.Fuzziness = 0;
-          job.Request = "*" + job.Request + "*";
+
+          job.Request = Regex.Replace(job.Request, "[,.]+", "");
+          if (job.Request.IndexOf('"') < 0)
+          {
+            job.Request = "*" + job.Request + "*";
+          }
 
           User user = Users.GetUser(loginUser, loginUser.UserID);
           if (user.TicketRights == TicketRightType.Customers)

@@ -60,7 +60,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         builder.AppendLine(Regex.Replace(organization.Name, "[^a-zA-Z0-9 -]", ""));
-
+        
         DocText = builder.ToString();
         _docFields.Clear();
         AddDocField("OrganizationID", organization.OrganizationID);

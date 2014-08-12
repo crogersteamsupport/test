@@ -124,16 +124,6 @@ jQuery(document).ready(function () {
         return val ? decodeURIComponent(val) : null;
     }
 
-    var params = new Object();
-    params.Source = getURLParameter("utm_source");
-    if (params.Source) {
-        params.Medium = getURLParameter("utm_medium");
-        params.Term = getURLParameter("utm_term");
-        params.Content = getURLParameter("utm_content");
-        params.Campaign = getURLParameter("utm_campaign");
-        jQuery.cookie("_tsm", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' });
-    }
-
     if (!jQuery.cookie("_tsmi")) {
         var ga = jQuery.cookie("__utmz");
         if (ga) {
@@ -146,18 +136,18 @@ jQuery(document).ready(function () {
                 return decodeURIComponent(s);
             }
 
-            params = new Object();
+            var params = new Object();
             params.Campaign = parseGAString("utmccn");
             params.Content = parseGAString("utmcct");
             params.Term = parseGAString("utmctr");
             params.Medium = parseGAString("utmcmd");
             params.Source = parseGAString("utmcsr");
 
-            /*if (parseGAString("utmgclid") != "") {
-                params.Source = "Google";
+            if (parseGAString("utmgclid") != "") {
+                params.Source = "AdWords";
                 params.Medium = "cpc";
             }
-            */
+            
 
             jQuery.cookie("_tsmi", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' });
         }
