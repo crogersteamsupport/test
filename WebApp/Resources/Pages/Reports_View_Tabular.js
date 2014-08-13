@@ -334,7 +334,7 @@
 
     var dateFormatter = function (row, cell, value, columnDef, dataContext) {
         var date = dataContext[columnDef.id];
-        return date ? top.Ts.Utils.getDateString(date, true, true, true) : '';
+        return date ? top.Ts.Utils.getDateString(date, true, true, _report.ReportType == 3) : '';
     };
 
     var bitFormatter = function (row, cell, value, columnDef, dataContext) {

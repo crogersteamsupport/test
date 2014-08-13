@@ -207,13 +207,13 @@ namespace TeamSupport.Handlers
             prams.gaTerm = parseGAString(utmz, "utmctr");
             prams.gaMedium = parseGAString(utmz, "utmcmd");
             prams.gaSource = parseGAString(utmz, "utmcsr");
-            /*
+            
             if (parseGAString(utmz, "utmgclid") != "")
             {
-              prams.gaSource = "Google";
+              prams.gaSource = "AdWords";
               prams.gaMedium = "cpc";
             }
-             * */
+             
           }
           catch (Exception)
           {

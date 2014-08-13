@@ -339,7 +339,7 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("SelfID", user.UserID);
         command.Parameters.AddWithValue("UserID", user.UserID);
   
-        TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
+        TimeSpan offset = loginUser.Offset;
         command.Parameters.AddWithValue("Offset", string.Format("{0}{1:D2}:{2:D2}", offset < TimeSpan.Zero ? "-" : "+", Math.Abs(offset.Hours), Math.Abs(offset.Minutes)));
       }
       else
@@ -434,7 +434,7 @@ namespace TeamSupport.Data
 
       ReportTableFields tableFields = new ReportTableFields(loginUser);
       tableFields.LoadAll();
-      TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
+      TimeSpan offset = loginUser.Offset;
       TicketTypes ticketTypes = new TicketTypes(loginUser);
       ticketTypes.LoadByOrganizationID(loginUser.OrganizationID);
 
@@ -678,7 +678,7 @@ namespace TeamSupport.Data
           }
           break;
         case "datetime":
-          TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
+          TimeSpan offset = loginUser.Offset;
           string datetimeSql = string.Format("CAST(SWITCHOFFSET(TODATETIMEOFFSET({0}, '+00:00'), '{1}{2:D2}:{3:D2}') AS DATETIME)",
             fieldName,
             offset < TimeSpan.Zero ? "-" : "+",
@@ -1032,7 +1032,7 @@ namespace TeamSupport.Data
 
       ReportTableFields tableFields = new ReportTableFields(loginUser);
       tableFields.LoadAll();
-      TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
+      TimeSpan offset = loginUser.Offset;
       TicketTypes ticketTypes = new TicketTypes(loginUser);
       ticketTypes.LoadByOrganizationID(loginUser.OrganizationID);
 
@@ -1101,7 +1101,7 @@ namespace TeamSupport.Data
 
       ReportTableFields tableFields = new ReportTableFields(loginUser);
       tableFields.LoadAll(false);
-      TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
+      TimeSpan offset = loginUser.Offset;
 
       foreach (ReportSummaryCalculatedField field in summaryReport.Fields.Calculated)
       {

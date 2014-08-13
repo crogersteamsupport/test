@@ -122,6 +122,20 @@ namespace TeamSupport.Data
       set { _timeZoneInfo = value; }
     }
 
+    private TimeSpan _offset = new TimeSpan(0);
+    
+    public TimeSpan Offset
+    {
+      get {
+        if (_offset.Ticks == 0)
+        {
+          _offset = TimeZoneInfo.GetUtcOffset(DataUtils.DateToLocal(this, DateTime.UtcNow));
+        }
+        return _offset;
+      }
+    }
+
+
     private CultureInfo _cultureInfo = null;
     public CultureInfo CultureInfo
     {
@@ -209,6 +223,18 @@ namespace TeamSupport.Data
     public string GetUserFullName()
     {
       return Users.GetUserFullName(this, _userID);
+    }
+
+    private User _user = null;
+    public User User
+    {
+      get { 
+        if (_user == null)
+        {
+          _user = Users.GetUser(this, this.UserID);
+        }
+        return _user;
+      }
     }
 
     public User GetUser()
