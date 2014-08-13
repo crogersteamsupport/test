@@ -28,7 +28,7 @@ namespace TeamSupport.ServiceLibrary
         UpdatedItems.Add((int)_lastItemID);
 
 
-        DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(note.Description));
+        DocText = HtmlToText.ConvertHtml(note.Description);
 
         _docFields.Clear();
         foreach (DataColumn column in note.Collection.Table.Columns)

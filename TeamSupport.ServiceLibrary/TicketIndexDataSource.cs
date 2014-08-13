@@ -49,7 +49,7 @@ namespace TeamSupport.ServiceLibrary
           actionsBuilder.AppendLine(actionText);
         }
 
-        DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", actionsBuilder.ToString());
+        DocText = actionsBuilder.ToString();
 
         _docFields.Clear();
         foreach (DataColumn column in ticket.Collection.Table.Columns)

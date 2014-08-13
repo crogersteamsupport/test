@@ -61,7 +61,7 @@ namespace TeamSupport.ServiceLibrary
           + " " + assetHistoryViewItem.DateCreated);
         }
 
-        DocText = string.Format("<html>{1} {0}</html>", "CUSTOM FIELDS", builder.ToString());
+        DocText = builder.ToString();
 
         StringBuilder assetLocationString = new StringBuilder();
         switch (asset.Location)

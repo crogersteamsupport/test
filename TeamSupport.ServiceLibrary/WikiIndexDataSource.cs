@@ -30,7 +30,7 @@ namespace TeamSupport.ServiceLibrary
         _lastItemID = wiki.ArticleID;
         UpdatedItems.Add((int)_lastItemID);
 
-        DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(wiki.Body == null ? string.Empty : wiki.Body));
+        DocText = HtmlToText.ConvertHtml(wiki.Body == null ? string.Empty : wiki.Body);
 
         _docFields.Clear();
         foreach (DataColumn column in wiki.Collection.Table.Columns)

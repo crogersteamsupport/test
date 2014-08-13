@@ -30,7 +30,7 @@ namespace TeamSupport.ServiceLibrary
         _lastItemID = waterCooler.MessageID;
         UpdatedItems.Add((int)_lastItemID);
 
-        DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(waterCooler.Message));
+        DocText = HtmlToText.ConvertHtml(waterCooler.Message);
 
         _docFields.Clear();
         foreach (DataColumn column in waterCooler.Collection.Table.Columns)

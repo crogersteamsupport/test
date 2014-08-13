@@ -30,7 +30,7 @@ namespace TeamSupport.ServiceLibrary
         _lastItemID = productVersion.ProductVersionID;
         UpdatedItems.Add((int)_lastItemID);
 
-        DocText = string.Format("<html><body>{0}</body></html>", HtmlToText.ConvertHtml(productVersion.Description == null ? string.Empty : productVersion.Description));
+        DocText = HtmlToText.ConvertHtml(productVersion.Description == null ? string.Empty : productVersion.Description);
 
         _docFields.Clear();
         foreach (DataColumn column in productVersion.Collection.Table.Columns)
