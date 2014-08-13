@@ -147,6 +147,7 @@
     <Compile Include="RestData\RestPhoneNumbers.cs" />
     <Compile Include="RestData\RestProducts.cs" />
     <Compile Include="RestData\RestProperties.cs" />
+    <Compile Include="RestData\RestReportTicketsView.cs" />
     <Compile Include="RestData\RestTickets.cs" />
     <Compile Include="RestData\RestUsers.cs" />
     <Compile Include="RestData\RestVersions.cs" />
