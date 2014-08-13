@@ -35,7 +35,7 @@ namespace TeamSupport.ServiceLibrary
         List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
         StringBuilder builder = new StringBuilder();
         PhoneNumbers phoneNumbers = new PhoneNumbers(_loginUser);
-        phoneNumbers.LoadByID(contact.UserID, ReferenceType.Contacts);
+        phoneNumbers.LoadByID(contact.UserID, ReferenceType.Users);
         foreach (PhoneNumber number in phoneNumbers)
         {
           phones.Add(new CustomerSearchPhone(number));
@@ -43,7 +43,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         Addresses addresses = new Addresses(_loginUser);
-        addresses.LoadByID(contact.UserID, ReferenceType.Contacts);
+        addresses.LoadByID(contact.UserID, ReferenceType.Users);
         foreach (Address address in addresses)
         {
           builder.AppendLine(address.Description
