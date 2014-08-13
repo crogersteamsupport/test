@@ -24,6 +24,18 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByTicketTypeID(int ticketTypeID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT * FROM ReportTicketsView WHERE (TicketTypeID = @TicketTypeID) ORDER BY TicketNumber";
+        command.CommandText = InjectCustomFields(command.CommandText, "TicketID", ReferenceType.Tickets, ticketTypeID);
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+        Fill(command);
+      }
+    }
+
   }
   
 }
