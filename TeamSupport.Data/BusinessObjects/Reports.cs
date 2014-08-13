@@ -325,17 +325,22 @@ namespace TeamSupport.Data
           break;
       }
 
-      AddCommandParameters(command, Users.GetUser(Collection.LoginUser, Collection.LoginUser.UserID));
+      AddCommandParameters(command, Collection.LoginUser);
     }
 
-    private static void AddCommandParameters(SqlCommand command, User user)
+    private static void AddCommandParameters(SqlCommand command, LoginUser loginUser)
     {
+      User user = loginUser.GetUser();
+
       if (command.CommandText.IndexOf("@OrganizationID") > -1)
       {
         command.Parameters.AddWithValue("OrganizationID", user.OrganizationID);
         command.Parameters.AddWithValue("Self", user.FirstLastName);
         command.Parameters.AddWithValue("SelfID", user.UserID);
         command.Parameters.AddWithValue("UserID", user.UserID);
+  
+        TimeSpan offset = loginUser.TimeZoneInfo.BaseUtcOffset;
+        command.Parameters.AddWithValue("Offset", string.Format("{0}{1:D2}:{2:D2}", offset < TimeSpan.Zero ? "-" : "+", Math.Abs(offset.Hours), Math.Abs(offset.Minutes)));
       }
       else
       {
@@ -1014,7 +1019,7 @@ namespace TeamSupport.Data
     {
       command.CommandType = CommandType.Text;
       GetSummarySql(loginUser, command, summaryReport, isSchemaOnly, null, useUserFilter, useDefaultOrderBy);
-      AddCommandParameters(command, Users.GetUser(loginUser, loginUser.UserID));
+      AddCommandParameters(command, loginUser);
     }
 
     private static List<DescriptiveClauseItem> GetSummaryDescFields(LoginUser loginUser, SummaryReport summaryReport)

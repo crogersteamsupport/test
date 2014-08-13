@@ -526,7 +526,32 @@ namespace TeamSupport.Data
       builder.AppendLine(command.CommandText);
       foreach (SqlParameter param in command.Parameters)
       {
-        builder.AppendLine(string.Format("@{0}: {1}", param.ParameterName, param.Value.ToString()));
+        try
+        {
+          string name = param.ParameterName.Replace("@", "");
+          builder.AppendLine(string.Format("DECLARE @{0} {1}", name, param.SqlDbType.ToString()));
+          switch (param.SqlDbType)
+          {
+            case SqlDbType.BigInt:
+            case SqlDbType.Binary:
+            case SqlDbType.Bit:
+            case SqlDbType.Decimal:
+            case SqlDbType.Float:
+            case SqlDbType.Int:
+            case SqlDbType.Real:
+            case SqlDbType.SmallInt:
+            case SqlDbType.TinyInt:
+              builder.AppendLine(string.Format("SET @{0} = {1}", name, param.Value.ToString()));
+              break;
+            default:
+              builder.AppendLine(string.Format("SET @{0} = '{1}'", name, param.Value.ToString()));
+              break;
+          }
+        }
+        catch (Exception)
+        {
+          builder.AppendLine("Error setting param");
+        }
       }
       return builder.ToString();    
     }

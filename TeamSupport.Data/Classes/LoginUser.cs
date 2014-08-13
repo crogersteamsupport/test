@@ -210,5 +210,10 @@ namespace TeamSupport.Data
     {
       return Users.GetUserFullName(this, _userID);
     }
+
+    public User GetUser()
+    {
+      return Users.GetUser(this, this.UserID);
+    }
   }
 }
