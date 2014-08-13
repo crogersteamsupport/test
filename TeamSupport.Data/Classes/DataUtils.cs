@@ -523,13 +523,11 @@ namespace TeamSupport.Data
     public static string GetCommandTextSql(SqlCommand command)
     {
       StringBuilder builder = new StringBuilder();
-      builder.AppendLine(command.CommandText);
       foreach (SqlParameter param in command.Parameters)
       {
         try
         {
-          string name = param.ParameterName.Replace("@", "");
-          builder.AppendLine(string.Format("DECLARE @{0} {1}", name, param.SqlDbType.ToString()));
+          string format = "";
           switch (param.SqlDbType)
           {
             case SqlDbType.BigInt:
@@ -541,18 +539,21 @@ namespace TeamSupport.Data
             case SqlDbType.Real:
             case SqlDbType.SmallInt:
             case SqlDbType.TinyInt:
-              builder.AppendLine(string.Format("SET @{0} = {1}", name, param.Value.ToString()));
+              format = "DECLARE @{0} {1}; SET @{0} = {2};";
               break;
             default:
-              builder.AppendLine(string.Format("SET @{0} = '{1}'", name, param.Value.ToString()));
+              format = "DECLARE @{0} {1}; SET @{0} = '{2}';";
               break;
           }
+          builder.AppendLine(string.Format(format, param.ParameterName.Replace("@", ""), param.SqlDbType.ToString(), param.Value.ToString()));
         }
         catch (Exception)
         {
           builder.AppendLine("Error setting param");
         }
       }
+      builder.AppendLine(command.CommandText);
+
       return builder.ToString();    
     }
 
