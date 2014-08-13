@@ -274,7 +274,7 @@ namespace TeamSupport.ServiceLibrary
 
       Options options = new Options();
       options.TextFlags = TextFlags.dtsoTfRecognizeDates;
-      options.NoiseWordFile = "noise.dat";
+      options.NoiseWordFile = noiseFile;
       options.Save();
       Logs.WriteEvent("Processing " + tableName);
       using (IndexJob job = new IndexJob())
