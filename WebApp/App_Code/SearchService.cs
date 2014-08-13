@@ -1130,7 +1130,7 @@ namespace TSWebServices
         job.TimeoutSeconds = 30;
 
         job.Fuzziness = 0;
-        job.Request = "*" + job.Request + "*";
+        job.Request = job.Request + "*";
 
         if (!searchAssigned || !searchWarehouse || !searchJunkyard)
         {
