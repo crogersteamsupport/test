@@ -833,10 +833,23 @@ Namespace TeamSupport
                       ticketValuesChanged = True
                     End If
                   ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
-                    If IsDBNull(updateTicket(0).Row(cRMLinkField.TSFieldName)) OrElse updateTicket(0).Row(cRMLinkField.TSFieldName) <> translatedFieldValue Then
-                      updateTicket(0).Row(cRMLinkField.TSFieldName) = translatedFieldValue
-                      ticketValuesChanged = True
-                    End If
+                    Try
+                      If IsDBNull(updateTicket(0).Row(cRMLinkField.TSFieldName)) OrElse updateTicket(0).Row(cRMLinkField.TSFieldName) <> translatedFieldValue Then
+                        updateTicket(0).Row(cRMLinkField.TSFieldName) = translatedFieldValue
+                        ticketValuesChanged = True
+                      End If
+                    Catch ex As Exception
+                      'When a ticket view field is mapped an exception migth be thrown when looking for it in the Tickets table
+                      'The following is to look for its reference field in the Tickets table (e.g. Severity ? TicketSeverityID) and the related value.
+                      Dim ticketsTableRelatedValue As Integer? = Nothing
+                      Dim ticketsTableRelatedFieldName As String = GetTicketsTableRelatedFieldName(cRMLinkField.TSFieldName, translatedFieldValue, ticketsTableRelatedValue)
+                      If Not String.IsNullOrEmpty(ticketsTableRelatedFieldName) AndAlso Not ticketsTableRelatedValue Is Nothing Then
+                        If IsDBNull(updateTicket(0).Row(ticketsTableRelatedFieldName)) OrElse updateTicket(0).Row(ticketsTableRelatedFieldName) <> ticketsTableRelatedValue Then
+                          updateTicket(0).Row(ticketsTableRelatedFieldName) = ticketsTableRelatedValue
+                          ticketValuesChanged = True
+                        End If
+                      End If
+                    End Try
                   End If
                 Catch mappingException As Exception
                   Log.Write(
@@ -1063,6 +1076,42 @@ Namespace TeamSupport
               End Select         
             End If
             Return result
+          End Function
+
+          Private Function GetTicketsTableRelatedFieldName(ByVal mappedFieldName As String, ByVal value As String, ByRef ticketsTableRelatedValue As Integer?)
+            Dim result As StringBuilder = New StringBuilder()
+            Select Case mappedFieldName
+              'This is linked to issue product as long as status and type
+              'Case "ProductName"
+              '  result.Append("ProductID")
+              '  Dim products As Products = New Products(User)
+              '  products.LoadByProductName(CRMLinkRow.OrganizationID, value)
+              '  If products.Count > 0 Then
+              '    ticketsTableRelatedValue = products(0).ProductID
+              '  End If
+              Case "GroupName"
+                result.Append("GroupID")
+                Dim groups As Groups = New Groups(User)
+                groups.LoadByGroupName(CRMLinkRow.OrganizationID, value, 1)
+                If groups.Count > 0 Then
+                  ticketsTableRelatedValue = groups(0).GroupId
+                End If
+              Case "UserName"
+                result.Append("UserID")
+                Dim givenUser As Users = New Users(User)
+                givenUser.LoadByName(value, CRMLinkRow.OrganizationID, False, False, False)
+                If givenUser.Count > 0 Then
+                  ticketsTableRelatedValue = givenUser(0).UserID
+                End If
+              Case "Severity"
+                result.Append("TicketSeverityID")
+                Dim severity As TicketSeverities = New TicketSeverities(User)
+                severity.LoadByName(CRMLinkRow.OrganizationID, value)
+                If severity.Count > 0 Then
+                  ticketsTableRelatedValue = severity(0).TicketSeverityID
+                End If
+            End Select
+            Return result.ToString()
           End Function
 
         Private Function GetNewComments(ByVal comments As JObject, ByVal ticketID As Integer) As JArray
