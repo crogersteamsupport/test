@@ -76,6 +76,7 @@ namespace TeamSupport.ServiceLibrary
         }
 
         builder.AppendLine(Regex.Replace(DocDisplayName, "[^a-zA-Z0-9 -]", ""));
+        builder.AppendLine(Regex.Replace(contact.Organization, "[^a-zA-Z0-9 -]", ""));
 
         DocText = builder.ToString();
 
