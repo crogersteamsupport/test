@@ -143,12 +143,6 @@ jQuery(document).ready(function () {
             params.Medium = parseGAString("utmcmd");
             params.Source = parseGAString("utmcsr");
 
-            if (parseGAString("utmgclid") != "") {
-                params.Source = "AdWords";
-                params.Medium = "cpc";
-            }
-            
-
             jQuery.cookie("_tsmi", JSON.stringify(params), { expires: 7, path: '/', domain: 'teamsupport.com' });
         }
     }

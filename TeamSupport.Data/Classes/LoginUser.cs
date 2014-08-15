@@ -225,18 +225,6 @@ namespace TeamSupport.Data
       return Users.GetUserFullName(this, _userID);
     }
 
-    private User _user = null;
-    public User User
-    {
-      get { 
-        if (_user == null)
-        {
-          _user = Users.GetUser(this, this.UserID);
-        }
-        return _user;
-      }
-    }
-
     public User GetUser()
     {
       return Users.GetUser(this, this.UserID);
