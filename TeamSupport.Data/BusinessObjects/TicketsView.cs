@@ -272,6 +272,17 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByTicketNumberFromTicketsView(int ticketNumber, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT TOP 1 * FROM TicketsView WHERE OrganizationID = @OrganizationID AND TicketNumber= @TicketNumber";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@TicketNumber", ticketNumber);
+        Fill(command);
+      }
+    }
 
     /// <summary>
     /// Loads tickets that are associated with a customer's organizationid

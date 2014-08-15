@@ -1653,12 +1653,19 @@ namespace TeamSupport.Data
       }
     }
     
-    public static TicketsViewItem GetTicketsViewItem(LoginUser loginUser, int ticketID)
+    public static TicketsViewItem GetTicketsViewItem(LoginUser loginUser, int ticketIDOrTicketNumber)
     {
       TicketsView ticketsView = new TicketsView(loginUser);
-      ticketsView.LoadByTicketID(ticketID);
+      ticketsView.LoadByTicketID(ticketIDOrTicketNumber);
       if (ticketsView.IsEmpty)
-        return null;
+      {
+        ticketsView = new TicketsView(loginUser);
+        ticketsView.LoadByTicketNumberFromTicketsView(ticketIDOrTicketNumber, loginUser.OrganizationID);
+        if (ticketsView.IsEmpty)
+          return null;
+        else
+          return ticketsView[0];
+      }
       else
         return ticketsView[0];
     }
