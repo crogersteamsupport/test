@@ -134,6 +134,7 @@ OR (RTRIM(o1.Name) LIKE '%'+@Name+'%')
 )
 AND (o2.OrganizationID = @OrganizationID)  
 AND (u.MarkDeleted = 0)
+AND (@ActiveOnly = 0 OR o1.IsActive = 1) 
 AND (@ActiveOnly = 0 OR u.IsActive = 1) 
 AND (@UseFilter=0 OR (u.OrganizationID IN (SELECT OrganizationID FROM UserRightsOrganizations WHERE UserID = @UserID)))
 ORDER BY u.LastName, u.FirstName";

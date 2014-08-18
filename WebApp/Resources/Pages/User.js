@@ -102,11 +102,13 @@ UserPage = function () {
     $('#userAllowToEditAnyAction').html((user.AllowUserToEditAnyAction == true ? 'Yes' : 'No'));
     $('#userCanPinAction').html((user.UserCanPinAction == true ? 'Yes' : 'No'));
     $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
+    $('#userCommunityVisibility').html((user.CanChangeCommunityVisibility == true ? 'Yes' : 'No'));
     $('#userCanCreateCompany').html((user.CanCreateCompany == true ? 'Yes' : 'No'));
     $('#userCanEditCompany').html((user.CanEditCompany == true ? 'Yes' : 'No'));
     $('#userCanCreateContacts').html((user.CanCreateContact == true ? 'Yes' : 'No'));
     $('#userCanEditContacts').html((user.CanEditContact == true ? 'Yes' : 'No'));
-
+    $('#userCanCreateAssets').html((user.CanCreateAsset == true ? 'Yes' : 'No'));
+    $('#userCanEditAssets').html((user.CanEditAsset == true ? 'Yes' : 'No'));
 
     $('#userKBVisibility').html((user.ChangeKbVisibility == true ? 'Yes' : 'No'));
     $('#userTicketRights').html(userRightsToString(user.TicketRights)).data('o', user.TicketRights);
@@ -234,6 +236,8 @@ UserPage = function () {
       $('#chatUser').addClass('disabledlink');
       $('#userTicketVisibility').removeClass('ui-state-default ts-link');
       $('#userTicketVisibility').addClass('disabledlink');
+      $('#userCommunityVisibility').removeClass('ui-state-default ts-link');
+      $('#userCommunityVisibility').addClass('disabledlink');
       $('#userRestrictFromEditingAnyActions').removeClass('ui-state-default ts-link');
       $('#userRestrictFromEditingAnyActions').addClass('disabledlink');
       $('#userAllowToEditAnyAction').removeClass('ui-state-default ts-link');
@@ -248,6 +252,11 @@ UserPage = function () {
       $('#userCanCreateContacts').addClass('disabledlink');
       $('#userCanEditContacts').removeClass('ui-state-default ts-link');
       $('#userCanEditContacts').addClass('disabledlink');
+      $('#userCanEditAssets').removeClass('ui-state-default ts-link');
+      $('#userCanEditAssets').addClass('disabledlink');
+      $('#userCanCreateAssets').removeClass('ui-state-default ts-link');
+      $('#userCanCreateAssets').addClass('disabledlink');
+
       $('#userKBVisibility').removeClass('ui-state-default ts-link');
       $('#userKBVisibility').addClass('disabledlink');
       $('#userRightsAllTicketCustomers').removeClass('ui-state-default ts-link').addClass('disabledlink');
@@ -793,6 +802,25 @@ UserPage = function () {
         }
       });
 
+      $('#userCommunityVisibility')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCommunityVisibility(_user.UserID, (item.text() !== 'Yes'),
+                  function (result) {
+                      top.Ts.System.logAction('User Info - User Change Ticket Community Changed');
+                      item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                  },
+                  function (error) {
+                      alert('There was an error saving the user change community visibility.');
+                      item.next().hide();
+                  });
+          }
+      });
+
     $('#userCanCreateCompany')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
       .click(function (e) {
@@ -867,6 +895,45 @@ UserPage = function () {
                     item.next().hide();
                   });
         }
+      });
+
+
+    $('#userCanCreateAssets')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCanCreateAssets(_user.UserID, (item.text() !== 'Yes'),
+                      function (result) {
+                          top.Ts.System.logAction('User Info - User Change Can Create Assets Changed');
+                          item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                      },
+                      function (error) {
+                          alert('There was an error saving the user change to can create assets.');
+                          item.next().hide();
+                      });
+          }
+      });
+
+    $('#userCanEditAssets')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCanEditAssets(_user.UserID, (item.text() !== 'Yes'),
+                      function (result) {
+                          top.Ts.System.logAction('User Info - User Change Can Edit Assets Changed');
+                          item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                      },
+                      function (error) {
+                          alert('There was an error saving the user change to can edit assets.');
+                          item.next().hide();
+                      });
+          }
       });
 
 
@@ -1224,6 +1291,8 @@ UserPage = function () {
     $('#userAllowToEditAnyAction').addClass('disabledlink');
     $('#userTicketVisibility').removeClass('ui-state-default ts-link');
     $('#userTicketVisibility').addClass('disabledlink');
+    $('#userCommunityVisibility').removeClass('ui-state-default ts-link');
+    $('#userCommunityVisibility').addClass('disabledlink');
     $('#userKBVisibility').removeClass('ui-state-default ts-link');
     $('#userKBVisibility').addClass('disabledlink');
     $('#userRightsAllTicketCustomers').removeClass('ui-state-default ts-link').addClass('disabledlink');

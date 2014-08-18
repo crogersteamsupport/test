@@ -129,7 +129,10 @@
             <asp:CheckBox ID="cbUpdateTicketChildrenGroupWithParent" runat="server" Text="Update Ticket Children Group With Parent"/>
           </td>
         </tr>
-
+        <tr>
+            <td class="labelColTD" colspan="2"><asp:CheckBox ID="cbHideDismissNonAdmins" runat="server" Text="Hide Alert Dismiss for Non Admins"/></td>
+            <td class="labelColTD" colspan="2"></td>
+        </tr>
         <tr>
           <td>Business Day Start:</td>
           <td>

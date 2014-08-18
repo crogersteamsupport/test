@@ -71,6 +71,22 @@ $(document).ready(function () {
         if (note != null) {
             $('#modalAlertMessage').html(note.Description);
             //$('#modalAlert').modal('show');
+            var buttons = {
+                "Close": function () {
+                    $(this).dialog("close");
+                },
+                "Snooze": function () {
+                    top.Ts.Services.Customers.SnoozeAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
+                    $(this).dialog("close");
+                }
+            }
+
+            if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                buttons["Dismiss"] = function () {
+                    top.Ts.Services.Customers.DismissAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
+                    $(this).dialog("close");
+                }
+            }
             $("#dialog").dialog({
                 resizable: false,
                 width: 'auto',
@@ -79,19 +95,7 @@ $(document).ready(function () {
                     $(this).css('maxWidth', '800px');
                 },
                 modal: true,
-                buttons: {
-                    "Close": function () {
-                        $(this).dialog("close");
-                    },
-                    "Snooze": function () {
-                        top.Ts.Services.Customers.SnoozeAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
-                        $(this).dialog("close");
-                    },
-                    "Dismiss": function () {
-                        top.Ts.Services.Customers.DismissAlert(organizationID, top.Ts.ReferenceTypes.Organizations);
-                        $(this).dialog("close");
-                    }
-                }
+                buttons: buttons
             });
 
         }
@@ -1514,7 +1518,18 @@ $(document).ready(function () {
         }
     });
 
+    if (top.Ts.System.User.FilterInactive) {
+        $('#cbActive').prop('checked', true);
+    }
+
     $('#cbActive').click(function (e) {
+        top.Ts.Services.Users.SetInactiveFilter(top.Ts.System.User.UserID, $('#cbActive').prop('checked'), function (result) {
+            top.Ts.System.logAction('User Info - Changed Filter Inactive Setting');
+        },
+              function (error) {
+                  alert('There was an error saving the user filter inaactive setting.');
+                  item.next().hide();
+              });
         LoadContacts();
     });
 

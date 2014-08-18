@@ -523,6 +523,30 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool SetInactiveFilter(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.FilterInactive = value;
+            user.Collection.Save();
+            return user.FilterInactive;
+        }
+
+        [WebMethod]
+        public bool SetChangeCommunityVisibility(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.CanChangeCommunityVisibility = value;
+            user.Collection.Save();
+            return user.CanChangeCommunityVisibility;
+        }
+
+        [WebMethod]
         public bool SetChangeCanCreateCompany(int userID, bool value)
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
@@ -568,6 +592,30 @@ namespace TSWebServices
             user.CanEditContact = value;
             user.Collection.Save();
             return user.CanEditContact;
+        }
+
+        [WebMethod]
+        public bool SetChangeCanEditAssets(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.CanEditAsset = value;
+            user.Collection.Save();
+            return user.CanEditAsset;
+        }
+
+        [WebMethod]
+        public bool SetChangeCanCreateAssets(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+            if (!TSAuthentication.IsSystemAdmin) return !value;
+
+            user.CanCreateAsset = value;
+            user.Collection.Save();
+            return user.CanCreateAsset;
         }
 
         [WebMethod]
@@ -708,7 +756,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string CreateNewContact(string emailAddress, string firstName, string lastName, string companyName, bool createNewCompany)
+        public string CreateNewContact(string emailAddress, string firstName, string lastName, string companyName, string phone, bool createNewCompany)
         {
             User user;
             Users users = new Users(TSAuthentication.GetLoginUser());
@@ -792,6 +840,7 @@ namespace TSWebServices
                 organization.DefaultSupportGroupID = id < 0 ? null : id;
 
                 organization.TimeZoneID = "Dateline Standard Time";
+
                 try
                 {
                     TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(organization.TimeZoneID);
@@ -831,8 +880,20 @@ namespace TSWebServices
                 user.ActivatedOn = DateTime.UtcNow;
                 user.IsPortalUser = false;
                 user.EnforceSingleSession = true;
-
+                
                 user.Collection.Save();
+
+                PhoneTypes phoneTypes = new PhoneTypes(TSAuthentication.GetLoginUser());
+                phoneTypes.LoadByOrganizationID(TSAuthentication.OrganizationID);
+                
+
+                PhoneNumber p = new PhoneNumbers(TSAuthentication.GetLoginUser()).AddNewPhoneNumber();
+                p.PhoneTypeID = phoneTypes[0].PhoneTypeID;
+                p.Number = phone;
+                p.RefType = ReferenceType.Users;
+                p.RefID = user.UserID;
+
+                p.Collection.Save();
 
                 string password = DataUtils.GenerateRandomPassword();
                 user.CryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "MD5");

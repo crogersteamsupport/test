@@ -56,6 +56,11 @@ $(document).ready(function () {
 
   if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
 
+  if (!top.Ts.System.User.ChangeTicketVisibility)
+  {
+      $('.community-block').hide();
+  }
+
   $('.ticket-action-form-date').datetimepicker().datetimepicker('setDate', new Date());
   $('.ticket-action-form-hours').spinner({ min: 0 }).val(0);
   $('.ticket-action-form-minutes').spinner({ min: 0 }).val(0);
@@ -933,6 +938,23 @@ $(document).ready(function () {
                     $('#modalAlertMessage').html(note.Description);
                     $('#alertID').val(note.RefID);
                     $('#alertType').val(note.RefType);
+                    var buttons = {
+                        "Close": function () {
+                            $(this).dialog("close");
+                        },
+                        "Snooze": function () {
+                            top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                            $(this).dialog("close");
+                        }
+                    }
+
+                    if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                        buttons["Dismiss"] = function () {
+                            top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                            $(this).dialog("close");
+                        }
+                    }
+
                     $("#dialog").dialog({
                       resizable: false,
                       width: 'auto',
@@ -941,19 +963,7 @@ $(document).ready(function () {
                         $(this).css('maxWidth', '800px');
                       },
                       modal: true,
-                      buttons: {
-                        "Close": function () {
-                          $(this).dialog("close");
-                        },
-                        "Snooze": function () {
-                          top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                          $(this).dialog("close");
-                        },
-                        "Dismiss": function () {
-                          top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                          $(this).dialog("close");
-                        }
-                      }
+                      buttons: buttons
                     });
                   }
                 });
@@ -964,6 +974,24 @@ $(document).ready(function () {
                     $('#modalAlertMessage').html(note.Description);
                     $('#alertID').val(note.RefID);
                     $('#alertType').val(note.RefType);
+
+                    var buttons = {
+                        "Close": function () {
+                            $(this).dialog("close");
+                        },
+                        "Snooze": function () {
+                            top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                            $(this).dialog("close");
+                        }
+                    }
+
+                    if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                        buttons["Dismiss"] = function () {
+                            top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                            $(this).dialog("close");
+                        }
+                    }
+
                     $("#dialog").dialog({
                       resizable: false,
                       width: 'auto',
@@ -972,19 +1000,7 @@ $(document).ready(function () {
                         $(this).css('maxWidth', '800px');
                       },
                       modal: true,
-                      buttons: {
-                        "Close": function () {
-                          $(this).dialog("close");
-                        },
-                        "Snooze": function () {
-                          top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                          $(this).dialog("close");
-                        },
-                        "Dismiss": function () {
-                          top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                          $(this).dialog("close");
-                        }
-                      }
+                      buttons: buttons
                     });
                   }
                 });
@@ -1695,6 +1711,23 @@ $(document).ready(function () {
                         $('#modalAlertMessage').html(note.Description);
                         $('#alertID').val(note.RefID);
                         $('#alertType').val(note.RefType);
+                        var buttons = {
+                            "Close": function () {
+                                $(this).dialog("close");
+                            },
+                            "Snooze": function () {
+                                top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                                $(this).dialog("close");
+                            }
+                        }
+
+                        if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                            buttons["Dismiss"] = function () {
+                                top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                                $(this).dialog("close");
+                            }
+                        }
+
                         $("#dialog").dialog({
                           resizable: false,
                           width: 'auto',
@@ -1703,19 +1736,7 @@ $(document).ready(function () {
                             $(this).css('maxWidth', '800px');
                           },
                           modal: true,
-                          buttons: {
-                            "Close": function () {
-                              $(this).dialog("close");
-                            },
-                            "Snooze": function () {
-                              top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                              $(this).dialog("close");
-                            },
-                            "Dismiss": function () {
-                              top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                              $(this).dialog("close");
-                            }
-                          }
+                          buttons: buttons
                         });
                       }
                     });
@@ -1731,6 +1752,23 @@ $(document).ready(function () {
                         $('#modalAlertMessage').html(note.Description);
                         $('#alertID').val(note.RefID);
                         $('#alertType').val(note.RefType);
+                        var buttons = {
+                            "Close": function () {
+                                $(this).dialog("close");
+                            },
+                            "Snooze": function () {
+                                top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                                $(this).dialog("close");
+                            }
+                        }
+
+                        if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                            buttons["Dismiss"] = function () {
+                                top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                                $(this).dialog("close");
+                            }
+                        }
+
                         $("#dialog").dialog({
                           resizable: false,
                           width: 'auto',
@@ -1739,19 +1777,7 @@ $(document).ready(function () {
                             $(this).css('maxWidth', '800px');
                           },
                           modal: true,
-                          buttons: {
-                            "Close": function () {
-                              $(this).dialog("close");
-                            },
-                            "Snooze": function () {
-                              top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                              $(this).dialog("close");
-                            },
-                            "Dismiss": function () {
-                              top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                              $(this).dialog("close");
-                            }
-                          }
+                          buttons: buttons
                         });
                       }
                     });

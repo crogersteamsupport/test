@@ -6,7 +6,18 @@
     }
     $('input, textarea').placeholder();
 
+    if(top.Ts.System.User.FilterInactive){
+        $('#cbActive').prop('checked', true);
+    }
+
     $('#cbActive').click(function (e) {
+        top.Ts.Services.Users.SetInactiveFilter(top.Ts.System.User.UserID, $('#cbActive').prop('checked'), function (result) {
+            top.Ts.System.logAction('User Info - Changed Filter Inactive Setting');
+        },
+              function (error) {
+                  alert('There was an error saving the user filter inaactive setting.');
+                  item.next().hide();
+              });
         fetchItems();
     });
 

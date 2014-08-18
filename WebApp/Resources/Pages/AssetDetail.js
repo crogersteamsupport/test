@@ -42,6 +42,12 @@ $(document).ready(function () {
   LoadCustomProperties();
   LoadFiles();
 
+
+  if (!top.Ts.System.User.CanEditAsset) {
+      $('#assetEdit').hide();
+  }
+
+
   $(".maincontainer").on("keypress", "input", (function (evt) {
     //Deterime where our character code is coming from within the event
     var charCode = evt.charCode || evt.keyCode;

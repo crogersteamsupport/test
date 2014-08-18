@@ -248,6 +248,23 @@ $(document).ready(function () {
                     $('#modalAlertMessage').html(note.Description);
                     $('#alertID').val(note.RefID);
                     $('#alertType').val(note.RefType);
+
+                    var buttons = {
+                        "Close": function () {
+                            $(this).dialog("close");
+                        },
+                        "Snooze": function () {
+                            top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                            $(this).dialog("close");
+                        }
+                    }
+                    if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                        buttons["Dismiss"] = function () {
+                            top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                            $(this).dialog("close");
+                        }
+                    }
+
                     $("#dialog").dialog({
                       resizable: false,
                       width: 'auto',
@@ -256,19 +273,7 @@ $(document).ready(function () {
                         $(this).css('maxWidth', '800px');
                       },
                       modal: true,
-                      buttons: {
-                        "Close": function () {
-                          $(this).dialog("close");
-                        },
-                        "Snooze": function () {
-                          top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                          $(this).dialog("close");
-                        },
-                        "Dismiss": function () {
-                          top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                          $(this).dialog("close");
-                        }
-                      }
+                      buttons: buttons
                     });
                   }
                 });
@@ -279,6 +284,24 @@ $(document).ready(function () {
                     $('#modalAlertMessage').html(note.Description);
                     $('#alertID').val(note.RefID);
                     $('#alertType').val(note.RefType);
+
+                    var buttons = {
+                        "Close": function () {
+                            $(this).dialog("close");
+                        },
+                        "Snooze": function () {
+                            top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                            $(this).dialog("close");
+                        }
+                    }
+
+                    if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                        buttons["Dismiss"] = function () {
+                            top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                            $(this).dialog("close");
+                        }
+                    }
+
                     $("#dialog").dialog({
                       resizable: false,
                       width: 'auto',
@@ -287,19 +310,7 @@ $(document).ready(function () {
                         $(this).css('maxWidth', '800px');
                       },
                       modal: true,
-                      buttons: {
-                        "Close": function () {
-                          $(this).dialog("close");
-                        },
-                        "Snooze": function () {
-                          top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-                          $(this).dialog("close");
-                        },
-                        "Dismiss": function () {
-                          top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-                          $(this).dialog("close");
-                        }
-                      }
+                      buttons: buttons
                     });
                   }
                 });
@@ -1185,6 +1196,9 @@ $(document).ready(function () {
     .click(function (e) {
       e.preventDefault();
       e.stopPropagation();
+      if (!top.Ts.System.User.CanChangeCommunityVisibility) {
+          return false;
+      }
       removeComboBoxes();
       var parent = $(this).closest('.ticket-name-value').hide();
       var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
@@ -1903,8 +1917,9 @@ $(document).ready(function () {
     var email = $('.ticket-new-customer-email').val();
     var firstName = $('.ticket-new-customer-first').val();
     var lastName = $('.ticket-new-customer-last').val();
+    var phone = $('.ticket-new-customer-phone').val();
     var companyName = $('.ticket-new-customer-company').val();
-    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, false, function (result) {
+    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName,phone, false, function (result) {
       if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
         top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
           appendCustomers(result);
@@ -1918,7 +1933,7 @@ $(document).ready(function () {
       else if (result.indexOf("The company you have specified is invalid") !== -1) {
         if (top.Ts.System.User.CanCreateCompany || top.Ts.System.User.IsSystemAdmin) {
           if (confirm('Unknown company, would you like to create it?')) {
-            top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, true, function (result) {
+            top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, true, function (result) {
               top.Ts.Services.Tickets.AddTicketCustomer(_ticketID, result.charAt(0), result.substring(1), function (result) {
                 appendCustomers(result);
                 $('.ticket-new-customer-email').val('');
@@ -2531,7 +2546,7 @@ var tickettimer = function () {
 
     if (_timerElapsed != Math.floor(ideal / 60000)) {
         var oldVal = parseInt(element.find('.ticket-action-form-minutes').val()) || 0;
-        element.find('.ticket-action-form-minutes').val(oldVal + 1);
+        $('.ticket-action-form-minutes').val(oldVal + 1);
         _timerElapsed = Math.floor(ideal / 60000);
     }
     _timerid = setTimeout(tickettimer, (speed - diff));
@@ -3334,6 +3349,24 @@ var loadTicket = function (ticketNumber, refresh) {
         $('#modalAlertMessage').html(note.Description);
         $('#alertID').val(note.RefID);
         $('#alertType').val(note.RefType);
+
+        var buttons = {
+            "Close": function () {
+                $(this).dialog("close");
+            },
+            "Snooze": function () {
+                top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
+                $(this).dialog("close");
+            }
+        }
+
+        if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+            buttons["Dismiss"] = function () {
+                top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
+                $(this).dialog("close");
+            }
+        }
+
         $("#dialog").dialog({
           resizable: false,
           width: 'auto',
@@ -3342,19 +3375,7 @@ var loadTicket = function (ticketNumber, refresh) {
           create: function () {
               $(this).css('maxWidth', '800px');
           },
-          buttons: {
-            "Close": function () {
-              $(this).dialog("close");
-            },
-            "Snooze": function () {
-              top.Ts.Services.Customers.SnoozeAlert($('#alertID').val(), $('#alertType').val());
-              $(this).dialog("close");
-            },
-            "Dismiss": function () {
-              top.Ts.Services.Customers.DismissAlert($('#alertID').val(), $('#alertType').val());
-              $(this).dialog("close");
-            }
-          }
+          buttons: buttons
         });
 
       }

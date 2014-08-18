@@ -1275,7 +1275,23 @@ $(document).ready(function () {
     top.Ts.Services.Customers.LoadAlert(userID, top.Ts.ReferenceTypes.Users, function (note) {
         if (note != null) {
             $('#modalAlertMessage').html(note.Description);
-            //$('#modalAlert').modal('show');
+            var buttons = {
+                "Close": function () {
+                    $(this).dialog("close");
+                },
+                "Snooze": function () {
+                    top.Ts.Services.Customers.SnoozeAlert(userID, top.Ts.ReferenceTypes.Users);
+                    $(this).dialog("close");
+                }
+            }
+
+            if (!top.Ts.System.Organization.HideDismissNonAdmins || top.Ts.System.User.IsSystemAdmin) {
+                buttons["Dismiss"] = function () {
+                    top.Ts.Services.Customers.DismissAlert(userID, top.Ts.ReferenceTypes.Users);
+                    $(this).dialog("close");
+                }
+            }
+
             $("#dialog").dialog({
                 resizable: false,
                 width: 'auto',
@@ -1284,19 +1300,7 @@ $(document).ready(function () {
                     $(this).css('maxWidth', '800px');
                 },
                 modal: true,
-                buttons: {
-                    "Close": function () {
-                        $(this).dialog("close");
-                    },
-                    "Snooze": function () {
-                        top.Ts.Services.Customers.SnoozeAlert(userID, top.Ts.ReferenceTypes.Users);
-                        $(this).dialog("close");
-                    },
-                    "Dismiss": function () {
-                        top.Ts.Services.Customers.DismissAlert(userID, top.Ts.ReferenceTypes.Users);
-                        $(this).dialog("close");
-                    }
-                }
+                buttons: buttons
             });
 
         }

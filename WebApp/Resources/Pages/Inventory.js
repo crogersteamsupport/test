@@ -34,6 +34,10 @@
       searchJunkyard = true;
     }
 
+    if (!top.Ts.System.User.CanCreateAsset) {
+        $('.action-new').hide();
+    }
+
     top.Ts.Services.Search.SearchAssets($('#searchString').val(), start, 20, searchAssigned, searchWarehouse, searchJunkyard, function (items) {
       $('.searchresults').fadeTo(0, 1);
 

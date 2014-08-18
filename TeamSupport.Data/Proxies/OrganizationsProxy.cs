@@ -103,6 +103,8 @@ namespace TeamSupport.Data
     [DataMember] public bool ForceUseOfReplyTo { get; set; }
     [DataMember] public bool AgentRating { get; set; }
     [DataMember] public bool AddEmailViaTS { get; set; }
+    [DataMember]
+    public bool HideDismissNonAdmins { get; set; }
           
   }
   
@@ -111,6 +113,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.HideDismissNonAdmins = this.HideDismissNonAdmins;
       result.AddEmailViaTS = this.AddEmailViaTS;
       result.AgentRating = this.AgentRating;
       result.ForceUseOfReplyTo = this.ForceUseOfReplyTo;
