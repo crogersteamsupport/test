@@ -1363,6 +1363,7 @@ $(document).ready(function () {
         assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
         assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
         assetAssignmentInfo.Comments = $('#comments').val();
+        assetAssignmentInfo.AssigneeName = $('#contactName').text() + ' [' + $('#fieldCompany').text() + ']';
 
         top.Ts.Services.Assets.AssignAsset($('#inputAsset').data('item').id, top.JSON.stringify(assetAssignmentInfo), function (assetHtml) {
           top.Ts.System.logAction('Contact Detail - Asset Assigned');

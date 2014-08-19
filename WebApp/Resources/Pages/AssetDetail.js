@@ -36,6 +36,7 @@ $(document).ready(function () {
 
   _assetID = top.Ts.Utils.getQueryValue("assetid", window);
   var historyLoaded = 0;
+  var actionsHistoryLoaded = 0;
   top.privateServices.SetUserSetting('SelectedAssetID', _assetID);
 
   LoadProperties();
@@ -44,7 +45,7 @@ $(document).ready(function () {
 
 
   if (!top.Ts.System.User.CanEditAsset) {
-      $('#assetEdit').hide();
+    $('#assetEdit').hide();
   }
 
 
@@ -63,8 +64,19 @@ $(document).ready(function () {
     }
   });
 
+  $('#actionsHistoryToggle').on('click', function () {
+    if (actionsHistoryLoaded == 0) {
+      actionsHistoryLoaded = 1;
+      LoadActionsHistory(1);
+    }
+  });
+
   $('#historyRefresh').on('click', function () {
     LoadHistory(1);
+  });
+
+  $('#actionsHistoryRefresh').on('click', function () {
+    LoadActionsHistory(1);
   });
 
   $('#assetTabs a:first').tab('show');
@@ -167,7 +179,7 @@ $(document).ready(function () {
       var name = this.options[this.selectedIndex].innerHTML;
       container.remove();
 
-      top.Ts.Services.Assets.SetAssetProduct(_assetID, value, function (result) {
+      top.Ts.Services.Assets.SetAssetProduct(_assetID, value, $('#fieldProduct').text(), name, function (result) {
         header.data('productID', result);
         header.text(name);
         header.show();
@@ -226,7 +238,7 @@ $(document).ready(function () {
       var name = this.options[this.selectedIndex].innerHTML;
       container.remove();
 
-      top.Ts.Services.Assets.SetAssetProductVersion(_assetID, value, function (result) {
+      top.Ts.Services.Assets.SetAssetProductVersion(_assetID, value, $('#fieldProductVersion').text(), name, function (result) {
         header.data('productVersionID', result);
         header.text(name);
         header.show();
@@ -452,6 +464,7 @@ $(document).ready(function () {
       assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
       assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
       assetAssignmentInfo.Comments = $('#comments').val();
+      assetAssignmentInfo.AssigneeName = $('#inputCustomer').data('item').value;
 
       top.Ts.Services.Assets.AssignAsset(_assetID, top.JSON.stringify(assetAssignmentInfo), function (assetID) {
         top.Ts.System.logAction('Asset Assigned');
@@ -780,6 +793,26 @@ $(document).ready(function () {
                       $(this).remove();
                     })
                    .appendTo('#tblHistory > tbody:last');
+    });
+  }
+
+  function LoadActionsHistory(start) {
+
+    if (start == 1)
+      $('#tblActionsHistory tbody').empty();
+
+    top.Ts.Services.Assets.LoadActionsHistory(_assetID, start, function (history) {
+      for (var i = 0; i < history.length; i++) {
+        $('<tr>').html('<td>' + history[i].DateCreated.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</td><td>' + history[i].CreatorName + '</td><td>' + history[i].Description + '</td>')
+        .appendTo('#tblActionsHistory > tbody:last');
+      }
+      if (history.length == 50)
+        $('<button>').text("Load More").addClass('btn-link')
+                    .click(function (e) {
+                      LoadHistory($('#tblActionsHistory tbody > tr').length + 1);
+                      $(this).remove();
+                    })
+                   .appendTo('#tblActionsHistory > tbody:last');
     });
   }
 

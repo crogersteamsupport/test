@@ -398,5 +398,44 @@ namespace TeamSupport.Data
         }
     }
 
+    public void LoadByAssetIDLimit(int assetID, int start)
+    {
+      int end = start + 49;
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT
+          *
+        FROM
+          (
+            SELECT
+              *, 
+              ROW_NUMBER() OVER (ORDER BY DateModified Desc) AS rownum  
+            FROM
+              (
+                SELECT 
+                  al.*, 
+                  u.FirstName + ' ' + u.LastName AS CreatorName
+                FROM
+                  ActionLogs al
+                  LEFT JOIN Users u ON u.UserID = al.CreatorID
+                WHERE 
+                  al.RefType = 34
+                  AND al.RefID = @AssetID
+              ) as temp
+          ) as results
+        WHERE
+          rownum BETWEEN @start AND @end
+        ORDER BY
+          rownum ASC
+                                ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@AssetID", assetID);
+        command.Parameters.AddWithValue("@start", start);
+        command.Parameters.AddWithValue("@end", end);
+        Fill(command);
+      }
+    }
+
   }
 }

@@ -104,7 +104,7 @@ namespace TSWebServices
 
       asset.Collection.Save();
 
-      string description = String.Format("{0} created asset {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, GetAssetReference(asset));
+      string description = String.Format("Created asset {0} ", GetAssetReference(asset));
       ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Insert, ReferenceType.Assets, asset.AssetID, description);
 
       foreach (CustomFieldSaveInfo field in info.Fields)
@@ -209,7 +209,7 @@ namespace TSWebServices
 
       assetAssignments.Save();
 
-      string description = String.Format("{0} assigned asset to refID: {1} and refType: {2}", TSAuthentication.GetUser(loginUser).FirstLastName, info.RefID.ToString(), info.RefType.ToString());
+      string description = String.Format("Assigned asset to {0}.", info.AssigneeName);
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
 
       AssetsView assetsView = new AssetsView(loginUser);
@@ -324,8 +324,7 @@ namespace TSWebServices
         assetAssignments.DeleteFromDB(assetAssignmentViewItem.AssetAssignmentsID);
       }
 
-      string description = String.Format("{0} returned asset.", TSAuthentication.GetUser(loginUser).FirstLastName);
-      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, "Returned asset.");
 
       return assetID;
     }
@@ -366,8 +365,7 @@ namespace TSWebServices
 
       assetHistory.Save();
 
-      string description = String.Format("{0} junked asset.", TSAuthentication.GetUser(loginUser).FirstLastName);
-      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, "Junked asset.");
 
       return assetID;
     }
@@ -426,21 +424,30 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public ActionLogProxy[] LoadActionsHistory(int assetID, int start)
+    {
+      ActionLogs history = new ActionLogs(TSAuthentication.GetLoginUser());
+      history.LoadByAssetIDLimit(assetID, start);
+
+      return history.GetActionLogProxies();
+    }
+
+    [WebMethod]
     public string SetAssetName(int assetID, string value)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       Asset o = Assets.GetAsset(loginUser, assetID);
+      string description = String.Format("Changed Name from \"{0}\" to \"{1}\".", o.Name, value);
       o.Name = value;
       o.DateModified = DateTime.UtcNow;
       o.ModifierID = loginUser.UserID;
       o.Collection.Save();
-      string description = String.Format("{0} set asset name to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
       return value != "" ? value : "Empty";
     }
 
     [WebMethod]
-    public int SetAssetProduct(int assetID, int value)
+    public int SetAssetProduct(int assetID, int value, string oldName, string newName)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       Asset o = Assets.GetAsset(loginUser, assetID);
@@ -449,13 +456,13 @@ namespace TSWebServices
       o.DateModified = DateTime.UtcNow;
       o.ModifierID = loginUser.UserID;
       o.Collection.Save();
-      string description = String.Format("{0} set asset productID to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      string description = String.Format("Changed Product from \"{0}\" to \"{1}\".", oldName, newName);
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
       return value;
     }
 
     [WebMethod]
-    public int SetAssetProductVersion(int assetID, int value)
+    public int SetAssetProductVersion(int assetID, int value, string oldName, string newName)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       Asset o = Assets.GetAsset(loginUser, assetID);
@@ -463,7 +470,7 @@ namespace TSWebServices
       o.DateModified = DateTime.UtcNow;
       o.ModifierID = loginUser.UserID;
       o.Collection.Save();
-      string description = String.Format("{0} set asset productVersionID to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      string description = String.Format("Changed Product Version from \"{0}\" to \"{1}\".", oldName, newName);
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
       return value;
     }
@@ -473,11 +480,11 @@ namespace TSWebServices
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       Asset o = Assets.GetAsset(loginUser, assetID);
+      string description = String.Format("Changed Serial Number from \"{0}\" to \"{1}\".", o.SerialNumber, value);
       o.SerialNumber = value;
       o.DateModified = DateTime.UtcNow;
       o.ModifierID = loginUser.UserID;
       o.Collection.Save();
-      string description = String.Format("{0} set asset Serial Number to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
       return value != "" ? value : "Empty";
     }
@@ -487,11 +494,11 @@ namespace TSWebServices
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       Asset o = Assets.GetAsset(loginUser, assetID);
+      string description = String.Format("Changed Warranty Expiration from \"{0}\" to \"{1}\".", ((DateTime)o.WarrantyExpiration).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal()));
       o.WarrantyExpiration = (DateTime)value;
       o.DateModified = DateTime.UtcNow;
       o.ModifierID = loginUser.UserID;
       o.Collection.Save();
-      string description = String.Format("{0} set asset Warranty Expiration to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
       return value.ToString() != "" ? value.ToString() : null;
     }
@@ -501,11 +508,11 @@ namespace TSWebServices
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       Asset o = Assets.GetAsset(loginUser, assetID);
+      string description = String.Format("Changed Notes from \"{0}\" to \"{1}\".", o.Notes, value);
       o.Notes = value;
       o.DateModified = DateTime.UtcNow;
       o.ModifierID = loginUser.UserID;
       o.Collection.Save();
-      string description = String.Format("{0} set asset Notes to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
       ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
       return value != "" ? value : "Empty";
     }
@@ -838,6 +845,8 @@ namespace TSWebServices
     public string ReferenceNumber { get; set; }
     [DataMember]
     public string Comments { get; set; }
+    [DataMember]
+    public string AssigneeName { get; set; }
   }
 
 }

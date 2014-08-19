@@ -1048,6 +1048,7 @@ $(document).ready(function () {
         assetAssignmentInfo.ShippingMethod = $('#shippingMethod').val();
         assetAssignmentInfo.ReferenceNumber = $('#referenceNumber').val();
         assetAssignmentInfo.Comments = $('#comments').val();
+        assetAssignmentInfo.AssigneeName = $('#fieldName').text();
 
         top.Ts.Services.Assets.AssignAsset($('#inputAsset').data('item').id, top.JSON.stringify(assetAssignmentInfo), function (assetHtml) {
           top.Ts.System.logAction('Customer Detail - Asset Assigned');
