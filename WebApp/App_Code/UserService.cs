@@ -785,11 +785,11 @@ namespace TSWebServices
                     return errorMsg;
                 }
 
-                if ((email.Length < 1 || email.IndexOf('@') < 0 || email.IndexOf('.') < 0))
+                /*if ((email.Length < 1 || email.IndexOf('@') < 0 || email.IndexOf('.') < 0))
                 {
                     errorMsg = "The email you have specified is invalid.  Please choose another email.";
                     return errorMsg;
-                }
+                }*/
 
                 if (email != "" && !users.IsEmailValid(email, -1, newOrgID))
                 {
