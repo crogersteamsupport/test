@@ -863,7 +863,7 @@ namespace TSWebServices
             }
 
             // Create User
-            if (firstName.Length > 0 && lastName.Length > 0 && email.Length > 1 && email.IndexOf('@') > 0 && email.IndexOf('.') > 0)
+            if (firstName.Length > 0 && lastName.Length > 0)
             {
                 user = users.AddNewUser();
                 user.OrganizationID = newOrgID;
