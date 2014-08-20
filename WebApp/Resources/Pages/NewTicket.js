@@ -869,7 +869,8 @@ $(document).ready(function () {
     var firstName = $('.ticket-new-customer-first').val();
     var lastName = $('.ticket-new-customer-last').val();
     var companyName = $('.ticket-new-customer-company').val();
-    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, false, function (result) {
+    var phone = $('.ticket-new-customer-phone').val();
+    top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, false, function (result) {
       if (result.indexOf("u") == 0 || result.indexOf("o") == 0) {
         top.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
           appendCustomer(result);
@@ -877,6 +878,7 @@ $(document).ready(function () {
           $('.ticket-new-customer-first').val('');
           $('.ticket-new-customer-last').val('');
           $('.ticket-new-customer-company').val('');
+          $('.ticket-new-customer-phone').val('');
           $('.ticket-new-customer').hide();
         });
       }
