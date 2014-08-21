@@ -233,14 +233,24 @@ $(document).ready(function () {
 
     });
 
-    $('#cbActive').click(function (e){
+    if (top.Ts.System.User.FilterInactive) {
+        $('#cbActive').prop('checked', true);
+    }
+
+    $('#cbActive').click(function (e) {
+        top.Ts.Services.Users.SetInactiveFilter(top.Ts.System.User.UserID, $('#cbActive').prop('checked'), function (result) {
+            top.Ts.System.logAction('User Info - Changed Filter Inactive Setting');
+        },
+              function (error) {
+                  alert('There was an error saving the user filter inaactive setting.');
+              });
         Search();
     });
 
 });
 
 function Search() {
-    top.Ts.Services.Users.GetUsersSearch(top.Ts.System.User.OrganizationID, $('#searchString').val(), $('#cbActive').prop('checked'), function (html) {
+    top.Ts.Services.Users.GetUsersSearch(top.Ts.System.User.OrganizationID, $('#searchString').val(), !$('#cbActive').prop('checked'), function (html) {
         $('.user-container').empty();
         $('.user-container').fadeTo(0, 1);
         $('.user-container').append(html);
