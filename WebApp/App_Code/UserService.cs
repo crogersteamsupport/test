@@ -527,7 +527,6 @@ namespace TSWebServices
         {
             User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
             if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
-            if (!TSAuthentication.IsSystemAdmin) return !value;
 
             user.FilterInactive = value;
             user.Collection.Save();
