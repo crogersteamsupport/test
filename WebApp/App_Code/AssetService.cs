@@ -494,12 +494,20 @@ namespace TSWebServices
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       Asset o = Assets.GetAsset(loginUser, assetID);
-      string description = String.Format("Changed Warranty Expiration from \"{0}\" to \"{1}\".", ((DateTime)o.WarrantyExpiration).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal()));
+      StringBuilder description = new StringBuilder();
+      if (o.WarrantyExpiration == null)
+      {
+        description.Append(String.Format("Changed Warranty Expiration from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+      }
+      else
+      {
+        description.Append(String.Format("Changed Warranty Expiration from \"{0}\" to \"{1}\".", ((DateTime)o.WarrantyExpiration).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+      }
       o.WarrantyExpiration = (DateTime)value;
       o.DateModified = DateTime.UtcNow;
       o.ModifierID = loginUser.UserID;
       o.Collection.Save();
-      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Assets, assetID, description.ToString());
       return value.ToString() != "" ? value.ToString() : null;
     }
 
