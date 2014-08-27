@@ -239,6 +239,10 @@ namespace TeamSupport.Handlers
 
         return Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
       }
+      else
+      {
+        throw new Exception("Invalid Company: " + company);
+      }
       return null;
 
     }

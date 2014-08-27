@@ -818,7 +818,7 @@ namespace TeamSupport.Data
               break;
             case "TOMORROW": 
               builder.Append(string.Format("{0} = @{1}", dateSql, paramName));
-              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(-1).Date;
+              command.Parameters.Add(paramName, SqlDbType.Date).Value = DataUtils.DateToLocal(loginUser, DateTime.UtcNow).AddDays(1).Date;
               break;
             case "SPECIFIC DAY":
               builder.Append(string.Format("DATEPART(weekday, {0}) = {1:D}", dateSql, int.Parse(condition.Value1)));
