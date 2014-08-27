@@ -223,7 +223,6 @@ $(document).ready(function () {
       opt.appendTo(select);
     }
 
-
     $('<i>')
         .addClass('col-xs-1 fa fa-times')
         .click(function (e) {
@@ -233,6 +232,30 @@ $(document).ready(function () {
           top.Ts.System.logAction('Asset Detail - Product Version changed cancelled');
         })
         .insertAfter(container1);
+
+    $('<i>')
+      .addClass('col-xs-1 fa fa-check')
+      .click(function (e) {
+        var value = $('#ddlProductVersion').val();
+        var name = $('#ddlProductVersion').text();
+        container.remove();
+
+        top.Ts.Services.Assets.SetAssetProductVersion(_assetID, value, $('#fieldProductVersion').text(), name, function (result) {
+          header.data('productVersionID', result);
+          header.text(name);
+          header.show();
+          top.Ts.System.logAction('Asset Detail - Product Version changed.');
+        },
+        function (error) {
+          header.show();
+          alert('There was an error saving the asset product version.');
+        });
+        $('#assetEdit').removeClass("disabled");
+        $('#ddlProductVersion').closest('div').remove();
+        header.show();
+      })
+      .insertAfter(container1);
+
     $('#ddlProductVersion').on('change', function () {
       var value = $(this).val();
       var name = this.options[this.selectedIndex].innerHTML;
