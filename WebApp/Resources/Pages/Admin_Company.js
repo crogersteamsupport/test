@@ -27,8 +27,8 @@ AdminPortal = function () {
   })
   .toggle(window.location.hostname.indexOf('127.0.0.1') > -1);
 
-  var height = $(window).height();
-  $('iframe').css('height', height * 0.88 | 0);
+    var height = $('.portal-admin').height();
+  $('iframe').css('height', height * 0.85 | 0);
 
   $(function () {
       $(".slider").slider({
