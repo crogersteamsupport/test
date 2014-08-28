@@ -105,6 +105,7 @@ namespace TeamSupport.Data
     [DataMember] public bool AgentRating { get; set; }
     [DataMember] public string SignUpToken { get; set; }
     [DataMember] public bool IsValidated { get; set; }
+    [DataMember] public DateTime? DateLastIndexed { get; set; }
           
   }
   
@@ -206,6 +207,7 @@ namespace TeamSupport.Data
       result.BusinessDayEnd = DateTime.SpecifyKind(this.BusinessDayEndUtc, DateTimeKind.Utc);
       result.LastIndexRebuilt = DateTime.SpecifyKind(this.LastIndexRebuiltUtc, DateTimeKind.Utc);
        
+      result.DateLastIndexed = this.DateLastIndexedUtc == null ? this.DateLastIndexedUtc : DateTime.SpecifyKind((DateTime)this.DateLastIndexedUtc, DateTimeKind.Utc); 
       result.SAExpirationDate = this.SAExpirationDateUtc == null ? this.SAExpirationDateUtc : DateTime.SpecifyKind((DateTime)this.SAExpirationDateUtc, DateTimeKind.Utc); 
        
       return result;

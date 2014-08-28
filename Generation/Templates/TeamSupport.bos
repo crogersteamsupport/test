@@ -5678,6 +5678,23 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>Users</TableName>
+    <FieldName>DisableExporting</FieldName>
+    <CustomType>bool</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>bit</DBType>
+    <SqlDbType>SqlDbType.Bit</SqlDbType>
+    <SystemType>System.Boolean</SystemType>
+    <Size>1</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>Reports</TableName>
     <FieldName>ReportID</FieldName>
     <CustomType>int</CustomType>
@@ -8234,7 +8251,7 @@
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>false</AllowDBNull>
     <IsNullable>false</IsNullable>
-    <IsPrimaryKey>true</IsPrimaryKey>
+    <IsPrimaryKey>false</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
     <DBType>int</DBType>
@@ -8305,6 +8322,23 @@
     <IsPrimaryKey>false</IsPrimaryKey>
     <IsIdentity>false</IsIdentity>
     <IsAutoInc>false</IsAutoInc>
+    <DBType>varchar</DBType>
+    <SqlDbType>SqlDbType.VarChar</SqlDbType>
+    <SystemType>System.String</SystemType>
+    <Size>14</Size>
+    <Precision>255</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>RatingValue</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>false</AllowDBNull>
+    <IsNullable>false</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
     <DBType>int</DBType>
     <SqlDbType>SqlDbType.Int</SqlDbType>
     <SystemType>System.Int32</SystemType>
@@ -8365,6 +8399,23 @@
   </Fields>
   <Fields>
     <TableName>ReportAgentRatingsView</TableName>
+    <FieldName>UserID</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>ReportAgentRatingsView</TableName>
     <FieldName>Agent</FieldName>
     <CustomType>string</CustomType>
     <IsReadOnly>true</IsReadOnly>
@@ -8382,7 +8433,7 @@
   </Fields>
   <Fields>
     <TableName>ReportAgentRatingsView</TableName>
-    <FieldName>Rated Ticket Number</FieldName>
+    <FieldName>RatedTicketNumber</FieldName>
     <CustomType>int</CustomType>
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>true</AllowDBNull>
@@ -8399,7 +8450,7 @@
   </Fields>
   <Fields>
     <TableName>ReportAgentRatingsView</TableName>
-    <FieldName>Rated Ticket Name</FieldName>
+    <FieldName>RatedTicketName</FieldName>
     <CustomType>string</CustomType>
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>true</AllowDBNull>
@@ -8416,7 +8467,7 @@
   </Fields>
   <Fields>
     <TableName>ReportAgentRatingsView</TableName>
-    <FieldName>Rating Contact</FieldName>
+    <FieldName>RatingContact</FieldName>
     <CustomType>string</CustomType>
     <IsReadOnly>true</IsReadOnly>
     <AllowDBNull>true</AllowDBNull>
@@ -8433,7 +8484,7 @@
   </Fields>
   <Fields>
     <TableName>ReportAgentRatingsView</TableName>
-    <FieldName>Rating Company</FieldName>
+    <FieldName>RatingCompany</FieldName>
     <CustomType>string</CustomType>
     <IsReadOnly>false</IsReadOnly>
     <AllowDBNull>true</AllowDBNull>
@@ -36668,6 +36719,23 @@
     <Size>1</Size>
     <Precision>255</Precision>
     <Scale>255</Scale>
+  </Fields>
+  <Fields>
+    <TableName>Organizations</TableName>
+    <FieldName>DateLastIndexed</FieldName>
+    <CustomType>DateTime</CustomType>
+    <IsReadOnly>false</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>datetime</DBType>
+    <SqlDbType>SqlDbType.DateTime</SqlDbType>
+    <SystemType>System.DateTime</SystemType>
+    <Size>8</Size>
+    <Precision>23</Precision>
+    <Scale>3</Scale>
   </Fields>
   <Fields>
     <TableName>TicketAutomationTriggerLogic</TableName>

@@ -99,6 +99,7 @@ UserPage = function () {
     $('#userFontFamily').html(user.FontFamilyDescription);
     $('#userFontSize').html(user.FontSizeDescription);
     $('#userRestrictFromEditingAnyActions').html((user.RestrictUserFromEditingAnyActions == true ? 'Yes' : 'No'));
+    $('#userDisableExporting').html((user.DisableExporting == true ? 'Yes' : 'No'));
     $('#userAllowToEditAnyAction').html((user.AllowUserToEditAnyAction == true ? 'Yes' : 'No'));
     $('#userCanPinAction').html((user.UserCanPinAction == true ? 'Yes' : 'No'));
     $('#userTicketVisibility').html((user.ChangeTicketVisibility == true ? 'Yes' : 'No'));
@@ -240,6 +241,8 @@ UserPage = function () {
       $('#userCommunityVisibility').addClass('disabledlink');
       $('#userRestrictFromEditingAnyActions').removeClass('ui-state-default ts-link');
       $('#userRestrictFromEditingAnyActions').addClass('disabledlink');
+      $('#userDisableExporting').removeClass('ui-state-default ts-link');
+      $('#userDisableExporting').addClass('disabledlink');
       $('#userAllowToEditAnyAction').removeClass('ui-state-default ts-link');
       $('#userAllowToEditAnyAction').addClass('disabledlink');
       $('#userCanPinAction').removeClass('ui-state-default ts-link');
@@ -740,6 +743,25 @@ UserPage = function () {
                 item.next().hide();
               });
         }
+      });
+
+    $('#userDisableExporting')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetRestrictUserFromExportingData(_user.UserID, (item.text() !== 'Yes'),
+              function (result) {
+                  top.Ts.System.logAction('User Info - User Change Restrict User From Exporting Changed');
+                  item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+              },
+              function (error) {
+                  alert('There was an error saving the user change restrict user from exporting data.');
+                  item.next().hide();
+              });
+          }
       });
 
     $('#userAllowToEditAnyAction')
@@ -1285,6 +1307,8 @@ UserPage = function () {
     $('#userTitle').addClass('disabledlink');
     $('#userTimeZone').removeClass('ui-state-default ts-link');
     $('#userTimeZone').addClass('disabledlink');
+    $('#userDisableExporting').removeClass('ui-state-default ts-link');
+    $('#userDisableExporting').addClass('disabledlink');
     $('#userRestrictFromEditingAnyActions').removeClass('ui-state-default ts-link');
     $('#userRestrictFromEditingAnyActions').addClass('disabledlink');
     $('#userAllowToEditAnyAction').removeClass('ui-state-default ts-link');

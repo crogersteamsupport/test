@@ -105,6 +105,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("AgentRating", "AgentRating", false, false, false);
       _fieldMap.AddMap("SignUpToken", "SignUpToken", false, false, false);
       _fieldMap.AddMap("IsValidated", "IsValidated", false, false, false);
+      _fieldMap.AddMap("DateLastIndexed", "DateLastIndexed", false, false, false);
             
     }
   }

@@ -5,6 +5,7 @@
     var datamodel = new TeamSupport.DataModel(getReportData);
     var _report = null;
     $('.reports-edit').hide();
+    if (top.Ts.System.User.DisableExporting == true) { $('.reports-export').remove(); }
 
     function getReportData(from, to, sortcol, isdesc, callback) {
         var params = { "reportID":

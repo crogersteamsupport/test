@@ -487,6 +487,18 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool SetRestrictUserFromExportingData(int userID, bool value)
+        {
+          User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+          if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+          if (!TSAuthentication.IsSystemAdmin) return !value;
+
+          user.DisableExporting = value;
+          user.Collection.Save();
+          return user.DisableExporting;
+        }
+
+        [WebMethod]
         public bool SetAllowUserToEditAnyAction(int userID, bool value)
         {
           User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);

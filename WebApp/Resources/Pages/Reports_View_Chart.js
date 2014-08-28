@@ -2,6 +2,7 @@
     var _reportID = top.Ts.Utils.getQueryValue('ReportID', window);
     var _report = null;
     $('.reports-edit').hide();
+    if (top.Ts.System.User.DisableExporting == true) { $('.reports-export').remove(); }
 
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: 'body' });
 

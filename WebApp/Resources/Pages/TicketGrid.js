@@ -2,6 +2,9 @@
 
 var ticketGrid = null;
 $(document).ready(function () {
+    if (top.Ts.System.User.DisableExporting == true) { $('.tickets-export').remove(); }
+   
+
     $('.btn-group [data-toggle="tooltip"]').tooltip({ placement: 'bottom', container: '.grid-ticket-toolbar', animation: false });
 
     top.Ts.Services.Settings.ReadUserSetting('TicketGrid-Settings', '', function (result) {
