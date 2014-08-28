@@ -467,7 +467,7 @@ namespace TeamSupport.ServiceLibrary
       if (isNew || oldUserID != null || oldGroupID != null) // assignment already sent
       {
         List<UserEmail> removeList = new List<UserEmail>();
-        AddTicketOwners(removeList, ticket);
+        AddTicketOwners(removeList, ticket, true);
         foreach (UserEmail item in removeList)
         {
           RemoveUser(userList, item.UserID);
@@ -1105,14 +1105,29 @@ namespace TeamSupport.ServiceLibrary
       return false;
     }
 
-    private void AddTicketOwners(List<UserEmail> userList, Ticket ticket)
+    private void AddTicketOwners(List<UserEmail> userList, Ticket ticket, bool? receiveTicketNotifications = null)
     {
       Logs.WriteEvent("Adding Ticket Owners");
       if (ticket.UserID != null)
       {
         User user =  Users.GetUser(LoginUser, (int)ticket.UserID);
-        AddUser(userList, user, true);
-        if (user != null) Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
+        if (user != null) 
+        {
+          if (receiveTicketNotifications != null)
+          {
+            if (user.ReceiveTicketNotifications == (bool) receiveTicketNotifications)
+            {
+              AddUser(userList, user, true);
+              Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
+            }
+            Logs.WriteEventFormat("Owner Skipped due to receiveTicketNotifications: {0} ({1})", user.DisplayName, user.UserID.ToString());
+          }
+          else
+          {
+            AddUser(userList, user, true);
+            Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
+          }
+        }
       }
       
       if (ticket.GroupID != null)
