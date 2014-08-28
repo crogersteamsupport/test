@@ -30,7 +30,15 @@ namespace TeamSupport.Api
       }
       else
       {
-        organizations.LoadByParentID(command.Organization.OrganizationID, true);
+        try
+        {
+          organizations.LoadByParentID(command.Organization.OrganizationID, true, command.Filters);
+        }
+        catch (Exception e)
+        {
+          organizations = new OrganizationsView(command.LoginUser);
+          organizations.LoadByParentID(command.Organization.OrganizationID, true);
+        }
       }
       return organizations.GetXml("Customers", "Customer", true, command.Filters);
     }
