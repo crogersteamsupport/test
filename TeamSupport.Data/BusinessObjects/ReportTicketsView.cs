@@ -36,6 +36,34 @@ namespace TeamSupport.Data
       }
     }
 
+    public static ReportTicketsViewItem GetReportTicketsViewItemByIDOrNumber(LoginUser loginUser, int ticketIDOrNumber)
+    {
+      ReportTicketsView reportTicketsView = new ReportTicketsView(loginUser);
+      reportTicketsView.LoadByTicketID(ticketIDOrNumber);
+      if (reportTicketsView.IsEmpty)
+      {
+        reportTicketsView = new ReportTicketsView(loginUser); 
+        reportTicketsView.LoadByTicketNumber(ticketIDOrNumber, loginUser.OrganizationID);
+        if (reportTicketsView.IsEmpty)
+          return null;
+        else
+          return reportTicketsView[0];
+      }
+      else
+        return reportTicketsView[0];
+    }
+
+    public void LoadByTicketNumber(int ticketNumber, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SELECT TOP 1 * FROM ReportTicketsView WHERE OrganizationID = @OrganizationID AND TicketNumber= @TicketNumber";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@TicketNumber", ticketNumber);
+        Fill(command);
+      }
+    }
   }
   
 }

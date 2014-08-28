@@ -36,11 +36,17 @@ namespace TeamSupport.Api
       
     }
 
-    public static string GetAssetsView(RestCommand command, int ticketID)
+    public static string GetAssetsView(RestCommand command, int ticketIDOrTicketNumber)
     {
       AssetsView assetsView = new AssetsView(command.LoginUser);
-      assetsView.LoadByTicketID(ticketID);
+      assetsView.LoadByTicketID(ticketIDOrTicketNumber);
 
+      if (assetsView.IsEmpty)
+      {
+        assetsView = new AssetsView(command.LoginUser);
+        assetsView.LoadByTicketNumber(ticketIDOrTicketNumber, command.LoginUser.OrganizationID);      
+      }
+      
       if (command.Format == RestFormat.XML)
       {
         return assetsView.GetXml("Assets", "Asset", true, command.Filters);

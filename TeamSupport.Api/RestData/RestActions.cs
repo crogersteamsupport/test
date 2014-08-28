@@ -24,24 +24,24 @@ namespace TeamSupport.Api
       return action.GetXml("Action", true);
     }
 
-    public static string GetActions(RestCommand command, int ticketID, int? limitNumber = null)
+    public static string GetActions(RestCommand command, int ticketIDOrNumber, int? limitNumber = null)
     {
-      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
       if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       ActionsView actions = new ActionsView(command.LoginUser);
-      actions.LoadByTicketID(ticketID, limitNumber);
+      actions.LoadByTicketID(ticket.TicketID, limitNumber);
 
       return actions.GetXml("Actions", "Action", true, command.Filters);
     }
 
-    public static string CreateAction(RestCommand command, int ticketID)
+    public static string CreateAction(RestCommand command, int ticketIDOrNumber)
     {
-      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
       if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
       Actions actions = new Actions(command.LoginUser);
       TeamSupport.Data.Action action = actions.AddNewAction();
-      action.TicketID = ticketID;
+      action.TicketID = ticket.TicketID;
       action.ReadFromXml(command.Data, true);
       action.Collection.Save();
       action.UpdateCustomFieldsFromXml(command.Data);

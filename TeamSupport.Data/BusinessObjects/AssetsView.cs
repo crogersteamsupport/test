@@ -144,6 +144,29 @@ namespace TeamSupport.Data
       }
     }
 
+    public virtual void LoadByTicketNumber(int ticketNumber, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"SET NOCOUNT OFF; 
+        SELECT 
+          av.* 
+        FROM 
+          AssetsView av
+          JOIN AssetTickets at 
+            ON av.AssetID = at.AssetID
+          JOIN Tickets t
+            ON at.TicketID = t.TicketID
+        WHERE 
+          t.TicketNumber = @TicketNumber
+          AND t.OrganizationID = @OrganizationID";
+        command.CommandText = InjectCustomFields(command.CommandText, "av.AssetID", ReferenceType.Assets);
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketNumber", ticketNumber);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
   }
   
   public class InventorySearchAsset

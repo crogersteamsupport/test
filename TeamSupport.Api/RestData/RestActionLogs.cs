@@ -35,6 +35,32 @@ namespace TeamSupport.Api
       return items.GetXml("History", "ActionItem", true, command.Filters);
     }
 
+    public static string GetItemsByTicketIDOrNumber(RestCommand command, int refID, bool orderByDateCreated = false)
+    {
+      ActionLogsView items = new ActionLogsView(command.LoginUser);
+      if (orderByDateCreated)
+      {
+        items.LoadByReference(refID, ReferenceType.Tickets, "DateCreated DESC");
+      }
+      else
+      {
+        items.LoadByReference(refID, ReferenceType.Tickets);
+      }
+      if (items.IsEmpty)
+      {
+        items = new ActionLogsView(command.LoginUser);
+        if (orderByDateCreated)
+        {
+          items.LoadByTicketNumber(refID, "DateCreated DESC");
+        }
+        else
+        {
+          items.LoadByTicketNumber(refID);
+        }
+      }
+      return items.GetXml("History", "ActionItem", true, command.Filters);
+    }
+
     public static string AddNote(RestCommand command, ReferenceType refType, int refID)
     {
       if (!DataUtils.IsReferenceValid(command.LoginUser, refType, refID)) throw new RestException(HttpStatusCode.Unauthorized);

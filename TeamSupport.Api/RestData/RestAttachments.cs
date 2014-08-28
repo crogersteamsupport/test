@@ -49,9 +49,9 @@ namespace TeamSupport.Api
       return attachments.GetXml("Attachments", "Attachment", true, command.Filters);
     }
 
-    public static string CreateAttachment(RestCommand command, int ticketID, int actionID)
+    public static string CreateAttachment(RestCommand command, int ticketIDOrNumber, int actionID)
     {
-      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
       if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
       string path = AttachmentPath.GetPath(command.LoginUser, command.Organization.OrganizationID, AttachmentPath.Folder.Actions);

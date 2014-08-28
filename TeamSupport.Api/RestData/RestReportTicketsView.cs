@@ -84,7 +84,7 @@ namespace TeamSupport.Api
 
     public static string GetTicket(RestCommand command, int ticketID)
     {
-      ReportTicketsViewItem ticket = ReportTicketsView.GetReportTicketsViewItem(command.LoginUser, ticketID);
+      ReportTicketsViewItem ticket = ReportTicketsView.GetReportTicketsViewItemByIDOrNumber(command.LoginUser, ticketID);
       if (ticket.OrganizationID != command.Organization.OrganizationID)
       {
         throw new RestException(HttpStatusCode.Unauthorized);

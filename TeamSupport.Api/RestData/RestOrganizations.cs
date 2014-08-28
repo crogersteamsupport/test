@@ -106,43 +106,43 @@ namespace TeamSupport.Api
       return result;
     }
 
-    public static string GetTicketOrganizations(RestCommand command, int ticketID, bool orderByDateCreated = false)
+    public static string GetTicketOrganizations(RestCommand command, int ticketIDOrNumber, bool orderByDateCreated = false)
     {
-      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
       if (ticket == null || ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       OrganizationsView organizations = new OrganizationsView(command.LoginUser);
       if (orderByDateCreated)
       {
-        organizations.LoadByTicketID(ticketID, "ot.DateCreated DESC");
+        organizations.LoadByTicketID(ticket.TicketID, "ot.DateCreated DESC");
       }
       else
       {
-        organizations.LoadByTicketID(ticketID);
+        organizations.LoadByTicketID(ticket.TicketID);
       }
       return organizations.GetXml("Customers", "Customer", true, command.Filters);
     }
 
-    public static string AddTicketOrganization(RestCommand command, int ticketID, int organizationID)
+    public static string AddTicketOrganization(RestCommand command, int ticketIDOrNumber, int organizationID)
     {
-      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
       if (ticket == null || ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       Organization organization = Organizations.GetOrganization(command.LoginUser, organizationID);
       if (organization == null || organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
       Tickets tickets = new Tickets(command.LoginUser);
-      tickets.AddOrganization(organizationID, ticketID);
+      tickets.AddOrganization(organizationID, ticket.TicketID);
       return OrganizationsView.GetOrganizationsViewItem(command.LoginUser, organizationID).GetXml("Customer", true);
     }
 
-    public static string RemoveTicketOrganization(RestCommand command, int ticketID, int organizationID)
+    public static string RemoveTicketOrganization(RestCommand command, int ticketIDOrNumber, int organizationID)
     {
-      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
       if (ticket == null || ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       Organization organization = Organizations.GetOrganization(command.LoginUser, organizationID);
       if (organization == null || organization.ParentID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
       Tickets tickets = new Tickets(command.LoginUser);
-      tickets.RemoveOrganization(organizationID, ticketID);
+      tickets.RemoveOrganization(organizationID, ticket.TicketID);
       return OrganizationsView.GetOrganizationsViewItem(command.LoginUser, organizationID).GetXml("Customer", true);
     }
 

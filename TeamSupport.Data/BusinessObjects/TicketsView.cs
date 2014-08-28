@@ -238,6 +238,44 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadRelatedByTicketNumber(int ticketNumber)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT 
+          tv.*
+        FROM
+          TicketsView tv
+        WHERE
+          tv.TicketID IN 
+          (
+            SELECT
+              tr2.Ticket2ID
+            FROM
+              TicketRelationships tr2
+              JOIN Tickets t2
+                ON tr2.Ticket1ID = t2.TicketID
+            WHERE 
+              t2.TicketNumber = @TicketNumber
+          ) 
+          OR tv.TicketID IN 
+          (
+            SELECT
+              tr1.Ticket1ID
+            FROM
+              TicketRelationships tr1
+              JOIN Tickets t1
+                ON tr1.Ticket2ID = t1.TicketID
+            WHERE
+              t1.TicketNumber = @TicketNumber
+          )";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@TicketNumber", ticketNumber);
+        Fill(command);
+      }
+    }
+
     public void LoadChildren(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -1380,6 +1418,23 @@ WHERE tgv.OrganizationID = @OrganizationID"
         command.Parameters.AddWithValue("@AssetID", assetID);
         Fill(command);
       }
+    }
+
+    public static TicketsViewItem GetTicketsViewItemByIdOrNumber(LoginUser loginUser, int ticketIDOrTicketNumber)
+    {
+      TicketsView ticketsView = new TicketsView(loginUser);
+      ticketsView.LoadByTicketID(ticketIDOrTicketNumber);
+      if (ticketsView.IsEmpty)
+      {
+        ticketsView = new TicketsView(loginUser);
+        ticketsView.LoadByTicketNumberFromTicketsView(ticketIDOrTicketNumber, loginUser.OrganizationID);
+        if (ticketsView.IsEmpty)
+          return null;
+        else
+          return ticketsView[0];
+      }
+      else
+        return ticketsView[0];
     }
   } 
 }

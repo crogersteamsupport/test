@@ -15,7 +15,7 @@ namespace TeamSupport.Api
 
     public static string GetTicket(RestCommand command, int ticketID)
     {
-      TicketsViewItem ticket = TicketsView.GetTicketsViewItem(command.LoginUser, ticketID);
+      TicketsViewItem ticket = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketID);
       if (ticket.OrganizationID != command.Organization.OrganizationID)
       {
         throw new RestException(HttpStatusCode.Unauthorized);
@@ -151,9 +151,10 @@ namespace TeamSupport.Api
       return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
     }
 
-    public static string UpdateTicket(RestCommand command, int ticketID)
+    public static string UpdateTicket(RestCommand command, int ticketIDOrNumber)
     {
-      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
+      TicketsViewItem ticketViewItem = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
+      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketViewItem.TicketID);
       if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       ticket.ReadFromXml(command.Data, false);
       ticket.Collection.Save();
@@ -162,10 +163,11 @@ namespace TeamSupport.Api
       return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
     }
 
-    public static string DeleteTicket(RestCommand command, int ticketID)
+    public static string DeleteTicket(RestCommand command, int ticketIDOrNumber)
     {
-      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketID);
-      string result = TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
+      TicketsViewItem ticketViewItem = TicketsView.GetTicketsViewItemByIdOrNumber(command.LoginUser, ticketIDOrNumber);
+      Ticket ticket = Tickets.GetTicket(command.LoginUser, ticketViewItem.TicketID);
+      string result = ticketViewItem.GetXml("Ticket", true);
       if (ticket.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       ticket.Delete();
       ticket.Collection.Save();
@@ -248,10 +250,15 @@ namespace TeamSupport.Api
       return TicketsView.GetTicketsViewItem(command.LoginUser, ticket.TicketID).GetXml("Ticket", true);
     }
 
-    public static string GetRelatedTickets(RestCommand command, int ticketID)
+    public static string GetRelatedTickets(RestCommand command, int ticketIDOrTicketNumber)
     {
       TicketsView tickets = new TicketsView(command.LoginUser);
-      tickets.LoadRelated(ticketID);
+      tickets.LoadRelated(ticketIDOrTicketNumber);
+      if (tickets.IsEmpty)
+      {
+        tickets = new TicketsView(command.LoginUser);
+        tickets.LoadRelatedByTicketNumber(ticketIDOrTicketNumber);
+      }
       if (tickets.Count > 0 && tickets[0].OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
       return tickets.GetXml("Tickets", "Ticket", true, command.Filters);
