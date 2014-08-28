@@ -169,6 +169,7 @@
     <Compile Include="BusinessObjects\AttachmentDownloads.cs" />
     <Compile Include="BusinessObjects\Attachments.cs" />
     <Compile Include="BusinessObjects\BillingInfo.cs" />
+    <Compile Include="BusinessObjects\CDI_Settings.cs" />
     <Compile Include="BusinessObjects\ChatClients.cs" />
     <Compile Include="BusinessObjects\ChatClientsView.cs" />
     <Compile Include="BusinessObjects\ChatMessages.cs" />
@@ -262,6 +263,7 @@
     <Compile Include="FieldMaps\AssetsFieldMap.cs" />
     <Compile Include="FieldMaps\AssetsViewFieldMap.cs" />
     <Compile Include="FieldMaps\AttachmentDownloadsFieldMap.cs" />
+    <Compile Include="FieldMaps\CDI_SettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ChatClientsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ChatUserSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkFieldsFieldMap.cs" />
@@ -326,6 +328,7 @@
     <Compile Include="Generated\GeneratedAssets.cs" />
     <Compile Include="Generated\GeneratedAssetsView.cs" />
     <Compile Include="Generated\GeneratedAttachmentDownloads.cs" />
+    <Compile Include="Generated\GeneratedCDI_Settings.cs" />
     <Compile Include="Generated\GeneratedChatClientsView.cs" />
     <Compile Include="Generated\GeneratedChatUserSettings.cs" />
     <Compile Include="BusinessObjects\Groups.cs" />
@@ -616,6 +619,7 @@
     <Compile Include="Proxies\AttachmentDownloadsProxy.cs" />
     <Compile Include="Proxies\AttachmentsProxy.cs" />
     <Compile Include="Proxies\BillingInfoProxy.cs" />
+    <Compile Include="Proxies\CDI_SettingsProxy.cs" />
     <Compile Include="Proxies\ChatClientsProxy.cs" />
     <Compile Include="Proxies\ChatClientsViewProxy.cs" />
     <Compile Include="Proxies\ChatMessagesProxy.cs" />

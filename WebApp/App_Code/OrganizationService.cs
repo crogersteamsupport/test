@@ -160,6 +160,37 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public void SaveCDISettings(CDI_SettingProxy cdi)
+    {
+        CDI_Setting cdiSettings = CDI_Settings.GetCDI_Setting(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID);
+        if (cdiSettings == null)
+        {
+            CDI_Setting cdiSetting = (new CDI_Settings(TSAuthentication.GetLoginUser())).AddNewCDI_Setting();
+            cdiSetting.OrganizationID = TSAuthentication.OrganizationID;
+            cdiSetting.TotalTicketsWeight = cdi.TotalTicketsWeight;
+            cdiSetting.OpenTicketsWeight = cdi.OpenTicketsWeight;
+            cdiSetting.Last30Weight = cdi.Last30Weight;
+            cdiSetting.AvgDaysOpenWeight = cdi.AvgDaysOpenWeight;
+            cdiSetting.AvgDaysToCloseWeight = cdi.AvgDaysToCloseWeight;
+            cdiSetting.GreenUpperRange = cdi.GreenUpperRange;
+            cdiSetting.YellowUpperRange = cdi.YellowUpperRange;
+            cdiSetting.Collection.Save();
+        }
+        else
+        {
+            cdiSettings.TotalTicketsWeight = cdi.TotalTicketsWeight;
+            cdiSettings.OpenTicketsWeight = cdi.OpenTicketsWeight;
+            cdiSettings.Last30Weight = cdi.Last30Weight;
+            cdiSettings.AvgDaysOpenWeight = cdi.AvgDaysOpenWeight;
+            cdiSettings.AvgDaysToCloseWeight = cdi.AvgDaysToCloseWeight;
+            cdiSettings.GreenUpperRange = cdi.GreenUpperRange;
+            cdiSettings.YellowUpperRange = cdi.YellowUpperRange;
+            cdiSettings.Collection.Save();
+        }
+    }
+
+
+    [WebMethod]
     public string SetPortalOption(PortalOptionProxy proxy, string externalLink, bool isPublicArticles, int? groupID, AgentRatingsOptionProxy agentproxy)
     {
       Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), proxy.OrganizationID);
@@ -274,8 +305,6 @@ namespace TSWebServices
           agentRatingOption.ExternalPageLink = agentproxy.ExternalPageLink;
           agentRatingOption.Collection.Save();
       }
-
-      
       return null;
     }
 
@@ -1051,6 +1080,40 @@ namespace TSWebServices
       }
     
     }
+
+    [WebMethod]
+    public void ResetCDI()
+    {
+        //CDI_Setting cdi = (new CDI_Settings(TSAuthentication.GetLoginUser()).AddNewCDI_Setting());
+        CDI_Settings cdi = new CDI_Settings(TSAuthentication.GetLoginUser());
+        cdi.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+        if (cdi.Count > 0)
+        {
+            cdi[0].NeedCompute = true;
+            cdi.Save();
+        }
+        else
+        {
+            CDI_Setting newCDI = (new CDI_Settings(TSAuthentication.GetLoginUser()).AddNewCDI_Setting());
+            newCDI.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
+            newCDI.NeedCompute = true;
+            newCDI.Collection.Save();
+        }
+    }
+
+    [WebMethod]
+    public CDI_SettingProxy LoadCDISettings(int organizationID)
+    {
+        CDI_Settings cdi = new CDI_Settings(TSAuthentication.GetLoginUser());
+        cdi.LoadByOrganizationID(organizationID);
+        if (cdi.Count > 0)
+            return cdi[0].GetProxy();
+        else
+            return null;
+    }
+
+
 
   }
 

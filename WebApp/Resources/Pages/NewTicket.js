@@ -576,17 +576,21 @@ $(document).ready(function () {
           ed.on('init', function (e) {
             top.Ts.System.refreshUser(function () {
               if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
-                ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+                  ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+                  ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
               }
               else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-                ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+                  ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+                  ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
               }
 
               if (top.Ts.System.User.FontSize != "0") {
-                ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
+                  ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
+                  ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize + 1);
               }
               else if (top.Ts.System.Organization.FontSize != "0") {
-                ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSizeDescription);
+                  ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSizeDescription);
+                  ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize + 1);
               }
             });
           });
@@ -2117,6 +2121,34 @@ $(document).ready(function () {
 
   top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
 });
+
+function GetTinyMCEFontSize(fontSize) {
+    var result = '';
+    switch (fontSize) {
+        case 1:
+            result = "8px";
+            break;
+        case 2:
+            result = "10px";
+            break;
+        case 3:
+            result = "12px";
+            break;
+        case 4:
+            result = "14px";
+            break;
+        case 5:
+            result = "18px";
+            break;
+        case 6:
+            result = "24px";
+            break;
+        case 7:
+            result = "36px";
+            break;
+    }
+    return result;
+}
 
 function GetTinyMCEFontName(fontFamily) {
   var result = '';

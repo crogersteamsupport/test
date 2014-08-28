@@ -2377,17 +2377,21 @@ var initEditor = function (element, init) {
         ed.on('init', function (e) {
           top.Ts.System.refreshUser(function () {
             if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
-              ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+                ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+                ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
             }
             else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
-              ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+                ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+                ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
             }
 
             if (top.Ts.System.User.FontSize != "0") {
-              ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
+                ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
+                ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize + 1);
             }
             else if (top.Ts.System.Organization.FontSize != "0") {
-              ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSizeDescription);
+                ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSize +1);
+                ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize+1);
             }          
           });
         });
@@ -2843,6 +2847,16 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
     var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === action.CreatorID;
     var restrictedFromEditingAnyActions = !top.Ts.System.User.IsSystemAdmin && top.Ts.System.User.RestrictUserFromEditingAnyActions;
 
+    var userSig = '';
+    top.Ts.Services.Users.GetUserSignature(action.CreatorID, function (signature) {
+        if (!signature == '' && action.IsVisibleOnPortal)
+            userSig = "<br/><br/>" + signature;
+        var desc = element.find('.ticket-action-description').html(action.Description +  userSig);
+        desc.find('a').attr('target', '_blank');
+        desc.find('blockquote').addClass('ui-corner-all');
+        desc.find('pre').addClass('ui-corner-all');
+    });
+
     if (!top.Ts.System.User.AllowUserToEditAnyAction && (!canEdit || restrictedFromEditingAnyActions)) {
       element.find('.ticket-action-edit').remove();
       element.find('.ticket-action-delete').remove();
@@ -2980,10 +2994,8 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
             }
         }
 
-        var desc = element.find('.ticket-action-description').html(action.Description);
-        desc.find('a').attr('target', '_blank');
-        desc.find('blockquote').addClass('ui-corner-all');
-        desc.find('pre').addClass('ui-corner-all');
+
+
         element.find('.ticket-action-body').show();
     }
 
@@ -4170,6 +4182,35 @@ function checkIfUserExistsInArray(user, array) {
     }
   }
   return result;
+}
+
+function GetTinyMCEFontSize(fontSize) {
+    var result = '';
+    switch (fontSize)
+    {
+        case 1:
+            result = "8px";
+            break;
+        case 2:
+            result = "10px";
+            break;
+        case 3:
+            result = "12px";
+            break;
+        case 4:
+            result = "14px";
+            break;
+        case 5:
+            result = "18px";
+            break;
+        case 6:
+            result = "24px";
+            break;
+        case 7:
+            result = "36px";
+            break;
+    }
+    return result;
 }
 
 function GetTinyMCEFontName(fontFamily) {

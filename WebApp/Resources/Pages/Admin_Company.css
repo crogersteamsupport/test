@@ -1,0 +1,14 @@
+﻿.red{
+    color: red;
+}
+
+#tabs-cdi .slider-container{
+    width: 400px;
+}
+
+#cdi-green .ui-slider-range { background: #8ae234; }
+#cdi-green .ui-slider-handle { border-color: #8ae234; }
+
+#cdi-yellow .ui-slider-range { background: #ffd800; }
+#cdi-yellow .ui-slider-handle { border-color: #ffd800; }
+

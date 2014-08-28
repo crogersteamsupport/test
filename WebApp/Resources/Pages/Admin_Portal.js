@@ -34,8 +34,97 @@ AdminPortal = function () {
     $('#tabs-advanced').hide();
   }
 
-  //if (top.Ts.System.User.OrganizationID != 1078 && top.Ts.System.User.OrganizationID != 13679 && top.Ts.System.User.OrganizationID != 1088) 
-  //  $('#tab-rating').hide();
+  $(function () {
+      $(".slider").slider({
+          range: "min",
+          value: 2,
+          min: 0,
+          max: 10,
+          slide: function (event, ui) {
+              $(this).next().text("Overall Weight: " + (ui.value*10) + "%");
+          },
+          stop: function (event, ui) {
+              var total = 0;
+              var result;
+
+              $('.slider').each(function () {
+                  total = total + $(this).slider("value");
+              });
+
+              if (total == 10)
+              {
+                  result = "100%";
+                  $('#cdi-total').removeClass('red');
+                  $('#recalculate-cdi').removeAttr("disabled");
+                  $('.portal-save-panel').show();
+              }
+                  
+              if (total > 10)
+              {
+                  result = "is greater than 100%, please reconfigure your weights";
+                  $('#cdi-total').addClass('red');
+                  $('#recalculate-cdi').attr("disabled", "disabled");
+                  $('.portal-save-panel').hide();
+              }
+                  
+              if (total < 10)
+              {
+                  result = "is less than 100%, please reconfigure your weights";
+                  $('#cdi-total').addClass('red');
+                  $('#recalculate-cdi').attr("disabled", "disabled");
+                  $('.portal-save-panel').hide();
+              }
+
+              $('#cdi-total').text("Total Weight: " + result);
+              
+          }
+      });
+
+      $("#cdi-green").slider({
+          range: "min",
+          value: 70,
+          min: 0,
+          max: 100,
+          slide: function (event, ui) {
+              $(this).next().text("Upper Limit: " + (ui.value));
+          },
+          stop: function (event,ui)
+          {
+              if (ui.value > $("#cdi-yellow").slider('value'))
+              {
+                  $(this).next().addClass("red");
+                  $('.portal-save-panel').hide();
+              }
+              else{
+                  $("#cdi-yellow").next().removeClass("red");
+                  $('.portal-save-panel').show();
+              }
+          }
+      });
+
+      $("#cdi-yellow").slider({
+          range: "min",
+          value: 85,
+          min: 0,
+          max: 100,
+          slide: function (event, ui) {
+              $(this).next().text("Upper Limit: " + (ui.value));
+          },
+          stop: function (event,ui)
+          {
+              if (ui.value < $("#cdi-green").slider("value"))
+              {
+                  $(this).next().addClass("red");
+                  $('.portal-save-panel').hide();
+              }
+              else {
+                  $("#cdi-green").next().removeClass("red");
+                  $(this).next().removeClass("red");
+                  $('.portal-save-panel').show();
+              }
+          }
+      });
+  });
 
 
   //$('a').addClass('ui-state-default ts-link');
@@ -260,7 +349,16 @@ AdminPortal = function () {
     _agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
     _agentratingOption.ExternalPageLink = $('#agentrating-externalurl').val();
 
-    top.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), _agentratingOption, function (result) {
+    var _cdiOption = new top.TeamSupport.Data.CDI_SettingProxy();
+    _cdiOption.TotalTicketsWeight = ($('#ttw-slider').slider('value') * .1).toFixed(1);
+    _cdiOption.OpenTicketsWeight = $('#otw-slider').slider('value') * .1;
+    _cdiOption.Last30Weight = $('#last30-slider').slider('value') * .1;
+    _cdiOption.AvgDaysOpenWeight = $('#avgopen-weight').slider('value') * .1;
+    _cdiOption.AvgDaysToCloseWeight = $('#avgclose-weight').slider('value') * .1;
+    _cdiOption.GreenUpperRange = $("#cdi-green").slider('value');
+    _cdiOption.YellowUpperRange = $("#cdi-yellow").slider('value');
+
+    top.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), _agentratingOption,_cdiOption, function (result) {
       if (result != null) {
         alert(result);
       }
@@ -724,7 +822,47 @@ AdminPortal = function () {
                   $('#agentrating-externalurl').val(o.ExternalPageLink);
           }
       });
-    }
+  }
+
+  loadCDISettings();
+  function loadCDISettings()
+  {
+      top.Ts.Services.Organizations.LoadCDISettings(top.Ts.System.Organization.OrganizationID, function (cdi) {
+
+          if (cdi != null)
+            {
+              var ttwvalue = cdi.TotalTicketsWeight == null ? '2' : cdi.TotalTicketsWeight * 10;
+              $('#ttw-slider').slider('value', ttwvalue);
+              $('#ttw-slider').next().text("Overall Weight: " + (ttwvalue * 10) + "%");
+
+              var last30slider = cdi.Last30Weight == null ? '2' : cdi.Last30Weight * 10;
+              $('#last30-slider').slider('value', last30slider);
+              $('#last30-slider').next().text("Overall Weight: " + (last30slider * 10) + "%");
+
+              var otwslider = cdi.OpenTicketsWeight == null ? '2' : cdi.OpenTicketsWeight * 10;
+              $('#otw-slider').slider('value', otwslider);
+              $('#otw-slider').next().text("Overall Weight: " + (otwslider * 10) + "%");
+
+              var avgopenweight = cdi.AvgDaysOpenWeight == null ? '2' : cdi.AvgDaysOpenWeight * 10;
+              $('#avgopen-weight').slider('value', avgopenweight);
+              $('#avgopen-weight').next().text("Overall Weight: " + (avgopenweight * 10) + "%");
+
+              var avgcloseweight = cdi.AvgDaysToCloseWeight == null ? '2' : cdi.AvgDaysToCloseWeight * 10;
+              $('#avgclose-weight').slider('value', avgcloseweight);
+              $('#avgclose-weight').next().text("Overall Weight: " + (avgcloseweight * 10) + "%");
+
+              var greenlimit = cdi.AvgDaysToCloseWeight == null ? '70' : cdi.GreenUpperRange;
+              $('#cdi-green').slider('value', greenlimit);
+              $('#cdi-green').next().text("Upper Limit: " + greenlimit);
+
+              var yellowlimit = cdi.YellowUpperRange == null ? '85' : cdi.YellowUpperRange;
+              $('#cdi-yellow').slider('value', yellowlimit);
+              $('#cdi-yellow').next().text("Upper Limit: " + yellowlimit);
+          }
+      });
+
+  }
+
   var isFilevalid = true;
   $('.positive-file-upload').fileupload({
       namespace: 'custom_attachment',
@@ -1051,6 +1189,63 @@ AdminPortal = function () {
       top.Ts.Services.Organizations.ResetRatingImage(0, function () {
           $('#agentrating-neutral-img').attr("src", "../Images/face-neutral.png");
       });
+  });
+
+  var delay = (function () {
+      var timer = 0;
+      return function (callback, ms) {
+          clearTimeout(timer);
+          timer = setTimeout(callback, ms);
+      };
+  })();
+
+  function buildWidgetCode() {
+      var defaultString = "<script src='http://app.teamsupport.com/widget.js'></script>\n";
+      var options = "";
+      if ($('#widget-width').val() != '')
+      {
+          options = options + ",width:" + $('#widget-width').val();
+      }
+      if ($('#widget-height').val() != '') {
+          options = options + ",height:" + $('#widget-height').val();
+      }
+      if ($('#widget-button-text').val() != '') {
+          options = options + ",buttonText:" + $('#widget-button-text').val();
+      }
+      if ($('#widget-button-background').val() != '') {
+          options = options + ",buttonBgColor:" + $('#widget-button-background').val();
+      }
+      if ($('#widget-button-text-color').val() != '') {
+          options = options + ",buttonTextColor:" + $('#widget-button-text-color').val();
+      }
+      if ($('#widget-heading-text').val() != '') {
+          options = options + ",text:" + $('#widget-heading-text').val();
+      }
+      if ($('#widget-offset').val() != '') {
+          options = options + ",offset:" + $('#widget-offset').val();
+      }
+
+      var appendString = "<script>TeamSupport.Widget({orgID: " + top.Ts.System.Organization.OrganizationID + options +"'}); </script>";
+      $('#widget-generated-code').val(defaultString + appendString);
+
+      }
+
+  $('.widget-change').keyup(function () {
+      var thisVal = $(this).val();
+      delay(function () {
+          buildWidgetCode();
+      }, 1000);
+  });
+
+  $('.color-picker').minicolors({
+      hide: function () {
+          buildWidgetCode();
+      }
+  });
+
+  $('#recalculate-cdi').click(function () {
+      top.Ts.Services.Organizations.ResetCDI();
+      $(this).hide();
   });
 };
 

@@ -372,11 +372,11 @@ $(document).ready(function () {
             alert('There was an error saving the customer portal user status.');
         });
     });
-    $('.userProperties').on('click', '#fieldPortalLimitOrgTickets', function (e) {
+    $('.userProperties').on('click', '#fieldDisableOrganizationTicketsViewonPortal', function (e) {
         if (!$(this).hasClass('editable'))
             return false;
         top.Ts.Services.Customers.SetContactPortalLimitOrgTickets(userID, ($(this).text() !== 'Yes'), function (result) {
-            $('#fieldPortalLimitOrgTickets').text((result === true ? 'Yes' : 'No'));
+            $('#fieldDisableOrganizationTicketsViewonPortal').text((result === true ? 'Yes' : 'No'));
             top.Ts.System.logAction('Contact Detail - Edit Contact Portal Limit Org Tickets');
         },
         function (error) {

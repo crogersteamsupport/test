@@ -400,7 +400,7 @@ namespace TSWebServices
             html.AppendLine(CreateFormElement("Active", user.IsActive, "editable"));
             html.AppendLine(CreateFormElement("Portal User", user.IsPortalUser, "editable"));
             html.AppendLine(CreateFormElement("Prevent email from creating tickets", user.BlockInboundEmail, "editable"));
-            html.AppendLine(CreateFormElement("Can View Organization Portal Tickets", user.PortalLimitOrgTickets, "editable"));
+            html.AppendLine(CreateFormElement("Disable Organization Tickets View on Portal", user.PortalLimitOrgTickets, "editable"));
 
             if (TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).ParentID == null)
             {

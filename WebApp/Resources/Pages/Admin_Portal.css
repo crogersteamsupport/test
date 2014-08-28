@@ -1,4 +1,6 @@
-﻿
+﻿.red{
+    color: red;
+}
 
 .face{
     width: 90px;
@@ -25,6 +27,16 @@
     width: 90px;
     height: 90px;
 }
+
+#tabs-cdi .slider-container{
+    width: 400px;
+}
+
+#cdi-green .ui-slider-range { background: #8ae234; }
+#cdi-green .ui-slider-handle { border-color: #8ae234; }
+
+#cdi-yellow .ui-slider-range { background: #ffd800; }
+#cdi-yellow .ui-slider-handle { border-color: #ffd800; }
 
 form.positive-file-upload, form.neutral-file-upload, form.negative-file-upload { position: relative; overflow: hidden; direction: ltr; cursor: pointer; color: #333; width: 15em; height: 16px; line-height: 16px; float:left; margin-top: 0em; }
 form.positive-file-upload input, form.neutral-file-upload input, form.negative-file-upload input { position: absolute; top: 0; right: 0; margin: 0; border: 300px solid transparent; opacity: 0; -ms-filter: 'alpha(opacity=0)'; filter: alpha(opacity=0); -o-transform: translate(-300px, -300px) scale(10); -moz-transform: translate(-800px, 0) scale(10); cursor: pointer; height: 100%; }
