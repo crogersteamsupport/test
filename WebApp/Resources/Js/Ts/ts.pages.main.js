@@ -924,7 +924,7 @@ Ts.Pages.Main.prototype = {
           } else {
             div.show();
           }
-          $('.main-info-content').load('vcr/1_9_0/PaneInfo/report.html');
+          $('.main-info-content').load('vcr/1_9_0/PaneInfo/reports.html');
 
           break;
         case Ts.Ui.Tabs.Tab.Type.NewAsset:
