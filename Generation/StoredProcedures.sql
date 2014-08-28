@@ -1007,7 +1007,11 @@ AS
     [AllowUserToEditAnyAction],
     [UserCanPinAction],
     [PortalLimitOrgTickets],
-    [DisableExporting]
+    [DisableExporting],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -1086,6 +1090,10 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @UserCanPinAction bit,
   @PortalLimitOrgTickets bit,
   @DisableExporting bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
   @Identity int OUT
 )
 AS
@@ -1159,7 +1167,11 @@ AS
     [AllowUserToEditAnyAction],
     [UserCanPinAction],
     [PortalLimitOrgTickets],
-    [DisableExporting])
+    [DisableExporting],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive])
   VALUES (
     @Email,
     @FirstName,
@@ -1228,7 +1240,11 @@ AS
     @AllowUserToEditAnyAction,
     @UserCanPinAction,
     @PortalLimitOrgTickets,
-    @DisableExporting)
+    @DisableExporting,
+    @CanCreateAsset,
+    @CanEditAsset,
+    @CanChangeCommunityVisibility,
+    @FilterInactive)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -1305,7 +1321,11 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @AllowUserToEditAnyAction bit,
   @UserCanPinAction bit,
   @PortalLimitOrgTickets bit,
-  @DisableExporting bit
+  @DisableExporting bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit
 )
 AS
   SET NOCOUNT OFF;
@@ -1376,7 +1396,11 @@ AS
     [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
     [UserCanPinAction] = @UserCanPinAction,
     [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
-    [DisableExporting] = @DisableExporting
+    [DisableExporting] = @DisableExporting,
+    [CanCreateAsset] = @CanCreateAsset,
+    [CanEditAsset] = @CanEditAsset,
+    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
+    [FilterInactive] = @FilterInactive
   WHERE ([UserID] = @UserID)
 GO
 
@@ -3538,7 +3562,8 @@ AS
     [SupportHoursMonth],
     [SupportHoursUsed],
     [SupportHoursRemaining],
-    [NeedsIndexing]
+    [NeedsIndexing],
+    [CustDisIndex]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -10811,7 +10836,8 @@ AS
     [AgentRating],
     [SignUpToken],
     [IsValidated],
-    [DateLastIndexed]
+    [DateLastIndexed],
+    [HideDismissNonAdmins]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -10914,6 +10940,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @SignUpToken varchar(250),
   @IsValidated bit,
   @DateLastIndexed datetime,
+  @HideDismissNonAdmins bit,
   @Identity int OUT
 )
 AS
@@ -11011,7 +11038,8 @@ AS
     [AgentRating],
     [SignUpToken],
     [IsValidated],
-    [DateLastIndexed])
+    [DateLastIndexed],
+    [HideDismissNonAdmins])
   VALUES (
     @Name,
     @Description,
@@ -11104,7 +11132,8 @@ AS
     @AgentRating,
     @SignUpToken,
     @IsValidated,
-    @DateLastIndexed)
+    @DateLastIndexed,
+    @HideDismissNonAdmins)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -11205,7 +11234,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @AgentRating bit,
   @SignUpToken varchar(250),
   @IsValidated bit,
-  @DateLastIndexed datetime
+  @DateLastIndexed datetime,
+  @HideDismissNonAdmins bit
 )
 AS
   SET NOCOUNT OFF;
@@ -11300,7 +11330,8 @@ AS
     [AgentRating] = @AgentRating,
     [SignUpToken] = @SignUpToken,
     [IsValidated] = @IsValidated,
-    [DateLastIndexed] = @DateLastIndexed
+    [DateLastIndexed] = @DateLastIndexed,
+    [HideDismissNonAdmins] = @HideDismissNonAdmins
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -14515,7 +14546,11 @@ AS
     [AllowUserToEditAnyAction],
     [UserCanPinAction],
     [PortalLimitOrgTickets],
-    [DisableExporting]
+    [DisableExporting],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -14594,6 +14629,10 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @UserCanPinAction bit,
   @PortalLimitOrgTickets bit,
   @DisableExporting bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
   @Identity int OUT
 )
 AS
@@ -14667,7 +14706,11 @@ AS
     [AllowUserToEditAnyAction],
     [UserCanPinAction],
     [PortalLimitOrgTickets],
-    [DisableExporting])
+    [DisableExporting],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive])
   VALUES (
     @Email,
     @FirstName,
@@ -14736,7 +14779,11 @@ AS
     @AllowUserToEditAnyAction,
     @UserCanPinAction,
     @PortalLimitOrgTickets,
-    @DisableExporting)
+    @DisableExporting,
+    @CanCreateAsset,
+    @CanEditAsset,
+    @CanChangeCommunityVisibility,
+    @FilterInactive)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -14813,7 +14860,11 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @AllowUserToEditAnyAction bit,
   @UserCanPinAction bit,
   @PortalLimitOrgTickets bit,
-  @DisableExporting bit
+  @DisableExporting bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit
 )
 AS
   SET NOCOUNT OFF;
@@ -14884,7 +14935,11 @@ AS
     [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
     [UserCanPinAction] = @UserCanPinAction,
     [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
-    [DisableExporting] = @DisableExporting
+    [DisableExporting] = @DisableExporting,
+    [CanCreateAsset] = @CanCreateAsset,
+    [CanEditAsset] = @CanEditAsset,
+    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
+    [FilterInactive] = @FilterInactive
   WHERE ([UserID] = @UserID)
 GO
 
@@ -17046,7 +17101,8 @@ AS
     [SupportHoursMonth],
     [SupportHoursUsed],
     [SupportHoursRemaining],
-    [NeedsIndexing]
+    [NeedsIndexing],
+    [CustDisIndex]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -24319,7 +24375,8 @@ AS
     [AgentRating],
     [SignUpToken],
     [IsValidated],
-    [DateLastIndexed]
+    [DateLastIndexed],
+    [HideDismissNonAdmins]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -24422,6 +24479,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @SignUpToken varchar(250),
   @IsValidated bit,
   @DateLastIndexed datetime,
+  @HideDismissNonAdmins bit,
   @Identity int OUT
 )
 AS
@@ -24519,7 +24577,8 @@ AS
     [AgentRating],
     [SignUpToken],
     [IsValidated],
-    [DateLastIndexed])
+    [DateLastIndexed],
+    [HideDismissNonAdmins])
   VALUES (
     @Name,
     @Description,
@@ -24612,7 +24671,8 @@ AS
     @AgentRating,
     @SignUpToken,
     @IsValidated,
-    @DateLastIndexed)
+    @DateLastIndexed,
+    @HideDismissNonAdmins)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -24713,7 +24773,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @AgentRating bit,
   @SignUpToken varchar(250),
   @IsValidated bit,
-  @DateLastIndexed datetime
+  @DateLastIndexed datetime,
+  @HideDismissNonAdmins bit
 )
 AS
   SET NOCOUNT OFF;
@@ -24808,7 +24869,8 @@ AS
     [AgentRating] = @AgentRating,
     [SignUpToken] = @SignUpToken,
     [IsValidated] = @IsValidated,
-    [DateLastIndexed] = @DateLastIndexed
+    [DateLastIndexed] = @DateLastIndexed,
+    [HideDismissNonAdmins] = @HideDismissNonAdmins
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -28023,7 +28085,11 @@ AS
     [AllowUserToEditAnyAction],
     [UserCanPinAction],
     [PortalLimitOrgTickets],
-    [DisableExporting]
+    [DisableExporting],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -28102,6 +28168,10 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @UserCanPinAction bit,
   @PortalLimitOrgTickets bit,
   @DisableExporting bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
   @Identity int OUT
 )
 AS
@@ -28175,7 +28245,11 @@ AS
     [AllowUserToEditAnyAction],
     [UserCanPinAction],
     [PortalLimitOrgTickets],
-    [DisableExporting])
+    [DisableExporting],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive])
   VALUES (
     @Email,
     @FirstName,
@@ -28244,7 +28318,11 @@ AS
     @AllowUserToEditAnyAction,
     @UserCanPinAction,
     @PortalLimitOrgTickets,
-    @DisableExporting)
+    @DisableExporting,
+    @CanCreateAsset,
+    @CanEditAsset,
+    @CanChangeCommunityVisibility,
+    @FilterInactive)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -28321,7 +28399,11 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @AllowUserToEditAnyAction bit,
   @UserCanPinAction bit,
   @PortalLimitOrgTickets bit,
-  @DisableExporting bit
+  @DisableExporting bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit
 )
 AS
   SET NOCOUNT OFF;
@@ -28392,7 +28474,11 @@ AS
     [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
     [UserCanPinAction] = @UserCanPinAction,
     [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
-    [DisableExporting] = @DisableExporting
+    [DisableExporting] = @DisableExporting,
+    [CanCreateAsset] = @CanCreateAsset,
+    [CanEditAsset] = @CanEditAsset,
+    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
+    [FilterInactive] = @FilterInactive
   WHERE ([UserID] = @UserID)
 GO
 
@@ -30554,7 +30640,8 @@ AS
     [SupportHoursMonth],
     [SupportHoursUsed],
     [SupportHoursRemaining],
-    [NeedsIndexing]
+    [NeedsIndexing],
+    [CustDisIndex]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -37827,7 +37914,8 @@ AS
     [AgentRating],
     [SignUpToken],
     [IsValidated],
-    [DateLastIndexed]
+    [DateLastIndexed],
+    [HideDismissNonAdmins]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -37930,6 +38018,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @SignUpToken varchar(250),
   @IsValidated bit,
   @DateLastIndexed datetime,
+  @HideDismissNonAdmins bit,
   @Identity int OUT
 )
 AS
@@ -38027,7 +38116,8 @@ AS
     [AgentRating],
     [SignUpToken],
     [IsValidated],
-    [DateLastIndexed])
+    [DateLastIndexed],
+    [HideDismissNonAdmins])
   VALUES (
     @Name,
     @Description,
@@ -38120,7 +38210,8 @@ AS
     @AgentRating,
     @SignUpToken,
     @IsValidated,
-    @DateLastIndexed)
+    @DateLastIndexed,
+    @HideDismissNonAdmins)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -38221,7 +38312,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @AgentRating bit,
   @SignUpToken varchar(250),
   @IsValidated bit,
-  @DateLastIndexed datetime
+  @DateLastIndexed datetime,
+  @HideDismissNonAdmins bit
 )
 AS
   SET NOCOUNT OFF;
@@ -38316,7 +38408,8 @@ AS
     [AgentRating] = @AgentRating,
     [SignUpToken] = @SignUpToken,
     [IsValidated] = @IsValidated,
-    [DateLastIndexed] = @DateLastIndexed
+    [DateLastIndexed] = @DateLastIndexed,
+    [HideDismissNonAdmins] = @HideDismissNonAdmins
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -41531,7 +41624,11 @@ AS
     [AllowUserToEditAnyAction],
     [UserCanPinAction],
     [PortalLimitOrgTickets],
-    [DisableExporting]
+    [DisableExporting],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -41610,6 +41707,10 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @UserCanPinAction bit,
   @PortalLimitOrgTickets bit,
   @DisableExporting bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
   @Identity int OUT
 )
 AS
@@ -41683,7 +41784,11 @@ AS
     [AllowUserToEditAnyAction],
     [UserCanPinAction],
     [PortalLimitOrgTickets],
-    [DisableExporting])
+    [DisableExporting],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive])
   VALUES (
     @Email,
     @FirstName,
@@ -41752,7 +41857,11 @@ AS
     @AllowUserToEditAnyAction,
     @UserCanPinAction,
     @PortalLimitOrgTickets,
-    @DisableExporting)
+    @DisableExporting,
+    @CanCreateAsset,
+    @CanEditAsset,
+    @CanChangeCommunityVisibility,
+    @FilterInactive)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -41829,7 +41938,11 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @AllowUserToEditAnyAction bit,
   @UserCanPinAction bit,
   @PortalLimitOrgTickets bit,
-  @DisableExporting bit
+  @DisableExporting bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit
 )
 AS
   SET NOCOUNT OFF;
@@ -41900,7 +42013,11 @@ AS
     [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
     [UserCanPinAction] = @UserCanPinAction,
     [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
-    [DisableExporting] = @DisableExporting
+    [DisableExporting] = @DisableExporting,
+    [CanCreateAsset] = @CanCreateAsset,
+    [CanEditAsset] = @CanEditAsset,
+    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
+    [FilterInactive] = @FilterInactive
   WHERE ([UserID] = @UserID)
 GO
 
@@ -44062,7 +44179,8 @@ AS
     [SupportHoursMonth],
     [SupportHoursUsed],
     [SupportHoursRemaining],
-    [NeedsIndexing]
+    [NeedsIndexing],
+    [CustDisIndex]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -51335,7 +51453,8 @@ AS
     [AgentRating],
     [SignUpToken],
     [IsValidated],
-    [DateLastIndexed]
+    [DateLastIndexed],
+    [HideDismissNonAdmins]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -51438,6 +51557,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @SignUpToken varchar(250),
   @IsValidated bit,
   @DateLastIndexed datetime,
+  @HideDismissNonAdmins bit,
   @Identity int OUT
 )
 AS
@@ -51535,7 +51655,8 @@ AS
     [AgentRating],
     [SignUpToken],
     [IsValidated],
-    [DateLastIndexed])
+    [DateLastIndexed],
+    [HideDismissNonAdmins])
   VALUES (
     @Name,
     @Description,
@@ -51628,7 +51749,8 @@ AS
     @AgentRating,
     @SignUpToken,
     @IsValidated,
-    @DateLastIndexed)
+    @DateLastIndexed,
+    @HideDismissNonAdmins)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -51729,7 +51851,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @AgentRating bit,
   @SignUpToken varchar(250),
   @IsValidated bit,
-  @DateLastIndexed datetime
+  @DateLastIndexed datetime,
+  @HideDismissNonAdmins bit
 )
 AS
   SET NOCOUNT OFF;
@@ -51824,7 +51947,8 @@ AS
     [AgentRating] = @AgentRating,
     [SignUpToken] = @SignUpToken,
     [IsValidated] = @IsValidated,
-    [DateLastIndexed] = @DateLastIndexed
+    [DateLastIndexed] = @DateLastIndexed,
+    [HideDismissNonAdmins] = @HideDismissNonAdmins
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 
@@ -55039,7 +55163,11 @@ AS
     [AllowUserToEditAnyAction],
     [UserCanPinAction],
     [PortalLimitOrgTickets],
-    [DisableExporting]
+    [DisableExporting],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive]
   FROM [dbo].[Users]
   WHERE ([UserID] = @UserID)
 GO
@@ -55118,6 +55246,10 @@ CREATE PROCEDURE dbo.uspGeneratedInsertUser
   @UserCanPinAction bit,
   @PortalLimitOrgTickets bit,
   @DisableExporting bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit,
   @Identity int OUT
 )
 AS
@@ -55191,7 +55323,11 @@ AS
     [AllowUserToEditAnyAction],
     [UserCanPinAction],
     [PortalLimitOrgTickets],
-    [DisableExporting])
+    [DisableExporting],
+    [CanCreateAsset],
+    [CanEditAsset],
+    [CanChangeCommunityVisibility],
+    [FilterInactive])
   VALUES (
     @Email,
     @FirstName,
@@ -55260,7 +55396,11 @@ AS
     @AllowUserToEditAnyAction,
     @UserCanPinAction,
     @PortalLimitOrgTickets,
-    @DisableExporting)
+    @DisableExporting,
+    @CanCreateAsset,
+    @CanEditAsset,
+    @CanChangeCommunityVisibility,
+    @FilterInactive)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -55337,7 +55477,11 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateUser
   @AllowUserToEditAnyAction bit,
   @UserCanPinAction bit,
   @PortalLimitOrgTickets bit,
-  @DisableExporting bit
+  @DisableExporting bit,
+  @CanCreateAsset bit,
+  @CanEditAsset bit,
+  @CanChangeCommunityVisibility bit,
+  @FilterInactive bit
 )
 AS
   SET NOCOUNT OFF;
@@ -55408,7 +55552,11 @@ AS
     [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,
     [UserCanPinAction] = @UserCanPinAction,
     [PortalLimitOrgTickets] = @PortalLimitOrgTickets,
-    [DisableExporting] = @DisableExporting
+    [DisableExporting] = @DisableExporting,
+    [CanCreateAsset] = @CanCreateAsset,
+    [CanEditAsset] = @CanEditAsset,
+    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,
+    [FilterInactive] = @FilterInactive
   WHERE ([UserID] = @UserID)
 GO
 
@@ -57570,7 +57718,8 @@ AS
     [SupportHoursMonth],
     [SupportHoursUsed],
     [SupportHoursRemaining],
-    [NeedsIndexing]
+    [NeedsIndexing],
+    [CustDisIndex]
   FROM [dbo].[OrganizationsView]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -64843,7 +64992,8 @@ AS
     [AgentRating],
     [SignUpToken],
     [IsValidated],
-    [DateLastIndexed]
+    [DateLastIndexed],
+    [HideDismissNonAdmins]
   FROM [dbo].[Organizations]
   WHERE ([OrganizationID] = @OrganizationID)
 GO
@@ -64946,6 +65096,7 @@ CREATE PROCEDURE dbo.uspGeneratedInsertOrganization
   @SignUpToken varchar(250),
   @IsValidated bit,
   @DateLastIndexed datetime,
+  @HideDismissNonAdmins bit,
   @Identity int OUT
 )
 AS
@@ -65043,7 +65194,8 @@ AS
     [AgentRating],
     [SignUpToken],
     [IsValidated],
-    [DateLastIndexed])
+    [DateLastIndexed],
+    [HideDismissNonAdmins])
   VALUES (
     @Name,
     @Description,
@@ -65136,7 +65288,8 @@ AS
     @AgentRating,
     @SignUpToken,
     @IsValidated,
-    @DateLastIndexed)
+    @DateLastIndexed,
+    @HideDismissNonAdmins)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
@@ -65237,7 +65390,8 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateOrganization
   @AgentRating bit,
   @SignUpToken varchar(250),
   @IsValidated bit,
-  @DateLastIndexed datetime
+  @DateLastIndexed datetime,
+  @HideDismissNonAdmins bit
 )
 AS
   SET NOCOUNT OFF;
@@ -65332,7 +65486,8 @@ AS
     [AgentRating] = @AgentRating,
     [SignUpToken] = @SignUpToken,
     [IsValidated] = @IsValidated,
-    [DateLastIndexed] = @DateLastIndexed
+    [DateLastIndexed] = @DateLastIndexed,
+    [HideDismissNonAdmins] = @HideDismissNonAdmins
   WHERE ([OrganizationID] = @OrganizationID)
 GO
 

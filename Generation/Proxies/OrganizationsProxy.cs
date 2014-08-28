@@ -106,6 +106,7 @@ namespace TeamSupport.Data
     [DataMember] public string SignUpToken { get; set; }
     [DataMember] public bool IsValidated { get; set; }
     [DataMember] public DateTime? DateLastIndexed { get; set; }
+    [DataMember] public bool HideDismissNonAdmins { get; set; }
           
   }
   
@@ -114,6 +115,7 @@ namespace TeamSupport.Data
     public OrganizationProxy GetProxy()
     {
       OrganizationProxy result = new OrganizationProxy();
+      result.HideDismissNonAdmins = this.HideDismissNonAdmins;
       result.IsValidated = this.IsValidated;
       result.SignUpToken = this.SignUpToken;
       result.AgentRating = this.AgentRating;
