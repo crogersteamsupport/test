@@ -1927,7 +1927,7 @@ $(document).ready(function () {
           $('.ticket-new-customer-first').val('');
           $('.ticket-new-customer-last').val('');
           $('.ticket-new-customer-company').val('');
-          $('ticket-new-customer-phone').val('');
+          $('.ticket-new-customer-phone').val('');
           $('.ticket-new-customer').hide();
         });
       }
@@ -1941,6 +1941,7 @@ $(document).ready(function () {
                 $('.ticket-new-customer-first').val('');
                 $('.ticket-new-customer-last').val('');
                 $('.ticket-new-customer-company').val('');
+                $('.ticket-new-customer-phone').val('');
                 $('.ticket-new-customer').hide();
               });
             });
@@ -1952,6 +1953,7 @@ $(document).ready(function () {
           $('.ticket-new-customer-first').val('');
           $('.ticket-new-customer-last').val('');
           $('.ticket-new-customer-company').val('');
+          $('.ticket-new-customer-phone').val('');
           $('.ticket-new-customer').hide();
         }
       }

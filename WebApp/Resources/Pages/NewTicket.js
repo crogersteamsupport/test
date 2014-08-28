@@ -889,13 +889,14 @@ $(document).ready(function () {
       else if (result.indexOf("The company you have specified is invalid") !== -1) {
         if (top.Ts.System.User.CanCreateCompany || top.Ts.System.User.IsSystemAdmin) {
           if (confirm('Unknown company, would you like to create it?')) {
-            top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, true, function (result) {
+              top.Ts.Services.Users.CreateNewContact(email, firstName, lastName, companyName, phone, true, function (result) {
               top.Ts.Services.Tickets.GetTicketCustomer(result.charAt(0), result.substring(1), function (result) {
                 appendCustomer(result);
                 $('.ticket-new-customer-email').val('');
                 $('.ticket-new-customer-first').val('');
                 $('.ticket-new-customer-last').val('');
                 $('.ticket-new-customer-company').val('');
+                $('.ticket-new-customer-phone').val('');
                 $('.ticket-new-customer').hide();
               });
             });
@@ -907,6 +908,7 @@ $(document).ready(function () {
           $('.ticket-new-customer-first').val('');
           $('.ticket-new-customer-last').val('');
           $('.ticket-new-customer-company').val('');
+          $('.ticket-new-customer-phone').val('');
           $('.ticket-new-customer').hide();
         }
       }
