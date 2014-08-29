@@ -259,7 +259,7 @@ namespace TeamSupport.Api
         tickets = new TicketsView(command.LoginUser);
         tickets.LoadRelatedByTicketNumber(ticketIDOrTicketNumber, command.LoginUser.OrganizationID);
       }
-      if (tickets.Count > 0 && tickets[0].OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
+      //if (tickets.Count > 0 && tickets[0].OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
       return tickets.GetXml("Tickets", "Ticket", true, command.Filters);
     }
