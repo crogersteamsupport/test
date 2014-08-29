@@ -238,7 +238,7 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadRelatedByTicketNumber(int ticketNumber)
+    public void LoadRelatedByTicketNumber(int ticketNumber, int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
       {
@@ -248,7 +248,8 @@ namespace TeamSupport.Data
         FROM
           TicketsView tv
         WHERE
-          tv.TicketID IN 
+          tv.OrganizationID = @OrganizationID
+          AND tv.TicketID IN 
           (
             SELECT
               tr2.Ticket2ID
@@ -271,6 +272,7 @@ namespace TeamSupport.Data
               t1.TicketNumber = @TicketNumber
           )";
         command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@TicketNumber", ticketNumber);
         Fill(command);
       }

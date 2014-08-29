@@ -257,7 +257,7 @@ namespace TeamSupport.Api
       if (tickets.IsEmpty)
       {
         tickets = new TicketsView(command.LoginUser);
-        tickets.LoadRelatedByTicketNumber(ticketIDOrTicketNumber);
+        tickets.LoadRelatedByTicketNumber(ticketIDOrTicketNumber, command.LoginUser.OrganizationID);
       }
       if (tickets.Count > 0 && tickets[0].OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
 
