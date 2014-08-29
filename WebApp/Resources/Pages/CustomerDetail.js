@@ -2046,128 +2046,128 @@ $(document).ready(function () {
             }
         });
 
-        top.Ts.Services.Organizations.LoadCDISettings(top.Ts.System.Organization.OrganizationID, function (cdi) {
-            if (cdi == null)
-            {
-                greenLimit = 70;
-                yellowLimit = 85
-            }
-                else
-            {
-            greenLimit = cdi.GreenUpperRange == null ? 70 : cdi.GreenUpperRange;
-            yellowLimit = cdi.YellowUpperRange == null ? 85 : cdi.YellowUpperRange;
-            }
-        });
+        //top.Ts.Services.Organizations.LoadCDISettings(top.Ts.System.Organization.OrganizationID, function (cdi) {
+        //    if (cdi == null)
+        //    {
+        //        greenLimit = 70;
+        //        yellowLimit = 85
+        //    }
+        //        else
+        //    {
+        //    greenLimit = cdi.GreenUpperRange == null ? 70 : cdi.GreenUpperRange;
+        //    yellowLimit = cdi.YellowUpperRange == null ? 85 : cdi.YellowUpperRange;
+        //    }
+        //});
 
-        top.Ts.Services.Customers.LoadCDI(organizationID, function (cdiValue) {
-            var chartData = [];
-            chartData.push(cdiValue);
-            $('#csiChart').highcharts({
+        //top.Ts.Services.Customers.LoadCDI(organizationID, function (cdiValue) {
+        //    var chartData = [];
+        //    chartData.push(cdiValue);
+        //    $('#csiChart').highcharts({
 
-                chart: {
-                    type: 'gauge',
-                    plotBackgroundColor: null,
-                    plotBackgroundImage: null,
-                    plotBorderWidth: 0,
-                    plotShadow: false,
-                    height: 250,
-                },
+        //        chart: {
+        //            type: 'gauge',
+        //            plotBackgroundColor: null,
+        //            plotBackgroundImage: null,
+        //            plotBorderWidth: 0,
+        //            plotShadow: false,
+        //            height: 250,
+        //        },
 
-                title: {
-                    text: 'CDI'
-                },
+        //        title: {
+        //            text: 'CDI'
+        //        },
 
-                pane: {
-                    startAngle: -150,
-                    endAngle: 150,
-                    background: [{
-                        backgroundColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [
-                                [0, '#FFF'],
-                                [1, '#333']
-                            ]
-                        },
-                        borderWidth: 0,
-                        outerRadius: '109%'
-                    }, {
-                        backgroundColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [
-                                [0, '#333'],
-                                [1, '#FFF']
-                            ]
-                        },
-                        borderWidth: 1,
-                        outerRadius: '107%'
-                    }, {
-                        // default background
-                    }, {
-                        backgroundColor: '#DDD',
-                        borderWidth: 0,
-                        outerRadius: '105%',
-                        innerRadius: '103%'
-                    }]
-                },
+        //        pane: {
+        //            startAngle: -150,
+        //            endAngle: 150,
+        //            background: [{
+        //                backgroundColor: {
+        //                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+        //                    stops: [
+        //                        [0, '#FFF'],
+        //                        [1, '#333']
+        //                    ]
+        //                },
+        //                borderWidth: 0,
+        //                outerRadius: '109%'
+        //            }, {
+        //                backgroundColor: {
+        //                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+        //                    stops: [
+        //                        [0, '#333'],
+        //                        [1, '#FFF']
+        //                    ]
+        //                },
+        //                borderWidth: 1,
+        //                outerRadius: '107%'
+        //            }, {
+        //                // default background
+        //            }, {
+        //                backgroundColor: '#DDD',
+        //                borderWidth: 0,
+        //                outerRadius: '105%',
+        //                innerRadius: '103%'
+        //            }]
+        //        },
 
-                // the value axis
-                yAxis: {
-                    min: 0,
-                    max: 100,
+        //        // the value axis
+        //        yAxis: {
+        //            min: 0,
+        //            max: 100,
 
-                    minorTickInterval: 'auto',
-                    minorTickWidth: 1,
-                    minorTickLength: 10,
-                    minorTickPosition: 'inside',
-                    minorTickColor: '#666',
+        //            minorTickInterval: 'auto',
+        //            minorTickWidth: 1,
+        //            minorTickLength: 10,
+        //            minorTickPosition: 'inside',
+        //            minorTickColor: '#666',
 
-                    tickPixelInterval: 30,
-                    tickWidth: 2,
-                    tickPosition: 'inside',
-                    tickLength: 10,
-                    tickColor: '#666',
-                    labels: {
-                        step: 2,
-                        rotation: 'auto'
-                    },
-                    title: {
-                        text: ''
-                    },
-                    plotBands: [{
-                        from: 0,
-                        to: greenLimit,
-                        color: '#55BF3B' // green
-                    }, {
-                        from: greenLimit,
-                        to: yellowLimit,
-                        color: '#DDDF0D' // yellow
-                    }, {
-                        from: yellowLimit,
-                        to: 100,
-                        color: '#DF5353' // red
-                    }]
-                },
-                credits: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'CDI',
-                    data: [],
-                    tooltip: {
-                        valueSuffix: ' Rating'
-                    }
-                }]
+        //            tickPixelInterval: 30,
+        //            tickWidth: 2,
+        //            tickPosition: 'inside',
+        //            tickLength: 10,
+        //            tickColor: '#666',
+        //            labels: {
+        //                step: 2,
+        //                rotation: 'auto'
+        //            },
+        //            title: {
+        //                text: ''
+        //            },
+        //            plotBands: [{
+        //                from: 0,
+        //                to: greenLimit,
+        //                color: '#55BF3B' // green
+        //            }, {
+        //                from: greenLimit,
+        //                to: yellowLimit,
+        //                color: '#DDDF0D' // yellow
+        //            }, {
+        //                from: yellowLimit,
+        //                to: 100,
+        //                color: '#DF5353' // red
+        //            }]
+        //        },
+        //        credits: {
+        //            enabled: false
+        //        },
+        //        series: [{
+        //            name: 'CDI',
+        //            data: [],
+        //            tooltip: {
+        //                valueSuffix: ' Rating'
+        //            }
+        //        }]
 
-            },
-            function (chart) {
-                if (!chart.renderer.forExport) {
+        //    },
+        //    function (chart) {
+        //        if (!chart.renderer.forExport) {
 
-                }
-            });
+        //        }
+        //    });
 
-            var chart = $('#csiChart').highcharts();
-            chart.series[0].setData(chartData);
-        }); 
+        //    var chart = $('#csiChart').highcharts();
+        //    chart.series[0].setData(chartData);
+        //}); 
     }
     $("[rel='tooltip']").tooltip();
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
