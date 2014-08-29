@@ -2987,11 +2987,12 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
         }
 
 
-        var desc = element.find('.ticket-action-description').html(action.Description + userSig);
+        var desc = element.find('.ticket-action-description').html(action.Description);
         desc.find('a').attr('target', '_blank');
         desc.find('blockquote').addClass('ui-corner-all');
         desc.find('pre').addClass('ui-corner-all');
         element.find('.ticket-action-body').show();
+    }
         element.find('a').addClass('ui-state-default ts-link');
 
 }

@@ -1237,11 +1237,11 @@ AdminPortal = function () {
       }, 1000);
   });
 
-  $('.color-picker').minicolors({
-      hide: function () {
-          buildWidgetCode();
-      }
-  });
+  //$('.color-picker').minicolors({
+  //    hide: function () {
+  //        buildWidgetCode();
+  //    }
+  //});
 
   $('#recalculate-cdi').click(function () {
       top.Ts.Services.Organizations.ResetCDI();
