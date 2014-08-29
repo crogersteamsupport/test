@@ -271,7 +271,7 @@ namespace TeamSupport.Data
                 ON tr1.Ticket2ID = t1.TicketID
             WHERE
               t1.TicketNumber = @TicketNumber
-              AND t2.OrganizationID = @OrganizationID
+              AND t1.OrganizationID = @OrganizationID
           )";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
