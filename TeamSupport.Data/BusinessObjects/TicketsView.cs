@@ -259,6 +259,7 @@ namespace TeamSupport.Data
                 ON tr2.Ticket1ID = t2.TicketID
             WHERE 
               t2.TicketNumber = @TicketNumber
+              AND t2.OrganizationID = @OrganizationID
           ) 
           OR tv.TicketID IN 
           (
@@ -270,6 +271,7 @@ namespace TeamSupport.Data
                 ON tr1.Ticket2ID = t1.TicketID
             WHERE
               t1.TicketNumber = @TicketNumber
+              AND t2.OrganizationID = @OrganizationID
           )";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
