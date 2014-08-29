@@ -2849,16 +2849,6 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
     var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.UserID === action.CreatorID;
     var restrictedFromEditingAnyActions = !top.Ts.System.User.IsSystemAdmin && top.Ts.System.User.RestrictUserFromEditingAnyActions;
 
-    var userSig = '';
-    top.Ts.Services.Users.GetUserSignature(action.CreatorID, function (signature) {
-        if (!signature == '' && action.IsVisibleOnPortal)
-            userSig = "<br/><br/>" + signature;
-        var desc = element.find('.ticket-action-description').html(action.Description +  userSig);
-        desc.find('a').attr('target', '_blank');
-        desc.find('blockquote').addClass('ui-corner-all');
-        desc.find('pre').addClass('ui-corner-all');
-    });
-
     if (!top.Ts.System.User.AllowUserToEditAnyAction && (!canEdit || restrictedFromEditingAnyActions)) {
       element.find('.ticket-action-edit').remove();
       element.find('.ticket-action-delete').remove();
@@ -2997,11 +2987,12 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
         }
 
 
-
+        var desc = element.find('.ticket-action-description').html(action.Description + userSig);
+        desc.find('a').attr('target', '_blank');
+        desc.find('blockquote').addClass('ui-corner-all');
+        desc.find('pre').addClass('ui-corner-all');
         element.find('.ticket-action-body').show();
-    }
-
-    element.find('a').addClass('ui-state-default ts-link');
+        element.find('a').addClass('ui-state-default ts-link');
 
 }
 

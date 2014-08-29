@@ -1211,7 +1211,15 @@ namespace TSWebServices
         action = (new Actions(TSAuthentication.GetLoginUser())).AddNewAction();
         action.TicketID = proxy.TicketID;
         action.CreatorID = TSAuthentication.UserID;
-        action.Description = proxy.Description;
+        if (!string.IsNullOrWhiteSpace(user.Signature) && action.IsVisibleOnPortal)
+        {
+            if (!action.Description.Contains(user.Signature))
+                action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+        }
+        else
+        {
+            action.Description = proxy.Description;
+        }
       }
       else
       {
