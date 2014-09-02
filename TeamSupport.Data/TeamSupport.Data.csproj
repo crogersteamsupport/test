@@ -180,6 +180,7 @@
     <Compile Include="BusinessObjects\ChatUserSettings.cs" />
     <Compile Include="BusinessObjects\ContactsView.cs" />
     <Compile Include="BusinessObjects\CreditCards.cs" />
+    <Compile Include="BusinessObjects\CRMLinkErrors.cs" />
     <Compile Include="BusinessObjects\CRMLinkFields.cs" />
     <Compile Include="BusinessObjects\CRMLinkResults.cs" />
     <Compile Include="BusinessObjects\CRMLinkSynchedOrganizations.cs" />
@@ -266,6 +267,7 @@
     <Compile Include="FieldMaps\CDI_SettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ChatClientsViewFieldMap.cs" />
     <Compile Include="FieldMaps\ChatUserSettingsFieldMap.cs" />
+    <Compile Include="FieldMaps\CRMLinkErrorsFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkFieldsFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkSynchedOrganizationsFieldMap.cs" />
     <Compile Include="FieldMaps\CustomFieldCategoriesFieldMap.cs" />
@@ -482,6 +484,7 @@
     <Compile Include="Generated\GeneratedChatSettings.cs" />
     <Compile Include="Generated\GeneratedContactsView.cs" />
     <Compile Include="Generated\GeneratedCreditCards.cs" />
+    <Compile Include="Generated\GeneratedCRMLinkErrors.cs" />
     <Compile Include="Generated\GeneratedCRMLinkFields.cs" />
     <Compile Include="Generated\GeneratedCRMLinkResults.cs" />
     <Compile Include="Generated\GeneratedCRMLinkSynchedOrganizations.cs" />
@@ -630,6 +633,7 @@
     <Compile Include="Proxies\ChatUserSettingsProxy.cs" />
     <Compile Include="Proxies\ContactsViewProxy.cs" />
     <Compile Include="Proxies\CreditCardsProxy.cs" />
+    <Compile Include="Proxies\CRMLinkErrorsProxy.cs" />
     <Compile Include="Proxies\CRMLinkFieldsProxy.cs" />
     <Compile Include="Proxies\CRMLinkResultsProxy.cs" />
     <Compile Include="Proxies\CRMLinkSynchedOrganizationsProxy.cs" />

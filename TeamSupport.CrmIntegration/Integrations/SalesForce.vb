@@ -8,6 +8,7 @@ Imports System.Web.Services.Protocols
 Imports System.Threading
 Imports sForce
 Imports TeamSupport.Data
+Imports Newtonsoft.Json
 
 Namespace TeamSupport
     Namespace CrmIntegration
@@ -223,6 +224,11 @@ Namespace TeamSupport
                                 Dim synchedOrganizations As New CRMLinkSynchedOrganizations(Me.User)
                                 synchedOrganizations.LoadByCRMLinkTableID(CRMLinkRow.CRMLinkID)
                                 'We now have a list of all accounts that have been modified in the last 3 hours and that match our account types. Let's update.
+
+                                Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "company")
+                                Dim crmLinkError As CRMLinkError = Nothing
+
                                 For Each qr As QueryResult In queriesResults 
 
                                     Log.Write("Begining For Each Loop to get companies.  qr.records.length = " + qr.records.Length.ToString)
@@ -281,11 +287,36 @@ Namespace TeamSupport
 
                                             Log.Write("Company " & thisCompany.AccountName & " last modified on " & LastModifiedDateTime.ToString())
 
-                                            UpdateOrgInfo(thisCompany, ParentOrgID)
-                                            Log.Write("Completed AddOrUpdateAccountInformation for company " + thisCompany.AccountName)
+                                            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(thisCompany.AccountID, string.Empty)
+                                            Try
+                                              UpdateOrgInfo(thisCompany, ParentOrgID)
+                                              Log.Write("Completed AddOrUpdateAccountInformation for company " + thisCompany.AccountName)
+                                              If crmLinkError IsNot Nothing then
+                                                crmLinkError.Delete()
+                                                crmLinkErrors.Save()
+                                              End If
+                                            Catch ex As Exception
+                                              If crmLinkError Is Nothing then
+                                                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                                crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                                crmLinkError.CRMType        = CRMLinkRow.CRMType
+                                                crmLinkError.Orientation    = "in"
+                                                crmLinkError.ObjectType     = "company"
+                                                crmLinkError.ObjectID       = thisCompany.AccountID
+                                                crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisCompany)
+                                                crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                                                crmLinkError.OperationType  = "unknown"
+                                                newCrmLinkError.Save()
+                                              Else
+                                                crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisCompany)
+                                                crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                                              End If                                              
+                                            End Try
 
                                             'Let's force an update of contact information for this company
-                                            GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, thisCompany.AccountID, True)
+                                            'I'm commenting this as I believe it is redundant with call being made in line 344
+                                            'GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, thisCompany.AccountID, True)
 
                                             Log.Write("Completed force update contact info for " + thisCompany.AccountName)
 
@@ -295,10 +326,10 @@ Namespace TeamSupport
                                         End If
                                     Next
                                 Next
-
+                                
                                 'check for existence of custom fields to sync
-                                GetCustomFields("Account", TypeString, LastUpdateSFFormat)
-
+                                GetCustomFields("Account", TypeString, LastUpdateSFFormat, crmLinkErrors)
+                                crmLinkErrors.Save()
                                 Log.Write("All done updating company information.")
 
                             Else
@@ -537,6 +568,10 @@ Namespace TeamSupport
                     End Try
 
                     If qr.size > 0 Then
+                        Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                        crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "contact")
+                        Dim crmLinkError As CRMLinkError = Nothing
+
                         While Not done
                             For i As Integer = 0 To qr.records.Length - 1
                                 Dim thisPerson As New EmployeeData()
@@ -568,7 +603,31 @@ Namespace TeamSupport
 
                                 LastModifiedDateTime = Date.Parse(records(i).Any(7).InnerText)
 
-                                UpdateContactInfo(thisPerson, AccountID, ParentOrgID)
+                                crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(thisPerson.SalesForceID, string.Empty)
+                                Try
+                                  UpdateContactInfo(thisPerson, AccountID, ParentOrgID)
+                                  If crmLinkError IsNot Nothing then
+                                    crmLinkError.Delete()
+                                    crmLinkErrors.Save()
+                                  End If
+                                Catch ex As Exception
+                                  If crmLinkError Is Nothing then
+                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                    crmLinkError.CRMType        = CRMLinkRow.CRMType
+                                    crmLinkError.Orientation    = "in"
+                                    crmLinkError.ObjectType     = "contact"
+                                    crmLinkError.ObjectID       = thisPerson.SalesForceID
+                                    crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisPerson)
+                                    crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                                    crmLinkError.OperationType  = "unknown"
+                                    newCrmLinkError.Save()
+                                  Else
+                                    crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisPerson)
+                                    crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                                  End If                                              
+                                End Try
 
                             Next
                             If qr.done Then
@@ -579,8 +638,9 @@ Namespace TeamSupport
                         End While
 
                         'check for existence of custom fields to sync
-                        GetCustomFields("Contact", TypeString, LastUpdate, AccountIDToUpdate)
+                        GetCustomFields("Contact", TypeString, LastUpdate, crmLinkErrors, AccountIDToUpdate)
 
+                        crmLinkErrors.Save()
                     Else
                         Log.Write("No records found.")
                     End If
@@ -804,7 +864,7 @@ Namespace TeamSupport
             End Sub
 
 
-            Private Sub GetCustomFields(ByVal objType As String, ByVal TypeString As String, ByVal LastUpdate As String, Optional ByVal AccountIDToUpdate As String = "")
+            Private Shadows Sub GetCustomFields(ByVal objType As String, ByVal TypeString As String, ByVal LastUpdate As String, ByRef crmLinkErrors As CRMLinkErrors, Optional ByVal AccountIDToUpdate As String = "")
                 Try
                     Dim customFieldList As String = Nothing
                     Dim theseFields As New CRMLinkFields(User)
@@ -869,6 +929,7 @@ Namespace TeamSupport
 
                         For Each qr As QueryResult In queriesResults 
                         If qr.size > 0 Then
+                            Dim crmLinkError As CRMLinkError = Nothing
                             For Each record As sObject In qr.records
                                 Dim accountID As String
 
@@ -906,12 +967,21 @@ Namespace TeamSupport
                                               End If
                                                 Try
                                                     If thisMapping.CustomFieldID IsNot Nothing Then
+                                                        crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(accountID, thisMapping.CustomFieldID.ToString())
                                                         Dim translatedFieldValue As String = TranslateFieldValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, value)
                                                         UpdateCustomValue(thisMapping.CustomFieldID, thisAccount.OrganizationID, translatedFieldValue)
-
+                                                        If crmLinkError IsNot Nothing then
+                                                          crmLinkError.Delete()
+                                                          crmLinkErrors.Save()
+                                                        End If
                                                     ElseIf thisMapping.TSFieldName IsNot Nothing Then
+                                                        crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(accountID, thisMapping.TSFieldName)
                                                         thisAccount.Row(thisMapping.TSFieldName) = TranslateFieldValue(value, thisAccount.Row(thisMapping.TSFieldName).GetType().Name)
                                                         thisAccount.BaseCollection.Save()
+                                                        If crmLinkError IsNot Nothing then
+                                                          crmLinkError.Delete()
+                                                          crmLinkErrors.Save()
+                                                        End If
                                                     End If
                                                 Catch mappingException As Exception
                                                     Log.Write(
@@ -921,6 +991,28 @@ Namespace TeamSupport
                                                       thisMapping.TSFieldName &
                                                       """: " &
                                                       mappingException.Message)
+
+                                                    If crmLinkError Is Nothing then
+                                                      Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                                      crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                                      crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                                      crmLinkError.CRMType        = CRMLinkRow.CRMType
+                                                      crmLinkError.Orientation    = "in"
+                                                      crmLinkError.ObjectType     = "company"
+                                                      crmLinkError.ObjectID       = accountID
+                                                      If thisMapping.CustomFieldID IsNot Nothing Then
+                                                        crmLinkError.ObjectFieldName = thisMapping.CustomFieldID.ToString()
+                                                      ElseIf thisMapping.TSFieldName IsNot Nothing Then
+                                                        crmLinkError.ObjectFieldName = thisMapping.TSFieldName
+                                                      End If
+                                                      crmLinkError.ObjectData     = value
+                                                      crmLinkError.Exception      = mappingException.ToString() + mappingException.StackTrace
+                                                      crmLinkError.OperationType  = "update"
+                                                      newCrmLinkError.Save()
+                                                    Else
+                                                      crmLinkError.ObjectData     = value
+                                                      crmLinkError.Exception      = mappingException.ToString() + mappingException.StackTrace                                               
+                                                    End If                                              
                                                 End Try
                                             End If
                                         Next
@@ -946,13 +1038,23 @@ Namespace TeamSupport
                                                   End If
                                                     Try
                                                         If thisMapping.CustomFieldID IsNot Nothing Then
+                                                            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(accountID, thisMapping.CustomFieldID.ToString())
                                                             Dim translatedFieldValue As String = TranslateFieldValue(thisMapping.CustomFieldID, thisContact.UserID, value)
                                                             UpdateCustomValue(thisMapping.CustomFieldID, thisContact.UserID, translatedFieldValue)
                                                             Log.Write("Updated """ + thisField.LocalName + """ with """ +  thisField.InnerText + """ for """ + email + """ using UpdateCustomValue.")
+                                                            If crmLinkError IsNot Nothing then
+                                                              crmLinkError.Delete()
+                                                              crmLinkErrors.Save()
+                                                            End If
                                                         ElseIf thisMapping.TSFieldName IsNot Nothing Then
+                                                            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(accountID, thisMapping.TSFieldName)
                                                             thisContact.Row(thisMapping.TSFieldName) = TranslateFieldValue(value, thisContact.Row(thisMapping.TSFieldName).GetType().Name)
                                                             thisContact.BaseCollection.Save()
                                                             Log.Write("Updated """ + thisField.LocalName + """ with """ +  thisField.InnerText + """ for """ + email + """ using Save.")
+                                                            If crmLinkError IsNot Nothing then
+                                                              crmLinkError.Delete()
+                                                              crmLinkErrors.Save()
+                                                            End If
                                                         End If
                                                     Catch mappingException As Exception
                                                         Log.Write(
@@ -962,6 +1064,28 @@ Namespace TeamSupport
                                                           thisMapping.TSFieldName &
                                                           """: " &
                                                           mappingException.Message)
+
+                                                          If crmLinkError Is Nothing then
+                                                            Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                                            crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                                            crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                                            crmLinkError.CRMType        = CRMLinkRow.CRMType
+                                                            crmLinkError.Orientation    = "in"
+                                                            crmLinkError.ObjectType     = "contact"
+                                                            crmLinkError.ObjectID       = accountID
+                                                            If thisMapping.CustomFieldID IsNot Nothing Then
+                                                              crmLinkError.ObjectFieldName = thisMapping.CustomFieldID.ToString()
+                                                            ElseIf thisMapping.TSFieldName IsNot Nothing Then
+                                                              crmLinkError.ObjectFieldName = thisMapping.TSFieldName
+                                                            End If
+                                                            crmLinkError.ObjectData     = value
+                                                            crmLinkError.Exception      = mappingException.ToString() + mappingException.StackTrace
+                                                            crmLinkError.OperationType  = "update"
+                                                            newCrmLinkError.Save()
+                                                          Else
+                                                            crmLinkError.ObjectData     = value
+                                                            crmLinkError.Exception      = mappingException.ToString() + mappingException.StackTrace                                               
+                                                          End If                                              
                                                     End Try
                                                 End If
 
@@ -1257,6 +1381,11 @@ Namespace TeamSupport
               ByVal ticketsToPushAsCases As TicketsView, 
               ByVal casesToPullAsTickets As List(Of QueryResult),
               ByVal numberOfCasesToPullAsTickets As Integer)
+
+              Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+              crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "out", "ticket")
+              Dim crmLinkError As CRMLinkError = Nothing
+
               For Each ticket As TicketsViewItem In ticketsToPushAsCases
                 'SalesForce Case-Customer relationship is one to one.
                 'Therefore we are assigning the first customer created in TeamSupport.
@@ -1287,6 +1416,11 @@ Namespace TeamSupport
                   If isNotCollidingWithACaseToPull Then
                     Dim updateTicket As Tickets = New Tickets(User)
                     updateTicket.LoadByTicketID(ticket.TicketID)
+                                            
+                    crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID.ToString(), "case")
+
+                    Dim pushSucceeded As Boolean = True
+
                     If isNewCase Then
                       Try
                         Dim result As SaveResult = Binding.create(New sObject() {salesForceCase})(0)
@@ -1294,6 +1428,11 @@ Namespace TeamSupport
                           updateTicket(0).SalesForceID = result.id
                           Dim actionLogDescription As String = "Sent Ticket to SalesForce as new Case with ID: '" + result.id + "'."
                           ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
+
+                          If crmLinkError IsNot Nothing then
+                            crmLinkError.Delete()
+                            crmLinkErrors.Save()
+                          End If
                         Else
                             Log.Write("Creating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                             Log.Write("Attempting without impersonation...")
@@ -1311,15 +1450,38 @@ Namespace TeamSupport
                               updateTicket(0).SalesForceID = result.id
                               Dim actionLogDescription As String = "Sent Ticket to SalesForce as new Case with ID: '" + result.id + "'."
                               ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
+
+                              If crmLinkError IsNot Nothing then
+                                crmLinkError.Delete()
+                                crmLinkErrors.Save()
+                              End If
                             Else
                               Throw(New Exception(result.errors(0).message))
                             End If
                         End If
                       Catch ex As Exception
+                        pushSucceeded = False
                         Log.Write("Creating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + ex.Message)
                         Log.Write("sObject.Any property value: " + salesForceCase.Any.ToString())
                         Log.Write(ex.StackTrace)
-                        Throw ex
+                        'Throw ex
+                        If crmLinkError Is Nothing then
+                          Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                          crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                          crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                          crmLinkError.CRMType          = CRMLinkRow.CRMType
+                          crmLinkError.Orientation      = "out"
+                          crmLinkError.ObjectType       = "ticket"
+                          crmLinkError.ObjectFieldName  = "case"
+                          crmLinkError.ObjectID         = ticket.TicketID.ToString()
+                          crmLinkError.ObjectData       = JsonConvert.SerializeObject(salesForceCase)
+                          crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+                          crmLinkError.OperationType  = "create"
+                          newCrmLinkError.Save()
+                        Else
+                          crmLinkError.ObjectData       = JsonConvert.SerializeObject(salesForceCase)
+                          crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                        End If                                              
                       End Try
                     Else
                       Try
@@ -1327,9 +1489,17 @@ Namespace TeamSupport
                         If result.errors Is Nothing Then
                           Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
                           ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
+                          If crmLinkError IsNot Nothing then
+                            crmLinkError.Delete()
+                            crmLinkErrors.Save()
+                          End If
                         Else If result.errors(0).message.ToLower() = "entity is deleted" Then
                           Dim actionLogDescription As String = "SalesForce Case ID: '" + ticket.SalesForceID + "' was not found. No update applied. Error: " + result.errors(0).message
                           ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
+                          If crmLinkError IsNot Nothing then
+                            crmLinkError.Delete()
+                            crmLinkErrors.Save()
+                          End If
                         Else
                           Log.Write("Updating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                           Log.Write("Attempting without impersonation...")
@@ -1346,29 +1516,50 @@ Namespace TeamSupport
                           If result.errors Is Nothing Then
                             Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
                             ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
-                          Else If result.errors(0).message.ToLower() = "invalid cross reference id" OrElse result.errors(0).message.ToLower() = "entity is deleted" Then
-                            Dim actionLogDescription As String = "SalesForce Case ID: '" + ticket.SalesForceID + "' was not found. No update applied. Error: " + result.errors(0).message
-                            ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
+                            If crmLinkError IsNot Nothing then
+                              crmLinkError.Delete()
+                              crmLinkErrors.Save()
+                            End If
                           Else
                             Throw(New Exception(result.errors(0).message))
                           End If
                         End If
                       Catch ex As Exception
+                        pushSucceeded = False
                         Log.Write("Updating case for ticketID: " + ticket.TicketID.ToString() + ", the following exception ocurred: " + ex.Message)
                         Log.Write("sObject.Any property value: " + salesForceCase.Any.ToString())
                         Log.Write(ex.StackTrace)
-                        Throw ex
+                        'Throw ex
+                        If crmLinkError Is Nothing then
+                          Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                          crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                          crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                          crmLinkError.CRMType          = CRMLinkRow.CRMType
+                          crmLinkError.Orientation      = "out"
+                          crmLinkError.ObjectType       = "ticket"
+                          crmLinkError.ObjectFieldName  = "case"
+                          crmLinkError.ObjectID         = ticket.TicketID.ToString()
+                          crmLinkError.ObjectData       = JsonConvert.SerializeObject(salesForceCase)
+                          crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+                          crmLinkError.OperationType    = "update"
+                          newCrmLinkError.Save()
+                        Else
+                          crmLinkError.ObjectData       = JsonConvert.SerializeObject(salesForceCase)
+                          crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                        End If                                              
                       End Try
                     End If
 
-                    If salesForceCustomer.ContactID IsNot Nothing Then
-                      updateTicket.SetUserAsSentToSalesForce(salesForceCustomer.TeamSupportUserID, ticket.TicketID)
-                    Else
-                      updateTicket.SetOrganizationAsSentToSalesForce(salesForceCustomer.TeamSupportOrganizationID, ticket.TicketID)              
-                    End If
+                    If pushSucceeded Then
+                      If salesForceCustomer.ContactID IsNot Nothing Then
+                        updateTicket.SetUserAsSentToSalesForce(salesForceCustomer.TeamSupportUserID, ticket.TicketID)
+                      Else
+                        updateTicket.SetOrganizationAsSentToSalesForce(salesForceCustomer.TeamSupportOrganizationID, ticket.TicketID)              
+                      End If
 
-                    updateTicket(0).DateModifiedBySalesForceSync = DateTime.UtcNow
-                    updateTicket.Save()
+                      updateTicket(0).DateModifiedBySalesForceSync = DateTime.UtcNow
+                      updateTicket(0).UpdateSalesForceData()
+                    End If
                   Else
                     Log.Write("TicketID: " + ticket.TicketID.ToString() + ", was not pushed because it is colliding with a case being pulled from SalesForce (If DatesModified missing above SF object did not include it).")
                   End If
@@ -1376,6 +1567,7 @@ Namespace TeamSupport
                   Log.Write("TicketID: " + ticket.TicketID.ToString() + ", was not pushed because first customer is not in SalesForce.")                
                 End If
               Next
+              crmLinkErrors.Save()
             End Sub
 
             Private Function GetSalesForceCaseData(
@@ -1801,6 +1993,12 @@ Namespace TeamSupport
             End Function
 
             Private Sub PushTicketsActionsAsCasesComments(ByVal ticketsActionsToSendAsCasesComments As Actions)
+
+              Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+              crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "out", "action")
+              Dim crmLinkError As CRMLinkError = Nothing
+              Dim pushSucceeded As Boolean = True
+
               For Each action As Action In ticketsActionsToSendAsCasesComments
                 Dim salesForceCaseComment As sForce.sObject = New sObject()
                 salesForceCaseComment.type = "CaseComment"
@@ -1814,6 +2012,8 @@ Namespace TeamSupport
                 salesForceCaseComment.Any  = GetSalesForceCaseCommentData(action, isNewCaseComment, hasParentID, impersonation)
 
                 If hasParentID Then
+                  crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(action.ActionID.ToString(), String.Empty)
+                  pushSucceeded = True
                   If isNewCaseComment Then
                     Try
                       Dim result As SaveResult = Binding.create(New sObject() {salesForceCaseComment})(0)
@@ -1821,9 +2021,19 @@ Namespace TeamSupport
                         action.SalesForceID = result.id
                         Dim actionLogDescription As String = "Sent Action to SalesForce as new CaseComment with ID: '" + result.id + "'."
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+
+                        If crmLinkError IsNot Nothing then
+                          crmLinkError.Delete()
+                          crmLinkErrors.Save()
+                        End If
                       Else If result.errors(0).message.ToLower() = "entity is deleted" Then
                         Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+
+                        If crmLinkError IsNot Nothing then
+                          crmLinkError.Delete()
+                          crmLinkErrors.Save()
+                        End If
                       Else
                         Log.Write("Creating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                         Log.Write("Attempting without impersonation...")
@@ -1834,18 +2044,45 @@ Namespace TeamSupport
                           action.SalesForceID = result.id
                           Dim actionLogDescription As String = "Sent Action to SalesForce as new CaseComment with ID: '" + result.id + "'."
                           ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+
+                          If crmLinkError IsNot Nothing then
+                            crmLinkError.Delete()
+                            crmLinkErrors.Save()
+                          End If
                         Else If result.errors(0).message.ToLower() = "entity is deleted" Then
                           Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
                           ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+
+                          If crmLinkError IsNot Nothing then
+                            crmLinkError.Delete()
+                            crmLinkErrors.Save()
+                          End If
                         Else
                           Throw(New Exception(result.errors(0).message))
                         End If
                       End If
                     Catch ex As Exception
+                      pushSucceeded = False
                       Log.Write("Creating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + ex.Message)
                       Log.Write("sObject.Any property value: " + salesForceCaseComment.Any.ToString())
                       Log.Write(ex.StackTrace)
-                      Throw ex
+                      'Throw ex
+                      If crmLinkError Is Nothing then
+                        Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                        crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                        crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                        crmLinkError.CRMType          = CRMLinkRow.CRMType
+                        crmLinkError.Orientation      = "out"
+                        crmLinkError.ObjectType       = "action"
+                        crmLinkError.ObjectID         = action.ActionID.ToString()
+                        crmLinkError.ObjectData       = JsonConvert.SerializeObject(salesForceCaseComment)
+                        crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+                        crmLinkError.OperationType    = "create"
+                        newCrmLinkError.Save()
+                      Else
+                        crmLinkError.ObjectData       = JsonConvert.SerializeObject(salesForceCaseComment)
+                        crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                      End If                                              
                     End Try
                   Else
                     Try
@@ -1853,9 +2090,19 @@ Namespace TeamSupport
                       If result.errors Is Nothing Then
                         Dim actionLogDescription As String = "Updated SalesForce CaseComment ID: '" + action.SalesForceID + "' with action changes."
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)                                  
+                        
+                        If crmLinkError IsNot Nothing then
+                          crmLinkError.Delete()
+                          crmLinkErrors.Save()
+                        End If
                       Else If result.errors(0).message.ToLower() = "entity is deleted" Then
                         Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
                         ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+                        
+                        If crmLinkError IsNot Nothing then
+                          crmLinkError.Delete()
+                          crmLinkErrors.Save()
+                        End If
                       Else
                         Log.Write("Updating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + result.errors(0).message)
                         Log.Write("Attempting without impersonation...")
@@ -1866,31 +2113,62 @@ Namespace TeamSupport
                           action.SalesForceID = result.id
                           Dim actionLogDescription As String = "Updated SalesForce CaseComment ID: '" + action.SalesForceID + "' with action changes."
                           ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+                        
+                          If crmLinkError IsNot Nothing then
+                            crmLinkError.Delete()
+                            crmLinkErrors.Save()
+                          End If
                         Else If result.errors(0).message.ToLower() = "entity is deleted" Then
                           Dim actionLogDescription As String = "Unable to send Action to SalesForce as parent Case was not found. Received error: " + result.errors(0).message
                           ActionLogs.AddActionLog(User, ActionLogType.Insert, ReferenceType.Tickets, action.TicketID, actionLogDescription)
+                        
+                          If crmLinkError IsNot Nothing then
+                            crmLinkError.Delete()
+                            crmLinkErrors.Save()
+                          End If
                         Else
                           Throw(New Exception(result.errors(0).message))
                         End If
                       End If
                     Catch ex As Exception
+                      pushSucceeded = False
                       Log.Write("Updating CaseComment for actionID: " + action.ActionID.ToString() + ", the following exception ocurred: " + ex.Message)
                       Log.Write("sObject.Any property value: " + salesForceCaseComment.Any.ToString())
                       Log.Write(ex.StackTrace)
-                      Throw ex
+                      'Throw ex
+                      If crmLinkError Is Nothing then
+                        Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                        crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                        crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                        crmLinkError.CRMType          = CRMLinkRow.CRMType
+                        crmLinkError.Orientation      = "out"
+                        crmLinkError.ObjectType       = "action"
+                        crmLinkError.ObjectID         = action.ActionID.ToString()
+                        crmLinkError.ObjectData       = JsonConvert.SerializeObject(salesForceCaseComment)
+                        crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+                        crmLinkError.OperationType    = "update"
+                        newCrmLinkError.Save()
+                      Else
+                        crmLinkError.ObjectData       = JsonConvert.SerializeObject(salesForceCaseComment)
+                        crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                      End If                                              
                     End Try
                   End If
-                  Dim tickets As Tickets = New Tickets(User)
-                  tickets.LoadByTicketID(action.TicketID)
-                  
-                  action.Collection.UpdateSalesForceSync(action.SalesForceID, DateTime.UtcNow, action.ActionID)
 
-                  tickets(0).DateModifiedBySalesForceSync = DateTime.UtcNow
-                  tickets.Save()
+                  If pushSucceeded Then
+                    Dim tickets As Tickets = New Tickets(User)
+                    tickets.LoadByTicketID(action.TicketID)
+                  
+                    action.Collection.UpdateSalesForceSync(action.SalesForceID, DateTime.UtcNow, action.ActionID)
+
+                    tickets(0).DateModifiedBySalesForceSync = DateTime.UtcNow
+                    tickets(0).UpdateSalesForceData()
+                  End If
                 Else
                   Log.Write("Action with ID: " + action.ActionID.ToString() + " was not pushed because it has no ParentID.")
                 End If
               Next
+              crmLinkErrors.Save()
             End Sub
 
             Private Function GetSalesForceCaseCommentData(
@@ -2012,77 +2290,118 @@ Namespace TeamSupport
             End Function
 
             Private Sub PullCasesAsTickets(ByVal casesToPullAsTickets As List(Of QueryResult), ByVal ticketsToPushAsCases As TicketsView)
+
+              Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+              crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "case")
+              Dim crmLinkError As CRMLinkError = Nothing
+
+              Dim isUpdate As Boolean = False
+
               For Each casesBatch As QueryResult In casesToPullAsTickets 
                 For Each caseToBring As sObject In casesBatch.records
-                  Dim tickets As New Tickets(User)
-                  tickets.LoadBySalesForceID(caseToBring.Id, CRMLinkRow.OrganizationID)
 
-                  Dim isUpdate As Boolean = False
-                  Dim ticket As Ticket = Nothing
-                  If tickets.Count > 0 Then
-                    ticket = tickets(0)
-                    Log.Write("Updating ticketID: " + ticket.TicketID.ToString() + ", with caseID: " + caseToBring.Id)
-                    isUpdate = True
-                  Else
-                    tickets = New Tickets(User)
-                    ticket = tickets.AddNewTicket()
-                    ticket.OrganizationID = CRMLinkRow.OrganizationID
+                  crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(caseToBring.Id, String.Empty)
 
-                    Dim types As TicketTypes = New TicketTypes(User)
-                    types.LoadAllPositions(CRMLinkRow.OrganizationID)
-                    ticket.TicketTypeID = types(0).TicketTypeID
+                  Try
+                    Dim tickets As New Tickets(User)
+                    tickets.LoadBySalesForceID(caseToBring.Id, CRMLinkRow.OrganizationID)
 
-                    Dim statuses As TicketStatuses = New TicketStatuses(User)
-                    statuses.LoadByTicketTypeID(ticket.TicketTypeID)
-                    ticket.TicketStatusID = statuses(0).TicketStatusID
+                    Dim ticket As Ticket = Nothing
+                    If tickets.Count > 0 Then
+                      ticket = tickets(0)
+                      Log.Write("Updating ticketID: " + ticket.TicketID.ToString() + ", with caseID: " + caseToBring.Id)
+                      isUpdate = True
+                    Else
+                      tickets = New Tickets(User)
+                      ticket = tickets.AddNewTicket()
+                      ticket.OrganizationID = CRMLinkRow.OrganizationID
 
-                    Dim severities As TicketSeverities = New TicketSeverities(User)
-                    severities.LoadAllPositions(CRMLinkRow.OrganizationID)
-                    ticket.TicketSeverityID = severities(0).TicketSeverityID
+                      Dim types As TicketTypes = New TicketTypes(User)
+                      types.LoadAllPositions(CRMLinkRow.OrganizationID)
+                      ticket.TicketTypeID = types(0).TicketTypeID
 
-                    ticket.SalesForceID = caseToBring.Id 
-                    ticket.TicketSource = "SalesForce"
-                    Dim creator As LoginUser = GetCreator(caseToBring)
-                    If creator IsNot Nothing Then
-                      tickets.LoginUser = creator
-                    End If
-                    tickets.ActionLogInstantMessage = "SalesForce Case ID: " + caseToBring.Id + " Created In TeamSupport With Ticket Number " 
-                    tickets.Save()              
-                    Log.Write("Creating ticketID: " + ticket.TicketID.ToString() + ", with caseID: " + caseToBring.Id)
-                  End If
+                      Dim statuses As TicketStatuses = New TicketStatuses(User)
+                      statuses.LoadByTicketTypeID(ticket.TicketTypeID)
+                      ticket.TicketStatusID = statuses(0).TicketStatusID
 
-                  Dim ticketValuesChanged As Boolean = False
-                  Dim isNotCollidingWithATicketToPush As Boolean = False
-                  
-                  AssignCaseValuesToTicket(ticket, caseToBring, ticketValuesChanged, isUpdate, ticketsToPushAsCases, isNotCollidingWithATicketToPush)
+                      Dim severities As TicketSeverities = New TicketSeverities(User)
+                      severities.LoadAllPositions(CRMLinkRow.OrganizationID)
+                      ticket.TicketSeverityID = severities(0).TicketSeverityID
 
-                  If ticketValuesChanged AndAlso isNotCollidingWithATicketToPush Then
-                    ticket.DateModifiedBySalesForceSync = DateTime.UtcNow
-                    ticket.Collection.Save()
-                    If isUpdate Then
-                      Dim actionLogDescription As String = "Updated Ticket with SalesForce Case ID: '" + ticket.SalesForceID + "' changes."
-                      ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
-                    End If
-                  Else
-                    Dim errorMessageSuffix As new StringBuilder()
-
-                    If Not ticketValuesChanged Then
-                      errorMessageSuffix.Append("have not changed")
-                    End If
-
-                    If Not isNotCollidingWithATicketToPush Then
-                      If errorMessageSuffix.Length > 0 Then
-                        errorMessageSuffix.Append(" and ")
+                      ticket.SalesForceID = caseToBring.Id 
+                      ticket.TicketSource = "SalesForce"
+                      Dim creator As LoginUser = GetCreator(caseToBring)
+                      If creator IsNot Nothing Then
+                        tickets.LoginUser = creator
                       End If
-                      errorMessageSuffix.Append("it is colliding with a ticket being pushed to SalesForce (If DatesModified missing above SF object did not include it)")
+                      tickets.ActionLogInstantMessage = "SalesForce Case ID: " + caseToBring.Id + " Created In TeamSupport With Ticket Number " 
+                      tickets.Save()              
+                      Log.Write("Creating ticketID: " + ticket.TicketID.ToString() + ", with caseID: " + caseToBring.Id)
                     End If
 
-                    errorMessageSuffix.Append(".")
+                    Dim ticketValuesChanged As Boolean = False
+                    Dim isNotCollidingWithATicketToPush As Boolean = False
+                  
+                    AssignCaseValuesToTicket(ticket, caseToBring, ticketValuesChanged, isUpdate, ticketsToPushAsCases, isNotCollidingWithATicketToPush)
 
-                    Log.Write("ticketID: " + ticket.TicketID.ToString() + " values were not updated because " + errorMessageSuffix.ToString())
-                  End If
+                    If ticketValuesChanged AndAlso isNotCollidingWithATicketToPush Then
+                      ticket.DateModifiedBySalesForceSync = DateTime.UtcNow
+                      ticket.UpdateSalesForceData()
+                      If isUpdate Then
+                        Dim actionLogDescription As String = "Updated Ticket with SalesForce Case ID: '" + ticket.SalesForceID + "' changes."
+                        ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
+                      End If
+                    Else
+                      Dim errorMessageSuffix As new StringBuilder()
+
+                      If Not ticketValuesChanged Then
+                        errorMessageSuffix.Append("have not changed")
+                      End If
+
+                      If Not isNotCollidingWithATicketToPush Then
+                        If errorMessageSuffix.Length > 0 Then
+                          errorMessageSuffix.Append(" and ")
+                        End If
+                        errorMessageSuffix.Append("it is colliding with a ticket being pushed to SalesForce (If DatesModified missing above SF object did not include it)")
+                      End If
+
+                      errorMessageSuffix.Append(".")
+
+                      Log.Write("ticketID: " + ticket.TicketID.ToString() + " values were not updated because " + errorMessageSuffix.ToString())
+                    End If
+
+                    If crmLinkError IsNot Nothing then
+                      crmLinkError.Delete()
+                      crmLinkErrors.Save()
+                    End If
+
+                  Catch ex As Exception
+
+                    If crmLinkError Is Nothing then
+                      Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                      crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                      crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                      crmLinkError.CRMType          = CRMLinkRow.CRMType
+                      crmLinkError.Orientation      = "in"
+                      crmLinkError.ObjectType       = "case"
+                      crmLinkError.ObjectID         = caseToBring.Id
+                      crmLinkError.ObjectData       = JsonConvert.SerializeObject(caseToBring)
+                      crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+                      If isUpdate Then
+                        crmLinkError.OperationType  = "update"
+                      Else
+                        crmLinkError.OperationType  = "create"
+                      End If
+                      newCrmLinkError.Save()
+                    Else
+                      crmLinkError.ObjectData       = JsonConvert.SerializeObject(caseToBring)
+                      crmLinkError.Exception        = ex.ToString() + ex.StackTrace                                               
+                    End If                                              
+
+                  End Try
                 Next
               Next
+              crmLinkErrors.Save()
             End Sub
 
             Private Function GetCreator(ByRef caseToBring As sObject) As LoginUser
@@ -2683,53 +3002,89 @@ Namespace TeamSupport
             End Sub
 
             Private Sub PullCasesCommentsAsTicketsActions(ByVal casesCommentsToPullAsTickets As List(Of QueryResult))
+
+              Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+              crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "caseComment")
+              Dim crmLinkError As CRMLinkError = Nothing
+
               For Each casesCommentsBatch As QueryResult In casesCommentsToPullAsTickets 
                 For Each caseCommentToBring As sObject In casesCommentsBatch.records
-                  Dim actions As New Actions(User)
-                  actions.LoadBySalesForceID(caseCommentToBring.Id, CRMLinkRow.OrganizationID)
 
-                  Dim action As Action = Nothing
-                  If actions.Count > 0 Then
-                    'action = actions(0)
-                    'Log.Write("Updating actionID: " + action.ActionID.ToString() + ", with caseCommentID: " + caseCommentToBring.Id)
-                    'To prevent loosing formatting of existing actions in TeamSupport we do not update SalesForce CaseComments changes.
-                    Continue For
-                  Else
-                    actions = New Actions(User)
-                    action = actions.AddNewAction()
-                    action.SalesForceID = caseCommentToBring.Id
-                    action.SystemActionTypeID = SystemActionType.Custom 
-                    Dim actionTypes As ActionTypes = New ActionTypes(User)
-                    actionTypes.LoadAllPositions(CRMLinkRow.OrganizationID)
-                    If actionTypes.Count > 0 Then
-                      Dim actionType As ActionType = actionTypes.FindByName("Comment")
-                      If actionType IsNot Nothing Then
-                        action.ActionTypeID = actionType.ActionTypeID
-                      Else
-                        action.ActionTypeID = actionTypes(0).ActionTypeID
-                      End If 
-                    End If                  
-                    Log.Write("Creating new action with caseCommentID: " + caseCommentToBring.Id)
-                  End If
+                  crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(caseCommentToBring.Id, String.Empty)
 
-                  Dim ticket As Tickets = New Tickets(User)
-                  AssignCaseCommentsValuesToTicketAction(action, caseCommentToBring, ticket)
+                  Try
+                    Dim actions As New Actions(User)
+                    actions.LoadBySalesForceID(caseCommentToBring.Id, CRMLinkRow.OrganizationID)
 
-                  action.Collection.ActionLogInstantMessage = "SalesForce CaseComment ID: " + caseCommentToBring.Id + " Created In TeamSupport Action " 
+                    Dim action As Action = Nothing
+                    If actions.Count > 0 Then
+                      'action = actions(0)
+                      'Log.Write("Updating actionID: " + action.ActionID.ToString() + ", with caseCommentID: " + caseCommentToBring.Id)
+                      'To prevent loosing formatting of existing actions in TeamSupport we do not update SalesForce CaseComments changes.
+                      Continue For
+                    Else
+                      actions = New Actions(User)
+                      action = actions.AddNewAction()
+                      action.SalesForceID = caseCommentToBring.Id
+                      action.SystemActionTypeID = SystemActionType.Custom 
+                      Dim actionTypes As ActionTypes = New ActionTypes(User)
+                      actionTypes.LoadAllPositions(CRMLinkRow.OrganizationID)
+                      If actionTypes.Count > 0 Then
+                        Dim actionType As ActionType = actionTypes.FindByName("Comment")
+                        If actionType IsNot Nothing Then
+                          action.ActionTypeID = actionType.ActionTypeID
+                        Else
+                          action.ActionTypeID = actionTypes(0).ActionTypeID
+                        End If 
+                      End If                  
+                      Log.Write("Creating new action with caseCommentID: " + caseCommentToBring.Id)
+                    End If
 
-                  If ticket.Count > 0 Then
-                    ticket(0).DateModifiedBySalesForceSync = DateTime.UtcNow
-                  End If
+                    Dim ticket As Tickets = New Tickets(User)
+                    AssignCaseCommentsValuesToTicketAction(action, caseCommentToBring, ticket)
 
-                  action.DateModifiedBySalesForceSync = DateTime.UtcNow
-                  action.Collection.Save()
+                    action.Collection.ActionLogInstantMessage = "SalesForce CaseComment ID: " + caseCommentToBring.Id + " Created In TeamSupport Action " 
 
-                  If ticket.Count > 0 Then
-                    ticket.Save()
-                  End If
+                    If ticket.Count > 0 Then
+                      ticket(0).DateModifiedBySalesForceSync = DateTime.UtcNow
+                    End If
+
+                    action.DateModifiedBySalesForceSync = DateTime.UtcNow
+                    action.Collection.Save()
+
+                    If ticket.Count > 0 Then
+                      ticket(0).UpdateSalesForceData()
+                    End If
+
+                    If crmLinkError IsNot Nothing then
+                      crmLinkError.Delete()
+                      crmLinkErrors.Save()
+                    End If
+
+                  Catch ex As Exception
+
+                    If crmLinkError Is Nothing then
+                      Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                      crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                      crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                      crmLinkError.CRMType          = CRMLinkRow.CRMType
+                      crmLinkError.Orientation      = "in"
+                      crmLinkError.ObjectType       = "caseComment"
+                      crmLinkError.ObjectID         = caseCommentToBring.Id
+                      crmLinkError.ObjectData       = JsonConvert.SerializeObject(caseCommentToBring)
+                      crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+                      crmLinkError.OperationType    = "create"
+                      newCrmLinkError.Save()
+                    Else
+                      crmLinkError.ObjectData       = JsonConvert.SerializeObject(caseCommentToBring)
+                      crmLinkError.Exception        = ex.ToString() + ex.StackTrace                                               
+                    End If                                              
+
+                  End Try
 
                 Next
               Next
+              crmLinkErrors.Save()
 
             End Sub
 

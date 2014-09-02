@@ -321,6 +321,27 @@ AND ot.TicketID = @TicketID
       }
     }
 
+    public void UpdateSalesForceData()
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+          UPDATE
+            Tickets
+          SET
+            SalesForceID = @SalesForceID,
+            DateModifiedBySalesForceSync = @DateModifiedBySalesForceSync
+          WHERE
+            TicketID = @TicketID
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@SalesForceID", this.SalesForceID);
+        command.Parameters.AddWithValue("@DateModifiedBySalesForceSync", this.DateModifiedBySalesForceSyncUtc);
+        command.Parameters.AddWithValue("@TicketID", this.TicketID);
+        this.BaseCollection.ExecuteNonQuery(command, "Tickets");
+      }
+    }
+
   }
 
   public partial class Tickets 
