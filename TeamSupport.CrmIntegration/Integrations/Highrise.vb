@@ -4,6 +4,7 @@ Imports System.Net
 Imports System.IO
 Imports System.Xml
 Imports TeamSupport.Data
+Imports Newtonsoft.Json
 
 Namespace TeamSupport
     Namespace CrmIntegration
@@ -63,6 +64,14 @@ Namespace TeamSupport
                         Next
 
                         If TagIDs.Count > 0 Then
+
+                            Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                            crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "company")
+                            Dim crmLinkError As CRMLinkError = Nothing
+
+                            Dim crmLinkContactErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                            crmLinkContactErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "contact")
+
                             For Each TagID As String In TagIDs
                                 If Processor.IsStopped Then
                                     Return False
@@ -154,9 +163,38 @@ Namespace TeamSupport
                                     Log.Write("Updating account information...")
 
                                     For Each company As CompanyData In CompanySyncData
+
+                                        crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(company.AccountID, String.Empty)
+                                        
                                         'Go through all accounts we just processed and add to the TS database
-                                        UpdateOrgInfo(company, ParentOrgID)
-                                        Log.Write("Updated w/ Address: " & company.AccountName)
+                                        Try
+                                          UpdateOrgInfo(company, ParentOrgID)
+                                          Log.Write("Updated w/ Address: " & company.AccountName)
+                                          If crmLinkError IsNot Nothing then
+                                            crmLinkError.Delete()
+                                            crmLinkErrors.Save()
+                                          End If
+
+                                        Catch ex As Exception
+
+                                          If crmLinkError Is Nothing then
+                                            Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                            crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                            crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                                            crmLinkError.CRMType          = CRMLinkRow.CRMType
+                                            crmLinkError.Orientation      = "in"
+                                            crmLinkError.ObjectType       = "company"
+                                            crmLinkError.ObjectID         = company.AccountID
+                                            crmLinkError.ObjectData       = JsonConvert.SerializeObject(company)
+                                            crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+                                            crmLinkError.OperationType    = "unknown"
+                                            newCrmLinkError.Save()
+                                          Else
+                                            crmLinkError.ObjectData       = JsonConvert.SerializeObject(company)
+                                            crmLinkError.Exception        = ex.ToString() + ex.StackTrace                                               
+                                          End If                                              
+
+                                        End Try
                                     Next
 
                                     Log.Write("Finished updating account information.")
@@ -164,7 +202,7 @@ Namespace TeamSupport
 
                                     For Each company As CompanyData In CompanySyncData
                                         Try
-                                            GetPeople(Key, CompanyName, company.AccountID, ParentOrgID)
+                                            GetPeople(Key, CompanyName, company.AccountID, ParentOrgID, crmLinkContactErrors)
                                             Log.Write("Updated people information for " & company.AccountName)
                                         Catch ex As Exception
                                             Log.Write("Error in Updating People loop:" + ex.Message)
@@ -176,6 +214,8 @@ Namespace TeamSupport
                                 End If
 
                             Next
+                            crmLinkErrors.Save()
+                            crmLinkContactErrors.Save()
                         End If
 
                     Catch ex As Exception
@@ -401,7 +441,7 @@ Namespace TeamSupport
                 Return Nothing
             End Function
 
-            Private Sub GetPeople(ByVal token As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal ParentOrgID As String)
+            Private Sub GetPeople(ByVal token As String, ByVal CompanyName As String, ByVal AccountID As String, ByVal ParentOrgID As String, ByRef crmLinkContactErrors As CRMLinkErrors)
                 Dim MyXML As XmlDocument
 
                 Dim PeopleSyncData As List(Of EmployeeData) = Nothing
@@ -415,11 +455,14 @@ Namespace TeamSupport
                         PeopleSyncData = New List(Of EmployeeData)()
                     End If
 
+                    Dim crmLinkError As CRMLinkError = Nothing
+
                     For Each person As XElement In allpeople.Descendants("person")
                         Dim thisPerson As New EmployeeData()
                         Dim phones As XElement = person.Element("contact-data").Element("phone-numbers")
 
                         With thisPerson
+                            .HighriseID = person.Element("id").Value
                             .FirstName = person.Element("first-name").Value
                             .LastName = person.Element("last-name").Value
                             .Title = person.Element("title").Value
@@ -449,7 +492,34 @@ Namespace TeamSupport
                         Log.Write(String.Format("{0} people found. Updating...", PeopleSyncData.Count.ToString()))
 
                         For Each person As EmployeeData In PeopleSyncData
-                            UpdateContactInfo(person, AccountID, ParentOrgID)
+                            crmLinkError = crmLinkContactErrors.FindByObjectIDAndFieldName(person.HighriseID, string.Empty)
+                            Try
+                              UpdateContactInfo(person, AccountID, ParentOrgID)                             
+                              If crmLinkError IsNot Nothing then
+                                crmLinkError.Delete()
+                                crmLinkContactErrors.Save()
+                              End If
+
+                            Catch ex As Exception
+
+                              If crmLinkError Is Nothing then
+                                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                crmLinkError.CRMType        = CRMLinkRow.CRMType
+                                crmLinkError.Orientation    = "in"
+                                crmLinkError.ObjectType     = "contact"
+                                crmLinkError.ObjectID       = person.HighriseID
+                                crmLinkError.ObjectData     = JsonConvert.SerializeObject(person)
+                                crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                                crmLinkError.OperationType  = "unknown"
+                                newCrmLinkError.Save()
+                              Else
+                                crmLinkError.ObjectData     = JsonConvert.SerializeObject(person)
+                                crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                              End If                                              
+
+                            End Try
                         Next
                     Else
                         Log.Write("No people to update.")
