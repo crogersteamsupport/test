@@ -190,7 +190,7 @@ $(document).ready(function () {
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
         $('#companyTabs a:first').tab('show');
-        if ((!_isAdmin && !top.Ts.System.User.HasPortalRights) || !top.Ts.System.User.CanEditCompany) {
+        if ((!_isAdmin && !top.Ts.System.User.IsPortalUser) || !top.Ts.System.User.CanEditCompany) {
             $('#fieldPortalAccess').removeClass('editable');
         }
 
@@ -873,7 +873,7 @@ $(document).ready(function () {
     });
 
     $('#fieldPortalAccess').click(function (e) {
-        if (!$(this).hasClass('editable') || (!_isAdmin && !top.Ts.System.User.HasPortalRights) || !top.Ts.System.User.CanEditCompany)
+        if (!$(this).hasClass('editable') || (!_isAdmin && !top.Ts.System.User.IsPortalUser) || !top.Ts.System.User.CanEditCompany)
             return false;
         top.Ts.Services.Customers.SetCompanyPortalAccess(organizationID, ($(this).text() !== 'true'), function (result) {
             top.Ts.System.logAction('Customer Detail - Toggle Portal Access State');

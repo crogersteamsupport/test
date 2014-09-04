@@ -349,16 +349,7 @@ AdminPortal = function () {
     _agentratingOption.RedirectURL = $('#agentrating-redirecturl').val();
     _agentratingOption.ExternalPageLink = $('#agentrating-externalurl').val();
 
-    var _cdiOption = new top.TeamSupport.Data.CDI_SettingProxy();
-    _cdiOption.TotalTicketsWeight = ($('#ttw-slider').slider('value') * .1).toFixed(1);
-    _cdiOption.OpenTicketsWeight = $('#otw-slider').slider('value') * .1;
-    _cdiOption.Last30Weight = $('#last30-slider').slider('value') * .1;
-    _cdiOption.AvgDaysOpenWeight = $('#avgopen-weight').slider('value') * .1;
-    _cdiOption.AvgDaysToCloseWeight = $('#avgclose-weight').slider('value') * .1;
-    _cdiOption.GreenUpperRange = $("#cdi-green").slider('value');
-    _cdiOption.YellowUpperRange = $("#cdi-yellow").slider('value');
-
-    top.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), _agentratingOption,_cdiOption, function (result) {
+    top.Ts.Services.Organizations.SetPortalOption(portalOption, $('#portal_external_link').val(), $('#portal_allow_wiki').prop('checked'), $('#portal_def_group').val() == -1 ? null : $('#portal_def_group').val(), _agentratingOption, function (result) {
       if (result != null) {
         alert(result);
       }

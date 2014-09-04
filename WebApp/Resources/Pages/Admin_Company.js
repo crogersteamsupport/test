@@ -36,6 +36,7 @@ AdminPortal = function () {
           value: 2,
           min: 0,
           max: 10,
+          step: .5,
           slide: function (event, ui) {
               $(this).next().text("Overall Weight: " + (ui.value*10) + "%");
           },
@@ -145,7 +146,7 @@ AdminPortal = function () {
   function saveValues() {
 
     var _cdiOption = new top.TeamSupport.Data.CDI_SettingProxy();
-    _cdiOption.TotalTicketsWeight = ($('#ttw-slider').slider('value') * .1).toFixed(1);
+    _cdiOption.TotalTicketsWeight = ($('#ttw-slider').slider('value') * .1);
     _cdiOption.OpenTicketsWeight = $('#otw-slider').slider('value') * .1;
     _cdiOption.Last30Weight = $('#last30-slider').slider('value') * .1;
     _cdiOption.AvgDaysOpenWeight = $('#avgopen-weight').slider('value') * .1;
@@ -159,7 +160,6 @@ AdminPortal = function () {
     });
 
   }
-
 
   loadCDISettings();
   function loadCDISettings()
@@ -196,9 +196,18 @@ AdminPortal = function () {
               $('#cdi-yellow').slider('value', yellowlimit);
               $('#cdi-yellow').next().text("Upper Limit: " + yellowlimit);
 
-              var cdistatus = cdi.LastCompute == null ? 'Never' : top.Ts.Utils.getMsDate(cdi.LastCompute);
+              var lastCompute = cdi.LastCompute == null ? 'Never' : top.Ts.Utils.getMsDate(cdi.LastCompute);
+
+              if (lastCompute == 'Never')
+              {
+                  var cdistatus = 'Never';
+              }
+                  else
+              {
+                  var cdistatus = lastCompute.localeFormat(top.Ts.Utils.getDateTimePattern())
+              }
               
-              $('#cdiStatus').html("The CDI runs once per day, and the last time your account processed was: <strong>" + cdistatus.localeFormat(top.Ts.Utils.getDateTimePattern()) + "</strong> To force an update now, please click the force update button below.");
+              $('#cdiStatus').html("The CDI runs once per day, and the last time your account processed was: <strong>" + cdistatus + "</strong> To force an update now, please click the force update button below.");
           }
       });
 
@@ -206,7 +215,19 @@ AdminPortal = function () {
 
   $('#recalculate-cdi').click(function () {
       top.Ts.Services.Organizations.ResetCDI();
-      alert("This process will take about 15-30 minutes to complete.");
+      alert("TeamSupport will begin recomputing the CDI indexes momentarily - Please note that it could take as much as 30 minutes for this process to be completed.");
+  });
+
+  $('.tabs-cdi').click(function () {
+      loadCDISettings();
+
+      $("#cdi-green").next().removeClass("red");
+      $("#cdi-yellow").next().removeClass("red");
+      $('#cdi-total').removeClass('red');
+      $('#recalculate-cdi').removeAttr("disabled");
+      $('.portal-save-panel').hide();
+      $('#cdi-total').text("Total Weight: 100%");
+
   });
 };
 
