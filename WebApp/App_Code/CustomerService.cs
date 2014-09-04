@@ -1417,6 +1417,21 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public string GetCustDistIndexTrend(int organizationID)
+        {
+            Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+            organizations.LoadByOrganizationID(organizationID);
+
+            if (organizations[0].CustDistIndexTrend == 1)
+                return "<i class='fa fa-arrow-up red'></i>";
+            else if (organizations[0].CustDistIndexTrend == -1)
+                return "<i class='fa fa-arrow-down green'></i>";
+            else
+                return "";
+
+        }
+
+        [WebMethod]
         public OrgProp GetProperties(int organizationID)
         {
             Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
@@ -1479,7 +1494,7 @@ namespace TSWebServices
             StringBuilder htmlresults = new StringBuilder("");
             StringBuilder phoneResults = new StringBuilder("");
             Users users = new Users(TSAuthentication.GetLoginUser());
-            users.LoadByOrganizationIDLastName(organizationID, !isActive);
+            users.LoadByOrganizationIDLastName(organizationID, isActive);
 
             foreach (User u in users)
             {

@@ -1524,9 +1524,9 @@ $(document).ready(function () {
     }
 
     $('#cbActive').click(function (e) {
-        top.Ts.Services.Users.SetInactiveFilter(top.Ts.System.User.UserID, $('#cbActive').prop('checked'), function (result) {
+        top.Ts.Services.Users.SetInactiveFilter(top.Ts.System.User.UserID, $('#cbActive').prop('checked') ? true : false, function (result) {
             top.Ts.System.logAction('User Info - Changed Filter Inactive Setting');
-        },
+        }, 
               function (error) {
                   alert('There was an error saving the user filter inaactive setting.');
                   item.next().hide();
@@ -1943,6 +1943,7 @@ $(document).ready(function () {
 
             var chartData = [];
             var dummy = chartString.split(",");
+            var openCount=0;
 
             for (var i = 0; i < dummy.length; i++) {
                 chartData.push([dummy[i], parseFloat(dummy[i + 1])]);
@@ -1955,7 +1956,10 @@ $(document).ready(function () {
                 //$('#openChart').text("No Open Tickes").addClass("text-center");
                 $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header").attr("title", "No Open Tickets");
             }
-            else{
+            else {
+                for (var i = 0; i < chartData.length; i++) {
+                    openCount = openCount + chartData[i][1];
+                }
             $('#openChart').highcharts({
                 chart: {
                     plotBackgroundColor: null,
@@ -1967,7 +1971,7 @@ $(document).ready(function () {
                     enabled: false
                 },
                 title: {
-                    text: 'Open Tickets'
+                    text: 'Open Tickets - ' + openCount
                 },
                 tooltip: {
                     pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
@@ -1990,6 +1994,9 @@ $(document).ready(function () {
 
             var chart = $('#openChart').highcharts();
             chart.series[0].setData(chartData);
+
+
+
             }
         });
 
@@ -1997,6 +2004,8 @@ $(document).ready(function () {
 
             var chartData = [];
             var dummy = chartString.split(",");
+            var closedCount = 0;
+
             for (var i = 0; i < dummy.length; i++) {
                 chartData.push([dummy[i], parseFloat(dummy[i + 1])]);
                 i++
@@ -2008,7 +2017,10 @@ $(document).ready(function () {
                 //$('#closedChart').text("No Closed Tickets").addClass("text-center");
                 $('#closedChart').html("No Closed Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header").attr("title", "No Closed Tickets");
             }
-            else{
+            else {
+                for (var i = 0; i < chartData.length; i++) {
+                    closedCount = closedCount + chartData[i][1];
+                }
             $('#closedChart').highcharts({
                 chart: {
                     plotBackgroundColor: null,
@@ -2020,7 +2032,7 @@ $(document).ready(function () {
                     enabled: false
                 },
                 title: {
-                    text: 'Closed Tickets'
+                    text: 'Closed Tickets - ' + closedCount
                 },
                 tooltip: {
                     pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
@@ -2062,111 +2074,117 @@ $(document).ready(function () {
         top.Ts.Services.Customers.LoadCDI(organizationID, function (cdiValue) {
             var chartData = [];
             chartData.push(cdiValue);
-            $('#csiChart').highcharts({
+            
+            top.Ts.Services.Customers.GetCustDistIndexTrend(organizationID, function (trend) {
+                $('#csiChart').highcharts({
 
-                chart: {
-                    type: 'gauge',
-                    plotBackgroundColor: null,
-                    plotBackgroundImage: null,
-                    plotBorderWidth: 0,
-                    plotShadow: false,
-                    height: 250,
-                },
-
-                title: {
-                    text: 'CDI'
-                },
-
-                pane: {
-                    startAngle: -150,
-                    endAngle: 150,
-                    background: [{
-                        backgroundColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [
-                                [0, '#FFF'],
-                                [1, '#333']
-                            ]
-                        },
-                        borderWidth: 0,
-                        outerRadius: '109%'
-                    }, {
-                        backgroundColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [
-                                [0, '#333'],
-                                [1, '#FFF']
-                            ]
-                        },
-                        borderWidth: 1,
-                        outerRadius: '107%'
-                    }, {
-                        // default background
-                    }, {
-                        backgroundColor: '#DDD',
-                        borderWidth: 0,
-                        outerRadius: '105%',
-                        innerRadius: '103%'
-                    }]
-                },
-
-                // the value axis
-                yAxis: {
-                    min: 0,
-                    max: 100,
-
-                    minorTickInterval: 'auto',
-                    minorTickWidth: 1,
-                    minorTickLength: 10,
-                    minorTickPosition: 'inside',
-                    minorTickColor: '#666',
-
-                    tickPixelInterval: 30,
-                    tickWidth: 2,
-                    tickPosition: 'inside',
-                    tickLength: 10,
-                    tickColor: '#666',
-                    labels: {
-                        step: 2,
-                        rotation: 'auto'
+                    chart: {
+                        type: 'gauge',
+                        plotBackgroundColor: null,
+                        plotBackgroundImage: null,
+                        plotBorderWidth: 0,
+                        plotShadow: false,
+                        height: 250,
                     },
+
                     title: {
-                        text: ''
+                        useHTML: true,
+                        text: 'CDI ' + trend
                     },
-                    plotBands: [{
-                        from: 0,
-                        to: greenLimit,
-                        color: '#55BF3B' // green
-                    }, {
-                        from: greenLimit,
-                        to: yellowLimit,
-                        color: '#DDDF0D' // yellow
-                    }, {
-                        from: yellowLimit,
-                        to: 100,
-                        color: '#DF5353' // red
+                    pane: {
+                        startAngle: -150,
+                        endAngle: 150,
+                        background: [{
+                            backgroundColor: {
+                                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                stops: [
+                                    [0, '#FFF'],
+                                    [1, '#333']
+                                ]
+                            },
+                            borderWidth: 0,
+                            outerRadius: '109%'
+                        }, {
+                            backgroundColor: {
+                                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                stops: [
+                                    [0, '#333'],
+                                    [1, '#FFF']
+                                ]
+                            },
+                            borderWidth: 1,
+                            outerRadius: '107%'
+                        }, {
+                            // default background
+                        }, {
+                            backgroundColor: '#DDD',
+                            borderWidth: 0,
+                            outerRadius: '105%',
+                            innerRadius: '103%'
+                        }]
+                    },
+
+                    // the value axis
+                    yAxis: {
+                        min: 0,
+                        max: 100,
+
+                        minorTickInterval: 'auto',
+                        minorTickWidth: 1,
+                        minorTickLength: 10,
+                        minorTickPosition: 'inside',
+                        minorTickColor: '#666',
+
+                        tickPixelInterval: 30,
+                        tickWidth: 2,
+                        tickPosition: 'inside',
+                        tickLength: 10,
+                        tickColor: '#666',
+                        labels: {
+                            step: 2,
+                            rotation: 'auto'
+                        },
+                        title: {
+                            text: ''
+                        },
+                        plotBands: [{
+                            from: 0,
+                            to: greenLimit,
+                            color: '#55BF3B' // green
+                        }, {
+                            from: greenLimit,
+                            to: yellowLimit,
+                            color: '#DDDF0D' // yellow
+                        }, {
+                            from: yellowLimit,
+                            to: 100,
+                            color: '#DF5353' // red
+                        }]
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    series: [{
+                        name: 'CDI',
+                        data: [],
+                        tooltip: {
+                            valueSuffix: ' Rating'
+                        }
                     }]
+
                 },
-                credits: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'CDI',
-                    data: [],
-                    tooltip: {
-                        valueSuffix: ' Rating'
+                function (chart) {
+                    if (!chart.renderer.forExport) {
+
                     }
-                }]
+                });
 
-            },
-            function (chart) {
-                if (!chart.renderer.forExport) {
-
-                }
+                var chart = $('#csiChart').highcharts();
+                chart.series[0].setData(chartData);
             });
 
-            var chart = $('#csiChart').highcharts();
-            chart.series[0].setData(chartData);
+
+
         }); 
     }
     $("[rel='tooltip']").tooltip();

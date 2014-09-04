@@ -206,6 +206,7 @@ AdminPortal = function () {
 
   $('#recalculate-cdi').click(function () {
       top.Ts.Services.Organizations.ResetCDI();
+      alert("This process will take about 15-30 minutes to complete.");
   });
 };
 

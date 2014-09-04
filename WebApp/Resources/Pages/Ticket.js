@@ -856,9 +856,13 @@ $(document).ready(function () {
           if (result == true) {
             icon.removeClass('ts-icon-portalnot').addClass('ts-icon-portal');
             confirmVisibleToCustomers();
+            actionDiv.remove();
+            loadTicket(_ticketNumber, 0);
           }
           else {
-            icon.removeClass('ts-icon-portal').addClass('ts-icon-portalnot');
+              icon.removeClass('ts-icon-portal').addClass('ts-icon-portalnot');
+              actionDiv.remove();
+              loadTicket(_ticketNumber, 0);
           }
         }, function () {
           alert('There was an error editing this action.');
@@ -2380,20 +2384,20 @@ var initEditor = function (element, init) {
           top.Ts.System.refreshUser(function () {
             if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
                 ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
-                ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
+                //ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
             }
             else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
                 ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
-                ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
+                //ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
             }
 
             if (top.Ts.System.User.FontSize != "0") {
                 ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
-                ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize + 1);
+                //ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize + 1);
             }
             else if (top.Ts.System.Organization.FontSize != "0") {
                 ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSize +1);
-                ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize+1);
+                //ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize+1);
             }          
           });
         });

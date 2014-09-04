@@ -16,6 +16,10 @@ $(document).ready(function () {
     //    $('#ratingsTab').hide();
     //}
 
+    if (top.Ts.System.User.FilterInactive) {
+        $('#cbActive').prop('checked', true);
+    }
+
     if (!top.Ts.System.User.IsSystemAdmin)
     {
         $('#historyTab').hide();
@@ -233,9 +237,7 @@ $(document).ready(function () {
 
     });
 
-    if (top.Ts.System.User.FilterInactive) {
-        $('#cbActive').prop('checked', true);
-    }
+
 
     $('#cbActive').click(function (e) {
         top.Ts.Services.Users.SetInactiveFilter(top.Ts.System.User.UserID, $('#cbActive').prop('checked'), function (result) {

@@ -1653,8 +1653,26 @@ namespace TSWebServices
     {
       TeamSupport.Data.Action action = Actions.GetAction(TSAuthentication.GetLoginUser(), actionID);
       User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      User author = Users.GetUser(TSAuthentication.GetLoginUser(), action.CreatorID);
       if (CanEditAction(action) || user.ChangeTicketVisibility)
       {
+          if (isVisibleOnPortal)
+          {
+            if (!string.IsNullOrWhiteSpace(author.Signature))
+            {
+                if (!action.Description.Contains(author.Signature))
+                    action.Description = action.Description + "<br/><br/>" + author.Signature;
+            }
+          }
+          else
+          {
+              if (!string.IsNullOrWhiteSpace(author.Signature))
+              {
+                  if (action.Description.Contains(author.Signature))
+                      action.Description = action.Description.Replace("<br><br>" + author.Signature, "");
+              }
+          }
+
         action.IsVisibleOnPortal = isVisibleOnPortal;
         action.Collection.Save();
       }
@@ -3048,7 +3066,7 @@ namespace TSWebServices
       action.Description = info.Description;
 
       User user = Users.GetUser(TSAuthentication.GetLoginUser(), TSAuthentication.UserID);
-      if (user.Signature != "")
+      if (!string.IsNullOrWhiteSpace(user.Signature) && info.IsVisibleOnPortal)
       {
           action.Description = action.Description + "<br/><br/>" + user.Signature;
       }
