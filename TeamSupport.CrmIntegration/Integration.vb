@@ -1114,6 +1114,7 @@ Namespace TeamSupport
             Private _fax        As String
             Private _salesForceID As String
             Private _zohoId    As String
+            Private _highriseID As String
 
 
             Property FirstName As String
@@ -1254,6 +1255,14 @@ Namespace TeamSupport
                 End Set
             End Property
 
+            Property HighriseID As String
+                Get
+                    Return _highriseID
+                End Get
+                Set(ByVal value As String)
+                    _highriseID = value
+                End Set
+            End Property
         End Class
 
         Public Class ProductData
