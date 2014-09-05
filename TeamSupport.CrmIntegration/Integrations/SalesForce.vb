@@ -1488,7 +1488,11 @@ Namespace TeamSupport
                         Dim result As SaveResult = Binding.update(New sObject() {salesForceCase})(0) 
                         If result.errors Is Nothing Then
                           Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
-                          ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
+                          Dim lastLog As ActionLogs = New ActionLogs(User)
+                          lastLog.LoadLastByTypeAndID(ReferenceType.Tickets, ticket.TicketID)
+                          If (lastLog.IsEmpty OrElse lastLog(0).Description <> actionLogDescription)
+                            ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription) 
+                          End If                             
                           If crmLinkError IsNot Nothing then
                             crmLinkError.Delete()
                             crmLinkErrors.Save()
@@ -1515,7 +1519,11 @@ Namespace TeamSupport
                           result = Binding.update(New sObject() {salesForceCase})(0)
                           If result.errors Is Nothing Then
                             Dim actionLogDescription As String = "Updated SalesForce Case ID: '" + ticket.SalesForceID + "' with ticket changes."
-                            ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)                              
+                            Dim lastLog As ActionLogs = New ActionLogs(User)
+                            lastLog.LoadLastByTypeAndID(ReferenceType.Tickets, ticket.TicketID)
+                            If (lastLog.IsEmpty OrElse lastLog(0).Description <> actionLogDescription)
+                              ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
+                            End If                              
                             If crmLinkError IsNot Nothing then
                               crmLinkError.Delete()
                               crmLinkErrors.Save()

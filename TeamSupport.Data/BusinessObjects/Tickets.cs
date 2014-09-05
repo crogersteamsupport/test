@@ -730,10 +730,33 @@ AND ts.IsClosed = 0";
 
     public void LoadByCRMLinkItem(CRMLinkTableItem item) {
         using (SqlCommand command = new SqlCommand()) {
-            command.CommandText = @"SELECT * FROM Tickets t 
-                    INNER JOIN OrganizationTickets ot ON t.TicketID = ot.TicketID
-                    INNER JOIN Organizations o ON o.OrganizationID = ot.OrganizationID
-                    WHERE (t.OrganizationID = @OrgID AND t.TicketID > @LastTicketID AND ISNULL(o.CRMLinkID,'') <> '')";
+            command.CommandText = @"
+              SELECT 
+                *
+              FROM
+                Tickets t 
+                JOIN OrganizationTickets ot
+                  ON t.TicketID = ot.TicketID
+                JOIN Organizations o 
+                  ON o.OrganizationID = ot.OrganizationID
+                LEFT JOIN TicketStatuses ts
+                  ON t.TicketStatusID = ts.TicketStatusID
+              WHERE 
+                t.OrganizationID = @OrgID 
+                AND 
+                (
+                  (
+                    @LastTicketID > 0
+                    AND t.TicketID > @LastTicketID
+                  )
+                  OR
+                  (
+                    @LastTicketID <= 0
+                    AND ts.IsClosed = 0
+                  )
+                )
+                AND ISNULL(o.CRMLinkID,'') <> ''
+            ";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@OrgID", item.OrganizationID);
             command.Parameters.AddWithValue("@LastTicketID", item.LastTicketID);

@@ -1317,12 +1317,25 @@ WHERE tgv.OrganizationID = @OrganizationID"
         command.CommandText =
         @"
           SELECT 
-            * 
+            t.* 
           FROM 
             TicketsView t
+            LEFT JOIN TicketStatuses ts
+              ON t.TicketStatusID = ts.TicketStatusID
           WHERE 
             t.OrganizationID = @OrgID 
-            AND t.DateModified > @DateModified
+            AND 
+            (
+              (
+                @DateModified > '1753-01-01'
+                AND t.DateModified > @DateModified
+              )
+              OR
+              (
+                @DateModified <= '1753-01-01'
+                AND ts.IsClosed = 0
+              )
+            )
             AND 
             (
               t.DateModifiedBySalesForceSync IS NULL

@@ -49,6 +49,29 @@ namespace TeamSupport.Data
       actionLogs.Save();
     }
 
+    public void LoadLastByTypeAndID(ReferenceType refType, int refID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+          SELECT
+            TOP 1
+            *
+          FROM
+            ActionLogs
+          WHERE
+            RefType = @RefType
+            AND RefID = @RefID
+          ORDER BY
+            DateCreated DESC
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@RefType", refType);
+        command.Parameters.AddWithValue("@RefID", refID);
+        Fill(command);
+      }
+    }
+
     public void LoadAll()
     {
       using (SqlCommand command = new SqlCommand())

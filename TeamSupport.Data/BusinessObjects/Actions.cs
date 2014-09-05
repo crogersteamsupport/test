@@ -258,6 +258,8 @@ namespace TeamSupport.Data
             Actions a 
             JOIN Tickets t 
               ON a.TicketID = t.TicketID
+            LEFT JOIN TicketStatuses ts
+              ON t.TicketStatusID = ts.TicketStatusID
           WHERE 
             a.SystemActionTypeID <> 1 
             AND a.DateModified > @DateModified
@@ -267,6 +269,11 @@ namespace TeamSupport.Data
               OR a.DateModified > DATEADD(s, 2, a.DateModifiedBySalesForceSync)
             )
             AND t.OrganizationID = @OrgID 
+            AND 
+            (
+              @DateModified > '1753-01-01'
+              OR ts.IsClosed = 0
+            )
           ORDER BY 
             a.DateCreated DESC
         ";
