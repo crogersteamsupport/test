@@ -224,13 +224,13 @@ ORDER BY u.FirstName, u.LastName";
       {
         command.CommandText =
 @"
-SELECT u.* FROM 
-UsersView u 
-LEFT JOIN TicketQueue q ON u.UserID = q.UserID 
-WHERE (q.TicketID = @TicketID) 
+SELECT u.* 
+FROM UsersView u 
+WHERE u.UserID IN (SELECT q.UserID FROM TicketQueue q WHERE q.TicketID=@TicketID)
 AND (u.IsActive = 1) 
 AND (u.MarkDeleted = 0)
-ORDER BY u.FirstName, u.LastName";
+ORDER BY u.FirstName, u.LastName
+";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@TicketID", ticketID);
         Fill(command);
