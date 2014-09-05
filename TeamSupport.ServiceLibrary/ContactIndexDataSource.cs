@@ -34,6 +34,7 @@ namespace TeamSupport.ServiceLibrary
 
         List<CustomerSearchPhone> phones = new List<CustomerSearchPhone>();
         StringBuilder builder = new StringBuilder();
+        builder.AppendLine(Regex.Replace(contact.Email, "[,.]+", ""));
         PhoneNumbers phoneNumbers = new PhoneNumbers(_loginUser);
         phoneNumbers.LoadByID(contact.UserID, ReferenceType.Users);
         foreach (PhoneNumber number in phoneNumbers)
