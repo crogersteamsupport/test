@@ -1971,7 +1971,10 @@ $(document).ready(function () {
                     enabled: false
                 },
                 title: {
-                    text: 'Open Tickets - ' + openCount
+                    text: 'Open Tickets ' + openCount,
+                    style: {
+                        "fontSize": "14px"
+                    }
                 },
                 tooltip: {
                     pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
@@ -2032,7 +2035,11 @@ $(document).ready(function () {
                     enabled: false
                 },
                 title: {
-                    text: 'Closed Tickets - ' + closedCount
+                    text: 'Closed Tickets ' + closedCount,
+                    style: {
+                        "fontSize": "14px"
+                    }
+
                 },
                 tooltip: {
                     pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
@@ -2089,7 +2096,10 @@ $(document).ready(function () {
 
                     title: {
                         useHTML: true,
-                        text: 'CDI ' + trend
+                        text: 'CDI ' + trend,
+                        style: {
+                            "fontSize": "14px"
+                        }
                     },
                     pane: {
                         startAngle: -150,
