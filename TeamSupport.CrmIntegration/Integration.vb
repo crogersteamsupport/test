@@ -3,6 +3,7 @@ Imports System.Xml
 Imports System.IO
 Imports System.Net
 Imports System.Text
+Imports Newtonsoft.Json
 
 Namespace TeamSupport
     Namespace CrmIntegration
@@ -80,12 +81,42 @@ Namespace TeamSupport
                       CompanySyncData = ParseCompanyXML(CompaniesToSync)
                       Log.Write("ParseCompanyXML method executed.")
                       If CompanySyncData IsNot Nothing Then
+
+                          Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                          crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "company")
+                          Dim crmLinkError As CRMLinkError = Nothing
+
                           Log.Write(String.Format("Processed {0} accounts.", CompanySyncData.Count))
 
                           'update info for organizations
                           For Each company As CompanyData In CompanySyncData
-                              UpdateOrgInfo(company, CRMLinkRow.OrganizationID)
+                              crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(company.AccountID, string.Empty)
+                              Try
+                                UpdateOrgInfo(company, CRMLinkRow.OrganizationID)
+                                If crmLinkError IsNot Nothing then
+                                  crmLinkError.Delete()
+                                  crmLinkErrors.Save()
+                                End If
+                              Catch ex As Exception
+                                If crmLinkError Is Nothing then
+                                  Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                  crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                  crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                  crmLinkError.CRMType        = CRMLinkRow.CRMType
+                                  crmLinkError.Orientation    = "in"
+                                  crmLinkError.ObjectType     = "company"
+                                  crmLinkError.ObjectID       = company.AccountID
+                                  crmLinkError.ObjectData     = JsonConvert.SerializeObject(company)
+                                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                                  crmLinkError.OperationType  = "unknown"
+                                  newCrmLinkError.Save()
+                                Else
+                                  crmLinkError.ObjectData     = JsonConvert.SerializeObject(company)
+                                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                                End If                                              
+                              End Try
                           Next
+                          crmLinkErrors.Save()
 
                           Log.Write("Finished updating account information.")
                           GetCustomFields("Account", String.Empty)
@@ -93,6 +124,9 @@ Namespace TeamSupport
 
                           If CRMLinkRow.PullCustomerProducts Then
                             Log.Write("Updating products information...")
+
+                            crmLinkErrors = New CRMLinkErrors(Me.User)
+                            crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "product")
 
                             For Each company As CompanyData In CompanySyncData
                                 'get products data for each company
@@ -103,14 +137,39 @@ Namespace TeamSupport
 
                                     If ProductsSyncData IsNot Nothing Then
                                         For Each product As ProductData In ProductsSyncData
+                                          Try
+                                            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(company.AccountID + product.Name + product.ExpirationDate.ToString(), string.Empty)
                                             'update info for products
                                             UpdateProductInfo(product, company.AccountID, CRMLinkRow.OrganizationID)
+                                            If crmLinkError IsNot Nothing then
+                                              crmLinkError.Delete()
+                                              crmLinkErrors.Save()
+                                            End If
+                                          Catch ex As Exception
+                                            If crmLinkError Is Nothing then
+                                              Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                              crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                              crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                              crmLinkError.CRMType        = CRMLinkRow.CRMType
+                                              crmLinkError.Orientation    = "in"
+                                              crmLinkError.ObjectType     = "product"
+                                              crmLinkError.ObjectID       = company.AccountID + product.Name + product.ExpirationDate.ToString()
+                                              crmLinkError.ObjectData     = JsonConvert.SerializeObject(product)
+                                              crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                                              crmLinkError.OperationType  = "unknown"
+                                              newCrmLinkError.Save()
+                                            Else
+                                              crmLinkError.ObjectData     = JsonConvert.SerializeObject(product)
+                                              crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                                            End If                                              
+                                          End Try
                                         Next
 
                                         Log.Write("Updated product information for " & company.AccountName)
                                     End If
                                 End If
                             Next
+                            crmLinkErrors.Save()
                             Log.Write("Finished updating product information")
                           End If
                       End If
@@ -134,11 +193,39 @@ Namespace TeamSupport
                           If PeopleSyncData IsNot Nothing Then
                               Log.Write(String.Format("Processed {0} contacts.", PeopleSyncData.Count))
 
+                              Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                              crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "contact")
+                              Dim crmLinkError As CRMLinkError = Nothing
+
                               'update info for customers
                               For Each person As EmployeeData In PeopleSyncData
-                                UpdateContactInfo(person, person.ZohoID, CRMLinkRow.OrganizationID)
+                                crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(person.ZohoID, string.Empty)
+                                Try
+                                  UpdateContactInfo(person, person.ZohoID, CRMLinkRow.OrganizationID)
+                                  If crmLinkError IsNot Nothing then
+                                    crmLinkError.Delete()
+                                    crmLinkErrors.Save()
+                                  End If
+                                Catch ex As Exception
+                                  If crmLinkError Is Nothing then
+                                    Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                    crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                    crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                    crmLinkError.CRMType        = CRMLinkRow.CRMType
+                                    crmLinkError.Orientation    = "in"
+                                    crmLinkError.ObjectType     = "contact"
+                                    crmLinkError.ObjectID       = person.ZohoID
+                                    crmLinkError.ObjectData     = JsonConvert.SerializeObject(person)
+                                    crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                                    crmLinkError.OperationType  = "unknown"
+                                    newCrmLinkError.Save()
+                                  Else
+                                    crmLinkError.ObjectData     = JsonConvert.SerializeObject(person)
+                                    crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                                  End If                                              
+                                End Try
                               Next
-
+                              crmLinkErrors.Save()
                               Log.Write("Finished updating people information")
                               GetCustomFields("Contact", Nothing)
                               Log.Write("Finished updating Contacts Custom Mappings")
@@ -180,6 +267,10 @@ Namespace TeamSupport
                         If tickets IsNot Nothing Then
                             Log.Write(String.Format("Found {0} tickets to sync.", tickets.Count.ToString()))
 
+                            Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                            crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "out", "ticket")
+                            Dim crmLinkError As CRMLinkError = Nothing
+
                             For Each thisTicket As Ticket In tickets
                                 If Processor.IsStopped Then
                                     Return False
@@ -190,6 +281,8 @@ Namespace TeamSupport
                                 'get a list of customers associated to the ticket
                                 Dim customers As New OrganizationsView(User)
                                 customers.LoadByTicketID(thisTicket.TicketID)
+
+                                crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(thisTicket.TicketID.ToString(), "note")
 
                                 For Each customer As OrganizationsViewItem In customers
                                     If customer.CRMLinkID <> "" Then
@@ -204,7 +297,6 @@ Namespace TeamSupport
                                     End If
                                 Next
 
-                                If atLeastOneSucceded Then
                                     CRMLinkRow.LastTicketID = thisTicket.TicketID
                                     CRMLinkRow.Collection.Save()
 
@@ -214,8 +306,30 @@ Namespace TeamSupport
                                         ReferenceType.Tickets,
                                         thisTicket.TicketID,
                                         "Sent ticket data to " + Type.ToString() + ".")
+
+                                If atLeastOneSucceded Then
+                                  If crmLinkError IsNot Nothing then
+                                    crmLinkError.Delete()
+                                    crmLinkErrors.Save()
+                                  End If
+                                ElseIf crmLinkError Is Nothing then
+                                  Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                  crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                  crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                                  crmLinkError.CRMType          = CRMLinkRow.CRMType
+                                  crmLinkError.Orientation      = "out"
+                                  crmLinkError.ObjectType       = "ticket"
+                                  crmLinkError.ObjectFieldName  = "note"
+                                  crmLinkError.ObjectID         = thisTicket.TicketID.ToString()
+                                  crmLinkError.Exception        = "Error creating ticket as note."
+                                  crmLinkError.OperationType    = "create"
+                                  newCrmLinkError.Save()
+                                Else
+                                  crmLinkError.Exception        = "Error creating ticket as note."                                
                                 End If
                             Next
+
+                            crmLinkErrors.Save()
                         Else
                             Log.Write("No new tickets to sync.")
                         End If

@@ -333,6 +333,17 @@ Namespace TeamSupport
                 Dim accountZohoType As String = String.Empty
                 Dim accountZohoID As String = String.Empty
 
+                Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                
+                Select Case objType
+                  Case "Account"
+                    crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "company")
+                  Case "Contact"
+                    crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "contact")
+                End Select
+                
+                Dim crmLinkError As CRMLinkError = Nothing
+
                 For Each recordToUpdate As XElement In GetCustomMappingValues(objType, customMappings, accountIDToUpdate)
                   accountZohoType = GetAccountZohoType(recordToUpdate, accountZohoID)
                   Dim companyToUpdate As New Organizations(User)
@@ -344,14 +355,45 @@ Namespace TeamSupport
                           For Each field As XElement In recordToUpdate.Descendants("FL")
                             Dim fieldMapping As CRMLinkField = customMappings.FindByCRMFieldName(field.Attribute("val").Value)
                             If fieldMapping IsNot Nothing Then
-                              If fieldMapping.CustomFieldID IsNot Nothing Then
-                                UpdateCustomValue(fieldMapping.CustomFieldID, companyToUpdate(0).OrganizationID, field.Value)
-                              ElseIf fieldMapping.TSFieldName IsNot Nothing Then
+                              Try
+                                If fieldMapping.CustomFieldID IsNot Nothing Then
+                                  crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(accountZohoID, fieldMapping.CustomFieldID.ToString())
+                                  UpdateCustomValue(fieldMapping.CustomFieldID, companyToUpdate(0).OrganizationID, field.Value)
+                                ElseIf fieldMapping.TSFieldName IsNot Nothing Then
+                                  crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(accountZohoID, fieldMapping.TSFieldName)
                                   companyToUpdate(0).Row(fieldMapping.TSFieldName) = field.Value
-                              End If
+                                  companyToUpdate(0).BaseCollection.Save()
+                                End If
+                                If crmLinkError IsNot Nothing then
+                                  crmLinkError.Delete()
+                                  crmLinkErrors.Save()
+                                End If
+
+                              Catch ex As Exception
+                                If crmLinkError Is Nothing then
+                                  Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                  crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                  crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                  crmLinkError.CRMType        = CRMLinkRow.CRMType
+                                  crmLinkError.Orientation    = "in"
+                                  crmLinkError.ObjectType     = "company"
+                                  crmLinkError.ObjectID       = accountZohoID
+                                  If fieldMapping.CustomFieldID IsNot Nothing Then
+                                    crmLinkError.ObjectFieldName = fieldMapping.CustomFieldID.ToString()
+                                  ElseIf fieldMapping.TSFieldName IsNot Nothing Then
+                                    crmLinkError.ObjectFieldName = fieldMapping.TSFieldName
+                                  End If
+                                  crmLinkError.ObjectData     = field.Value
+                                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                                  crmLinkError.OperationType  = "update"
+                                  newCrmLinkError.Save()
+                                Else
+                                  crmLinkError.ObjectData     = field.Value
+                                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                                End If                                              
+                              End Try
                             End If
                           Next
-                          companyToUpdate(0).BaseCollection.Save()
                         End If
                       End If
                       Case "Contact"
@@ -363,18 +405,50 @@ Namespace TeamSupport
                           For Each field As XElement In recordToUpdate.Descendants("FL")
                             Dim fieldMapping As CRMLinkField = customMappings.FindByCRMFieldName(field.Attribute("val").Value)
                             If fieldMapping IsNot Nothing Then
-                              If fieldMapping.CustomFieldID IsNot Nothing Then
-                                UpdateCustomValue(fieldMapping.CustomFieldID, userToUpdate(0).UserID, field.Value)
-                              ElseIf fieldMapping.TSFieldName IsNot Nothing Then
-                                userToUpdate(0).Row(fieldMapping.TSFieldName) = field.Value
-                              End If
+                              Try
+                                If fieldMapping.CustomFieldID IsNot Nothing Then
+                                  crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(accountZohoID, fieldMapping.CustomFieldID.ToString())
+                                  UpdateCustomValue(fieldMapping.CustomFieldID, userToUpdate(0).UserID, field.Value)
+                                ElseIf fieldMapping.TSFieldName IsNot Nothing Then
+                                  crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(accountZohoID, fieldMapping.TSFieldName)
+                                  userToUpdate(0).Row(fieldMapping.TSFieldName) = field.Value
+                                  userToUpdate(0).BaseCollection.Save()
+                                End If
+                                If crmLinkError IsNot Nothing then
+                                  crmLinkError.Delete()
+                                  crmLinkErrors.Save()
+                                End If
+
+                              Catch ex As Exception
+                                If crmLinkError Is Nothing then
+                                  Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                                  crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                                  crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                                  crmLinkError.CRMType        = CRMLinkRow.CRMType
+                                  crmLinkError.Orientation    = "in"
+                                  crmLinkError.ObjectType     = "contact"
+                                  crmLinkError.ObjectID       = accountZohoID
+                                  If fieldMapping.CustomFieldID IsNot Nothing Then
+                                    crmLinkError.ObjectFieldName = fieldMapping.CustomFieldID.ToString()
+                                  ElseIf fieldMapping.TSFieldName IsNot Nothing Then
+                                    crmLinkError.ObjectFieldName = fieldMapping.TSFieldName
+                                  End If
+                                  crmLinkError.ObjectData     = field.Value
+                                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                                  crmLinkError.OperationType  = "update"
+                                  newCrmLinkError.Save()
+                                Else
+                                  crmLinkError.ObjectData     = field.Value
+                                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                                End If                                              
+                              End Try
                             End If
                           Next
-                          userToUpdate(0).BaseCollection.Save()
                         End If
                       End If
                     End Select
                 Next
+                crmLinkErrors.Save()
               End If
             End Sub
 
