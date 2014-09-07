@@ -5,6 +5,7 @@ Imports System.Net
 Imports System.Text
 Imports System.Xml
 Imports TeamSupport.Data
+Imports Newtonsoft.Json
 
 Namespace TeamSupport
   Namespace CrmIntegration
@@ -202,6 +203,17 @@ Namespace TeamSupport
         Dim attachmentFileSizeLimit As Integer = 0
         Dim attachmentEnabled As Boolean = GetAttachmentEnabled(attachmentFileSizeLimit)
 
+        Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+        crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "out", "ticket")
+        Dim crmLinkError As CRMLinkError = Nothing
+        Dim ticketData As StringBuilder = Nothing
+
+        Dim crmLinkActionErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+        crmLinkActionErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "out", "action")
+
+        Dim crmLinkAttachmentErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+        crmLinkAttachmentErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "out", "attachment")
+
         For Each ticket As TicketsViewItem In ticketsToPushAsCases
           Dim ticketLinkToJira As TicketLinkToJiraItem = ticketsLinksToJiraToPushAsIssues.FindByTicketID(ticket.TicketID)
           Log.Write("Processing ticket #" + ticket.TicketNumber.ToString())
@@ -212,16 +224,28 @@ Namespace TeamSupport
           'Create new issue
           If ticketLinkToJira.JiraKey Is Nothing OrElse ticketLinkToJira.JiraKey.IndexOf("Error") > -1 Then
             Try
+
+              crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, "create")
+
               Log.Write("No JiraKey. Creating issue...")
               URI = _baseURI + "/issue"
-              issue = GetAPIJObject(URI, "POST", GetTicketData(ticket))
+              ticketData = New StringBuilder()
+              ticketData.Append(GetTicketData(ticket))
+              issue = GetAPIJObject(URI, "POST", ticketData.ToString())
               'The create issue response does not include status and we need it to initialize the synched ticket. So, we do a GET on the recently created issue.
               URI = _baseURI + "/issue/" + issue("key").ToString()
               issue = GetAPIJObject(URI, "GET", String.Empty)
               updateTicketFlag = True
               sendCustomMappingFields = True
+
+              If crmLinkError IsNot Nothing then
+                crmLinkError.Delete()
+                crmLinkErrors.Save()
+              End If
+
             Catch ex As Exception
               
+              Dim updateLinkToJira As Boolean = True
               Dim errorMessage As String = String.Empty
               Select Case ex.Message
                 Case "no project"
@@ -231,78 +255,162 @@ Namespace TeamSupport
                 Case "project mismatch"
                   errorMessage = "Error: Specify valid Project (Product)."
                 Case Else
-                  Throw ex                
+                  'Throw ex 
+                  updateLinkToJira = False
               End Select
 
+              If updateLinkToJira Then
+                ticketLinkToJira.JiraKey = errorMessage
+                ticketLinkToJira.DateModifiedByJiraSync = DateTime.UtcNow()
+                ticketLinkToJira.Collection.Save()
+              End If
+
+              If crmLinkError Is Nothing then
+                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                crmLinkError.CRMType          = CRMLinkRow.CRMType
+                crmLinkError.Orientation      = "out"
+                crmLinkError.ObjectType       = "ticket"
+                crmLinkError.ObjectFieldName  = "create"
+                crmLinkError.ObjectID         = ticket.TicketID.ToString()
+                crmLinkError.ObjectData       = ticketData.ToString()
+                crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+                crmLinkError.OperationType    = "create"
+                newCrmLinkError.Save()
+              Else
+                crmLinkError.ObjectData       = ticketData.ToString()
+                crmLinkError.Exception        = ex.ToString() + ex.StackTrace                                               
+              End If                                              
+
               Log.Write(errorMessage)
-              ticketLinkToJira.JiraKey = errorMessage
-              ticketLinkToJira.DateModifiedByJiraSync = DateTime.UtcNow()
-              ticketLinkToJira.Collection.Save()
               Continue For
 
             End Try
           'Issue already exists. 
           'We are not updating issues, but if this is a second ticket relating to issue we add a remote link and update ticket fields for Jira
           ElseIf ticketLinkToJira.JiraID Is Nothing Then
-            URI = _baseURI + "/issue/" + ticketLinkToJira.JiraKey
-            issue = GetAPIJObject(URI, "GET", String.Empty)
-            updateTicketFlag = True
-            Log.Write("No JiraID. We'll add link.")
+            
+            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, "update")
+            
+            Try
+              URI = _baseURI + "/issue/" + ticketLinkToJira.JiraKey
+              issue = GetAPIJObject(URI, "GET", String.Empty)
+              updateTicketFlag = True
+              Log.Write("No JiraID. We'll add link.")
+
+              'An update error could has been caused here or below.
+              'We'll only clear when successfull below.
+            Catch ex As Exception
+
+              If crmLinkError Is Nothing then
+                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                crmLinkError.CRMType          = CRMLinkRow.CRMType
+                crmLinkError.Orientation      = "out"
+                crmLinkError.ObjectType       = "ticket"
+                crmLinkError.ObjectFieldName  = "update"
+                crmLinkError.ObjectID         = ticket.TicketID.ToString()
+                crmLinkError.ObjectData       = URI
+                crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+                crmLinkError.OperationType    = "update"
+                newCrmLinkError.Save()
+              Else
+                crmLinkError.ObjectData       = URI
+                crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+              End If
+
+              Log.Write(ex.ToString() + ex.StackTrace)
+              Continue For
+
+            End Try
           Else
             Log.Write("Already linked. Doing nothing.")
           End If
 
           If updateTicketFlag Then
-            Dim creatorName As String = "TeamSupport"
-            If ticketLinkToJira.CreatorID IsNot Nothing Then
-              Dim creator As Users = New Users(User)
-              creator.LoadByUserID(ticketLinkToJira.CreatorID)
-              creatorName = creator(0).FirstName.Substring(0, 1) + ". " + creator(0).LastName + " linked"
-            End If
-            AddRemoteLinkInJira(issue("id").ToString(), ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.Name, creatorName)
-            Log.Write("Added remote link for ticket #" + ticket.TicketNumber.ToString())
 
-            ticketLinkToJira.JiraID      = CType(issue("id").ToString(), Integer?)
-            ticketLinkToJira.JiraKey     = issue("key").ToString()
-            ticketLinkToJira.JiraLinkURL = CRMLinkRow.HostName + "/browse/" + ticketLinkToJira.JiraKey
-            ticketLinkToJira.JiraStatus  = issue("fields")("status")("name").ToString()
+            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, "update")
 
-            If CRMLinkRow.UpdateStatus Then
-              Dim newStatus As TicketStatus = allStatuses.FindByName(ticketLinkToJira.JiraStatus, ticket.TicketTypeID)
-              If newStatus IsNot Nothing Then
-                Dim updateTicket As Tickets = New Tickets(User)
-                updateTicket.LoadByTicketID(ticket.TicketID)
-                updateTicket(0).TicketStatusID = newStatus.TicketStatusID
-                ticketLinkToJira.DateModifiedByJiraSync = DateTime.UtcNow
-                updateTicket.Save()
-                Log.Write("Updated status with linked issue status.")
-              Else
-                Log.Write("Status was not updated because """ + ticketLinkToJira.JiraStatus + """ does not exist in the current statuses.")
+            Try
+              Dim creatorName As String = "TeamSupport"
+              If ticketLinkToJira.CreatorID IsNot Nothing Then
+                Dim creator As Users = New Users(User)
+                creator.LoadByUserID(ticketLinkToJira.CreatorID)
+                creatorName = creator(0).FirstName.Substring(0, 1) + ". " + creator(0).LastName + " linked"
               End If
-            Else
-              Dim newAction As Actions = New Actions(User)
-              newAction.AddNewAction()
-              newAction(0).ActionTypeID = newActionsTypeID
-              newAction(0).TicketID = ticket.TicketID
-              newAction(0).Description = "Ticket has been synced with Jira's issue " + issue("key").ToString() + " with status """ + ticketLinkToJira.JiraStatus + """."
-              ticketLinkToJira.DateModifiedByJiraSync = DateTime.UtcNow()
-              newAction.Save()
+              AddRemoteLinkInJira(issue("id").ToString(), ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.Name, creatorName)
+              Log.Write("Added remote link for ticket #" + ticket.TicketNumber.ToString())
 
-              Dim newActionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
-              newActionLinkToJira.AddNewActionLinkToJiraItem()
-              newActionLinkToJira(0).ActionID = newAction(0).ActionID
-              newActionLinkToJira(0).JiraID = -1
-              newActionLinkToJira(0).DateModifiedByJiraSync = ticketLinkToJira.DateModifiedByJiraSync
-              newActionLinkToJira.Save()
+              ticketLinkToJira.JiraID      = CType(issue("id").ToString(), Integer?)
+              ticketLinkToJira.JiraKey     = issue("key").ToString()
+              ticketLinkToJira.JiraLinkURL = CRMLinkRow.HostName + "/browse/" + ticketLinkToJira.JiraKey
+              ticketLinkToJira.JiraStatus  = issue("fields")("status")("name").ToString()
 
-              Log.Write("Added comment indicating linked issue status.")
-            End If
+              If CRMLinkRow.UpdateStatus Then
+                Dim newStatus As TicketStatus = allStatuses.FindByName(ticketLinkToJira.JiraStatus, ticket.TicketTypeID)
+                If newStatus IsNot Nothing Then
+                  Dim updateTicket As Tickets = New Tickets(User)
+                  updateTicket.LoadByTicketID(ticket.TicketID)
+                  updateTicket(0).TicketStatusID = newStatus.TicketStatusID
+                  ticketLinkToJira.DateModifiedByJiraSync = DateTime.UtcNow
+                  updateTicket.Save()
+                  Log.Write("Updated status with linked issue status.")
+                Else
+                  Log.Write("Status was not updated because """ + ticketLinkToJira.JiraStatus + """ does not exist in the current statuses.")
+                End If
+              Else
+                Dim newAction As Actions = New Actions(User)
+                newAction.AddNewAction()
+                newAction(0).ActionTypeID = newActionsTypeID
+                newAction(0).TicketID = ticket.TicketID
+                newAction(0).Description = "Ticket has been synced with Jira's issue " + issue("key").ToString() + " with status """ + ticketLinkToJira.JiraStatus + """."
+                ticketLinkToJira.DateModifiedByJiraSync = DateTime.UtcNow()
+                newAction.Save()
 
-            ticketLinkToJira.Collection.Save()
-            Log.Write("Updated jira fields in ticket")
+                Dim newActionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
+                newActionLinkToJira.AddNewActionLinkToJiraItem()
+                newActionLinkToJira(0).ActionID = newAction(0).ActionID
+                newActionLinkToJira(0).JiraID = -1
+                newActionLinkToJira(0).DateModifiedByJiraSync = ticketLinkToJira.DateModifiedByJiraSync
+                newActionLinkToJira.Save()
+
+                Log.Write("Added comment indicating linked issue status.")
+              End If
+
+              ticketLinkToJira.Collection.Save()
+              Log.Write("Updated jira fields in ticket")
+
+              If crmLinkError IsNot Nothing then
+                crmLinkError.Delete()
+                crmLinkErrors.Save()
+              End If
+
+            Catch ex As Exception
+
+              If crmLinkError Is Nothing then
+                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+                crmLinkError.CRMType          = CRMLinkRow.CRMType
+                crmLinkError.Orientation      = "out"
+                crmLinkError.ObjectType       = "ticket"
+                crmLinkError.ObjectFieldName  = "update"
+                crmLinkError.ObjectID         = ticket.TicketID.ToString()
+                'crmLinkError.ObjectData       = JsonConvert.SerializeObject(ticket)
+                crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+                crmLinkError.OperationType    = "update"
+                newCrmLinkError.Save()
+              Else
+                'crmLinkError.ObjectData     = JsonConvert.SerializeObject(ticket)
+                crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+              End If                                              
+
+            End Try
           End If
 
-          PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, issue, ticketLinkToJira.JiraKey, attachmentEnabled, attachmentFileSizeLimit)
+          PushActionsAsComments(ticket.TicketID, ticket.TicketNumber, issue, ticketLinkToJira.JiraKey, attachmentEnabled, attachmentFileSizeLimit, crmLinkActionErrors, crmLinkAttachmentErrors)
 
           If sendCustomMappingFields Then
             'We are now updating the custom mapping fields. We do a call per field to minimize the impact of invalid values attempted to be assigned.
@@ -317,6 +425,7 @@ Namespace TeamSupport
               If cRMLinkField IsNot Nothing Then
                 Dim value As String = Nothing
                 If cRMLinkField.CustomFieldID IsNot Nothing Then
+                  crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, cRMLinkField.CustomFieldID.ToString())
                   Dim findCustom As New CustomValues(User)
                   findCustom.LoadByFieldID(cRMLinkField.CustomFieldID, ticket.TicketID)
                   If findCustom.Count > 0 Then
@@ -325,6 +434,7 @@ Namespace TeamSupport
                     Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), findCustom.Count = 0))                      
                   End If
                 ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
+                  crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, cRMLinkField.TSFieldName)
                   If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing Then
                     value = GetDataLineValue(field.Key.ToString(), field.Value("schema")("custom"), ticket.Row(cRMLinkField.TSFieldName))
                   Else
@@ -348,6 +458,12 @@ Namespace TeamSupport
                     updateFieldRequestBody.Append("}")
        
                     issue = GetAPIJObject(URI, "PUT", updateFieldRequestBody.ToString())
+
+                    If crmLinkError IsNot Nothing then
+                      crmLinkError.Delete()
+                      crmLinkErrors.Save()
+                    End If
+
                   Catch ex As Exception
                     Dim exBody As String = value
                     If updateFieldRequestBody IsNot Nothing Then
@@ -356,6 +472,29 @@ Namespace TeamSupport
                     If ex.Message <> "Error reading JObject from JsonReader. Path '', line 0, position 0." Then
                       Log.Write("Field " + field.Value("name").ToString() + " with body " + exBody + ", was not sent because an exception ocurred.")                      
                     End If
+
+                    If crmLinkError Is Nothing then
+                      Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                      crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                      crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                      crmLinkError.CRMType        = CRMLinkRow.CRMType
+                      crmLinkError.Orientation    = "out"
+                      crmLinkError.ObjectType     = "ticket"
+                      crmLinkError.ObjectID       = ticket.TicketID.ToString()
+                      If cRMLinkField.CustomFieldID IsNot Nothing Then
+                        crmLinkError.ObjectFieldName = cRMLinkField.CustomFieldID.ToString()
+                      Else
+                        crmLinkError.ObjectFieldName = cRMLinkField.TSFieldName
+                      End If
+                      crmLinkError.ObjectData     = value
+                      crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                      crmLinkError.OperationType  = "unknown"
+                      newCrmLinkError.Save()
+                    Else
+                      crmLinkError.ObjectData     = value
+                      crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                    End If                                              
+
                   End Try
                 End If
               End If
@@ -364,6 +503,9 @@ Namespace TeamSupport
 
           End If
         Next
+        crmLinkErrors.Save()
+        crmLinkActionErrors.Save()
+        crmLinkAttachmentErrors.Save()
       End Sub
 
         Private Function GetAttachmentEnabled(ByRef attachmentFileSizeLimit As Integer) As String
@@ -605,7 +747,9 @@ Namespace TeamSupport
         ByVal issue As JObject, 
         ByVal issueKey As String,
         ByVal attachmentEnabled As Boolean,
-        ByVal attachmentFileSizeLimit As Integer)
+        ByVal attachmentFileSizeLimit As Integer,
+        ByRef crmLinkActionErrors As CRMLinkErrors,
+        ByRef crmLinkAttachmentErrors As CRMLinkErrors)
           Dim actionsToPushAsComments As Actions = New Actions(User)
           actionsToPushAsComments.LoadToPushToJira(CRMLinkRow, ticketID)
           Log.Write("Found " + actionsToPushAsComments.Count.ToString() + " actions to push as comments.")
@@ -613,7 +757,13 @@ Namespace TeamSupport
           Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
           actionLinkToJira.LoadToPushToJira(CRMLinkRow, ticketID)
 
+          Dim crmLinkError As CRMLinkError = Nothing
+          Dim body As StringBuilder = Nothing
+          
           For Each actionToPushAsComment As Action In actionsToPushAsComments
+
+            crmLinkError = crmLinkActionErrors.FindByObjectIDAndFieldName(actionToPushAsComment.ActionID.ToString(), string.Empty)
+
             Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.FindByActionID(actionToPushAsComment.ActionID)
 
             Log.Write("Processing actionID: " + actionToPushAsComment.ActionID.ToString())
@@ -621,39 +771,107 @@ Namespace TeamSupport
             
             Dim actionPosition As Integer =  Actions.GetActionPosition(User, actionToPushAsComment.ActionID)
             If actionLinkToJiraItem Is Nothing Then
-              If issue Is Nothing Then
-                issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET",  String.Empty)
-              End If
-
-              Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/comment"
-              Dim body As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition)
-              comment = GetAPIJObject(URI, "POST", body)
-
-              Dim newActionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
-              Dim newActionLinkToJiraItem As ActionLinkToJiraItem = newActionLinkToJira.AddNewActionLinkToJiraItem()
-              newActionLinkToJiraItem.ActionID = actionToPushAsComment.ActionID
-              newActionLinkToJiraItem.JiraID = CType(comment("id").ToString(), Integer?)
-              newActionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow
-              newActionLinkToJira.Save()
-              Log.Write("created comment for action")
-
-            Else
-              Log.Write("action.JiraID: " + actionLinkToJiraItem.JiraID.ToString())
-              If actionLinkToJiraItem.JiraID <> -1 Then
+              
+              Try
                 If issue Is Nothing Then
-                  issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET", String.Empty)
+                  issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET",  String.Empty)
                 End If
 
-                Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/comment/" + actionLinkToJiraItem.JiraID.ToString()
-                Dim body As String = BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition)
-                comment = GetAPIJObject(URI, "PUT", body)
-                actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow
-                Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
-              End If
+                Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/comment"
+                body = New StringBuilder()
+                body.Append(BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition))
+                comment = GetAPIJObject(URI, "POST", body.ToString())
+
+                Dim newActionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
+                Dim newActionLinkToJiraItem As ActionLinkToJiraItem = newActionLinkToJira.AddNewActionLinkToJiraItem()
+                newActionLinkToJiraItem.ActionID = actionToPushAsComment.ActionID
+                newActionLinkToJiraItem.JiraID = CType(comment("id").ToString(), Integer?)
+                newActionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow
+                newActionLinkToJira.Save()
+                Log.Write("created comment for action")
+
+                If crmLinkError IsNot Nothing then
+                  crmLinkError.Delete()
+                  crmLinkActionErrors.Save()
+                End If
+
+              Catch ex As Exception
+
+                If crmLinkError Is Nothing then
+                  Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                  crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                  crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                  crmLinkError.CRMType        = CRMLinkRow.CRMType
+                  crmLinkError.Orientation    = "out"
+                  crmLinkError.ObjectType     = "action"
+                  crmLinkError.ObjectID       = actionToPushAsComment.ActionID.ToString()
+                  If body IsNot Nothing
+                    crmLinkError.ObjectData     = body.ToString()
+                  End If
+                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                  crmLinkError.OperationType  = "create"
+                  newCrmLinkError.Save()
+                Else
+                  crmLinkError.ObjectData     = body.ToString()
+                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                End If                                              
+
+                Log.Write(ex.ToString() + ex.StackTrace)
+                Continue For
+
+              End Try
+            Else
+              Try
+                Log.Write("action.JiraID: " + actionLinkToJiraItem.JiraID.ToString())
+                If actionLinkToJiraItem.JiraID <> -1 Then
+                  If issue Is Nothing Then
+                    issue = GetAPIJObject(_baseURI + "/issue/" + issueKey, "GET", String.Empty)
+                  End If
+
+                  Dim URI As String = _baseURI + "/issue/" + issue("id").ToString() + "/comment/" + actionLinkToJiraItem.JiraID.ToString()
+                  body = New StringBuilder()
+                  body.Append(BuildCommentBody(ticketNumber, actionToPushAsComment.Description, actionPosition))
+                  comment = GetAPIJObject(URI, "PUT", body.ToString())
+                  actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow
+                  Log.Write("updated comment for actionID: " + actionToPushAsComment.ActionID.ToString())
+                End If
+
+                If crmLinkError IsNot Nothing then
+                  crmLinkError.Delete()
+                  crmLinkActionErrors.Save()
+                End If
+
+              Catch ex As Exception
+
+                If crmLinkError Is Nothing then
+                  Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                  crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                  crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                  crmLinkError.CRMType        = CRMLinkRow.CRMType
+                  crmLinkError.Orientation    = "out"
+                  crmLinkError.ObjectType     = "action"
+                  crmLinkError.ObjectID       = actionToPushAsComment.ActionID.ToString()
+                  If body IsNot Nothing
+                    crmLinkError.ObjectData     = body.ToString()
+                  End If 
+                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                  crmLinkError.OperationType  = "update"
+                  newCrmLinkError.Save()
+                Else
+                  If (body IsNot Nothing)
+                    crmLinkError.ObjectData     = body.ToString()
+                  End If
+                  crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                End If   
+                                                           
+                Log.Write(ex.ToString() + ex.StackTrace)
+                Continue For
+
+              End Try
             End If
 
             If (attachmentEnabled)
-              PushAttachments(actionToPushAsComment.ActionID, ticketNumber, issue, issueKey, attachmentFileSizeLimit, actionPosition)
+              PushAttachments(actionToPushAsComment.ActionID, ticketNumber, issue, issueKey, attachmentFileSizeLimit, actionPosition, crmLinkAttachmentErrors)
             End If
           Next
           actionLinkToJira.Save()
@@ -665,10 +883,13 @@ Namespace TeamSupport
           ByVal issue As JObject, 
           ByVal issueKey As String,
           ByVal fileSizeLimit As Integer,
-          ByVal actionPosition As Integer)
+          ByVal actionPosition As Integer,
+          ByRef crmLinkAttachmentErrors As CRMLinkErrors)
             Dim attachments As Attachments = New Attachments(User)
             attachments.LoadForJira(actionID)
             Dim updateAttachments As Boolean = False
+            Dim crmLinkError As CRMLinkError = Nothing
+
             For Each attachment As Attachment In attachments
               If (Not File.Exists(attachment.Path))
                 Log.Write("Attachment """ + attachment.FileName + """ was not sent as it was not found on server")
@@ -713,10 +934,39 @@ Namespace TeamSupport
                       requestStream.Close()
                     End Using
 
-                    Dim response As HttpWebResponse = request.GetResponse()
-                    Log.Write("Attachment """ + attachment.FileName + """ sent.")
-                    attachment.SentToJira = True
-                    updateAttachments = True                                 
+                    crmLinkError = crmLinkAttachmentErrors.FindByObjectIDAndFieldName(attachment.AttachmentID.ToString(), string.Empty)
+                    
+                    Try
+                      Dim response As HttpWebResponse = request.GetResponse()
+                      Log.Write("Attachment """ + attachment.FileName + """ sent.")
+                      attachment.SentToJira = True
+                      updateAttachments = True                                 
+
+                      If crmLinkError IsNot Nothing then
+                        crmLinkError.Delete()
+                        crmLinkAttachmentErrors.Save()
+                      End If
+
+                    Catch ex As Exception
+
+                      If crmLinkError Is Nothing then
+                        Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                        crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                        crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                        crmLinkError.CRMType        = CRMLinkRow.CRMType
+                        crmLinkError.Orientation    = "out"
+                        crmLinkError.ObjectType     = "attachment"
+                        crmLinkError.ObjectID       = attachment.AttachmentID.ToString()
+                        'crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisCompany)
+                        crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                        crmLinkError.OperationType  = "create"
+                        newCrmLinkError.Save()
+                      Else
+                        'crmLinkError.ObjectData     = JsonConvert.SerializeObject(thisCompany)
+                        crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+                      End If                                              
+
+                    End Try
                   End If
                 End If
             Next
@@ -735,16 +985,50 @@ Namespace TeamSupport
           End Function
 
       Private Sub PullIssuesAndCommentsAsTicketsAndActions(ByVal issuesToPullAsTickets As JArray, ByVal allStatuses As TicketStatuses, ByVal newActionsTypeID As Integer, ByVal indexOfTicketIDInRemoteLink As Integer)
+        Dim crmLinkErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+        crmLinkErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "ticket")
+        Dim crmLinkError As CRMLinkError = Nothing
+
+        Dim crmLinkActionErrors As CRMLinkErrors = New CRMLinkErrors(Me.User)
+        crmLinkActionErrors.LoadByOperation(CRMLinkRow.OrganizationID, CRMLinkRow.CRMType, "in", "action")
+
         For i = 0 To issuesToPullAsTickets.Count - 1
           Dim newComments As JArray = Nothing
           For Each ticketID As Integer In GetLinkedTicketIDs(issuesToPullAsTickets(i), indexOfTicketIDInRemoteLink)
-            UpdateTicketWithIssueData(ticketID, issuesToPullAsTickets(i), newActionsTypeID, allStatuses)
+            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticketID.ToString(), string.Empty)
+            Try
+              UpdateTicketWithIssueData(ticketID, issuesToPullAsTickets(i), newActionsTypeID, allStatuses)
+
+              If crmLinkError IsNot Nothing then
+                crmLinkError.Delete()
+                crmLinkErrors.Save()
+              End If
+            Catch ex As Exception
+              If crmLinkError Is Nothing then
+                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                crmLinkError.CRMType        = CRMLinkRow.CRMType
+                crmLinkError.Orientation    = "in"
+                crmLinkError.ObjectType     = "ticket"
+                crmLinkError.ObjectID       = ticketID.ToString()
+                crmLinkError.ObjectData     = JsonConvert.SerializeObject(issuesToPullAsTickets(i))
+                crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                crmLinkError.OperationType  = "update"
+                newCrmLinkError.Save()
+              Else
+                crmLinkError.ObjectData     = JsonConvert.SerializeObject(issuesToPullAsTickets(i))
+                crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+              End If                                              
+            End Try
             If newComments Is Nothing Then
               newComments = GetNewComments(issuesToPullAsTickets(i)("fields")("comment"), ticketID)
             End If
-            AddNewCommentsInTicket(ticketID, newComments, newActionsTypeID)
+            AddNewCommentsInTicket(ticketID, newComments, newActionsTypeID, crmLinkActionErrors)
           Next
         Next
+        crmLinkErrors.Save()
+        crmLinkActionErrors.Save()
       End Sub
 
         Private Function GetNewActionsTypeID(ByVal organizationID As Integer) As Integer
@@ -1143,21 +1427,51 @@ Namespace TeamSupport
             Return result 
           End Function
 
-        Private Sub AddNewCommentsInTicket(ByVal ticketID As Integer, ByRef newComments As Jarray, ByVal newActionsTypeID As Integer)
-          For i = 0 To newComments.Count - 1
-            Dim updateActions As Actions = New Actions(User)
-            updateActions.AddNewAction()
-            updateActions(0).TicketID = ticketID
-            updateActions(0).ActionTypeID = newActionsTypeID
-            updateActions(0).Description = newComments(i)("body").ToString()
+        Private Sub AddNewCommentsInTicket(ByVal ticketID As Integer, ByRef newComments As Jarray, ByVal newActionsTypeID As Integer, ByRef crmLinkActionErrors As CRMlinkErrors)
+          Dim crmLinkError As CRMLinkError = Nothing
 
-            Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
-            Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.AddNewActionLinkToJiraItem()
-            actionLinkToJiraItem.JiraID = CType(newComments(i)("id").ToString(), Integer)
-            actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow
-            updateActions.Save()
-            actionLinkToJiraItem.ActionID = updateActions(0).ActionID
-            actionLinkToJira.Save()
+          For i = 0 To newComments.Count - 1
+            crmLinkError = crmLinkActionErrors.FindByObjectIDAndFieldName(newComments(i)("id").ToString(), string.Empty)
+            Try
+              Dim updateActions As Actions = New Actions(User)
+              updateActions.AddNewAction()
+              updateActions(0).TicketID = ticketID
+              updateActions(0).ActionTypeID = newActionsTypeID
+              updateActions(0).Description = newComments(i)("body").ToString()
+
+              Dim actionLinkToJira As ActionLinkToJira = New ActionLinkToJira(User)
+              Dim actionLinkToJiraItem As ActionLinkToJiraItem = actionLinkToJira.AddNewActionLinkToJiraItem()
+              actionLinkToJiraItem.JiraID = CType(newComments(i)("id").ToString(), Integer)
+              actionLinkToJiraItem.DateModifiedByJiraSync = DateTime.UtcNow
+              updateActions.Save()
+              actionLinkToJiraItem.ActionID = updateActions(0).ActionID
+              actionLinkToJira.Save()
+
+              If crmLinkError IsNot Nothing then
+                crmLinkError.Delete()
+                crmLinkActionErrors.Save()
+              End If
+
+            Catch ex As Exception
+
+              If crmLinkError Is Nothing then
+                Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+                crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+                crmLinkError.OrganizationID = CRMLinkRow.OrganizationID
+                crmLinkError.CRMType        = CRMLinkRow.CRMType
+                crmLinkError.Orientation    = "in"
+                crmLinkError.ObjectType     = "action"
+                crmLinkError.ObjectID       = newComments(i)("id").ToString()
+                crmLinkError.ObjectData     = newComments(i)("body").ToString()
+                crmLinkError.Exception      = ex.ToString() + ex.StackTrace
+                crmLinkError.OperationType  = "create"
+                newCrmLinkError.Save()
+              Else
+                crmLinkError.ObjectData     = newComments(i)("body").ToString()
+                crmLinkError.Exception      = ex.ToString() + ex.StackTrace                                               
+              End If                                              
+
+            End Try
           Next
         End Sub
 
