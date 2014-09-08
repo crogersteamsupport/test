@@ -219,7 +219,36 @@ Namespace TeamSupport
           Log.Write("Processing ticket #" + ticket.TicketNumber.ToString())
           Dim updateTicketFlag As Boolean = False
           Dim sendCustomMappingFields As Boolean = False
-          Dim issueFields As JObject = GetIssueFields(ticket)
+
+          Dim issueFields As JObject = Nothing
+          Try
+            crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(ticket.TicketID, String.Empty)
+            issueFields = GetIssueFields(ticket)
+            If crmLinkError IsNot Nothing then
+              crmLinkError.Delete()
+              crmLinkErrors.Save()
+            End If
+          Catch ex As Exception
+            If crmLinkError Is Nothing then
+              Dim newCrmLinkError As CRMLinkErrors = New CRMLinkErrors(Me.User)
+              crmLinkError = newCrmLinkError.AddNewCRMLinkError()
+              crmLinkError.OrganizationID   = CRMLinkRow.OrganizationID
+              crmLinkError.CRMType          = CRMLinkRow.CRMType
+              crmLinkError.Orientation      = "out"
+              crmLinkError.ObjectType       = "ticket"
+              crmLinkError.ObjectFieldName  = String.Empty
+              crmLinkError.ObjectID         = ticket.TicketID.ToString()
+              crmLinkError.Exception        = ex.ToString() + ex.StackTrace
+              crmLinkError.OperationType    = "unknown"
+              newCrmLinkError.Save()
+            Else
+              crmLinkError.Exception        = ex.ToString() + ex.StackTrace                                               
+            End If                                              
+
+            Log.Write(crmLinkError.Exception)
+            Continue For
+          End Try
+
           Dim issue As JObject = Nothing
           'Create new issue
           If ticketLinkToJira.JiraKey Is Nothing OrElse ticketLinkToJira.JiraKey.IndexOf("Error") > -1 Then
