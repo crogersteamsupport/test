@@ -1656,23 +1656,25 @@ namespace TSWebServices
       User author = Users.GetUser(TSAuthentication.GetLoginUser(), action.CreatorID);
       if (CanEditAction(action) || user.ChangeTicketVisibility)
       {
-          if (isVisibleOnPortal)
+          if (author != null)
           {
-            if (!string.IsNullOrWhiteSpace(author.Signature))
-            {
-                if (!action.Description.Contains(author.Signature))
-                    action.Description = action.Description + "<br/><br/>" + author.Signature;
-            }
-          }
-          else
-          {
-              if (!string.IsNullOrWhiteSpace(author.Signature))
+              if (isVisibleOnPortal)
               {
-                  if (action.Description.Contains(author.Signature))
-                      action.Description = action.Description.Replace("<br><br>" + author.Signature, "");
+                  if (!string.IsNullOrWhiteSpace(author.Signature))
+                  {
+                      if (!action.Description.Contains(author.Signature))
+                          action.Description = action.Description + "<br/><br/>" + author.Signature;
+                  }
+              }
+              else
+              {
+                  if (!string.IsNullOrWhiteSpace(author.Signature))
+                  {
+                      if (action.Description.Contains(author.Signature))
+                          action.Description = action.Description.Replace("<br><br>" + author.Signature, "");
+                  }
               }
           }
-
         action.IsVisibleOnPortal = isVisibleOnPortal;
         action.Collection.Save();
       }
