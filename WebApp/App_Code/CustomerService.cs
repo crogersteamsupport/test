@@ -1996,7 +1996,7 @@ namespace TSWebServices
                 total += count;
 
                 if (count > 0)
-                    chartString.AppendFormat("{0},{1},", ticketType.Name, count.ToString().Remove(','));
+                    chartString.AppendFormat("{0},{1},", ticketType.Name, count.ToString().Replace(",",""));
                     //chartString.AppendFormat("['{0}',{1}],",ticketType.Name, count.ToString());
             }
             if (chartString.ToString().EndsWith(","))
