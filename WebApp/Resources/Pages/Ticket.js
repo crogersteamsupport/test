@@ -2357,7 +2357,7 @@ var initEditor = function (element, init) {
   top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
     var editorOptions = {
       plugins: "autoresize paste link code textcolor image moxiemanager table",
-      toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+      toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
       toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote | code | table",
       statusbar : false,
       gecko_spellcheck: true,
@@ -2384,20 +2384,20 @@ var initEditor = function (element, init) {
           top.Ts.System.refreshUser(function () {
             if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
                 ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
-                //ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
+                ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
             }
             else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
                 ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
-                //ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
+                ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.Organization.FontFamily);
             }
 
             if (top.Ts.System.User.FontSize != "0") {
                 ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
-                //ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize + 1);
+                ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.User.FontSize + 1);
             }
             else if (top.Ts.System.Organization.FontSize != "0") {
                 ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSize +1);
-                //ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize+1);
+                ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize+1);
             }          
           });
         });
@@ -2455,6 +2455,18 @@ var initEditor = function (element, init) {
               });
             }
           }
+        });
+
+        ed.addButton('insertUser', {
+            title: 'Insert Userstamp',
+            icon: 'awesome fa fa-clock-o',
+            //image: '../images/icons/dropbox.png',
+            onclick: function () {
+                var html = top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + ' ' + top.Ts.Utils.getMsDate(Date.Now).localeFormat(top.Ts.Utils.getDateTimePattern());
+                ed.selection.setContent(html);
+                ed.execCommand('mceAutoResize');
+                ed.focus();
+            }
         });
 
         ed.addButton('insertDropBox', {

@@ -172,7 +172,6 @@ $(document).ready(function () {
         var currenttext = $('.newticket-desc').html();
         $('.newticket-desc').html(currenttext + result);
       }
-
     });
   }
 
@@ -550,7 +549,7 @@ $(document).ready(function () {
 
       var editorOptions = {
         plugins: "autoresize paste link code textcolor image moxiemanager table",
-        toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
+        toolbar1: "insertPasteImage insertKb insertTicket image insertimage insertDropBox recordScreen insertUser | link unlink | undo redo removeformat | cut copy paste pastetext | outdent indent | bullist numlist",
         toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote | code | table",
         statusbar: false,
         gecko_spellcheck: true,
@@ -663,6 +662,17 @@ $(document).ready(function () {
             }
           });
 
+          ed.addButton('insertUser', {
+              title: 'Insert Userstamp',
+              icon: 'awesome fa fa-clock-o',
+              //image: '../images/icons/dropbox.png',
+              onclick: function () {
+                  var html = top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + ' ' + top.Ts.Utils.getMsDate(Date.Now).localeFormat(top.Ts.Utils.getDateTimePattern());
+                  ed.selection.setContent(html);
+                  ed.execCommand('mceAutoResize');
+                  ed.focus();
+              }
+          });
 
           ed.addButton('insertKb', {
             title: 'Insert Knowledgebase',
@@ -2122,6 +2132,7 @@ $(document).ready(function () {
   $('.ticket-rail a').addClass('ui-state-default ts-link');
 
   top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
+
 });
 
 function GetTinyMCEFontSize(fontSize) {
