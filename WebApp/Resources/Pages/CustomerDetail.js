@@ -1230,7 +1230,7 @@ $(document).ready(function () {
         });
     });
 
-    //$('#reminderDate').datetimepicker();
+    $('#reminderDate').datetimepicker();
 
     $("#btnSaveReminder").click(function (e) {
         if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
