@@ -2462,7 +2462,7 @@ var initEditor = function (element, init) {
             icon: 'awesome fa fa-clock-o',
             //image: '../images/icons/dropbox.png',
             onclick: function () {
-                var html = top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + ' ' + top.Ts.Utils.getMsDate(Date.Now).localeFormat(top.Ts.Utils.getDateTimePattern());
+                var html = Date(Date.UTC(Date.Now)) + ' ' + top.Ts.System.User.FirstName + ' : ' + top.Ts.System.User.LastName;
                 ed.selection.setContent(html);
                 ed.execCommand('mceAutoResize');
                 ed.focus();
@@ -3201,7 +3201,7 @@ var loadTicket = function (ticketNumber, refresh) {
     $('#ticketCommunity').text((info.Ticket.CategoryName == null ? 'Unassigned' : info.Ticket.CategoryDisplayString));
 
     _dueDate = info.Ticket.DueDate;
-    var dueDate = info.Ticket.DueDate == null ? null : top.Ts.Utils.getMsDate(info.Ticket.DueDate);
+    var dueDate = info.Ticket.DueDate == null ? null : info.Ticket.DueDate;
     $('#dueDate').text((dueDate === null ? 'Unassigned' : dueDate.localeFormat(top.Ts.Utils.getDateTimePattern())));
     if (_dueDate != null && _dueDate < Date.now()) {
       $('#dueDate').parent().addClass('nonrequired-field-error ui-corner-all');
