@@ -146,7 +146,7 @@ namespace TeamSupport.Data
       result.IsSubscribed = this.IsSubscribed;
       result.IsEnqueued = this.IsEnqueued;
       result.ViewerID = this.ViewerID;
-      result.DueDate = this.DueDate;
+      result.DueDate = this.DueDateUtc == null ? this.DueDateUtc : DateTime.SpecifyKind((DateTime)this.DueDateUtc, DateTimeKind.Utc);
       return result;
     }	
   }

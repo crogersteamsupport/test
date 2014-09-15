@@ -138,7 +138,7 @@ function GetUserDialog(organizationID, userID) {
     if (userID != null) {
         url = url + '&UserID=' + userID;
     }
-    wnd.setSize(800, 400);
+    wnd.setSize(850, 400);
 
     wnd.setUrl(url);
     return wnd;

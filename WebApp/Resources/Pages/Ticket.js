@@ -2462,7 +2462,7 @@ var initEditor = function (element, init) {
             icon: 'awesome fa fa-clock-o',
             //image: '../images/icons/dropbox.png',
             onclick: function () {
-                var html = Date(Date.UTC(Date.Now)) + ' ' + top.Ts.System.User.FirstName + ' : ' + top.Ts.System.User.LastName;
+                var html = Date(Date.UTC(Date.Now)) + ' ' + top.Ts.System.User.FirstName + ' ' + top.Ts.System.User.LastName + ' : ';
                 ed.selection.setContent(html);
                 ed.execCommand('mceAutoResize');
                 ed.focus();
