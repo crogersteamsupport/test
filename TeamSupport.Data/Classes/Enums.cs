@@ -59,6 +59,13 @@ namespace TeamSupport.Data
      Reports = 43
   };
 
+  public enum SlaViolationType
+  {
+    InitialResponse, 
+    LastAction, 
+    TimeClosed
+  }
+
   public enum SystemUser
   { 
     Unknown = -1,

@@ -12,8 +12,6 @@ namespace TeamSupport.ServiceLibrary
   [Serializable]
   public class SlaProcessor : ServiceThread
   {
-    enum NotificationType { InitialResponse, LastAction, TimeClosed }
-
     public SlaProcessor()
     {
     }
@@ -79,7 +77,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.InitialResponseViolationDate == null || Math.Abs(((DateTime)notification.InitialResponseViolationDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, NotificationType.InitialResponse);
+            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.InitialResponse);
             notification.InitialResponseViolationDate = notifyTime;
           }
         }
@@ -92,7 +90,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.InitialResponseWarningDate == null || Math.Abs(((DateTime)notification.InitialResponseWarningDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, NotificationType.InitialResponse);
+            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.InitialResponse);
             notification.InitialResponseWarningDate = notifyTime;
           }
         }
@@ -107,7 +105,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.LastActionViolationDate == null || Math.Abs(((DateTime)notification.LastActionViolationDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, NotificationType.LastAction);
+            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.LastAction);
             notification.LastActionViolationDate = notifyTime;
           }
         }
@@ -120,7 +118,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.LastActionWarningDate == null || Math.Abs(((DateTime)notification.LastActionWarningDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, NotificationType.LastAction);
+            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.LastAction);
             notification.LastActionWarningDate = notifyTime;
           }
         }
@@ -135,7 +133,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.TimeClosedViolationDate == null || Math.Abs(((DateTime)notification.TimeClosedViolationDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, NotificationType.TimeClosed);
+            NotifyViolation(ticket.TicketID, vioUser, vioGroup, false, SlaViolationType.TimeClosed);
             notification.TimeClosedViolationDate = notifyTime;
           }
         }
@@ -148,7 +146,7 @@ namespace TeamSupport.ServiceLibrary
         {
           if (notification.TimeClosedWarningDate == null || Math.Abs(((DateTime)notification.TimeClosedWarningDateUtc - notifyTime).TotalMinutes) > 5)
           {
-            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, NotificationType.TimeClosed);
+            NotifyViolation(ticket.TicketID, warnUser, warnGroup, true, SlaViolationType.TimeClosed);
             notification.TimeClosedWarningDate = notifyTime;
           }
         }
@@ -163,7 +161,7 @@ namespace TeamSupport.ServiceLibrary
     }
 
 
-    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, NotificationType notificationType)
+    private void NotifyViolation(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType slaViolationType)
     {
       Users users = new Users(LoginUser);
       User user = null;
@@ -172,16 +170,25 @@ namespace TeamSupport.ServiceLibrary
       TicketsViewItem ticket = TicketsView.GetTicketsViewItem(LoginUser, ticketID);
       if (ticket == null) return;
 
+      SlaViolationHistoryItem history = (new SlaViolationHistory(LoginUser)).AddNewSlaViolationHistoryItem();
+      history.DateViolated = DateTime.UtcNow;
+      history.GroupID = ticket.GroupID;
+      history.UserID = ticket.UserID;
+      history.ViolationType = slaViolationType;
+      history.TicketID = ticket.TicketID;
+      history.Collection.Save();
+      
+
       string violationType = "";
-      switch (notificationType)
+      switch (slaViolationType)
       {
-        case NotificationType.InitialResponse: violationType = "Initial Resoponse"; break;
-        case NotificationType.LastAction: violationType = "Last Action"; break;
-        case NotificationType.TimeClosed: violationType = "Time to Close"; break;
+        case SlaViolationType.InitialResponse: violationType = "Initial Resoponse"; break;
+        case SlaViolationType.LastAction: violationType = "Last Action"; break;
+        case SlaViolationType.TimeClosed: violationType = "Time to Close"; break;
         default: break;
       }
       Logs.WriteEvent(string.Format("NOTIFYING TicketID:{0}  TicketNumber:{1}  OrganizationID:{2} ", ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.OrganizationID.ToString()));
-      Logs.WriteEvent(string.Format("User:{1}  Group:{2}  IsWarning:{3}  NoficationType:{4}", ticketID.ToString(), useUser.ToString(), useGroup.ToString(), isWarning.ToString(), notificationType));
+      Logs.WriteEvent(string.Format("User:{1}  Group:{2}  IsWarning:{3}  NoficationType:{4}", ticketID.ToString(), useUser.ToString(), useGroup.ToString(), isWarning.ToString(), slaViolationType));
       
 
       MailMessage message = EmailTemplates.GetSlaEmail(LoginUser, ticket, violationType, isWarning);
@@ -217,7 +224,7 @@ namespace TeamSupport.ServiceLibrary
 
     }
     /*
-    private void NotifyViolationOld(int ticketID, bool useUser, bool useGroup, bool isWarning, NotificationType notificationType)
+    private void NotifyViolationOld(int ticketID, bool useUser, bool useGroup, bool isWarning, SlaViolationType SlaViolationType)
     {
       MailMessage message = new MailMessage();
 
@@ -257,17 +264,17 @@ namespace TeamSupport.ServiceLibrary
       string description = "";
       if (!isWarning)
       {
-        switch (notificationType)
+        switch (SlaViolationType)
         {
-          case NotificationType.InitialResponse: 
+          case SlaViolationType.InitialResponse: 
             builder.Append("<div>The following ticket has violated an initial response Service Level Agreement.</div>");
             description = "SLA Violation: Initial Resoponse";
             break;
-          case NotificationType.LastAction: 
+          case SlaViolationType.LastAction: 
             builder.Append("<div>The following ticket has violated a last action Service Level Agreement.</div>");
             description = "SLA Violation: Last Action";
             break;
-          case NotificationType.TimeClosed: 
+          case SlaViolationType.TimeClosed: 
             builder.Append("<div>The following ticket has violated a time to close Service Level Agreement.</div>");
             description = "SLA Violation: Time to Close";
             break;
@@ -278,17 +285,17 @@ namespace TeamSupport.ServiceLibrary
       }
       else
       {
-        switch (notificationType)
+        switch (SlaViolationType)
         {
-          case NotificationType.InitialResponse: 
+          case SlaViolationType.InitialResponse: 
             builder.Append("<div>The following ticket is about to violate an initial response Service Level Agreement.</div>"); 
             description = "SLA Warning: Initial Response";
             break;
-          case NotificationType.LastAction: 
+          case SlaViolationType.LastAction: 
             builder.Append("<div>The following ticket is about to violate a last action Service Level Agreement.</div>"); 
             description = "SLA Warning: Last Action";
             break;
-          case NotificationType.TimeClosed: 
+          case SlaViolationType.TimeClosed: 
             builder.Append("<div>The following ticket is about to violate a time to close Service Level Agreement.</div>");
             description = "SLA Warning: Time to Close";
             break;

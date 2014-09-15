@@ -203,6 +203,7 @@
     <Compile Include="BusinessObjects\ForumCategories.cs" />
     <Compile Include="BusinessObjects\ForumPermissions.cs" />
     <Compile Include="BusinessObjects\ForumTickets.cs" />
+    <Compile Include="BusinessObjects\GroupAssignmentHistory.cs" />
     <Compile Include="BusinessObjects\KnowledgeBaseCategories.cs" />
     <Compile Include="BusinessObjects\MiscellaneousLog.cs" />
     <Compile Include="BusinessObjects\OrganizationEmails.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="BusinessObjects\SearchStandardFilters.cs" />
     <Compile Include="BusinessObjects\Services.cs" />
     <Compile Include="BusinessObjects\ServiceSettings.cs" />
+    <Compile Include="BusinessObjects\SlaViolationHistory.cs" />
     <Compile Include="BusinessObjects\TagLinks.cs" />
     <Compile Include="BusinessObjects\Tags.cs" />
     <Compile Include="BusinessObjects\TicketAutomationActions.cs" />
@@ -232,6 +234,7 @@
     <Compile Include="BusinessObjects\TicketsView.cs" />
     <Compile Include="BusinessObjects\TicketTemplates.cs" />
     <Compile Include="BusinessObjects\Translate.cs" />
+    <Compile Include="BusinessObjects\UserAssignmentHistory.cs" />
     <Compile Include="BusinessObjects\UserNoteSettings.cs" />
     <Compile Include="BusinessObjects\UserTicketStatuses.cs" />
     <Compile Include="BusinessObjects\WatercoolerAttachments.cs" />
@@ -282,6 +285,7 @@
     <Compile Include="FieldMaps\ForumLogsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumPermissionsFieldMap.cs" />
     <Compile Include="FieldMaps\ForumTicketsFieldMap.cs" />
+    <Compile Include="FieldMaps\GroupAssignmentHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\KnowledgeBaseCategoriesFieldMap.cs" />
     <Compile Include="FieldMaps\MiscellaneousLogFieldMap.cs" />
     <Compile Include="FieldMaps\OrganizationEmailsFieldMap.cs" />
@@ -299,6 +303,7 @@
     <Compile Include="FieldMaps\SearchStandardFiltersFieldMap.cs" />
     <Compile Include="FieldMaps\ServiceSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\ServicesFieldMap.cs" />
+    <Compile Include="FieldMaps\SlaViolationHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\TagLinksFieldMap.cs" />
     <Compile Include="FieldMaps\TagsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketAutomationActionsFieldMap.cs" />
@@ -311,6 +316,7 @@
     <Compile Include="FieldMaps\TicketRelationshipsFieldMap.cs" />
     <Compile Include="FieldMaps\TicketTemplatesFieldMap.cs" />
     <Compile Include="FieldMaps\TranslateFieldMap.cs" />
+    <Compile Include="FieldMaps\UserAssignmentHistoryFieldMap.cs" />
     <Compile Include="FieldMaps\UserNoteSettingsFieldMap.cs" />
     <Compile Include="FieldMaps\UserTicketStatusesFieldMap.cs" />
     <Compile Include="FieldMaps\WatercoolerAttachmentsFieldMap.cs" />
@@ -508,6 +514,7 @@
     <Compile Include="Generated\GeneratedForumLogs.cs" />
     <Compile Include="Generated\GeneratedForumPermissions.cs" />
     <Compile Include="Generated\GeneratedForumTickets.cs" />
+    <Compile Include="Generated\GeneratedGroupAssignmentHistory.cs" />
     <Compile Include="Generated\GeneratedGroups.cs" />
     <Compile Include="Generated\GeneratedInvoices.cs" />
     <Compile Include="Generated\GeneratedKBStats.cs" />
@@ -555,6 +562,7 @@
     <Compile Include="Generated\GeneratedSlaNotifications.cs" />
     <Compile Include="Generated\GeneratedSlaTriggers.cs" />
     <Compile Include="Generated\GeneratedSlaTriggersView.cs" />
+    <Compile Include="Generated\GeneratedSlaViolationHistory.cs" />
     <Compile Include="Generated\GeneratedSourceCommitLogs.cs" />
     <Compile Include="Generated\GeneratedSystemSettings.cs" />
     <Compile Include="Generated\GeneratedTagLinks.cs" />
@@ -581,6 +589,7 @@
     <Compile Include="Generated\GeneratedTicketTypes.cs" />
     <Compile Include="Generated\GeneratedTranslate.cs" />
     <Compile Include="Generated\GeneratedTSEMailIgnoreList.cs" />
+    <Compile Include="Generated\GeneratedUserAssignmentHistory.cs" />
     <Compile Include="Generated\GeneratedUserNoteSettings.cs" />
     <Compile Include="Generated\GeneratedUsers.cs" />
     <Compile Include="Generated\GeneratedUserSettings.cs" />
@@ -594,6 +603,9 @@
     <Compile Include="Generated\GeneratedWikiArticles.cs" />
     <Compile Include="Generated\GeneratedWikiArticlesView.cs" />
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
+    <Compile Include="Proxies\GroupAssignmentHistoryProxy.cs" />
+    <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
+    <Compile Include="Proxies\UserAssignmentHistoryProxy.cs" />
     <Compile Include="HtmlToText.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
