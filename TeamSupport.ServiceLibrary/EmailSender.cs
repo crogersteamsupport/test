@@ -43,11 +43,6 @@ namespace TeamSupport.ServiceLibrary
     public override void Run()
     {
       _isDebug = Settings.ReadBool("Debug", false);
-      if (_isDebug)
-      {
-        _debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
-        Logs.WriteEvent("DEBUG Addresses: " + _debugAddresses);
-      }
 
       while (!IsStopped)
       {
@@ -93,6 +88,7 @@ namespace TeamSupport.ServiceLibrary
             message.To.Clear();
             message.To.Add(_debugAddresses);
             message.Subject = "[DEBUG] " + message.Subject;
+            _debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
           }
           Logs.WriteEvent("Sending email");
           client.Send(message);
