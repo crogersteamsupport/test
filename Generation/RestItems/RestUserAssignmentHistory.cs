@@ -13,9 +13,9 @@ namespace TeamSupport.Api
   
   public class RestUserAssignmentHistory
   {
-    public static string GetUserAssignmentHistoryItem(RestCommand command, int userAssignmentHistoryID)
+    public static string GetUserAssignmentHistoryItem(RestCommand command, int )
     {
-      UserAssignmentHistoryItem userAssignmentHistoryItem = UserAssignmentHistory.GetUserAssignmentHistoryItem(command.LoginUser, userAssignmentHistoryID);
+      UserAssignmentHistoryItem userAssignmentHistoryItem = UserAssignmentHistory.GetUserAssignmentHistoryItem(command.LoginUser, );
       if (userAssignmentHistoryItem.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       return userAssignmentHistoryItem.GetXml("UserAssignmentHistoryItem", true);
     }

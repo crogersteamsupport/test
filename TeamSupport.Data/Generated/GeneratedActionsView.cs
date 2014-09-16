@@ -451,8 +451,8 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 255;
 		  tempParameter.Scale = 255;
 		}
-
-    tempParameter = updateCommand.Parameters.Add("Description", SqlDbType.NVarChar, -1);
+		
+		tempParameter = updateCommand.Parameters.Add("Description", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -683,7 +683,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("TicketName", SqlDbType.VarChar, 255);
+		tempParameter = updateCommand.Parameters.Add("TicketName", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -782,7 +782,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 23;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("TicketName", SqlDbType.VarChar, 255);
+		tempParameter = insertCommand.Parameters.Add("TicketName", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1026,8 +1026,8 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
 		}
-
-    tempParameter = insertCommand.Parameters.Add("Description", SqlDbType.NVarChar, -1);
+		
+		tempParameter = insertCommand.Parameters.Add("Description", SqlDbType.NVarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

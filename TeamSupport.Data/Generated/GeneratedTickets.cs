@@ -1022,8 +1022,8 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
 		}
-
-    tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.NVarChar, 255);
+		
+		tempParameter = insertCommand.Parameters.Add("Name", SqlDbType.NVarChar, 255);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;

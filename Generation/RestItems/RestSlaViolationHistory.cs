@@ -13,9 +13,9 @@ namespace TeamSupport.Api
   
   public class RestSlaViolationHistory
   {
-    public static string GetSlaViolationHistoryItem(RestCommand command, int slaViolationHistoryID)
+    public static string GetSlaViolationHistoryItem(RestCommand command, int )
     {
-      SlaViolationHistoryItem slaViolationHistoryItem = SlaViolationHistory.GetSlaViolationHistoryItem(command.LoginUser, slaViolationHistoryID);
+      SlaViolationHistoryItem slaViolationHistoryItem = SlaViolationHistory.GetSlaViolationHistoryItem(command.LoginUser, );
       if (slaViolationHistoryItem.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       return slaViolationHistoryItem.GetXml("SlaViolationHistoryItem", true);
     }

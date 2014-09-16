@@ -101,7 +101,7 @@ namespace TeamSupport.Data
     
     public override string PrimaryKeyFieldName
     {
-      get { return "SlaViolationHistoryID"; }
+      get { return ""; }
     }
 
 
@@ -120,11 +120,11 @@ namespace TeamSupport.Data
     partial void AfterRowInsert(SlaViolationHistoryItem slaViolationHistoryItem);
     partial void BeforeRowEdit(SlaViolationHistoryItem slaViolationHistoryItem);
     partial void AfterRowEdit(SlaViolationHistoryItem slaViolationHistoryItem);
-    partial void BeforeRowDelete(int slaViolationHistoryID);
-    partial void AfterRowDelete(int slaViolationHistoryID);    
+    partial void BeforeRowDelete(int );
+    partial void AfterRowDelete(int );    
 
-    partial void BeforeDBDelete(int slaViolationHistoryID);
-    partial void AfterDBDelete(int slaViolationHistoryID);    
+    partial void BeforeDBDelete(int );
+    partial void AfterDBDelete(int );    
 
     #endregion
 
@@ -142,9 +142,9 @@ namespace TeamSupport.Data
       return list.ToArray();
     }	
 	
-    public virtual void DeleteFromDB(int slaViolationHistoryID)
+    public virtual void DeleteFromDB(int )
     {
-      BeforeDBDelete(slaViolationHistoryID);
+      BeforeDBDelete();
       using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
       {
         connection.Open();
@@ -153,17 +153,17 @@ namespace TeamSupport.Data
 
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaViolationHistory] WHERE ([SlaViolationHistoryID] = @SlaViolationHistoryID);";
-        deleteCommand.Parameters.Add("SlaViolationHistoryID", SqlDbType.Int);
-        deleteCommand.Parameters["SlaViolationHistoryID"].Value = slaViolationHistoryID;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaViolationHistory] WH);";
+        deleteCommand.Parameters.Add("", SqlDbType.Int);
+        deleteCommand.Parameters[""].Value = ;
 
-        BeforeRowDelete(slaViolationHistoryID);
+        BeforeRowDelete();
         deleteCommand.ExecuteNonQuery();
 		connection.Close();
         if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
-        AfterRowDelete(slaViolationHistoryID);
+        AfterRowDelete();
       }
-      AfterDBDelete(slaViolationHistoryID);
+      AfterDBDelete();
       
     }
 
@@ -174,7 +174,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaViolationHistory] SET     [UserID] = @UserID,    [GroupID] = @GroupID,    [TicketID] = @TicketID,    [ViolationType] = @ViolationType,    [DateViolated] = @DateViolated  WHERE ([SlaViolationHistoryID] = @SlaViolationHistoryID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[SlaViolationHistory] SET     [UserID] = @UserID,    [GroupID] = @GroupID,    [TicketID] = @TicketID,    [ViolationType] = @ViolationType,    [DateViolated] = @DateViolated  WH);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("SlaViolationHistoryID", SqlDbType.Int, 4);
@@ -268,8 +268,8 @@ namespace TeamSupport.Data
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaViolationHistory] WHERE ([SlaViolationHistoryID] = @SlaViolationHistoryID);";
-		deleteCommand.Parameters.Add("SlaViolationHistoryID", SqlDbType.Int);
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[SlaViolationHistory] WH);";
+		deleteCommand.Parameters.Add("", SqlDbType.Int);
 
 		try
 		{
@@ -291,10 +291,10 @@ namespace TeamSupport.Data
 			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
 
 			  insertCommand.ExecuteNonQuery();
-			  Table.Columns["SlaViolationHistoryID"].AutoIncrement = false;
-			  Table.Columns["SlaViolationHistoryID"].ReadOnly = false;
+			  Table.Columns[""].AutoIncrement = false;
+			  Table.Columns[""].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				slaViolationHistoryItem.Row["SlaViolationHistoryID"] = (int)insertCommand.Parameters["Identity"].Value;
+				slaViolationHistoryItem.Row[""] = (int)insertCommand.Parameters["Identity"].Value;
 			  AfterRowInsert(slaViolationHistoryItem);
 			}
 			else if (slaViolationHistoryItem.Row.RowState == DataRowState.Modified)
@@ -313,8 +313,8 @@ namespace TeamSupport.Data
 			}
 			else if (slaViolationHistoryItem.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)slaViolationHistoryItem.Row["SlaViolationHistoryID", DataRowVersion.Original];
-			  deleteCommand.Parameters["SlaViolationHistoryID"].Value = id;
+			  int id = (int)slaViolationHistoryItem.Row["", DataRowVersion.Original];
+			  deleteCommand.Parameters[""].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
 			  AfterRowDelete(id);
@@ -350,11 +350,11 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public SlaViolationHistoryItem FindBySlaViolationHistoryID(int slaViolationHistoryID)
+    public SlaViolationHistoryItem FindBy(int )
     {
       foreach (SlaViolationHistoryItem slaViolationHistoryItem in this)
       {
-        if (slaViolationHistoryItem.SlaViolationHistoryID == slaViolationHistoryID)
+        if (slaViolationHistoryItem. == )
         {
           return slaViolationHistoryItem;
         }
@@ -370,21 +370,21 @@ namespace TeamSupport.Data
       return new SlaViolationHistoryItem(row, this);
     }
     
-    public virtual void LoadBySlaViolationHistoryID(int slaViolationHistoryID)
+    public virtual void LoadBy(int )
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [SlaViolationHistoryID], [UserID], [GroupID], [TicketID], [ViolationType], [DateViolated] FROM [dbo].[SlaViolationHistory] WHERE ([SlaViolationHistoryID] = @SlaViolationHistoryID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [SlaViolationHistoryID], [UserID], [GroupID], [TicketID], [ViolationType], [DateViolated] FROM [dbo].[SlaViolationHistory] WH);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("SlaViolationHistoryID", slaViolationHistoryID);
+        command.Parameters.AddWithValue("", );
         Fill(command);
       }
     }
     
-    public static SlaViolationHistoryItem GetSlaViolationHistoryItem(LoginUser loginUser, int slaViolationHistoryID)
+    public static SlaViolationHistoryItem GetSlaViolationHistoryItem(LoginUser loginUser, int )
     {
       SlaViolationHistory slaViolationHistory = new SlaViolationHistory(loginUser);
-      slaViolationHistory.LoadBySlaViolationHistoryID(slaViolationHistoryID);
+      slaViolationHistory.LoadBy();
       if (slaViolationHistory.IsEmpty)
         return null;
       else
