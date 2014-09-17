@@ -23,7 +23,6 @@ namespace TeamSupport.ServiceLibrary
   {
     private static int[] _nextAttempts = new int[] { 10, 15, 20, 30, 60, 120, 360, 720, 1440 };
     private bool _isDebug = false;
-    private string _debugAddresses;
     private static object _staticLock = new object();
 
     private static Email GetNextEmail(string connectionString, int lockID)
@@ -85,10 +84,12 @@ namespace TeamSupport.ServiceLibrary
           message.Headers.Add("X-xsMailingId", email.EmailID.ToString());
           if (_isDebug == true)
           {
+            string debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
+            Logs.WriteEvent("DEBUG Addresses: " + debugAddresses);
+
             message.To.Clear();
-            message.To.Add(_debugAddresses);
+            message.To.Add(debugAddresses);
             message.Subject = "[DEBUG] " + message.Subject;
-            _debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
           }
           Logs.WriteEvent("Sending email");
           client.Send(message);
