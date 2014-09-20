@@ -1213,7 +1213,7 @@ namespace TSWebServices
         action.CreatorID = TSAuthentication.UserID;
         if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal)
         {
-          if (!action.Description.Contains(user.Signature))
+          if (!proxy.Description.Contains(user.Signature))
             action.Description = proxy.Description + "<br/><br/>" + user.Signature;
         }
         else
