@@ -48,13 +48,12 @@ namespace TeamSupport.ServiceLibrary
         DocCreatedDate  = wiki.CreatedDate;
         DocModifiedDate = DateTime.UtcNow;
 
-        return true;
       }
       catch (Exception ex)
       {
         ExceptionLogs.LogException(_loginUser, ex, "WikiIndexDataSource");
-        throw;
       }
+      return true;
     }
 
     override public bool Rewind()

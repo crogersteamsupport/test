@@ -76,14 +76,12 @@ namespace TeamSupport.ServiceLibrary
         DocCreatedDate  = (DateTime)ticket.Row["DateCreated"];
         DocModifiedDate = (DateTime)ticket.Row["DateModified"];
 
-        return true;
       }
       catch (Exception ex)
       {
         ExceptionLogs.LogException(_loginUser, ex, "TicketIndexDataSource");
-        //Logs.WriteException(ex);
-        throw;
       }
+      return true;
     }
 
     

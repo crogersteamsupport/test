@@ -104,14 +104,12 @@ namespace TeamSupport.ServiceLibrary
         DocCreatedDate = (DateTime)contact.Row["DateCreated"];
         DocModifiedDate = (DateTime)contact.Row["DateModified"];
 
-        return true;
       }
       catch (Exception ex)
       {
         ExceptionLogs.LogException(_loginUser, ex, "ContactIndexDataSource");
-        //Logs.WriteException(ex);
-        throw;
       }
+      return true;
     }
 
     override public bool Rewind()

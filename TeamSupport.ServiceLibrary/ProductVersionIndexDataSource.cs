@@ -55,13 +55,12 @@ namespace TeamSupport.ServiceLibrary
         DocCreatedDate = productVersion.DateCreatedUtc;
         DocModifiedDate = DateTime.UtcNow;
 
-        return true;
       }
       catch (Exception ex)
       {
         ExceptionLogs.LogException(_loginUser, ex, "ProductVersionIndexDataSource");
-        throw;
       }
+      return true;
     }
 
     override public bool Rewind()

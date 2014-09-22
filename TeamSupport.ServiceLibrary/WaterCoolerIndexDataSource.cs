@@ -46,13 +46,12 @@ namespace TeamSupport.ServiceLibrary
         DocCreatedDate = waterCooler.TimeStampUtc;
         DocModifiedDate = DateTime.UtcNow;
 
-        return true;
       }
       catch (Exception ex)
       {
         ExceptionLogs.LogException(_loginUser, ex, "WaterCoolerIndexDataSource");
-        throw;
       }
+      return true;
     }
 
     override public bool Rewind()

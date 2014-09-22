@@ -125,14 +125,13 @@ namespace TeamSupport.ServiceLibrary
 
         }
 
-        return true;
       }
       catch (Exception ex)
       {
         ExceptionLogs.LogException(_loginUser, ex, "AssetIndexDataSource");
-        //Logs.WriteException(ex);
-        throw;
+
       }
+      return true;
     }
 
     override public bool Rewind()

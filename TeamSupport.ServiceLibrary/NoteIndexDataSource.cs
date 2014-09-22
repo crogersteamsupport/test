@@ -43,13 +43,12 @@ namespace TeamSupport.ServiceLibrary
         DocCreatedDate = note.DateCreatedUtc;
         DocModifiedDate = DateTime.UtcNow;
 
-        return true;
       }
       catch (Exception ex)
       {
         ExceptionLogs.LogException(_loginUser, ex, "NoteIndexDataSource");
-        throw;
       }
+      return true;
     }
 
     override public bool Rewind()
