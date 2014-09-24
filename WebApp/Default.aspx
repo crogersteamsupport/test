@@ -36,10 +36,10 @@
   <script type="text/javascript">
     var _aaq = _aaq || [];
     (function () {
-      var d = document,
-          g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+      var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
       g.type = 'text/javascript'; g.defer = true; g.async = true;
-      g.src = document.location.protocol + '//teamsupport.apptegic.com/scripts/apptegic-tw.min.js';
+      g.src = document.location.protocol + '//cdn.evergage.com/beacon/'
+            + evergageAccount + '/' + dataset + '/scripts/evergage.min.js';
       s.parentNode.insertBefore(g, s);
     })();
   </script>

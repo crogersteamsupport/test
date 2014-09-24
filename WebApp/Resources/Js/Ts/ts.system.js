@@ -150,9 +150,8 @@ var _startDate = new Date();
         return; 
       }
 
-      _aaq.push(['setApptegicAccount', 'teamsupport']);
-      _aaq.push(['setDataset', dataset]);
-      _aaq.push(['setTwoWayEnabled', true]);
+
+      _aaq.push(['setEvergageAccount', 'teamsupport'], ['setDataset', dataset], ['setUseSiteConfig', true]);
       var user = Ts.System.User;
       var org = Ts.System.Organization;
       
