@@ -2426,6 +2426,7 @@ namespace TSWebServices
     [WebMethod]
     public void EmailTicket(int ticketID, string addresses, string introduction)
     {
+      addresses = addresses.Substring(0, 200);
       EmailPosts posts = new EmailPosts(TSAuthentication.GetLoginUser());
       EmailPost post = posts.AddNewEmailPost();
       post.EmailPostType = EmailPostType.TicketSendEmail;
