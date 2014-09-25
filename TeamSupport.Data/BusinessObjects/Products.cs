@@ -313,5 +313,63 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadForIndexing(int organizationID, int max, bool isRebuilding)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        string text = @"
+        SELECT 
+          TOP {0} 
+          ProductID
+        FROM 
+          Products p WITH(NOLOCK)
+        WHERE 
+          p.NeedsIndexing = 1
+          AND p.OrganizationID = @OrganizationID
+        ORDER BY 
+          p.DateModified DESC";
+
+        if (isRebuilding)
+        {
+          text = @"
+          SELECT 
+            ProductID
+          FROM 
+            products p WITH(NOLOCK)
+          WHERE 
+            p.OrganizationID = @OrganizationID
+          ORDER BY 
+            p.DateModified DESC";
+        }
+
+        command.CommandText = string.Format(text, max.ToString());
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
+  }
+
+  public class ProductSearch
+  {
+    public ProductSearch() { }
+    public ProductSearch(Product item)
+    {
+      productID = item.ProductID;
+      organizationID = item.OrganizationID;
+      name = item.Name;
+      description = item.Description;
+      dateCreated = item.DateCreated;
+      dateModified = item.DateModified;
+
+    }
+
+    public int productID { get; set; }
+    public int organizationID { get; set; }
+    public string name { get; set; }
+    public string description { get; set; }
+    public DateTime? dateCreated { get; set; }
+    public DateTime? dateModified { get; set; }
   }
 }

@@ -1164,6 +1164,42 @@ namespace TSWebServices
       }
     }
 
+    public SearchResults GetProductsSearchResults(LoginUser loginUser, string searchTerm, int max, bool searchProducts, bool searchProductVersions)
+    {
+      Options options = new Options();
+      options.TextFlags = TextFlags.dtsoTfRecognizeDates;
+      using (SearchJob job = new SearchJob())
+      {
+
+        job.Request = searchTerm;
+        job.FieldWeights = "Name:20,Description:10";
+        job.MaxFilesToRetrieve = max;
+        job.AutoStopLimit = 10000000;
+        job.TimeoutSeconds = 30;
+
+        job.Fuzziness = 0;
+        job.Request = job.Request + "*";
+
+        job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchDelayDocInfo;
+
+        if (searchTerm.ToLower().IndexOf(" and ") < 0 && searchTerm.ToLower().IndexOf(" or ") < 0) job.SearchFlags = job.SearchFlags | SearchFlags.dtsSearchTypeAllWords;
+
+        if (searchProducts)
+        {
+          job.IndexesToSearch.Add(DataUtils.GetProductsIndexPath(loginUser));
+        }
+
+        if (searchProductVersions)
+        {
+          job.IndexesToSearch.Add(DataUtils.GetProductVersionsIndexPath(loginUser));
+        }
+
+        job.Execute();
+        job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortDescending, "");
+        return job.Results;
+      }
+    }
+
     [WebMethod]
     public string[] SearchCompaniesAndContacts(string searchTerm, int from, int count, bool searchCompanies, bool searchContacts, bool? active)
     {      
@@ -1365,6 +1401,33 @@ SELECT
         }
 
       //}
+
+      return resultItems.ToArray();
+    }
+
+    [WebMethod]
+    public string[] SearchProducts(string searchTerm, int from, int count, bool searchProducts, bool searchProductVersions)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      List<string> resultItems = new List<string>();
+      if (string.IsNullOrWhiteSpace(searchTerm))
+      {
+        searchTerm = "xfirstword";
+      }
+
+      SearchResults results = GetProductsSearchResults(loginUser, searchTerm, 0, searchProducts, searchProductVersions);
+      int topLimit = from + count;
+      if (topLimit > results.Count)
+      {
+        topLimit = results.Count;
+      }
+
+      for (int i = from; i < topLimit; i++)
+      {
+        results.GetNthDoc(i);
+        if (results.CurrentItem.UserFields["JSON"] != null)
+          resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+      }
 
       return resultItems.ToArray();
     }

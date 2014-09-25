@@ -599,10 +599,10 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public string LoadCustomControls()
+    public string LoadCustomControls(ReferenceType refType)
     {
       CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
-      fields.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Assets, -1);
+      fields.LoadByReferenceType(TSAuthentication.OrganizationID, refType, -1);
       int count = 0;
 
       StringBuilder htmltest = new StringBuilder("");

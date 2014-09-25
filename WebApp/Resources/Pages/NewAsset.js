@@ -110,7 +110,7 @@
   });
 
   function LoadCustomControls() {
-    top.Ts.Services.Assets.LoadCustomControls(function (html) {
+    top.Ts.Services.Assets.LoadCustomControls(top.Ts.ReferenceTypes.Assets, function (html) {
       $('#customerCustomInfo').append(html);
       $('.customField:visible').each(function () {
         var maskValue = $(this).attr("placeholder");

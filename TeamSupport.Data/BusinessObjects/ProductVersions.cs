@@ -260,4 +260,41 @@ namespace TeamSupport.Data
 
 
   }
+
+  public class ProductVersionsSearch
+  {
+    public ProductVersionsSearch() { }
+    public ProductVersionsSearch(ProductVersionsViewItem item)
+    {
+      productVersionID        = item.ProductVersionID;
+      productID               = item.ProductID;
+      productVersionStatusID  = item.ProductVersionStatusID;
+      versionNumber           = item.VersionNumber;
+      releaseDate             = item.ReleaseDate;
+      isReleased              = item.IsReleased;
+      description             = item.Description;
+      dateCreated             = item.DateCreated;
+      dateModified            = item.DateModified;
+      creatorID               = item.CreatorID;
+      modifierID              = item.ModifierID;
+      versionStatus           = item.VersionStatus;
+      productName             = item.ProductName;
+      organizationID          = item.OrganizationID;
+    }
+
+    public int productVersionID { get; set; }
+    public int productID { get; set; }
+    public int productVersionStatusID { get; set; }
+    public string versionNumber { get; set; }
+    public DateTime? releaseDate { get; set; }
+    public bool isReleased { get; set; }
+    public string description { get; set; }
+    public DateTime? dateCreated { get; set; }
+    public DateTime? dateModified { get; set; }
+    public int creatorID { get; set; }
+    public int modifierID { get; set; }
+    public string versionStatus { get; set; }
+    public string productName { get; set; }
+    public int organizationID { get; set; }
+  }
 }

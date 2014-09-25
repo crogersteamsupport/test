@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using TeamSupport.Data;
+using Newtonsoft.Json;
 
 namespace TeamSupport.ServiceLibrary
 {
@@ -39,6 +40,9 @@ namespace TeamSupport.ServiceLibrary
           string s = value == null || value == DBNull.Value ? "" : value.ToString();
           AddDocField(column.ColumnName, s);
         }
+
+        ProductVersionsSearch productVersionsSearch = new ProductVersionsSearch(productVersion);
+        AddDocField("**JSON", JsonConvert.SerializeObject(productVersionsSearch));
 
         CustomValues customValues = new CustomValues(_loginUser);
         customValues.LoadByReferenceType(_organizationID, ReferenceType.ProductVersions, null, productVersion.ProductVersionID);

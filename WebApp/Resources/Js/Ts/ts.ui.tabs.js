@@ -279,3 +279,7 @@ Ts.Ui.Tabs.Tab.Type.NewContact = 'new_contact';
 Ts.Ui.Tabs.Tab.Type.Report = 'report';
 Ts.Ui.Tabs.Tab.Type.Asset = 'asset';
 Ts.Ui.Tabs.Tab.Type.NewAsset = 'new_asset';
+Ts.Ui.Tabs.Tab.Type.Product = 'product';
+Ts.Ui.Tabs.Tab.Type.NewProduct = 'new_product';
+Ts.Ui.Tabs.Tab.Type.ProductVersion = 'product_version';
+Ts.Ui.Tabs.Tab.Type.NewProductVersion = 'new_product_version';

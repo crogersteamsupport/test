@@ -146,6 +146,7 @@ namespace TeamSupport.ServiceLibrary
         ProcessIndex(org, ReferenceType.Organizations, isRebuilder);
         ProcessIndex(org, ReferenceType.Contacts, isRebuilder);
         ProcessIndex(org, ReferenceType.Assets, isRebuilder);
+        ProcessIndex(org, ReferenceType.Products, isRebuilder);
 
         if (isRebuilder && !IsStopped)
         {
@@ -236,6 +237,14 @@ namespace TeamSupport.ServiceLibrary
           tableName = "Assets";
           primaryKeyName = "AssetID";
           indexDataSource = new AssetIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
+          break;
+        case ReferenceType.Products:
+          indexPath = "\\Products";
+          deletedIndexItemsFileName = "DeletedProducts.txt";
+          storedFields = "Name JSON";
+          tableName = "Products";
+          primaryKeyName = "ProductID";
+          indexDataSource = new ProductIndexDataSource(LoginUser, maxRecords, organization.OrganizationID, isRebuilder, string.Format(logName, tableName, _threadPosition.ToString()));
           break;
         default:
           throw new System.ArgumentException("ReferenceType " + referenceType.ToString() + " is not supported by indexer.");

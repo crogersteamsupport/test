@@ -695,6 +695,12 @@ Ts.Pages.Main.prototype = {
             case Ts.Ui.Tabs.Tab.Type.Asset:
               div = $('.main-tab-Asset');
               break;
+            case Ts.Ui.Tabs.Tab.Type.NewProduct:
+              div = $('.main-tab-newProduct');
+              break;
+            case Ts.Ui.Tabs.Tab.Type.Product:
+              div = $('.main-tab-Product');
+              break;
             default:
           }
 
@@ -972,6 +978,95 @@ Ts.Pages.Main.prototype = {
           $('.main-info-content').load('vcr/1_9_0/PaneInfo/inventory.html');
           break;
 
+        case Ts.Ui.Tabs.Tab.Type.NewProduct:
+          div = $('.main-tab-content .main-ticket-newProduct');
+          if (div.length < 1) {
+            var query = '';
+            if (tab.getData()) query = tab.getData();
+            div = $('<div>')
+                  .addClass('main-tab-content-item main-tab-newProduct main-ticket-newProduct')
+                  .appendTo('.main-tab-content');
+
+            $('<iframe>')
+                  .attr('frameborder', 0)
+                  .attr('scrolling', 'no')
+                  .appendTo(div)
+                  .attr('src', 'vcr/1_9_0/Pages/NewProduct.html' + query);
+          }
+          else {
+            div.show();
+          }
+          $('.main-info-content').load('vcr/1_9_0/PaneInfo/Products.html');
+          break;
+        case Ts.Ui.Tabs.Tab.Type.Product:
+          var productID = tab.getId();
+          div = $('.main-tab-content .main-Product-' + productID);
+          if (div.length < 1) {
+            var query = '';
+            if (tab.getData()) query = tab.getData();
+            div = $('<div>')
+                    .addClass('main-tab-content-item main-tab-Product main-Product-' + productID)
+                    .appendTo('.main-tab-content');
+
+            $('<iframe>')
+                    .attr('frameborder', 0)
+                    .attr('scrolling', 'no')
+                    .attr('id', 'iframe-o-' + productID)
+                    .appendTo(div)
+                    .attr('src', 'vcr/1_9_0/Pages/ProductDetail.html' + query);
+          }
+          else {
+            top.privateServices.SetUserSetting('SelectedProductID', productID);
+            div.show();
+          }
+          $('.main-info-content').load('vcr/1_9_0/PaneInfo/Products.html');
+          break;
+
+
+        case Ts.Ui.Tabs.Tab.Type.NewProductVersion:
+          div = $('.main-tab-content .main-ticket-newProductVersion');
+          if (div.length < 1) {
+            var query = '';
+            if (tab.getData()) query = tab.getData();
+            div = $('<div>')
+                  .addClass('main-tab-content-item main-tab-newProductVersion main-ticket-newProductVersion')
+                  .appendTo('.main-tab-content');
+
+            $('<iframe>')
+                  .attr('frameborder', 0)
+                  .attr('scrolling', 'no')
+                  .appendTo(div)
+                  .attr('src', 'vcr/1_9_0/Pages/NewProductVersion.html' + query);
+          }
+          else {
+            div.show();
+          }
+          $('.main-info-content').load('vcr/1_9_0/PaneInfo/Products.html');
+          break;
+        case Ts.Ui.Tabs.Tab.Type.ProductVersion:
+          var productVersionID = tab.getId();
+          div = $('.main-tab-content .main-Product-Version-' + productVersionID);
+          if (div.length < 1) {
+            var query = '';
+            if (tab.getData()) query = tab.getData();
+            div = $('<div>')
+                    .addClass('main-tab-content-item main-tab-Product-Version main-Product-Version-' + productVersionID)
+                    .appendTo('.main-tab-content');
+
+            $('<iframe>')
+                    .attr('frameborder', 0)
+                    .attr('scrolling', 'no')
+                    .attr('id', 'iframe-o-' + productID)
+                    .appendTo(div)
+                    .attr('src', 'vcr/1_9_0/Pages/ProductVersionDetail.html' + query);
+          }
+          else {
+            top.privateServices.SetUserSetting('SelectedProductVersionID', productVersionID);
+            div.show();
+          }
+          $('.main-info-content').load('vcr/1_9_0/PaneInfo/Products.html');
+          break;
+
         default:
 
       }
@@ -1186,6 +1281,12 @@ Ts.Pages.Main.prototype = {
   },
   openAsset: function (assetID) {
     this.openNewAsset(assetID); 
+  },
+  openProduct: function (productID) {
+    this.openNewProduct(productID);
+  },
+  openProductVersion: function (productVersionID) {
+    this.openNewProductVersion(productVersionID);
   },
   openUser: function (userID) {
     var self = this;
@@ -1535,6 +1636,62 @@ Ts.Pages.Main.prototype = {
   },
   closeNewAssetTab: function (assetID) {
     var tab = this.MainTabs.find(assetID, Ts.Ui.Tabs.Tab.Type.Asset);
+    if (tab) {
+      this.closeTab(tab);
+      tab.remove();
+    }
+  },
+  newProduct: function (tab, orgID) {
+    var query;
+    if (tab != undefined)
+      query = "?open=" + tab + "&organizationid=" + orgID;
+    this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewProduct, 'newProduct', 'Add Product', true, true, true, null, null, query, null);
+  },
+  closenewProductTab: function () {
+    var tab = this.MainTabs.find('newProduct', Ts.Ui.Tabs.Tab.Type.NewProduct);
+    if (tab) {
+      this.closeTab(tab);
+      tab.remove();
+    }
+  },
+  openNewProduct: function (productID) {
+    var query = "?productid=" + productID;
+    top.Ts.Services.Products.GetShortNameFromID(productID, function (result) {
+      this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.Product, productID, result, true, true, false, null, null, query, null);
+    });
+
+  },
+  closeNewProduct: function (productID) {
+    var div = $('.main-tab-content .main-Product-' + productID);
+    div.remove();
+  },
+  closeNewProductTab: function (productID) {
+    var tab = this.MainTabs.find(productID, Ts.Ui.Tabs.Tab.Type.Product);
+    if (tab) {
+      this.closeTab(tab);
+      tab.remove();
+    }
+  },
+
+  newProductVersion: function (tab, orgID) {
+    var query;
+    if (tab != undefined)
+      query = "?open=" + tab + "&organizationid=" + orgID;
+    this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewProductVersion, 'newProductVersion', 'Add Product Version', true, true, true, null, null, query, null);
+  },
+  openNewProductVersion: function (productVersionID) {
+    var query = "?productversionid=" + productVersionID;
+    top.Ts.Services.Products.GetVersionShortNameFromID(productVersionID, function (result) {
+      this.Ts.MainPage.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.ProductVersion, productVersionID, result, true, true, false, null, null, query, null);
+    });
+
+  },
+  closeNewProductVersion: function (productVersionID) {
+    var div = $('.main-tab-content .main-Product-Version-' + productVersionID);
+    div.remove();
+  },
+  closeNewProductVersionTab: function (productVersionID) {
+    var tab = this.MainTabs.find(productVersionID, Ts.Ui.Tabs.Tab.Type.ProductVersion);
     if (tab) {
       this.closeTab(tab);
       tab.remove();

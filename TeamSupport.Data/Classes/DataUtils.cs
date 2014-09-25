@@ -1710,6 +1710,11 @@ namespace TeamSupport.Data
       return GetIndexPath(loginUser) + "\\Assets";
     }
 
+    public static string GetProductsIndexPath(LoginUser loginUser)
+    {
+      return GetIndexPath(loginUser) + "\\Products";
+    }
+
     public static string GetContactsIndexPath(LoginUser loginUser)
     {
       return GetIndexPath(loginUser) + "\\Contacts";

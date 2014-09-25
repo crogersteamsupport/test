@@ -56,6 +56,20 @@ namespace TeamSupport.Data
           }
       }
 
+      public void LoadRecentForProductsPage(int userID)
+      {
+        using (SqlCommand command = new SqlCommand())
+        {
+          command.CommandText =
+            @"SELECT TOP 5 * FROM RecentlyViewedItems
+                WHERE (UserID = @UserID) 
+                AND refType IN (13,14)
+                ORDER BY DateViewed Desc";
+          command.CommandType = CommandType.Text;
+          command.Parameters.AddWithValue("@UserID", userID);
+          Fill(command);
+        }
+      }
   }
   
 }

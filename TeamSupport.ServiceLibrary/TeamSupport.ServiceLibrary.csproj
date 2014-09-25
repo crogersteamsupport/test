@@ -132,6 +132,7 @@
     <Compile Include="IndexDataSource.cs" />
     <Compile Include="NoteIndexDataSource.cs" />
     <Compile Include="CustomerIndexDataSource.cs" />
+    <Compile Include="ProductIndexDataSource.cs" />
     <Compile Include="ProductVersionIndexDataSource.cs" />
     <Compile Include="ReportSender.cs" />
     <Compile Include="ReminderProcessor.cs" />

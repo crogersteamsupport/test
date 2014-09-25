@@ -9,6 +9,7 @@
         this._users = null;
         this._groups = null;
         this._products = null;
+        this._productVersionStatuses = null;
         this._ticketTypes = null;
         this._ticketStatuses = null;
         this._ticketNextStatuses = null;
@@ -34,6 +35,7 @@
           this.getUsers();
           this.getGroups();
           this.getProducts();
+          this.getProductVersionStatuses();
           this.getTicketNextStatuses();
           this.getTicketSeverities();
           this.getTicketStatuses();
@@ -188,6 +190,18 @@
               }
           }
           return null;
+      },
+      getProductVersionStatuses: function () {
+        var self = this;
+        Ts.Services.System.GetCheckSum(Ts.ReferenceTypes.ProductVersionStatuses, function (checksum) {
+          if (!self._productVersionStatuses || !self._productVersionStatuses.CheckSum || checksum != self._productVersionStatuses.CheckSum) {
+            Ts.Services.Products.GetProductVersionStatuses(function (result) {
+              self._productVersionStatuses = result;
+              self._productVersionStatuses.CheckSum = checksum;
+            });
+          }
+        });
+        return self._productVersionStatuses;
       },
       getActionTypes: function () {
           var self = this;

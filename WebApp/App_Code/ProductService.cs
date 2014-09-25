@@ -105,6 +105,243 @@ namespace TSWebServices
       attachment.Delete();
       attachment.Collection.Save();
     }
+
+    [WebMethod]
+    public string GetShortNameFromID(int productID)
+    {
+      Products products = new Products(TSAuthentication.GetLoginUser());
+      products.LoadByProductID(productID);
+
+      if (products.IsEmpty) return "N/A";
+
+      if (products[0].Name.Length > 10)
+        return products[0].Name.Substring(0, 10).ToString() + "...";
+      else
+        return products[0].Name.ToString();
+    }
+
+    [WebMethod]
+    public string GetVersionShortNameFromID(int productVersionID)
+    {
+      ProductVersions productVersions = new ProductVersions(TSAuthentication.GetLoginUser());
+      productVersions.LoadByProductVersionID(productVersionID);
+
+      if (productVersions.IsEmpty) return "N/A";
+
+      if (productVersions[0].VersionNumber.Length > 10)
+        return productVersions[0].VersionNumber.Substring(0, 10).ToString() + "...";
+      else
+        return productVersions[0].VersionNumber.ToString();
+    }
+
+    [WebMethod]
+    public string UpdateRecentlyViewed(string viewid)
+    {
+      int refType, refID;
+
+      if (viewid.StartsWith("v"))
+        refType = (int)ReferenceType.ProductVersions;
+      else
+        refType = (int)ReferenceType.Products;
+
+      refID = Convert.ToInt32(viewid.Substring(1));
+
+      RecentlyViewedItem recent = (new RecentlyViewedItems(TSAuthentication.GetLoginUser()).AddNewRecentlyViewedItem());
+
+
+      recent.RefID = refID;
+      recent.RefType = refType;
+      recent.DateViewed = DateTime.UtcNow;
+      recent.UserID = TSAuthentication.GetLoginUser().UserID;
+      recent.BaseCollection.Save();
+
+      return GetRecentlyViewed();
+    }
+
+    [WebMethod]
+    public string GetRecentlyViewed()
+    {
+      StringBuilder builder = new StringBuilder();
+      RecentlyViewedItems recent = new RecentlyViewedItems(TSAuthentication.GetLoginUser());
+      recent.LoadRecentForProductsPage(TSAuthentication.GetLoginUser().UserID);
+
+      builder.Append(@"<ul class=""recent-list"">");
+      foreach (RecentlyViewedItem item in recent)
+      {
+        builder.Append(CreateRecentlyViewed(item));
+      }
+      builder.Append("</ul>");
+      return builder.ToString();
+    }
+
+    public string CreateRecentlyViewed(RecentlyViewedItem recent)
+    {
+      string recentHTML;
+      if (recent.RefType == (int)ReferenceType.ProductVersions)
+      {
+        ProductVersions pv = new ProductVersions(TSAuthentication.GetLoginUser());
+        pv.LoadByProductVersionID(recent.RefID);
+        recentHTML = @" 
+          <li>
+            <div class=""recent-info"">
+              <h4><a class=""productversionlink"" data-productversionid=""{0}"" href=""""><i class=""fa fa-clock-o color-orange""></i>{1}</a></h4>
+            </div>
+          </li>";
+        return string.Format(recentHTML, pv[0].ProductVersionID, pv[0].VersionNumber);
+      }
+      else
+      {
+        Products p = new Products(TSAuthentication.GetLoginUser());
+        p.LoadByProductID(recent.RefID);
+        recentHTML = @" 
+          <li>
+            <div class=""recent-info"">
+              <h4><a class=""productlink"" data-productid=""{0}"" href=""""><i class=""fa fa-barcode color-green""></i>{1}</a></h4>
+            </div>
+          </li>";
+
+        return string.Format(recentHTML, p[0].ProductID, p[0].Name);
+      }
+    }
+
+    [WebMethod]
+    public int SaveProduct(string data)
+    {
+      NewProductSave info;
+      try
+      {
+        info = Newtonsoft.Json.JsonConvert.DeserializeObject<NewProductSave>(data);
+      }
+      catch (Exception e)
+      {
+        return -1;
+      }
+
+      Product product;
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Products products = new Products(loginUser);
+
+      product = products.AddNewProduct();
+      product.OrganizationID = loginUser.OrganizationID;
+      product.Name = info.Name;
+      product.Description = info.Description;
+      product.Collection.Save();
+
+      string description = String.Format("{0} created {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, product.Name);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.Products, product.ProductID, description);
+
+      foreach (CustomFieldSaveInfo field in info.Fields)
+      {
+        CustomValue customValue = CustomValues.GetValue(loginUser, field.CustomFieldID, product.ProductID);
+        if (field.Value == null)
+        {
+          customValue.Value = "";
+        }
+        else
+        {
+          if (customValue.FieldType == CustomFieldType.DateTime)
+          {
+            customValue.Value = ((DateTime)field.Value).ToString();
+            //DateTime dt;
+            //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+            //{
+            //    customValue.Value = dt.ToUniversalTime().ToString();
+            //}
+          }
+          else
+          {
+            customValue.Value = field.Value.ToString();
+          }
+
+        }
+
+        customValue.Collection.Save();
+      }
+
+      return product.ProductID;
+
+    }
+
+    [WebMethod]
+    public int SaveProductVersion(string data)
+    {
+      NewProductVersionSave info;
+      try
+      {
+        info = Newtonsoft.Json.JsonConvert.DeserializeObject<NewProductVersionSave>(data);
+      }
+      catch (Exception e)
+      {
+        return -1;
+      }
+
+      ProductVersion productVersion;
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      ProductVersions productVersions = new ProductVersions(loginUser);
+
+      productVersion = productVersions.AddNewProductVersion();
+      productVersion.ProductID = info.ProductID;
+      productVersion.ProductVersionStatusID = info.ProductVersionStatusID;
+      productVersion.VersionNumber = info.VersionNumber;
+      productVersion.ReleaseDate = info.ReleaseDate;
+      productVersion.IsReleased = info.IsReleased;
+      productVersion.Description = info.Description;
+      productVersion.Collection.Save();
+
+      string description = String.Format("{0} created {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, productVersion.VersionNumber);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Insert, ReferenceType.ProductVersions, productVersion.ProductVersionID, description);
+
+      foreach (CustomFieldSaveInfo field in info.Fields)
+      {
+        CustomValue customValue = CustomValues.GetValue(loginUser, field.CustomFieldID, productVersion.ProductVersionID);
+        if (field.Value == null)
+        {
+          customValue.Value = "";
+        }
+        else
+        {
+          if (customValue.FieldType == CustomFieldType.DateTime)
+          {
+            customValue.Value = ((DateTime)field.Value).ToString();
+            //DateTime dt;
+            //if (DateTime.TryParse(((string)field.Value), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out dt))
+            //{
+            //    customValue.Value = dt.ToUniversalTime().ToString();
+            //}
+          }
+          else
+          {
+            customValue.Value = field.Value.ToString();
+          }
+
+        }
+
+        customValue.Collection.Save();
+      }
+
+      return productVersion.ProductVersionID;
+
+    }
+
+    [WebMethod]
+    public BasicVersionStatus[] GetProductVersionStatuses()
+    {
+      ProductVersionStatuses productVersionStatuses = new ProductVersionStatuses(TSAuthentication.GetLoginUser());
+      productVersionStatuses.LoadByOrganizationID(TSAuthentication.OrganizationID);
+
+      List<BasicVersionStatus> result = new List<BasicVersionStatus>();
+      foreach (ProductVersionStatus productVersionStatus in productVersionStatuses)
+      {
+        BasicVersionStatus basicVersionStatus = new BasicVersionStatus();
+        basicVersionStatus.ProductVersionStatusID = productVersionStatus.ProductVersionStatusID;
+        basicVersionStatus.Name = productVersionStatus.Name;
+
+        result.Add(basicVersionStatus);
+      }
+
+      return result.ToArray();
+    }
+
   }
 
   [DataContract]
@@ -122,4 +359,32 @@ namespace TSWebServices
     [DataMember] public string VersionNumber { get; set; }
   }
 
+  [DataContract]
+  public class BasicVersionStatus
+  {
+    [DataMember]
+    public int ProductVersionStatusID { get; set; }
+    [DataMember]
+    public string Name { get; set; }
+  }
+
+  public class NewProductSave
+  {
+      public NewProductSave() { }
+      [DataMember] public string Name { get; set; }
+      [DataMember] public string Description { get; set; }
+      [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
+  }
+
+  public class NewProductVersionSave
+  {
+      public NewProductVersionSave() { }
+      [DataMember] public int ProductID { get; set; }
+      [DataMember] public int ProductVersionStatusID { get; set; }
+      [DataMember] public string VersionNumber { get; set; }
+      [DataMember] public DateTime ReleaseDate { get; set; }
+      [DataMember] public bool IsReleased { get; set; }
+      [DataMember] public string Description { get; set; }
+      [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
+  }
 }
