@@ -123,7 +123,7 @@ $(document).ready(function () {
     $("#btnSaveReminder").click(function (e) {
         top.Ts.System.logAction('Contact Detail - Save Reminder');
         if ($('#reminderDesc').val() != "" && $('#reminderDate').val() != "") {
-            top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Users, userID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val(), function () { });
+            top.Ts.Services.System.EditReminder(null, top.Ts.ReferenceTypes.Contacts, userID, $('#reminderDesc').val(), top.Ts.Utils.getMsDate($('#reminderDate').val()), $('#reminderUsers').val(), function () { });
             $('#modalReminder').modal('hide');
         }
         else
@@ -1156,6 +1156,8 @@ $(document).ready(function () {
 
             var chartData = [];
             var dummy = chartString.split(",");
+            var openCount = 0;
+
             for (var i = 0; i < dummy.length; i++) {
                 chartData.push([dummy[i], parseFloat(dummy[i + 1])]);
                 i++
@@ -1167,7 +1169,10 @@ $(document).ready(function () {
                 //$('#openChart').text("No Open Tickes").addClass("text-center");
                 $('#openChart').html("No Open Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center chart-header").attr("title","No Open Tickets");
             }
-            else{
+            else {
+                for (var i = 0; i < chartData.length; i++) {
+                    openCount = openCount + chartData[i][1];
+                }
             $('#openChart').highcharts({
                 chart: {
                     plotBackgroundColor: null,
@@ -1179,7 +1184,10 @@ $(document).ready(function () {
                     enabled: false
                 },
                 title: {
-                    text: 'Open Tickets'
+                    text: 'Open Tickets ' + openCount,
+                    style: {
+                        "fontSize": "14px"
+                    }
                 },
                 tooltip: {
                     //formatter: function() {
@@ -1221,6 +1229,8 @@ $(document).ready(function () {
 
             var chartData = [];
             var dummy = chartString.split(",");
+            var closedCount = 0;
+
             for (var i = 0; i < dummy.length; i++) {
                 chartData.push([dummy[i], parseFloat(dummy[i + 1])]);
                 i++
@@ -1232,7 +1242,10 @@ $(document).ready(function () {
                 //$('#closedChart').text("No Closed Tickets").addClass("text-center");
                 $('#closedChart').html("No Closed Tickets<br/><img class='img-responsive' src=../Images/nochart.jpg>").addClass("text-center  chart-header").attr("title", "No Closed Tickets");
             }
-            else{
+            else {
+                for (var i = 0; i < chartData.length; i++) {
+                    closedCount = closedCount + chartData[i][1];
+                }
             $('#closedChart').highcharts({
                 chart: {
                     plotBackgroundColor: null,
@@ -1244,7 +1257,10 @@ $(document).ready(function () {
                     enabled: false
                 },
                 title: {
-                    text: 'Closed Tickets'
+                    text: 'Closed Tickets ' + closedCount,
+                    style: {
+                        "fontSize": "14px"
+                    }
                 },
                 tooltip: {
                     pointFormat: '{series.name}: {point.y} - <b>{point.percentage:.0f}%</b>'
