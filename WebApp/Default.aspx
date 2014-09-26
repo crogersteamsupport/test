@@ -35,13 +35,21 @@
   <!-- Start Apptegic Code -->
   <script type="text/javascript">
     var _aaq = _aaq || [];
-    (function () {
-      var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
-      g.type = 'text/javascript'; g.defer = true; g.async = true;
-      g.src = document.location.protocol + '//cdn.evergage.com/beacon/'
-            + evergageAccount + '/' + dataset + '/scripts/evergage.min.js';
-      s.parentNode.insertBefore(g, s);
-    })();
+    var _evergageDataset = '';
+    var _evergageAccount = 'teamsupport';
+    if (window.location.hostname.indexOf('beta.teamsupport') > -1) { _evergageDataset = 'MainAppBeta' }
+    else if (window.location.hostname.indexOf('alpha.teamsupport') > -1) { _evergageDataset = 'MainAppAlpha' }
+    else if (window.location.hostname.indexOf('app.teamsupport') > -1) { _evergageDataset = 'MainApp' }
+    else if (window.location.hostname.indexOf('tsdev') > -1) { _evergageDataset = 'MainApp_Dev' }
+    if (_evergageDataset != '') {
+      (function () {
+        var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+        g.type = 'text/javascript'; g.defer = true; g.async = true;
+        g.src = document.location.protocol + '//cdn.evergage.com/beacon/'
+              + _evergageAccount + '/' + _evergageDataset + '/scripts/evergage.min.js';
+        s.parentNode.insertBefore(g, s);
+      })();
+    }
   </script>
   <!-- End Apptegic Code -->
 

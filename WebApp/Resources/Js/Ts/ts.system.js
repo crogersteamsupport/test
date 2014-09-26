@@ -141,17 +141,10 @@ var _startDate = new Date();
     function setupLogTracking()
     {
       //https://teamsupport.apptegic.com/scripts/apptegic-tw.js
-      var dataset = '';
-      if (window.location.hostname.indexOf('beta.teamsupport') > -1) { dataset = 'MainAppBeta' }
-      else if (window.location.hostname.indexOf('app.teamsupport') > -1) { dataset = 'MainApp' }
-      else if (window.location.hostname.indexOf('tsdev') > -1)   { dataset='MainApp_Dev' }
-      if (dataset == '') {
-        _aaq = null;
-        return; 
-      }
+    
 
 
-      _aaq.push(['setEvergageAccount', 'teamsupport'], ['setDataset', dataset], ['setUseSiteConfig', true]);
+      _aaq.push(['setEvergageAccount', _evergageAccount], ['setDataset', _evergageDataset], ['setUseSiteConfig', true]);
       var user = Ts.System.User;
       var org = Ts.System.Organization;
       
