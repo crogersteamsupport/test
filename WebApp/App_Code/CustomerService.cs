@@ -1251,34 +1251,39 @@ namespace TSWebServices
           AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
           assets.LoadByRefID(refID, referenceType);
 
-          StringBuilder productVersionNumberDisplayName = new StringBuilder();
-          if (!string.IsNullOrEmpty(assets[0].ProductVersionNumber))
-          {
-            productVersionNumberDisplayName.Append(" - " + assets[0].ProductVersionNumber);
-          }
-
-          StringBuilder serialNumberDisplayValue = new StringBuilder();
-          if (string.IsNullOrEmpty(assets[0].SerialNumber))
-          {
-            serialNumberDisplayValue.Append("Empty");
-          }
-          else
-          {
-            serialNumberDisplayValue.Append(assets[0].SerialNumber);
-          }
-
-          StringBuilder warrantyExpirationDisplayValue = new StringBuilder();
-          if (assets[0].WarrantyExpiration == null)
-          {
-            warrantyExpirationDisplayValue.Append("Empty");
-          }
-          else
-          {
-            warrantyExpirationDisplayValue.Append(((DateTime)assets[0].WarrantyExpiration).ToString(GetDateFormatNormal()));
-          }
+          StringBuilder productVersionNumberDisplayName;
+          StringBuilder serialNumberDisplayValue;
+          StringBuilder warrantyExpirationDisplayValue;
 
           foreach (AssetsViewItem asset in assets)
           {
+            productVersionNumberDisplayName = new StringBuilder();
+            serialNumberDisplayValue = new StringBuilder();
+            warrantyExpirationDisplayValue = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(asset.ProductVersionNumber))
+            {
+              productVersionNumberDisplayName.Append(" - " + asset.ProductVersionNumber);
+            }
+
+            if (string.IsNullOrEmpty(asset.SerialNumber))
+            {
+              serialNumberDisplayValue.Append("Empty");
+            }
+            else
+            {
+              serialNumberDisplayValue.Append(asset.SerialNumber);
+            }
+
+            if (asset.WarrantyExpiration == null)
+            {
+              warrantyExpirationDisplayValue.Append("Empty");
+            }
+            else
+            {
+              warrantyExpirationDisplayValue.Append(((DateTime)asset.WarrantyExpiration).ToString(GetDateFormatNormal()));
+            }
+
             htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
                             <div class='row'>
@@ -1312,34 +1317,39 @@ namespace TSWebServices
           AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
           assets.LoadAssignedToContactsByOrganizationID(organizationID);
 
-          StringBuilder productVersionNumberDisplayName = new StringBuilder();
-          if (!string.IsNullOrEmpty(assets[0].ProductVersionNumber))
-          {
-            productVersionNumberDisplayName.Append(" - " + assets[0].ProductVersionNumber);
-          }
-
-          StringBuilder serialNumberDisplayValue = new StringBuilder();
-          if (string.IsNullOrEmpty(assets[0].SerialNumber))
-          {
-            serialNumberDisplayValue.Append("Empty");
-          }
-          else
-          {
-            serialNumberDisplayValue.Append(assets[0].SerialNumber);
-          }
-
-          StringBuilder warrantyExpirationDisplayValue = new StringBuilder();
-          if (assets[0].WarrantyExpiration == null)
-          {
-            warrantyExpirationDisplayValue.Append("Empty");
-          }
-          else
-          {
-            warrantyExpirationDisplayValue.Append(((DateTime)assets[0].WarrantyExpiration).ToString(GetDateFormatNormal()));
-          }
+          StringBuilder productVersionNumberDisplayName;
+          StringBuilder serialNumberDisplayValue;
+          StringBuilder warrantyExpirationDisplayValue;
 
           foreach (AssetsViewItem asset in assets)
           {
+            productVersionNumberDisplayName = new StringBuilder();
+            serialNumberDisplayValue = new StringBuilder();
+            warrantyExpirationDisplayValue = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(asset.ProductVersionNumber))
+            {
+              productVersionNumberDisplayName.Append(" - " + asset.ProductVersionNumber);
+            }
+
+            if (string.IsNullOrEmpty(asset.SerialNumber))
+            {
+              serialNumberDisplayValue.Append("Empty");
+            }
+            else
+            {
+              serialNumberDisplayValue.Append(asset.SerialNumber);
+            }
+
+            if (asset.WarrantyExpiration == null)
+            {
+              warrantyExpirationDisplayValue.Append("Empty");
+            }
+            else
+            {
+              warrantyExpirationDisplayValue.Append(((DateTime)asset.WarrantyExpiration).ToString(GetDateFormatNormal()));
+            }
+
             htmlresults.AppendFormat(@"<div class='list-group-item'>
                             <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
                             <div class='row'>

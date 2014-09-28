@@ -277,3 +277,60 @@ var initEditor = function (element, init) {
   });
 }
 
+function GetTinyMCEFontName(fontFamily) {
+  var result = '';
+  switch (fontFamily) {
+    case 1:
+      result = "'andale mono', times";
+      break;
+    case 2:
+      result = "arial, helvetica, sans-serif";
+      break;
+    case 3:
+      result = "'arial black', 'avant garde'";
+      break;
+    case 4:
+      result = "'book antiqua', palatino";
+      break;
+    case 5:
+      result = "'comic sans ms', sans-serif";
+      break;
+    case 6:
+      result = "'courier new', courier";
+      break;
+    case 7:
+      result = "georgia, palatino";
+      break;
+    case 8:
+      result = "helvetica";
+      break;
+    case 9:
+      result = "impact, chicago";
+      break;
+    case 10:
+      result = "symbol";
+      break;
+    case 11:
+      result = "tahoma, arial, helvetica, sans-serif";
+      break;
+    case 12:
+      result = "terminal, monaco";
+      break;
+    case 13:
+      result = "'times new roman', times";
+      break;
+    case 14:
+      result = "'trebuchet ms', geneva";
+      break;
+    case 15:
+      result = "verdana, geneva";
+      break;
+    case 16:
+      result = "webdings";
+      break;
+    case 17:
+      result = "wingdings, 'zapf dingbats'";
+      break;
+  }
+  return result;
+}

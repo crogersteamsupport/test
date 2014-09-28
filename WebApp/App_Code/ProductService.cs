@@ -382,7 +382,7 @@ namespace TSWebServices
       [DataMember] public int ProductID { get; set; }
       [DataMember] public int ProductVersionStatusID { get; set; }
       [DataMember] public string VersionNumber { get; set; }
-      [DataMember] public DateTime ReleaseDate { get; set; }
+      [DataMember] public DateTime? ReleaseDate { get; set; }
       [DataMember] public bool IsReleased { get; set; }
       [DataMember] public string Description { get; set; }
       [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
