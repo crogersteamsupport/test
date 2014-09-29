@@ -1596,6 +1596,7 @@ $(document).ready(function () {
 
     function LoadProperties() {
         top.Ts.Services.Customers.GetProperties(organizationID, function (result) {
+            var date = result.SAED == null ? null : top.Ts.Utils.getMsDate(result.SAED);
             $('#fieldName').text(result.orgproxy.Name);
             $('#fieldWebsite').text(result.orgproxy.Website != null && result.orgproxy.Website != "" ? result.orgproxy.Website : "Empty");
             if ($('#fieldWebsite').text() == "Empty")
@@ -1604,7 +1605,7 @@ $(document).ready(function () {
             $('#fieldActive').text(result.orgproxy.IsActive);
             $('#fieldPortalAccess').text(result.orgproxy.HasPortalAccess);
             $('#fieldAPIEnabled').text(result.orgproxy.IsApiActive && result.orgproxy.IsApiEnabled);
-            $('#fieldSAED').text(result.SAED == null ? "Empty" : result.SAED);
+            $('#fieldSAED').text(result.SAED == null ? "Empty" : date.localeFormat(top.Ts.Utils.getDatePattern()));
             $('#fieldSLA').text(result.SLA);
             $('#fieldSLA').data('field', result.orgproxy.SlaLevelID);
             $('#fieldSupportHours').text(result.orgproxy.SupportHoursMonth);
@@ -1847,8 +1848,8 @@ $(document).ready(function () {
     }
 
     function LoadContacts() {
-        $('.userList').empty();
         top.Ts.Services.Customers.LoadContacts(organizationID, $('#cbActive').prop('checked'), function (users) {
+            $('.userList').empty();
             $('.userList').append(users)
             //for (var i = 0; i < users.length; i++) {
             //    $('<a>').attr('class', 'list-group-item').text(users[i].FirstName + ' ' + users[i].LastName).appendTo('.userList');

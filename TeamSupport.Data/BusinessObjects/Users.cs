@@ -507,7 +507,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM Users u LEFT JOIN GroupUsers gu ON u.UserID = gu.UserID WHERE gu.GroupID = @GroupID AND u.IsActive = 1 AND u.MarkDeleted = 0";
+          command.CommandText = "SELECT * FROM Users u LEFT JOIN GroupUsers gu ON u.UserID = gu.UserID WHERE gu.GroupID = @GroupID AND u.IsActive = 1 AND u.MarkDeleted = 0 order by u.LastName";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@GroupID", groupID);
         Fill(command, "Users,GroupUsers");
