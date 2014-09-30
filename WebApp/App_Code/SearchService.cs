@@ -1409,27 +1409,35 @@ SELECT
     public string[] SearchProducts(string searchTerm, int from, int count, bool searchProducts, bool searchProductVersions)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
-      List<string> resultItems = new List<string>();
-      if (string.IsNullOrWhiteSpace(searchTerm))
+      try
       {
-        searchTerm = "xfirstword";
-      }
+        List<string> resultItems = new List<string>();
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+          searchTerm = "xfirstword";
+        }
 
-      SearchResults results = GetProductsSearchResults(loginUser, searchTerm, 0, searchProducts, searchProductVersions);
-      int topLimit = from + count;
-      if (topLimit > results.Count)
+        SearchResults results = GetProductsSearchResults(loginUser, searchTerm, 0, searchProducts, searchProductVersions);
+        int topLimit = from + count;
+        if (topLimit > results.Count)
+        {
+          topLimit = results.Count;
+        }
+
+        for (int i = from; i < topLimit; i++)
+        {
+          results.GetNthDoc(i);
+          if (results.CurrentItem.UserFields["JSON"] != null)
+            resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
+        }
+
+        return resultItems.ToArray();
+      }
+      catch (Exception ex)
       {
-        topLimit = results.Count;
+        ExceptionLogs.LogException(loginUser, ex, "SearchService.SearchProducts");
       }
-
-      for (int i = from; i < topLimit; i++)
-      {
-        results.GetNthDoc(i);
-        if (results.CurrentItem.UserFields["JSON"] != null)
-          resultItems.Add(results.CurrentItem.UserFields["JSON"].ToString());
-      }
-
-      return resultItems.ToArray();
+      return null;
     }
 
   }
