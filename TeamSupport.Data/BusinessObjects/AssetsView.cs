@@ -50,7 +50,7 @@ namespace TeamSupport.Data
           WHERE 
             h.ShippedTo = @RefID
             AND h.RefType = @RefType
-            AND a.AssetID = 94195
+            AND a.AssetID = 93341
           ORDER BY 
             aa.AssetAssignmentsID DESC";
         command.CommandType = CommandType.Text;
