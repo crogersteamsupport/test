@@ -43,16 +43,24 @@ namespace TeamSupport.Data
             a.* 
           FROM
             AssetsView a
-            JOIN AssetHistory h
-              ON a.AssetID = h.AssetID
-            JOIN AssetAssignments aa
-              ON h.HistoryID = aa.HistoryID
-          WHERE 
-            h.ShippedTo = @RefID
-            AND h.RefType = @RefType
-            AND a.AssetID = 93341
-          ORDER BY 
-            aa.AssetAssignmentsID DESC";
+          WHERE
+            a.AssetID IN
+            (
+              SELECT
+                a.AssetID
+              FROM
+                  Assets a
+                  JOIN AssetHistory h
+                    ON a.AssetID = h.AssetID
+                  JOIN AssetAssignments aa
+                    ON h.HistoryID = aa.HistoryID
+              WHERE 
+                h.ShippedTo = @RefID
+                AND h.RefType = @RefType
+              ORDER BY 
+                aa.AssetAssignmentsID DESC
+            )
+          ";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefID", refID);
         command.Parameters.AddWithValue("@RefType", refType);

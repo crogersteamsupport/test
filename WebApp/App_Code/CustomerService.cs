@@ -1249,14 +1249,7 @@ namespace TSWebServices
         {
           StringBuilder htmlresults = new StringBuilder("");
           AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
-          try
-          {
           assets.LoadByRefID(refID, referenceType);
-          }
-          catch (Exception e)
-          {
-            return "refID: " + refID.ToString() + ", referenceType: " + referenceType.ToString() + "exception: " + e.Message;
-          }
 
           StringBuilder productVersionNumberDisplayName;
           StringBuilder serialNumberDisplayValue;
