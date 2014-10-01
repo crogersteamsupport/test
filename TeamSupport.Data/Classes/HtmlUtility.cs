@@ -226,6 +226,19 @@ namespace TeamSupport.Data
             return Content;
         }
 
+        public static string StripHTMLUsingAgilityPack(string Content)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(Content);
+            var text = doc.DocumentNode.SelectNodes("//body//text()").Select(node => node.InnerText);
+            StringBuilder output = new StringBuilder();
+            foreach (string line in text)
+            {
+                output.AppendLine(line);
+            }
+            return HttpUtility.HtmlDecode(output.ToString());
+        }
+
         public static string StripComments(string Content) {
             Content = Regex.Replace(Content, @"<!--.*?-->", " ");
             return Content;
