@@ -151,7 +151,7 @@ namespace TeamSupport.Api
 
         if (bytes.Length > 0)
         {
-          return (new ASCIIEncoding()).GetString(bytes);
+          return (new UTF8Encoding()).GetString(bytes);
         }
       }
       return "";
