@@ -39,6 +39,8 @@ namespace TeamSupport.Data
     [DataMember] public bool DisplayFooter { get; set; }
     [DataMember] public bool DisplayPortalPhone { get; set; }
     [DataMember] public bool DisplayAdvProducts { get; set; }
+    [DataMember] public bool DisplaySettings { get; set; }
+    [DataMember] public bool DisplayLogout { get; set; }
     [DataMember] public bool DisplayAdvKB { get; set; }
     [DataMember] public bool DisplayProductVersion { get; set; }
     [DataMember] public string LandingPageHtml { get; set; }
@@ -65,6 +67,7 @@ namespace TeamSupport.Data
     public PortalOptionProxy GetProxy()
     {
       PortalOptionProxy result = new PortalOptionProxy();
+      result.DisplayLogout = this.DisplayLogout;
       result.EnableSaExpiration = this.EnableSaExpiration;
       result.DisablePublicMyTickets = this.DisablePublicMyTickets;
       result.RequestAccess = this.RequestAccess;
@@ -83,6 +86,7 @@ namespace TeamSupport.Data
       result.DisplayProductVersion = this.DisplayProductVersion;
       result.DisplayAdvKB = this.DisplayAdvKB;
       result.DisplayAdvProducts = this.DisplayAdvProducts;
+      result.DisplaySettings = this.DisplaySettings;
       result.DisplayPortalPhone = this.DisplayPortalPhone;
       result.DisplayFooter = this.DisplayFooter;
       result.DisplayForum = this.DisplayForum;

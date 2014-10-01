@@ -257,6 +257,8 @@ AdminPortal = function () {
     $('#portal_show_group').prop('checked', portalOption.HideGroupAssignedTo == null ? true : !portalOption.HideGroupAssignedTo);
     $('#portal_adv_kb').prop('checked', portalOption.DisplayAdvKB == true);
     $('#portal_display_products').prop('checked', portalOption.DisplayAdvProducts == true);
+    $('#portal_display_settings').prop('checked', portalOption.DisplaySettings == true);
+    $('#portal_display_logout').prop('checked', portalOption.DisplayLogout == true);
     $('#portal_adv_wiki').prop('checked', portalOption.DisplayAdvArticles == true);
     $('#portal_adv_enable_toc').prop('checked', portalOption.DisplayTandC == true);
     $('#portal_adv_enabled_sa_expiration').prop('checked', portalOption.EnableSaExpiration == true);
@@ -317,6 +319,8 @@ AdminPortal = function () {
     portalOption.HideGroupAssignedTo = !$('#portal_show_group').prop('checked');
     portalOption.DisplayAdvKB = $('#portal_adv_kb').prop('checked');
     portalOption.DisplayAdvProducts = $('#portal_display_products').prop('checked');
+    portalOption.DisplaySettings = $('#portal_display_settings').prop('checked');
+    portalOption.DisplayLogout = $('#portal_display_logout').prop('checked');
     portalOption.DisplayAdvArticles = $('#portal_adv_wiki').prop('checked');
     portalOption.DisplayTandC = $('#portal_adv_enable_toc').prop('checked');
     portalOption.EnableSaExpiration = $('#portal_adv_enabled_sa_expiration').prop('checked');

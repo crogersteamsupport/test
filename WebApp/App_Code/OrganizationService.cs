@@ -235,6 +235,8 @@ namespace TSWebServices
       option.DisplayProductVersion = proxy.DisplayProductVersion;
       option.DisplayAdvKB = proxy.DisplayAdvKB;
       option.DisplayAdvProducts = proxy.DisplayAdvProducts;
+      option.DisplaySettings = proxy.DisplaySettings;
+      option.DisplayLogout = proxy.DisplayLogout;
       option.DisplayPortalPhone = proxy.DisplayPortalPhone;
       option.DisplayFooter = proxy.DisplayFooter;
       option.DisplayForum = proxy.DisplayForum;
