@@ -57,9 +57,9 @@ namespace TeamSupport.Data
               WHERE 
                 h.ShippedTo = @RefID
                 AND h.RefType = @RefType
-              ORDER BY 
-                aa.AssetAssignmentsID DESC
             )
+          ORDER BY
+            a.AssetID DESC
           ";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@RefID", refID);
