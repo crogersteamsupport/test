@@ -243,8 +243,6 @@ namespace TeamSupport.Handlers
       {
         throw new Exception("Invalid Company: " + company);
       }
-      return null;
-
     }
 
     private static string parseGAString(string cookieValue, string key)
