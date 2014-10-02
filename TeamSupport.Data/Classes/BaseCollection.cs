@@ -308,7 +308,14 @@ namespace TeamSupport.Data
           case "CreatorID": Row[col.ColumnName] = BaseCollection.LoginUser.UserID; break;
           case "DateModified": Row[col.ColumnName] = DateTime.UtcNow; break;
           case "DateCreated": Row[col.ColumnName] = DateTime.UtcNow; break;
-          default: Row[col.ColumnName] = source[col.ColumnName]; break;
+          default:
+            if (source.Table.Columns.Contains(col.ColumnName))
+            {
+              Row[col.ColumnName] = source[col.ColumnName];
+            }
+            
+            
+            break;
         }
       }
     

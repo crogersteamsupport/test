@@ -81,11 +81,11 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("AllowUserToEditAnyAction", "AllowUserToEditAnyAction", false, false, false);
       _fieldMap.AddMap("UserCanPinAction", "UserCanPinAction", false, false, false);
       _fieldMap.AddMap("PortalLimitOrgTickets", "PortalLimitOrgTickets", false, false, false);
+      _fieldMap.AddMap("DisableExporting", "DisableExporting", false, false, false);
       _fieldMap.AddMap("CanCreateAsset", "CanCreateAsset", false, false, false);
       _fieldMap.AddMap("CanEditAsset", "CanEditAsset", false, false, false);
       _fieldMap.AddMap("CanChangeCommunityVisibility", "CanChangeCommunityVisibility", false, false, false);
       _fieldMap.AddMap("FilterInactive", "FilterInactive", false, false, false);
-      _fieldMap.AddMap("DisableExporting", "DisableExporting", false, false, false);
             
     }
   }

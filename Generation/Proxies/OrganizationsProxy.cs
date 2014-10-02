@@ -101,8 +101,8 @@ namespace TeamSupport.Data
     [DataMember] public bool UpdateTicketChildrenGroupWithParent { get; set; }
     [DataMember] public bool ReplyToAlternateEmailAddresses { get; set; }
     [DataMember] public bool ForceUseOfReplyTo { get; set; }
-    [DataMember] public bool AgentRating { get; set; }
     [DataMember] public bool AddEmailViaTS { get; set; }
+    [DataMember] public bool AgentRating { get; set; }
     [DataMember] public string SignUpToken { get; set; }
     [DataMember] public bool IsValidated { get; set; }
     [DataMember] public DateTime? DateLastIndexed { get; set; }
@@ -120,8 +120,8 @@ namespace TeamSupport.Data
       result.HideDismissNonAdmins = this.HideDismissNonAdmins;
       result.IsValidated = this.IsValidated;
       result.SignUpToken = this.SignUpToken;
-      result.AddEmailViaTS = this.AddEmailViaTS;
       result.AgentRating = this.AgentRating;
+      result.AddEmailViaTS = this.AddEmailViaTS;
       result.ForceUseOfReplyTo = this.ForceUseOfReplyTo;
       result.ReplyToAlternateEmailAddresses = this.ReplyToAlternateEmailAddresses;
       result.UpdateTicketChildrenGroupWithParent = this.UpdateTicketChildrenGroupWithParent;

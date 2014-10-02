@@ -17,7 +17,6 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ActionTypeID", "ActionTypeID", false, false, false);
       _fieldMap.AddMap("SystemActionTypeID", "SystemActionTypeID", false, false, false);
       _fieldMap.AddMap("Name", "Name", false, false, false);
-      _fieldMap.AddMap("Description", "Description", false, false, false);
       _fieldMap.AddMap("TimeSpent", "TimeSpent", false, false, false);
       _fieldMap.AddMap("DateStarted", "DateStarted", false, false, false);
       _fieldMap.AddMap("IsVisibleOnPortal", "IsVisibleOnPortal", false, false, false);
@@ -34,6 +33,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DateModifiedByJiraSync", "DateModifiedByJiraSync", false, false, false);
       _fieldMap.AddMap("JiraID", "JiraID", false, false, false);
       _fieldMap.AddMap("Pinned", "Pinned", false, false, false);
+      _fieldMap.AddMap("Description", "Description", false, false, false);
             
     }
   }

@@ -89,7 +89,7 @@ namespace TeamSupport.Data
     
     public override string PrimaryKeyFieldName
     {
-      get { return ""; }
+      get { return "GroupAssignmentHistoryID"; }
     }
 
 
@@ -108,11 +108,11 @@ namespace TeamSupport.Data
     partial void AfterRowInsert(GroupAssignmentHistoryItem groupAssignmentHistoryItem);
     partial void BeforeRowEdit(GroupAssignmentHistoryItem groupAssignmentHistoryItem);
     partial void AfterRowEdit(GroupAssignmentHistoryItem groupAssignmentHistoryItem);
-    partial void BeforeRowDelete(int );
-    partial void AfterRowDelete(int );    
+    partial void BeforeRowDelete(int groupAssignmentHistoryID);
+    partial void AfterRowDelete(int groupAssignmentHistoryID);    
 
-    partial void BeforeDBDelete(int );
-    partial void AfterDBDelete(int );    
+    partial void BeforeDBDelete(int groupAssignmentHistoryID);
+    partial void AfterDBDelete(int groupAssignmentHistoryID);    
 
     #endregion
 
@@ -130,9 +130,9 @@ namespace TeamSupport.Data
       return list.ToArray();
     }	
 	
-    public virtual void DeleteFromDB(int )
+    public virtual void DeleteFromDB(int groupAssignmentHistoryID)
     {
-      BeforeDBDelete();
+      BeforeDBDelete(groupAssignmentHistoryID);
       using (SqlConnection connection = new SqlConnection(LoginUser.ConnectionString))
       {
         connection.Open();
@@ -141,17 +141,17 @@ namespace TeamSupport.Data
 
         deleteCommand.Connection = connection;
         deleteCommand.CommandType = CommandType.Text;
-        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[GroupAssignmentHistory] WH);";
-        deleteCommand.Parameters.Add("", SqlDbType.Int);
-        deleteCommand.Parameters[""].Value = ;
+        deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[GroupAssignmentHistory] WHERE ([GroupAssignmentHistoryID] = @GroupAssignmentHistoryID);";
+        deleteCommand.Parameters.Add("GroupAssignmentHistoryID", SqlDbType.Int);
+        deleteCommand.Parameters["GroupAssignmentHistoryID"].Value = groupAssignmentHistoryID;
 
-        BeforeRowDelete();
+        BeforeRowDelete(groupAssignmentHistoryID);
         deleteCommand.ExecuteNonQuery();
 		connection.Close();
         if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
-        AfterRowDelete();
+        AfterRowDelete(groupAssignmentHistoryID);
       }
-      AfterDBDelete();
+      AfterDBDelete(groupAssignmentHistoryID);
       
     }
 
@@ -162,7 +162,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[GroupAssignmentHistory] SET     [TicketID] = @TicketID,    [GroupID] = @GroupID,    [DateAssigned] = @DateAssigned  WH);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[GroupAssignmentHistory] SET     [TicketID] = @TicketID,    [GroupID] = @GroupID,    [DateAssigned] = @DateAssigned  WHERE ([GroupAssignmentHistoryID] = @GroupAssignmentHistoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("GroupAssignmentHistoryID", SqlDbType.Int, 4);
@@ -228,8 +228,8 @@ namespace TeamSupport.Data
 		deleteCommand.Connection = connection;
 		//deleteCommand.Transaction = transaction;
 		deleteCommand.CommandType = CommandType.Text;
-		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[GroupAssignmentHistory] WH);";
-		deleteCommand.Parameters.Add("", SqlDbType.Int);
+		deleteCommand.CommandText = "SET NOCOUNT OFF;  DELETE FROM [dbo].[GroupAssignmentHistory] WHERE ([GroupAssignmentHistoryID] = @GroupAssignmentHistoryID);";
+		deleteCommand.Parameters.Add("GroupAssignmentHistoryID", SqlDbType.Int);
 
 		try
 		{
@@ -251,10 +251,10 @@ namespace TeamSupport.Data
 			  if (insertCommand.Parameters.Contains("CreatorID") && (int)insertCommand.Parameters["CreatorID"].Value == 0) insertCommand.Parameters["CreatorID"].Value = LoginUser.UserID;
 
 			  insertCommand.ExecuteNonQuery();
-			  Table.Columns[""].AutoIncrement = false;
-			  Table.Columns[""].ReadOnly = false;
+			  Table.Columns["GroupAssignmentHistoryID"].AutoIncrement = false;
+			  Table.Columns["GroupAssignmentHistoryID"].ReadOnly = false;
 			  if (insertCommand.Parameters["Identity"].Value != DBNull.Value)
-				groupAssignmentHistoryItem.Row[""] = (int)insertCommand.Parameters["Identity"].Value;
+				groupAssignmentHistoryItem.Row["GroupAssignmentHistoryID"] = (int)insertCommand.Parameters["Identity"].Value;
 			  AfterRowInsert(groupAssignmentHistoryItem);
 			}
 			else if (groupAssignmentHistoryItem.Row.RowState == DataRowState.Modified)
@@ -273,8 +273,8 @@ namespace TeamSupport.Data
 			}
 			else if (groupAssignmentHistoryItem.Row.RowState == DataRowState.Deleted)
 			{
-			  int id = (int)groupAssignmentHistoryItem.Row["", DataRowVersion.Original];
-			  deleteCommand.Parameters[""].Value = id;
+			  int id = (int)groupAssignmentHistoryItem.Row["GroupAssignmentHistoryID", DataRowVersion.Original];
+			  deleteCommand.Parameters["GroupAssignmentHistoryID"].Value = id;
 			  BeforeRowDelete(id);
 			  deleteCommand.ExecuteNonQuery();
 			  AfterRowDelete(id);
@@ -310,11 +310,11 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-    public GroupAssignmentHistoryItem FindBy(int )
+    public GroupAssignmentHistoryItem FindByGroupAssignmentHistoryID(int groupAssignmentHistoryID)
     {
       foreach (GroupAssignmentHistoryItem groupAssignmentHistoryItem in this)
       {
-        if (groupAssignmentHistoryItem. == )
+        if (groupAssignmentHistoryItem.GroupAssignmentHistoryID == groupAssignmentHistoryID)
         {
           return groupAssignmentHistoryItem;
         }
@@ -330,21 +330,21 @@ namespace TeamSupport.Data
       return new GroupAssignmentHistoryItem(row, this);
     }
     
-    public virtual void LoadBy(int )
+    public virtual void LoadByGroupAssignmentHistoryID(int groupAssignmentHistoryID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [GroupAssignmentHistoryID], [TicketID], [GroupID], [DateAssigned] FROM [dbo].[GroupAssignmentHistory] WH);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [GroupAssignmentHistoryID], [TicketID], [GroupID], [DateAssigned] FROM [dbo].[GroupAssignmentHistory] WHERE ([GroupAssignmentHistoryID] = @GroupAssignmentHistoryID);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("", );
+        command.Parameters.AddWithValue("GroupAssignmentHistoryID", groupAssignmentHistoryID);
         Fill(command);
       }
     }
     
-    public static GroupAssignmentHistoryItem GetGroupAssignmentHistoryItem(LoginUser loginUser, int )
+    public static GroupAssignmentHistoryItem GetGroupAssignmentHistoryItem(LoginUser loginUser, int groupAssignmentHistoryID)
     {
       GroupAssignmentHistory groupAssignmentHistory = new GroupAssignmentHistory(loginUser);
-      groupAssignmentHistory.LoadBy();
+      groupAssignmentHistory.LoadByGroupAssignmentHistoryID(groupAssignmentHistoryID);
       if (groupAssignmentHistory.IsEmpty)
         return null;
       else

@@ -108,12 +108,6 @@ namespace TeamSupport.Data
     
 
     
-    public bool DisableExporting
-    {
-      get { return (bool)Row["DisableExporting"]; }
-      set { Row["DisableExporting"] = CheckValue("DisableExporting", value); }
-    }
-    
     public bool FilterInactive
     {
       get { return (bool)Row["FilterInactive"]; }
@@ -136,6 +130,12 @@ namespace TeamSupport.Data
     {
       get { return (bool)Row["CanCreateAsset"]; }
       set { Row["CanCreateAsset"] = CheckValue("CanCreateAsset", value); }
+    }
+    
+    public bool DisableExporting
+    {
+      get { return (bool)Row["DisableExporting"]; }
+      set { Row["DisableExporting"] = CheckValue("DisableExporting", value); }
     }
     
     public bool PortalLimitOrgTickets
@@ -606,7 +606,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,    [IsClassicView] = @IsClassicView,    [SubscribeToNewActions] = @SubscribeToNewActions,    [ApprovedTerms] = @ApprovedTerms,    [ShowWelcomePage] = @ShowWelcomePage,    [UserInformation] = @UserInformation,    [PortalAutoReg] = @PortalAutoReg,    [AppChatID] = @AppChatID,    [AppChatStatus] = @AppChatStatus,    [MenuItems] = @MenuItems,    [TicketRights] = @TicketRights,    [Signature] = @Signature,    [LinkedIn] = @LinkedIn,    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,    [BlockInboundEmail] = @BlockInboundEmail,    [SalesForceID] = @SalesForceID,    [ChangeTicketVisibility] = @ChangeTicketVisibility,    [ChangeKBVisibility] = @ChangeKBVisibility,    [EnforceSingleSession] = @EnforceSingleSession,    [NeedsIndexing] = @NeedsIndexing,    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,    [FontFamily] = @FontFamily,    [FontSize] = @FontSize,    [CanCreateCompany] = @CanCreateCompany,    [CanEditCompany] = @CanEditCompany,    [CanCreateContact] = @CanCreateContact,    [CanEditContact] = @CanEditContact,    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,    [UserCanPinAction] = @UserCanPinAction,    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,    [CanCreateAsset] = @CanCreateAsset,    [CanEditAsset] = @CanEditAsset,    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,    [FilterInactive] = @FilterInactive,    [DisableExporting] = @DisableExporting  WHERE ([UserID] = @UserID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Users] SET     [Email] = @Email,    [FirstName] = @FirstName,    [MiddleName] = @MiddleName,    [LastName] = @LastName,    [Title] = @Title,    [CryptedPassword] = @CryptedPassword,    [IsActive] = @IsActive,    [MarkDeleted] = @MarkDeleted,    [TimeZoneID] = @TimeZoneID,    [CultureName] = @CultureName,    [LastLogin] = @LastLogin,    [LastActivity] = @LastActivity,    [LastPing] = @LastPing,    [LastWaterCoolerID] = @LastWaterCoolerID,    [IsSystemAdmin] = @IsSystemAdmin,    [IsFinanceAdmin] = @IsFinanceAdmin,    [IsPasswordExpired] = @IsPasswordExpired,    [IsPortalUser] = @IsPortalUser,    [IsChatUser] = @IsChatUser,    [PrimaryGroupID] = @PrimaryGroupID,    [InOffice] = @InOffice,    [InOfficeComment] = @InOfficeComment,    [ReceiveTicketNotifications] = @ReceiveTicketNotifications,    [ReceiveAllGroupNotifications] = @ReceiveAllGroupNotifications,    [SubscribeToNewTickets] = @SubscribeToNewTickets,    [ActivatedOn] = @ActivatedOn,    [DeactivatedOn] = @DeactivatedOn,    [OrganizationID] = @OrganizationID,    [LastVersion] = @LastVersion,    [SessionID] = @SessionID,    [ImportID] = @ImportID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [OrgsUserCanSeeOnPortal] = @OrgsUserCanSeeOnPortal,    [DoNotAutoSubscribe] = @DoNotAutoSubscribe,    [IsClassicView] = @IsClassicView,    [SubscribeToNewActions] = @SubscribeToNewActions,    [ApprovedTerms] = @ApprovedTerms,    [ShowWelcomePage] = @ShowWelcomePage,    [UserInformation] = @UserInformation,    [PortalAutoReg] = @PortalAutoReg,    [AppChatID] = @AppChatID,    [AppChatStatus] = @AppChatStatus,    [MenuItems] = @MenuItems,    [TicketRights] = @TicketRights,    [Signature] = @Signature,    [LinkedIn] = @LinkedIn,    [OnlyEmailAfterHours] = @OnlyEmailAfterHours,    [BlockInboundEmail] = @BlockInboundEmail,    [SalesForceID] = @SalesForceID,    [ChangeTicketVisibility] = @ChangeTicketVisibility,    [ChangeKBVisibility] = @ChangeKBVisibility,    [EnforceSingleSession] = @EnforceSingleSession,    [NeedsIndexing] = @NeedsIndexing,    [AllowAnyTicketCustomer] = @AllowAnyTicketCustomer,    [FontFamily] = @FontFamily,    [FontSize] = @FontSize,    [CanCreateCompany] = @CanCreateCompany,    [CanEditCompany] = @CanEditCompany,    [CanCreateContact] = @CanCreateContact,    [CanEditContact] = @CanEditContact,    [RestrictUserFromEditingAnyActions] = @RestrictUserFromEditingAnyActions,    [AllowUserToEditAnyAction] = @AllowUserToEditAnyAction,    [UserCanPinAction] = @UserCanPinAction,    [PortalLimitOrgTickets] = @PortalLimitOrgTickets,    [DisableExporting] = @DisableExporting,    [CanCreateAsset] = @CanCreateAsset,    [CanEditAsset] = @CanEditAsset,    [CanChangeCommunityVisibility] = @CanChangeCommunityVisibility,    [FilterInactive] = @FilterInactive  WHERE ([UserID] = @UserID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("UserID", SqlDbType.Int, 4);
@@ -1071,6 +1071,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("DisableExporting", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
 		tempParameter = updateCommand.Parameters.Add("CanCreateAsset", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
@@ -1099,27 +1106,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("DisableExporting", SqlDbType.Bit, 1);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Users] (    [Email],    [FirstName],    [MiddleName],    [LastName],    [Title],    [CryptedPassword],    [IsActive],    [MarkDeleted],    [TimeZoneID],    [CultureName],    [LastLogin],    [LastActivity],    [LastPing],    [LastWaterCoolerID],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [IsChatUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ReceiveTicketNotifications],    [ReceiveAllGroupNotifications],    [SubscribeToNewTickets],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [LastVersion],    [SessionID],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrgsUserCanSeeOnPortal],    [DoNotAutoSubscribe],    [IsClassicView],    [SubscribeToNewActions],    [ApprovedTerms],    [ShowWelcomePage],    [UserInformation],    [PortalAutoReg],    [AppChatID],    [AppChatStatus],    [MenuItems],    [TicketRights],    [Signature],    [LinkedIn],    [OnlyEmailAfterHours],    [BlockInboundEmail],    [SalesForceID],    [ChangeTicketVisibility],    [ChangeKBVisibility],    [EnforceSingleSession],    [NeedsIndexing],    [AllowAnyTicketCustomer],    [FontFamily],    [FontSize],    [CanCreateCompany],    [CanEditCompany],    [CanCreateContact],    [CanEditContact],    [RestrictUserFromEditingAnyActions],    [AllowUserToEditAnyAction],    [UserCanPinAction],    [PortalLimitOrgTickets],    [CanCreateAsset],    [CanEditAsset],    [CanChangeCommunityVisibility],    [FilterInactive],    [DisableExporting]) VALUES ( @Email, @FirstName, @MiddleName, @LastName, @Title, @CryptedPassword, @IsActive, @MarkDeleted, @TimeZoneID, @CultureName, @LastLogin, @LastActivity, @LastPing, @LastWaterCoolerID, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @IsChatUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ReceiveTicketNotifications, @ReceiveAllGroupNotifications, @SubscribeToNewTickets, @ActivatedOn, @DeactivatedOn, @OrganizationID, @LastVersion, @SessionID, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrgsUserCanSeeOnPortal, @DoNotAutoSubscribe, @IsClassicView, @SubscribeToNewActions, @ApprovedTerms, @ShowWelcomePage, @UserInformation, @PortalAutoReg, @AppChatID, @AppChatStatus, @MenuItems, @TicketRights, @Signature, @LinkedIn, @OnlyEmailAfterHours, @BlockInboundEmail, @SalesForceID, @ChangeTicketVisibility, @ChangeKBVisibility, @EnforceSingleSession, @NeedsIndexing, @AllowAnyTicketCustomer, @FontFamily, @FontSize, @CanCreateCompany, @CanEditCompany, @CanCreateContact, @CanEditContact, @RestrictUserFromEditingAnyActions, @AllowUserToEditAnyAction, @UserCanPinAction, @PortalLimitOrgTickets, @CanCreateAsset, @CanEditAsset, @CanChangeCommunityVisibility, @FilterInactive, @DisableExporting); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Users] (    [Email],    [FirstName],    [MiddleName],    [LastName],    [Title],    [CryptedPassword],    [IsActive],    [MarkDeleted],    [TimeZoneID],    [CultureName],    [LastLogin],    [LastActivity],    [LastPing],    [LastWaterCoolerID],    [IsSystemAdmin],    [IsFinanceAdmin],    [IsPasswordExpired],    [IsPortalUser],    [IsChatUser],    [PrimaryGroupID],    [InOffice],    [InOfficeComment],    [ReceiveTicketNotifications],    [ReceiveAllGroupNotifications],    [SubscribeToNewTickets],    [ActivatedOn],    [DeactivatedOn],    [OrganizationID],    [LastVersion],    [SessionID],    [ImportID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [OrgsUserCanSeeOnPortal],    [DoNotAutoSubscribe],    [IsClassicView],    [SubscribeToNewActions],    [ApprovedTerms],    [ShowWelcomePage],    [UserInformation],    [PortalAutoReg],    [AppChatID],    [AppChatStatus],    [MenuItems],    [TicketRights],    [Signature],    [LinkedIn],    [OnlyEmailAfterHours],    [BlockInboundEmail],    [SalesForceID],    [ChangeTicketVisibility],    [ChangeKBVisibility],    [EnforceSingleSession],    [NeedsIndexing],    [AllowAnyTicketCustomer],    [FontFamily],    [FontSize],    [CanCreateCompany],    [CanEditCompany],    [CanCreateContact],    [CanEditContact],    [RestrictUserFromEditingAnyActions],    [AllowUserToEditAnyAction],    [UserCanPinAction],    [PortalLimitOrgTickets],    [DisableExporting],    [CanCreateAsset],    [CanEditAsset],    [CanChangeCommunityVisibility],    [FilterInactive]) VALUES ( @Email, @FirstName, @MiddleName, @LastName, @Title, @CryptedPassword, @IsActive, @MarkDeleted, @TimeZoneID, @CultureName, @LastLogin, @LastActivity, @LastPing, @LastWaterCoolerID, @IsSystemAdmin, @IsFinanceAdmin, @IsPasswordExpired, @IsPortalUser, @IsChatUser, @PrimaryGroupID, @InOffice, @InOfficeComment, @ReceiveTicketNotifications, @ReceiveAllGroupNotifications, @SubscribeToNewTickets, @ActivatedOn, @DeactivatedOn, @OrganizationID, @LastVersion, @SessionID, @ImportID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @OrgsUserCanSeeOnPortal, @DoNotAutoSubscribe, @IsClassicView, @SubscribeToNewActions, @ApprovedTerms, @ShowWelcomePage, @UserInformation, @PortalAutoReg, @AppChatID, @AppChatStatus, @MenuItems, @TicketRights, @Signature, @LinkedIn, @OnlyEmailAfterHours, @BlockInboundEmail, @SalesForceID, @ChangeTicketVisibility, @ChangeKBVisibility, @EnforceSingleSession, @NeedsIndexing, @AllowAnyTicketCustomer, @FontFamily, @FontSize, @CanCreateCompany, @CanEditCompany, @CanCreateContact, @CanEditContact, @RestrictUserFromEditingAnyActions, @AllowUserToEditAnyAction, @UserCanPinAction, @PortalLimitOrgTickets, @DisableExporting, @CanCreateAsset, @CanEditAsset, @CanChangeCommunityVisibility, @FilterInactive); SET @Identity = SCOPE_IDENTITY();";
 
-		
-		tempParameter = insertCommand.Parameters.Add("DisableExporting", SqlDbType.Bit, 1);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 255;
-		  tempParameter.Scale = 255;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("FilterInactive", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -1143,6 +1136,13 @@ namespace TeamSupport.Data
 		}
 		
 		tempParameter = insertCommand.Parameters.Add("CanCreateAsset", SqlDbType.Bit, 1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("DisableExporting", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -1730,7 +1730,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [UserID], [Email], [FirstName], [MiddleName], [LastName], [Title], [CryptedPassword], [IsActive], [MarkDeleted], [TimeZoneID], [CultureName], [LastLogin], [LastActivity], [LastPing], [LastWaterCoolerID], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [IsChatUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ReceiveTicketNotifications], [ReceiveAllGroupNotifications], [SubscribeToNewTickets], [ActivatedOn], [DeactivatedOn], [OrganizationID], [LastVersion], [SessionID], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrgsUserCanSeeOnPortal], [DoNotAutoSubscribe], [IsClassicView], [SubscribeToNewActions], [ApprovedTerms], [ShowWelcomePage], [UserInformation], [PortalAutoReg], [AppChatID], [AppChatStatus], [MenuItems], [TicketRights], [Signature], [LinkedIn], [OnlyEmailAfterHours], [BlockInboundEmail], [SalesForceID], [ChangeTicketVisibility], [ChangeKBVisibility], [EnforceSingleSession], [NeedsIndexing], [AllowAnyTicketCustomer], [FontFamily], [FontSize], [CanCreateCompany], [CanEditCompany], [CanCreateContact], [CanEditContact], [RestrictUserFromEditingAnyActions], [AllowUserToEditAnyAction], [UserCanPinAction], [PortalLimitOrgTickets], [CanCreateAsset], [CanEditAsset], [CanChangeCommunityVisibility], [FilterInactive], [DisableExporting] FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [UserID], [Email], [FirstName], [MiddleName], [LastName], [Title], [CryptedPassword], [IsActive], [MarkDeleted], [TimeZoneID], [CultureName], [LastLogin], [LastActivity], [LastPing], [LastWaterCoolerID], [IsSystemAdmin], [IsFinanceAdmin], [IsPasswordExpired], [IsPortalUser], [IsChatUser], [PrimaryGroupID], [InOffice], [InOfficeComment], [ReceiveTicketNotifications], [ReceiveAllGroupNotifications], [SubscribeToNewTickets], [ActivatedOn], [DeactivatedOn], [OrganizationID], [LastVersion], [SessionID], [ImportID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [OrgsUserCanSeeOnPortal], [DoNotAutoSubscribe], [IsClassicView], [SubscribeToNewActions], [ApprovedTerms], [ShowWelcomePage], [UserInformation], [PortalAutoReg], [AppChatID], [AppChatStatus], [MenuItems], [TicketRights], [Signature], [LinkedIn], [OnlyEmailAfterHours], [BlockInboundEmail], [SalesForceID], [ChangeTicketVisibility], [ChangeKBVisibility], [EnforceSingleSession], [NeedsIndexing], [AllowAnyTicketCustomer], [FontFamily], [FontSize], [CanCreateCompany], [CanEditCompany], [CanCreateContact], [CanEditContact], [RestrictUserFromEditingAnyActions], [AllowUserToEditAnyAction], [UserCanPinAction], [PortalLimitOrgTickets], [DisableExporting], [CanCreateAsset], [CanEditAsset], [CanChangeCommunityVisibility], [FilterInactive] FROM [dbo].[Users] WHERE ([UserID] = @UserID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("UserID", userID);
         Fill(command);

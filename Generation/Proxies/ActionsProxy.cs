@@ -17,7 +17,6 @@ namespace TeamSupport.Data
     [DataMember] public int? ActionTypeID { get; set; }
     [DataMember] public SystemActionType SystemActionTypeID { get; set; }
     [DataMember] public string Name { get; set; }
-    [DataMember] public string Description { get; set; }
     [DataMember] public int? TimeSpent { get; set; }
     [DataMember] public DateTime? DateStarted { get; set; }
     [DataMember] public bool IsVisibleOnPortal { get; set; }
@@ -34,6 +33,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? DateModifiedByJiraSync { get; set; }
     [DataMember] public int? JiraID { get; set; }
     [DataMember] public bool Pinned { get; set; }
+    [DataMember] public string Description { get; set; }
           
   }
   
@@ -42,6 +42,7 @@ namespace TeamSupport.Data
     public ActionProxy GetProxy()
     {
       ActionProxy result = new ActionProxy();
+      result.Description = this.Description;
       result.Pinned = this.Pinned;
       result.JiraID = this.JiraID;
       result.SalesForceID = this.SalesForceID;
@@ -53,7 +54,6 @@ namespace TeamSupport.Data
       result.IsKnowledgeBase = this.IsKnowledgeBase;
       result.IsVisibleOnPortal = this.IsVisibleOnPortal;
       result.TimeSpent = this.TimeSpent;
-      result.Description = this.Description;
       result.Name = this.Name;
       result.SystemActionTypeID = this.SystemActionTypeID;
       result.ActionTypeID = this.ActionTypeID;
