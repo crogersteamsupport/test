@@ -1286,7 +1286,7 @@ $(document).ready(function () {
             parent.show().find('img').show();
             var value = '';
             if (input.val()) {
-              value = top.Ts.Utils.getMsDate(input.datetimepicker('getDate'));
+                value = top.Ts.Utils.getMsDate(input.val());
             }
             container.remove();
             //how can i check if the date is in the past

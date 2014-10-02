@@ -1662,7 +1662,7 @@ namespace TSWebServices
               {
                   if (!string.IsNullOrWhiteSpace(author.Signature))
                   {
-                      if (!action.Description.Contains(author.Signature))
+                      if (!action.Description.Contains(author.Signature.Replace(" />",">")))
                           action.Description = action.Description + "<br/><br/>" + author.Signature;
                   }
               }
@@ -1670,8 +1670,8 @@ namespace TSWebServices
               {
                   if (!string.IsNullOrWhiteSpace(author.Signature))
                   {
-                      if (action.Description.Contains(author.Signature))
-                          action.Description = action.Description.Replace("<br><br>" + author.Signature, "");
+                      if (action.Description.Contains(author.Signature.Replace(" />",">")))
+                          action.Description = action.Description.Replace("<br><br>" + author.Signature.Replace(" />", ">"), "");
                   }
               }
           }
