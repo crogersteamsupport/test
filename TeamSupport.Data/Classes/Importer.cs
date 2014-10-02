@@ -1268,6 +1268,11 @@ namespace TeamSupport.Data
             organization.ImportID = organization.Name;
             organization.IsActive = true;
             organization.HasPortalAccess = false;
+            organization.IsCustomerFree = false;
+            organization.UserSeats = 0;
+            organization.PortalSeats = 0;
+            organization.ExtraStorageUnits = 0;
+            organization.ProductType = ProductType.Enterprise;
             organization.Collection.Save();
             orgCount++;
             organizations.LoadByParentID(_organizationID, false);
