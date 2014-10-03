@@ -22,6 +22,7 @@ using ImageResizer;
 using System.Net;
 using Newtonsoft.Json;
 
+
 namespace TSWebServices
 {
   [ScriptService]
@@ -1753,7 +1754,56 @@ namespace TSWebServices
       return result;
     }
 
-    
+    [WebMethod]
+    public bool UnSetSyncWithJira(int ticketID)
+    {
+        bool result = false;
+
+        try
+        {
+            CRMLinkTable crmlink = new CRMLinkTable(TSAuthentication.GetLoginUser());
+            crmlink.LoadByOrganizationID(TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).OrganizationID);
+            foreach(DataRow crmRow in crmlink.Table.Rows)
+            {
+                if(crmRow["CRMType"].ToString() == "Jira")
+                {
+                    TicketLinkToJira linkToJira = new TicketLinkToJira(TSAuthentication.GetLoginUser());
+                    linkToJira.LoadByTicketID(ticketID);
+           
+                    TicketLinkToJiraItemProxy ticketLinktoJiraProxy = GetLinkToJira(ticketID);
+                    if (null != ticketLinktoJiraProxy && linkToJira.Count > 0)
+                    {
+                        TeamSupport.JIRA.JiraClient jiraClient = new TeamSupport.JIRA.JiraClient(crmRow["HostName"].ToString(), crmRow["Username"].ToString(), crmRow["Password"].ToString());
+                        TeamSupport.JIRA.IssueRef issueRef = new TeamSupport.JIRA.IssueRef();
+                        issueRef.id = ticketLinktoJiraProxy.JiraID.ToString();
+                        issueRef.key = ticketLinktoJiraProxy.JiraKey;
+                        var issue = jiraClient.LoadIssue(issueRef);
+                        if (null != issue)
+                        {
+                            var remoteLinks = jiraClient.GetRemoteLinks(issueRef);
+                            if (null != remoteLinks)
+                                foreach (TeamSupport.JIRA.RemoteLink linkItem in remoteLinks)
+                                    if (linkItem.icon.title == "TeamSupport Logo")
+                                    {
+                                        jiraClient.DeleteRemoteLink(issueRef, linkItem);
+                                        linkToJira.DeleteFromDB(ticketID);
+                                        result = true;
+                                    }
+                        }
+                        
+                    }
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            result = false;
+            //To Do: Log Exception
+        }
+
+        return result;
+    }
+          
     [WebMethod]
     public bool Subscribe(int ticketID)
     {

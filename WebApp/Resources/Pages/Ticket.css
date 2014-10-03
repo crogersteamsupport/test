@@ -30,6 +30,7 @@
     .ts-jira-buttons-container { padding: 10px 0 10px 0px; text-align: center;}
     .ticket-jira-issue {display:inline;}
     .ticket-jira-issue-property {margin-right: 5px; font-weight: bold;}
+    #jiraUnlink { display: inline;float: right;}
     #savedIssueKeyImg {display:inline-block;}
 
     .ticket-customer-add{ padding-left: 10px; }

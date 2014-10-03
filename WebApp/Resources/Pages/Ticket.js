@@ -1721,7 +1721,24 @@ $(document).ready(function () {
         $('#issueKey').hide();
         alert('There was an error setting your Jira Issue Key.');
       });
-  });
+});
+
+$('#jiraUnlink').click(function (e) {
+    e.preventDefault();
+    var parent = $(this).parent().hide();
+    top.Ts.Services.Tickets.UnSetSyncWithJira(_ticketID, function (result) {
+        if (result === true) {
+            $('.ts-jira-buttons-container').show();
+            $('#issueKey').hide();
+        }
+        else {
+            alert('There was an error setting your Jira Issue Key. Please try again later');
+        }
+    },
+      function (error) {
+          alert('There was an error setting your Jira Issue Key.');
+      });
+});
 
   $('#existingJiraIssue').click(function (e) {
     e.preventDefault();
