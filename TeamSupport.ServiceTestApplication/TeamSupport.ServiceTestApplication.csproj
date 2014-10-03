@@ -166,6 +166,10 @@
       <Project>{1943AC11-1F2D-4B85-9F0F-4D67284814BE}</Project>
       <Name>TeamSupport.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TeamSupport.ServiceLibrary\TeamSupport.ServiceLibrary.csproj">
+      <Project>{6AD9D48C-DDBA-4045-BFAA-362A1FCB0AA0}</Project>
+      <Name>TeamSupport.ServiceLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
