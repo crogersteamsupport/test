@@ -1240,6 +1240,8 @@ namespace TeamSupport.Data
           Product product = products.FindByImportID(productID);
           if (product == null)
           {
+            _log.AppendMessage("Asset Product not found: " + productID);
+/*
             product = (new Products(_loginUser)).AddNewProduct();
             product.Name = row["ProductID"].ToString();
             product.OrganizationID = _organizationID;
@@ -1247,8 +1249,9 @@ namespace TeamSupport.Data
             product.Collection.Save();
             prodCount++;
             products.LoadByOrganizationID(_organizationID);
+ */
           }
-          asset.ProductID = product.ProductID;
+          //asset.ProductID = product.ProductID;
         }
         else
         {
@@ -1262,6 +1265,8 @@ namespace TeamSupport.Data
           Organization organization = organizations.FindByImportID(organizationID);
           if (organization == null)
           {
+            _log.AppendMessage("Asset Customer not found: " + organizationID);
+            /*
             organization = (new Organizations(_loginUser)).AddNewOrganization();
             organization.Name = row["AssignedTo"].ToString();
             organization.ParentID = _organizationID;
@@ -1276,8 +1281,9 @@ namespace TeamSupport.Data
             organization.Collection.Save();
             orgCount++;
             organizations.LoadByParentID(_organizationID, false);
+             */
           }
-          asset.AssignedTo = organization.OrganizationID;
+          //asset.AssignedTo = organization.OrganizationID;
         }
         else
         {
