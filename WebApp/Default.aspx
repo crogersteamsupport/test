@@ -100,6 +100,7 @@
         <asp:ServiceReference Path="~/Services/AdminService.asmx" />
         <asp:ServiceReference Path="~/Services/UserService.asmx" />
         <asp:ServiceReference Path="~/Services/ReportService.asmx" />
+        <asp:ServiceReference Path="~/Services/WikiService.asmx" />
         <asp:ServiceReference Path="~/Services/WaterCoolerService.asmx" />
         <asp:ServiceReference Path="~/Services/OrganizationService.asmx" />
         <asp:ServiceReference Path="~/Services/ProductService.asmx" />

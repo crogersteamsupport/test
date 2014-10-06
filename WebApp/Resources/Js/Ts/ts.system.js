@@ -112,6 +112,10 @@ var _startDate = new Date();
     Ts.Services.Reports.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Reports.set_defaultFailedCallback(defaultFailedCallback);
 
+    Ts.Services.Wiki = new TSWebServices.WikiService();
+    Ts.Services.Wiki.set_defaultSucceededCallback(defaultSucceededCallback);
+    Ts.Services.Wiki.set_defaultFailedCallback(defaultFailedCallback);
+
     Ts.Services.Customers = new TSWebServices.CustomerService();
     Ts.Services.Customers.set_defaultSucceededCallback(defaultSucceededCallback);
     Ts.Services.Customers.set_defaultFailedCallback(defaultFailedCallback);
