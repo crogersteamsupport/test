@@ -32,6 +32,10 @@ $(document).ready(function () {
     });
   }
 
+  if (top.Ts.System.Organization.SetNewActionsVisibleToCustomers == true) {
+      $('.newticket-portal').prop('checked', true);
+  }
+
   var knowledgeBaseCategories = top.Ts.Cache.getKnowledgeBaseCategories();
   var option = $('<option>').text('Unassigned').attr('value', -1).appendTo('.newticket-kbCategory').data('o', null).attr('selected', 'selected');
   for (var i = 0; i < knowledgeBaseCategories.length; i++) {
