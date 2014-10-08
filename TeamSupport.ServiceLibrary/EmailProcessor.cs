@@ -916,7 +916,7 @@ namespace TeamSupport.ServiceLibrary
       message.From = new MailAddress("sales@teamsupport.com", "TeamSupport.com");
 
       string[] addresses = SystemSettings.ReadString(LoginUser, "SignUpNotifications", "").Split('|');
-      if (addresses.Length < 1) return;
+      if (addresses != null && addresses.Length < 1) return;
       foreach (string address in addresses)
       {
         message.To.Add(new MailAddress(address));

@@ -79,10 +79,14 @@ namespace TeamSupport.Data
       Organization o = Organizations.GetOrganization(BaseCollection.LoginUser, this.OrganizationID);
       MailMessage message = new MailMessage();
       message.From = new MailAddress("support@teamsupport.com");
-      message.To.Add("eharrington@teamsupport.com");
-      message.To.Add("lchoi@teamsupport.com");
-      message.To.Add("jgutierrez@teamsupport.com");
-      message.To.Add("jhathaway@teamsupport.com");
+
+      string[] addresses = SystemSettings.ReadString(BaseCollection.LoginUser, "UserCountNotifications", "").Split('|');
+      if (addresses != null && addresses.Length < 1) return;
+      foreach (string address in addresses)
+      {
+        message.To.Add(new MailAddress(address));
+      }
+      
       message.Subject = isNew ? "TeamSupport User Added" : "TeamSupport User Removed";
       message.Subject += " - " + o.Name;
       int count = Organizations.GetUserCount(Collection.LoginUser, OrganizationID);
