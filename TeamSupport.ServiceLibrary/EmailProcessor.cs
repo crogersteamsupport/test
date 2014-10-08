@@ -920,6 +920,7 @@ namespace TeamSupport.ServiceLibrary
       message.To.Add(new MailAddress("jhathaway@teamsupport.com"));
       message.To.Add(new MailAddress("jharada@teamsupport.com"));
       message.To.Add(new MailAddress("lchoi@teamsupport.com"));
+      message.To.Add(new MailAddress("jderryberry@teamsupport.com"));
       AddMessage(1078, "New Internal Sign Up", message);
     }
 
