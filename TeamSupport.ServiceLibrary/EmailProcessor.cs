@@ -914,13 +914,14 @@ namespace TeamSupport.ServiceLibrary
       Organization organization = Organizations.GetOrganization(LoginUser, user.OrganizationID);
       MailMessage message = EmailTemplates.GetSignUpNotification(LoginUser, user);
       message.From = new MailAddress("sales@teamsupport.com", "TeamSupport.com");
-      message.To.Add(new MailAddress("kjones@teamsupport.com"));
-      message.To.Add(new MailAddress("rjohnson@teamsupport.com"));
-      message.To.Add(new MailAddress("eharrington@teamsupport.com"));
-      message.To.Add(new MailAddress("jhathaway@teamsupport.com"));
-      message.To.Add(new MailAddress("jharada@teamsupport.com"));
-      message.To.Add(new MailAddress("lchoi@teamsupport.com"));
-      message.To.Add(new MailAddress("jderryberry@teamsupport.com"));
+
+      string[] addresses = SystemSettings.ReadString(LoginUser, "SignUpNotifications", "").Split('|');
+      if (addresses.Length < 1) return;
+      foreach (string address in addresses)
+      {
+        message.To.Add(new MailAddress(address));
+      }
+
       AddMessage(1078, "New Internal Sign Up", message);
     }
 
