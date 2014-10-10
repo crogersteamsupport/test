@@ -702,7 +702,7 @@ $(document).ready(function () {
   });
 
   function LoadCustomProperties() {
-    top.Ts.Services.Assets.GetCustomValues(_assetID, function (html) {
+    top.Ts.Services.Assets.GetCustomValues(_assetID, top.Ts.ReferenceTypes.Assets, function (html) {
       //$('#customProperties').append(html);
       appendCustomValues(html);
 

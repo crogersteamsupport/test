@@ -1860,7 +1860,7 @@ $(document).ready(function () {
     function LoadProducts(noheaders) {
 
         if(!noheaders){
-            top.Ts.Services.Customers.LoadcustomProductHeaders(organizationID, function (headers) {
+            top.Ts.Services.Customers.LoadcustomProductHeaders(function (headers) {
                 for (var i = 0; i < headers.length; i++) {
                     $('#tblProducts th:last').after('<th>' + headers[i] + '</th>');
                 }

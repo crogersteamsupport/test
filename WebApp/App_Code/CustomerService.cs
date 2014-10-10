@@ -933,7 +933,7 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public string[] LoadcustomProductHeaders(int organizationID)
+        public string[] LoadcustomProductHeaders()
         {
             List<string> columns = new List<string>();
             string col;

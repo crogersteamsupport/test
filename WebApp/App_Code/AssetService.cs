@@ -799,10 +799,10 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public CustomValueProxy[] GetCustomValues(int assetID)
+    public CustomValueProxy[] GetCustomValues(int refID, ReferenceType refType)
     {
       CustomValues values = new CustomValues(TSAuthentication.GetLoginUser());
-      values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Assets, assetID);
+      values.LoadByReferenceType(TSAuthentication.OrganizationID, refType, refID);
       return values.GetCustomValueProxies();
     }
 

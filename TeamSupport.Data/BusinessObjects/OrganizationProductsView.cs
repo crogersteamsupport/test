@@ -98,6 +98,27 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    public void LoadByProductID(int productID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+          @"
+            SELECT 
+              * 
+            FROM
+              OrganizationProductsView 
+            WHERE
+              ProductID = @ProductID 
+            ORDER BY 
+              OrganizationProductID DESC
+          ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductID", productID);
+        Fill(command);
+      }
+    }
   }
   
 }

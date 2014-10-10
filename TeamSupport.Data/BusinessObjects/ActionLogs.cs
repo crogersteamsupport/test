@@ -332,6 +332,86 @@ namespace TeamSupport.Data
         }
     }
 
+    public void LoadByProductIDLimit(int productID, int start)
+    {
+      int end = start + 49;
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT
+          *
+        FROM
+        (
+          SELECT
+            *, 
+            ROW_NUMBER() OVER (ORDER BY DateModified Desc) AS rownum  
+          FROM
+          (
+            SELECT
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM
+              ActionLogs al
+              LEFT JOIN Users u 
+                ON u.UserID = al.CreatorID
+            WHERE 
+              al.RefType = 13
+              AND al.RefID = @ProductID
+                                
+            UNION 
+                                
+            SELECT 
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM 
+              ActionLogs al
+              LEFT JOIN Users u ON u.UserID = al.CreatorID
+              LEFT JOIN Tickets t ON t.TicketID = al.RefID
+            WHERE
+              al.RefType = 17
+              AND t.ProductID = @ProductID
+                                
+            UNION 
+                                
+            SELECT 
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM
+              ActionLogs al
+              LEFT JOIN Users u ON u.UserID = al.CreatorID
+              LEFT JOIN Actions a ON a.ActionID = al.RefID
+              LEFT JOIN Tickets t ON t.TicketID = a.TicketID
+            WHERE
+              al.RefType = 0
+              AND t.ProductID = @ProductID
+                                
+            UNION 
+
+            SELECT 
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM 
+              ActionLogs al
+              LEFT JOIN Users u ON u.UserID = al.CreatorID
+              LEFT JOIN ProductVersions pv ON pv.ProductVersionID = al.RefID
+            WHERE
+              al.RefType = 14
+              AND pv.ProductID = @ProductID
+          ) as temp
+        ) as results
+        WHERE
+          rownum between @start and @end
+				ORDER BY
+          rownum ASC
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductID", productID);
+        command.Parameters.AddWithValue("@start", start);
+        command.Parameters.AddWithValue("@end", end);
+        Fill(command);
+      }
+    }
+
     public void LoadByUserID(int userID)
     {
       using (SqlCommand command = new SqlCommand())

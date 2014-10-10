@@ -24,6 +24,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("Description", "Description", false, false, false);
       _fieldMap.AddMap("OrganizationProductID", "OrganizationProductID", false, false, true);
       _fieldMap.AddMap("OrganizationID", "OrganizationID", false, false, true);
+      _fieldMap.AddMap("OrganizationName", "OrganizationName", false, false, false);
       _fieldMap.AddMap("ProductID", "ProductID", false, false, true);
       _fieldMap.AddMap("ProductVersionID", "ProductVersionID", true, true, true);
       _fieldMap.AddMap("IsVisibleOnPortal", "IsVisibleOnPortal", false, false, false);

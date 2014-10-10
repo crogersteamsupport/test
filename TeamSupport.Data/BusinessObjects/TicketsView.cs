@@ -189,6 +189,51 @@ namespace TeamSupport.Data
       }
     }
 
+    public int GetProductTicketCount(int productID, int closed)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT 
+          COUNT(*) 
+        FROM 
+          TicketsView tv 
+        WHERE 
+          tv.ProductID = @ProductID
+          AND tv.IsClosed = @closed
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductID", productID);
+        command.Parameters.AddWithValue("@closed", closed);
+        object o = ExecuteScalar(command);
+        if (o == null || o == DBNull.Value) return 0;
+        return (int)o;
+      }
+    }
+
+    public int GetProductVersionTicketCount(int productVersionID, int closed)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT 
+          COUNT(*) 
+        FROM 
+          TicketsView tv 
+        WHERE 
+          tv.ReportedVersionID = @ProductVersionID
+          AND tv.SolvedVersionID = @ProductVersionID
+          AND tv.IsClosed = @closed
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
+        command.Parameters.AddWithValue("@closed", closed);
+        object o = ExecuteScalar(command);
+        if (o == null || o == DBNull.Value) return 0;
+        return (int)o;
+      }
+    }
+
     public void LoadByOrganizationID(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -225,6 +270,25 @@ namespace TeamSupport.Data
             command.Parameters.AddWithValue("@OrganizationID", organizationID);
             Fill(command);
         }
+    }
+
+    public void LoadLatest5ProductTickets(int productID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT 
+          top 5 tv.* 
+        FROM 
+          TicketsView tv 
+        WHERE 
+          tv.ProductID = @ProductID 
+        ORDER BY 
+          TicketNumber desc";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductID", productID);
+        Fill(command);
+      }
     }
 
     public void LoadRelated(int ticketID)

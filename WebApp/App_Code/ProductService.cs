@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using System.Web.Security;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Globalization;
 
 namespace TSWebServices
 {
@@ -342,6 +343,169 @@ namespace TSWebServices
       return result.ToArray();
     }
 
+    [WebMethod]
+    public string LoadChartData(int productID, bool open)
+    {
+
+      Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+      organizations.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
+
+      TicketTypes ticketTypes = new TicketTypes(TSAuthentication.GetLoginUser());
+      ticketTypes.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID, organizations[0].ProductType);
+
+      int total = 0;
+      StringBuilder chartString = new StringBuilder("");
+
+      foreach (TicketType ticketType in ticketTypes)
+      {
+        int count;
+        if (open)
+          count = Tickets.GetProductOpenTicketCount(TSAuthentication.GetLoginUser(), productID, ticketType.TicketTypeID);
+        else
+          count = Tickets.GetProductClosedTicketCount(TSAuthentication.GetLoginUser(), productID, ticketType.TicketTypeID);
+        total += count;
+
+        if (count > 0)
+          chartString.AppendFormat("{0},{1},", ticketType.Name.Replace(",", ""), count.ToString().Replace(",", ""));
+        //chartString.AppendFormat("['{0}',{1}],",ticketType.Name, count.ToString());
+      }
+      if (chartString.ToString().EndsWith(","))
+      {
+        chartString.Remove(chartString.Length - 1, 1);
+      }
+
+      return chartString.ToString();
+    }
+
+    [WebMethod]
+    public string GetProductTickets(int productID, int closed)
+    {
+      TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+
+      return tickets.GetProductTicketCount(productID, closed).ToString();
+    }
+
+    [WebMethod]
+    public string GetProductVersionTickets(int productVersionID, int closed)
+    {
+      TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+
+      return tickets.GetProductVersionTicketCount(productVersionID, closed).ToString();
+    }
+
+    [WebMethod]
+    public ActionLogProxy[] LoadHistory(int productID, int start)
+    {
+      ActionLogs actionLogs = new ActionLogs(TSAuthentication.GetLoginUser());
+      actionLogs.LoadByProductIDLimit(productID, start);
+
+      return actionLogs.GetActionLogProxies();
+    }
+
+    [WebMethod]
+    public string SetName(int productID, string value)
+    {
+      Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), productID);
+      p.Name = value;
+      p.Collection.Save();
+      string description = String.Format("{0} set product name to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+      ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Products, productID, description);
+      return value != "" ? value : "Empty";
+    }
+
+    [WebMethod]
+    public string SetDescription(int productID, string value)
+    {
+      Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), productID);
+      p.Description = value;
+      p.Collection.Save();
+      string description = String.Format("{0} set product description to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
+      ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Products, productID, description);
+      return value != "" ? value : "Empty";
+    }
+
+    [WebMethod]
+    public string LoadVersions(int productID)
+    {
+      StringBuilder htmlresults = new StringBuilder("");
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      ProductVersionsView productVersions = new ProductVersionsView(loginUser);
+      productVersions.LoadByProductID(productID);
+
+      foreach (ProductVersionsViewItem productVersion in productVersions)
+      {
+        htmlresults.AppendFormat(@"<div class='list-group-item'>
+                            <span class='pull-right'>{0}</span>
+                            <a href='#' id='{1}' class='productversionlink'>
+                              <h4 class='list-group-item-heading'>{2}</h4>
+                            </a>
+                            <div class='row'>
+                                <div class='col-xs-6'>
+                                    <p class='list-group-item-text'>{3}</p>
+                                    {4}
+                                </div>
+                                <div class='col-xs-6'>
+                                    <p class='list-group-item-text'>{5} Open Tickets</p>
+                                    <p class='list-group-item-text'>{6} Closed Tickets</p>                            
+                                </div>
+                            </div>
+                            </div>"
+
+            , productVersion.IsReleased ? "Released" : "Not released"
+            , productVersion.ProductVersionID
+            , productVersion.VersionNumber
+            , productVersion.VersionStatus
+            , (productVersion.IsReleased && productVersion.ReleaseDate != null) ? "Released on " + DataUtils.DateToLocal(loginUser, (((DateTime)productVersion.ReleaseDateUtc))).ToString(GetDateFormatNormal()) : ""
+            , GetProductVersionTickets(productVersion.ProductVersionID, 0)
+            , GetProductVersionTickets(productVersion.ProductVersionID, 1));
+
+      }
+
+      return htmlresults.ToString();
+    }
+
+    [WebMethod]
+    public ProductCustomOrganization[] LoadCustomers(int productID)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      OrganizationProductsView organizationProducts = new OrganizationProductsView(loginUser);
+      organizationProducts.LoadByProductID(productID);
+      List<ProductCustomOrganization> list = new List<ProductCustomOrganization>();
+      CustomFields fields = new CustomFields(loginUser);
+      fields.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.OrganizationProducts);
+
+
+      foreach (DataRow row in organizationProducts.Table.Rows)
+      {
+        ProductCustomOrganization test = new ProductCustomOrganization();
+        test.Customer = row["OrganizationName"].ToString();
+        test.VersionNumber = row["VersionNumber"].ToString();
+        test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(loginUser, (((DateTime)row["SupportExpiration"]))).ToString(GetDateFormatNormal()) : "";
+        test.VersionStatus = row["VersionStatus"].ToString();
+        test.IsReleased = row["IsReleased"].ToString();
+        test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
+        test.OrganizationProductID = (int)row["OrganizationProductID"];
+        test.CustomFields = new List<string>();
+        foreach (CustomField field in fields)
+        {
+          CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, test.OrganizationProductID);
+          test.CustomFields.Add(customValue.Value);
+        }
+
+
+        list.Add(test);
+      }
+
+
+      return list.ToArray();
+    }
+
+    public string GetDateFormatNormal()
+    {
+      CultureInfo us = new CultureInfo(TSAuthentication.GetLoginUser().CultureInfo.ToString());
+      return us.DateTimeFormat.ShortDatePattern;
+    }
+
   }
 
   [DataContract]
@@ -387,4 +551,28 @@ namespace TSWebServices
       [DataMember] public string Description { get; set; }
       [DataMember] public List<CustomFieldSaveInfo> Fields { get; set; }
   }
+
+  public class ProductCustomOrganization
+  {
+    [DataMember]
+    public string Customer { get; set; }
+    [DataMember]
+    public string VersionNumber { get; set; }
+    [DataMember]
+    public string SupportExpiration { get; set; }
+    [DataMember]
+    public string VersionStatus { get; set; }
+    [DataMember]
+    public string IsReleased { get; set; }
+    [DataMember]
+    public string ReleaseDate { get; set; }
+    [DataMember]
+    public int ProductID { get; set; }
+    [DataMember]
+    public int OrganizationProductID { get; set; }
+    [DataMember]
+    public List<string> CustomFields { get; set; }
+
+  }
+
 }
