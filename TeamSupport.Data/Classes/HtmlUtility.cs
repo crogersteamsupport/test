@@ -218,6 +218,7 @@ namespace TeamSupport.Data
         }
 
         public static string StripHTML(string Content) {
+            Content = Regex.Replace(Content, "<.*?>", string.Empty);
             Content = System.Web.HttpUtility.HtmlDecode(Content);
             Content = StripComments(Content);
 
