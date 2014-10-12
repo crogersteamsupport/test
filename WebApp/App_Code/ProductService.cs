@@ -500,10 +500,99 @@ namespace TSWebServices
       return list.ToArray();
     }
 
+    [WebMethod]
+    public ProductCustomOrganization LoadCustomer(int organizationProductID)
+    {
+      OrganizationProductsViewItem organizationProduct = (OrganizationProductsViewItem)OrganizationProductsView.GetOrganizationProductsViewItem(TSAuthentication.GetLoginUser(), organizationProductID);
+      ProductCustomOrganization productCustomer = new ProductCustomOrganization();
+
+      productCustomer.Customer = organizationProduct.OrganizationName;
+      productCustomer.VersionNumber = organizationProduct.ProductVersionID.HasValue ? organizationProduct.ProductVersionID.ToString() : "-1";
+
+      if (organizationProduct.SupportExpiration.HasValue)
+        productCustomer.SupportExpiration = ((DateTime)organizationProduct.SupportExpiration).ToString(GetDateFormatNormal());
+      else
+        productCustomer.SupportExpiration = "";
+
+      productCustomer.VersionStatus = "";
+      productCustomer.IsReleased = "";
+      productCustomer.ReleaseDate = null;
+      productCustomer.OrganizationProductID = organizationProduct.OrganizationProductID;
+      productCustomer.OrganizationID = organizationProduct.OrganizationID;
+
+      return productCustomer;
+    }
+
     public string GetDateFormatNormal()
     {
       CultureInfo us = new CultureInfo(TSAuthentication.GetLoginUser().CultureInfo.ToString());
       return us.DateTimeFormat.ShortDatePattern;
+    }
+
+    [WebMethod]
+    public string LoadAssets(int productID)
+    {
+      StringBuilder htmlresults = new StringBuilder("");
+      AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
+      assets.LoadByProductID(productID);
+
+      StringBuilder productVersionNumberDisplayName;
+      StringBuilder serialNumberDisplayValue;
+      StringBuilder warrantyExpirationDisplayValue;
+
+      foreach (AssetsViewItem asset in assets)
+      {
+        productVersionNumberDisplayName = new StringBuilder();
+        serialNumberDisplayValue = new StringBuilder();
+        warrantyExpirationDisplayValue = new StringBuilder();
+
+        if (!string.IsNullOrEmpty(asset.ProductVersionNumber))
+        {
+          productVersionNumberDisplayName.Append(" - " + asset.ProductVersionNumber);
+        }
+
+        if (string.IsNullOrEmpty(asset.SerialNumber))
+        {
+          serialNumberDisplayValue.Append("Empty");
+        }
+        else
+        {
+          serialNumberDisplayValue.Append(asset.SerialNumber);
+        }
+
+        if (asset.WarrantyExpiration == null)
+        {
+          warrantyExpirationDisplayValue.Append("Empty");
+        }
+        else
+        {
+          warrantyExpirationDisplayValue.Append(((DateTime)asset.WarrantyExpiration).ToString(GetDateFormatNormal()));
+        }
+
+        htmlresults.AppendFormat(@"<div class='list-group-item'>
+                            <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
+                            <div class='row'>
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>{2}{3}</p>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>SN: {4} - Warr. Exp.: {5}</p>
+                                </div>
+                            </div>
+                            </div>
+                            </div>"
+
+            , asset.AssetID
+            , asset.DisplayName
+            , asset.ProductName
+            , productVersionNumberDisplayName
+            , serialNumberDisplayValue
+            , warrantyExpirationDisplayValue);
+      }
+
+      return htmlresults.ToString();
     }
 
   }
@@ -568,6 +657,8 @@ namespace TSWebServices
     public string ReleaseDate { get; set; }
     [DataMember]
     public int ProductID { get; set; }
+    [DataMember]
+    public int OrganizationID { get; set; }
     [DataMember]
     public int OrganizationProductID { get; set; }
     [DataMember]

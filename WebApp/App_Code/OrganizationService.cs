@@ -864,6 +864,13 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public AutocompleteItem[] GetOrganizationForTicket(string searchTerm)
+    {
+      User user = TSAuthentication.GetUser(TSAuthentication.GetLoginUser());
+      return GetOrganizationFiltered(searchTerm, !user.AllowAnyTicketCustomer);
+    }
+
+    [WebMethod]
     public AutocompleteItem[] GetUserOrOrganization(string searchTerm)
     {
       return GetUserOrOrganizationFiltered(searchTerm, true);
@@ -886,6 +893,20 @@ namespace TSWebServices
       foreach (UsersViewItem user in users)
       {
         list.Add(new AutocompleteItem(String.Format("{0}, {1} [{2}]", user.LastName, user.FirstName, user.Organization), user.UserID.ToString(), "u"));
+      }
+
+      return list.ToArray();
+    }
+
+    public AutocompleteItem[] GetOrganizationFiltered(string searchTerm, bool filterByUserRights)
+    {
+      Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+      organizations.LoadByLikeOrganizationName(TSAuthentication.OrganizationID, searchTerm, true, 50, filterByUserRights);
+
+      List<AutocompleteItem> list = new List<AutocompleteItem>();
+      foreach (Organization organization in organizations)
+      {
+        list.Add(new AutocompleteItem(organization.Name, organization.OrganizationID.ToString(), "o"));
       }
 
       return list.ToArray();

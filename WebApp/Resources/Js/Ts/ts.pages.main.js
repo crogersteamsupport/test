@@ -1414,7 +1414,13 @@ Ts.Pages.Main.prototype = {
   openOrganizationProduct: function (organizationProductID) {
     var self = this;
     Ts.Services.Organizations.GetOrganizationProduct(organizationProductID, function (op) {
-      self.openProduct(op.ProductID, op.ProductVersionID == null ? -1 : op.ProductVersionID);
+      self.openNewProduct(op.ProductID);
+    });
+  },
+  openProductOrganization: function (organizationProductID) {
+    var self = this;
+    Ts.Services.Organizations.GetOrganizationProduct(organizationProductID, function (op) {
+      self.openCustomer(op.OrganizationID);
     });
   },
   openTag: function (tagID) {

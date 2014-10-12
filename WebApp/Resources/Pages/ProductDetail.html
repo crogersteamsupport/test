@@ -41,7 +41,7 @@
             </div>
             <div class="btn-group">
               <button class="btn btn-default product-tooltip" type="button" title="Refresh this product" id="productRefresh"><i class="fa fa-refresh"></i></button>
-              <button class="btn btn-default product-tooltip" type="button" title="Delete" id="productDelete"><i class="fa fa-trash-o"></i></button>
+              <button class="btn btn-default product-tooltip" type="button" title="Delete" id="customerDelete"><i class="fa fa-trash-o"></i></button>
             </div>
           </div>
         </div>
@@ -52,8 +52,8 @@
           <li><a href="#product-overview" data-toggle="tab">Details</a></li>
           <li><a href="#product-versions" data-toggle="tab">Versions</a></li>
           <li><a href="#product-customers" data-toggle="tab">Customers</a></li>
-          <li><a href="#product-watercooler" data-toggle="tab">Watercooler</a></li>         
           <li><a href="#product-tickets" data-toggle="tab">Tickets</a></li>
+          <li><a href="#product-watercooler" data-toggle="tab">Watercooler</a></li>
           <li><a href="#product-inventory" data-toggle="tab">Inventory</a></li>
         </ul>
       </div>
@@ -230,7 +230,7 @@
                   </div>
                   </form>
                   <input type="hidden" id="fieldOrganizationProductID" value="-1" />
-                  <button id="btnCustomerSave" class="btn btn-primary col-md-offset-1">Associate Customer</button>
+                  <button id="btnCustomerSave" class="btn btn-primary col-md-offset-1">Save</button>
                   <button id="btnCustomerCancel" class="btn btn-default">Cancel</button>
                 </div>
               </div>
@@ -241,7 +241,7 @@
                 <div class="box-content">
                   <div class="row">
                     <div class="col-md-12">
-                      <table class="table table-hover" id="tblProducts">
+                      <table class="table table-hover" id="tblCustomers">
                         <thead>
                           <tr>
                             <th></th>
@@ -263,6 +263,33 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="product-tickets">
+          <iframe id="ticketIframe" frameborder="0" scrolling="no" src="" width="100%" style="height: 96%;
+            position: absolute"></iframe>
+        </div>
+        <div class="tab-pane fade" id="product-watercooler">
+          <iframe id="watercoolerIframe" frameborder="0" scrolling="no" src="" width="100%"
+            height="850"></iframe>
+        </div>
+        <div class="tab-pane fade" id="product-inventory">
+          <div class="row">
+              <div class="col-xs-12">
+                  <div class="box">
+                <div class="box-header">
+                </div>
+                <div class="box-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                          <!--<button class="btn btn-primary asset-action-assign" data-toggle="modal" data-target="#modalAssign" >Assign Asset</button>-->
+                          <div class="list-group assetList">
+                          </div>
+                        </div>
+                      </div>
+                  </div>   
+              </div>
+              </div>
           </div>
         </div>
       </div>

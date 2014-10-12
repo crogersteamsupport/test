@@ -1,4 +1,5 @@
 ﻿var _productID = null;
+var _execGetCustomer = null;
 
 $(document).ready(function () {
   _productID = top.Ts.Utils.getQueryValue("productid", window);
@@ -59,7 +60,23 @@ $(document).ready(function () {
 
   $('#productTabs a:first').tab('show');
 
-  createTestChart();
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      if (e.target.innerHTML == "Details") {
+          createTestChart();
+          LoadCustomProperties();
+      }
+      else if (e.target.innerHTML == "Versions")
+          LoadVersions();
+      else if (e.target.innerHTML == "Customers")
+          LoadCustomers();
+      else if (e.target.innerHTML == "Tickets")
+          $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_ProductID=" + _productID);
+      else if (e.target.innerHTML == "Watercooler")
+          $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=1&pageid=" + _productID);
+      else if (e.target.innerHTML == "Inventory")
+          LoadInventory();
+  })
+
   function createTestChart() {
     var greenLimit, yellowLimit;
 
@@ -238,8 +255,6 @@ $(document).ready(function () {
 
   var ellipseString = function (text, max) { return text.length > max - 3 ? text.substring(0, max - 3) + '...' : text; };
 
-  LoadCustomProperties();
-
   function LoadCustomProperties() {
     top.Ts.Services.Assets.GetCustomValues(_productID, top.Ts.ReferenceTypes.Products, function (html) {
       appendCustomValues(html);
@@ -381,7 +396,6 @@ $(document).ready(function () {
       top.Ts.MainPage.newProduct("product", _productID);
   });
 
-  LoadVersions();
   function LoadVersions() {
       top.Ts.Services.Products.LoadVersions(_productID, function (versions) {
           $('.versionList').empty();
@@ -400,7 +414,6 @@ $(document).ready(function () {
       $('#customerForm').toggle();
   });
 
-  LoadCustomers();
   function LoadCustomers(noheaders) {
 
       if(!noheaders){
@@ -411,12 +424,12 @@ $(document).ready(function () {
                   if(header == 'Product Name') {
                     header = 'Customer';
                   }
-                  $('#tblProducts th:last').after('<th>' + header + '</th>');
+                  $('#tblCustomers th:last').after('<th>' + header + '</th>');
               }
           });
           }
 
-      $('#tblProducts tbody').empty();
+      $('#tblCustomers tbody').empty();
       //Here we need a whole different method that is going to load customers by productID. It should return the same columns
       top.Ts.Services.Products.LoadCustomers(_productID, function (product) {
           for (var i = 0; i < product.length; i++) {
@@ -430,19 +443,18 @@ $(document).ready(function () {
 
               if(top.Ts.System.User.CanEditCompany || _isAdmin)
               {
-                  html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].Customer + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields;
+                  html = '<td><i class="fa fa-edit customerEdit"></i></td><td><i class="fa fa-trash-o customerDelete"></i></td><td><i class="fa fa-folder-open customerView"></i></td><td>' + product[i].Customer + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields;
               }
               else
               {
-                  html = '<td></td><td></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].Customer + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
+                  html = '<td></td><td></td><td><i class="fa fa-folder-open customerView"></i></td><td>' + product[i].Customer + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
               }
               var tr = $('<tr>')
               .attr('id', product[i].OrganizationProductID)
               .html(html)
-              .appendTo('#tblProducts > tbody:last');
+              .appendTo('#tblCustomers > tbody:last');
 
 
-              //$('#tblProducts > tbody:last').append('<tr><td><a href="#" id='+ product.ProductID +'><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td></td></tr>');
           }
       });
 
@@ -450,7 +462,7 @@ $(document).ready(function () {
 
   var getCustomers = function (request, response) {
     if (_execGetCustomer) { _execGetCustomer._executor.abort(); }
-    _execGetCustomer = top.Ts.Services.Organizations.GetUserOrOrganizationForTicket(request.term, function (result) { response(result); });
+    _execGetCustomer = top.Ts.Services.Organizations.GetOrganizationForTicket(request.term, function (result) { response(result); });
   }
 
   $('#inputCustomer').autocomplete({
@@ -466,15 +478,15 @@ $(document).ready(function () {
   });
 
   LoadProductVersions();
-  function LoadProductVersions(productID, selVal) {
+  function LoadProductVersions() {
       $("#productVersion").empty();
         
-      top.Ts.Services.Customers.LoadProductVersions(productID, function (pt) {
+      top.Ts.Services.Customers.LoadProductVersions(_productID, function (pt) {
           $('<option>').attr('value', '-1').text('Unassigned').appendTo('#productVersion');
           for (var i = 0; i < pt.length; i++) {
               var opt = $('<option>').attr('value', pt[i].ProductVersionID).text(pt[i].VersionNumber).data('o', pt[i]);
-              if (pt[i].ProductVersionID == selVal)
-                  opt.attr('selected', 'selected');
+//              if (pt[i].ProductVersionID == selVal)
+//                  opt.attr('selected', 'selected');
               opt.appendTo('#productVersion');
           }
       });
@@ -549,7 +561,7 @@ $(document).ready(function () {
               LoadCustomers(true);
               $('#btnProductSave').text("Save Product");
               $('#productExpiration').val('');
-              $('#fieldProductID').val('-1');
+              $('#fieldOrganizationProductID').val('-1');
               $('#btnProductSave').text("Associate Product");
               $('.customField:visible').each(function () {
                   switch ($(this).attr("type")) {
@@ -560,13 +572,100 @@ $(document).ready(function () {
                           $(this).val('');
                   }
               });
-              $('#productForm').toggle();
+              $('#customerForm').toggle();
           }, function () {
               alert('There was an error saving this product association. Please try again.');
           });
       }
 
   });
+
+  $("#btnCustomerCancel").click(function (e) {
+      e.preventDefault();
+      top.Ts.System.logAction('Product Detail - Cancel Customer Edit');
+      $('#productExpiration').val('');
+      $('#fieldOrganizationProductID').val('-1');
+      $('.customField:visible').each(function () {
+          switch ($(this).attr("type")) {
+              case "checkbox":
+                  $(this).prop('checked',false);
+                  break;
+              default:
+                  $(this).val('');
+          }
+      });
+      $('#customerForm').toggle();
+  });
+
+  $('#tblCustomers').on('click', '.customerEdit', function (e) {
+      e.preventDefault();
+      var organizationProductID = $(this).parent().parent().attr('id');
+      //var orgproductID;
+      top.Ts.System.logAction('Product Detail - Edit Customer');
+      top.Ts.Services.Products.LoadCustomer(organizationProductID, function (organizationProduct) {
+          //orgproductID = prod.OrganizationProductID;
+          SetVersion(organizationProduct.VersionNumber);
+          var item = new Object();
+          item.label = organizationProduct.Customer;
+          item.value = organizationProduct.Customer;
+          item.id = organizationProduct.OrganizationID;
+          item.data = "o";
+          $('#inputCustomer').data('item', item);
+          $('#inputCustomer').val(organizationProduct.Customer);
+          $('#supportExpiration').val(organizationProduct.SupportExpiration);
+          $('#fieldOrganizationProductID').val(organizationProductID);
+          top.Ts.Services.Customers.LoadCustomProductFields(organizationProductID, function (custField) {
+              for (var i = 0; i < custField.length; i++) {
+                  if (custField[i].FieldType == 2)
+                      $('#' + custField[i].CustomFieldID).attr('checked', custField[i].Value);
+                  //else if (custField[i].FieldType == 5)
+                  //{
+                  //    var date = field.value == null ? null : top.Ts.Utils.getMsDate(field.Value);
+                  //    $('#' + custField[i].CustomFieldID).val(date.localeFormat(top.Ts.Utils.getDatePattern()));
+                  //}
+                        
+                  else
+                      $('#' + custField[i].CustomFieldID).val(custField[i].Value);
+              }
+          });
+      });
+      $('#customerForm').show();
+  });
+
+  function SetVersion(selVal) {
+    $("#productVersion").children().removeAttr("selected");
+    $("#productVersion > option").each(function() {
+     if(this.value == selVal){
+      this.setAttribute('selected','selected');
+     }
+    });
+  }
+
+  $('#tblCustomers').on('click', '.customerDelete', function (e) {
+      e.preventDefault();
+      if (confirm('Are you sure you would like to remove this customer association?')) {
+          top.Ts.System.logAction('Product Detail - Delete Customer');
+          top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), function (e) {
+              LoadCustomers(true);
+          });
+            
+      }
+  });
+
+  $('#tblCustomers').on('click', '.customerView', function (e) {
+      e.preventDefault();
+      top.Ts.System.logAction('Product Detail - View Customer');
+      top.Ts.MainPage.openProductOrganization($(this).parent().parent().attr('id'))
+      //top.location = "../../../Default.aspx?OrganizationProductID=" + ;
+
+  });
+
+  function LoadInventory() {
+      $('.assetList').empty();
+      top.Ts.Services.Products.LoadAssets(_productID, function (assets) {
+          $('.assetList').append(assets)
+      });
+  }
 
 });
 
