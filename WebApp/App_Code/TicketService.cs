@@ -1782,13 +1782,18 @@ namespace TSWebServices
                         {
                             var remoteLinks = jiraClient.GetRemoteLinks(issueRef);
                             if (null != remoteLinks)
+                            {
                                 foreach (TeamSupport.JIRA.RemoteLink linkItem in remoteLinks)
+                                {
                                     if (linkItem.icon.title == "TeamSupport Logo")
                                     {
                                         jiraClient.DeleteRemoteLink(issueRef, linkItem);
-                                        linkToJira.DeleteFromDB(ticketID);
-                                        result = true;
+
                                     }
+                                }
+                                linkToJira.DeleteFromDB(ticketID);
+                                result = true;
+                            }
                         }
                         
                     }
