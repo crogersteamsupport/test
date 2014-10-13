@@ -1689,6 +1689,56 @@ AND u.OrganizationID = @OrganizationID
       }
     }
 
+    public static int GetProductVersionOpenTicketCount(LoginUser loginUser, int productVersionID, int ticketTypeID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT
+          COUNT(*) 
+        FROM 
+          Tickets t 
+          LEFT JOIN TicketStatuses ts 
+            ON ts.TicketStatusID = t.TicketStatusID 
+        WHERE 
+          t.TicketTypeID = @TicketTypeID
+          AND ts.IsClosed = 0
+          AND (t.ReportedVersionID = @ProductVersionID OR t.SolvedVersionID = @ProductVersionID)
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
+        command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+
+        Tickets tickets = new Tickets(loginUser);
+        return (int)tickets.ExecuteScalar(command, "Tickets");
+      }
+    }
+
+    public static int GetProductVersionClosedTicketCount(LoginUser loginUser, int productVersionID, int ticketTypeID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT
+          COUNT(*)
+        FROM
+          Tickets t
+          LEFT JOIN TicketStatuses ts
+            ON ts.TicketStatusID = t.TicketStatusID
+        WHERE 
+          t.TicketTypeID = @TicketTypeID
+          AND ts.IsClosed = 1
+          AND (t.ReportedVersionID = @ProductVersionID OR t.SolvedVersionID = @ProductVersionID)
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
+        command.Parameters.AddWithValue("@TicketTypeID", ticketTypeID);
+
+        Tickets tickets = new Tickets(loginUser);
+        return (int)tickets.ExecuteScalar(command, "Tickets");
+      }
+    }
+
     public void LoadByGroupUnassigned(int userID, int top)
     {
       using (SqlCommand command = new SqlCommand())

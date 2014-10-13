@@ -412,6 +412,73 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByProductVersionIDLimit(int productVersionID, int start)
+    {
+      int end = start + 49;
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT
+          *
+        FROM
+        (
+          SELECT
+            *, 
+            ROW_NUMBER() OVER (ORDER BY DateModified Desc) AS rownum  
+          FROM
+          (
+            SELECT
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM
+              ActionLogs al
+              LEFT JOIN Users u 
+                ON u.UserID = al.CreatorID
+            WHERE 
+              al.RefType = 14
+              AND al.RefID = @ProductVersionID
+                                
+            UNION 
+                                
+            SELECT 
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM 
+              ActionLogs al
+              LEFT JOIN Users u ON u.UserID = al.CreatorID
+              LEFT JOIN Tickets t ON t.TicketID = al.RefID
+            WHERE
+              al.RefType = 17
+              AND (t.ReportedVersionID = @ProductVersionID OR t.SolvedVersionID = @ProductVersionID)
+                                
+            UNION 
+                                
+            SELECT 
+              al.*, 
+              u.FirstName + ' ' + u.LastName AS CreatorName
+            FROM
+              ActionLogs al
+              LEFT JOIN Users u ON u.UserID = al.CreatorID
+              LEFT JOIN Actions a ON a.ActionID = al.RefID
+              LEFT JOIN Tickets t ON t.TicketID = a.TicketID
+            WHERE
+              al.RefType = 0
+              AND (t.ReportedVersionID = @ProductVersionID OR t.SolvedVersionID = @ProductVersionID)                               
+          ) as temp
+        ) as results
+        WHERE
+          rownum between @start and @end
+				ORDER BY
+          rownum ASC
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
+        command.Parameters.AddWithValue("@start", start);
+        command.Parameters.AddWithValue("@end", end);
+        Fill(command);
+      }
+    }
+
     public void LoadByUserID(int userID)
     {
       using (SqlCommand command = new SqlCommand())

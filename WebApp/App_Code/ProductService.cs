@@ -378,6 +378,40 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public string LoadVersionChartData(int productVersionID, bool open)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      Organizations organizations = new Organizations(loginUser);
+      organizations.LoadByOrganizationID(loginUser.OrganizationID);
+
+      TicketTypes ticketTypes = new TicketTypes(loginUser);
+      ticketTypes.LoadByOrganizationID(loginUser.OrganizationID, organizations[0].ProductType);
+
+      int total = 0;
+      StringBuilder chartString = new StringBuilder("");
+
+      foreach (TicketType ticketType in ticketTypes)
+      {
+        int count;
+        if (open)
+          count = Tickets.GetProductVersionOpenTicketCount(loginUser, productVersionID, ticketType.TicketTypeID);
+        else
+          count = Tickets.GetProductVersionClosedTicketCount(loginUser, productVersionID, ticketType.TicketTypeID);
+        total += count;
+
+        if (count > 0)
+          chartString.AppendFormat("{0},{1},", ticketType.Name.Replace(",", ""), count.ToString().Replace(",", ""));
+        //chartString.AppendFormat("['{0}',{1}],",ticketType.Name, count.ToString());
+      }
+      if (chartString.ToString().EndsWith(","))
+      {
+        chartString.Remove(chartString.Length - 1, 1);
+      }
+
+      return chartString.ToString();
+    }
+
+    [WebMethod]
     public string GetProductTickets(int productID, int closed)
     {
       TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
@@ -403,6 +437,15 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public ActionLogProxy[] LoadVersionHistory(int productVersionID, int start)
+    {
+      ActionLogs actionLogs = new ActionLogs(TSAuthentication.GetLoginUser());
+      actionLogs.LoadByProductVersionIDLimit(productVersionID, start);
+
+      return actionLogs.GetActionLogProxies();
+    }
+
+    [WebMethod]
     public string SetName(int productID, string value)
     {
       Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), productID);
@@ -414,6 +457,18 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public string SetVersionNumber(int productVersionID, string value)
+    {
+      ProductVersion pv = ProductVersions.GetProductVersion(TSAuthentication.GetLoginUser(), productVersionID);
+      pv.VersionNumber = value;
+      pv.Collection.Save();
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      string description = String.Format("{0} set product version number to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.ProductVersions, productVersionID, description);
+      return value != "" ? value : "Empty";
+    }
+
+    [WebMethod]
     public string SetDescription(int productID, string value)
     {
       Product p = Products.GetProduct(TSAuthentication.GetLoginUser(), productID);
@@ -421,6 +476,18 @@ namespace TSWebServices
       p.Collection.Save();
       string description = String.Format("{0} set product description to {1} ", TSAuthentication.GetUser(TSAuthentication.GetLoginUser()).FirstLastName, value);
       ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.Products, productID, description);
+      return value != "" ? value : "Empty";
+    }
+
+    [WebMethod]
+    public string SetVersionDescription(int productVersionID, string value)
+    {
+      ProductVersion pv = ProductVersions.GetProductVersion(TSAuthentication.GetLoginUser(), productVersionID);
+      pv.Description = value;
+      pv.Collection.Save();
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      string description = String.Format("{0} set product version description to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.ProductVersions, productVersionID, description);
       return value != "" ? value : "Empty";
     }
 

@@ -221,9 +221,8 @@ namespace TeamSupport.Data
         FROM 
           TicketsView tv 
         WHERE 
-          tv.ReportedVersionID = @ProductVersionID
-          AND tv.SolvedVersionID = @ProductVersionID
-          AND tv.IsClosed = @closed
+          tv.IsClosed = @closed
+          AND (tv.ReportedVersionID = @ProductVersionID OR tv.SolvedVersionID = @ProductVersionID)
         ";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
@@ -287,6 +286,26 @@ namespace TeamSupport.Data
           TicketNumber desc";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ProductID", productID);
+        Fill(command);
+      }
+    }
+
+    public void LoadLatest5ProductVersionTickets(int productVersionID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT 
+          top 5 tv.* 
+        FROM 
+          TicketsView tv 
+        WHERE 
+          tv.ReportedVersionID = @ProductVersionID
+          OR tv.SolvedVersionID = @ProductVersionID
+        ORDER BY 
+          TicketNumber desc";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
         Fill(command);
       }
     }

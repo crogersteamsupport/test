@@ -2519,6 +2519,14 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public TicketsViewItemProxy[] Load5MostRecentByProductVersionID(int productVersionID)
+    {
+      TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
+      tickets.LoadLatest5ProductVersionTickets(productVersionID);
+      return tickets.GetTicketsViewItemProxies();
+    }
+
+    [WebMethod]
     public TicketsViewItemProxy[] Load5MostRecentByContactID(int userID)
     {
         TicketsView tickets = new TicketsView(TSAuthentication.GetLoginUser());
