@@ -1647,307 +1647,309 @@ Namespace TeamSupport
                       End If
                       Log.Write(message.ToString())                      
                     End If
-                  ElseIf cRMLinkField.TSFieldName IsNot Nothing Then
-                    If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                      Dim value As String = If(IsDbNull(ticket.Row(cRMLinkField.TSFieldName)), String.Empty, ticket.Row(cRMLinkField.TSFieldName))
-                      If field.type = fieldType.date Then
-                        Dim dateValue As Date
-                        If Date.TryParse(value, dateValue) Then
-                          value = dateValue.ToString("yyyy'-'MM'-'dd")
                         Else
-                          Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because is mapped to a date field and the value is not a valid date.")
-                          Log.Write(message.ToString())
-                          Continue For                                            
+                            If cRMLinkField.TSFieldName IsNot Nothing Then
+                                If ticket.Row(cRMLinkField.TSFieldName) IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                    Dim value As String = If(IsDBNull(ticket.Row(cRMLinkField.TSFieldName)), String.Empty, ticket.Row(cRMLinkField.TSFieldName))
+                                    If field.type = fieldType.date Then
+                                        Dim dateValue As Date
+                                        If Date.TryParse(value, dateValue) Then
+                                            value = dateValue.ToString("yyyy'-'MM'-'dd")
+                                        Else
+                                            Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because is mapped to a date field and the value is not a valid date.")
+                                            Log.Write(message.ToString())
+                                            Continue For
+                                        End If
+                                    ElseIf field.type = fieldType.datetime Then
+                                        Dim dateValue As DateTime
+                                        If DateTime.TryParse(value, dateValue) Then
+                                            value = dateValue.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")
+                                        Else
+                                            Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because is mapped to a datetime field and the value is not a valid datetime.")
+                                            Log.Write(message.ToString())
+                                            Continue For
+                                        End If
+                                    End If
+                                    result.Add(GetNewXmlElement(field.name, value))
+                                Else
+                                    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                    If ticket.Row(cRMLinkField.TSFieldName) Is Nothing Then
+                                        message.Append("it was null")
+                                    End If
+                                    If ticket.Row(cRMLinkField.TSFieldName) Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append(" and ")
+                                    End If
+                                    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append("the field is not updatable.")
+                                    End If
+                                    Log.Write(message.ToString())
+                                End If
+                            Else
+                                Log.Write(
+                              "TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because custom field " +
+                              cRMLinkField.CRMFieldID.ToString() + " CustomFieldID and TSFieldName are null.")
+                            End If
                         End If
-                      ElseIf field.type = fieldType.datetime Then
-                        Dim dateValue As DateTime
-                        If DateTime.TryParse(value, dateValue) Then
-                          value = dateValue.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'") 
-                        Else
-                          Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because is mapped to a datetime field and the value is not a valid datetime.")
-                          Log.Write(message.ToString())
-                          Continue For                                            
-                        End If
-                      End If
-                      result.Add(GetNewXmlElement(field.name, value))
+                        ' Push of Lookup fields mappings is not supported at this time. 
+                        'Else If apiField.relationshipName IsNot Nothing Then
+                        '  cRMLinkField = customFields.FindByCRMFieldName(apiField.relationshipName)
+                        '  If cRMLinkField IsNot Nothing Then
+                        '    AddCustomFieldToList(apiField.relationshipName + ".Name", result)
+                        '  End If
                     Else
-                      Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                      If ticket.Row(cRMLinkField.TSFieldName) Is Nothing Then
-                        message.Append("it was null")
-                      End If
-                      If ticket.Row(cRMLinkField.TSFieldName) Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                        message.Append(" and ")
-                      End If
-                      If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                        message.Append("the field is not updatable.")
-                      End If
-                      Log.Write(message.ToString())                                            
-                    End If
-                  Else
-                    Log.Write(
-                      "TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because custom field " + 
-                      cRMLinkField.CRMFieldID.ToString() + " CustomFieldID and TSFieldName are null.")
-                  End If
-                ' Push of Lookup fields mappings is not supported at this time. 
-                'Else If apiField.relationshipName IsNot Nothing Then
-                '  cRMLinkField = customFields.FindByCRMFieldName(apiField.relationshipName)
-                '  If cRMLinkField IsNot Nothing Then
-                '    AddCustomFieldToList(apiField.relationshipName + ".Name", result)
-                '  End If
-                Else
-                  Select Case field.name.Trim().ToLower()
-                    Case "contactid"
-                      If salesForceCustomer.ContactID IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                        result.Add(GetNewXmlElement(field.name, salesForceCustomer.ContactID))
-                      Else
-                        Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                        If salesForceCustomer.ContactID Is Nothing Then
-                          message.Append("it was null")
-                        End If
-                        If salesForceCustomer.ContactID Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append(" and ")
-                        End If
-                        If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append("the field is not updatable.")
-                        End If
-                        Log.Write(message.ToString())
-                      End If
-                    Case "accountid"
-                      If salesForceCustomer.AccountID IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                        result.Add(GetNewXmlElement(field.name, salesForceCustomer.AccountID))
-                      Else
-                        Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                        If salesForceCustomer.AccountID Is Nothing Then
-                          message.Append("it was null")
-                        End If
-                        If salesForceCustomer.AccountID Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append(" and ")
-                        End If
-                        If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append("the field is not updatable.")
-                        End If
-                        Log.Write(message.ToString())
-                      End If
-                    Case "type"
-                      'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
-                      If ticket.TicketTypeName IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                        result.Add(GetNewXmlElement(field.name, ticket.TicketTypeName))
-                      Else
-                        Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                        If ticket.TicketTypeName Is Nothing Then
-                          message.Append("it was null")
-                        End If
-                        If ticket.TicketTypeName Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append(" and ")
-                        End If
-                        If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append("the field is not updatable.")
-                        End If
-                        Log.Write(message.ToString())
-                      End If
-                    Case "status"
-                      'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
-                      If ticket.Status IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then 
-                        result.Add(GetNewXmlElement(field.name, ticket.Status))
-                      Else
-                        Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                        If ticket.Status Is Nothing Then
-                          message.Append("it was null")
-                        End If
-                        If ticket.Status Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append(" and ")
-                        End If
-                        If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append("the field is not updatable.")
-                        End If
-                        Log.Write(message.ToString())
-                      End If
-                    Case "subject"
-                      'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
-                      If ticket.Name IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then 
-                        result.Add(GetNewXmlElement(field.name, ticket.Name))
-                      Else
-                        Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                        If ticket.Name Is Nothing Then
-                          message.Append("it was null")
-                        End If
-                        If ticket.Name Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append(" and ")
-                        End If
-                        If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append("the field is not updatable.")
-                        End If
-                        Log.Write(message.ToString())
-                      End If
-                    Case "priority"
-                      'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
-                      If ticket.Severity IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                        result.Add(GetNewXmlElement(field.name, ticket.Severity))
-                      Else
-                        Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                        If ticket.Severity Is Nothing Then
-                          message.Append("it was null")
-                        End If
-                        If ticket.Severity Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append(" and ")
-                        End If
-                        If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append("the field is not updatable.")
-                        End If
-                        Log.Write(message.ToString())
-                      End If
-                    Case "description"
-                      'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
-                      Dim action As Action = Actions.GetTicketDescription(User, ticket.TicketID)
-                      Dim description As String = Nothing
-                      Dim logError As Boolean = False
-                      If action IsNot Nothing Then
-                        description = Actions.GetTicketDescription(User, ticket.TicketID).Description
-                        If description IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(description))))
-                        Else
-                          logError = True
-                        End If
-                      Else
-                        logError = True
-                      End If
+                        Select Case field.name.Trim().ToLower()
+                            Case "contactid"
+                                If salesForceCustomer.ContactID IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                    result.Add(GetNewXmlElement(field.name, salesForceCustomer.ContactID))
+                                Else
+                                    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                    If salesForceCustomer.ContactID Is Nothing Then
+                                        message.Append("it was null")
+                                    End If
+                                    If salesForceCustomer.ContactID Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append(" and ")
+                                    End If
+                                    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append("the field is not updatable.")
+                                    End If
+                                    Log.Write(message.ToString())
+                                End If
+                            Case "accountid"
+                                If salesForceCustomer.AccountID IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                    result.Add(GetNewXmlElement(field.name, salesForceCustomer.AccountID))
+                                Else
+                                    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                    If salesForceCustomer.AccountID Is Nothing Then
+                                        message.Append("it was null")
+                                    End If
+                                    If salesForceCustomer.AccountID Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append(" and ")
+                                    End If
+                                    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append("the field is not updatable.")
+                                    End If
+                                    Log.Write(message.ToString())
+                                End If
+                            Case "type"
+                                'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                                If ticket.TicketTypeName IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                    result.Add(GetNewXmlElement(field.name, ticket.TicketTypeName))
+                                Else
+                                    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                    If ticket.TicketTypeName Is Nothing Then
+                                        message.Append("it was null")
+                                    End If
+                                    If ticket.TicketTypeName Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append(" and ")
+                                    End If
+                                    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append("the field is not updatable.")
+                                    End If
+                                    Log.Write(message.ToString())
+                                End If
+                            Case "status"
+                                'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                                If ticket.Status IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                    result.Add(GetNewXmlElement(field.name, ticket.Status))
+                                Else
+                                    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                    If ticket.Status Is Nothing Then
+                                        message.Append("it was null")
+                                    End If
+                                    If ticket.Status Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append(" and ")
+                                    End If
+                                    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append("the field is not updatable.")
+                                    End If
+                                    Log.Write(message.ToString())
+                                End If
+                            Case "subject"
+                                'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                                If ticket.Name IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                    result.Add(GetNewXmlElement(field.name, ticket.Name))
+                                Else
+                                    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                    If ticket.Name Is Nothing Then
+                                        message.Append("it was null")
+                                    End If
+                                    If ticket.Name Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append(" and ")
+                                    End If
+                                    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append("the field is not updatable.")
+                                    End If
+                                    Log.Write(message.ToString())
+                                End If
+                            Case "priority"
+                                'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                                If ticket.Severity IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                    result.Add(GetNewXmlElement(field.name, ticket.Severity))
+                                Else
+                                    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                    If ticket.Severity Is Nothing Then
+                                        message.Append("it was null")
+                                    End If
+                                    If ticket.Severity Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append(" and ")
+                                    End If
+                                    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append("the field is not updatable.")
+                                    End If
+                                    Log.Write(message.ToString())
+                                End If
+                            Case "description"
+                                'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                                Dim action As Action = Actions.GetTicketDescription(User, ticket.TicketID)
+                                Dim description As String = Nothing
+                                Dim logError As Boolean = False
+                                If action IsNot Nothing Then
+                                    description = Actions.GetTicketDescription(User, ticket.TicketID).Description
+                                    If description IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        result.Add(GetNewXmlElement(field.name, TruncateCaseCommentBody(HtmlUtility.StripHTML(description))))
+                                    Else
+                                        logError = True
+                                    End If
+                                Else
+                                    logError = True
+                                End If
 
-                      If logError Then
-                        Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                        If description Is Nothing Then
-                          message.Append("it was null")
-                        End If
-                        If description Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append(" and ")
-                        End If
-                        If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          message.Append("the field is not updatable.")
-                        End If
-                        Log.Write(message.ToString())
-                      End If
-                    'See ticket 13807. Createdate was not passed as is not createable or updateable. Because SalesForce denies creating a case with a closedate greater than createdate i'm taking it out.
-                    'Case "closeddate"
-                    '  'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
-                    '  If ticket.DateClosedUtc IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                    '    result.Add(GetNewXmlElement(field.name, CType(ticket.DateClosedUtc, DateTime).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")))
-                    '  Else
-                    '    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                    '    If ticket.DateClosed Is Nothing Then
-                    '      message.Append("it was null")
-                    '    End If
-                    '    If ticket.DateClosed Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                    '      message.Append(" and ")
-                    '    End If
-                    '    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                    '      message.Append("the field is not updatable.")
-                    '    End If
-                    '    Log.Write(message.ToString())
-                    '  End If
-                    Case "ownerid"
-                      If impersonation Then
-                      'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
-                      If ticket.UserID IsNot Nothing Then
-                        Dim owner As User = Users.GetUser(User, ticket.UserID)
-                        If owner IsNot Nothing Then
-                          Dim salesForceID As String = owner.SalesForceID
-                          If salesForceID Is Nothing Then
-                            salesForceID = GetSalesForceUserID(owner.Email)
-                            owner.SalesForceID = salesForceID
-                            owner.Collection.Save()
-                          End If
-                          If salesForceID IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                            result.Add(GetNewXmlElement(field.name, salesForceID))
-                          Else
-                            Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                            If salesForceID Is Nothing Then
-                              message.Append("it was null")
-                            End If
-                            If salesForceID Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                              message.Append(" and ")
-                            End If
-                            If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                              message.Append("the field is not updatable.")
-                            End If
-                            Log.Write(message.ToString())
-                          End If
-                        Else
-                          Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no owner.")
-                        End If
-                      Else
-                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no owner.")                      
-                      End If
-                      Else
-                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because impersonation flag is false.")                                            
-                      End If
-                    Case "createdbyid"
-                      If impersonation Then
-                      'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
-                      Dim creator As User = Users.GetUser(User, ticket.CreatorID)
-                      'Ticket 14381. SalesForce does not allow contact to create cases. Therefore we only try to add the creator if is not a contact.
-                      If creator IsNot Nothing AndAlso creator.OrganizationID = ticket.OrganizationID Then
-                        Dim salesForceID As String = creator.SalesForceID
-                        If salesForceID Is Nothing Then
-                          salesForceID = GetSalesForceUserID(creator.Email)
-                          creator.SalesForceID = salesForceID
-                          creator.Collection.Save()
-                        End If
-                        If salesForceID IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          result.Add(GetNewXmlElement(field.name, salesForceID))
-                        Else
-                          Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                          If salesForceID Is Nothing Then
-                            message.Append("it was null")
-                          End If
-                          If salesForceID Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                            message.Append(" and ")
-                          End If
-                          If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                            message.Append("the field is not updatable.")
-                          End If
-                          Log.Write(message.ToString())
-                        End If
-                      Else
-                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no creator.")                      
-                      End If
-                      Else
-                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because impersonation flag is false.")                                            
-                      End If
-                    Case "lastmodifiedbyid"
-                      If impersonation Then
-                      'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
-                      Dim modifier As User = Users.GetUser(User, ticket.ModifierID)
-                      'Ticket 14381. SalesForce does not allow contacts to modify cases. Therefore we only try to add the modifier if is not a contact.
-                      If modifier IsNot Nothing AndAlso modifier.OrganizationID = ticket.OrganizationID Then
-                        Dim salesForceID As String = modifier.SalesForceID
-                        If salesForceID Is Nothing Then
-                          salesForceID = GetSalesForceUserID(modifier.Email)
-                          modifier.SalesForceID = salesForceID
-                          modifier.Collection.Save()
-                        End If
-                        If salesForceID IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                          result.Add(GetNewXmlElement(field.name, salesForceID))
-                        Else
-                          Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
-                          If salesForceID Is Nothing Then
-                            message.Append("it was null")
-                          End If
-                          If salesForceID Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                            message.Append(" and ")
-                          End If
-                          If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
-                            message.Append("the field is not updatable.")
-                          End If
-                          Log.Write(message.ToString())
-                        End If
-                      Else
-                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no modifier.")                                            
-                      End If
-                      Else
-                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because impersonation flag is false.")                                                                  
-                      End If
-                  End Select
-                End If
-              Next 
+                                If logError Then
+                                    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                    If description Is Nothing Then
+                                        message.Append("it was null")
+                                    End If
+                                    If description Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append(" and ")
+                                    End If
+                                    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                        message.Append("the field is not updatable.")
+                                    End If
+                                    Log.Write(message.ToString())
+                                End If
+                                'See ticket 13807. Createdate was not passed as is not createable or updateable. Because SalesForce denies creating a case with a closedate greater than createdate i'm taking it out.
+                                'Case "closeddate"
+                                '  'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                                '  If ticket.DateClosedUtc IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                '    result.Add(GetNewXmlElement(field.name, CType(ticket.DateClosedUtc, DateTime).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'")))
+                                '  Else
+                                '    Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                '    If ticket.DateClosed Is Nothing Then
+                                '      message.Append("it was null")
+                                '    End If
+                                '    If ticket.DateClosed Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                '      message.Append(" and ")
+                                '    End If
+                                '    If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                '      message.Append("the field is not updatable.")
+                                '    End If
+                                '    Log.Write(message.ToString())
+                                '  End If
+                            Case "ownerid"
+                                If impersonation Then
+                                    'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                                    If ticket.UserID IsNot Nothing Then
+                                        Dim owner As User = Users.GetUser(User, ticket.UserID)
+                                        If owner IsNot Nothing Then
+                                            Dim salesForceID As String = owner.SalesForceID
+                                            If salesForceID Is Nothing Then
+                                                salesForceID = GetSalesForceUserID(owner.Email)
+                                                owner.SalesForceID = salesForceID
+                                                owner.Collection.Save()
+                                            End If
+                                            If salesForceID IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                                result.Add(GetNewXmlElement(field.name, salesForceID))
+                                            Else
+                                                Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                                If salesForceID Is Nothing Then
+                                                    message.Append("it was null")
+                                                End If
+                                                If salesForceID Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                                    message.Append(" and ")
+                                                End If
+                                                If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                                    message.Append("the field is not updatable.")
+                                                End If
+                                                Log.Write(message.ToString())
+                                            End If
+                                        Else
+                                            Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no owner.")
+                                        End If
+                                    Else
+                                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no owner.")
+                                    End If
+                                Else
+                                    Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because impersonation flag is false.")
+                                End If
+                            Case "createdbyid"
+                                If impersonation Then
+                                    'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                                    Dim creator As User = Users.GetUser(User, ticket.CreatorID)
+                                    'Ticket 14381. SalesForce does not allow contact to create cases. Therefore we only try to add the creator if is not a contact.
+                                    If creator IsNot Nothing AndAlso creator.OrganizationID = ticket.OrganizationID Then
+                                        Dim salesForceID As String = creator.SalesForceID
+                                        If salesForceID Is Nothing Then
+                                            salesForceID = GetSalesForceUserID(creator.Email)
+                                            creator.SalesForceID = salesForceID
+                                            creator.Collection.Save()
+                                        End If
+                                        If salesForceID IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                            result.Add(GetNewXmlElement(field.name, salesForceID))
+                                        Else
+                                            Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                            If salesForceID Is Nothing Then
+                                                message.Append("it was null")
+                                            End If
+                                            If salesForceID Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                                message.Append(" and ")
+                                            End If
+                                            If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                                message.Append("the field is not updatable.")
+                                            End If
+                                            Log.Write(message.ToString())
+                                        End If
+                                    Else
+                                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no creator.")
+                                    End If
+                                Else
+                                    Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because impersonation flag is false.")
+                                End If
+                            Case "lastmodifiedbyid"
+                                If impersonation Then
+                                    'Dim equivalentTypeValueInSalesForce As String = GetEquivalentValueInSalesForce(field.name, ticket.TicketTypeID)
+                                    Dim modifier As User = Users.GetUser(User, ticket.ModifierID)
+                                    'Ticket 14381. SalesForce does not allow contacts to modify cases. Therefore we only try to add the modifier if is not a contact.
+                                    If modifier IsNot Nothing AndAlso modifier.OrganizationID = ticket.OrganizationID Then
+                                        Dim salesForceID As String = modifier.SalesForceID
+                                        If salesForceID Is Nothing Then
+                                            salesForceID = GetSalesForceUserID(modifier.Email)
+                                            modifier.SalesForceID = salesForceID
+                                            modifier.Collection.Save()
+                                        End If
+                                        If salesForceID IsNot Nothing AndAlso ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                            result.Add(GetNewXmlElement(field.name, salesForceID))
+                                        Else
+                                            Dim message As StringBuilder = New StringBuilder("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because ")
+                                            If salesForceID Is Nothing Then
+                                                message.Append("it was null")
+                                            End If
+                                            If salesForceID Is Nothing AndAlso Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                                message.Append(" and ")
+                                            End If
+                                            If Not ((isNewCase AndAlso field.createable) OrElse field.updateable) Then
+                                                message.Append("the field is not updatable.")
+                                            End If
+                                            Log.Write(message.ToString())
+                                        End If
+                                    Else
+                                        Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because there is no modifier.")
+                                    End If
+                                Else
+                                    Log.Write("TicketID " + ticket.TicketID.ToString() + "'s field '" + field.name + "' was not included because impersonation flag is false.")
+                                End If
+                        End Select
+                    End If
+                Next
 
               Return result.ToArray()
             End Function
