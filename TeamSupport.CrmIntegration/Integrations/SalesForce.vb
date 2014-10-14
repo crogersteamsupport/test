@@ -315,8 +315,8 @@ Namespace TeamSupport
                                             End Try
 
                                             'Let's force an update of contact information for this company
-                                            'I'm commenting this as I believe it is redundant with call being made in line 344
-                                            'GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, thisCompany.AccountID, True)
+                                            'This is not redundant with line 344 see ticket 18202
+                                            GetContactInformation(ParentOrgID, LastUpdateSFFormat, AccountTypeString, thisCompany.AccountID, True)
 
                                             Log.Write("Completed force update contact info for " + thisCompany.AccountName)
 
