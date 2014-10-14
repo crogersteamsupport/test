@@ -568,6 +568,42 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public ProductCustomOrganization[] LoadVersionCustomers(int productVersionID)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      OrganizationProductsView organizationProducts = new OrganizationProductsView(loginUser);
+      organizationProducts.LoadByProductVersionID(productVersionID);
+      List<ProductCustomOrganization> list = new List<ProductCustomOrganization>();
+      CustomFields fields = new CustomFields(loginUser);
+      fields.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.OrganizationProducts);
+
+
+      foreach (DataRow row in organizationProducts.Table.Rows)
+      {
+        ProductCustomOrganization test = new ProductCustomOrganization();
+        test.Customer = row["OrganizationName"].ToString();
+        test.VersionNumber = row["VersionNumber"].ToString();
+        test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(loginUser, (((DateTime)row["SupportExpiration"]))).ToString(GetDateFormatNormal()) : "";
+        test.VersionStatus = row["VersionStatus"].ToString();
+        test.IsReleased = row["IsReleased"].ToString();
+        test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
+        test.OrganizationProductID = (int)row["OrganizationProductID"];
+        test.CustomFields = new List<string>();
+        foreach (CustomField field in fields)
+        {
+          CustomValue customValue = CustomValues.GetValue(TSAuthentication.GetLoginUser(), field.CustomFieldID, test.OrganizationProductID);
+          test.CustomFields.Add(customValue.Value);
+        }
+
+
+        list.Add(test);
+      }
+
+
+      return list.ToArray();
+    }
+
+    [WebMethod]
     public ProductCustomOrganization LoadCustomer(int organizationProductID)
     {
       OrganizationProductsViewItem organizationProduct = (OrganizationProductsViewItem)OrganizationProductsView.GetOrganizationProductsViewItem(TSAuthentication.GetLoginUser(), organizationProductID);
@@ -662,6 +698,125 @@ namespace TSWebServices
       return htmlresults.ToString();
     }
 
+    [WebMethod]
+    public string LoadVersionAssets(int productVersionID)
+    {
+      StringBuilder htmlresults = new StringBuilder("");
+      AssetsView assets = new AssetsView(TSAuthentication.GetLoginUser());
+      assets.LoadByProductVersionID(productVersionID);
+
+      StringBuilder productVersionNumberDisplayName;
+      StringBuilder serialNumberDisplayValue;
+      StringBuilder warrantyExpirationDisplayValue;
+
+      foreach (AssetsViewItem asset in assets)
+      {
+        productVersionNumberDisplayName = new StringBuilder();
+        serialNumberDisplayValue = new StringBuilder();
+        warrantyExpirationDisplayValue = new StringBuilder();
+
+        if (!string.IsNullOrEmpty(asset.ProductVersionNumber))
+        {
+          productVersionNumberDisplayName.Append(" - " + asset.ProductVersionNumber);
+        }
+
+        if (string.IsNullOrEmpty(asset.SerialNumber))
+        {
+          serialNumberDisplayValue.Append("Empty");
+        }
+        else
+        {
+          serialNumberDisplayValue.Append(asset.SerialNumber);
+        }
+
+        if (asset.WarrantyExpiration == null)
+        {
+          warrantyExpirationDisplayValue.Append("Empty");
+        }
+        else
+        {
+          warrantyExpirationDisplayValue.Append(((DateTime)asset.WarrantyExpiration).ToString(GetDateFormatNormal()));
+        }
+
+        htmlresults.AppendFormat(@"<div class='list-group-item'>
+                            <a href='#' id='{0}' class='assetLink'><h4 class='list-group-item-heading'>{1}</h4></a>
+                            <div class='row'>
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>{2}{3}</p>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-xs-8'>
+                                    <p class='list-group-item-text'>SN: {4} - Warr. Exp.: {5}</p>
+                                </div>
+                            </div>
+                            </div>
+                            </div>"
+
+            , asset.AssetID
+            , asset.DisplayName
+            , asset.ProductName
+            , productVersionNumberDisplayName
+            , serialNumberDisplayValue
+            , warrantyExpirationDisplayValue);
+      }
+
+      return htmlresults.ToString();
+    }
+
+    [WebMethod]
+    public ProductVersionStatusProxy[] LoadVersionStatuses()
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      ProductVersionStatuses statuses = new ProductVersionStatuses(loginUser);
+      statuses.LoadByOrganizationID(loginUser.OrganizationID);
+      return statuses.GetProductVersionStatusProxies();
+    }
+
+    [WebMethod]
+    public int SetProductVersionStatus(int productVersionID, int productVersionStatusID)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      ProductVersion pv = ProductVersions.GetProductVersion(loginUser, productVersionID);
+      pv.ProductVersionStatusID = productVersionStatusID;
+      pv.Collection.Save();
+      ProductVersionStatus pvs = ProductVersionStatuses.GetProductVersionStatus(loginUser, productVersionStatusID);
+      string description = String.Format("{0} set company name to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, pvs == null ? "Unassigned" : pvs.Name);
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.ProductVersions, productVersionID, description);
+      return productVersionStatusID;
+    }
+
+    [WebMethod]
+    public bool SetProductVersionReleased(int productVersionID, bool value)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      ProductVersion pv = ProductVersions.GetProductVersion(loginUser, productVersionID);
+      pv.IsReleased = value;
+      pv.Collection.Save();
+      string description = String.Format("{0} set product version released to {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, value);
+      ActionLogs.AddActionLog(TSAuthentication.GetLoginUser(), ActionLogType.Update, ReferenceType.ProductVersions, productVersionID, description);
+      return value;
+    }
+
+    [WebMethod]
+    public string SetReleaseDate(int productVersionID, object value)
+    {
+      LoginUser loginUser = TSAuthentication.GetLoginUser();
+      ProductVersion pv = ProductVersions.GetProductVersion(loginUser, productVersionID);
+      StringBuilder description = new StringBuilder();
+      if (pv.ReleaseDate == null)
+      {
+        description.Append(String.Format("Changed Released Date from \"{0}\" to \"{1}\".", "Unassigned", ((DateTime)value).ToString(GetDateFormatNormal())));
+      }
+      else
+      {
+        description.Append(String.Format("Changed Released Date from \"{0}\" to \"{1}\".", ((DateTime)pv.ReleaseDate).ToString(GetDateFormatNormal()), ((DateTime)value).ToString(GetDateFormatNormal())));
+      }
+      pv.ReleaseDate = (DateTime)value;
+      pv.Collection.Save();
+      ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.ProductVersions, productVersionID, description.ToString());
+      return value.ToString() != "" ? value.ToString() : null;
+    }
   }
 
   [DataContract]

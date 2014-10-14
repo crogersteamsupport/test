@@ -171,29 +171,47 @@
                   <div id="openTickets" class="tickets"></div>
                 </div>
               </div>  
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="product-versions">
-          <div class="row">
-            <div class="col-xs-12">
               <div class="box">
                 <div class="box-header">
+                  <h3>Version Info</h3>
                 </div>
                 <div class="box-content">
-                  <div class="row">
-                    <div class="col-md-6">
-                      <button class="btn btn-primary version-action-add">Add Version</button>
-                      <div class="list-group versionList">
+                  <div>
+                    <div class="form-horizontal">
+                      <div class="productVersionProperties">
+                        <div class="form-group">
+                          <label for="fieldProduct" class="col-md-4 control-label">Product</label>
+                          <div class="col-md-8">
+                            <p class="form-control-static link" id="fieldProduct"></p>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="fieldStatus" class="col-md-4 control-label">Status</label>
+                          <div class="col-md-8">
+                            <p class="form-control-static editable" id="fieldStatus"></p>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="fieldReleased" class="col-md-4 control-label">Released</label>
+                          <div class="col-md-8">
+                            <p class="form-control-static editable w-wrap" id="fieldReleased"></p>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="fieldReleaseDate" class="col-md-4 control-label">Release Date</label>
+                          <div class="col-md-8">
+                            <p class="form-control-static editable" id="fieldReleaseDate"></p>
+                          </div>
+                        </div>
+                        </div>
                       </div>
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="tab-pane fade" id="product-customers">
+        <div class="tab-pane fade" id="product-version-customers">
           <div class="row">
             <div class="col-xs-12">
               <div class="box" id="customerForm" style="display: none;">
@@ -207,14 +225,6 @@
                         <label for="inputCustomer" class="col-md-4 control-label">Customer:</label>
                         <div class="col-md-8">
                           <input class="col-md-10 form-control" id="inputCustomer" placeholder="Enter partial name then select name from list">
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <label class="col-md-2 control-label" for="productVersion">Version</label>
-                        <div class="col-md-8">
-                          <select id="productVersion" class="form-control">
-                            <option value="-1">Unassigned</option>
-                          </select>
                         </div>
                       </div>
                       <div class="col-md-4">
@@ -248,7 +258,6 @@
                             <th></th>
                             <th></th>
                             <th>Customer</th>
-                            <th>Version</th>
                             <th>Support Expiration</th>
                             <th>Status</th>
                             <th>Released</th>
@@ -269,11 +278,67 @@
           <iframe id="ticketIframe" frameborder="0" scrolling="no" src="" width="100%" style="height: 96%;
             position: absolute"></iframe>
         </div>
+        <div class="tab-pane fade" id="company-attachments">
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="box" id="fileForm" style="display: none;">
+                <div class="box-header">
+                </div>
+                <div class="box-content">
+                  <form class="form-horizontal file-upload" action="Upload/Actions/555" method="POST"
+                  enctype="multipart/form-data" title="You can drag and drop your attachments here.">
+                  <div class="form-group">
+                    <label for="inputName" class="col-md-1 control-label">File</label>
+                    <div class="col-md-10">
+                      <input class="hiddenfile" type="file" name="file[]">
+                      <p class="form-control-static"><a class="ui-state-default ts-link" href="#" title="You can drag and drop your attachments here.">
+                        Click to select your file or drag and drop files here.</a></p>
+                      <ul class="upload-queue"></ul>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputName" class="col-md-1 control-label">Description</label>
+                    <div class="col-md-10">
+                      <textarea class="col-md-3 form-control" id="attachmentDescription"></textarea>
+                    </div>
+                  </div>
+                  </form>
+                  <button id="btnFilesSave" class="btn btn-primary col-md-offset-1">Upload</button>
+                  <button id="btnFilesCancel" class="btn btn-default">Cancel</button>
+                </div>
+              </div>
+              <div class="box">
+                <div class="box-header">
+                  <button id="fileToggle" class="btn btn-primary">Add Files</button>
+                </div>
+                <div class="box-content">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <table class="table table-hover" id="tblFiles">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>File Name</th>
+                            <th>Description</th>
+                            <th>Attached By</th>
+                            <th>Date Attached</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="tab-pane fade" id="product-watercooler">
           <iframe id="watercoolerIframe" frameborder="0" scrolling="no" src="" width="100%"
             height="850"></iframe>
         </div>
-        <div class="tab-pane fade" id="product-inventory">
+        <div class="tab-pane fade" id="product-version-inventory">
           <div class="row">
               <div class="col-xs-12">
                   <div class="box">

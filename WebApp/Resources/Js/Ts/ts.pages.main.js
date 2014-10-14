@@ -1414,7 +1414,7 @@ Ts.Pages.Main.prototype = {
   openOrganizationProduct: function (organizationProductID) {
     var self = this;
     Ts.Services.Organizations.GetOrganizationProduct(organizationProductID, function (op) {
-      self.openNewProduct(op.ProductID);
+      self.openProduct(op.ProductID, op.ProductVersionID == null ? -1 : op.ProductVersionID);
     });
   },
   openProductOrganization: function (organizationProductID) {

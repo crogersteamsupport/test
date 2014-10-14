@@ -119,6 +119,27 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    public void LoadByProductVersionID(int productVersionID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+          @"
+            SELECT 
+              * 
+            FROM
+              OrganizationProductsView 
+            WHERE
+              ProductVersionID = @ProductVersionID 
+            ORDER BY 
+              OrganizationProductID DESC
+          ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
+        Fill(command);
+      }
+    }
   }
   
 }

@@ -1,5 +1,6 @@
 ﻿var _productID = null;
 var _execGetCustomer = null;
+var _headersLoaded = false;
 
 $(document).ready(function () {
   _productID = top.Ts.Utils.getQueryValue("productid", window);
@@ -414,9 +415,9 @@ $(document).ready(function () {
       $('#customerForm').toggle();
   });
 
-  function LoadCustomers(noheaders) {
+  function LoadCustomers() {
 
-      if(!noheaders){
+      if(!_headersLoaded){
         
           top.Ts.Services.Customers.LoadcustomProductHeaders(function (headers) {
               for (var i = 0; i < headers.length; i++) {
@@ -426,11 +427,12 @@ $(document).ready(function () {
                   }
                   $('#tblCustomers th:last').after('<th>' + header + '</th>');
               }
+              _headersLoaded = true;
           });
           }
 
       $('#tblCustomers tbody').empty();
-      //Here we need a whole different method that is going to load customers by productID. It should return the same columns
+
       top.Ts.Services.Products.LoadCustomers(_productID, function (product) {
           for (var i = 0; i < product.length; i++) {
               var customfields = "";
@@ -558,11 +560,9 @@ $(document).ready(function () {
       if (hasError == 0)
       {
           top.Ts.Services.Customers.SaveProduct(top.JSON.stringify(productInfo), function (prod) {
-              LoadCustomers(true);
-              $('#btnProductSave').text("Save Product");
+              LoadCustomers();
               $('#productExpiration').val('');
               $('#fieldOrganizationProductID').val('-1');
-              $('#btnProductSave').text("Associate Product");
               $('.customField:visible').each(function () {
                   switch ($(this).attr("type")) {
                       case "checkbox":
@@ -646,7 +646,7 @@ $(document).ready(function () {
       if (confirm('Are you sure you would like to remove this customer association?')) {
           top.Ts.System.logAction('Product Detail - Delete Customer');
           top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), function (e) {
-              LoadCustomers(true);
+              LoadCustomers();
           });
             
       }
