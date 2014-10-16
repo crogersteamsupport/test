@@ -971,6 +971,18 @@ AND u.IsPortalUser = 1";
       return null;
     }
 
+    public User FindBySalesForceID(string salesForceID)
+    {
+        foreach (User user in this)
+        {
+            if (user.SalesForceID.ToString().Trim().ToLower() == salesForceID.Trim().ToLower())
+            {
+                return user;
+            }
+        }
+        return null;
+    }
+
     public User FindByName(string firstName, string lastName)
     {
       foreach (User user in this)
