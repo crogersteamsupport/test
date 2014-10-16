@@ -72,7 +72,7 @@ Namespace TeamSupport
           Try
             Log = New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()), CRMType)
           Catch ex As Exception
-            ExceptionLogs.LogException(LoginUser, ex, "CRM Processor", CRMLinkTableItem.Row)
+            ExceptionLogs.LogException(LoginUser, ex, "CRM Processor rev.2381", CRMLinkTableItem.Row)
             Log = New SyncLog(Path.Combine("C:\CrmLogs\", CRMLinkTableItem.OrganizationID.ToString()), CRMType)
           End Try
 
