@@ -559,11 +559,7 @@ Namespace TeamSupport
                     Dim thisUser As User
 
                     findUser.LoadByOrganizationID(thisCompany.OrganizationID, False)
-                    'First Condition uses SalesforceID, prevents duplicate contacts being created when the email address is updated in SalesForce
-                    If person.SalesForceID IsNot Nothing And findUser.FindBySalesForceID(person.SalesForceID) IsNot Nothing Then
-                        thisUser = findUser.FindBySalesForceID(person.Email)
-
-                    ElseIf findUser.FindByEmail(person.Email) IsNot Nothing Then
+                    If findUser.FindByEmail(person.Email) IsNot Nothing Then
                         thisUser = findUser.FindByEmail(person.Email)
 
                     Else
@@ -593,7 +589,7 @@ Namespace TeamSupport
                         .LastName = person.LastName
                         .Title = person.Title
                         .MarkDeleted = False
-                        .SalesForceID = person.SalesForceID
+                        .SalesForceID = person.SalesForceID 
 
                         .Collection.Save()
                     End With
@@ -696,16 +692,16 @@ Namespace TeamSupport
                         End If
 
                         With phone
-                            .Number = person.Phone
+                            .Number  = person.Phone
                             .RefType = ReferenceType.Users
-                            .RefID = thisUser.UserID
+                            .RefID   = thisUser.UserID
                             If CRMPhoneType IsNot Nothing Then
                                 .PhoneTypeID = CRMPhoneType.PhoneTypeID
                             End If
-
+                            
                             'Custom mapping for Tenmast.
                             If Type = IntegrationType.ZohoCRM Then
-                                .Extension = person.Extension
+                              .Extension = person.Extension
                             End If
 
                             .Collection.Save()
@@ -713,7 +709,7 @@ Namespace TeamSupport
                     End If
 
                     If person.Cell Is Nothing OrElse person.Cell = String.Empty Then
-                        If mobilePhone IsNot Nothing Then
+                        If mobilePhone IsNot Nothing then
                             mobilePhone.Collection.DeleteFromDB(mobilePhone.PhoneID)
                         End If
                     Else
@@ -722,16 +718,16 @@ Namespace TeamSupport
                         End If
 
                         With mobilePhone
-                            .Number = person.Cell
-                            .RefType = ReferenceType.Users
-                            .RefID = thisUser.UserID
-                            .PhoneTypeID = mobileType.PhoneTypeID
+                            .Number       = person.Cell
+                            .RefType      = ReferenceType.Users
+                            .RefID        = thisUser.UserID
+                            .PhoneTypeID  = mobileType.PhoneTypeID
                             .Collection.Save()
                         End With
                     End If
 
                     If person.Fax Is Nothing OrElse person.Fax = String.Empty Then
-                        If faxPhone IsNot Nothing Then
+                        If faxPhone IsNot Nothing then
                             faxPhone.Collection.DeleteFromDB(faxPhone.PhoneID)
                         End If
                     Else
@@ -740,9 +736,9 @@ Namespace TeamSupport
                         End If
 
                         With faxPhone
-                            .Number = person.Fax
-                            .RefType = ReferenceType.Users
-                            .RefID = thisUser.UserID
+                            .Number   = person.Fax
+                            .RefType  = ReferenceType.Users
+                            .RefID    = thisUser.UserID
                             .PhoneTypeID = faxType.PhoneTypeID
                             .Collection.Save()
                         End With
