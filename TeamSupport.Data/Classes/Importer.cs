@@ -1588,6 +1588,9 @@ namespace TeamSupport.Data
         action.TimeSpent = GetDBInt(row["TimeSpent"], true);
         if (action.IsVisibleOnPortal && !ticket.IsVisibleOnPortal) ticket.IsVisibleOnPortal = true;
 
+        action.Pinned = row.Table.Columns.Contains("IsPinned") ? GetDBBool(row["IsPinned"]) : false;
+
+
         if (++count % BULK_LIMIT == 0)
         {
           tickets.Save();
