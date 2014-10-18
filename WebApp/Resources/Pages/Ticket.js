@@ -1726,18 +1726,24 @@ $(document).ready(function () {
     $('#jiraUnlink').click(function (e) {
         if (confirm("Are you sure you want to remove link to JIRA?")) {
             e.preventDefault();
+            $('.ts-jira-buttons-container').show();
+            $('#issueKey').hide();
             var parent = $(this).parent().hide();
             top.Ts.Services.Tickets.UnSetSyncWithJira(_ticketID, function (result) {
                 if (result === true) {
-                    $('.ts-jira-buttons-container').show();
-                    $('#issueKey').hide();
+                    //$('.ts-jira-buttons-container').show();
+                    //$('#issueKey').hide();
                 }
                 else {
                     alert('There was an error setting your Jira Issue Key. Please try again later');
+                    $('.ts-jira-buttons-container').hide();
+                    $('#issueKey').show();
                 }
             },
       function (error) {
           alert('There was an error setting your Jira Issue Key.');
+          $('.ts-jira-buttons-container').hide();
+          $('#issueKey').show();
       });
         }
     });

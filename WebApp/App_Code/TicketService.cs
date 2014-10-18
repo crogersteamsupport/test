@@ -1788,10 +1788,10 @@ namespace TSWebServices
                                     if (linkItem.icon.title == "TeamSupport Logo")
                                     {
                                         jiraClient.DeleteRemoteLink(issueRef, linkItem);
-
                                     }
                                 }
-                                linkToJira.DeleteFromDB(ticketID);
+                                
+                                linkToJira.DeleteFromDB(ticketLinktoJiraProxy.id);
                                 result = true;
                             }
                         }
