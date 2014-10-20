@@ -1028,6 +1028,7 @@ namespace TeamSupport.Data
 
     private void ImportContacts()
     {
+      Organization unknown = Organizations.GetUnknownCompany(_loginUser, _organizationID);
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
       //IdList idList = GetIdList(organizations);
@@ -1040,8 +1041,9 @@ namespace TeamSupport.Data
         Organization organization = organizations.FindByImportID(row["CustomerID"].ToString());
         if (organization == null)
         {
-          _log.AppendError(row, "Contact skipped due to missing organization.");
-          continue;
+          organization = unknown;
+          //_log.AppendError(row, "Contact skipped due to missing organization.");
+          //continue;
         }
 
 

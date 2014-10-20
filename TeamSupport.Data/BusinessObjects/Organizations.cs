@@ -2399,19 +2399,41 @@ ORDER BY o.Name";
 
     public static int GetUnknownCompanyID(LoginUser loginUser)
     {
+      return GetUnknownCompanyID(loginUser, loginUser.OrganizationID);
+    }
+
+    public static int GetUnknownCompanyID(LoginUser loginUser, int organizationID)
+    {
       Organizations organizations = new Organizations(loginUser);
-      organizations.LoadByUnknownCompany(loginUser.OrganizationID);
+      organizations.LoadByUnknownCompany(organizationID);
       if (organizations.IsEmpty)
       {
         organizations = new Organizations(loginUser);
         Organization newUnknownCompany = organizations.AddNewOrganization();
         newUnknownCompany.Name = "_Unknown Company";
         newUnknownCompany.IsActive = true;
-        newUnknownCompany.ParentID = loginUser.OrganizationID;
+        newUnknownCompany.ParentID = organizationID;
         organizations.Save();
       }
       return organizations[0].OrganizationID;
     }
+
+    public static Organization GetUnknownCompany(LoginUser loginUser, int organizationID)
+    {
+      Organizations organizations = new Organizations(loginUser);
+      organizations.LoadByUnknownCompany(organizationID);
+      if (organizations.IsEmpty)
+      {
+        organizations = new Organizations(loginUser);
+        Organization newUnknownCompany = organizations.AddNewOrganization();
+        newUnknownCompany.Name = "_Unknown Company";
+        newUnknownCompany.IsActive = true;
+        newUnknownCompany.ParentID = organizationID;
+        organizations.Save();
+      }
+      return organizations[0];
+    }
+
 
     public void LoadFirstDomainMatch(int parentID, string domain)
     {
