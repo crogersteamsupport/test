@@ -437,23 +437,25 @@ namespace TeamSupport.ServiceLibrary
       {
         Logs.WriteEvent("Ticket.GroupID is not null AND oldGroupID is not null");
         Group owner = Groups.GetGroup(LoginUser, (int)ticket.GroupID);
-        Logs.WriteEventFormat("Group Owner: {0} ({1})", owner.Name, owner.GroupID.ToString());
-        List<UserEmail> list = new List<UserEmail>();
-        AddTicketOwners(list, ticket);
-        if (ticket.UserID != null)
+        if (owner != null)
         {
-          RemoveUser(list, (int)ticket.UserID);
-          Logs.WriteParam("Removing UserID from list: ", ticket.UserID.ToString());
+          Logs.WriteEventFormat("Group Owner: {0} ({1})", owner.Name, owner.GroupID.ToString());
+          List<UserEmail> list = new List<UserEmail>();
+          AddTicketOwners(list, ticket);
+          if (ticket.UserID != null)
+          {
+            RemoveUser(list, (int)ticket.UserID);
+            Logs.WriteParam("Removing UserID from list: ", ticket.UserID.ToString());
+          }
+          MailMessage message = EmailTemplates.GetTicketAssignmentGroup(LoginUser, modifierName, ticket.GetTicketView());
+          AddUsersToAddresses(message.To, list, modifierID);
+          message.Subject = message.Subject + subject;
+          foreach (MailAddress mailAddress in message.To)
+          {
+            ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket assignment email sent to " + mailAddress.Address);
+          }
+          AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
         }
-        MailMessage message = EmailTemplates.GetTicketAssignmentGroup(LoginUser, modifierName, ticket.GetTicketView());
-        AddUsersToAddresses(message.To, list, modifierID);
-        message.Subject = message.Subject + subject;
-        foreach (MailAddress mailAddress in message.To)
-        {
-          ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, "Ticket assignment email sent to " + mailAddress.Address);
-        }
-        AddMessage(ticketOrganization.OrganizationID, "Ticket Assignment [" + ticket.TicketNumber.ToString() + "]", message, ticket.EmailReplyToAddress, fileNames.ToArray());
-
       }
 
 
