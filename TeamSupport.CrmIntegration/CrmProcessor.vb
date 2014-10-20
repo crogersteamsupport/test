@@ -69,12 +69,23 @@ Namespace TeamSupport
           'set up log per crm link item
           Dim Log As SyncLog = Nothing
 
-          Try
-            Log = New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()), CRMType)
-          Catch ex As Exception
-            ExceptionLogs.LogException(LoginUser, ex, "CRM Processor rev.2381", CRMLinkTableItem.Row)
-            Log = New SyncLog(Path.Combine("C:\CrmLogs\", CRMLinkTableItem.OrganizationID.ToString()), CRMType)
-          End Try
+
+          Dim LogPath As String = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Logs")
+
+          If Not Directory.Exists(LogPath) Then
+            Directory.CreateDirectory(LogPath)
+          End If
+
+          LogPath = Path.Combine(LogPath, CRMLinkTableItem.OrganizationID.ToString())
+
+          Log = New SyncLog(LogPath, CRMType)
+
+          'Try
+          'Log = New SyncLog(Path.Combine(Settings.ReadString("Log File Path", "C:\CrmLogs\"), CRMLinkTableItem.OrganizationID.ToString()), CRMType)
+          'Catch ex As Exception
+          ' ExceptionLogs.LogException(LoginUser, ex, "CRM Processor rev.2381", CRMLinkTableItem.Row)
+          'Log = New SyncLog(Path.Combine("C:\CrmLogs\", CRMLinkTableItem.OrganizationID.ToString()), CRMType)
+          'End Try
 
           Dim CRM As Integration = Nothing
 
@@ -153,13 +164,13 @@ Namespace TeamSupport
                 End If
                 If CRMLinkTableItem.SendBackTicketData Then
                   If pushTicketsAndPullCasesMessage.Length > 0 Then
-                    pushTicketsAndPullCasesMessage.Append(" and")                    
+                    pushTicketsAndPullCasesMessage.Append(" and")
                   End If
                   pushTicketsAndPullCasesMessage.Append(" pushing ticktes as ")
                   If CRMLinkTableItem.CRMType = "Jira" Then
                     pushTicketsAndPullCasesMessage.Append("issues")
                   Else
-                    pushTicketsAndPullCasesMessage.Append("notes")                
+                    pushTicketsAndPullCasesMessage.Append("notes")
                   End If
                 End If
                 Integration.LogSyncResult(CRMType.ToString() & " Sync Completed" & pushTicketsAndPullCasesMessage.ToString() & ".",
