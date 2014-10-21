@@ -561,195 +561,195 @@ Namespace TeamSupport
                     findUser.LoadByOrganizationID(thisCompany.OrganizationID, False)
                     'First Condition uses SalesforceID, prevents duplicate contacts being created when the email address is updated in SalesForce
                     If person.SalesForceID IsNot Nothing And findUser.FindBySalesForceID(person.SalesForceID) IsNot Nothing Then
-                        thisUser = findUser.FindBySalesForceID(person.Email)
+                        thisUser = findUser.FindBySalesForceID(person.SalesForceID)
                     ElseIf findUser.FindByEmail(person.Email) IsNot Nothing Then
                         thisUser = findUser.FindByEmail(person.Email)
 
-                    Else
-                        Dim pw = DataUtils.GenerateRandomPassword()
+                        Else
+                            Dim pw = DataUtils.GenerateRandomPassword()
 
-                        Dim crmlinkOrg As New Organizations(User)
-                        crmlinkOrg.LoadByOrganizationID(ParentOrgID)
-                        Dim isAdvancedPortal As Boolean = crmlinkOrg(0).IsAdvancedPortal
+                            Dim crmlinkOrg As New Organizations(User)
+                            crmlinkOrg.LoadByOrganizationID(ParentOrgID)
+                            Dim isAdvancedPortal As Boolean = crmlinkOrg(0).IsAdvancedPortal
 
-                        'add the contact
-                        thisUser = (New Users(User)).AddNewUser()
-                        thisUser.OrganizationID = thisCompany.OrganizationID
-                        thisUser.IsActive = True
-                        thisUser.IsPasswordExpired = True
-                        thisUser.IsPortalUser = isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess
-                        thisUser.CryptedPassword = Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(pw, "MD5")
-                        thisUser.Collection.Save()
+                            'add the contact
+                            thisUser = (New Users(User)).AddNewUser()
+                            thisUser.OrganizationID = thisCompany.OrganizationID
+                            thisUser.IsActive = True
+                            thisUser.IsPasswordExpired = True
+                            thisUser.IsPortalUser = isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess
+                            thisUser.CryptedPassword = Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(pw, "MD5")
+                            thisUser.Collection.Save()
 
-                        If isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
-                            EmailPosts.SendWelcomePortalUser(User, thisUser.UserID, pw)
+                            If isAdvancedPortal AndAlso CRMLinkRow.AllowPortalAccess AndAlso CRMLinkRow.SendWelcomeEmail Then
+                                EmailPosts.SendWelcomePortalUser(User, thisUser.UserID, pw)
+                            End If
                         End If
-                    End If
 
-                    With thisUser
-                        .Email = person.Email
-                        .FirstName = IIf(person.FirstName IsNot Nothing, person.FirstName, "")
-                        .LastName = person.LastName
-                        .Title = person.Title
-                        .MarkDeleted = False
-                        .SalesForceID = person.SalesForceID
+                        With thisUser
+                            .Email = person.Email
+                            .FirstName = IIf(person.FirstName IsNot Nothing, person.FirstName, "")
+                            .LastName = person.LastName
+                            .Title = person.Title
+                            .MarkDeleted = False
+                            .SalesForceID = person.SalesForceID
 
-                        .Collection.Save()
-                    End With
+                            .Collection.Save()
+                        End With
 
-                    Log.Write("Updating phone information.")
+                        Log.Write("Updating phone information.")
 
-                    '1. Preparation. Get phone types to use in update.
-                    Dim thesePhoneTypes As New PhoneTypes(User)
-                    thesePhoneTypes.LoadAllPositions(ParentOrgID)
-
-                    Dim CRMPhoneType As PhoneType = Nothing
-                    'We'll save the phone number using the corresponding CRM ("phone" or "work") phone type.
-                    Select Case Type
-                        Case IntegrationType.Batchbook, IntegrationType.SalesForce, IntegrationType.ZohoCRM
-                            CRMPhoneType = thesePhoneTypes.FindByName("Phone")
-                            If CRMPhoneType Is Nothing Then
-                                CRMPhoneType = AddPhoneType("Phone", thesePhoneTypes.Count, ParentOrgID)
-                                thesePhoneTypes.LoadAllPositions(ParentOrgID)
-                            End If
-                        Case IntegrationType.Highrise
-                            CRMPhoneType = thesePhoneTypes.FindByName("Work")
-                            If CRMPhoneType Is Nothing Then
-                                CRMPhoneType = AddPhoneType("Work", thesePhoneTypes.Count, ParentOrgID)
-                                thesePhoneTypes.LoadAllPositions(ParentOrgID)
-                            End If
-                    End Select
-
-                    'The worktype is used regardless of the CRM phone type to be able to update the numbers processed by the previous version of this class.
-                    Dim workType As PhoneType = thesePhoneTypes.FindByName("Work")
-                    If workType Is Nothing Then
-                        workType = AddPhoneType("Work", thesePhoneTypes.Count, ParentOrgID)
+                        '1. Preparation. Get phone types to use in update.
+                        Dim thesePhoneTypes As New PhoneTypes(User)
                         thesePhoneTypes.LoadAllPositions(ParentOrgID)
-                    End If
 
-                    'All the CRMs uses Mobile for this phone type.
-                    Dim mobileType As PhoneType = thesePhoneTypes.FindByName("Mobile")
-                    If mobileType Is Nothing Then
-                        mobileType = AddPhoneType("Mobile", thesePhoneTypes.Count, ParentOrgID)
-                        thesePhoneTypes.LoadAllPositions(ParentOrgID)
-                    End If
-
-                    'All the CRMs uses Fax for this phone type.
-                    Dim faxType As PhoneType = thesePhoneTypes.FindByName("Fax")
-                    If faxType Is Nothing Then
-                        faxType = AddPhoneType("Fax", thesePhoneTypes.Count, ParentOrgID)
-                        thesePhoneTypes.LoadAllPositions(ParentOrgID)
-                    End If
-
-                    '2. Preparation. Get existing numbers, if any, to update instead of add new.
-                    Dim phone As PhoneNumber = Nothing
-                    Dim mobilePhone As PhoneNumber = Nothing
-                    Dim faxPhone As PhoneNumber = Nothing
-
-                    'We'll proceed to find an existing number to update instead of incorrectly adding a new number everytime the contact get sync.
-                    'If more than one phone number exist with the type we are looking for, we might end up updating the incorrect number.
-                    'Unfortunately there is not an easy way to prevent this undesirable effect.
-                    'An alternative is to wipe all numbers and add the ones comming from the CRM. This has been reviewed and rejected by RJ.
-                    'Error chances are less if we update the first existing number with the type being updated than deleting existing numbers.
-                    'Specially because we are bringing only the first number from the CRM.
-                    Dim findPhone As New PhoneNumbers(User)
-                    findPhone.LoadByID(thisUser.UserID, ReferenceType.Users)
-                    If findPhone.Count > 0 Then
-                        'The previous version assigned phone to the work type when the work type existed.
-                        'Because chances are low that the Work Type was deleted by a user chances are big that this is the number we need to update.
-                        phone = findPhone.FindByPhoneTypeID(workType.PhoneTypeID)
-                        If phone Is Nothing Then
-                            'When no work number exist, there is a small chance that the work type was deleted.
-                            'In this case, for a long time we did not add the phone, recently we updated the code to add the number without type.
-                            'To handle this very low chance we look for a number without type.
-                            For Each existingNumber As PhoneNumber In findPhone
-                                If existingNumber.PhoneTypeID Is Nothing Then
-                                    phone = existingNumber
-                                    Exit For
+                        Dim CRMPhoneType As PhoneType = Nothing
+                        'We'll save the phone number using the corresponding CRM ("phone" or "work") phone type.
+                        Select Case Type
+                            Case IntegrationType.Batchbook, IntegrationType.SalesForce, IntegrationType.ZohoCRM
+                                CRMPhoneType = thesePhoneTypes.FindByName("Phone")
+                                If CRMPhoneType Is Nothing Then
+                                    CRMPhoneType = AddPhoneType("Phone", thesePhoneTypes.Count, ParentOrgID)
+                                    thesePhoneTypes.LoadAllPositions(ParentOrgID)
                                 End If
-                            Next
-                        End If
-                        If phone Is Nothing AndAlso CRMPhoneType IsNot Nothing Then
-                            'If no number have been found so far, maybe the current version already updated this contact.
-                            'Therefore we look for a number with the CRM phone type.
-                            phone = findPhone.FindByPhoneTypeID(CRMPhoneType.PhoneTypeID)
+                            Case IntegrationType.Highrise
+                                CRMPhoneType = thesePhoneTypes.FindByName("Work")
+                                If CRMPhoneType Is Nothing Then
+                                    CRMPhoneType = AddPhoneType("Work", thesePhoneTypes.Count, ParentOrgID)
+                                    thesePhoneTypes.LoadAllPositions(ParentOrgID)
+                                End If
+                        End Select
+
+                        'The worktype is used regardless of the CRM phone type to be able to update the numbers processed by the previous version of this class.
+                        Dim workType As PhoneType = thesePhoneTypes.FindByName("Work")
+                        If workType Is Nothing Then
+                            workType = AddPhoneType("Work", thesePhoneTypes.Count, ParentOrgID)
+                            thesePhoneTypes.LoadAllPositions(ParentOrgID)
                         End If
 
-                        If mobileType IsNot Nothing Then
-                            mobilePhone = findPhone.FindByPhoneTypeID(mobileType.PhoneTypeID)
+                        'All the CRMs uses Mobile for this phone type.
+                        Dim mobileType As PhoneType = thesePhoneTypes.FindByName("Mobile")
+                        If mobileType Is Nothing Then
+                            mobileType = AddPhoneType("Mobile", thesePhoneTypes.Count, ParentOrgID)
+                            thesePhoneTypes.LoadAllPositions(ParentOrgID)
                         End If
 
-                        If faxType IsNot Nothing Then
-                            faxPhone = findPhone.FindByPhoneTypeID(faxType.PhoneTypeID)
-                        End If
-                    End If
-
-                    '3. Action. Add/Update.
-                    If person.Phone Is Nothing OrElse person.Phone = String.Empty Then
-                        If phone IsNot Nothing Then
-                            phone.Collection.DeleteFromDB(phone.PhoneID)
-                        End If
-                    Else
-                        If phone Is Nothing Then
-                            phone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                        'All the CRMs uses Fax for this phone type.
+                        Dim faxType As PhoneType = thesePhoneTypes.FindByName("Fax")
+                        If faxType Is Nothing Then
+                            faxType = AddPhoneType("Fax", thesePhoneTypes.Count, ParentOrgID)
+                            thesePhoneTypes.LoadAllPositions(ParentOrgID)
                         End If
 
-                        With phone
-                            .Number = person.Phone
-                            .RefType = ReferenceType.Users
-                            .RefID = thisUser.UserID
-                            If CRMPhoneType IsNot Nothing Then
-                                .PhoneTypeID = CRMPhoneType.PhoneTypeID
+                        '2. Preparation. Get existing numbers, if any, to update instead of add new.
+                        Dim phone As PhoneNumber = Nothing
+                        Dim mobilePhone As PhoneNumber = Nothing
+                        Dim faxPhone As PhoneNumber = Nothing
+
+                        'We'll proceed to find an existing number to update instead of incorrectly adding a new number everytime the contact get sync.
+                        'If more than one phone number exist with the type we are looking for, we might end up updating the incorrect number.
+                        'Unfortunately there is not an easy way to prevent this undesirable effect.
+                        'An alternative is to wipe all numbers and add the ones comming from the CRM. This has been reviewed and rejected by RJ.
+                        'Error chances are less if we update the first existing number with the type being updated than deleting existing numbers.
+                        'Specially because we are bringing only the first number from the CRM.
+                        Dim findPhone As New PhoneNumbers(User)
+                        findPhone.LoadByID(thisUser.UserID, ReferenceType.Users)
+                        If findPhone.Count > 0 Then
+                            'The previous version assigned phone to the work type when the work type existed.
+                            'Because chances are low that the Work Type was deleted by a user chances are big that this is the number we need to update.
+                            phone = findPhone.FindByPhoneTypeID(workType.PhoneTypeID)
+                            If phone Is Nothing Then
+                                'When no work number exist, there is a small chance that the work type was deleted.
+                                'In this case, for a long time we did not add the phone, recently we updated the code to add the number without type.
+                                'To handle this very low chance we look for a number without type.
+                                For Each existingNumber As PhoneNumber In findPhone
+                                    If existingNumber.PhoneTypeID Is Nothing Then
+                                        phone = existingNumber
+                                        Exit For
+                                    End If
+                                Next
+                            End If
+                            If phone Is Nothing AndAlso CRMPhoneType IsNot Nothing Then
+                                'If no number have been found so far, maybe the current version already updated this contact.
+                                'Therefore we look for a number with the CRM phone type.
+                                phone = findPhone.FindByPhoneTypeID(CRMPhoneType.PhoneTypeID)
                             End If
 
-                            'Custom mapping for Tenmast.
-                            If Type = IntegrationType.ZohoCRM Then
-                                .Extension = person.Extension
+                            If mobileType IsNot Nothing Then
+                                mobilePhone = findPhone.FindByPhoneTypeID(mobileType.PhoneTypeID)
                             End If
 
-                            .Collection.Save()
-                        End With
+                            If faxType IsNot Nothing Then
+                                faxPhone = findPhone.FindByPhoneTypeID(faxType.PhoneTypeID)
+                            End If
+                        End If
+
+                        '3. Action. Add/Update.
+                        If person.Phone Is Nothing OrElse person.Phone = String.Empty Then
+                            If phone IsNot Nothing Then
+                                phone.Collection.DeleteFromDB(phone.PhoneID)
+                            End If
+                        Else
+                            If phone Is Nothing Then
+                                phone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                            End If
+
+                            With phone
+                                .Number = person.Phone
+                                .RefType = ReferenceType.Users
+                                .RefID = thisUser.UserID
+                                If CRMPhoneType IsNot Nothing Then
+                                    .PhoneTypeID = CRMPhoneType.PhoneTypeID
+                                End If
+
+                                'Custom mapping for Tenmast.
+                                If Type = IntegrationType.ZohoCRM Then
+                                    .Extension = person.Extension
+                                End If
+
+                                .Collection.Save()
+                            End With
+                        End If
+
+                        If person.Cell Is Nothing OrElse person.Cell = String.Empty Then
+                            If mobilePhone IsNot Nothing Then
+                                mobilePhone.Collection.DeleteFromDB(mobilePhone.PhoneID)
+                            End If
+                        Else
+                            If mobilePhone Is Nothing Then
+                                mobilePhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                            End If
+
+                            With mobilePhone
+                                .Number = person.Cell
+                                .RefType = ReferenceType.Users
+                                .RefID = thisUser.UserID
+                                .PhoneTypeID = mobileType.PhoneTypeID
+                                .Collection.Save()
+                            End With
+                        End If
+
+                        If person.Fax Is Nothing OrElse person.Fax = String.Empty Then
+                            If faxPhone IsNot Nothing Then
+                                faxPhone.Collection.DeleteFromDB(faxPhone.PhoneID)
+                            End If
+                        Else
+                            If faxPhone Is Nothing Then
+                                faxPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
+                            End If
+
+                            With faxPhone
+                                .Number = person.Fax
+                                .RefType = ReferenceType.Users
+                                .RefID = thisUser.UserID
+                                .PhoneTypeID = faxType.PhoneTypeID
+                                .Collection.Save()
+                            End With
+                        End If
+
+
+                        Log.Write("Phone information updated.")
                     End If
-
-                    If person.Cell Is Nothing OrElse person.Cell = String.Empty Then
-                        If mobilePhone IsNot Nothing Then
-                            mobilePhone.Collection.DeleteFromDB(mobilePhone.PhoneID)
-                        End If
-                    Else
-                        If mobilePhone Is Nothing Then
-                            mobilePhone = (New PhoneNumbers(User).AddNewPhoneNumber())
-                        End If
-
-                        With mobilePhone
-                            .Number = person.Cell
-                            .RefType = ReferenceType.Users
-                            .RefID = thisUser.UserID
-                            .PhoneTypeID = mobileType.PhoneTypeID
-                            .Collection.Save()
-                        End With
-                    End If
-
-                    If person.Fax Is Nothing OrElse person.Fax = String.Empty Then
-                        If faxPhone IsNot Nothing Then
-                            faxPhone.Collection.DeleteFromDB(faxPhone.PhoneID)
-                        End If
-                    Else
-                        If faxPhone Is Nothing Then
-                            faxPhone = (New PhoneNumbers(User).AddNewPhoneNumber())
-                        End If
-
-                        With faxPhone
-                            .Number = person.Fax
-                            .RefType = ReferenceType.Users
-                            .RefID = thisUser.UserID
-                            .PhoneTypeID = faxType.PhoneTypeID
-                            .Collection.Save()
-                        End With
-                    End If
-
-
-                    Log.Write("Phone information updated.")
-                End If
 
             End Sub
 
