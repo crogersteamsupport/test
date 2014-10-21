@@ -29,6 +29,7 @@ table {
 	border-collapse: separate;
 	border-spacing: 0;
 }
+
 caption, th, td {
 	text-align: left;
 	font-weight: normal;
@@ -367,3 +368,13 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .bgcolor-green { background-color: #5CB85C; }
 .bgcolor-teal { background-color: #008080; }
 .bgcolor-magenta { background-color: #BA55D3; }
+
+.ticket-action-description table{
+    border-width: 1px; border-style: outset;
+    border-spacing: 2px;
+}
+
+
+.ticket-action-description tbody, tfoot, thead, tr, th, td{
+    border-width: 1px; border-style: inset;
+}
