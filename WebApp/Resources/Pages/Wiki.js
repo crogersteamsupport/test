@@ -15,6 +15,7 @@ var _wikiParentsList = null;
 var _wikiMenuLITemplate = '<li class="wiki-menu-item"><a id="{ID}" href="#">{Title}</a>';
 var _wikiSubMenuULTemplate = '<ul class="nav wiki-sidebar-subitem">';
 var _wikiSubMenuLITemplate = '<li class="wiki-menu-subitem"><a id="{ID}" href="#">{Title}</a></li>';
+var _wikiLinkPopOverTemplate = '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"><button id="wiki-copy-button" data-clipboard-text="Copy Me!" title="Click to copy me.">Copy to Clipboard</button></h3><div class="popover-content"></div></div>';
 
 $(document).ready(function () {
     wikiPage = new WikiPage();
@@ -47,16 +48,22 @@ function BuildWikiPage() {
 
 
 function BuildWikiView() {
-    $('#WikiLink').popover('hide')
-    $("#WikiLink").popover({ trigger: 'click' });
+    $('#WikiLink').popover('hide');
+    $("#WikiLink").popover();
+    $("#WikiLink").attr("data-content", _wikiExternalLink.replace("{ID}", _wikiID));
+    $('#WikiLink').on('shown.bs.popover', function () {
+        $(".popover-title").append('<div class="zero-clipboard"><span id="wiki-copy-button" class="btn-clipboard with-example" data-clipboard-text="' + _wikiExternalLink.replace("{ID}", _wikiID) + '" title="Click to copy below link">Copy</span></div>');
+        var client = new ZeroClipboard(document.getElementById("wiki-copy-button"));
+        client.on("aftercopy", function (event) {
+            alert("Copied text to clipboard: " + event.data["text/plain"]);
+        });
+    });
+
+
     $("#Wiki-Title").text(_wikiTitle);
     $("#Wiki-Body").html(_wikiBody);
     $("#Wiki-Edit-Title").val(_wikiTitle);
     $("#Wiki-Edit-Body").html(_wikiBody);
-
-    if (_wikiID !== null) {
-        $("#WikiLink").attr("data-content", _wikiExternalLink.replace("{ID}", _wikiID));
-    }
     $("#Wiki-Edit-Parent").val(_wikiParentID);
     $("#Wiki-Edit-PublicView").prop('checked', _wikiPublicView);
     $("#Wiki-Edit-PrivateView").prop('checked', _wikiPrivateView);
@@ -108,15 +115,15 @@ function BuildWikiMenuItems() {
 
             $(".wiki-menu-item>a").click(function (e) {
                 $('.wiki-menu-item').children("a").removeClass('active');
-                $(this).addClass('active');
-                //$('.wiki-sidebar-subitem').hide();
-                $(this).closest('li').children("ul").toggle();
                 $('.wiki-menu-subitem').children("a").removeClass('active');
+                $(this).addClass('active');
+                $(this).closest('li').children("ul").toggle();
                 GetWiki(this.id);
                 e.preventDefault();
             });
 
             $(".wiki-menu-subitem>a").click(function (e) {
+                $('.wiki-menu-item').children("a").removeClass('active');
                 $('.wiki-menu-subitem').children("a").removeClass('active');
                 $(this).addClass('active');
                 GetWiki(this.id);
@@ -147,6 +154,7 @@ function BuildWikiEditEvents() {
     });
 
     $("#wiki-edit-save").click(function () {
+        var comment = prompt("Please enter a comment for this revision", "");
         var title = $("#Wiki-Edit-Title").val();
         var body = $("#Wiki-Edit-Body").html();
         var public = $("#Wiki-Edit-PublicView").is(':checked');
@@ -173,8 +181,8 @@ function BuildWikiEditEvents() {
         $("#Wiki-Edit-PublicView").prop('checked', false);
         $("#Wiki-Edit-PrivateView").prop('checked', false);
         $("#Wiki-Edit-PortalView").prop('checked', false);
-        $('#Wiki-Revisions').find('option').remove().end().append($("<option></option>"));
-        $('#Wiki-Revisions').hide();
+        $('.wiki-revision-history tbody').empty();
+        $('.wiki-revision-div').hide();
         $("#WikiViewArea").hide();
         $("#WikiEditArea").show();
         top.Ts.System.logAction('Wiki - Wiki Created');
@@ -221,9 +229,15 @@ function GetWiki(wikiID) {
 
 function GetWikiHistory(wikiID) {
     top.Ts.Services.Wiki.GetWikiHistory(wikiID, function (wikiHistory) {
+        if (wikiHistory !== null) {
+            $('.wiki-revision-div').show();
+        }
+        else {
+            $('.wiki-revision-div').hide();
+        }
         $('.wiki-revision-history tbody').empty();
         $.each(wikiHistory, function (key, value) {
-            $(".wiki-revision-history tbody").append('<tr><td>' + value.RevisionNumber + '</td><td>' + value.RevisedDate + '</td><td>' + value.RevisedBy + '</td><td>' + value.Comment + '</td><td><button data-id="' + value.HistoryID + '" class="btn btn-primary btn-xs wiki-restore">Restore</button></td></tr>');
+            $(".wiki-revision-history tbody").append('<tr><td>' + value.RevisionNumber + '</td><td>' + value.RevisedDate + '</td><td>' + value.RevisedBy + '</td><td>' + value.Comment + '</td><td><button data-id="' + value.HistoryID + '" class="btn btn-primary btn-xs wiki-restore">Preview</button></td></tr>');
         });
 
         $(".wiki-restore").click(function () {
