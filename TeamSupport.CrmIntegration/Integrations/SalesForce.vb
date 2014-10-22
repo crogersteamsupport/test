@@ -976,7 +976,15 @@ Namespace TeamSupport
                                                         End If
                                                     ElseIf thisMapping.TSFieldName IsNot Nothing Then
                                                         crmLinkError = crmLinkErrors.FindByObjectIDAndFieldName(accountID, thisMapping.TSFieldName)
-                                                        thisAccount.Row(thisMapping.TSFieldName) = TranslateFieldValue(value, thisAccount.Row(thisMapping.TSFieldName).GetType().Name)
+                                                        Dim tableColumnName As String = GetTableColumnName(thisMapping.TSFieldName)
+                                                        If tableColumnName = thisMapping.TSFieldName Then
+                                                          thisAccount.Row(thisMapping.TSFieldName) = TranslateFieldValue(value, thisAccount.Row(thisMapping.TSFieldName).GetType().Name)
+                                                        Else
+                                                          Dim columnValue As Integer = GetTableColumnValue(value, thisMapping.TSFieldName, thisAccount.OrganizationID)
+                                                          If columnValue <> 0 Then
+                                                            thisAccount.Row(tableColumnName) = columnValue
+                                                          End If
+                                                        End If
                                                         thisAccount.BaseCollection.Save()
                                                         If crmLinkError IsNot Nothing then
                                                           crmLinkError.Delete()
@@ -1192,6 +1200,44 @@ Namespace TeamSupport
                 End Try
 
                 Return result
+            End Function
+
+            Private Function GetTableColumnName(ByRef viewColumnName) As String
+                Dim tableColumnName As String
+
+                Select Case viewColumnName.ToLower()
+                    Case "primarycontact"
+                        tableColumnName = "primaryuserid"
+                    Case "slaname"
+                        tableColumnName = "slalevelid"
+                    Case Else
+                        tableColumnName = viewColumnName
+                End Select
+
+                Return tableColumnName
+            End Function
+
+            Private Function GetTableColumnValue(ByRef viewValue As String, ByRef viewColumnName As String, ByVal organizationID As Integer) As String
+                Dim tableColumnValue As String
+
+                Select Case viewColumnName.ToLower()
+                    Case "primarycontact"
+                        Dim primaryContact As Users = New Users(User)
+                        primaryContact.LoadByFirstAndLastName(viewValue, organizationID)
+                        If primaryContact.Count > 0 Then
+                          tableColumnValue = primaryContact(0).UserID.ToString()
+                        End If
+                    Case "slaname"
+                        Dim serviceLevelAgreement As SlaLevels = New SlaLevels(User)
+                        serviceLevelAgreement.LoadByName(CRMLinkRow.OrganizationID, viewValue)
+                        If serviceLevelAgreement.Count > 0 Then
+                          tableColumnValue = serviceLevelAgreement(0).SlaLevelID.ToString()
+                        End If
+                    Case Else
+                        tableColumnValue = viewColumnName
+                End Select
+
+                Return tableColumnValue
             End Function
 
             Protected Overrides Sub Finalize()

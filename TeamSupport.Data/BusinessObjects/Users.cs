@@ -565,6 +565,25 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByFirstAndLastName(string firstAndLastName, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+          SELECT
+            *
+          FROM
+            Users
+          WHERE 
+            FirstName + ' ' + LastName = @FirstAndLastName
+            AND OrganizationID = @OrganizationID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@FirstAndLastName", firstAndLastName);
+        Fill(command);
+      }
+    }
+
     /// <summary>
     /// Get users by name
     /// </summary>
