@@ -554,14 +554,14 @@ Namespace TeamSupport
 
           result.Append("{")
           result.Append("""fields"":{")
-          result.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTML(ticket.Name))) + """,")
+                result.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name))) + """,")
           result.Append("""issuetype"":{""name"":""" + ticket.TicketTypeName + """},")
           result.Append("""project"":{""key"":""" + GetProjectKey(ticket.ProductName) + """},")
-          Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTML(Actions.GetTicketDescription(User, ticket.TicketID).Description))
+                Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(Actions.GetTicketDescription(User, ticket.TicketID).Description))
           result.Append("""description"":""" + DataUtils.GetJsonCompatibleString(description) + """")
           result.Append("}")
           result.Append("}")
-       
+
           Return result.ToString()
         End Function
 
@@ -638,7 +638,7 @@ Namespace TeamSupport
                   End If
                 Case "summary"
                   If ticket.Name IsNot Nothing Then               
-                    result = preffix + """summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTML(ticket.Name))) + """"
+                            result = preffix + """summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticket.Name))) + """"
                     If preffix = String.Empty Then
                       preffix = ","
                     End If
@@ -646,7 +646,7 @@ Namespace TeamSupport
                     Log.Write(GetFieldNotIncludedMessage(ticket.TicketID, field.Value("name").ToString(), ticket.Name Is Nothing))                      
                   End If
                 Case "description"
-                  Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTML(Actions.GetTicketDescription(User, ticket.TicketID).Description))
+                        Dim description As String = HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(Actions.GetTicketDescription(User, ticket.TicketID).Description))
                   If description IsNot Nothing Then
                     result = preffix + """description"":""" + DataUtils.GetJsonCompatibleString(description) + """"
                     If preffix = String.Empty Then
@@ -753,7 +753,7 @@ Namespace TeamSupport
                 remoteLinkData.Append("""url16x16"":""" + domain + "/vcr/1_6_5/Images/icons/TeamSupportLogo16.png"",")
                 remoteLinkData.Append("""title"":""TeamSupport Logo""},")
               remoteLinkData.Append("""title"":""" + creatorName + " Ticket #" + ticketNumber + """,")
-              remoteLinkData.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTML(ticketName))) + """,")
+                remoteLinkData.Append("""summary"":""" + DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(ticketName))) + """,")
               remoteLinkData.Append("""url"":""" + domain + "/Ticket.aspx?ticketid=" + ticketID + """")
             remoteLinkData.Append("}")
           remoteLinkData.Append("}")
@@ -1008,7 +1008,7 @@ Namespace TeamSupport
             Dim result As StringBuilder = New StringBuilder()
             result.Append("{")
               result.Append("""body"":""TeamSupport ticket #" + ticketNumber.ToString() + " comment #" + actionPosition.ToString() +": ")
-              result.Append(DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTML(actionDescription))))
+                result.Append(DataUtils.GetJsonCompatibleString(HtmlUtility.StripHTML(HtmlUtility.StripHTMLUsingAgilityPack(actionDescription))))
             result.Append("""}")
             Return result.ToString()
           End Function

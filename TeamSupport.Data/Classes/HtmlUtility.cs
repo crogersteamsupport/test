@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -217,12 +218,36 @@ namespace TeamSupport.Data
         }
 
         public static string StripHTML(string Content) {
+            Content = Regex.Replace(Content, "<.*?>", string.Empty);
             Content = System.Web.HttpUtility.HtmlDecode(Content);
             Content = StripComments(Content);
 
             //regex based on http://stackoverflow.com/questions/787932/using-c-regular-expressions-to-remove-html-tags/787949#787949
             Content = Regex.Replace(Content, @"</?\w+((\s+\w+(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)/?>", "", RegexOptions.Singleline);
 
+            return Content;
+        }
+
+        public static string StripHTMLUsingAgilityPack(string Content)
+        {
+            StringBuilder output = new StringBuilder();
+            try
+            {
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(Content);
+
+                var text = doc.DocumentNode.SelectNodes("//body//text()").Select(node => node.InnerText);
+
+                foreach (string line in text)
+                {
+                    output.AppendLine(line);
+                }
+                return HttpUtility.HtmlDecode(output.ToString());
+            }
+            catch (Exception ex)
+            {
+                //No HTML Exists
+            }
             return Content;
         }
 
