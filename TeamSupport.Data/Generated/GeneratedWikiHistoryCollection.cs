@@ -465,6 +465,17 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
+    public virtual void LoadByArticleID(int articleID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [ArticleID], [OrganizationID], [ArticleName], [Body], [Version], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate] FROM [dbo].[WikiHistory] WHERE ([ArticleID] = @ArticleID);";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ArticleID", articleID);
+            Fill(command);
+        }
+    }
     
     public static WikiHistory GetWikiHistory(LoginUser loginUser, int historyID)
     {
@@ -475,7 +486,16 @@ namespace TeamSupport.Data
       else
         return wikiHistoryCollection[0];
     }
-    
+
+    public static WikiHistoryCollection GetWikiHistoryByArticleID(LoginUser loginUser, int articleID)
+    {
+        WikiHistoryCollection wikiHistoryCollection = new WikiHistoryCollection(loginUser);
+        wikiHistoryCollection.LoadByArticleID(articleID);
+        if (wikiHistoryCollection.IsEmpty)
+            return null;
+        else
+            return wikiHistoryCollection;
+    }
     
     
 

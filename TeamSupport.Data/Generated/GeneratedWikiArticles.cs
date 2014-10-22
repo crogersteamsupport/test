@@ -605,6 +605,7 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
     
     public static WikiArticle GetWikiArticle(LoginUser loginUser, int articleID)
     {
@@ -614,6 +615,36 @@ namespace TeamSupport.Data
         return null;
       else
         return wikiArticles[0];
+    }
+
+    public static WikiArticles GetWikiArticles(LoginUser loginUser)
+    {
+        WikiArticles wikiArticles = new WikiArticles(loginUser);
+        wikiArticles.LoadByOrganizationIDAndUserID(loginUser.OrganizationID, loginUser.UserID);
+        if (wikiArticles.IsEmpty)
+            return null;
+        else
+            return wikiArticles;
+    }
+
+    public static WikiArticles GetWikiParentArticles(LoginUser loginUser)
+    {
+        WikiArticles wikiArticles = new WikiArticles(loginUser);
+        wikiArticles.LoadParentsByOrganizationID(loginUser.OrganizationID, loginUser.UserID);
+        if (wikiArticles.IsEmpty)
+            return null;
+        else
+            return wikiArticles;
+    }
+
+    public static WikiArticles GetWikiSubArticles(LoginUser loginUser, int articleID)
+    {
+        WikiArticles wikiArticles = new WikiArticles(loginUser);
+        wikiArticles.LoadSubArticlesByParentID(articleID, loginUser.OrganizationID, loginUser.UserID);
+        if (wikiArticles.IsEmpty)
+            return null;
+        else
+            return wikiArticles;
     }
     
     

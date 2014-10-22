@@ -374,6 +374,11 @@
     <input type="text" class="text ui-corner-all ui-widget-content" style="width:90%;"/>
   </div>
 
+  <div class="dialog-select-wiki ui-helper-hidden" title="Select a Wiki Article">
+	  <p>Enter a wiki title:</p>
+    <input type="text" class="text ui-corner-all ui-widget-content" style="width:90%;"/>
+  </div>
+
   <div id="dialog-paste-imageID" class="dialog-paste-image ui-helper-hidden" title="Paste Image">
         <div class="image-cropper">
             <div id="mainImageDiv" style="height:245px;margin:0 auto;overflow:auto">

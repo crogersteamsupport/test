@@ -302,6 +302,21 @@ Ts.Pages.Main.prototype = {
       }
     });
 
+    $(".dialog-select-wiki").dialog({
+        height: 150,
+        width: 300,
+        autoOpen: false,
+        modal: true,
+        buttons: {
+            OK: function () {
+                $(this).dialog("close");
+            },
+            Cancel: function () {
+                $(this).dialog("close");
+            }
+        }
+    });
+
 
     $(".dialog-paste-image").dialog({
       height: 'auto',
@@ -350,6 +365,30 @@ Ts.Pages.Main.prototype = {
         at: "right bottom",
         collision: "fit flip"
       }
+    });
+
+    var execSelectWiki = null;
+
+    function selectWiki(request, response) {
+        if (execSelectWiki) {
+            execSelectWiki._executor.abort();
+        }
+        execSelectWiki = top.Ts.Services.Wiki.SearchWikis(request.term, function (result) {
+            response(result);
+        });
+    }
+
+    $(".dialog-select-wiki input").autocomplete({
+        minLength: 2,
+        source: selectWiki,
+        select: function (event, ui) {
+            $(this).data('item', ui.item).removeClass('ui-autocomplete-loading')
+        },
+        position: {
+            my: "right top",
+            at: "right bottom",
+            collision: "fit flip"
+        }
     });
 
     function setupReminderDialog() {
@@ -1440,7 +1479,18 @@ Ts.Pages.Main.prototype = {
       callback($(this).find('input').data('item').data);
     }
     $('.dialog-select-ticket').dialog('option', 'buttons', buttons).dialog('open').find('input').focus();
-  },
+    },
+    selectWiki: function (callback) {
+        $('.dialog-select-wiki').find('input').val('');
+        var buttons = $('.dialog-select-wiki').dialog('option', 'buttons');
+
+        buttons.OK = function () {
+            $(this).dialog("close");
+            var test = $(this).find('input').data('item').data;
+            callback($(this).find('input').data('item').data);
+        }
+        $('.dialog-select-wiki').dialog('option', 'buttons', buttons).dialog('open').find('input').focus();
+    },
   updateMyOpenTicketReadCount: function () {
     Ts.Services.Tickets.GetMyOpenReadCount(function (result) {
       if (result > 0) {
