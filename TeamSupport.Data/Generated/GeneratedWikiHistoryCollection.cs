@@ -470,7 +470,7 @@ namespace TeamSupport.Data
     {
         using (SqlCommand command = new SqlCommand())
         {
-            command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [ArticleID], [OrganizationID], [ArticleName], [Body], [Version], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate] FROM [dbo].[WikiHistory] WHERE ([ArticleID] = @ArticleID);";
+            command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [ArticleID], [OrganizationID], [ArticleName], [Body], [Version], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate] FROM [dbo].[WikiHistory] WHERE ([ArticleID] = @ArticleID) ORDER BY VERSION DESC;";
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@ArticleID", articleID);
             Fill(command);

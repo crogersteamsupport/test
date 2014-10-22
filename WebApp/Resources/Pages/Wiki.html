@@ -66,8 +66,29 @@
                     </div>
                     <div class="wiki-edit-footer">
                         <div class="pull-left">
-                            <select id="Wiki-Revisions" class="form-control"><option value="0"></option>
-                            </select>
+                            <!--<select id="Wiki-Revisions" class="form-control"><option value="0"></option>
+                            </select>-->
+                            <label>Version History</label>
+                            <!--<div class="list-group wiki-revision-history"></div>-->
+                            <table class="table wiki-revision-history">
+                              <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Edited by</th>
+                                    <th>Comments</th>
+                                    <th></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                    <td>3</td>
+                                    <td>10/21/2014 10:00PM</td>
+                                    <td>Matt Townsen</td>
+                                    <td>Updated links</td>
+                                </tr>
+                              </tbody>
+                            </table>
                         </div>
                         <div class="pull-right">
                             <button id="wiki-edit-save" class="btn btn-primary" type="button" data-toggle="tooltip" title="" data-original-title="Save Wiki Article">Save</button>

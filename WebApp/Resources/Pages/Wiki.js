@@ -47,7 +47,8 @@ function BuildWikiPage() {
 
 
 function BuildWikiView() {
-    $("#WikiLink").popover({ trigger: 'hover' });
+    $('#WikiLink').popover('hide')
+    $("#WikiLink").popover({ trigger: 'click' });
     $("#Wiki-Title").text(_wikiTitle);
     $("#Wiki-Body").html(_wikiBody);
     $("#Wiki-Edit-Title").val(_wikiTitle);
@@ -105,19 +106,21 @@ function BuildWikiMenuItems() {
                 var test = wikiMenuItem.parent().parent().parent().children("a").addClass('active');
             };
 
-            $(".wiki-menu-item>a").click(function () {
+            $(".wiki-menu-item>a").click(function (e) {
                 $('.wiki-menu-item').children("a").removeClass('active');
                 $(this).addClass('active');
-                $('.wiki-sidebar-subitem').hide();
-                $(this).closest('li').children("ul").show();
+                //$('.wiki-sidebar-subitem').hide();
+                $(this).closest('li').children("ul").toggle();
                 $('.wiki-menu-subitem').children("a").removeClass('active');
                 GetWiki(this.id);
+                e.preventDefault();
             });
 
-            $(".wiki-menu-subitem>a").click(function () {
+            $(".wiki-menu-subitem>a").click(function (e) {
                 $('.wiki-menu-subitem').children("a").removeClass('active');
                 $(this).addClass('active');
                 GetWiki(this.id);
+                e.preventDefault();
             });
         }
     });
@@ -177,28 +180,6 @@ function BuildWikiEditEvents() {
         top.Ts.System.logAction('Wiki - Wiki Created');
     });
 
-    $("#Wiki-Revisions").change(function () {
-        var wikiRevisionID = $(this).val();
-         
-        if (wikiRevisionID !== "") {
-            top.Ts.Services.Wiki.GetWikiRevision(wikiRevisionID, function (revision) {
-                $("#Wiki-Edit-Title").val(revision.ArticleName);
-                $("#Wiki-Edit-Body").html(revision.Body);
-                $("#Wiki-Edit-PublicView").prop('checked', false);
-                $("#Wiki-Edit-PrivateView").prop('checked', false);
-                $("#Wiki-Edit-PortalView").prop('checked', false);
-            });
-        }
-        else {
-            $("#Wiki-Edit-Title").val(_wikiTitle);
-            $("#Wiki-Edit-Body").html(_wikiBody);
-            $("#Wiki-Edit-PublicView").prop('checked', _wikiPublicView);
-            $("#Wiki-Edit-PrivateView").prop('checked', _wikiPrivateView);
-            $("#Wiki-Edit-PortalView").prop('checked', _wikiPortalView);
-        };
-
-    });
-
     $("#WikiPrint").click(function () {
         var divContents = $("#WikiViewArea").html();
         var printWindow = window.open('', '');
@@ -240,19 +221,34 @@ function GetWiki(wikiID) {
 
 function GetWikiHistory(wikiID) {
     top.Ts.Services.Wiki.GetWikiHistory(wikiID, function (wikiHistory) {
-        $('#Wiki-Revisions').find('option').remove().end().append($("<option></option>"));
-        if (wikiHistory !== null) {
-            $('#Wiki-Revisions').show();
-            $.each(wikiHistory, function (key, value) {
-                $('#Wiki-Revisions')
-                    .append($("<option></option>")
-                    .attr("value", value.HistoryID)
-                    .text(value.RevisionNote));
-            });
-        }
-        else {
-            $('#Wiki-Revisions').hide();
-        };
+        $('.wiki-revision-history tbody').empty();
+        $.each(wikiHistory, function (key, value) {
+            $(".wiki-revision-history tbody").append('<tr><td>' + value.RevisionNumber + '</td><td>' + value.RevisedDate + '</td><td>' + value.RevisedBy + '</td><td>' + value.Comment + '</td><td><button data-id="' + value.HistoryID + '" class="btn btn-primary btn-xs wiki-restore">Restore</button></td></tr>');
+        });
+
+        $(".wiki-restore").click(function () {
+            var wikiRevisionID = $(this).data("id");
+            $('.wiki-revision-history tbody > tr').removeClass('active');
+            $(this).closest('tr').addClass('active');
+
+            if (wikiRevisionID !== "") {
+                top.Ts.Services.Wiki.GetWikiRevision(wikiRevisionID, function (revision) {
+                    $("#Wiki-Edit-Title").val(revision.ArticleName);
+                    $("#Wiki-Edit-Body").html(revision.Body);
+                    $("#Wiki-Edit-PublicView").prop('checked', false);
+                    $("#Wiki-Edit-PrivateView").prop('checked', false);
+                    $("#Wiki-Edit-PortalView").prop('checked', false);
+                });
+            }
+            else {
+                $("#Wiki-Edit-Title").val(_wikiTitle);
+                $("#Wiki-Edit-Body").html(_wikiBody);
+                $("#Wiki-Edit-PublicView").prop('checked', _wikiPublicView);
+                $("#Wiki-Edit-PrivateView").prop('checked', _wikiPrivateView);
+                $("#Wiki-Edit-PortalView").prop('checked', _wikiPortalView);
+            };
+            top.Ts.System.logAction('Wiki - Viewed Revision');
+        });
     });
 };
 
@@ -287,7 +283,6 @@ var initEditor = function (element, init) {
             extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type],table[class=table|border:1]",
             content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
             body_class: "ui-widget ui-widget-content",
-
             convert_urls: true,
             remove_script_host: false,
             relative_urls: false,

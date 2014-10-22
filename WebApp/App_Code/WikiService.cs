@@ -63,10 +63,11 @@ namespace TSWebServices
 
                         if (user != null)
                         {
-                            item.RevisionNote = string.Format("{0} by {1}", wiki.ModifiedDate, user.DisplayName);
+                            item.RevisedBy = user.DisplayName;
                         }
                     }
-                    else item.RevisionNote = string.Format("{0}", wiki.Version);
+                    item.RevisedDate = wiki.ModifiedDate.ToString();
+                    item.Comment = "";
 
                     wikiHistory.Add(item);
                 }
@@ -234,7 +235,11 @@ namespace TSWebServices
             [DataMember]
             public int? RevisionNumber { get; set; }
             [DataMember]
-            public string RevisionNote { get; set; }
+            public string RevisedDate { get; set; }
+            [DataMember]
+            public string RevisedBy { get; set; }
+            [DataMember]
+            public string Comment { get; set; }
         }
     }
 }
