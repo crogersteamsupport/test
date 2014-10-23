@@ -23,6 +23,7 @@
   margin-bottom: 20px;
   margin-left: -20px;
 }
+li.wiki-menu-item { line-height:1px; padding: 2px 0;}
 .wiki-sidebar > li > a {
   padding-right: 20px;
   padding-left: 20px;
@@ -42,6 +43,8 @@
 .wiki-sidebar-subitem > li > a.active,
 .wiki-sidebar-subitem > li > a.active:hover,
 .wiki-sidebar-subitemr > li > a.active:focus {  color: #428BCA; }
+.wiki-sidebar-caret { float:right; }
+.wiki-sidebar-caret-right { border-left: 4px solid; border-bottom: 4px solid transparent; border-top: 4px solid transparent; }
 
 .wiki-header { border-bottom: 1px solid #eee; padding-top: 6px; padding-bottom: 15px;}   
 .wiki-edit-header { padding-top: 6px; padding-bottom: 10px; }
@@ -60,9 +63,7 @@
 .fa-dropbox { color: #3d9ae8 !important}
 .fa-circle  { color: #D9534F !important}
 
-.zero-clipboard {
-    display: block;
-}
+.zero-clipboard { display: block; }
 
 .btn-clipboard {
     position: absolute;
@@ -78,9 +79,4 @@
     border: 1px solid #e1e1e8;
     border-radius: 0 4px 0 4px;
 }
-
-.btn-clipboard.zeroclipboard-is-hover
-{
-    background-color:#3d6da7;
-    color:White;
-}
+.btn-clipboard.zeroclipboard-is-hover { background-color:#3d6da7; color:White; }

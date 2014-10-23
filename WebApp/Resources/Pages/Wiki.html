@@ -36,9 +36,10 @@
                                 </div>
                                 <div class="col-xs-5 col-sm-5 col-md-4 col-lg-3 hidden-print">
                                     <span class="btn-group pull-right">
-                                        <button id="WikiLink" class="btn btn-default" type="button" data-original-title="External Link" data-container="body" data-toggle="popover" data-placement="bottom"><i class="fa fa-link"></i></button>
-                                        <button id="EditWiki" class="btn btn-default" type="button" data-toggle="tooltip" title="" data-original-title="Edit Wiki Page"><i class="fa fa-pencil"></i></button>
-                                        <button id="WikiPrint" class="btn btn-default" type="button" data-toggle="tooltip" title="" data-original-title="Print Wiki Page"><i class="fa fa-print"></i></button>       
+<!--                                        <button data-trigger="hover" data-delay='{"hide":"5000"}' id="WikiLink" tabindex="0" class="btn btn-default" type="button" data-original-title="External Link" data-container="body" data-toggle="popover" data-placement="bottom"><i class="fa fa-link"></i></button>
+-->                                     <a  data-trigger="focus" id="WikiLink" tabindex="0" href="#" class="btn btn-default" type="button" data-original-title="External Link" data-container="body" data-toggle="popover" data-placement="auto"><i class="fa fa-link"></i></a>
+                                        <button id="EditWiki" class="btn btn-default" type="button" data-toggle="tooltip" title="" data-original-title="Edit Wiki Page" data-toggle="tooltip" data-placement="bottom" title="Edit Wiki Page"><i class="fa fa-pencil"></i></button>
+                                        <button id="WikiPrint" class="btn btn-default" type="button" data-toggle="tooltip" title="" data-original-title="Print Wiki Page" data-toggle="tooltip" data-placement="bottom" title="Print Wiki Page"><i class="fa fa-print"></i></button>       
                                     </span>
                                     <span class="btn-group pull-right" style="margin-right:5px;">
                                         <button id="NewWiki" class="btn btn-primary" type="button" data-toggle="tooltip" title="" data-original-title="Create a new wiki article">New Article</button>
@@ -56,7 +57,7 @@
                     <div><textarea id="Wiki-Edit-Body" class="editWikiDesc"></textarea></div>
                     <div class="row">
                         <div class="col-sm-7">
-                            <label>Sub Artile of:</label>
+                            <label>Sub Article of:</label>
                             <select id="Wiki-Edit-Parent" class="form-control"></select>
                         </div>
                         <div class="col-sm-5">

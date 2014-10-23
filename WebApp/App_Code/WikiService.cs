@@ -185,6 +185,12 @@ namespace TSWebServices
             wiki.Collection.Save();
         }
 
+        [WebMethod]
+        public int? GetDefaultWikiID()
+        {
+            return TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).DefaultWikiArticleID;
+        }
+
         #region Private Methods
 
         public void LogHistory(LoginUser loggedInUser,  WikiArticle wiki)
@@ -199,8 +205,8 @@ namespace TSWebServices
             newWikiHistory.ArticleName = wiki.ArticleName;
             newWikiHistory.OrganizationID = wiki.OrganizationID;
             newWikiHistory.ArticleID = wiki.ArticleID;
-            newWikiHistory.ModifiedDate = wiki.ModifiedDate;
-            newWikiHistory.CreatedDate = wiki.CreatedDate;
+            newWikiHistory.ModifiedDate = DateTime.UtcNow;
+            newWikiHistory.CreatedDate = DateTime.UtcNow;
 
             newWikiHistory.Collection.Save();
         }

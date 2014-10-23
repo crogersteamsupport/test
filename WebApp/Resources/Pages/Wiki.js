@@ -2,7 +2,10 @@
 var _wikiArticles = null;
 var _wikiID = null;
 var _wikiParentID = null;
-var _wikiExternalLink = "https://app.teamsupport.com?articleid={ID}"
+var _wikiInternalLLinkBase = "https://app.teamsupport.com?articleid={ID}"
+var _wikiExternalLinkBase = "https://app.teamsupport.com/wiki/justarticle.aspx?Organizationid={ORGID}&ArticleID={ArticleID}"
+var _wikiInternalLink = null;
+var _wikiExternalLink = null;
 var _wikiTitle = null;
 var _wikiBody = null;
 var _wikiSubArticleList = null;
@@ -13,6 +16,7 @@ var _wikiVersion = 0;
 var _wikiModifiedDate = null;
 var _wikiParentsList = null;
 var _wikiMenuLITemplate = '<li class="wiki-menu-item"><a id="{ID}" href="#">{Title}</a>';
+var _wikiMenuLIWithChildrenTemplate = '<li class="wiki-menu-item"><a id="{ID}" href="#">{Title}<span class="caret wiki-sidebar-caret"></span></a>';
 var _wikiSubMenuULTemplate = '<ul class="nav wiki-sidebar-subitem">';
 var _wikiSubMenuLITemplate = '<li class="wiki-menu-subitem"><a id="{ID}" href="#">{Title}</a></li>';
 
@@ -37,10 +41,23 @@ WikiPage = function () {
 function BuildWikiPage() {
     top.Ts.Services.Wiki.GetWikiMenuItems(function (menuItems) {
         _wikiArticles = menuItems;
-        if (_wikiID == null) { _wikiID = menuItems[0].ID };
-        GetWiki(_wikiID);
-        BuildWikiMenuItems();
-        
+        if (_wikiID == null) {
+            top.Ts.Services.Wiki.GetDefaultWikiID(function (wikiID) {
+                if (wikiID == null) {
+                    _wikiID = menuItems[0].ID
+                }
+                else {
+                    _wikiID = wikiID;
+                }
+                GetWiki(_wikiID);
+                BuildWikiMenuItems();
+            });
+        }
+        else {
+            GetWiki(_wikiID);
+            BuildWikiMenuItems();
+        };
+
     });
     top.Ts.System.logAction('Wiki - Wiki Viewed');
 };
@@ -49,15 +66,14 @@ function BuildWikiPage() {
 function BuildWikiView() {
     $('#WikiLink').popover('hide');
     $("#WikiLink").popover();
-    $("#WikiLink").attr("data-content", _wikiExternalLink.replace("{ID}", _wikiID));
+    $("#WikiLink").attr("data-content", _wikiExternalLink);
     $('#WikiLink').on('shown.bs.popover', function () {
         $(".popover-title").append('<div class="zero-clipboard"><span id="wiki-copy-button" class="btn-clipboard with-example" data-clipboard-text="' + _wikiExternalLink.replace("{ID}", _wikiID) + '" title="Click to copy below link">Copy</span></div>');
         var client = new ZeroClipboard(document.getElementById("wiki-copy-button"));
-        client.on("aftercopy", function (event) {
-            alert("Copied text to clipboard: " + event.data["text/plain"]);
-        });
     });
 
+    $('#EditWiki').tooltip();
+    $('#WikiPrint').tooltip();
 
     $("#Wiki-Title").text(_wikiTitle);
     $("#Wiki-Body").html(_wikiBody);
@@ -88,8 +104,8 @@ function BuildWikiMenuItems() {
                      .attr("value", menuItems[i].ID)
                      .text(menuItems[i].Title));
 
-                menuParents += _wikiMenuLITemplate.replace("{ID}", menuItems[i].ID).replace("{Title}", menuItems[i].Title);
                 if (menuItems[i].SubArticles !== null) {
+                    menuParents += _wikiMenuLIWithChildrenTemplate.replace("{ID}", menuItems[i].ID).replace("{Title}", menuItems[i].Title);
                     var subMenuItems = "";
                     for (var s = 0; s < menuItems[i].SubArticles.length; s++) {
                         subMenuItems += _wikiSubMenuLITemplate.replace("{ID}", menuItems[i].SubArticles[s].ID).replace("{Title}", menuItems[i].SubArticles[s].Title);
@@ -97,6 +113,7 @@ function BuildWikiMenuItems() {
                     menuParents += _wikiSubMenuULTemplate + subMenuItems + "</li></ul>";
                 }
                 else {
+                    menuParents += _wikiMenuLITemplate.replace("{ID}", menuItems[i].ID).replace("{Title}", menuItems[i].Title);
                     menuParents += "</li>"
                 }
             }
@@ -117,6 +134,8 @@ function BuildWikiMenuItems() {
                 $('.wiki-menu-subitem').children("a").removeClass('active');
                 $(this).addClass('active');
                 $(this).closest('li').children("ul").toggle();
+                var test = $(this).closest('li').find("span.wiki-sidebar-caret").toggleClass('wiki-sidebar-caret-right');
+                //wiki-sidebar-caret
                 GetWiki(this.id);
                 e.preventDefault();
             });
@@ -136,6 +155,7 @@ function BuildWikiEditEvents() {
     $("#EditWiki").click(function () {
         $("#WikiViewArea").hide();
         $("#WikiEditArea").show();
+        $("#Wiki-Edit-Title").focus();
     });
 
     $("#wiki-edit-cancel").click(function () {
@@ -200,6 +220,8 @@ function BuildWikiEditEvents() {
         printWindow.print();
         top.Ts.System.logAction('Wiki - Wiki Printed');
     });
+
+    $("#WikiLink").click(function (e) { e.preventDefault(); });
 };
 
 function MapWikiProperties(wiki) {
@@ -212,6 +234,7 @@ function MapWikiProperties(wiki) {
     _wikiPublicView = wiki.PublicView;
     _wikiPrivateView = wiki.Private;
     _wikiModifiedDate = wiki.ModifiedDate;
+    _wikiExternalLink = _wikiExternalLinkBase.replace("{ORGID}", wiki.OrganizationID).replace("{ArticleID}", wiki.ArticleID);
 };
 
 //GET-POST Wiki Functions
@@ -347,13 +370,6 @@ var initEditor = function (element, init) {
                         top.Ts.MainPage.selectTicket(null, function (ticketID) {
                             top.Ts.Services.Tickets.GetTicket(ticketID, function (ticket) {
                                 ed.focus();
-                                top.Ts.Services.Tickets.AddRelated(_ticketID, ticketID, null, function (tickets) {
-                                    appendRelated(tickets);
-                                    //window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addrelationship", userFullName);
-                                }, function (error) {
-                                    //container.remove();
-                                    alert(error.get_message());
-                                });
                                 var html = '<a href="' + top.Ts.System.AppDomain + '?TicketNumber=' + ticket.TicketNumber + '" target="_blank" onclick="top.Ts.MainPage.openTicket(' + ticket.TicketNumber + '); return false;">Ticket ' + ticket.TicketNumber + '</a>';
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
