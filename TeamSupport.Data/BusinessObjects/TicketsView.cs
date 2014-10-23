@@ -26,6 +26,7 @@ namespace TeamSupport.Data
     }
     [DataMember] public int? TicketTypeID { get; set; }
     [DataMember] public int? ProductID { get; set; }
+    [DataMember] public int? ProductVersionID { get; set; }
     [DataMember] public int? SolvedVersionID { get; set; }
     [DataMember] public int? ReportedVersionID { get; set; }
     [DataMember] public bool? IsClosed { get; set; }
@@ -783,6 +784,12 @@ namespace TeamSupport.Data
       {
         builder.Append(" AND (EXISTS(SELECT * FROM AssetTickets asst WHERE (asst.AssetID = @AssetID) AND (asst.TicketID = tv.TicketID)))");
         command.Parameters.AddWithValue("AssetID", filter.AssetID);
+      }
+
+      if (filter.ProductVersionID != null)
+      {
+        builder.Append(" AND (tv.ReportedVersionID = @ProductVersionID OR tv.SolvedVersionID = @ProductVersionID)");
+        command.Parameters.AddWithValue("ProductVersionID", filter.ProductVersionID);
       }
 
       if (!String.IsNullOrEmpty(filter.SearchText.Trim()))

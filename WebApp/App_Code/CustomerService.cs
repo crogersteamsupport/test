@@ -1976,6 +1976,60 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public void AssignAllCustomersToVersion(int productVersionID)
+        {
+          LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+          ProductVersionsView productVersionsView = new ProductVersionsView(loginUser);
+          productVersionsView.LoadByProductVersionID(productVersionID);
+
+          OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
+          existingOrganizationProducts.LoadByParentOrganizationID(loginUser.OrganizationID);
+
+          Organizations allCustomers = new Organizations(loginUser);
+          allCustomers.LoadByParentID(loginUser.OrganizationID, true);
+
+          foreach(Organization customer in allCustomers)
+          {
+            OrganizationProduct existingOrganizationProduct = existingOrganizationProducts.FindByOrganizationID(customer.OrganizationID);
+
+            if (existingOrganizationProduct == null)
+            {
+              OrganizationProduct organizationProduct = (new OrganizationProducts(loginUser)).AddNewOrganizationProduct();
+              organizationProduct.OrganizationID = customer.OrganizationID;
+              organizationProduct.ProductID = productVersionsView[0].ProductID;
+              organizationProduct.ProductVersionID = productVersionID;
+              organizationProduct.Collection.Save();
+
+              string description = String.Format("{0} added product version association to version number {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, productVersionsView[0].VersionNumber);
+              ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, customer.OrganizationID, description);
+            }
+          }
+        }
+
+        [WebMethod]
+        public void UnassignAllCustomersFromVersion(int productVersionID)
+        {
+          LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+          ProductVersionsView productVersionsView = new ProductVersionsView(loginUser);
+          productVersionsView.LoadByProductVersionID(productVersionID);
+          if (productVersionsView.Count > 0 && productVersionsView[0].OrganizationID == loginUser.OrganizationID)
+          {           
+            OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
+            existingOrganizationProducts.LoadByProductVersionID(loginUser.OrganizationID);
+
+            OrganizationProducts.DeleteAllOrganizationsByProductVersionID(loginUser, productVersionID);
+            
+            foreach (OrganizationProduct organizationProduct in existingOrganizationProducts)
+            {
+              string description = String.Format("{0} deleted product version association to version number {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, productVersionsView[0].VersionNumber);
+              ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, organizationProduct.OrganizationID, description);
+            }
+          }
+        }
+
+        [WebMethod]
         public int LoadCDI(int organizationID)
         {
             Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);

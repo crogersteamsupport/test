@@ -42,6 +42,24 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByProductVersionID(int productVersionID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT 
+          op.*
+        FROM
+          OrganizationProducts op
+        WHERE 
+          op.ProductVersionID = @ProductVersionID";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
+        Fill(command);
+      }
+    }
+
+
     public void LoadByOrganizationAndProductID(int orgId, int productID) {
         using (SqlCommand command = new SqlCommand()) {
             command.CommandText = "select * from OrganizationProducts where Organizationid = @ClientOrgID and productid=@ProductID";
@@ -133,7 +151,32 @@ namespace TeamSupport.Data
 
     }
 
+    public OrganizationProduct FindByOrganizationID(int organizationID)
+    {
+      foreach (OrganizationProduct organizationProduct in this)
+      {
+        if (organizationProduct.OrganizationID == organizationID)
+        {
+          return organizationProduct;
+        }
+      }
+      return null;
+    }
 
+    public static void DeleteAllOrganizationsByProductVersionID(LoginUser loginUser, int productVersionID)
+    {
+      using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+      {
+        connection.Open();
+
+        SqlCommand command = connection.CreateCommand();
+        command.Connection = connection;
+        command.CommandType = CommandType.Text;
+        command.CommandText = "DELETE FROM OrganizationProducts WHERE ProductVersionID = @ProductVersionID";
+        command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
+        command.ExecuteNonQuery();
+      }
+    }
 
   }
 }

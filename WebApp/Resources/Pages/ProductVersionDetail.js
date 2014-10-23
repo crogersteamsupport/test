@@ -2,6 +2,7 @@
 var _productID = null;
 var _productName = null;
 var _versionNumber = null;
+var _execGetCustomer = null;
 var _headersLoaded = false;
 
 $(document).ready(function () {
@@ -78,9 +79,11 @@ $(document).ready(function () {
     else if (e.target.innerHTML == "Customers")
       LoadCustomers();
     else if (e.target.innerHTML == "Tickets")
-      $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_ProductID=" + _productID);
+      $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_ProductVersionID=" + _productVersionID);
+    else if (e.target.innerHTML == "Files")
+      LoadFiles();
     else if (e.target.innerHTML == "Watercooler")
-      $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=1&pageid=" + _productID);
+      $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=5&pageid=" + _productVersionID);
     else if (e.target.innerHTML == "Inventory")
       LoadInventory();
   })
@@ -356,9 +359,9 @@ $(document).ready(function () {
       $('#productVersionEdit').addClass("disabled");
   });
 
-//  initEditor($('#fieldDesc'), function (ed) {
-//      $('#fieldDesc').tinymce().focus();
-//  });
+  initEditor($('#fieldDesc'), function (ed) {
+      $('#fieldDesc').tinymce().focus();
+  });
 
   $('#fieldDescription').click(function (e) {
       e.preventDefault();
@@ -369,9 +372,9 @@ $(document).ready(function () {
       top.Ts.Services.Products.GetVersion(_productVersionID, function (productVersion) {
         var desc = productVersion.Description;
         desc = desc.replace(/<br\s?\/?>/g, "\n");
-//        $('#fieldDesc').tinymce().setContent(desc);
-//        $('#fieldDesc').tinymce().focus();
-        $('#fieldDesc').html(desc);
+        $('#fieldDesc').tinymce().setContent(desc);
+        $('#fieldDesc').tinymce().focus();
+//        $('#fieldDesc').html(desc);
         $('#descriptionForm').show();
       });
 
@@ -524,6 +527,41 @@ $(document).ready(function () {
           })
           .insertAfter(container1);
     $('#productVersionEdit').addClass("disabled");
+  });
+
+  var _isAdmin = top.Ts.System.User.IsSystemAdmin;
+  if (!top.Ts.System.User.CanEditCompany && !_isAdmin) 
+  {
+      $('#customerToggle').hide();
+      $('#associateAllToggle').hide();
+      $('#unAssociateAllToggle').hide();
+  }
+
+  $('#customerToggle').click(function (e) {
+      top.Ts.System.logAction('Product Version Detail - Toggle Customer Form');
+      $('#customerForm').toggle();
+  });
+
+  $('#associateAllToggle').click(function (e) {
+      if (confirm('Are you sure you would like to associate All customers to this version?')) {
+        top.Ts.System.logAction('Product Version Detail - Toggle Associate All Customer Form');
+        top.Ts.Services.Customers.AssignAllCustomersToVersion(_productVersionID, function () {
+            LoadCustomers();
+        }, function () {
+            alert('There was an error associating all customers to this version. Please try again.');
+        });
+      }
+  });
+
+  $('#unAssociateAllToggle').click(function (e) {
+      if (confirm('Are you sure you would like to unassociate All customers from this version?')) {
+        top.Ts.System.logAction('Product Version Detail - Toggle Unassociate All Customer Form');
+        top.Ts.Services.Customers.UnassignAllCustomersFromVersion(_productVersionID, function () {
+            LoadCustomers();
+        }, function () {
+            alert('There was an error unassociating all customers from this version. Please try again.');
+        });
+      }
   });
 
   function LoadCustomers() {
@@ -746,9 +784,144 @@ $(document).ready(function () {
 
   });
 
+  function LoadFiles() {
+      $('#tblFiles tbody').empty();
+      top.Ts.Services.Customers.LoadFiles(_productVersionID, top.Ts.ReferenceTypes.ProductVersions, function (files) {
+          for (var i = 0; i < files.length; i++) {
+              var tr = $('<tr>')
+              .attr('id', files[i].AttachmentID)
+              .html('<td><i class="fa fa-trash-o delFile"></i></td><td class="viewFile">' + files[i].FileName + '</td><td>' + files[i].Description + '</td><td>' + files[i].CreatorName + '</td><td>' + files[i].DateCreated.toDateString() + '</td>')
+              .appendTo('#tblFiles > tbody:last');
+
+
+              //$('#tblFiles > tbody:last').appendTo('<tr id=' +  + '></tr>');
+          }
+      });
+  }
+
+  $('#tblFiles').on('click', '.viewFile', function (e) {
+      e.preventDefault();
+      top.Ts.MainPage.openNewAttachment($(this).parent().attr('id'));
+  });
+
+  $('#tblFiles').on('click', '.delFile', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm('Are you sure you would like to remove this attachment?')) {
+          top.Ts.System.logAction('Customer Detail - Delete File');
+          top.privateServices.DeleteAttachment($(this).parent().parent().attr('id'), function (e) {
+              LoadFiles();
+          });
+            
+      }
+  });
+
+  $('#fileToggle').click(function (e) {
+      top.Ts.System.logAction('Product Version Detail - Toggle File Form');
+      $('#fileForm').toggle();
+  });
+
+  $("#btnFilesCancel").click(function (e) {
+      top.Ts.System.logAction('Product Version Detail - Cancel File Form');
+      $('.upload-queue').empty();
+      $('#attachmentDescription').val('');
+      $('#fileForm').toggle();
+  });
+
+  $('#btnFilesSave').click(function (e) {
+      top.Ts.System.logAction('Product Version Detail - Save Files');
+      if ($('.upload-queue li').length > 0) {
+          $('.upload-queue li').each(function (i, o) {
+              var data = $(o).data('data');
+              data.formData = { description: $('#attachmentDescription').val().replace(/<br\s?\/?>/g, "\n") };
+              data.url = '../../../Upload/Products/' + _productVersionID;
+              data.jqXHR = data.submit();
+              $(o).data('data', data);
+          });
+      }
+      //$('#fileForm').toggle();
+  });
+
+  $('.file-upload').fileupload({
+      namespace: 'custom_attachment',
+      dropZone: $('.file-upload'),
+      add: function (e, data) {
+          for (var i = 0; i < data.files.length; i++) {
+              var item = $('<li>')
+                .appendTo($('.upload-queue'));
+
+              data.context = item;
+              item.data('data', data);
+
+              var bg = $('<div>')
+                .addClass('ts-color-bg-accent')
+                .appendTo(item);
+
+              $('<div>')
+                .text(data.files[i].name + '  (' + top.Ts.Utils.getSizeString(data.files[i].size) + ')')
+                .addClass('filename')
+                .appendTo(bg);
+
+              $('<span>')
+                .addClass('icon-remove')
+                .click(function (e) {
+                    e.preventDefault();
+                    $(this).closest('li').fadeOut(500, function () { $(this).remove(); });
+                })
+                .appendTo(bg);
+
+              $('<span>')
+                .addClass('icon-remove')
+                .hide()
+                .click(function (e) {
+                    e.preventDefault();
+                    var data = $(this).closest('li').data('data');
+                    data.jqXHR.abort();
+                })
+                .appendTo(bg);
+
+              var progress = $('<div>')
+                .addClass('progress progress-striped active')
+                .hide();
+
+              $('<div>')
+                  .addClass('progress-bar')
+                  .attr('role', 'progressbar')
+                  .appendTo(progress);
+
+              progress.appendTo(bg);
+          }
+
+      },
+      send: function (e, data) {
+          if (data.context && data.dataType && data.dataType.substr(0, 6) === 'iframe') {
+              data.context.find('.progress-bar').css('width', '50%');
+          }
+      },
+      fail: function (e, data) {
+          if (data.errorThrown === 'abort') return;
+          alert('There was an error uploading "' + data.files[0].name + '".');
+      },
+      progress: function (e, data) {
+          data.context.find('.progress-bar').css('width', parseInt(data.loaded / data.total * 100, 10) +'%');
+      },
+      start: function (e, data) {
+          $('.progress').show();
+          $('.upload-queue .ui-icon-close').hide();
+          $('.upload-queue .ui-icon-cancel').show();
+      },
+      stop: function (e, data) {
+          //data.context.find('.progress-bar').css('width', '100%');
+          LoadFiles();
+          $('.upload-queue').empty();
+          $('#attachmentDescription').val('');
+          $('#fileForm').toggle();
+      }
+  });
+
   function LoadInventory() {
       $('.assetList').empty();
-      top.Ts.Services.Products.LoadAssets(_productID, function (assets) {
+      top.Ts.Services.Products.LoadVersionAssets(_productVersionID, function (assets) {
           $('.assetList').append(assets)
       });
   }
@@ -774,6 +947,56 @@ var getUrls = function (input) {
   }
 
   return result == '' ? input : result;
+}
+
+var initEditor = function (element, init) {
+    top.Ts.Settings.System.read('EnableScreenR', 'True', function (enableScreenR) {
+        var editorOptions = {
+            plugins: "autoresize paste link code textcolor",
+            toolbar1: "link unlink | undo redo removeformat | cut copy paste pastetext | code | outdent indent | bullist numlist",
+            toolbar2: "alignleft aligncenter alignright alignjustify | forecolor backcolor | fontselect fontsizeselect | bold italic underline strikethrough blockquote",
+            statusbar: false,
+            gecko_spellcheck: true,
+            extended_valid_elements: "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev|shape<circle?default?poly?rect|style|tabindex|title|target|type],script[charset|defer|language|src|type]",
+            content_css: "../Css/jquery-ui-latest.custom.css,../Css/editor.css",
+            body_class: "ui-widget ui-widget-content",
+
+            convert_urls: true,
+            remove_script_host: false,
+            relative_urls: false,
+            template_external_list_url: "tinymce/jscripts/template_list.js",
+            external_link_list_url: "tinymce/jscripts/link_list.js",
+            external_image_list_url: "tinymce/jscripts/image_list.js",
+            media_external_list_url: "tinymce/jscripts/media_list.js",
+            menubar: false,
+
+            setup: function (ed) {
+                ed.on('init', function (e) {
+                    top.Ts.System.refreshUser(function () {
+                        if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
+                        }
+                        else if (top.Ts.System.Organization.FontFamilyDescription != "Unassigned") {
+                            ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.Organization.FontFamily));
+                        }
+
+                        if (top.Ts.System.User.FontSize != "0") {
+                            ed.execCommand("FontSize", false, top.Ts.System.User.FontSizeDescription);
+                        }
+                        else if (top.Ts.System.Organization.FontSize != "0") {
+                            ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSizeDescription);
+                        }
+                    });
+                });
+
+                ed.on('paste', function (ed, e) {
+                    setTimeout(function () { ed.execCommand('mceAutoResize'); }, 1000);
+                });
+            }
+            , oninit: init
+        };
+        $(element).tinymce(editorOptions);
+    });
 }
 
 var appendCustomValues = function (fields) {
@@ -1394,3 +1617,60 @@ $.fn.autoGrow = function () {
     });
 };
 
+function GetTinyMCEFontName(fontFamily) {
+  var result = '';
+  switch (fontFamily) {
+    case 1:
+      result = "'andale mono', times";
+      break;
+    case 2:
+      result = "arial, helvetica, sans-serif";
+      break;
+    case 3:
+      result = "'arial black', 'avant garde'";
+      break;
+    case 4:
+      result = "'book antiqua', palatino";
+      break;
+    case 5:
+      result = "'comic sans ms', sans-serif";
+      break;
+    case 6:
+      result = "'courier new', courier";
+      break;
+    case 7:
+      result = "georgia, palatino";
+      break;
+    case 8:
+      result = "helvetica";
+      break;
+    case 9:
+      result = "impact, chicago";
+      break;
+    case 10:
+      result = "symbol";
+      break;
+    case 11:
+      result = "tahoma, arial, helvetica, sans-serif";
+      break;
+    case 12:
+      result = "terminal, monaco";
+      break;
+    case 13:
+      result = "'times new roman', times";
+      break;
+    case 14:
+      result = "'trebuchet ms', geneva";
+      break;
+    case 15:
+      result = "verdana, geneva";
+      break;
+    case 16:
+      result = "webdings";
+      break;
+    case 17:
+      result = "wingdings, 'zapf dingbats'";
+      break;
+  }
+  return result;
+}
