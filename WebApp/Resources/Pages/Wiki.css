@@ -61,22 +61,22 @@
 .fa-circle  { color: #D9534F !important}
 
 .zero-clipboard {
-display: block;
+    display: block;
 }
 
 .btn-clipboard {
-position: absolute;
-top: -1px;
-right: 0;
-z-index: 10;
-display: block;
-padding: 5px 8px;
-font-size: 12px;
-color: #777;
-cursor: pointer;
-background-color: #fff;
-border: 1px solid #e1e1e8;
-border-radius: 0 4px 0 4px;
+    position: absolute;
+    top: -1px;
+    right: 0;
+    z-index: 10;
+    display: block;
+    padding: 5px 8px;
+    font-size: 12px;
+    color: #777;
+    cursor: pointer;
+    background-color: #fff;
+    border: 1px solid #e1e1e8;
+    border-radius: 0 4px 0 4px;
 }
 
 .btn-clipboard.zeroclipboard-is-hover

@@ -15,7 +15,6 @@ var _wikiParentsList = null;
 var _wikiMenuLITemplate = '<li class="wiki-menu-item"><a id="{ID}" href="#">{Title}</a>';
 var _wikiSubMenuULTemplate = '<ul class="nav wiki-sidebar-subitem">';
 var _wikiSubMenuLITemplate = '<li class="wiki-menu-subitem"><a id="{ID}" href="#">{Title}</a></li>';
-var _wikiLinkPopOverTemplate = '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"><button id="wiki-copy-button" data-clipboard-text="Copy Me!" title="Click to copy me.">Copy to Clipboard</button></h3><div class="popover-content"></div></div>';
 
 $(document).ready(function () {
     wikiPage = new WikiPage();
