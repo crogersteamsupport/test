@@ -439,6 +439,8 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         user.OrganizationID = organization.OrganizationID;
         user.ReceiveTicketNotifications = true;
         user.ShowWelcomePage = true;
+        user.CanCreateAsset = true;
+        user.CanEditAsset = true;
         user.Collection.Save();
 
         
@@ -778,16 +780,13 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         SystemSettings.WriteString(loginUser, "NextSalesGuy", nextSalesGuy.ToString());
         CustomValues.UpdateByAPIFieldName(loginUser, customFields, mOrg.OrganizationID, "SalesRep", salesGuy);
 
-        List<string> tags = new List<string>();
-        tags.Add("trial");
-        tags.Add(salesGuy);
-        int hrCompanyID = TSHighrise.CreateCompany(mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "", "", tags.ToArray());
-        int hrContactID = TSHighrise.CreatePerson(mUser.FirstName, mUser.LastName, mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "", "", tags.ToArray());
+        int hrCompanyID = TSHighrise.CreateCompany(mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "", "", new string[] {salesGuy, "trial"});
+        int hrContactID = TSHighrise.CreatePerson(mUser.FirstName, mUser.LastName, mOrg.Name, phoneNumber, mUser.Email, productType, "", signUpParams != null ? signUpParams.gaSource : "", signUpParams != null ? signUpParams.gaCampaign : "", "", new string[] { salesGuy});
         //1. New Trial Check In:1496359
         //3. End of trial: 1496361
         //Eric's ID 159931
         TSHighrise.CreateTaskFrame("", "today", "1496359", "Party", hrContactID.ToString(), salesGuyID, true, true);
-        TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Party", hrContactID.ToString(), "159931", false, false);
+        TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Party", hrContactID.ToString(), "159931", true, false);
       }
       catch (Exception ex)
       {
