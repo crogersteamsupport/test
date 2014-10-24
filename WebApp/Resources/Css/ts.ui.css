@@ -369,12 +369,16 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .bgcolor-teal { background-color: #008080; }
 .bgcolor-magenta { background-color: #BA55D3; }
 
-.ticket-action-description table{
+.ticket-action-description table[border="1"], .ticket-preview-action table[border="1"]{
     border-width: 1px; border-style: outset;
     border-spacing: 2px;
 }
 
 
-.ticket-action-description tbody, tfoot, thead, tr, th, td{
+.ticket-action-description table[border="1"] tbody, .ticket-preview-action table[border="1"] tbody 
+.ticket-action-description table[border="1"] tbody > thead, .ticket-preview-action table[border="1"] tbody > thead, 
+.ticket-action-description table[border="1"] tbody tr, .ticket-preview-action table[border="1"] tbody tr, 
+.ticket-action-description table[border="1"] tbody th, .ticket-preview-action table[border="1"] tbody th, 
+.ticket-action-description table[border="1"] td, .ticket-preview-action table[border="1"] td{ 
     border-width: 1px; border-style: inset;
 }
