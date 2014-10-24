@@ -97,6 +97,10 @@ function BuildWikiView() {
     $("#Wiki-Revisions").val(_wikiVersion);
     $("#WikiViewArea").show();
     $("#WikiEditArea").hide();
+    $("#wiki-view-toolbar").show();
+    $("#wiki-edit-toolbar").hide();
+    $('#Wiki-Title').show();
+    $("#wiki-title-edit").hide();
     initEditor($("#Wiki-Edit-Body"), function (ed) {
         $("#Wiki-Edit-Body").tinymce().focus();
     });
@@ -286,6 +290,7 @@ function MapWikiProperties(wiki) {
     _wikiModifiedDate = wiki.ModifiedDate;
     _wikiExternalLink = _wikiExternalLinkBase.replace("{ORGID}", wiki.OrganizationID).replace("{ArticleID}", wiki.ArticleID);
     _wikiInternalLink = _wikiInternalLLinkBase.replace("{ArticleID}", wiki.ArticleID);
+    _editingWiki = false;
 };
 
 //GET-POST Wiki Functions
@@ -574,6 +579,34 @@ var initEditor = function (element, init) {
         $(element).tinymce(editorOptions);
     });
 };
+
+function GetTinyMCEFontSize(fontSize) {
+    var result = '';
+    switch (fontSize) {
+        case 1:
+            result = "8px";
+            break;
+        case 2:
+            result = "10px";
+            break;
+        case 3:
+            result = "12px";
+            break;
+        case 4:
+            result = "14px";
+            break;
+        case 5:
+            result = "18px";
+            break;
+        case 6:
+            result = "24px";
+            break;
+        case 7:
+            result = "36px";
+            break;
+    }
+    return result;
+}
 
 function GetTinyMCEFontName(fontFamily) {
     var result = '';
