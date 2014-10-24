@@ -441,6 +441,14 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         user.ShowWelcomePage = true;
         user.CanCreateAsset = true;
         user.CanEditAsset = true;
+        user.UserCanPinAction = true;
+        user.CanChangeCommunityVisibility = true;
+        user.ChangeTicketVisibility = true;
+        user.ChangeKBVisibility = true;
+        user.CanCreateContact = true;
+        user.CanCreateCompany = true;
+        user.CanEditCompany = true;
+        user.CanEditContact = true;
         user.Collection.Save();
 
         
