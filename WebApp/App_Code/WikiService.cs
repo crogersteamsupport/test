@@ -120,14 +120,11 @@ namespace TSWebServices
             try
             {
                 List<AutocompleteItem> items = new List<AutocompleteItem>();
-                WikiArticles articles = WikiArticles.GetWikiArticles(TSAuthentication.GetLoginUser());
+                WikiArticles articles = WikiArticles.GetWikiArticlesBySearchTerm(TSAuthentication.GetLoginUser(), searchTerm);
 
                 foreach (WikiArticle article in articles)
                 {
-                    if (article.ArticleName.Contains(searchTerm))
-                    {
-                        items.Add(new AutocompleteItem(article.ArticleName, article.ArticleID.ToString(), article.ArticleID));
-                    }
+                    items.Add(new AutocompleteItem(article.ArticleName, article.ArticleID.ToString(), article.ArticleID));
                 }
 
                 return items.ToArray();

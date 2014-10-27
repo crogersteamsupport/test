@@ -620,7 +620,7 @@ namespace TeamSupport.Data
     public static WikiArticles GetWikiArticles(LoginUser loginUser)
     {
         WikiArticles wikiArticles = new WikiArticles(loginUser);
-        wikiArticles.LoadByOrganizationIDAndUserID(loginUser.OrganizationID, loginUser.UserID);
+        wikiArticles.LoadByOrganizationIDAndUserID();
         if (wikiArticles.IsEmpty)
             return null;
         else
@@ -630,7 +630,7 @@ namespace TeamSupport.Data
     public static WikiArticles GetWikiParentArticles(LoginUser loginUser)
     {
         WikiArticles wikiArticles = new WikiArticles(loginUser);
-        wikiArticles.LoadParentsByOrganizationID(loginUser.OrganizationID, loginUser.UserID);
+        wikiArticles.LoadParentsByOrganizationID();
         if (wikiArticles.IsEmpty)
             return null;
         else
@@ -640,15 +640,22 @@ namespace TeamSupport.Data
     public static WikiArticles GetWikiSubArticles(LoginUser loginUser, int articleID)
     {
         WikiArticles wikiArticles = new WikiArticles(loginUser);
-        wikiArticles.LoadSubArticlesByParentID(articleID, loginUser.OrganizationID, loginUser.UserID);
+        wikiArticles.LoadSubArticlesByParentID(articleID);
         if (wikiArticles.IsEmpty)
             return null;
         else
             return wikiArticles;
     }
-    
-    
-    
+
+    public static WikiArticles GetWikiArticlesBySearchTerm(LoginUser loginUser, string searchTerm)
+    {
+        WikiArticles wikiArticles = new WikiArticles(loginUser);
+        wikiArticles.LoadBySearchTerm(searchTerm);
+        if (wikiArticles.IsEmpty)
+            return null;
+        else
+            return wikiArticles;
+    }
 
     #endregion
 

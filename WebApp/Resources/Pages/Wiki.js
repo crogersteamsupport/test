@@ -533,7 +533,6 @@ var initEditor = function (element, init) {
 
                 ed.addButton('insertWiki', {
                     title: 'Insert Wiki Article',
-                    //image: '../images/nav/16/knowledge.png',
                     icon: 'awesome fa fa-file',
                     onclick: function () {
                         top.Ts.MainPage.selectWiki(function (wikiID) {
