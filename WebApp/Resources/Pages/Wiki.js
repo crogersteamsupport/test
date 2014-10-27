@@ -203,7 +203,8 @@ function BuildWikiEditEvents() {
     });
 
     $("#wiki-edit-save").click(function () {
-        var comment = prompt("Please enter a comment for this revision", "");
+        var comment = $("#Wiki-Update-Comment").val();
+        alert(comment);
         var title = $("#Wiki-Title").text();
         var body = $("#Wiki-Edit-Body").html();
         var public = $("#Wiki-Edit-PublicView").is(':checked');
@@ -214,6 +215,7 @@ function BuildWikiEditEvents() {
         if (_wikiID.toString() !== parent) {
 
             SaveWiki(_wikiID, parent, body, title, public, private, portal);
+            $('#Wiki-Comment-Modal').modal('hide')
             $("#wiki-view-toolbar").show();
             $("#wiki-edit-toolbar").hide();
             $("#WikiViewArea").show();
