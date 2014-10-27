@@ -85,6 +85,8 @@ function BuildWikiView() {
 
     $('#EditWiki').tooltip();
     $('#WikiPrint').tooltip();
+    $('#NewWiki').tooltip();
+    $('#Wiki-Privacy-Controls').tooltip();
 
     $("#Wiki-Title").text(_wikiTitle);
     $("#Wiki-Body").html(_wikiBody);
@@ -102,7 +104,7 @@ function BuildWikiView() {
     $('#Wiki-Title').show();
     $("#wiki-title-edit").hide();
     initEditor($("#Wiki-Edit-Body"), function (ed) {
-        $("#Wiki-Edit-Body").tinymce().focus();
+        $("#Wiki-Edit-Body").tinymce();
     });
 };
 
@@ -169,6 +171,8 @@ function BuildWikiMenuItems() {
 
 function BuildWikiEditEvents() {
     $("#EditWiki").click(function () {
+        $('#Wiki-Title').hide();
+        $("#wiki-title-edit").show().focus();
         $("#wiki-view-toolbar").hide();
         $("#wiki-edit-toolbar").show();
         $("#WikiViewArea").hide();
@@ -204,7 +208,6 @@ function BuildWikiEditEvents() {
 
     $("#wiki-edit-save").click(function () {
         var comment = $("#Wiki-Update-Comment").val();
-        alert(comment);
         var title = $("#Wiki-Title").text();
         var body = $("#Wiki-Edit-Body").html();
         var public = $("#Wiki-Edit-PublicView").is(':checked');
@@ -242,7 +245,7 @@ function BuildWikiEditEvents() {
         $("#wiki-view-toolbar").hide();
         $("#wiki-edit-toolbar").show();
         $('#Wiki-Title').hide();
-        $("#wiki-title-edit").show();
+        $("#wiki-title-edit").show().focus();
         $("#WikiViewArea").hide();
         $("#WikiEditArea").show();
 
@@ -264,20 +267,6 @@ function BuildWikiEditEvents() {
     });
 
     $("#WikiLink").click(function (e) { e.preventDefault(); });
-
-    $('#Wiki-Title').click(function () {
-        if (_editingWiki) {
-            $(this).hide();
-            $('#wiki-title-edit').val($(this).text()).show().focus();
-        }
-    });
-
-    $('#wiki-title-edit').focusout(function () {
-        if ($(this).val() !== '') {
-            $(this).hide();
-            $('#Wiki-Title').text($(this).val()).show();
-        }
-    });
 };
 
 function MapWikiProperties(wiki) {
@@ -543,7 +532,7 @@ var initEditor = function (element, init) {
                                     alert('There was an error inserting your wiki article.');
                                     return;
                                 }
-                                var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '" target="_blank">' + wiki.ArticleName + '</a>';
+                                var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
                                 ed.focus();
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
