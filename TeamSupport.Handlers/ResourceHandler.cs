@@ -66,7 +66,7 @@ namespace TeamSupport.Handlers
         context.Response.Cache.SetExpires(DateTime.Now.AddHours(8));
         context.Response.Cache.SetMaxAge(new TimeSpan(8, 0, 0));
         //context.Response.Cache.SetLastModified(File.GetLastWriteTimeUtc(fileName));
-        context.Response.Headers["Last-Modified"] = File.GetLastWriteTimeUtc(fileName).ToString("yyyy-MM-dd HH':'mm':'ss");
+        context.Response.Headers["Last-Modified"] = File.GetLastWriteTimeUtc(fileName).ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
 
         context.Response.WriteFile(fileName);
       }
