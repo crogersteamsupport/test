@@ -492,12 +492,12 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public string LoadVersions(int productID)
+    public string LoadVersions(int productID, int start)
     {
       StringBuilder htmlresults = new StringBuilder("");
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       ProductVersionsView productVersions = new ProductVersionsView(loginUser);
-      productVersions.LoadByProductID(productID);
+      productVersions.LoadByProductIDLimit(productID, start);
 
       foreach (ProductVersionsViewItem productVersion in productVersions)
       {

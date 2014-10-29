@@ -25,15 +25,23 @@ $(document).ready(function () {
   });
 
   top.Ts.Services.Products.GetVersion(_productVersionID, function (productVersion) {
-    _productID = productVersion.ProductID;
-    _productName = productVersion.ProductName;
-    _versionNumber = productVersion.VersionNumber;
-    $('#productVersionNumber').text(productVersion.ProductName + " - " + productVersion.VersionNumber);
-    $('#fieldDescription').html(productVersion.Description != null && productVersion.Description != "" ? productVersion.Description : "Empty");
-    $('#fieldProduct').html(productVersion.ProductName);
-    $('#fieldStatus').html(productVersion.VersionStatus);
-    $('#fieldReleased').text((productVersion.IsReleased === true ? 'True' : 'False'));
-    $('#fieldReleaseDate').text(top.Ts.Utils.getMsDate(productVersion.ReleaseDate).localeFormat(top.Ts.Utils.getDatePattern()));
+    if (productVersion == null)
+    {
+      alert('This product version has been deleted.');
+      top.Ts.MainPage.closeNewProductVersionTab(_productVersionID);
+    }
+    else
+    {
+      _productID = productVersion.ProductID;
+      _productName = productVersion.ProductName;
+      _versionNumber = productVersion.VersionNumber;
+      $('#productVersionNumber').text(productVersion.ProductName + " - " + productVersion.VersionNumber);
+      $('#fieldDescription').html(productVersion.Description != null && productVersion.Description != "" ? productVersion.Description : "Empty");
+      $('#fieldProduct').html(productVersion.ProductName);
+      $('#fieldStatus').html(productVersion.VersionStatus);
+      $('#fieldReleased').text((productVersion.IsReleased === true ? 'True' : 'False'));
+      $('#fieldReleaseDate').text(top.Ts.Utils.getMsDate(productVersion.ReleaseDate).localeFormat(top.Ts.Utils.getDatePattern()));
+    }
   });
 
   $('.product-version-tooltip').tooltip({ placement: 'bottom', container: 'body' });
@@ -62,8 +70,6 @@ $(document).ready(function () {
     if (confirm('Are you sure you would like to remove this product version?')) {
       top.Ts.System.logAction('Product Version Detail - Delete Product Version');
       top.privateServices.DeleteVersion(_productVersionID, function (e) {
-        if (window.parent.document.getElementById('iframe-mniProducts'))
-          window.parent.document.getElementById('iframe-mniProducts').contentWindow.refreshPage();
         top.Ts.MainPage.closeNewProductVersionTab(_productVersionID);
       });
     }

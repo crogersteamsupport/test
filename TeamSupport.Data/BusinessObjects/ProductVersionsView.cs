@@ -27,6 +27,39 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByProductIDLimit(int productID, int start)
+    {
+      int end = start + 10;
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        WITH OrderedVersion AS
+        (
+	        SELECT 
+		        ProductVersionID, 
+		        ROW_NUMBER() OVER (ORDER BY ProductVersionID DESC) AS rownum
+	        FROM 
+		        ProductVersions 
+	        WHERE 
+		        ProductID = @ProductID 
+        ) 
+        SELECT 
+          v.*
+        FROM
+          ProductVersionsView v
+          JOIN OrderedVersion ov
+            ON v.ProductVersionID = ov.ProductVersionID
+        WHERE 
+	        ov.rownum BETWEEN @start and @end
+        ORDER BY
+          v.ProductVersionID DESC";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductID", productID);
+        command.Parameters.AddWithValue("@start", start);
+        command.Parameters.AddWithValue("@end", end);
+        Fill(command);
+      }
+    }
     public void LoadByProductAndCustomer(int productID, int organizationID, string orderBy = "VersionNumber")
     {
       using (SqlCommand command = new SqlCommand())

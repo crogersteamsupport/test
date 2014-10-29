@@ -1,6 +1,10 @@
 ﻿var _productID = null;
 var _execGetCustomer = null;
 var _headersLoaded = false;
+var _isLoadingVersions = false;
+var _viewingVersions = false;
+var _viewingCustomers = false;
+var _viewingInventory = false;
 
 $(document).ready(function () {
   _productID = top.Ts.Utils.getQueryValue("productid", window);
@@ -22,8 +26,16 @@ $(document).ready(function () {
   });
 
   top.Ts.Services.Products.GetProduct(_productID, function (product) {
-    $('#productName').text(product.Name);
-    $('#fieldDescription').html(product.Description != null && product.Description != ""? product.Description : "Empty");
+    if (product == null)
+    {
+      alert('This product has been deleted.');
+      top.Ts.MainPage.closeNewProductTab(_productID);
+    }
+    else
+    {
+      $('#productName').text(product.Name);
+      $('#fieldDescription').html(product.Description != null && product.Description != ""? product.Description : "Empty");
+    }
   });
 
   $('.product-tooltip').tooltip({ placement: 'bottom', container: 'body' });
@@ -52,8 +64,6 @@ $(document).ready(function () {
     if (confirm('Are you sure you would like to remove this product?')) {
       top.Ts.System.logAction('Product Detail - Delete Product');
       top.privateServices.DeleteProduct(_productID, function (e) {
-        if (window.parent.document.getElementById('iframe-mniProducts'))
-          window.parent.document.getElementById('iframe-mniProducts').contentWindow.refreshPage();
         top.Ts.MainPage.closeNewProductTab(_productID);
       });
     }
@@ -65,17 +75,40 @@ $(document).ready(function () {
       if (e.target.innerHTML == "Details") {
           createTestChart();
           LoadCustomProperties();
+          _viewingCustomers = false;
+          _viewingInventory = false;
+          _viewingVersions = false;
       }
-      else if (e.target.innerHTML == "Versions")
+      else if (e.target.innerHTML == "Versions") {
           LoadVersions();
-      else if (e.target.innerHTML == "Customers")
+          _viewingCustomers = false;
+          _viewingInventory = false;
+          _viewingVersions = true;
+      }
+      else if (e.target.innerHTML == "Customers") {
           LoadCustomers();
-      else if (e.target.innerHTML == "Tickets")
+          _viewingCustomers = true;
+          _viewingInventory = false;
+          _viewingVersions = false;
+      }
+      else if (e.target.innerHTML == "Tickets") {
           $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_ProductID=" + _productID);
-      else if (e.target.innerHTML == "Watercooler")
+          _viewingCustomers = false;
+          _viewingInventory = false;
+          _viewingVersions = false;
+      }
+      else if (e.target.innerHTML == "Watercooler") {
           $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=1&pageid=" + _productID);
-      else if (e.target.innerHTML == "Inventory")
+          _viewingCustomers = false;
+          _viewingInventory = false;
+          _viewingVersions = false;
+      }
+      else if (e.target.innerHTML == "Inventory") {
           LoadInventory();
+          _viewingCustomers = false;
+          _viewingInventory = true;
+          _viewingVersions = false;
+      }
   })
 
   function createTestChart() {
@@ -397,12 +430,75 @@ $(document).ready(function () {
       top.Ts.MainPage.newProduct("product", _productID);
   });
 
-  function LoadVersions() {
-      top.Ts.Services.Products.LoadVersions(_productID, function (versions) {
-          $('.versionList').empty();
-          $('.versionList').append(versions)
-      });
+  function LoadVersions(start) {
+    start = start || 0;
+    showVersionsLoadingIndicator();
+    $('.versionList').fadeTo(200, 0.5);
+    top.Ts.Services.Products.LoadVersions(_productID, start, function (versions) {
+      $('.versionList').fadeTo(0, 1);
+      
+      if (start == 0) {
+        insertVersions(versions);
+      } else {
+        appendVersions(versions);
+      }
+    });
   }
+
+  function showVersionsLoadingIndicator() {
+    _isLoadingVersions = true;
+    $('.versions-loading').show();
+  }
+
+  function insertVersions(versions) {
+    $('.versionList').empty();
+
+    if (versions.length < 1) {
+      $('.versions-loading').hide();
+      $('.versions-done').hide();
+      $('.versions-empty').show();
+    } else {
+      appendVersions(versions);
+    }
+    _isLoadingVersions = false;
+  }
+
+  function appendVersions(versions) {
+    $('.versions-loading').hide();
+    $('.versions-empty').hide();
+    $('.versions-done').hide();
+
+    if (versions.length < 1) {
+      $('.versions-done').show();
+    } else {
+      $('.versionList').append(versions)
+    }
+    _isLoadingVersions = false;
+  }
+
+  $('.maincontainer').bind('scroll', function () {
+    if (_viewingVersions) {
+      if (_isLoadingVersions == true) return;
+      if ($('.versions-done').is(':visible')) return;
+
+      if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+        LoadVersions($('.list-group-item').length + 1);
+      }
+
+      if ($(this).scrollTop() > 100) {
+        $('.scrollup').fadeIn();
+      } else {
+        $('.scrollup').fadeOut();
+      }
+    }
+  });
+
+  $('.scrollup').click(function () {
+    $('.maincontainer').animate({
+      scrollTop: 0
+    }, 600);
+    return false;
+  });
 
   var _isAdmin = top.Ts.System.User.IsSystemAdmin;
   if (!top.Ts.System.User.CanEditCompany && !_isAdmin) 
