@@ -44,7 +44,11 @@ namespace TeamSupport.Data
 		        ProductID = @ProductID 
         ) 
         SELECT 
-          v.*
+          v.ProductVersionID,
+          v.VersionNumber,
+          v.ReleaseDate,
+          v.IsReleased,
+          v.VersionStatus
         FROM
           ProductVersionsView v
           JOIN OrderedVersion ov
