@@ -592,9 +592,7 @@ Namespace TeamSupport
                             .LastName = person.LastName
                             .Title = person.Title
                             .MarkDeleted = False
-                        .SalesForceID = person.SalesForceID
-                        .OrganizationID = thisCompany.OrganizationID
-
+                            .SalesForceID = person.SalesForceID
 
                             .Collection.Save()
                         End With
