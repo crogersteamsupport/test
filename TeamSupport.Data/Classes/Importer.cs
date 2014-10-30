@@ -1048,6 +1048,17 @@ namespace TeamSupport.Data
         }
 
 
+
+        Users existingUsers = new Users(_loginUser);
+        existingUsers.LoadByName(row["FirstName"].ToString().Trim() + " " + row["LastName"].ToString().Trim(), organization.OrganizationID, false, false, false);
+        if (existingUsers.Count > 0)
+        {
+          existingUsers[0].ImportID = "[contact]" + row["ContactID"].ToString().Trim();
+          existingUsers.Save();
+          _log.AppendError(row, "Contact skipped due to already exists.");
+          continue;
+        }
+        /*
         Users existingUsers = new Users(_loginUser);
         existingUsers.LoadByEmail(organization.OrganizationID, row["Email"].ToString().Trim());
 
@@ -1069,7 +1080,7 @@ namespace TeamSupport.Data
             _log.AppendError(row, "Contact skipped due to already exists.");
             continue;
           }
-        }
+        }*/
         
         User user = users.AddNewUser();
         user.ActivatedOn = DateTime.UtcNow;
