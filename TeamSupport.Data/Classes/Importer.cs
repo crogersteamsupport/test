@@ -1038,7 +1038,8 @@ namespace TeamSupport.Data
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
-        Organization organization = organizations.FindByImportID(row["CustomerID"].ToString());
+        string customerID = row["CustomerID"].ToString().Trim();
+        Organization organization = customerID == "" ? null : organizations.FindByImportID(customerID);
         if (organization == null)
         {
           organization = unknown;
