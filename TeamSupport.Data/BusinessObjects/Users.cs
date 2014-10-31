@@ -994,9 +994,16 @@ AND u.IsPortalUser = 1";
     {
         foreach (User user in this)
         {
-            if (user.SalesForceID.ToString().Trim().ToLower() == salesForceID.Trim().ToLower())
+            try
             {
-                return user;
+                if (null != user.SalesForceID && user.SalesForceID.ToString().Trim().ToLower() == salesForceID.Trim().ToLower())
+                {
+                    return user;
+                }
+            }
+            catch (Exception ex)
+            {
+                //User does not have a contact id
             }
         }
         return null;
