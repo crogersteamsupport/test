@@ -2464,6 +2464,7 @@ var initEditor = function (element, init) {
           //image: '../images/nav/16/imagepaste.png',
           icon: 'awesome fa fa-paste',
           onclick: function () {
+          debugger
             if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
               alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
             }
