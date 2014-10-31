@@ -1366,7 +1366,12 @@ namespace TeamSupport.Data
         AssetHistoryItem item = history.AddNewAssetHistoryItem();
         Asset asset = assets.FindByImportID(row["AssetID"].ToString());
 
-        if (asset == null) continue;
+        if (asset == null)
+        {
+          _log.AppendMessage("Asset not found: " + row["AssetID"].ToString());
+
+          continue;
+        }
 
         item.OrganizationID = _organizationID;
         item.AssetID = asset.AssetID;
