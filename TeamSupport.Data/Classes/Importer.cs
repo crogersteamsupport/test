@@ -756,6 +756,27 @@ namespace TeamSupport.Data
 	    }
     }
 
+    private DateTime? GetDBDate(DataRow row, string columnName, bool allowNull)
+    {
+
+      DateTime? result = allowNull ? null : (DateTime?)DateTime.UtcNow;
+
+      if (row.Table.Columns.Contains(columnName))
+      {
+        object o = row[columnName];
+        try
+        {
+          if (o.ToString().Trim() != "") result = DateTime.Parse(o.ToString().Trim());
+          result = TimeZoneInfo.ConvertTimeToUtc((DateTime)result);
+        }
+        catch (Exception)
+        {
+        }
+      }
+
+      return result;
+    }
+
     private DateTime? GetDBDate(object o, bool allowNull)
     {
       DateTime? result = allowNull ? null : (DateTime?)DateTime.UtcNow;
@@ -1327,6 +1348,9 @@ namespace TeamSupport.Data
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
 
+      Users users = new Users(_loginUser);
+      users.LoadContactsAndUsers(_organizationID, false);
+
       Assets assets = new Assets(_loginUser);
       assets.LoadByOrganizationID(_organizationID);
       
@@ -1349,10 +1373,14 @@ namespace TeamSupport.Data
         item.ActionTime = (DateTime?)GetDBDate(row["ActionTime"], true);
         item.DateCreated = item.ActionTime;
         item.ActionDescription = GetDBString(row["Description"], 500, true);
-        Organization organization = organizations.FindByImportID(row["ShippedFrom"].ToString());
-        if (organization != null) item.ShippedFrom = organization.OrganizationID;
-        organization = organizations.FindByImportID(row["ShippedTo"].ToString());
-        if (organization != null) item.ShippedTo = organization.OrganizationID;
+        
+        item.ShippedFrom = _organizationID;
+        item.ShippedFromRefType = 9;
+        
+        User user = users.FindByImportID(row["ShippedTo"].ToString());
+        if (user != null) item.ShippedTo = user.UserID;
+        item.RefType = 32;
+
         item.TrackingNumber = GetDBString(row["TrackingNumber"], 200, true);
         item.ShippingMethod = GetDBString(row["ShippingMethod"], 200, true);
         item.ReferenceNum = GetDBString(row["ReferenceNum"], 200, true);
@@ -1465,6 +1493,7 @@ namespace TeamSupport.Data
         ticket.ModifierID = modifierID;
         ticket.DateModified = (DateTime)GetDBDate(row["DateModified"], false);
         ticket.DateClosed = GetDBDate(row["DateClosed"], true);
+        ticket.DueDate = GetDBDate(row, "DueDate", true);
         ticket.GroupID = null;
         ticket.ImportID = row["TicketID"].ToString().Trim();
         ticket.IsKnowledgeBase = row.Table.Columns.Contains("IsKnowledgeBase") ? GetDBBool(row["IsKnowledgeBase"]) : false;
@@ -1510,6 +1539,7 @@ namespace TeamSupport.Data
         ticket.TicketNumber = ticketNumber;
         ticket.TicketSeverityID = GetTicketSeverity(ticketSeverities, row["TicketSeverity"].ToString()).TicketSeverityID;
         ticket.TicketStatusID = GetTicketStatus(ticketStatuses, row["TicketStatus"].ToString(), ticketType).TicketStatusID;
+        
         ticket.TicketTypeID = ticketType.TicketTypeID;
         ticket.UserID = userID;
         ticket.NeedsIndexing = true;
