@@ -48,7 +48,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SignalR", "SignalR\", "{47E
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "58279"
+		VWDPort = "60957"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamSupport.WebUtils", "TeamSupport.WebUtils\TeamSupport.WebUtils.csproj", "{7BEB5C4F-414E-4660-904C-6407A3BC3ACF}"

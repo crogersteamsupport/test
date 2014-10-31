@@ -188,6 +188,12 @@ namespace TSWebServices
             return TSAuthentication.GetOrganization(TSAuthentication.GetLoginUser()).DefaultWikiArticleID;
         }
 
+        [WebMethod]
+        public bool IsWikiOwner(int userID)
+        {
+            return TSAuthentication.GetLoginUser().UserID == userID;
+        }
+
         #region Private Methods
 
         public void LogHistory(LoginUser loggedInUser,  WikiArticle wiki)

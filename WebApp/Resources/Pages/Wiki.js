@@ -20,6 +20,8 @@ var _wikiMenuLIWithChildrenTemplate = '<li class="wiki-menu-item"><a id="{ID}" h
 var _wikiSubMenuULTemplate = '<ul class="nav wiki-sidebar-subitem">';
 var _wikiSubMenuLITemplate = '<li class="wiki-menu-subitem"><a id="{ID}" href="#">{Title}</a></li>';
 var _editingWiki = false;
+var _isWikiOwner = false;
+var _canDeleteWiki = false;
 
 $(document).ready(function () {
     wikiPage = new WikiPage();
@@ -66,27 +68,34 @@ function BuildWikiPage() {
 
 
 function BuildWikiView() {
-
     var internalLink = new ZeroClipboard(document.getElementById("wiki-internal-link"));
     $("#wiki-internal-link").attr("data-clipboard-text", _wikiInternalLink);
-    $("#wiki-internal-link").tooltip();
+
 
     if (_wikiPrivateView) {
-        //$("#wiki-external-link").hide();
         $("#wiki-external-link").prop('disabled', true);
     }
     else {
-        $("#wiki-external-link").show()
         var externalLink = new ZeroClipboard(document.getElementById("wiki-external-link"));
         $("#wiki-external-link").attr("data-clipboard-text", _wikiExternalLink);
-        $("#wiki-external-link").tooltip();
+
         $("#wiki-external-link").prop('disabled', false);
     }
 
-    $('#EditWiki').tooltip();
-    $('#WikiPrint').tooltip();
-    $('#NewWiki').tooltip();
-    $('#Wiki-Privacy-Controls').tooltip();
+    $(".wiki-tools").tooltip({ placement: 'bottom', animation: false })
+
+    if (_isWikiOwner) {
+        $("#Wiki-Edit-PrivateView").removeAttr("disabled");
+    } else {
+        $("#Wiki-Edit-PrivateView").attr("disabled", true);
+    }
+
+    if (_canDeleteWiki) {
+        $("#wiki-edit-delete").show();
+    } else {
+        $("#wiki-edit-delete").hide();
+    }
+
 
     $("#Wiki-Title").text(_wikiTitle);
     $("#Wiki-Body").html(_wikiBody);
@@ -172,7 +181,9 @@ function BuildWikiMenuItems() {
 function BuildWikiEditEvents() {
     $("#EditWiki").click(function () {
         $('#Wiki-Title').hide();
-        $("#wiki-title-edit").show().focus();
+        $("#wiki-title-edit").val(_wikiTitle).show();
+        $("#Wiki-Edit-Body").tinymce().focus();
+
         $("#wiki-view-toolbar").hide();
         $("#wiki-edit-toolbar").show();
         $("#WikiViewArea").hide();
@@ -208,7 +219,7 @@ function BuildWikiEditEvents() {
 
     $("#wiki-edit-save").click(function () {
         var comment = $("#Wiki-Update-Comment").val();
-        var title = $("#Wiki-Title").text();
+        var title = $("#wiki-title-edit").val();
         var body = $("#Wiki-Edit-Body").html();
         var public = $("#Wiki-Edit-PublicView").is(':checked');
         var private = $("#Wiki-Edit-PrivateView").is(':checked');
@@ -252,21 +263,15 @@ function BuildWikiEditEvents() {
         top.Ts.System.logAction('Wiki - Wiki Created');
     });
 
-    $("#WikiPrint").click(function () {
-        var divContents = $("#wikiprintarea").html();
-        var printWindow = window.open('', '');
-        var headContent = document.getElementsByTagName('head')[0].innerHTML;
-        printWindow.document.write('<html><head>');
-        printWindow.document.write(headContent);
-        printWindow.document.write('</head><body >');
-        printWindow.document.write(divContents);
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-        printWindow.print();
-        top.Ts.System.logAction('Wiki - Wiki Printed');
-    });
-
     $("#WikiLink").click(function (e) { e.preventDefault(); });
+
+    $("#wiki-title-edit").on('keydown', function (e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode == 9) {
+            e.preventDefault();
+            $("#Wiki-Edit-Body").tinymce().focus();
+        }
+    });
 };
 
 function MapWikiProperties(wiki) {
@@ -282,6 +287,8 @@ function MapWikiProperties(wiki) {
     _wikiExternalLink = _wikiExternalLinkBase.replace("{ORGID}", wiki.OrganizationID).replace("{ArticleID}", wiki.ArticleID);
     _wikiInternalLink = _wikiInternalLLinkBase.replace("{ArticleID}", wiki.ArticleID);
     _editingWiki = false;
+    _isWikiOwner = wiki.IsOwner;
+    _canDeleteWiki = wiki.CanDelete;
 };
 
 //GET-POST Wiki Functions

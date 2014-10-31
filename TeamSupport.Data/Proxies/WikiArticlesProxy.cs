@@ -29,7 +29,11 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? CreatedDate { get; set; }
     [DataMember] public int? ModifiedBy { get; set; }
     [DataMember] public DateTime? ModifiedDate { get; set; }
-    [DataMember] public bool NeedsIndexing { get; set; }     
+    [DataMember] public bool NeedsIndexing { get; set; }
+    [DataMember] public bool IsOwner { get; set; }
+    [DataMember] public bool CanDelete { get; set; }  
+   
+   
          
   }
   
@@ -56,7 +60,9 @@ namespace TeamSupport.Data
        
        
       result.ModifiedDate = this.ModifiedDateUtc == null ? this.ModifiedDateUtc : DateTime.SpecifyKind((DateTime)this.ModifiedDateUtc, DateTimeKind.Utc); 
-      result.CreatedDate = this.CreatedDateUtc == null ? this.CreatedDateUtc : DateTime.SpecifyKind((DateTime)this.CreatedDateUtc, DateTimeKind.Utc); 
+      result.CreatedDate = this.CreatedDateUtc == null ? this.CreatedDateUtc : DateTime.SpecifyKind((DateTime)this.CreatedDateUtc, DateTimeKind.Utc);
+      result.IsOwner = (BaseCollection.LoginUser.UserID == this.CreatedBy);
+      result.CanDelete = (BaseCollection.LoginUser.GetUser().IsSystemAdmin || result.IsOwner);
        
       return result;
     }	

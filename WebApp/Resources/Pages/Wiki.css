@@ -43,7 +43,7 @@
 
 #wiki-view-toolbar > span {margin-right:15px; margin-top:4px;}
 #wiki-edit-toolbar > div {margin-right:15px; margin-top:4px;}  
-.wiki-edit-footer { border-top: 2px solid #eee; padding-top: 10px; margin-top:10px; margin-bottom:10px; height:50px; }
+.wiki-edit-footer { border-top: 2px solid #eee; padding-top: 10px; margin-top:10px; margin-bottom:10px; }
 
 .wiki-title { position: relative; top: 4px; font-weight:400; font-size:17px;}
 .wiki-title-edit {position: relative; top: 4px;}
