@@ -511,10 +511,6 @@ namespace TSWebServices
                                     <p class='list-group-item-text'>{3}</p>
                                     {4}
                                 </div>
-                                <div class='col-xs-6'>
-                                    <p class='list-group-item-text'>{5} Open Tickets</p>
-                                    <p class='list-group-item-text'>{6} Closed Tickets</p>                            
-                                </div>
                             </div>
                             </div>"
 
@@ -522,9 +518,7 @@ namespace TSWebServices
             , productVersion.ProductVersionID
             , productVersion.VersionNumber
             , productVersion.VersionStatus
-            , (productVersion.IsReleased && productVersion.ReleaseDate != null) ? "Released on " + DataUtils.DateToLocal(loginUser, (((DateTime)productVersion.ReleaseDateUtc))).ToString(GetDateFormatNormal()) : ""
-            , GetProductVersionTickets(productVersion.ProductVersionID, 0)
-            , GetProductVersionTickets(productVersion.ProductVersionID, 1));
+            , (productVersion.IsReleased && productVersion.ReleaseDate != null) ? "Released on " + DataUtils.DateToLocal(loginUser, (((DateTime)productVersion.ReleaseDateUtc))).ToString(GetDateFormatNormal()) : "");
 
       }
 

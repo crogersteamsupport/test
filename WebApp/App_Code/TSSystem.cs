@@ -206,11 +206,12 @@ namespace TSWebServices
 
         if ((org.ProductType == ProductType.Enterprise || org.ProductType == ProductType.BugTracking) && IsMenuItemActive(user, "mniProducts"))
         {
-          items.Add(new TsMenuItem("products", "mniProducts", "Products", "vcr/1_9_0/images/nav/20/products.png", string.Format(data, "Frames/Products.aspx", "vcr/1_9_0/PaneInfo/Products.html")));
-          if (TSAuthentication.OrganizationID == 1078 || TSAuthentication.OrganizationID == 13679 || TSAuthentication.OrganizationID == 362372)
-          {
-            items.Add(new TsMenuItem("products", "mniProducts1", "New Products", "vcr/1_9_0/images/nav/20/products.png", string.Format(data, "vcr/1_9_0/Pages/Products.html", "vcr/1_9_0/PaneInfo/Products.html")));
-          }
+            items.Add(new TsMenuItem("products", "mniProducts", "Products", "vcr/1_9_0/images/nav/20/products.png", string.Format(data, "vcr/1_9_0/Pages/Products.html", "vcr/1_9_0/PaneInfo/Products.html")));
+          //items.Add(new TsMenuItem("products", "mniProducts", "Products", "vcr/1_9_0/images/nav/20/products.png", string.Format(data, "Frames/Products.aspx", "vcr/1_9_0/PaneInfo/Products.html")));
+          //if (TSAuthentication.OrganizationID == 1078 || TSAuthentication.OrganizationID == 13679 || TSAuthentication.OrganizationID == 362372 || TSAuthentication.OrganizationID == 428340)
+          //{
+          //  items.Add(new TsMenuItem("products", "mniProducts1", "New Products", "vcr/1_9_0/images/nav/20/products.png", string.Format(data, "vcr/1_9_0/Pages/Products.html", "vcr/1_9_0/PaneInfo/Products.html")));
+          //}
         }
 
         if (org.IsInventoryEnabled && IsMenuItemActive(user, "mniInventory"))
