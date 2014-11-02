@@ -2,6 +2,8 @@
 var _execGetCustomer = null;
 var _headersLoaded = false;
 var _isLoadingVersions = false;
+var _isLoadingCustomers = false;
+var _isLoadingInventory = false;
 var _viewingVersions = false;
 var _viewingCustomers = false;
 var _viewingInventory = false;
@@ -72,6 +74,7 @@ $(document).ready(function () {
   $('#productTabs a:first').tab('show');
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      $('.scrollup').fadeOut();
       if (e.target.innerHTML == "Details") {
           createTestChart();
           LoadCustomProperties();
@@ -484,12 +487,28 @@ $(document).ready(function () {
       if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
         LoadVersions($('.list-group-item').length + 1);
       }
+    }
+    else if (_viewingCustomers) {
+      if (_isLoadingCustomers == true) return;
+      if ($('.customers-done').is(':visible')) return;
 
-      if ($(this).scrollTop() > 100) {
-        $('.scrollup').fadeIn();
-      } else {
-        $('.scrollup').fadeOut();
+      if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+        LoadCustomers($('.list-group-item').length + 1);
       }
+    }
+    else if (_viewingInventory) {
+      if (_isLoadingInventory == true) return;
+      if ($('.inventory-done').is(':visible')) return;
+
+      if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+        LoadInventory($('.list-group-item').length + 1);
+      }
+    }
+
+    if ($(this).scrollTop() > 100) {
+        $('.scrollup').fadeIn();
+    } else {
+        $('.scrollup').fadeOut();
     }
   });
 
@@ -498,6 +517,20 @@ $(document).ready(function () {
       scrollTop: 0
     }, 600);
     return false;
+  });
+
+  $('.versionList').on('click', '.productversionlink', function (e) {
+      e.preventDefault();
+
+      var id = $(this).attr('id');
+      top.Ts.System.logAction('Product Detail Page - View Product Version');
+      top.Ts.MainPage.openNewProductVersion(id);
+
+      top.Ts.Services.Products.UpdateRecentlyViewed('v' + id, function (resultHtml) {
+          $('.recent-container').empty();
+          $('.recent-container').html(resultHtml);
+      });
+
   });
 
   var _isAdmin = top.Ts.System.User.IsSystemAdmin;
@@ -511,7 +544,7 @@ $(document).ready(function () {
       $('#customerForm').toggle();
   });
 
-  function LoadCustomers() {
+  function LoadCustomers(start) {
 
       if(!_headersLoaded){
         
@@ -527,35 +560,70 @@ $(document).ready(function () {
           });
           }
 
+      start = start || 0;
+      showCustomersLoadingIndicator();
+      $('#tblCustomers').fadeTo(200, 0.5);
+
+      top.Ts.Services.Products.LoadCustomers(_productID, start, function (customers) {
+          $('#tblCustomers').fadeTo(0, 1);
+          if (start == 0) {
+              insertCustomers(customers);
+          } else {
+              appendCustomers(customers);
+          }
+      });
+
+  }
+
+  function showCustomersLoadingIndicator() {
+      _isLoadingCustomers = true;
+      $('.customers-loading').show();
+  }
+
+  function insertCustomers(customers) {
       $('#tblCustomers tbody').empty();
 
-      top.Ts.Services.Products.LoadCustomers(_productID, function (product) {
-          for (var i = 0; i < product.length; i++) {
+      if (customers.length < 1) {
+          $('.customers-loading').hide();
+          $('.customers-done').hide();
+          $('.customers-empty').show();
+      } else {
+          appendCustomers(customers);
+      }
+      _isLoadingCustomers = false;
+  }
+
+  function appendCustomers(customers) {
+      $('.customers-loading').hide();
+      $('.customers-empty').hide();
+      $('.customers-done').hide();
+
+      if (customers.length < 1) {
+          $('.customers-done').show();
+      } else {
+          for (var i = 0; i < customers.length; i++) {
               var customfields = "";
-              for (var p = 0; p < product[i].CustomFields.length; p++)
-              {
-                  customfields = customfields + "<td>" + product[i].CustomFields[p]  + "</td>";
+              for (var p = 0; p < customers[i].CustomFields.length; p++) {
+                  customfields = customfields + "<td>" + customers[i].CustomFields[p] + "</td>";
               }
 
               var html;
 
-              if(top.Ts.System.User.CanEditCompany || _isAdmin)
-              {
-                  html = '<td><i class="fa fa-edit customerEdit"></i></td><td><i class="fa fa-trash-o customerDelete"></i></td><td><i class="fa fa-folder-open customerView"></i></td><td>' + product[i].Customer + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields;
+              if (top.Ts.System.User.CanEditCompany || _isAdmin) {
+                  html = '<td><i class="fa fa-edit customerEdit"></i></td><td><i class="fa fa-trash-o customerDelete"></i></td><td><i class="fa fa-folder-open customerView"></i></td><td>' + customers[i].Customer + '</td><td>' + customers[i].VersionNumber + '</td><td>' + customers[i].SupportExpiration + '</td><td>' + customers[i].VersionStatus + '</td><td>' + customers[i].IsReleased + '</td><td>' + customers[i].ReleaseDate + '</td>' + customfields;
               }
-              else
-              {
-                  html = '<td></td><td></td><td><i class="fa fa-folder-open customerView"></i></td><td>' + product[i].Customer + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
+              else {
+                  html = '<td></td><td></td><td><i class="fa fa-folder-open customerView"></i></td><td>' + customers[i].Customer + '</td><td>' + customers[i].VersionNumber + '</td><td>' + customers[i].SupportExpiration + '</td><td>' + customers[i].VersionStatus + '</td><td>' + customers[i].IsReleased + '</td><td>' + customers[i].ReleaseDate + '</td>' + customfields
               }
               var tr = $('<tr>')
-              .attr('id', product[i].OrganizationProductID)
+              .attr('id', customers[i].OrganizationProductID)
               .html(html)
               .appendTo('#tblCustomers > tbody:last');
 
 
           }
-      });
-
+      }
+      _isLoadingCustomers = false;
   }
 
   var getCustomers = function (request, response) {
@@ -756,13 +824,53 @@ $(document).ready(function () {
 
   });
 
-  function LoadInventory() {
-      $('.assetList').empty();
-      top.Ts.Services.Products.LoadAssets(_productID, function (assets) {
-          $('.assetList').append(assets)
+  function LoadInventory(start) {
+      start = start || 0;
+      showAssetsLoadingIndicator();
+      $('.assetList').fadeTo(200, 0.5);
+
+      top.Ts.Services.Products.LoadAssets(_productID, start, function (assets) {
+          $('.assetList').fadeTo(0, 1);
+
+          if (start == 0) {
+              insertAssets(assets);
+          } else {
+              appendAssets(assets);
+          }
       });
   }
 
+
+  function showAssetsLoadingIndicator() {
+      _isLoadingInventory = true;
+      $('.inventory-loading').show();
+  }
+
+  function insertAssets(assets) {
+      $('.assetList').empty();
+
+      if (assets.length < 1) {
+          $('.inventory-loading').hide();
+          $('.inventory-done').hide();
+          $('.inventory-empty').show();
+      } else {
+          appendAssets(assets);
+      }
+      _isLoadingInventory = false;
+  }
+
+  function appendAssets(assets) {
+      $('.inventory-loading').hide();
+      $('.inventory-empty').hide();
+      $('.inventory-done').hide();
+
+      if (assets.length < 1) {
+          $('.inventory-done').show();
+      } else {
+          $('.assetList').append(assets)
+      }
+      _isLoadingInventory = false;
+  }
 });
 
 var getUrls = function (input) {

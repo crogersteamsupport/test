@@ -120,6 +120,40 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByProductIDLimit(int productID, int start)
+    {
+        int end = start + 10;
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+        WITH OrderedOrganizationProduct AS
+        (
+	        SELECT 
+		        OrganizationProductID, 
+		        ROW_NUMBER() OVER (ORDER BY OrganizationProductID DESC) AS rownum
+	        FROM 
+		        OrganizationProductsView 
+	        WHERE 
+		        ProductID = @ProductID 
+        ) 
+        SELECT 
+          v.*
+        FROM
+          OrganizationProductsView v
+          JOIN OrderedOrganizationProduct oop
+            ON v.OrganizationProductID = oop.OrganizationProductID
+        WHERE 
+	        oop.rownum BETWEEN @start and @end
+        ORDER BY
+          v.OrganizationProductID DESC";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductID", productID);
+            command.Parameters.AddWithValue("@start", start);
+            command.Parameters.AddWithValue("@end", end);
+            Fill(command);
+        }
+    }
+
     public void LoadByProductVersionID(int productVersionID)
     {
       using (SqlCommand command = new SqlCommand())
@@ -139,6 +173,40 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
         Fill(command);
       }
+    }
+
+    public void LoadByProductVersionIDLimit(int productVersionID, int start)
+    {
+        int end = start + 10;
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+        WITH OrderedOrganizationProduct AS
+        (
+	        SELECT 
+		        OrganizationProductID, 
+		        ROW_NUMBER() OVER (ORDER BY OrganizationProductID DESC) AS rownum
+	        FROM 
+		        OrganizationProductsView 
+	        WHERE 
+		        ProductVersionID = @ProductVersionID 
+        ) 
+        SELECT 
+          v.*
+        FROM
+          OrganizationProductsView v
+          JOIN OrderedOrganizationProduct oop
+            ON v.OrganizationProductID = oop.OrganizationProductID
+        WHERE 
+	      oop.rownum BETWEEN @start and @end
+        ORDER BY
+          v.OrganizationProductID DESC";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
+            command.Parameters.AddWithValue("@start", start);
+            command.Parameters.AddWithValue("@end", end);
+            Fill(command);
+        }
     }
   }
   

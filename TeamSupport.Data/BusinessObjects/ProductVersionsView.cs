@@ -64,6 +64,7 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
+
     public void LoadByProductAndCustomer(int productID, int organizationID, string orderBy = "VersionNumber")
     {
       using (SqlCommand command = new SqlCommand())
