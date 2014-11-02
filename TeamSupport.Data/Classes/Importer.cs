@@ -1346,14 +1346,16 @@ namespace TeamSupport.Data
     private void ImportAssetHistory()
     {
       Organizations organizations = new Organizations(_loginUser);
-      organizations.LoadByParentID(_organizationID, false);
+      //organizations.LoadByParentID(_organizationID, false);
 
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
+      IdList userIDs = GetIdList(users);
 
       Assets assets = new Assets(_loginUser);
       assets.LoadByOrganizationID(_organizationID);
-      
+      IdList assetIDs = GetIdList(assets);
+
       AssetHistory history = new AssetHistory(_loginUser);
 
 
@@ -1364,9 +1366,9 @@ namespace TeamSupport.Data
 
         _currentRow = row;
         AssetHistoryItem item = history.AddNewAssetHistoryItem();
-        Asset asset = assets.FindByImportID(row["AssetID"].ToString());
-
-        if (asset == null)
+        
+        int assetID;
+        if (!assetIDs.TryGetValue(row["AssetID"].ToString(), out assetID))
         {
           _log.AppendMessage("Asset not found: " + row["AssetID"].ToString());
 
@@ -1374,7 +1376,7 @@ namespace TeamSupport.Data
         }
 
         item.OrganizationID = _organizationID;
-        item.AssetID = asset.AssetID;
+        item.AssetID = assetID;
         item.ActionTime = (DateTime?)GetDBDate(row["ActionTime"], true);
         item.DateCreated = item.ActionTime;
         item.ActionDescription = GetDBString(row["Description"], 500, true);
@@ -1382,10 +1384,13 @@ namespace TeamSupport.Data
         item.ShippedFrom = _organizationID;
         item.ShippedFromRefType = 9;
         
-        User user = users.FindByImportID(row["ShippedTo"].ToString());
-        if (user != null) item.ShippedTo = user.UserID;
-        item.RefType = 32;
+        int userID;
+        if (userIDs.TryGetValue("[contact]" + row["ShippedTo"].ToString(), out userID))
+        {
+          item.ShippedTo = userID;
+        }
 
+        item.RefType = 32;
         item.TrackingNumber = GetDBString(row["TrackingNumber"], 200, true);
         item.ShippingMethod = GetDBString(row["ShippingMethod"], 200, true);
         item.ReferenceNum = GetDBString(row["ReferenceNum"], 200, true);
