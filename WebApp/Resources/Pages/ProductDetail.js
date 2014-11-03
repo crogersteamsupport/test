@@ -18,7 +18,7 @@ $(document).ready(function () {
           closable: false
       },
       north: {
-          size: 100,
+          size: 90,
           spacing_open: 1
       },
       center: {

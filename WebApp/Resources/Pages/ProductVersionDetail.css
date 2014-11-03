@@ -6,8 +6,9 @@
     font-size: 24px;
 }
 
-.header-nav { height: 49px; overflow:hidden; white-space:nowrap; }
-.pageheader .btn-toolbar { margin: 10px 20px 0 0; }
+.header-nav { height: 40px; overflow:hidden; white-space:nowrap; }
+.pageheader .btn-toolbar { margin: 0 20px 0 0; }
+.pageheader {height: initial !important;}
 .main-nav { margin-top: 0; }
 
 .box-content {font-size: 12px}
