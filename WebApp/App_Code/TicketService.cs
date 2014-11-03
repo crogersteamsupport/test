@@ -1425,7 +1425,7 @@ namespace TSWebServices
       ActionLogs.AddActionLog(ticket.Collection.LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticketID, description);
 
       ticket.Collection.Save();
-      return (DateTime?)dueDate;
+      return ticket.DueDate;
     }
 
     [WebMethod]
