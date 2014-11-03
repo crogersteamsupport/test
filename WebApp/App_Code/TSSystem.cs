@@ -162,13 +162,7 @@ namespace TSWebServices
 
         if (org.ProductType != ProductType.Express && IsMenuItemActive(user, "mniWiki"))
         {
-          int? articleID = org.DefaultWikiArticleID;
-          string wikiLink = articleID == null ? "Wiki/ViewPage.aspx" : "Wiki/ViewPage.aspx?ArticleID=" + articleID;
-          items.Add(new TsMenuItem("wiki", "mniWiki", "Wiki", "vcr/1_9_0/images/nav/20/wiki.png", string.Format(data, wikiLink, "vcr/1_9_0/PaneInfo/Wiki.html")));
-          if (TSAuthentication.OrganizationID == 1078)
-          {
-            items.Add(new TsMenuItem("wiki2", "mniWiki2", "Wiki Beta", "vcr/1_9_0/images/nav/20/wiki.png", string.Format(data, "vcr/1_9_0/Pages/Wiki.html", "vcr/1_9_0/PaneInfo/Wiki.html")));
-          }
+          items.Add(new TsMenuItem("wiki", "mniWiki", "Wiki", "vcr/1_9_0/images/nav/20/wiki.png", string.Format(data, "vcr/1_9_0/Pages/Wiki.html", "vcr/1_9_0/PaneInfo/Wiki.html")));
         }
 
         if (IsMenuItemActive(user, "mniSearch"))
