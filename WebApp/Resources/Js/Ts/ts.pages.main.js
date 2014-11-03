@@ -1437,7 +1437,8 @@ Ts.Pages.Main.prototype = {
   openWiki: function (articleID) {
     this.MainMenu.find('mniWiki', 'wiki').select();
     var element = $('.main-tab-content-item:visible');
-    $(element).children('iframe').attr('src', 'Wiki/ViewPage.aspx?ArticleID=' + articleID);
+    //$(element).children('iframe').attr('src', 'Wiki/ViewPage.aspx?ArticleID=' + articleID);
+    $(element).children('iframe').attr('src', 'vcr/1_6_0/Pages/wiki.html?ArticleID=' + articleID);
   },
   openUser: function (userID) {
     this.MainMenu.find('mniUsers', 'users').select();
