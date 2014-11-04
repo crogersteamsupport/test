@@ -229,7 +229,7 @@ function BuildWikiEditEvents() {
 
         if (_wikiID.toString() !== parent) {
 
-            SaveWiki(_wikiID, parent, body, title, public, private, portal);
+            SaveWiki(_wikiID, parent, body, title, public, private, portal, comment);
             $('#Wiki-Comment-Modal').modal('hide')
             $("#wiki-view-toolbar").show();
             $("#wiki-edit-toolbar").hide();
@@ -273,7 +273,12 @@ function BuildWikiEditEvents() {
             $("#Wiki-Edit-Body").tinymce().focus();
         }
     });
+
     top.Ts.Services.Settings.SetMoxieManagerSessionVariables();
+
+    $('#Wiki-Comment-Modal').on('shown.bs.modal', function (e) {
+        $("#Wiki-Update-Comment").focus();
+    })
 };
 
 function MapWikiProperties(wiki) {
@@ -307,6 +312,7 @@ function GetWiki(wikiID) {
 
 function GetWikiHistory(wikiID) {
     top.Ts.Services.Wiki.GetWikiHistory(wikiID, function (wikiHistory) {
+    debugger
         if (wikiHistory !== null) {
             $('.wiki-revision-div').show();
         }
@@ -345,8 +351,8 @@ function GetWikiHistory(wikiID) {
 };
 
 
-function SaveWiki(wikiID, parent, wikiBody, wikiTitle, publicView, privateView, portalView) {
-    top.Ts.Services.Wiki.SaveWiki(wikiID, parent, wikiBody, wikiTitle, publicView, privateView, portalView, function (wiki) {
+function SaveWiki(wikiID, parent, wikiBody, wikiTitle, publicView, privateView, portalView, comment) {
+    top.Ts.Services.Wiki.SaveWiki(wikiID, parent, wikiBody, wikiTitle, publicView, privateView, portalView, comment, function (wiki) {
         MapWikiProperties(wiki);
         BuildWikiPage();
         top.Ts.System.logAction('Wiki - Wiki Saved');
@@ -388,7 +394,9 @@ var initEditor = function (element, init) {
             moxiemanager_title: top.Ts.System.Organization.Name,
             moxiemanager_hidden_tools: (top.Ts.System.User.IsSystemAdmin == true) ? "" : "manage",
             paste_data_images: true,
-            
+//            moxiemanager_image_settings: {
+//                moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/"
+//            },
             setup: function (ed) {
                 ed.on('init', function (e) {
                     top.Ts.System.refreshUser(function () {

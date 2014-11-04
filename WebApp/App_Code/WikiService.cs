@@ -67,7 +67,7 @@ namespace TSWebServices
                         }
                     }
                     item.RevisedDate = wiki.ModifiedDate.ToString();
-                    item.Comment = "";
+                    item.Comment = (wiki.Comment != null) ? wiki.Comment : "";
 
                     wikiHistory.Add(item);
                 }
@@ -137,14 +137,14 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public WikiArticleProxy SaveWiki(int wikiID, int? parent, string wikiBody, string wikiTitle, bool publicView, bool privateView, bool portalView)
+        public WikiArticleProxy SaveWiki(int wikiID, int? parent, string wikiBody, string wikiTitle, bool publicView, bool privateView, bool portalView, string comment)
         {
             LoginUser loggedInUser = TSAuthentication.GetLoginUser();
             WikiArticle wiki;
             if (wikiID != 0)
             {
                 wiki = WikiArticles.GetWikiArticle(loggedInUser, wikiID);
-                LogHistory(loggedInUser, wiki);
+                LogHistory(loggedInUser, wiki, comment);
                 wiki.Version = wiki.Version + 1;
             }
             else
@@ -196,7 +196,7 @@ namespace TSWebServices
 
         #region Private Methods
 
-        public void LogHistory(LoginUser loggedInUser,  WikiArticle wiki)
+        public void LogHistory(LoginUser loggedInUser,  WikiArticle wiki, string comment)
         {
             WikiHistoryCollection history = new WikiHistoryCollection(loggedInUser);
             WikiHistory newWikiHistory = history.AddNewWikiHistory();
@@ -210,6 +210,7 @@ namespace TSWebServices
             newWikiHistory.ArticleID = wiki.ArticleID;
             newWikiHistory.ModifiedDate = DateTime.UtcNow;
             newWikiHistory.CreatedDate = DateTime.UtcNow;
+            newWikiHistory.Comment = comment;
 
             newWikiHistory.Collection.Save();
         }
