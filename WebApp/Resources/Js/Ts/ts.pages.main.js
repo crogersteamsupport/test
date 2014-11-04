@@ -1454,8 +1454,16 @@ Ts.Pages.Main.prototype = {
   openOrganizationProduct: function (organizationProductID) {
     var self = this;
     Ts.Services.Organizations.GetOrganizationProduct(organizationProductID, function (op) {
-      self.openProduct(op.ProductID, op.ProductVersionID == null ? -1 : op.ProductVersionID);
+        //self.openProduct(op.ProductID, op.ProductVersionID == null ? -1 : op.ProductVersionID);
+        self.openNewProduct(op.ProductID);
     });
+  },
+  openOrganizationProductVersion: function (organizationProductID) {
+      var self = this;
+      Ts.Services.Organizations.GetOrganizationProduct(organizationProductID, function (op) {
+          //self.openProduct(op.ProductID, op.ProductVersionID == null ? -1 : op.ProductVersionID);
+          self.openNewProductVersion(op.ProductVersionID);
+      });
   },
   openProductOrganization: function (organizationProductID) {
     var self = this;

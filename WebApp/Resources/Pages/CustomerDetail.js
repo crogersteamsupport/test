@@ -1146,6 +1146,14 @@ $(document).ready(function () {
 
     });
 
+    $('#tblProducts').on('click', '.productVersionView', function (e) {
+        e.preventDefault();
+        top.Ts.System.logAction('Customer Detail - View Product Version');
+        top.Ts.MainPage.openOrganizationProductVersion($(this).parent().parent().attr('id'))
+        //top.location = "../../../Default.aspx?OrganizationProductID=" + ;
+
+    });
+
     top.privateServices.IsSubscribed(9, organizationID, issubbed);
 
     function issubbed(result) {
@@ -1880,11 +1888,11 @@ $(document).ready(function () {
 
                 if(top.Ts.System.User.CanEditCompany || _isAdmin)
                 {
-                    html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields;
+                    html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields;
                 }
                 else
                 {
-                    html = '<td></td><td></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
+                    html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
                 }
                 var tr = $('<tr>')
                 .attr('id', product[i].OrganizationProductID)
