@@ -312,7 +312,6 @@ function GetWiki(wikiID) {
 
 function GetWikiHistory(wikiID) {
     top.Ts.Services.Wiki.GetWikiHistory(wikiID, function (wikiHistory) {
-    debugger
         if (wikiHistory !== null) {
             $('.wiki-revision-div').show();
         }

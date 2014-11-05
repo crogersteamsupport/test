@@ -954,6 +954,7 @@ TicketGrid = function (options) {
                 }
 
                 rows.push(row);
+                grid.setActiveCell(rows[0], 0);
                 grid.setSelectedRows(rows);
                 e.stopPropagation();
                 e.stopImmediatePropagation();
