@@ -1224,7 +1224,18 @@ namespace TSWebServices
       }
       else
       {
-        action.Description = proxy.Description;
+          if (proxy.IsVisibleOnPortal)
+          {
+              if (!string.IsNullOrWhiteSpace(user.Signature))
+              {
+                  if (!action.Description.Contains(user.Signature.Replace(" />", ">")))
+                      action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+              }
+          }
+          else
+          {
+              action.Description = proxy.Description;
+          }
       }
       
       if (!CanEditAction(action)) return null;
