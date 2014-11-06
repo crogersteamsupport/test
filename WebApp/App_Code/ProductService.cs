@@ -526,11 +526,11 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public ProductCustomOrganization[] LoadCustomers(int productID, int start)
+    public ProductCustomOrganization[] LoadCustomers(int productID, int start, string sortColumn, string sortDirection)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       OrganizationProductsView organizationProducts = new OrganizationProductsView(loginUser);
-      organizationProducts.LoadByProductIDLimit(productID, start);
+      organizationProducts.LoadByProductIDLimit(productID, start, GetSortColumnTableName(sortColumn), sortDirection);
       List<ProductCustomOrganization> list = new List<ProductCustomOrganization>();
       CustomFields fields = new CustomFields(loginUser);
       fields.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.OrganizationProducts);
@@ -545,6 +545,7 @@ namespace TSWebServices
         test.VersionStatus = row["VersionStatus"].ToString();
         test.IsReleased = row["IsReleased"].ToString();
         test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
+        test.DateCreated = ((DateTime)row["DateCreated"]).ToString(GetDateFormatNormal());
         test.OrganizationProductID = (int)row["OrganizationProductID"];
         test.CustomFields = new List<string>();
         foreach (CustomField field in fields)
@@ -561,6 +562,35 @@ namespace TSWebServices
       return list.ToArray();
     }
 
+    private string GetSortColumnTableName(string interfaceName)
+    {
+        string result = "OrganizationProductID";
+        switch(interfaceName.ToLower())
+        {
+            case "customer":
+                result = "OrganizationName";
+                break;
+            case "version":
+                result = "VersionNumber";
+                break;
+            case "support expiration":
+                result = "SupportExpiration";
+                break;
+            case "status":
+                result = "VersionStatus";
+                break;
+            case "released":
+                result = "IsReleased";
+                break;
+            case "released date":
+                result = "ReleaseDate";
+                break;
+            case "date created":
+                result = "OrganizationProductID";
+                break;
+        }
+        return result;
+    }
     [WebMethod]
     public ProductCustomOrganization[] LoadVersionCustomers(int productVersionID, int start)
     {
@@ -871,6 +901,8 @@ namespace TSWebServices
     public string IsReleased { get; set; }
     [DataMember]
     public string ReleaseDate { get; set; }
+    [DataMember]
+    public string DateCreated { get; set; }
     [DataMember]
     public int ProductID { get; set; }
     [DataMember]

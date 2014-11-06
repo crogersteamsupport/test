@@ -51,3 +51,6 @@
   outline-style:none !important;
 }
 
+.fa-sort-desc, .fa-sort-asc {
+    margin-left: 3px;
+}

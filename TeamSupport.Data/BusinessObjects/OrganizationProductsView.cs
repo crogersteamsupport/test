@@ -120,7 +120,7 @@ namespace TeamSupport.Data
       }
     }
 
-    public void LoadByProductIDLimit(int productID, int start)
+    public void LoadByProductIDLimit(int productID, int start, string sortColumn, string sortDirection)
     {
         int end = start + 10;
         using (SqlCommand command = new SqlCommand())
@@ -130,7 +130,7 @@ namespace TeamSupport.Data
         (
 	        SELECT 
 		        OrganizationProductID, 
-		        ROW_NUMBER() OVER (ORDER BY OrganizationProductID DESC) AS rownum
+		        ROW_NUMBER() OVER (ORDER BY " + sortColumn + " " + sortDirection + @") AS rownum
 	        FROM 
 		        OrganizationProductsView 
 	        WHERE 
@@ -145,7 +145,7 @@ namespace TeamSupport.Data
         WHERE 
 	        oop.rownum BETWEEN @start and @end
         ORDER BY
-          v.OrganizationProductID DESC";
+          v." + sortColumn + " " + sortDirection;
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@ProductID", productID);
             command.Parameters.AddWithValue("@start", start);

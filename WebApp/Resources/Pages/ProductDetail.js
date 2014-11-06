@@ -7,6 +7,8 @@ var _isLoadingInventory = false;
 var _viewingVersions = false;
 var _viewingCustomers = false;
 var _viewingInventory = false;
+var _customersSortColumn = 'Date Created';
+var _customersSortDirection = 'DESC';
 
 $(document).ready(function () {
   _productID = top.Ts.Utils.getQueryValue("productid", window);
@@ -564,7 +566,7 @@ $(document).ready(function () {
       showCustomersLoadingIndicator();
       $('#tblCustomers').fadeTo(200, 0.5);
 
-      top.Ts.Services.Products.LoadCustomers(_productID, start, function (customers) {
+      top.Ts.Services.Products.LoadCustomers(_productID, start, _customersSortColumn, _customersSortDirection, function (customers) {
           $('#tblCustomers').fadeTo(0, 1);
           if (start == 0) {
               insertCustomers(customers);
@@ -610,10 +612,10 @@ $(document).ready(function () {
               var html;
 
               if (top.Ts.System.User.CanEditCompany || _isAdmin) {
-                  html = '<td><i class="fa fa-edit customerEdit"></i></td><td><i class="fa fa-trash-o customerDelete"></i></td><td><a href="#" class="customerView">' + customers[i].Customer + '</a></td><td>' + customers[i].VersionNumber + '</td><td>' + customers[i].SupportExpiration + '</td><td>' + customers[i].VersionStatus + '</td><td>' + customers[i].IsReleased + '</td><td>' + customers[i].ReleaseDate + '</td>' + customfields;
+                  html = '<td><i class="fa fa-edit customerEdit"></i></td><td><i class="fa fa-trash-o customerDelete"></i></td><td><a href="#" class="customerView">' + customers[i].Customer + '</a></td><td>' + customers[i].VersionNumber + '</td><td>' + customers[i].SupportExpiration + '</td><td>' + customers[i].VersionStatus + '</td><td>' + customers[i].IsReleased + '</td><td>' + customers[i].ReleaseDate + '</td><td>' + customers[i].DateCreated + '</td>' + customfields;
               }
               else {
-                  html = '<td></td><td></td><td><a href="#" class="customerView">' + customers[i].Customer + '</a></td><td>' + customers[i].VersionNumber + '</td><td>' + customers[i].SupportExpiration + '</td><td>' + customers[i].VersionStatus + '</td><td>' + customers[i].IsReleased + '</td><td>' + customers[i].ReleaseDate + '</td>' + customfields
+                  html = '<td></td><td></td><td><a href="#" class="customerView">' + customers[i].Customer + '</a></td><td>' + customers[i].VersionNumber + '</td><td>' + customers[i].SupportExpiration + '</td><td>' + customers[i].VersionStatus + '</td><td>' + customers[i].IsReleased + '</td><td>' + customers[i].ReleaseDate + '</td><td>' + customers[i].DateCreated + '</td>' + customfields
               }
               var tr = $('<tr>')
               .attr('id', customers[i].OrganizationProductID)
@@ -794,6 +796,38 @@ $(document).ready(function () {
           });
       });
       $('#customerForm').show();
+  });
+
+  $('#tblCustomers').on('click', '.customerHeader', function (e) {
+      e.preventDefault();
+      _customersSortColumn = $(this).text();
+      var sortIcon = $(this).children(i);
+      if (sortIcon.length > 0) {
+          if (sortIcon.hasClass('fa-sort-asc')) {
+              _customersSortDirection = 'DESC'
+          }
+          else {
+                _customersSortDirection = 'ASC'
+          }
+          sortIcon.toggleClass('fa-sort-asc fa-sort-desc');
+      }
+      else {
+          $('.customerHeader').children(i).remove();
+          var newSortIcon = $('<i>')
+              .addClass('fa fa-sort-asc')
+              .appendTo($(this));
+          _customersSortDirection = 'ASC';
+          switch (_customersSortColumn.toLowerCase()) {
+              case "version":
+              case "support expiration":
+              case "released date":
+              case "date created":
+                  newSortIcon.toggleClass('fa-sort-asc fa-sort-desc');
+                  _customersSortDirection = 'DESC';
+
+          }
+      }
+      LoadCustomers();
   });
 
   function SetVersion(selVal) {
