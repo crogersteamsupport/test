@@ -833,9 +833,11 @@ $(document).ready(function () {
           function (result) {
               if (result == true) {
                   icon.removeClass('ts-icon-kbnot').addClass('ts-icon-kb');
+                  icon.prop('title', 'Remove Knowledgebase Article');
               }
               else {
                   icon.removeClass('ts-icon-kb').addClass('ts-icon-kbnot');
+                  icon.prop('title', 'Make Knowledgebase Article');
               }
           }, function () {
               alert('There was an error editing this action.');
@@ -2894,8 +2896,8 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
     var restrictedFromEditingAnyActions = !top.Ts.System.User.IsSystemAdmin && top.Ts.System.User.RestrictUserFromEditingAnyActions;
 
     if (!top.Ts.System.User.AllowUserToEditAnyAction && (!canEdit || restrictedFromEditingAnyActions)) {
-      element.find('.ticket-action-edit').remove();
-      element.find('.ticket-action-delete').remove();
+        element.find('.ticket-action-edit').remove();
+        element.find('.ticket-action-delete').remove();
     }
 
     if (action.SystemActionTypeID === top.Ts.SystemActionTypes.Description) {
@@ -2912,15 +2914,21 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
     }
     element.find('.ticket-action-title').text(action.DisplayName);
     element.find('.ticket-action-kb').toggleClass('ts-icon-kb', action.IsKnowledgeBase === true).toggleClass('ts-icon-kbnot', action.IsKnowledgeBase === false);
+    if (action.IsKnowledgeBase) {
+        element.find('.ticket-action-kb').prop('title', 'Remove Knowledgebase Article');
+    }
+    else if (!action.IsKnowledgeBase) {
+        element.find('.ticket-action-kb').prop('title', 'Make Knowledgebase Article');
+    }
     element.find('.ticket-action-portal').toggleClass('ts-icon-portal', action.IsVisibleOnPortal === true).toggleClass('ts-icon-portalnot', action.IsVisibleOnPortal === false);
     if (action.Pinned) {
-      element.find('.ticket-action-pin').addClass('ts-icon-pin');
-      element.find('.ticket-action-pin').removeClass('ts-icon-pinnot');
-      element.find('.ticket-action-pin').prop('title', 'Unpin this action.');
+        element.find('.ticket-action-pin').addClass('ts-icon-pin');
+        element.find('.ticket-action-pin').removeClass('ts-icon-pinnot');
+        element.find('.ticket-action-pin').prop('title', 'Unpin this action.');
     }
 
     if (!top.Ts.System.User.IsSystemAdmin && !top.Ts.System.User.UserCanPinAction) {
-      element.find('.ts-icon-pinnot').remove();
+        element.find('.ts-icon-pinnot').remove();
     }
 
     if (attachments.length < 1) {
@@ -3037,7 +3045,7 @@ var loadActionDisplay = function (element, actionInfo, doExpand) {
         desc.find('pre').addClass('ui-corner-all');
         element.find('.ticket-action-body').show();
     }
-        element.find('a').addClass('ui-state-default ts-link');
+    element.find('a').addClass('ui-state-default ts-link');
 
 }
 
