@@ -1105,7 +1105,8 @@ var initEditor = function (element, init) {
             media_external_list_url: "tinymce/jscripts/media_list.js",
             menubar: false,
             moxiemanager_image_settings: {
-                moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/"
+                moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/",
+                extensions: 'gif,jpg,jpeg,png'
             },
             setup: function (ed) {
                 ed.on('init', function (e) {
