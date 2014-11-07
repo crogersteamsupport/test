@@ -122,7 +122,7 @@ namespace TeamSupport.Data
 
     public void LoadByProductIDLimit(int productID, int start, string sortColumn, string sortDirection)
     {
-        int end = start + 10;
+        int end = start + 20;
         using (SqlCommand command = new SqlCommand())
         {
             command.CommandText = @"
@@ -177,7 +177,7 @@ namespace TeamSupport.Data
 
     public void LoadByProductVersionIDLimit(int productVersionID, int start)
     {
-        int end = start + 10;
+        int end = start + 20;
         using (SqlCommand command = new SqlCommand())
         {
             command.CommandText = @"

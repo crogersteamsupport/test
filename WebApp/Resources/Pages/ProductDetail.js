@@ -495,7 +495,7 @@ $(document).ready(function () {
       if ($('.customers-done').is(':visible')) return;
 
       if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-        LoadCustomers($('.list-group-item').length + 1);
+        LoadCustomers($('#tblCustomers > tbody > tr').length + 1);
       }
     }
     else if (_viewingInventory) {
