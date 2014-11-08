@@ -343,6 +343,8 @@ namespace TeamSupport.Data
               GC.WaitForPendingFinalizers();
               ImportAssetTickets();
               GC.WaitForPendingFinalizers();
+              ImportParentTickets();
+              GC.WaitForPendingFinalizers();
               ImportTicketSubscriptions();
               GC.WaitForPendingFinalizers();
               ImportWiki();
@@ -1661,7 +1663,6 @@ AND a.OrganizationID = @OrganizationID
           if (_IsBulk == true) actions.BulkSave(); else actions.Save();
           actions = new Actions(_loginUser);
           GC.WaitForPendingFinalizers();
-
         }
 
       }
@@ -2193,6 +2194,44 @@ AND a.OrganizationID = @OrganizationID
         }
       }
       EmailPosts.DeleteImportEmails(_loginUser);
+    }
+
+    private void ImportParentTickets()
+    {
+      DataTable table = ReadTable("ParentTickets");
+      if (table == null) return;
+
+      Tickets tickets = new Tickets(_loginUser);
+      tickets.LoadByOrganizationID(_organizationID);
+      IdList ticketIDs = GetIdList(tickets);
+      int count = 0;
+
+      foreach (DataRow row in table.Rows)
+      {
+        _currentRow = row;
+        int parentID;
+        if (ticketIDs.TryGetValue(row["ParentTicketID"].ToString(), out parentID))
+        {
+          Ticket ticket = tickets.FindByImportID(row["ChildTicketID"].ToString().Trim());
+          if (ticket == null)
+          {
+            _log.AppendError(row, "Parent skipped due to missing child ticket");
+            continue;
+          }
+
+          ticket.ParentID = parentID;
+        }
+        else
+        {
+          _log.AppendError(row, "Parent Ticket skipped due to missing parent ticket.");
+        }
+
+      }
+      tickets.Save();
+      EmailPosts.DeleteImportEmails(_loginUser);
+      _log.AppendMessage(count.ToString() + " child tickets associated.");
+
+    
     }
 
     private void ImportTicketSubscriptions()
