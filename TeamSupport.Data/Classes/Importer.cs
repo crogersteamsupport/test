@@ -287,7 +287,7 @@ namespace TeamSupport.Data
       {
 
         _organizationID = organizationID;
-        _loginUser = new LoginUser(_loginUser.ConnectionString, -1, organizationID, null);
+        _loginUser = new LoginUser(_loginUser.ConnectionString, -2, organizationID, null);
 
         _log.AppendMessage("Import Started: " + DateTime.Now.ToString());
         _currentRow = null;
@@ -340,6 +340,8 @@ namespace TeamSupport.Data
               ImportCustomerTickets();
               GC.WaitForPendingFinalizers();
               ImportContactTickets();
+              GC.WaitForPendingFinalizers();
+              ImportAssetTickets();
               GC.WaitForPendingFinalizers();
               ImportTicketSubscriptions();
               GC.WaitForPendingFinalizers();
@@ -756,6 +758,20 @@ namespace TeamSupport.Data
 	    }
     }
 
+    private bool GetDBBool(DataRow row, string columnName, bool defValue = false)
+    {
+      if (!row.Table.Columns.Contains(columnName)) return defValue;
+
+      try
+      {
+        return bool.Parse(row[columnName].ToString().Trim());
+      }
+      catch (Exception)
+      {
+        return defValue;
+      }
+    }
+
     private DateTime? GetDBDate(DataRow row, string columnName, bool allowNull)
     {
 
@@ -808,6 +824,23 @@ namespace TeamSupport.Data
       return result;
     }
 
+    private string GetDBString(DataRow row, string columnName, int maxLength = 0, bool allowNull = false)
+    {
+      if (!row.Table.Columns.Contains(columnName)) return allowNull ? null : "";
+
+      try
+      {
+        string result = row[columnName].ToString().Trim();
+        if (allowNull && result == "") return null;
+        if (result.Length > maxLength && maxLength > 0) result = result.Substring(0, maxLength);
+        return result;
+      }
+      catch (Exception)
+      {
+        return allowNull ? null : "";
+      }
+    }
+
     private string GetDBString(object o, int maxLength, bool allowNull)
     {
       string result = o.ToString().Trim();
@@ -815,6 +848,32 @@ namespace TeamSupport.Data
       if (result.Length > maxLength && maxLength > 0) result = result.Substring(0, maxLength);
       return result;
     }
+
+    private int? GetUserOrContact(IdList list, string id)
+    {
+      int value;
+      if (list.TryGetValue(id, out value))
+      {
+        return value;
+      }
+      else if (list.TryGetValue("[contact]" + id, out value))
+      {
+        return value;
+      }    
+
+      return null;
+    }
+
+    private int? GetListID(IdList list, string id)
+    {
+      int value;
+      if (list.TryGetValue(id, out value))
+      {
+        return value;
+      }
+      return null;
+    }
+
 
     private int GetUserContactID(string importID, Users users)
     {
@@ -1229,9 +1288,7 @@ namespace TeamSupport.Data
     {
       Products products = new Products(_loginUser);
       products.LoadByOrganizationID(_organizationID);
-
-      Organizations organizations = new Organizations(_loginUser);
-      organizations.LoadByParentID(_organizationID, false);
+      IdList productIDs = GetIdList(products);
 
       Assets assets = new Assets(_loginUser);
       int orgCount = 0;
@@ -1241,7 +1298,6 @@ namespace TeamSupport.Data
       int count = 0;
       foreach (DataRow row in table.Rows)
       {
-
         _currentRow = row;
         string organizationID = row["AssignedTo"].ToString().Trim().ToLower();
 
@@ -1260,62 +1316,12 @@ namespace TeamSupport.Data
 	      }
         asset.Notes = GetDBString(row["Notes"], 0, true);
 
-        string productID = row["ProductID"].ToString().Trim().ToLower();
-        if (productID != "")
+        int productID;
+        if (productIDs.TryGetValue(row["ProductID"].ToString(), out productID))
         {
-          Product product = products.FindByImportID(productID);
-          if (product == null)
-          {
-            _log.AppendMessage("Asset Product not found: " + productID);
-/*
-            product = (new Products(_loginUser)).AddNewProduct();
-            product.Name = row["ProductID"].ToString();
-            product.OrganizationID = _organizationID;
-            product.ImportID = product.Name;
-            product.Collection.Save();
-            prodCount++;
-            products.LoadByOrganizationID(_organizationID);
- */
-          }
-          //asset.ProductID = product.ProductID;
-        }
-        else
-        {
-          asset.ProductID = null;
+          asset.ProductID = productID;
         }
 
-
-        
-        if (organizationID != "")
-        {
-          Organization organization = organizations.FindByImportID(organizationID);
-          if (organization == null)
-          {
-            _log.AppendMessage("Asset Customer not found: " + organizationID);
-            /*
-            organization = (new Organizations(_loginUser)).AddNewOrganization();
-            organization.Name = row["AssignedTo"].ToString();
-            organization.ParentID = _organizationID;
-            organization.ImportID = organization.Name;
-            organization.IsActive = true;
-            organization.HasPortalAccess = false;
-            organization.IsCustomerFree = false;
-            organization.UserSeats = 0;
-            organization.PortalSeats = 0;
-            organization.ExtraStorageUnits = 0;
-            organization.ProductType = ProductType.Enterprise;
-            organization.Collection.Save();
-            orgCount++;
-            organizations.LoadByParentID(_organizationID, false);
-             */
-          }
-          //asset.AssignedTo = organization.OrganizationID;
-        }
-        else
-        {
-          asset.AssignedTo = null;
-        }
-        
 
         asset.WarrantyExpiration = GetDBDate(row["WarrantyExpiration"], true);
         asset.CreatorID = -1;
@@ -1345,9 +1351,6 @@ namespace TeamSupport.Data
 
     private void ImportAssetHistory()
     {
-      Organizations organizations = new Organizations(_loginUser);
-      //organizations.LoadByParentID(_organizationID, false);
-
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
       IdList userIDs = GetIdList(users);
@@ -1357,7 +1360,7 @@ namespace TeamSupport.Data
       IdList assetIDs = GetIdList(assets);
 
       AssetHistory history = new AssetHistory(_loginUser);
-
+      AssetAssignments assignments = new AssetAssignments(_loginUser);
 
       DataTable table = ReadTable("AssetHistory");
       int count = 0;
@@ -1395,8 +1398,7 @@ namespace TeamSupport.Data
         item.ShippingMethod = GetDBString(row["ShippingMethod"], 200, true);
         item.ReferenceNum = GetDBString(row["ReferenceNum"], 200, true);
         item.Comments = GetDBString(row["Comments"], 0, true);
-
-
+        
         if (++count % BULK_LIMIT == 0)
         {
           if (_IsBulk == true) history.BulkSave(); else history.Save();
@@ -1408,6 +1410,20 @@ namespace TeamSupport.Data
       if (_IsBulk == true) history.BulkSave(); else history.Save();
 
       _log.AppendMessage(count.ToString() + " Asset Histories Imported.");
+
+      SqlCommand command = new SqlCommand();
+      command.CommandText = @"
+INSERT INTO AssetAssignments (HistoryID) 
+SELECT ah.HistoryID FROM AssetHistory ah
+LEFT JOIN Assets a ON a.AssetID = ah.AssetID
+WHERE ah.ShippedTo IS NOT NULL
+AND a.ImportID IS NOT NULL
+AND ah.DateModified > DATEADD(MINUTE, -120, GETUTCDATE())
+AND a.OrganizationID = @OrganizationID
+";
+      command.Parameters.AddWithValue("OrganizationID", _organizationID);
+      SqlExecutor.ExecuteNonQuery(_loginUser, command);
+
 
     }
 
@@ -1425,6 +1441,7 @@ namespace TeamSupport.Data
     {
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
+      IdList userIDs = GetIdList(users);
 
       Groups groups = new Groups(_loginUser);
       groups.LoadByOrganizationID(_organizationID);
@@ -1471,21 +1488,20 @@ namespace TeamSupport.Data
         }
 
         maxTicketNumber = Math.Max(ticketNumber, maxTicketNumber);
+        int? tempID = null;
 
-        User assignedTo = users.Find(row["UserID"].ToString().Trim());
-        int? userID = assignedTo == null ? null : (int?)assignedTo.UserID;
+        int? userID = GetListID(userIDs, row["UserID"].ToString().Trim());
 
         Group group = groups.FindByImportID(row["GroupID"].ToString().Trim());
         int? groupID = group == null ? null : (int?)group.GroupID;
 
-        User creator = users.FindByImportID(row["CreatorID"].ToString());
-        int creatorID = creator == null ? -1 : creator.UserID;
+        tempID = GetUserOrContact(userIDs, row["CreatorID"].ToString().Trim());
+        int creatorID = tempID == null ? -1 : (int)tempID;
 
-        User modifier = users.FindByImportID(row["ModifierID"].ToString());
-        int modifierID = modifier == null ? -1 : modifier.UserID;
+        tempID = GetUserOrContact(userIDs, row["ModifierID"].ToString().Trim());
+        int modifierID = tempID == null ? -1 : (int)tempID;
 
-        User closer = users.FindByImportID(row["CloserID"].ToString());
-        int? closerID = closer == null ? -1 : closer.UserID;
+        int? closerID = GetUserOrContact(userIDs, row["CloserID"].ToString().Trim());
 
         Product product = products.FindByImportID(row["ProductID"].ToString().Trim());
         int? productID = product == null ? null : (int?)product.ProductID;
@@ -1504,6 +1520,8 @@ namespace TeamSupport.Data
         ticket.DateModified = (DateTime)GetDBDate(row["DateModified"], false);
         ticket.DateClosed = GetDBDate(row["DateClosed"], true);
         ticket.DueDate = GetDBDate(row, "DueDate", true);
+        ticket.TicketSource = GetDBString(row, "Source", 100, true);
+        ticket.IsVisibleOnPortal = GetDBBool(row, "VisibleOnPortal", false);
         ticket.GroupID = null;
         ticket.ImportID = row["TicketID"].ToString().Trim();
         ticket.IsKnowledgeBase = row.Table.Columns.Contains("IsKnowledgeBase") ? GetDBBool(row["IsKnowledgeBase"]) : false;
@@ -1538,7 +1556,7 @@ namespace TeamSupport.Data
             ticket.KnowledgeBaseCategoryID = cat.CategoryID;
           }
         }
-        ticket.IsVisibleOnPortal = false;
+        
         ticket.ModifierID = _loginUser.UserID;
         ticket.Name = GetDBString(row["Name"], 250, false);
         ticket.OrganizationID = _organizationID;
@@ -1633,7 +1651,7 @@ namespace TeamSupport.Data
         action.TimeSpent = GetDBInt(row["TimeSpent"], true);
         if (action.IsVisibleOnPortal && !ticket.IsVisibleOnPortal) ticket.IsVisibleOnPortal = true;
 
-        action.Pinned = row.Table.Columns.Contains("IsPinned") ? GetDBBool(row["IsPinned"]) : false;
+        action.Pinned = GetDBBool(row, "IsPinned", false);
 
 
         if (++count % BULK_LIMIT == 0)
@@ -2108,31 +2126,71 @@ namespace TeamSupport.Data
     {
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
+      IdList organizationIDs = GetIdList(organizations);
 
       Tickets tickets = new Tickets(_loginUser);
       tickets.LoadByOrganizationID(_organizationID);
+      IdList ticketIDs = GetIdList(tickets);
+
       DataTable table = ReadTable("CustomerTickets");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
-        Ticket ticket = tickets.FindByImportID(row["TicketID"].ToString().Trim());
-        Organization organization = organizations.FindByImportID(row["CustomerID"].ToString().Trim());
+        int ticketID;
+        int orgID;
 
-        bool missing = false;
-        if (ticket == null)
+        if (ticketIDs.TryGetValue(row["TicketID"].ToString().Trim(), out ticketID))
         {
-          _log.AppendError(row, "Customer Ticket skipped due to missing ticket.");
-          missing = true;
+          if (organizationIDs.TryGetValue(row["CustomerID"].ToString().Trim(), out orgID))
+          {
+            tickets.AddOrganization(orgID, ticketID);
+          }
+          else
+          {
+            _log.AppendError(row, "Customer Ticket skipped due to missing ticket.");
+          }
         }
-
-        if (organization == null)
+        else
         {
           _log.AppendError(row, "Customer Ticket skipped due to missing organization.");
-          missing = true;
         }
+      }
+      EmailPosts.DeleteImportEmails(_loginUser);
+    }
 
-        if (missing == true) continue;
-        tickets.AddOrganization(organization.OrganizationID, ticket.TicketID);
+    private void ImportAssetTickets()
+    {
+      DataTable table = ReadTable("AssetTickets");
+      if (table == null) return;
+
+      Assets assets = new Assets(_loginUser);
+      assets.LoadByOrganizationID(_organizationID);
+      IdList assetIDs = GetIdList(assets);
+
+      Tickets tickets = new Tickets(_loginUser);
+      tickets.LoadByOrganizationID(_organizationID);
+      IdList ticketIDs = GetIdList(tickets);
+
+      foreach (DataRow row in table.Rows)
+      {
+        _currentRow = row;
+        int ticketID;
+        int assetID;
+        if (ticketIDs.TryGetValue(row["TicketID"].ToString(), out ticketID))
+        {
+          if (assetIDs.TryGetValue(row["AssetID"].ToString(), out assetID))
+          {
+            tickets.AddAsset(assetID, ticketID);
+          }
+          else
+          {
+            _log.AppendError(row, "Customer Ticket skipped due to missing organization.");
+          }
+        }
+        else
+        {
+          _log.AppendError(row, "Customer Ticket skipped due to missing ticket.");
+        }
       }
       EmailPosts.DeleteImportEmails(_loginUser);
     }
@@ -2168,25 +2226,35 @@ namespace TeamSupport.Data
     private void ImportContactTickets()
     {
       Users users = new Users(_loginUser);
-      //users.LoadByOrganizationID(_organizationID, false);
       users.LoadContactsAndUsers(_organizationID, false);
+      IdList userIDs = GetIdList(users);
 
       Tickets tickets = new Tickets(_loginUser);
       tickets.LoadByOrganizationID(_organizationID);
+      IdList ticketIDs = GetIdList(tickets);
+
       DataTable table = ReadTable("ContactTickets");
       foreach (DataRow row in table.Rows)
       {
-        _currentRow = row;
-        Ticket ticket = tickets.FindByImportID(row["TicketID"].ToString().Trim());
-        User user = users.FindByImportID(row["ContactID"].ToString().Trim());
-
-        if (user == null || ticket == null)
+        int userID;
+        int ticketID;
+        if (userIDs.TryGetValue("[contact]" + row["ContactID"].ToString(), out userID))
         {
-          _log.AppendError(row, "Contact Ticket skipped due to missing user or ticket.");
-          continue;
+          if (ticketIDs.TryGetValue(row["TicketID"].ToString().Trim(), out ticketID))
+          {
+            tickets.AddContact(userID, ticketID);
+          }
+          else
+          {
+            _log.AppendError(row, "Contact Ticket skipped due to missing ticket.");
+          }
+        }
+        else
+        {
+          _log.AppendError(row, "Contact Ticket skipped due to missing user.");
         }
 
-        tickets.AddContact(user.UserID, ticket.TicketID);
+        
       }
       EmailPosts.DeleteImportEmails(_loginUser);
     }

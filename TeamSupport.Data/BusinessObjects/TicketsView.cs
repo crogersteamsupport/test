@@ -554,7 +554,8 @@ namespace TeamSupport.Data
             ,tv.[DaysOpened]
             ,tv.[IsClosed]
             ,tv.[CloserName]
-            ,tv.[SlaViolationTime]");
+            ,tv.[SlaViolationTime]
+            ,tv.[DueDate]");
       GetFilterWhereClause(loginUser, filter, command, builder);
       builder.Append(" ORDER BY tv.[" + sort);
       if (filter.SortAsc) builder.Append("] ASC"); else builder.Append("] DESC");
