@@ -1113,7 +1113,7 @@ namespace TeamSupport.Data
       Organization unknown = Organizations.GetUnknownCompany(_loginUser, _organizationID);
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
-      //IdList idList = GetIdList(organizations);
+      IdList idList = GetIdList(organizations);
       Users users = new Users(_loginUser);
       DataTable table = ReadTable("Contacts");
       int count = 0;
@@ -1121,15 +1121,11 @@ namespace TeamSupport.Data
       {
         _currentRow = row;
         string customerID = row["CustomerID"].ToString().Trim();
-        Organization organization = customerID == "" ? null : organizations.FindByImportID(customerID);
-        if (organization == null)
+        int orgID;
+        if (!idList.TryGetValue(row["CustomerID"].ToString().Trim(), out orgID))
         {
-          organization = unknown;
-          //_log.AppendError(row, "Contact skipped due to missing organization.");
-          //continue;
+          orgID = unknown.OrganizationID;        
         }
-
-
 
        /*
         Users existingUsers = new Users(_loginUser);
@@ -1174,7 +1170,7 @@ namespace TeamSupport.Data
         user.NeedsIndexing = true;
         user.LastName = row["LastName"].ToString().Trim();
         user.MiddleName = row["MiddleName"].ToString().Trim();
-        user.OrganizationID = organization.OrganizationID;
+        user.OrganizationID = orgID;
         user.PrimaryGroupID = null;
         user.Title = row["Title"].ToString().Trim();
         user.DateCreated = (DateTime)GetDBDate(row["DateCreated"], false); 
@@ -2172,28 +2168,34 @@ AND a.OrganizationID = @OrganizationID
       tickets.LoadByOrganizationID(_organizationID);
       IdList ticketIDs = GetIdList(tickets);
 
+      int count = 0;
+
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
         int ticketID;
         int assetID;
+
         if (ticketIDs.TryGetValue(row["TicketID"].ToString(), out ticketID))
         {
           if (assetIDs.TryGetValue(row["AssetID"].ToString(), out assetID))
           {
             tickets.AddAsset(assetID, ticketID);
+            count++;
           }
           else
           {
-            _log.AppendError(row, "Customer Ticket skipped due to missing organization.");
+            _log.AppendError(row, "Asset Ticket skipped due to missing asset.");
           }
         }
         else
         {
-          _log.AppendError(row, "Customer Ticket skipped due to missing ticket.");
+          _log.AppendError(row, "Asset Ticket skipped due to missing ticket.");
         }
       }
       EmailPosts.DeleteImportEmails(_loginUser);
+      _log.AppendMessage(count.ToString() + " asset and ticket associated.");
+
     }
 
     private void ImportParentTickets()
@@ -2220,6 +2222,7 @@ AND a.OrganizationID = @OrganizationID
           }
 
           ticket.ParentID = parentID;
+          count++;
         }
         else
         {
