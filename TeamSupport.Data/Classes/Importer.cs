@@ -1668,7 +1668,8 @@ AND a.OrganizationID = @OrganizationID
         action.Name = "";// GetDBString(row["Name"], 500, false);
         if (action.Name.Length > 499) action.Name = action.Name.Substring(0, 499);
         action.TicketID = ticket.TicketID;
-        action.ImportID = row["ActionID"].ToString().Trim();
+        string importID = GetDBString(row, "ActionID", 250, true);
+        action.ImportID = string.IsNullOrWhiteSpace(importID) ? "Unassigned" : importID;
         action.TimeSpent = GetDBInt(row["TimeSpent"], true);
         if (action.IsVisibleOnPortal && !ticket.IsVisibleOnPortal) ticket.IsVisibleOnPortal = true;
 
