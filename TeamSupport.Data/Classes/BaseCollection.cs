@@ -145,7 +145,8 @@ namespace TeamSupport.Data
       }
       
       // Ticket 15640
-      if (_baseCollection.LoginUser.OrganizationID == 566596 && _baseCollection.TableName == "TicketsView")
+      // Per a skype conversation with Jesus adding AMCO Sales (797841)
+      if ((_baseCollection.LoginUser.OrganizationID == 566596 || _baseCollection.LoginUser.OrganizationID == 797841) && _baseCollection.TableName == "TicketsView")
       {
         Organizations customers = new Organizations(_baseCollection.LoginUser);
         customers.LoadByTicketIDOrderedByDateCreated((int)Row["TicketID"]);
