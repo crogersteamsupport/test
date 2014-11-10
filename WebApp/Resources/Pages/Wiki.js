@@ -18,7 +18,7 @@ var _wikiParentsList = null;
 var _wikiMenuLITemplate = '<li class="wiki-menu-item"><a id="{ID}" href="#">{Title}</a>';
 var _wikiMenuLIWithChildrenTemplate = '<li class="wiki-menu-item"><a id="{ID}" href="#">{Title}<span class="caret wiki-sidebar-caret wiki-sidebar-caret-right"></span></a>';
 var _wikiSubMenuULTemplate = '<ul class="nav wiki-sidebar-subitem">';
-var _wikiSubMenuLITemplate = '<li class="wiki-menu-subitem"><a id="{ID}" href="#">{Title}</a></li>';
+var _wikiSubMenuLITemplate = '<li class="wiki-menu-subitem"><a id="{ID}" href="#">{Title}<span class="caret wiki-sidebar-caret  wiki-sidebar-caret-right"></span></a></li>';
 var _editingWiki = false;
 var _isWikiOwner = false;
 var _canDeleteWiki = false;
@@ -45,8 +45,8 @@ function BuildWikiPage() {
     top.Ts.Services.Wiki.GetWikiMenuItems(function (menuItems) {
         _wikiArticles = menuItems;
         if (menuItems !== null) {
-            var _wikiID = top.Ts.Utils.getQueryValue("ArticleID", window);
             if (_wikiID == null) {
+                _wikiID = top.Ts.Utils.getQueryValue("ArticleID", window);
                 top.Ts.Services.Wiki.GetDefaultWikiID(function (wikiID) {
                     if (wikiID == null) {
                         _wikiID = menuItems[0].ID
@@ -119,64 +119,70 @@ function BuildWikiView() {
 };
 
 function BuildWikiMenuItems() {
-    top.Ts.Services.Wiki.GetWikiMenuItems(function (menuItems) {
-        _wikiArticles = menuItems;
-        $('#wiki-sidebar').empty();
-        $('#Wiki-Edit-Parent').find('option').remove().end().append($("<option></option>"));
-        if (menuItems !== null) {
+    $('#Wiki-Edit-Parent').find('option').remove().end().append($("<option></option>"));
+    $("#wiki-sidebar").empty();
+
+    top.Ts.Services.Wiki.GetWikis(function (wikis) {
+        $.each(wikis, function (index, value) {
+            $('#Wiki-Edit-Parent')
+                .append($("<option></option>")
+                .attr("value", value.ID)
+                .text(value.Title));
+        })
+    });
+
+    top.Ts.Services.Wiki.GetWikiParents(function (wikis) {
+        if (wikis !== null) {
             var menuParents = "";
-            for (var i = 0; i < menuItems.length; i++) {
-                $('#Wiki-Edit-Parent')
-                     .append($("<option></option>")
-                     .attr("value", menuItems[i].ID)
-                     .text(menuItems[i].Title));
+            var subMenuItems = "";
+            $.each(wikis, function (key, parent) {
+                $("#wiki-sidebar").append(_wikiMenuLIWithChildrenTemplate.replace("{ID}", parent.ID).replace("{Title}", parent.Title));
+                recursiveFunction(key, parent);
+                $(".wiki-menu-item>a").on('click', function (e) {
+                    SidebarFunction($(this), e);
+                });
+            });
 
-                if (menuItems[i].SubArticles !== null) {
-                    menuParents += _wikiMenuLIWithChildrenTemplate.replace("{ID}", menuItems[i].ID).replace("{Title}", menuItems[i].Title);
-                    var subMenuItems = "";
-                    for (var s = 0; s < menuItems[i].SubArticles.length; s++) {
-                        subMenuItems += _wikiSubMenuLITemplate.replace("{ID}", menuItems[i].SubArticles[s].ID).replace("{Title}", menuItems[i].SubArticles[s].Title);
+
+            function recursiveFunction(key, parent) {
+                top.Ts.Services.Wiki.GetWikiAndChildren(parent.ID, function (children) {
+                    if (children.SubArticles !== null) {
+                        $("#" + parent.ID).parent().append(_wikiSubMenuULTemplate);
+                        $.each(children.SubArticles, function (key, child) {
+                            $("#" + parent.ID).parent().children("ul").append(_wikiSubMenuLITemplate.replace("{ID}", child.ID).replace("{Title}", child.Title));
+                            recursiveFunction(key, child)
+                            $("#wiki-sidebar").append("</li>");
+                            $("#" + child.ID).on('click', function (e) {
+                                SidebarFunction($(this), e);
+                            });
+                        });
                     }
-                    menuParents += _wikiSubMenuULTemplate + subMenuItems + "</li></ul>";
-                }
-                else {
-                    menuParents += _wikiMenuLITemplate.replace("{ID}", menuItems[i].ID).replace("{Title}", menuItems[i].Title);
-                    menuParents += "</li>"
-                }
+                    else {
+                        $("#" + parent.ID + " > span.wiki-sidebar-caret").remove();
+                    }
+                    if (parent.ID == _wikiID) {
+                        var wikiMenuItem = $("#" + _wikiID);
+                        wikiMenuItem.addClass('active');
+                        wikiMenuItem.closest('li').children("ul").show();
+                        wikiMenuItem.find("span.wiki-sidebar-caret").removeClass('wiki-sidebar-caret-right');
+                        wikiMenuItem.parents('li.wiki-menu-item').children('a').children('span.wiki-sidebar-caret-right').removeClass('wiki-sidebar-caret-right');
+                        wikiMenuItem.parents('li.wiki-menu-subitem').children('a').children('span.wiki-sidebar-caret-right').removeClass('wiki-sidebar-caret-right');
+                        wikiMenuItem.parents('.wiki-sidebar-subitem').show();
+                    }
+                });
             }
-
-            $("#wiki-sidebar").append(menuParents);
-            var wikiMenuItem = $("#" + _wikiID);
-
-            wikiMenuItem.addClass('active');
-            wikiMenuItem.closest('li').children("ul").show();
-            wikiMenuItem.closest('li').find("span.wiki-sidebar-caret").toggleClass('wiki-sidebar-caret-right');
-
-            if (wikiMenuItem.parent().hasClass("wiki-menu-subitem")) {
-                wikiMenuItem.parent().parent().show();
-                wikiMenuItem.parent().parent().parent().children("a").addClass('active');
-                wikiMenuItem.parent().parent().parent().find("span.wiki-sidebar-caret").toggleClass('wiki-sidebar-caret-right');
-            };
-
-            $(".wiki-menu-item>a").click(function (e) {
-                $('.wiki-menu-item').children("a").removeClass('active');
-                $('.wiki-menu-subitem').children("a").removeClass('active');
-                $(this).addClass('active');
-                $(this).closest('li').children("ul").toggle();
-                $(this).closest('li').find("span.wiki-sidebar-caret").toggleClass('wiki-sidebar-caret-right');
-                GetWiki(this.id);
-                e.preventDefault();
-            });
-
-            $(".wiki-menu-subitem>a").click(function (e) {
-                $('.wiki-menu-item').children("a").removeClass('active');
-                $('.wiki-menu-subitem').children("a").removeClass('active');
-                $(this).addClass('active');
-                GetWiki(this.id);
-                e.preventDefault();
-            });
         }
     });
+};
+
+function SidebarFunction(element, e) {
+    $('.wiki-menu-item').children("a").removeClass('active');
+    $('.wiki-menu-subitem').children("a").removeClass('active');
+    element.addClass('active');
+    element.closest('li').children("ul").toggle();
+    element.closest('li').find("span.wiki-sidebar-caret").first().toggleClass('wiki-sidebar-caret-right');
+    GetWiki(element[0].id);
+    e.preventDefault();
 };
 
 function BuildWikiEditEvents() {
@@ -217,6 +223,8 @@ function BuildWikiEditEvents() {
             _editingWiki = false;
         }
     });
+
+
 
     $("#wiki-edit-save").click(function () {
         var comment = $("#Wiki-Update-Comment").val();

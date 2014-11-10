@@ -36,6 +36,93 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public List<WikiArticleListItem2> GetWikis()
+        {
+            WikiArticles articles = WikiArticles.GetWikiArticles(TSAuthentication.GetLoginUser());
+            if (articles != null)
+            {
+                List<WikiArticleListItem2> articleList = new List<WikiArticleListItem2>();
+                foreach (WikiArticle article in articles)
+                {
+                    articleList.Add(new WikiArticleListItem2
+                    {
+                        ID = article.ArticleID,
+                        Title = article.ArticleName,
+                        ParentID = article.ParentID
+                    });
+                }
+                return articleList;
+            }
+            return null;
+        }
+
+        [WebMethod]
+        public List<WikiArticleListItem> GetWikiParents()
+        {
+            WikiArticles articles = WikiArticles.GetWikiParentArticles(TSAuthentication.GetLoginUser());
+            List<WikiArticleListItem> parents = new List<WikiArticleListItem>();
+            if (articles == null) return null;
+
+            foreach (WikiArticle article in articles)
+            {
+                parents.Add(new WikiArticleListItem
+                {
+                    ID = article.ArticleID,
+                    Title = article.ArticleName
+                });
+            }
+
+            return parents;
+        }
+
+        [WebMethod]
+        public WikiArticleListItem GetWikiAndChildren(int wikiID)
+        {
+            WikiArticle article = WikiArticles.GetWikiArticle(TSAuthentication.GetLoginUser(), wikiID);
+            WikiArticleListItem parent = new WikiArticleListItem
+            {
+                ID = article.ArticleID,
+                Title = article.ArticleName
+            };
+
+            WikiArticles subArticles = WikiArticles.GetWikiSubArticles(TSAuthentication.GetLoginUser(), article.ArticleID);
+            if (subArticles != null)
+            {
+                List<WikiArticleListSubItem> children = new List<WikiArticleListSubItem>();
+                foreach (WikiArticle subArticle in subArticles)
+                {
+                    children.Add(new WikiArticleListSubItem
+                    {
+                        ID = subArticle.ArticleID,
+                        Title = subArticle.ArticleName
+                    });
+                }
+                parent.SubArticles = children.ToArray();
+            }
+            return parent;
+        }
+
+        [WebMethod]
+        public List<WikiArticleListSubItem> GetWikiParentChildren(int parentID)
+        {
+            WikiArticles subArticles = WikiArticles.GetWikiSubArticles(TSAuthentication.GetLoginUser(), parentID);
+            if (subArticles != null)
+            {
+                List<WikiArticleListSubItem> children = new List<WikiArticleListSubItem>();
+                foreach (WikiArticle subArticle in subArticles)
+                {
+                    children.Add(new WikiArticleListSubItem
+                    {
+                        ID = subArticle.ArticleID,
+                        Title = subArticle.ArticleName
+                    });
+                }
+                return children;
+            }
+            else return null;
+        }
+
+        [WebMethod]
         public WikiHistoryProxy GetWikiRevision(int historyID)
         {
             WikiHistory article = WikiHistoryCollection.GetWikiHistory(TSAuthentication.GetLoginUser(), historyID);
@@ -226,6 +313,17 @@ namespace TSWebServices
             public string Title { get; set; }
             [DataMember]
             public WikiArticleListSubItem[] SubArticles { get; set; }
+        }
+
+        [DataContract]
+        public class WikiArticleListItem2
+        {
+            [DataMember]
+            public int ID { get; set; }
+            [DataMember]
+            public string Title { get; set; }
+            [DataMember]
+            public int? ParentID { get; set; }
         }
 
         [DataContract]

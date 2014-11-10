@@ -29,12 +29,12 @@
 .wiki-sidebar > li > a.active:focus { font-weight: bold; color: #428BCA; }
 .wiki-sidebar-subitem {
     padding-left:20px; 
-    display:none; 
     font-size: 10px;
     font-weight: 400;
     color: #444;
+    display:none;
 }
-.wiki-sidebar-subitem > li > a { padding:5px 20px 5px 20px;  color: #444; }
+.wiki-sidebar-subitem > li > a { padding: 5px 20px 5px 10px;  color: #444; }
 .wiki-sidebar-subitem > li > a.active,
 .wiki-sidebar-subitem > li > a.active:hover,
 .wiki-sidebar-subitem > li > a.active:focus {  color: #428BCA; }
