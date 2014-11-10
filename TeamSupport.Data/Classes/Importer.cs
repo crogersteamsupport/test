@@ -95,6 +95,7 @@ namespace TeamSupport.Data
     private DataRow ReadRow(string tableName, string keyColumnName, string value)
     {
       DataTable table = new DataTable();
+      if (tableName == null) return null;
       using (OleDbConnection connection = new OleDbConnection(GetConnectionString()))
       {
 
