@@ -137,6 +137,7 @@ namespace TeamSupport.Data
       }
       catch (Exception)
       {
+        _log.AppendMessage("Unable to open table '" + tableName + "'");
         return null;
       }
     }
@@ -402,6 +403,9 @@ namespace TeamSupport.Data
 
     private void CreateCustomFields(string tableName, string lastColumnName, bool isTicket)
     {
+      DataTable table = ReadTable(tableName);
+      if (table == null) return;
+
       TicketTypes ticketTypes = new TicketTypes(_loginUser);
       ticketTypes.LoadAllPositions(_organizationID);
 
@@ -432,7 +436,6 @@ namespace TeamSupport.Data
       customFields.LoadByReferenceType(_organizationID, referenceType, auxID);
 
 
-      DataTable table = ReadTable(tableName);
       int index = -1;
       for (int i = 0; i < table.Columns.Count; i++)
       {
@@ -941,10 +944,11 @@ namespace TeamSupport.Data
     #region Import Methods
     private void ImportUsers()
     {
+      DataTable table = ReadTable("Users");
+      if (table == null) return;
       Users users = new Users(_loginUser);
       Users existing = new Users(_loginUser);
       existing.LoadByOrganizationID(_organizationID, false);
-      DataTable table = ReadTable("Users");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -988,10 +992,12 @@ namespace TeamSupport.Data
 
     private void ImportGroups()
     {
+      DataTable table = ReadTable("Groups");
+      if (table == null) return;
+
       Groups groups = new Groups(_loginUser);
       Groups existing = new Groups(_loginUser);
       existing.LoadByOrganizationID(_organizationID);
-      DataTable table = ReadTable("Groups");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -1021,13 +1027,15 @@ namespace TeamSupport.Data
 
     private void ImportUserGroups()
     {
+      DataTable table = ReadTable("UserGroups");
+      if (table == null) return;
+
       Users users = new Users(_loginUser);
       users.LoadByOrganizationID(_loginUser.OrganizationID, false);
       Groups groups = new Groups(_loginUser);
       groups.LoadByOrganizationID(_loginUser.OrganizationID);
 
       int count = 0;
-      DataTable table = ReadTable("UserGroups");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -1055,11 +1063,13 @@ namespace TeamSupport.Data
 
     private void ImportCustomers()
     {
+      DataTable table = ReadTable("Customers");
+      if (table == null) return;
+
       Organizations organizations = new Organizations(_loginUser);
       Organizations existing = new Organizations(_loginUser);
       existing.LoadByParentID(_organizationID, false);
       IdList list = GetIdList(existing);
-      DataTable table = ReadTable("Customers");
       int count = 0;
       foreach (DataRow row in table.Rows)
       {
@@ -1110,12 +1120,14 @@ namespace TeamSupport.Data
 
     private void ImportContacts()
     {
+      DataTable table = ReadTable("Contacts");
+      if (table == null) return;
+
       Organization unknown = Organizations.GetUnknownCompany(_loginUser, _organizationID);
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
       IdList idList = GetIdList(organizations);
       Users users = new Users(_loginUser);
-      DataTable table = ReadTable("Contacts");
       int count = 0;
       foreach (DataRow row in table.Rows)
       {
@@ -1188,13 +1200,15 @@ namespace TeamSupport.Data
 
     private void ImportPrimaryContacts()
     {
+      DataTable table = ReadTable("PrimaryContacts");
+      if (table == null) return;
+
       Users users = new Users(_loginUser);
       users.LoadContacts(_loginUser.OrganizationID, false);
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_loginUser.OrganizationID, false);
 
       int count = 0;
-      DataTable table = ReadTable("PrimaryContacts");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -1216,11 +1230,13 @@ namespace TeamSupport.Data
 
     private void ImportProducts()
     {
+      DataTable table = ReadTable("Products");
+      if (table == null) return;
+
       Products products = new Products(_loginUser);
       Products existing = new Products(_loginUser);
       existing.LoadByOrganizationID(_organizationID);
 
-      DataTable table = ReadTable("Products");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -1246,6 +1262,9 @@ namespace TeamSupport.Data
 
     private void ImportProductVersions()
     {
+      DataTable table = ReadTable("Versions");
+      if (table == null) return;
+
       Products products = new Products(_loginUser);
       products.LoadByOrganizationID(_organizationID);
 
@@ -1256,7 +1275,6 @@ namespace TeamSupport.Data
       ProductVersions existing = new ProductVersions(_loginUser);
       existing.LoadByParentOrganizationID(_organizationID);
 
-      DataTable table = ReadTable("Versions");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -1284,6 +1302,9 @@ namespace TeamSupport.Data
 
     private void ImportAssets()
     {
+      DataTable table = ReadTable("Assets");
+      if (table == null) return;
+
       Products products = new Products(_loginUser);
       products.LoadByOrganizationID(_organizationID);
       IdList productIDs = GetIdList(products);
@@ -1292,7 +1313,6 @@ namespace TeamSupport.Data
       int orgCount = 0;
       int prodCount = 0;
 
-      DataTable table = ReadTable("Assets");
       int count = 0;
       foreach (DataRow row in table.Rows)
       {
@@ -1349,6 +1369,9 @@ namespace TeamSupport.Data
 
     private void ImportAssetHistory()
     {
+      DataTable table = ReadTable("AssetHistory");
+      if (table == null) return;
+
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
       IdList userIDs = GetIdList(users);
@@ -1360,7 +1383,6 @@ namespace TeamSupport.Data
       AssetHistory history = new AssetHistory(_loginUser);
       AssetAssignments assignments = new AssetAssignments(_loginUser);
 
-      DataTable table = ReadTable("AssetHistory");
       int count = 0;
       foreach (DataRow row in table.Rows)
       {
@@ -1396,7 +1418,7 @@ namespace TeamSupport.Data
         item.ShippingMethod = GetDBString(row["ShippingMethod"], 200, true);
         item.ReferenceNum = GetDBString(row["ReferenceNum"], 200, true);
         item.Comments = GetDBString(row["Comments"], 0, true);
-        
+        item.DateModified = DateTime.UtcNow;
         if (++count % BULK_LIMIT == 0)
         {
           if (_IsBulk == true) history.BulkSave(); else history.Save();
@@ -1589,6 +1611,8 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportActions()
     {
+      DataTable table = ReadTable("Actions");
+      if (table == null) return;
 
       Users users = new Users(_loginUser);
       Users contacts = new Users(_loginUser);
@@ -1604,7 +1628,6 @@ AND a.OrganizationID = @OrganizationID
 
       Actions actions = new Actions(_loginUser);
       int count = 0;
-      DataTable table = ReadTable("Actions");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -1670,6 +1693,9 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportAttachments()
     {
+      DataTable table = ReadTable("Attachments");
+      if (table == null) return;
+
       Tickets tickets = new Tickets(_loginUser);
       tickets.LoadByOrganizationID(_organizationID);
       Actions actions = new Actions(_loginUser);
@@ -1677,7 +1703,6 @@ AND a.OrganizationID = @OrganizationID
       Organizations customers = new Organizations(_loginUser);
       customers.LoadByParentID(_organizationID, false);
       Attachments attachments = new Attachments(_loginUser);
-      DataTable table = ReadTable("Attachments");
       
       foreach (DataRow row in table.Rows)
       {
@@ -1800,6 +1825,8 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportWiki()
     {
+      DataTable table = ReadTable("Wiki");
+      if (table == null) return;
 
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
@@ -1809,7 +1836,6 @@ AND a.OrganizationID = @OrganizationID
       Dictionary<int, string> parents = new Dictionary<int, string>();
 
       int count = 0;
-      DataTable table = ReadTable("Wiki");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -1863,6 +1889,9 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportAddresses()
     {
+      DataTable table = ReadTable("Addresses");
+      if (table == null) return;
+
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
 
@@ -1874,7 +1903,6 @@ AND a.OrganizationID = @OrganizationID
 
 
       Addresses addresses = new Addresses(_loginUser);
-      DataTable table = ReadTable("Addresses");
       int count = 0;
       foreach (DataRow row in table.Rows)
       {
@@ -1947,6 +1975,9 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportPhoneNumbers()
     {
+      DataTable table = ReadTable("PhoneNumbers");
+      if (table == null) return;
+
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
 
@@ -1960,7 +1991,6 @@ AND a.OrganizationID = @OrganizationID
       IdList orgList = GetIdList(organizations);
 
       PhoneNumbers phoneNumbers = new PhoneNumbers(_loginUser);
-      DataTable table = ReadTable("PhoneNumbers");
       int count = 0;
       foreach (DataRow row in table.Rows)
       {
@@ -2028,6 +2058,9 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportNotes()
     {
+      DataTable table = ReadTable("CustomerNotes");
+      if (table == null) return;
+
       Users users = new Users(_loginUser);
       users.LoadByOrganizationID(_organizationID, false);
 
@@ -2037,7 +2070,6 @@ AND a.OrganizationID = @OrganizationID
 
       Notes notes = new Notes(_loginUser);
 
-      DataTable table = ReadTable("CustomerNotes");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -2067,6 +2099,9 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportCustomerProducts()
     {
+      DataTable table = ReadTable("CustomerProducts");
+      if (table == null) return;
+
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
 
@@ -2077,7 +2112,6 @@ AND a.OrganizationID = @OrganizationID
       productVersions.LoadByParentOrganizationID(_organizationID);
 
       OrganizationProducts organizationProducts = new OrganizationProducts(_loginUser);
-      DataTable table = ReadTable("CustomerProducts");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -2121,6 +2155,9 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportCustomerTickets()
     {
+      DataTable table = ReadTable("CustomerTickets");
+      if (table == null) return;
+
       Organizations organizations = new Organizations(_loginUser);
       organizations.LoadByParentID(_organizationID, false);
       IdList organizationIDs = GetIdList(organizations);
@@ -2129,7 +2166,6 @@ AND a.OrganizationID = @OrganizationID
       tickets.LoadByOrganizationID(_organizationID);
       IdList ticketIDs = GetIdList(tickets);
 
-      DataTable table = ReadTable("CustomerTickets");
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
@@ -2239,12 +2275,14 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportTicketSubscriptions()
     {
+      DataTable table = ReadTable("TicketSubscriptions");
+      if (table == null) return;
+
       Users users = new Users(_loginUser);
       users.LoadByOrganizationID(_organizationID, false);
 
       Tickets tickets = new Tickets(_loginUser);
       tickets.LoadByOrganizationID(_organizationID);
-      DataTable table = ReadTable("TicketSubscriptions");
       if (table == null) return;
 
       foreach (DataRow row in table.Rows)
@@ -2267,6 +2305,9 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportContactTickets()
     {
+      DataTable table = ReadTable("ContactTickets");
+      if (table == null) return;
+
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
       IdList userIDs = GetIdList(users);
@@ -2275,7 +2316,6 @@ AND a.OrganizationID = @OrganizationID
       tickets.LoadByOrganizationID(_organizationID);
       IdList ticketIDs = GetIdList(tickets);
 
-      DataTable table = ReadTable("ContactTickets");
       foreach (DataRow row in table.Rows)
       {
         int userID;
