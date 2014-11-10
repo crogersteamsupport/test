@@ -94,21 +94,28 @@ namespace TeamSupport.Data
 
     private DataRow ReadRow(string tableName, string keyColumnName, string value)
     {
-      DataTable table = new DataTable();
-      if (table == null) return null;
-      using (OleDbConnection connection = new OleDbConnection(GetConnectionString()))
+      try
       {
+        DataTable table = new DataTable();
 
-        string query = string.Format("SELECT * FROM [{0}$] WHERE {1} = '{2}'", tableName, keyColumnName, value);
-        OleDbDataAdapter adapter = new OleDbDataAdapter(query, connection);
-        connection.Open();
-        adapter.Fill(table);
-        connection.Close();
+        using (OleDbConnection connection = new OleDbConnection(GetConnectionString()))
+        {
+
+          string query = string.Format("SELECT * FROM [{0}$] WHERE {1} = '{2}'", tableName, keyColumnName, value);
+          OleDbDataAdapter adapter = new OleDbDataAdapter(query, connection);
+          connection.Open();
+          adapter.Fill(table);
+          connection.Close();
+        }
+
+        if (table.Rows.Count < 1) return null;
+
+        return table.Rows[0];
       }
-
-      if (table.Rows.Count < 1) return null;
-
-      return table.Rows[0];
+      catch (Exception)
+      {
+        return null;
+      }
     }
 
     private DataTable ReadTable(string tableName)
@@ -905,7 +912,9 @@ namespace TeamSupport.Data
     private string GetSettingString(string key)
     {
       DataRow row = ReadRow("Settings", "Key", key);
-      if (row == null) throw new Exception("Missing Setting: " + key);
+      //if (row == null) throw new Exception("Missing Setting: " + key);
+      _log.AppendMessage("Missing Setting: " + key);
+      if (row == null) return ""; ;
       return row[1].ToString().Trim();
     }
 
