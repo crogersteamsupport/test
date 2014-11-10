@@ -202,7 +202,7 @@ AdminPortal = function () {
     }
     $('#portal_req_tickettype').combobox({ selected: function (e, ui) { $('.portal-save-panel').show(); } });
 
-    portal_req_tickettype
+    //portal_req_tickettype
     var products = top.Ts.Cache.getProducts();
     $('<option>').attr('value', -1).text('Unassigned').data('o', null).appendTo('#com_cat_product');
     for (var i = 0; i < products.length; i++) {
@@ -794,6 +794,99 @@ AdminPortal = function () {
     top.Ts.System.logAction('Admin Portal - KnowledgeBase Category Positions Changed');
 
   }
+
+  loadGridDropDown();
+  function loadGridDropDown()
+  {
+      top.Ts.Services.Search.GetAdvancedSearchOptions(function (advancedSearchOptions) {
+          for (var i = 0; i < advancedSearchOptions.Fields.length; i++) {
+              $('<option>').attr('value', (advancedSearchOptions.Fields[i].IsCustom ? "c":"s") + advancedSearchOptions.Fields[i].FieldID).text(advancedSearchOptions.Fields[i].Alias).appendTo('.admin-portal-columns').data('field', advancedSearchOptions.Fields[i]);
+          }
+      });
+      $('.admin-portal-columns').combobox();
+      
+
+  }
+
+  loadGridData();
+  function loadGridData()
+  {
+      top.Ts.Services.Organizations.LoadCustomPortalColumns(top.Ts.System.Organization.OrganizationID, function(columns){
+          for (var col in columns)
+              appendCustomPortalColumn(columns[col]);
+      });
+  }
+
+  function appendCustomPortalColumn(col)
+  {
+      var container = $('.sort-container');
+      var sort = $('<div>').addClass("sort-item").data("fieldID", col.CustomFieldID ? "c" + col.CustomFieldID : "s" + col.StockFieldID).appendTo(container);
+      var title = $('<span>').text(col.FieldText).appendTo(sort);
+      var trash = $('<span>').addClass('ts-icon ts-icon-delete').hide().click(function () {
+          if (confirm("Do you want to delete this column?")) {
+              top.Ts.Services.Organizations.RemoveCustomPortalColumn(sort.data("fieldID"));
+              sort.remove();
+              top.Ts.System.logAction('Admin Portal - Grid Column Removed');
+          }
+      }).appendTo(sort);
+  }
+
+  $('.add-portal-column').click(function () {
+      var isDupe=false;
+      $('.sort-item').each(function () {
+          if ($(this).data('fieldID') == $('.admin-portal-columns option:selected').val())
+              isDupe = true;
+      });
+
+      if (!isDupe)
+      {
+          var container = $('.sort-container');
+          var sort = $('<div>').addClass("sort-item").data("fieldID", $('.admin-portal-columns').val()).appendTo(container);
+          var title = $('<span>').text($('.admin-portal-columns option:selected').text()).appendTo(sort);
+          var trash = $('<span>').addClass('ts-icon ts-icon-delete').hide().click(function(){
+              if (confirm("Do you want to delete this column?"))
+              {
+                  top.Ts.Services.Organizations.RemoveCustomPortalColumn(sort.data("fieldID"));
+                  savePortalColPositions();
+                  sort.remove();
+                  top.Ts.System.logAction('Admin Portal - Grid Column Removed');
+              }
+          }).appendTo(sort);
+          top.Ts.Services.Organizations.AddCustomPortalColumn($('.admin-portal-columns').val(), $('.sort-item').length);
+          top.Ts.System.logAction('Admin Portal - Grid Column Added');
+      }
+      setPortalColSortable();
+      savePortalColPositions();
+  });
+
+
+  setPortalColSortable();
+  function setPortalColSortable() {
+      $('.sort-container').sortable({
+          items: '.sort-item', connectWith: '.sort-container', placeholder: 'ui-state-highlight sort-item ui-corner-all', update: function (e, ui) {
+              savePortalColPositions();
+          }
+      });
+  }
+
+  function savePortalColPositions() {
+      var items = new top.Array();
+      $('.sort-item').each(function () {
+        items[items.length] = $(this).data('fieldID');
+      });
+      top.Ts.System.logAction('Admin Portal - Grid Column Order Saved');
+      top.Ts.Services.Organizations.SavePortalColOrder(JSON.stringify(items));
+  }
+
+
+  $('.sort-container').on({
+      mouseenter: function () {
+          $(this).find('.ts-icon').show();
+      },
+      mouseleave: function () {
+          $(this).find('.ts-icon').hide();
+      }
+  }, '.sort-item');
 
   loadAgentRating();
   function loadAgentRating() {

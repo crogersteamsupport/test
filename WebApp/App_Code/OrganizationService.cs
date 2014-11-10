@@ -1136,6 +1136,82 @@ namespace TSWebServices
             return null;
     }
 
+    [WebMethod]
+    public CustomPortalColumnProxy[] LoadCustomPortalColumns(int organizationID)
+    {
+        CustomPortalColumns cpc = new CustomPortalColumns(TSAuthentication.GetLoginUser());
+        cpc.LoadByOrganizationID(organizationID);
+
+        return cpc.GetCustomPortalColumnProxies();
+    }
+
+    [WebMethod]
+    public void RemoveCustomPortalColumn(string fieldID)
+    {
+        CustomPortalColumns cpc;
+        int id = int.Parse(fieldID.Substring(1));
+
+        if (fieldID.StartsWith("s"))
+        {
+            //loadstock
+            cpc = new CustomPortalColumns(TSAuthentication.GetLoginUser());
+            cpc.LoadByStockFieldID(id, TSAuthentication.GetLoginUser().OrganizationID);
+        }
+        else
+        {
+            //load custom
+            cpc = new CustomPortalColumns(TSAuthentication.GetLoginUser());
+            cpc.LoadByCustomFieldID(id, TSAuthentication.GetLoginUser().OrganizationID);
+        }
+
+
+
+        cpc[0].Delete();
+        cpc[0].Collection.Save();
+    }
+
+    [WebMethod]
+    public void AddCustomPortalColumn(string fieldID, int position)
+    {
+        CustomPortalColumn cpc;
+        int id = int.Parse(fieldID.Substring(1));
+
+        cpc = (new CustomPortalColumns(TSAuthentication.GetLoginUser()).AddNewCustomPortalColumn());
+        cpc.OrganizationID = TSAuthentication.GetLoginUser().OrganizationID;
+        cpc.Position = position-1;
+
+        if (fieldID.StartsWith("s"))
+            //save stock
+            cpc.StockFieldID = id;
+        else
+            //save custom
+            cpc.CustomFieldID = id;
+        
+        cpc.Collection.Save();
+    }
+
+    [WebMethod]
+    public void SavePortalColOrder(string columns)
+    {
+        List<string> orders = JsonConvert.DeserializeObject<List<string>>(columns);
+        CustomPortalColumns cols = new CustomPortalColumns(TSAuthentication.GetLoginUser());
+        cols.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
+
+        int pos = 0;
+        foreach (string s in orders)
+        {
+            CustomPortalColumn c;
+            int id = int.Parse(s.Substring(1));
+            if(s.StartsWith("s"))
+                c = cols.FindByStockFieldID(id);
+            else
+                c = cols.FindByCustomFieldID(id);
+
+            c.Position = pos;
+            pos++;
+        }
+        cols.Save();
+    }
 
 
   }
