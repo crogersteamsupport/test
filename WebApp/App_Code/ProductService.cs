@@ -592,11 +592,11 @@ namespace TSWebServices
         return result;
     }
     [WebMethod]
-    public ProductCustomOrganization[] LoadVersionCustomers(int productVersionID, int start)
+    public ProductCustomOrganization[] LoadVersionCustomers(int productVersionID, int start, string sortColumn, string sortDirection)
     {
       LoginUser loginUser = TSAuthentication.GetLoginUser();
       OrganizationProductsView organizationProducts = new OrganizationProductsView(loginUser);
-      organizationProducts.LoadByProductVersionIDLimit(productVersionID, start);
+      organizationProducts.LoadByProductVersionIDLimit(productVersionID, start, GetSortColumnTableName(sortColumn), sortDirection);
       List<ProductCustomOrganization> list = new List<ProductCustomOrganization>();
       CustomFields fields = new CustomFields(loginUser);
       fields.LoadByReferenceType(loginUser.OrganizationID, ReferenceType.OrganizationProducts);
@@ -611,6 +611,7 @@ namespace TSWebServices
         test.VersionStatus = row["VersionStatus"].ToString();
         test.IsReleased = row["IsReleased"].ToString();
         test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
+        test.DateCreated = row["DateCreated"].ToString() != "" ? ((DateTime)row["DateCreated"]).ToString(GetDateFormatNormal()) : "";
         test.OrganizationProductID = (int)row["OrganizationProductID"];
         test.CustomFields = new List<string>();
         foreach (CustomField field in fields)

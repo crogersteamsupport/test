@@ -46,3 +46,7 @@
   border-color: #D5E5F7;
   outline-style:none !important;
 }
+
+.fa-sort-desc, .fa-sort-asc {
+    margin-left: 3px;
+}
