@@ -1469,6 +1469,11 @@ AND a.OrganizationID = @OrganizationID
 
     private void ImportTicketsByTicketType(TicketType ticketType)
     {
+      if (ticketType == null) return;
+
+      DataTable table = ReadTable(ticketType.Name);
+      if (table == null) return;
+
       Users users = new Users(_loginUser);
       users.LoadContactsAndUsers(_organizationID, false);
       IdList userIDs = GetIdList(users);
@@ -1496,7 +1501,7 @@ AND a.OrganizationID = @OrganizationID
       int maxTicketNumber = tickets.GetMaxTicketNumber(_organizationID);
       if (maxTicketNumber < 0) maxTicketNumber++;
       int count = 0;
-      DataTable table = ReadTable(ticketType.Name);
+      
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
