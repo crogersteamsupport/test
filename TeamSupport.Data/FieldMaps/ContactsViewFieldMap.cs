@@ -42,7 +42,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("ModifierID", "ModifierID", false, false, true);
       _fieldMap.AddMap("OrganizationParentID", "OrganizationParentID", false, false, false);
       _fieldMap.AddMap("CryptedPassword", "CryptedPassword", true, true, true);
-      _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, false);
+      _fieldMap.AddMap("SalesForceID", "SalesForceID", false, false, true);
       _fieldMap.AddMap("NeedsIndexing", "NeedsIndexing", false, false, false);
       _fieldMap.AddMap("OrganizationActive", "OrganizationActive", false, false, false);
       _fieldMap.AddMap("OrganizationSAExpirationDate", "OrganizationSAExpirationDate", false, false, false);
