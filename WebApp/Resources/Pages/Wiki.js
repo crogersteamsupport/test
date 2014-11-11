@@ -26,12 +26,10 @@ var _canDeleteWiki = false;
 $(document).ready(function () {
     wikiPage = new WikiPage();
     wikiPage.refresh();
-    debugger
 });
 
 function onShow() {
     // this fires everytime the main tab is selected
-    debugger
     //wikiPage.refresh();
 };
 
@@ -140,8 +138,8 @@ function BuildWikiMenuItems() {
             $.each(wikis, function (key, parent) {
                 $("#wiki-sidebar").append(_wikiMenuLIWithChildrenTemplate.replace("{ID}", parent.ID).replace("{Title}", parent.Title));
                 recursiveFunction(key, parent);
-                $(".wiki-menu-item>a").on('click', function (e) {
-                    SidebarFunction($(this), e);
+                $(".wiki-menu-item>a").on('click', function () {
+                    SidebarFunction($(this));
                 });
             });
         }
@@ -156,8 +154,8 @@ function recursiveFunction(key, parent) {
                 $("#" + parent.ID).parent().children("ul").append(_wikiSubMenuLITemplate.replace("{ID}", child.ID).replace("{Title}", child.Title));
                 recursiveFunction(key, child)
                 $("#wiki-sidebar").append("</li>");
-                $("#" + child.ID).on('click', function (e) {
-                    SidebarFunction($(this), e);
+                $("#" + child.ID).on('click', function () {
+                    SidebarFunction($(this));
                 });
             });
         }
@@ -176,14 +174,14 @@ function recursiveFunction(key, parent) {
     });
 }
 
-function SidebarFunction(element, e) {
+function SidebarFunction(element) {
     $('.wiki-menu-item').children("a").removeClass('active');
     $('.wiki-menu-subitem').children("a").removeClass('active');
     element.addClass('active');
     element.closest('li').children("ul").toggle();
     element.closest('li').find("span.wiki-sidebar-caret").first().toggleClass('wiki-sidebar-caret-right');
     GetWiki(element[0].id);
-    e.preventDefault();
+    return false;
 };
 
 function BuildWikiEditEvents() {
@@ -322,17 +320,16 @@ function GetWiki(wikiID) {
 
 function GetWikiHistory(wikiID) {
     top.Ts.Services.Wiki.GetWikiHistory(wikiID, function (wikiHistory) {
+        $('.wiki-revision-history tbody').empty();
         if (wikiHistory !== null) {
             $('.wiki-revision-div').show();
+            $.each(wikiHistory, function (key, value) {
+                $(".wiki-revision-history tbody").append('<tr><td>' + value.RevisionNumber + '</td><td>' + value.RevisedDate + '</td><td>' + value.RevisedBy + '</td><td>' + value.Comment + '</td><td><button data-id="' + value.HistoryID + '" class="btn btn-primary btn-xs wiki-restore">Preview</button></td></tr>');
+            });
         }
         else {
             $('.wiki-revision-div').hide();
         }
-        $('.wiki-revision-history tbody').empty();
-        $.each(wikiHistory, function (key, value) {
-            $(".wiki-revision-history tbody").append('<tr><td>' + value.RevisionNumber + '</td><td>' + value.RevisedDate + '</td><td>' + value.RevisedBy + '</td><td>' + value.Comment + '</td><td><button data-id="' + value.HistoryID + '" class="btn btn-primary btn-xs wiki-restore">Preview</button></td></tr>');
-        });
-
         $(".wiki-restore").click(function () {
             var wikiRevisionID = $(this).data("id");
             $('.wiki-revision-history tbody > tr').removeClass('active');
