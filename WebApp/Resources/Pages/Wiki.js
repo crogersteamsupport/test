@@ -175,6 +175,7 @@ function recursiveFunction(key, parent) {
 }
 
 function SidebarFunction(element) {
+    debugger;
     $('.wiki-menu-item').children("a").removeClass('active');
     $('.wiki-menu-subitem').children("a").removeClass('active');
     element.addClass('active');
