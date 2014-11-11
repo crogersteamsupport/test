@@ -142,38 +142,37 @@ function BuildWikiMenuItems() {
                     SidebarFunction($(this), e);
                 });
             });
-
-
-            function recursiveFunction(key, parent) {
-                top.Ts.Services.Wiki.GetWikiAndChildren(parent.ID, function (children) {
-                    if (children.SubArticles !== null) {
-                        $("#" + parent.ID).parent().append(_wikiSubMenuULTemplate);
-                        $.each(children.SubArticles, function (key, child) {
-                            $("#" + parent.ID).parent().children("ul").append(_wikiSubMenuLITemplate.replace("{ID}", child.ID).replace("{Title}", child.Title));
-                            recursiveFunction(key, child)
-                            $("#wiki-sidebar").append("</li>");
-                            $("#" + child.ID).on('click', function (e) {
-                                SidebarFunction($(this), e);
-                            });
-                        });
-                    }
-                    else {
-                        $("#" + parent.ID + " > span.wiki-sidebar-caret").remove();
-                    }
-                    if (parent.ID == _wikiID) {
-                        var wikiMenuItem = $("#" + _wikiID);
-                        wikiMenuItem.addClass('active');
-                        wikiMenuItem.closest('li').children("ul").show();
-                        wikiMenuItem.find("span.wiki-sidebar-caret").removeClass('wiki-sidebar-caret-right');
-                        wikiMenuItem.parents('li.wiki-menu-item').children('a').children('span.wiki-sidebar-caret-right').removeClass('wiki-sidebar-caret-right');
-                        wikiMenuItem.parents('li.wiki-menu-subitem').children('a').children('span.wiki-sidebar-caret-right').removeClass('wiki-sidebar-caret-right');
-                        wikiMenuItem.parents('.wiki-sidebar-subitem').show();
-                    }
-                });
-            }
         }
     });
 };
+
+function recursiveFunction(key, parent) {
+    top.Ts.Services.Wiki.GetWikiAndChildren(parent.ID, function (children) {
+        if (children.SubArticles !== null) {
+            $("#" + parent.ID).parent().append(_wikiSubMenuULTemplate);
+            $.each(children.SubArticles, function (key, child) {
+                $("#" + parent.ID).parent().children("ul").append(_wikiSubMenuLITemplate.replace("{ID}", child.ID).replace("{Title}", child.Title));
+                recursiveFunction(key, child)
+                $("#wiki-sidebar").append("</li>");
+                $("#" + child.ID).on('click', function (e) {
+                    SidebarFunction($(this), e);
+                });
+            });
+        }
+        else {
+            $("#" + parent.ID + " > span.wiki-sidebar-caret").remove();
+        }
+        if (parent.ID == _wikiID) {
+            var wikiMenuItem = $("#" + _wikiID);
+            wikiMenuItem.addClass('active');
+            wikiMenuItem.closest('li').children("ul").show();
+            wikiMenuItem.find("span.wiki-sidebar-caret").removeClass('wiki-sidebar-caret-right');
+            wikiMenuItem.parents('li.wiki-menu-item').children('a').children('span.wiki-sidebar-caret-right').removeClass('wiki-sidebar-caret-right');
+            wikiMenuItem.parents('li.wiki-menu-subitem').children('a').children('span.wiki-sidebar-caret-right').removeClass('wiki-sidebar-caret-right');
+            wikiMenuItem.parents('.wiki-sidebar-subitem').show();
+        }
+    });
+}
 
 function SidebarFunction(element, e) {
     $('.wiki-menu-item').children("a").removeClass('active');
