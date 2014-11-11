@@ -3479,37 +3479,51 @@ Namespace TeamSupport
             End If
             
             If contacts.Count > 0 Then
-              Dim account As Organizations = New Organizations(_user)
-              account.LoadByOrganizationID(contacts(0).OrganizationID)
-              If account.Count > 0 Then
-                _accountID = account(0).CRMLinkID
-                _teamSupportOrganizationID = account(0).OrganizationID
-              End If
-
-              If _accountID IsNot Nothing Then
-                If contacts(0).SalesForceID IsNot Nothing Then
-                  _contactID = contacts(0).SalesForceID
-                  _teamSupportUserID = contacts(0).UserID
-                Else
-                  Try
-                    _contactID = GetSalesForceCustomerContactID(contacts(0).Email, _accountID, Binding)
-                    If _contactID Is Nothing Then
-                      _accountID = Nothing
-                      _teamSupportOrganizationID = -1
-                    Else
-                      Dim updateUser As Users = New Users(_user)
-                      updateUser.LoadByUserID(contacts(0).UserID)
-                      updateUser(0).SalesForceID = _contactID
-                      updateUser.Save()
-                      _teamSupportUserID = contacts(0).UserID
-                    End If
-                  Catch ex As Exception
-                    _accountID = Nothing
-                    _teamSupportOrganizationID = -1
-                  End Try
+              Dim firstSalesForceContactIndex As Integer = -1
+              For i As Integer = 0 To contacts.Count - 1
+                If contacts(i).SalesForceID IsNot Nothing Then
+                  firstSalesForceContactIndex = i
+                  Exit For
                 End If
-              End If
+              Next
+
+              If firstSalesForceContactIndex >= 0 Then
+                Dim account As Organizations = New Organizations(_user)
+                account.LoadByOrganizationID(contacts(firstSalesForceContactIndex).OrganizationID)
+                If account.Count > 0 Then
+                  _accountID = account(0).CRMLinkID
+                  _teamSupportOrganizationID = account(0).OrganizationID
+                  _contactID = contacts(firstSalesForceContactIndex).SalesForceID
+                  _teamSupportUserID = contacts(firstSalesForceContactIndex).UserID
+                End If
+              Else
+                Try
+                  For i As Integer = 0 To contacts.Count - 1
+                    Dim account As Organizations = New Organizations(_user)
+                    account.LoadByOrganizationID(contacts(i).OrganizationID)
+                    If account.Count > 0 Then
+                      _accountID = account(0).CRMLinkID
+                      _teamSupportOrganizationID = account(0).OrganizationID
+                      _contactID = GetSalesForceCustomerContactID(contacts(i).Email, _accountID, Binding)
+                      If _contactID IsNot Nothing Then
+                        Dim updateUser As Users = New Users(_user)
+                        updateUser.LoadByUserID(contacts(i).UserID)
+                        updateUser(0).SalesForceID = _contactID
+                        updateUser.Save()
+                        _teamSupportUserID = contacts(i).UserID
+                        Exit For
+                      Else
+                        _accountID = Nothing
+                        _teamSupportOrganizationID = -1                        
+                      End If
+                    End If
+                  Next
+                Catch ex As Exception
+                  _accountID = Nothing
+                  _teamSupportOrganizationID = -1
+                End Try
               
+              End If
             Else
               organization.LoadSentToSalesForce(ticketId)
               If organization.Count = 0 Then
