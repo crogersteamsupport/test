@@ -189,6 +189,7 @@ function BuildWikiEditEvents() {
         $('#Wiki-Title').hide();
         $("#wiki-title-edit").val(_wikiTitle).show();
         $("#Wiki-Edit-Body").tinymce().focus();
+        $("#Wiki-Update-Comment").val('');
 
         $("#wiki-view-toolbar").hide();
         $("#wiki-edit-toolbar").show();
