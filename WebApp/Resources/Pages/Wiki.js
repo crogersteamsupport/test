@@ -138,7 +138,7 @@ function BuildWikiMenuItems() {
             $.each(wikis, function (key, parent) {
                 $("#wiki-sidebar").append(_wikiMenuLIWithChildrenTemplate.replace("{ID}", parent.ID).replace("{Title}", parent.Title));
                 recursiveFunction(key, parent);
-                $(".wiki-menu-item>a").on('click', function () {
+                $("#" + parent.ID).on('click', function () {
                     SidebarFunction($(this));
                 });
             });
@@ -175,7 +175,6 @@ function recursiveFunction(key, parent) {
 }
 
 function SidebarFunction(element) {
-    debugger;
     $('.wiki-menu-item').children("a").removeClass('active');
     $('.wiki-menu-subitem').children("a").removeClass('active');
     element.addClass('active');
