@@ -26,11 +26,13 @@ var _canDeleteWiki = false;
 $(document).ready(function () {
     wikiPage = new WikiPage();
     wikiPage.refresh();
+    debugger
 });
 
 function onShow() {
     // this fires everytime the main tab is selected
-    wikiPage.refresh();
+    debugger
+    //wikiPage.refresh();
 };
 
 WikiPage = function () {
