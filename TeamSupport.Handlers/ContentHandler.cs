@@ -65,6 +65,8 @@ namespace TeamSupport.Handlers
             case "attachments": ProcessAttachment(context, int.Parse(segments[2])); break;
             case "avatar": ProcessAvatar(context, segments.ToArray(), organizationID); break;
             case "agentrating": ProcessRatingImages(context, segments.ToArray(), organizationID); break;
+            case "productcustomers": ProcessProductCustomers(context, int.Parse(segments[2]), context.Request["Type"]); break;
+            case "productversioncustomers": ProcessProductVersionCustomers(context, int.Parse(segments[2]), context.Request["Type"]); break;
             default: context.Response.End(); break;
           }
         }
@@ -514,6 +516,124 @@ namespace TeamSupport.Handlers
       }
 
 
+    }
+  
+    private void ProcessProductCustomers(HttpContext context, int productID, string type)
+    {
+      if (productID > 0)
+      {
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        Products products = new Products(loginUser);
+        products.LoadByProductID(productID);
+        OrganizationProductsView organizationProductsView = new OrganizationProductsView(loginUser);
+        organizationProductsView.LoadByProductIDForExport(productID);
+
+        if (type.ToLower() == "excel")
+        {
+          using (ExcelPackage pck = new ExcelPackage())
+          {
+            //Create the worksheet
+            ExcelWorksheet ws = pck.Workbook.Worksheets.Add(products[0].Name + " product customers");
+
+            //Load the datatable into the sheet, starting from cell A1. Print the column names on row 1
+            ws.Cells["A1"].LoadFromDataTable(organizationProductsView.Table, true);
+
+            int columnCount = organizationProductsView.Table.Columns.Count;
+            int rowCount = organizationProductsView.Table.Rows.Count;
+
+            ExcelRange r;
+
+            System.Globalization.DateTimeFormatInfo dtfi = loginUser.CultureInfo.DateTimeFormat;
+
+            // which columns have dates in
+            for (int i = 0; i < columnCount; i++)
+            {
+              // if cell header value matches a date column
+              if (organizationProductsView.Table.Columns[i].DataType == typeof(System.DateTime))
+              {
+                r = ws.Cells[2, i + 1, rowCount + 1, i + 1];
+                r.AutoFitColumns();
+                r.Style.Numberformat.Format = dtfi.ShortDatePattern + " " + dtfi.ShortTimePattern;
+              }
+            }
+            // get all data and autofit
+            r = ws.Cells[1, 1, rowCount + 1, columnCount];
+            r.AutoFitColumns();
+
+            //Write it back to the client
+            context.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            context.Response.AddHeader("content-disposition", "attachment;  filename=" + products[0].Name + " product customers.xlsx");
+            context.Response.BinaryWrite(pck.GetAsByteArray());
+          }
+        }
+        else
+        {
+          string text = DataUtils.TableToCsv(loginUser, organizationProductsView.Table);
+          context.Response.Write(text);
+          context.Response.ContentType = "application/octet-stream";
+          context.Response.AddHeader("content-disposition", "attachment; filename=\"" + products[0].Name + " product customers.csv\"");
+
+        }
+      }
+    }
+
+    private void ProcessProductVersionCustomers(HttpContext context, int productVersionID, string type)
+    {
+      if (productVersionID > 0)
+      {
+        LoginUser loginUser = TSAuthentication.GetLoginUser();
+        ProductVersions productVersions = new ProductVersions(loginUser);
+        productVersions.LoadByProductVersionID(productVersionID);
+        OrganizationProductsView organizationProductsView = new OrganizationProductsView(loginUser);
+        organizationProductsView.LoadByProductVersionIDForExport(productVersionID);
+
+        if (type.ToLower() == "excel")
+        {
+          using (ExcelPackage pck = new ExcelPackage())
+          {
+            //Create the worksheet
+            ExcelWorksheet ws = pck.Workbook.Worksheets.Add(productVersions[0].VersionNumber + " product version customers");
+
+            //Load the datatable into the sheet, starting from cell A1. Print the column names on row 1
+            ws.Cells["A1"].LoadFromDataTable(organizationProductsView.Table, true);
+
+            int columnCount = organizationProductsView.Table.Columns.Count;
+            int rowCount = organizationProductsView.Table.Rows.Count;
+
+            ExcelRange r;
+
+            System.Globalization.DateTimeFormatInfo dtfi = loginUser.CultureInfo.DateTimeFormat;
+
+            // which columns have dates in
+            for (int i = 0; i < columnCount; i++)
+            {
+              // if cell header value matches a date column
+              if (organizationProductsView.Table.Columns[i].DataType == typeof(System.DateTime))
+              {
+                r = ws.Cells[2, i + 1, rowCount + 1, i + 1];
+                r.AutoFitColumns();
+                r.Style.Numberformat.Format = dtfi.ShortDatePattern + " " + dtfi.ShortTimePattern;
+              }
+            }
+            // get all data and autofit
+            r = ws.Cells[1, 1, rowCount + 1, columnCount];
+            r.AutoFitColumns();
+
+            //Write it back to the client
+            context.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            context.Response.AddHeader("content-disposition", "attachment;  filename=" + productVersions[0].VersionNumber + " product version customers.xlsx");
+            context.Response.BinaryWrite(pck.GetAsByteArray());
+          }
+        }
+        else
+        {
+          string text = DataUtils.TableToCsv(loginUser, organizationProductsView.Table);
+          context.Response.Write(text);
+          context.Response.ContentType = "application/octet-stream";
+          context.Response.AddHeader("content-disposition", "attachment; filename=\"" + productVersions[0].VersionNumber + " product version customers.csv\"");
+
+        }
+      }
     }
   }
 }

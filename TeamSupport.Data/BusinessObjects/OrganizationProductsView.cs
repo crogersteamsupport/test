@@ -120,6 +120,34 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByProductIDForExport(int productID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+          @"
+            SELECT 
+              OrganizationName AS Customer,
+              VersionNumber As Version,
+              SupportExpiration As 'Support Expiration',
+              VersionStatus As Status,
+              IsReleased As Released,
+              ReleaseDate As 'Release Date',
+              DateCreated As 'Date Created'
+            FROM
+              OrganizationProductsView 
+            WHERE
+              ProductID = @ProductID 
+            ORDER BY 
+              OrganizationProductID DESC
+          ";
+        command.CommandText = InjectCustomFields(command.CommandText, "OrganizationProductID", ReferenceType.OrganizationProducts);
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductID", productID);
+        Fill(command);
+      }
+    }
+
     public void LoadByProductIDLimit(int productID, int start, string sortColumn, string sortDirection)
     {
         int end = start + 20;
@@ -169,6 +197,33 @@ namespace TeamSupport.Data
             ORDER BY 
               OrganizationProductID DESC
           ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
+        Fill(command);
+      }
+    }
+
+    public void LoadByProductVersionIDForExport(int productVersionID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText =
+          @"
+            SELECT 
+              OrganizationName AS Customer,
+              SupportExpiration As 'Support Expiration',
+              VersionStatus As Status,
+              IsReleased As Released,
+              ReleaseDate As 'Release Date',
+              DateCreated As 'Date Created'
+            FROM
+              OrganizationProductsView 
+            WHERE
+              ProductVersionID = @ProductVersionID 
+            ORDER BY 
+              OrganizationProductID DESC
+          ";
+        command.CommandText = InjectCustomFields(command.CommandText, "OrganizationProductID", ReferenceType.OrganizationProducts);
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
         Fill(command);

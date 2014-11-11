@@ -645,6 +645,24 @@ $(document).ready(function () {
     }
   });
 
+  $('.product-customers-export-excel').on('click', function (e) {
+      e.preventDefault();
+
+      top.Ts.System.logAction('Product Detail Page - Export Customers Excel');
+
+      window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/productcustomers/' + _productID + '?Type=EXCEL', 'ProductCustomersDownload');
+
+  });
+
+  $('.product-customers-export-csv').on('click', function (e) {
+      e.preventDefault();
+
+      top.Ts.System.logAction('Product Detail Page - Export Customers CSV');
+
+      window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/productcustomers/' + _productID + '?Type=CSV', 'ProductCustomersDownload');
+
+  });
+
   LoadProductVersions();
   function LoadProductVersions() {
       $("#productVersion").empty();

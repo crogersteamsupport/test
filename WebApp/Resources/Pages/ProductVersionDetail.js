@@ -693,6 +693,24 @@ $(document).ready(function () {
     }
   });
 
+  $('.product-version-customers-export-excel').on('click', function (e) {
+      e.preventDefault();
+
+      top.Ts.System.logAction('Product Version Detail Page - Export Customers Excel');
+
+      window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/productversioncustomers/' + _productVersionID + '?Type=EXCEL', 'ProductCustomersDownload');
+
+  });
+
+  $('.product-version-customers-export-csv').on('click', function (e) {
+      e.preventDefault();
+
+      top.Ts.System.logAction('Product Version Detail Page - Export Customers CSV');
+
+      window.open('../../../dc/' + top.Ts.System.Organization.OrganizationID + '/productversioncustomers/' + _productVersionID + '?Type=CSV', 'ProductCustomersDownload');
+
+  });
+
   top.Ts.Services.Customers.GetDateFormat(false, function (dateformat) {
       $('.datepicker').attr("data-format", dateformat);
       $('.datepicker').datetimepicker({ pickTime: false });
