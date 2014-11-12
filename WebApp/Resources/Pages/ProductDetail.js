@@ -102,6 +102,12 @@ $(document).ready(function () {
           _viewingInventory = false;
           _viewingVersions = false;
       }
+      else if (e.target.innerHTML == "Knowledge Base") {
+          $('#kbIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_IsKnowledgeBase=true&tf_ProductID=" + _productID);
+          _viewingCustomers = false;
+          _viewingInventory = false;
+          _viewingVersions = false;
+      }
       else if (e.target.innerHTML == "Watercooler") {
           $('#watercoolerIframe').attr("src", "WaterCooler.html?pagetype=1&pageid=" + _productID);
           _viewingCustomers = false;

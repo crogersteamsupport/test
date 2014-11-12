@@ -50,3 +50,14 @@
 .fa-sort-desc, .fa-sort-asc {
     margin-left: 3px;
 }
+
+.checkBoxesBar {
+  margin-left: 25px;
+  margin-top: 5px;
+  margin-bottom: -15px;
+}
+
+.checkBoxLabel {
+  font-weight: normal;
+  color: #15428B;
+}

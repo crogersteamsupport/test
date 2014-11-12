@@ -52,6 +52,7 @@
           <li><a href="#product-version-overview" data-toggle="tab">Details</a></li>
           <li><a href="#product-version-customers" data-toggle="tab">Customers</a></li>
           <li><a href="#product-version-tickets" data-toggle="tab">Tickets</a></li>
+          <li><a href="#product-version-kb" data-toggle="tab">Knowledge Base</a></li>
           <li><a href="#product-version-attachments" data-toggle="tab">Files</a></li>
           <!--<li><a href="#product-version-watercooler" data-toggle="tab">Watercooler</a></li>-->
           <li><a href="#product-version-inventory" data-toggle="tab">Inventory</a></li>
@@ -291,7 +292,35 @@
           </div>
         </div>
         <div class="tab-pane fade" id="product-version-tickets">
+          <div class="checkBoxesBar">
+            <div class="checkbox-inline">
+              <label class="checkBoxLabel">
+                <input type="checkbox" id="cbReported" checked> Reported Tickets
+              </label>
+            </div>
+            <div class="checkbox-inline">
+              <label class="checkBoxLabel">
+                <input type="checkbox" id="cbResolved" checked> Resolved Tickets
+              </label>
+            </div>          
+          </div>
           <iframe id="ticketIframe" frameborder="0" scrolling="no" src="" width="100%" style="height: 96%;
+            position: absolute"></iframe>
+        </div>
+        <div class="tab-pane fade" id="product-version-kb">
+          <div class="checkBoxesBar">
+            <div class="checkbox-inline">
+              <label class="checkBoxLabel">
+                <input type="checkbox" id="cbReportedKB" checked> Reported Tickets
+              </label>
+            </div>
+            <div class="checkbox-inline">
+              <label class="checkBoxLabel">
+                <input type="checkbox" id="cbResolvedKB" checked> Resolved Tickets
+              </label>
+            </div>          
+          </div>
+          <iframe id="kbIframe" frameborder="0" scrolling="no" src="" width="100%" style="height: 96%;
             position: absolute"></iframe>
         </div>
         <div class="tab-pane fade" id="product-version-attachments">

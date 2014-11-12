@@ -97,7 +97,12 @@ $(document).ready(function () {
       _viewingInventory = false;
     }
     else if (e.target.innerHTML == "Tickets") {
-      $('#ticketIframe').attr("src", "../../../Frames/TicketTabsAll.aspx?tf_ProductVersionID=" + _productVersionID);
+      LoadTickets();
+      _viewingCustomers = false;
+      _viewingInventory = false;
+    }
+    else if (e.target.innerHTML == "Knowledge Base") {
+      LoadKbs();
       _viewingCustomers = false;
       _viewingInventory = false;
     }
@@ -897,6 +902,62 @@ $(document).ready(function () {
       top.Ts.MainPage.openProductOrganization($(this).parent().parent().attr('id'))
       //top.location = "../../../Default.aspx?OrganizationProductID=" + ;
 
+  });
+
+  function LoadTickets() {
+      var url = "../../../Frames/TicketTabsAll.aspx?";
+      if ($("#cbReported").is(":checked")) {
+        if ($("#cbResolved").is(":checked")) {
+          url += "tf_ProductVersionID=" + _productVersionID;
+        }
+        else {
+          url += "tf_ReportedVersionID=" + _productVersionID;
+        }
+      }
+      else {
+        if ($("#cbResolved").is(":checked")) {
+          url += "tf_SolvedVersionID=" + _productVersionID;
+        }
+        else {
+          url = "";
+        }
+      }
+
+      if (url != "") {
+        $('#ticketIframe').attr("src", url);
+      }
+  }
+
+  $('#cbReported, #cbResolved').on('click', function (e) {
+    LoadTickets();
+  });
+
+  function LoadKbs() {
+      var url = "../../../Frames/TicketTabsAll.aspx?tf_IsKnowledgeBase=true&";
+      if ($("#cbReportedKB").is(":checked")) {
+        if ($("#cbResolvedKB").is(":checked")) {
+          url += "tf_ProductVersionID=" + _productVersionID;
+        }
+        else {
+          url += "tf_ReportedVersionID=" + _productVersionID;
+        }
+      }
+      else {
+        if ($("#cbResolvedKB").is(":checked")) {
+          url += "tf_SolvedVersionID=" + _productVersionID;
+        }
+        else {
+          url = "";
+        }
+      }
+
+      if (url != "") {
+        $('#kbIframe').attr("src", url);
+      }
+  }
+
+  $('#cbReportedKB, #cbResolvedKB').on('click', function (e) {
+    LoadKbs();
   });
 
   function LoadFiles() {
