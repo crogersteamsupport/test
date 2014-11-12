@@ -2,8 +2,8 @@
 var _wikiArticles = null;
 var _wikiID = null;
 var _wikiParentID = null;
-var _wikiInternalLLinkBase = "https://app.teamsupport.com?articleid={ArticleID}"
-var _wikiExternalLinkBase = "https://app.teamsupport.com/wiki/justarticle.aspx?Organizationid={ORGID}&ArticleID={ArticleID}"
+var _wikiInternalLLinkBase = top.Ts.System.AppDomain + "?articleid={ArticleID}";
+var _wikiExternalLinkBase = top.Ts.System.AppDomain + "/wiki/justarticle.aspx?Organizationid={ORGID}&ArticleID={ArticleID}";
 var _wikiInternalLink = null;
 var _wikiExternalLink = null;
 var _wikiTitle = null;
@@ -45,8 +45,8 @@ function BuildWikiPage() {
     top.Ts.Services.Wiki.GetWikiMenuItems(function (menuItems) {
         _wikiArticles = menuItems;
         if (menuItems !== null) {
+            _wikiID = top.Ts.Utils.getQueryValue("ArticleID", window);
             if (_wikiID == null) {
-                _wikiID = top.Ts.Utils.getQueryValue("ArticleID", window);
                 top.Ts.Services.Wiki.GetDefaultWikiID(function (wikiID) {
                     if (wikiID == null) {
                         _wikiID = menuItems[0].ID
@@ -74,13 +74,13 @@ function BuildWikiView() {
 
 
     if (_wikiPrivateView) {
-        $("#wiki-external-link").prop('disabled', true);
+        $("#wiki-external-link").hide();
     }
     else {
         var externalLink = new ZeroClipboard(document.getElementById("wiki-external-link"));
         $("#wiki-external-link").attr("data-clipboard-text", _wikiExternalLink);
 
-        $("#wiki-external-link").prop('disabled', false);
+        $("#wiki-external-link").show();
     }
 
     $(".wiki-tools").tooltip({ placement: 'bottom', animation: false })
@@ -138,10 +138,14 @@ function BuildWikiMenuItems() {
             $.each(wikis, function (key, parent) {
                 $("#wiki-sidebar").append(_wikiMenuLIWithChildrenTemplate.replace("{ID}", parent.ID).replace("{Title}", parent.Title));
                 recursiveFunction(key, parent);
-                $("#" + parent.ID).on('click', function () {
+                $("#" + parent.ID).on('click', function (e) {
+                    e.preventDefault();
                     SidebarFunction($(this));
                 });
             });
+            $('.sidebar').animate({
+                scrollTop: $("#" + _wikiID).offset().top
+            }, 2000);
         }
     });
 };
@@ -154,7 +158,8 @@ function recursiveFunction(key, parent) {
                 $("#" + parent.ID).parent().children("ul").append(_wikiSubMenuLITemplate.replace("{ID}", child.ID).replace("{Title}", child.Title));
                 recursiveFunction(key, child)
                 $("#wiki-sidebar").append("</li>");
-                $("#" + child.ID).on('click', function () {
+                $("#" + child.ID).on('click', function (e) {
+                    e.preventDefault();
                     SidebarFunction($(this));
                 });
             });
@@ -181,7 +186,6 @@ function SidebarFunction(element) {
     element.closest('li').children("ul").toggle();
     element.closest('li').find("span.wiki-sidebar-caret").first().toggleClass('wiki-sidebar-caret-right');
     GetWiki(element[0].id);
-    return false;
 };
 
 function BuildWikiEditEvents() {
@@ -556,7 +560,8 @@ var initEditor = function (element, init) {
                                     alert('There was an error inserting your wiki article.');
                                     return;
                                 }
-                                var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
+                                var html = '<a href="./JustArticle.aspx?Organizationid=' + wiki.OrganizationID + '&amp;ArticleID=' + wiki.ArticleID + '" data-mce-href="' + top.Ts.System.AppDomain + '/vcr/1_9_0/Pages/JustArticle.aspx?Organizationid=' + wiki.OrganizationID + '&amp;ArticleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
+                                //var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
                                 ed.focus();
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
