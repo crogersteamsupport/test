@@ -54,7 +54,7 @@
 .checkBoxesBar {
   margin-left: 25px;
   margin-top: 5px;
-  margin-bottom: -15px;
+  /*margin-bottom: -15px;*/
 }
 
 .checkBoxLabel {
