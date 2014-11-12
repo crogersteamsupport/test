@@ -29,8 +29,6 @@ $(document).ready(function () {
 });
 
 function onShow() {
-    // this fires everytime the main tab is selected
-    //wikiPage.refresh();
 };
 
 WikiPage = function () {
@@ -143,9 +141,9 @@ function BuildWikiMenuItems() {
                     SidebarFunction($(this));
                 });
             });
-            $('.sidebar').animate({
-                scrollTop: $("#" + _wikiID).offset().top
-            }, 2000);
+//            $('.sidebar').animate({
+//                scrollTop: $("#" + _wikiID).offset().top
+//            }, 2000);
         }
     });
 };
@@ -560,8 +558,7 @@ var initEditor = function (element, init) {
                                     alert('There was an error inserting your wiki article.');
                                     return;
                                 }
-                                var html = '<a href="./JustArticle.aspx?Organizationid=' + wiki.OrganizationID + '&amp;ArticleID=' + wiki.ArticleID + '" data-mce-href="' + top.Ts.System.AppDomain + '/vcr/1_9_0/Pages/JustArticle.aspx?Organizationid=' + wiki.OrganizationID + '&amp;ArticleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
-                                //var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
+                                var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
                                 ed.focus();
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
