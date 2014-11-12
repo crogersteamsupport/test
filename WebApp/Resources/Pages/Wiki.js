@@ -558,7 +558,8 @@ var initEditor = function (element, init) {
                                     alert('There was an error inserting your wiki article.');
                                     return;
                                 }
-                                var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
+                                //var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
+                                var html = '<a href="#" onclick="top.Ts.MainPage.openWiki(' + wiki.ArticleID + ', true)" class="ts-link">' + wiki.ArticleName + '</a>'
                                 ed.focus();
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
