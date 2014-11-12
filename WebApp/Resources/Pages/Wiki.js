@@ -43,18 +43,24 @@ function BuildWikiPage() {
     top.Ts.Services.Wiki.GetWikiMenuItems(function (menuItems) {
         _wikiArticles = menuItems;
         if (menuItems !== null) {
-            _wikiID = top.Ts.Utils.getQueryValue("ArticleID", window);
             if (_wikiID == null) {
-                top.Ts.Services.Wiki.GetDefaultWikiID(function (wikiID) {
-                    if (wikiID == null) {
-                        _wikiID = menuItems[0].ID
-                    }
-                    else {
-                        _wikiID = wikiID;
-                    }
-                    GetWiki(_wikiID);
+                var articleID = top.Ts.Utils.getQueryValue("ArticleID", window);
+                if (articleID == null) {
+                    top.Ts.Services.Wiki.GetDefaultWikiID(function (wikiID) {
+                        if (wikiID == null) {
+                            _wikiID = menuItems[0].ID
+                        }
+                        else {
+                            _wikiID = wikiID;
+                        }
+                        GetWiki(_wikiID);
+                        BuildWikiMenuItems();
+                    });
+                }
+                else {
+                    GetWiki(articleID);
                     BuildWikiMenuItems();
-                });
+                }
             }
             else {
                 GetWiki(_wikiID);
