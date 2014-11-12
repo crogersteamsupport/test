@@ -545,11 +545,35 @@ $(document).ready(function () {
   if (!top.Ts.System.User.CanEditCompany && !_isAdmin) 
   {
       $('#customerToggle').hide();
+      $('#associateAllToggle').hide();
+      $('#unAssociateAllToggle').hide();
   }
 
   $('#customerToggle').click(function (e) {
       top.Ts.System.logAction('Product Detail - Toggle Customer Form');
       $('#customerForm').toggle();
+  });
+
+  $('#associateAllToggle').click(function (e) {
+      if (confirm('Are you sure you would like to associate All customers to this product?')) {
+        top.Ts.System.logAction('Product Detail - Toggle Associate All Customer Form');
+        top.Ts.Services.Customers.AssignAllCustomersToProduct(_productID, function () {
+            LoadCustomers();
+        }, function () {
+            alert('There was an error associating all customers to this product. Please try again.');
+        });
+      }
+  });
+
+  $('#unAssociateAllToggle').click(function (e) {
+      if (confirm('Are you sure you would like to unassociate All customers from this product?')) {
+        top.Ts.System.logAction('Product Detail - Toggle Unassociate All Customer Form');
+        top.Ts.Services.Customers.UnassignAllCustomersFromProduct(_productID, function () {
+            LoadCustomers();
+        }, function () {
+            alert('There was an error unassociating all customers from this product. Please try again.');
+        });
+      }
   });
 
   function LoadCustomers(start) {

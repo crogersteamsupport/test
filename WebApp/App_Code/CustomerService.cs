@@ -2030,6 +2030,59 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public void AssignAllCustomersToProduct(int productID)
+        {
+          LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+          Products products = new Products(loginUser);
+          products.LoadByProductID(productID);
+
+          OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
+          existingOrganizationProducts.LoadByParentOrganizationID(loginUser.OrganizationID);
+
+          Organizations allCustomers = new Organizations(loginUser);
+          allCustomers.LoadByParentID(loginUser.OrganizationID, true);
+
+          foreach (Organization customer in allCustomers)
+          {
+            OrganizationProduct existingOrganizationProduct = existingOrganizationProducts.FindByOrganizationID(customer.OrganizationID);
+
+            if (existingOrganizationProduct == null)
+            {
+              OrganizationProduct organizationProduct = (new OrganizationProducts(loginUser)).AddNewOrganizationProduct();
+              organizationProduct.OrganizationID = customer.OrganizationID;
+              organizationProduct.ProductID = products[0].ProductID;
+              organizationProduct.Collection.Save();
+
+              string description = String.Format("{0} added customer association to product {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, products[0].Name);
+              ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, customer.OrganizationID, description);
+            }
+          }
+        }
+
+        [WebMethod]
+        public void UnassignAllCustomersFromProduct(int productID)
+        {
+          LoginUser loginUser = TSAuthentication.GetLoginUser();
+
+          Products products = new Products(loginUser);
+          products.LoadByProductID(productID);
+          if (products.Count > 0 && products[0].OrganizationID == loginUser.OrganizationID)
+          {
+            OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
+            existingOrganizationProducts.LoadByProductVersionID(loginUser.OrganizationID);
+
+            OrganizationProducts.DeleteAllOrganizationsByProductID(loginUser, productID);
+
+            foreach (OrganizationProduct organizationProduct in existingOrganizationProducts)
+            {
+              string description = String.Format("{0} deleted customer association to product {1} ", TSAuthentication.GetUser(loginUser).FirstLastName, products[0].Name);
+              ActionLogs.AddActionLog(loginUser, ActionLogType.Update, ReferenceType.Organizations, organizationProduct.OrganizationID, description);
+            }
+          }
+        }
+
+        [WebMethod]
         public int LoadCDI(int organizationID)
         {
             Organization organization = Organizations.GetOrganization(TSAuthentication.GetLoginUser(), organizationID);

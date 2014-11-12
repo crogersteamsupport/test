@@ -178,5 +178,19 @@ namespace TeamSupport.Data
       }
     }
 
+    public static void DeleteAllOrganizationsByProductID(LoginUser loginUser, int productID)
+    {
+      using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
+      {
+        connection.Open();
+
+        SqlCommand command = connection.CreateCommand();
+        command.Connection = connection;
+        command.CommandType = CommandType.Text;
+        command.CommandText = "DELETE FROM OrganizationProducts WHERE ProductID = @ProductID";
+        command.Parameters.AddWithValue("@ProductID", productID);
+        command.ExecuteNonQuery();
+      }
+    }
   }
 }
