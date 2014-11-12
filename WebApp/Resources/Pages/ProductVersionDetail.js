@@ -47,6 +47,8 @@ $(document).ready(function () {
       $('#fieldStatus').html(productVersion.VersionStatus);
       $('#fieldReleased').text((productVersion.IsReleased === true ? 'True' : 'False'));
       $('#fieldReleaseDate').text(top.Ts.Utils.getMsDate(productVersion.ReleaseDate).localeFormat(top.Ts.Utils.getDatePattern()));
+      top.privateServices.SetUserSetting('SelectedProductID', _productID);
+      top.privateServices.SetUserSetting('SelectedProductVersionID', _productVersionID);
     }
   });
 

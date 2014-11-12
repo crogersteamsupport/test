@@ -1055,8 +1055,8 @@ Ts.Pages.Main.prototype = {
                     .attr('src', 'vcr/1_9_0/Pages/ProductDetail.html' + query);
           }
           else {
-            top.privateServices.SetUserSetting('SelectedProductID', productID);
-            div.show();
+              top.privateServices.SetUserSetting('SelectedProductID', productID);
+              div.show();
           }
           $('.main-info-content').load('vcr/1_9_0/PaneInfo/Products.html');
           break;
@@ -1100,8 +1100,8 @@ Ts.Pages.Main.prototype = {
                     .attr('src', 'vcr/1_9_0/Pages/ProductVersionDetail.html' + query);
           }
           else {
-            top.privateServices.SetUserSetting('SelectedProductVersionID', productVersionID);
-            div.show();
+              top.privateServices.SetUserSetting('SelectedProductVersionID', productVersionID);
+              div.show();
           }
           $('.main-info-content').load('vcr/1_9_0/PaneInfo/Products.html');
           break;
@@ -1706,10 +1706,10 @@ Ts.Pages.Main.prototype = {
       tab.remove();
     }
   },
-  newProduct: function (tab, orgID) {
+  newProduct: function (tab, productID) {
     var query;
     if (tab != undefined)
-      query = "?open=" + tab + "&organizationid=" + orgID;
+        query = "?open=" + tab + "&productid=" + productID;
     this.MainTabs.prepend(true, Ts.Ui.Tabs.Tab.Type.NewProduct, 'newProduct', 'Add Product', true, true, true, null, null, query, null);
   },
   closenewProductTab: function () {

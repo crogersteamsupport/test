@@ -1195,7 +1195,21 @@ namespace TSWebServices
         }
 
         job.Execute();
-        job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortDescending, "");
+        if (searchTerm == "xfirstword")
+        {
+            if (searchProducts)
+            {
+                job.Results.Sort(SortFlags.dtsSortByField | SortFlags.dtsSortAscending, "Name");
+            }
+            else
+            {
+                job.Results.Sort(SortFlags.dtsSortByName | SortFlags.dtsSortDescending, "");
+            }
+        }
+        else
+        {
+            job.Results.Sort(SortFlags.dtsSortByRelevanceScore | SortFlags.dtsSortDescending, "");
+        }
         return job.Results;
       }
     }

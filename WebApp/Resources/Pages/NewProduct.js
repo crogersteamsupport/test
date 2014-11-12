@@ -28,7 +28,7 @@ $(document).ready(function () {
   });
 
   var defaultTab = top.Ts.Utils.getQueryValue("open", window);
-  var defaultOrg = top.Ts.Utils.getQueryValue("organizationID", window);
+  var defaultProduct = top.Ts.Utils.getQueryValue("productID", window);
 
   $(".maincontainer").on("keypress", "input", (function (evt) {
     //Deterime where our character code is coming from within the event
@@ -58,7 +58,12 @@ $(document).ready(function () {
   function LoadProducts() {
     var products = top.Ts.Cache.getProducts();
     for (var i = 0; i < products.length; i++) {
-      $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#ddlProduct');
+        if (defaultProduct == products[i].ProductID) {
+            $('<option>').attr('value', products[i].ProductID).attr('selected', 'selected').text(products[i].Name).data('o', products[i]).appendTo('#ddlProduct');
+        }
+        else {
+            $('<option>').attr('value', products[i].ProductID).text(products[i].Name).data('o', products[i]).appendTo('#ddlProduct');
+        }
     }
   }
 

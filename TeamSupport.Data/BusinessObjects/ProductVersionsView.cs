@@ -37,7 +37,7 @@ namespace TeamSupport.Data
         (
 	        SELECT 
 		        ProductVersionID, 
-		        ROW_NUMBER() OVER (ORDER BY ProductVersionID DESC) AS rownum
+		        ROW_NUMBER() OVER (ORDER BY VersionNumber DESC) AS rownum
 	        FROM 
 		        ProductVersions 
 	        WHERE 
@@ -56,7 +56,7 @@ namespace TeamSupport.Data
         WHERE 
 	        ov.rownum BETWEEN @start and @end
         ORDER BY
-          v.ProductVersionID DESC";
+          v.VersionNumber DESC";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@ProductID", productID);
         command.Parameters.AddWithValue("@start", start);

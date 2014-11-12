@@ -39,7 +39,8 @@ $(document).ready(function () {
     {
       $('#productName').text(product.Name);
       $('#fieldDescription').html(product.Description != null && product.Description != ""? product.Description : "Empty");
-    }
+      top.privateServices.SetUserSetting('SelectedProductID', _productID);
+  }
   });
 
   $('.product-tooltip').tooltip({ placement: 'bottom', container: 'body' });
