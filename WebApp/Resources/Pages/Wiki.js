@@ -90,13 +90,6 @@ function BuildWikiView() {
 
     $(".wiki-tools").tooltip({ placement: 'bottom', animation: false })
 
-    if (_isWikiOwner) {
-        $("#Wiki-Edit-PrivateView").removeAttr("disabled");
-    } else {
-        $("#Wiki-Edit-PrivateView").attr("disabled", true);
-    }
-
-
     $("#Wiki-Title").text(_wikiTitle);
     $("#Wiki-Body").html(_wikiBody);
     $("#Wiki-Edit-Title").val(_wikiTitle);
@@ -212,6 +205,11 @@ function BuildWikiEditEvents() {
         $("#WikiEditArea").show();
         $("#wiki-edit-title-div").show();
         $("#wiki-title-div").hide();
+        if (_isWikiOwner) {
+            $("#Wiki-Edit-PrivateView").removeAttr("disabled");
+        } else {
+            $("#Wiki-Edit-PrivateView").attr("disabled", true);
+        }
         if (_canDeleteWiki) {
             $("#wiki-edit-delete").show();
         } else {
@@ -311,6 +309,7 @@ function BuildWikiEditEvents() {
         $("#wiki-edit-title-div").show();
         $("#wiki-title-div").hide();
         $("#wiki-edit-delete").hide();
+        $("#Wiki-Edit-PrivateView").removeAttr("disabled");
         tinyMCE.activeEditor.remove();
         var element = $('body').find('#Wiki-Edit-Body');
         initEditor(element, function (ed) {
