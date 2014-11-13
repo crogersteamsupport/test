@@ -120,7 +120,21 @@ function BuildWikiView() {
     initEditor($("#Wiki-Edit-Body"), function (ed) {
         $("#Wiki-Edit-Body").tinymce();
     });
+
+    $('a[href*="JustArticle.aspx"]').click(function (e) {
+        debugger;
+        e.preventDefault();
+
+        var url = ($(this).attr('href'));
+        var ArticleID = getURLParameter(url, 'ArticleID');
+
+        top.Ts.MainPage.openWiki(ArticleID, true)
+    });
 };
+
+function getURLParameter(url, name) {
+    return (RegExp(name + '=' + '(.+?)(&|$)').exec(url) || [, null])[1];
+}
 
 function BuildWikiMenuItems() {
     $('#Wiki-Edit-Parent').find('option').remove().end().append($("<option></option>"));
@@ -308,7 +322,7 @@ function BuildWikiEditEvents() {
 
     $('#Wiki-Comment-Modal').on('shown.bs.modal', function (e) {
         $("#Wiki-Update-Comment").focus();
-    })
+    });
 };
 
 function MapWikiProperties(wiki) {
@@ -396,6 +410,7 @@ function DeleteWiki(wikiID) {
     });
 
 };
+
 
 //Tiny_MCE Editor Setup
 var initEditor = function (element, init) {
@@ -579,7 +594,8 @@ var initEditor = function (element, init) {
                                     return;
                                 }
                                 //var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
-                                var html = '<a href="#" onclick="top.Ts.MainPage.openWiki(' + wiki.ArticleID + ', true)" class="ts-link">' + wiki.ArticleName + '</a>'
+                                //var html = '<a href="#" onclick="top.Ts.MainPage.openWiki(' + wiki.ArticleID + ', true)" class="ts-link">' + wiki.ArticleName + '</a>'
+                                var html = '<a href="./JustArticle.aspx?Organizationid=' + wiki.OrganizationID + '&amp;ArticleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
                                 ed.focus();
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');

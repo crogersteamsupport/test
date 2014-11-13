@@ -65,6 +65,6 @@ namespace TeamSupport.Data
       result.CanDelete = (BaseCollection.LoginUser.GetUser().IsSystemAdmin || result.IsOwner);
        
       return result;
-    }	
+    }
   }
 }
