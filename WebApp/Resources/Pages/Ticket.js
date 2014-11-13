@@ -2849,7 +2849,7 @@ var saveAction = function (form, oldAction, callback) {
 
     top.Ts.System.logAction('Action Saved');
     window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "addaction", userFullName);
-    
+
 }
 
 var createActionElement = function () {

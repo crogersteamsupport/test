@@ -100,7 +100,6 @@ function BuildWikiView() {
     $("#Wiki-Title").text(_wikiTitle);
     $("#Wiki-Body").html(_wikiBody);
     $("#Wiki-Edit-Title").val(_wikiTitle);
-    $("#Wiki-Edit-Body").html(_wikiBody);
     $("#Wiki-Edit-Parent").val(_wikiParentID);
     $("#Wiki-Edit-PublicView").prop('checked', _wikiPublicView);
     $("#Wiki-Edit-PrivateView").prop('checked', _wikiPrivateView);
@@ -112,15 +111,18 @@ function BuildWikiView() {
     $("#wiki-edit-toolbar").hide();
     $('#Wiki-Title').show();
     $("#wiki-title-edit").hide();
-    initEditor($("#Wiki-Edit-Body"), function (ed) {
-        $("#Wiki-Edit-Body").tinymce();
-    });
 
     $('a[href*="JustArticle.aspx"]').click(function (e) {
         e.preventDefault();
         var url = ($(this).attr('href'));
         var ArticleID = getURLParameter(url, 'ArticleID');s
         top.Ts.MainPage.openWiki(ArticleID, true)
+    });
+
+    var element = $('body');
+    tinymce.execCommand('mceRemoveControl', true, '#Wiki-Edit-Body');
+    initEditor(element.find('#Wiki-Edit-Body'), function (ed) {
+        element.find('#Wiki-Edit-Body').tinymce().focus();
     });
 };
 
@@ -202,7 +204,6 @@ function BuildWikiEditEvents() {
     $("#EditWiki").click(function () {
         $('#Wiki-Title').hide();
         $("#wiki-title-edit").val(_wikiTitle).show();
-        $("#Wiki-Edit-Body").tinymce().focus();
         $("#Wiki-Update-Comment").val('');
         $("#wiki-sidebar-div").hide();
         $("#wiki-view-toolbar").hide();
@@ -218,6 +219,7 @@ function BuildWikiEditEvents() {
         }
         _editingWiki = true;
         _isCreatingNewWiki = false;
+        tinyMCE.activeEditor.setContent(_wikiBody).focus();
     });
 
     $("#wiki-edit-cancel").click(function (e) {
@@ -293,7 +295,6 @@ function BuildWikiEditEvents() {
         _isCreatingNewWiki = true;
         $("#Wiki-Edit-Title").val(null);
         $("#wiki-title-edit").val("");
-        $("#Wiki-Edit-Body").html("");
         $("#Wiki-Edit-Parent").val(0);
         $("#Wiki-Edit-PublicView").prop('checked', false);
         $("#Wiki-Edit-PrivateView").prop('checked', false);
@@ -303,14 +304,20 @@ function BuildWikiEditEvents() {
         $("#wiki-view-toolbar").hide();
         $("#wiki-edit-toolbar").show();
         $('#Wiki-Title').hide();
-        $("#wiki-title-edit").show().focus();
+        $("#wiki-title-edit").show();
         $("#WikiViewArea").hide();
         $("#WikiEditArea").show();
         $("#wiki-sidebar-div").hide();
         $("#wiki-edit-title-div").show();
         $("#wiki-title-div").hide();
         $("#wiki-edit-delete").hide();
-
+        tinyMCE.activeEditor.remove();
+        var element = $('body').find('#Wiki-Edit-Body');
+        initEditor(element, function (ed) {
+            ed.setContent('');
+            element.find('#Wiki-Edit-Body').tinymce();
+        });
+        $("#wiki-title-edit").show().focus();
         top.Ts.System.logAction('Wiki - Wiki Created');
     });
 
@@ -453,7 +460,6 @@ var initEditor = function (element, init) {
             setup: function (ed) {
                 ed.on('init', function (e) {
                     top.Ts.System.refreshUser(function () {
-                        debugger
                         if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
                             ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
                             ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
