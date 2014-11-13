@@ -453,6 +453,7 @@ var initEditor = function (element, init) {
             setup: function (ed) {
                 ed.on('init', function (e) {
                     top.Ts.System.refreshUser(function () {
+                        debugger
                         if (top.Ts.System.User.FontFamilyDescription != "Unassigned") {
                             ed.execCommand("FontName", false, GetTinyMCEFontName(top.Ts.System.User.FontFamily));
                             ed.getBody().style.fontFamily = GetTinyMCEFontName(top.Ts.System.User.FontFamily);
@@ -596,6 +597,7 @@ var initEditor = function (element, init) {
                     title: 'Insert Wiki Article',
                     icon: 'awesome fa fa-file',
                     onclick: function () {
+                        var bookmark = ed.selection.getBookmark(0);
                         top.Ts.MainPage.selectWiki(function (wikiID) {
                             top.Ts.Services.Wiki.GetWiki(wikiID, function (wiki) {
                                 if (wiki === null) {
@@ -606,6 +608,7 @@ var initEditor = function (element, init) {
                                 //var html = '<a href="#" onclick="top.Ts.MainPage.openWiki(' + wiki.ArticleID + ', true)" class="ts-link">' + wiki.ArticleName + '</a>'
                                 var html = '<a href="./JustArticle.aspx?Organizationid=' + wiki.OrganizationID + '&amp;ArticleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
                                 ed.focus();
+                                ed.selection.moveToBookmark(bookmark);
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
                                 ed.focus();
