@@ -26,16 +26,18 @@
         <div class="container-fluid">
             <nav style="min-height:inherit; padding-bottom: 4px;" class="navbar navbar-default navbar-fixed-top" role="navigation">                  
                 <div class="row">
-                    <div class="col-xs-5 col-xs-offset-3 col-sm-5 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-7 col-lg-offset-2">
+                    <div id="wiki-title-div" class="col-xs-5 col-xs-offset-3 col-sm-5 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-7 col-lg-offset-2">
                         <span id="Wiki-Title" class="wiki-title"></span>
-                        <input id="wiki-title-edit" type="text" class="form-control wiki-title-edit" style="display:none;" placeholder="Wiki Title" tabindex="1"/>
+                    </div>
+                    <div id="wiki-edit-title-div" class="col-xs-8 col-sm-8 col-md-9 col-lg-9" style="display:none;">
+                        <input id="wiki-title-edit" type="text" class="form-control wiki-title-edit" style="display:none; margin-left: 15px;" placeholder="Wiki Title" tabindex="1"/>
                     </div>
                     <div id="wiki-view-toolbar" class="col-xs-4 col-sm-4 col-md-3 col-lg-3">
                         <span class="btn-group pull-right">
                             <button id="NewWiki" class="btn btn-default wiki-tools" type="button" data-toggle="tooltip" data-placement="bottom" title="Create Wiki Page" data-original-title="Create a new wiki article"><i class="fa fa-plus"></i></button>
                             <button id="EditWiki" class="btn btn-default  wiki-tools" type="button" data-toggle="tooltip" data-original-title="Edit Wiki Page" data-toggle="tooltip" data-placement="bottom" title="Edit Wiki Page"><i class="fa fa-pencil"></i></button> 
-                            <button id="wiki-internal-link" data-clipboard-text="" class="btn btn-default wiki-tools" type="button" data-toggle="tooltip" data-placement="bottom" title="Copy Internal Link"><i class="fa fa-link"></i></button> 
-                            <button id="wiki-external-link" data-clipboard-text="" class="btn btn-default wiki-tools" type="button" data-toggle="tooltip" data-placement="bottom" title="Copy External Link"><i class="fa fa-share"></i></button>   
+                            <button id="wiki-internal-link" data-clipboard-text="" class="btn btn-default wiki-tools" type="button" data-toggle="tooltip" data-placement="bottom" title="Copy Internal Link"><i class="fa fa-hand-o-down"></i></button> 
+                            <button id="wiki-external-link" data-clipboard-text="" class="btn btn-default wiki-tools" type="button" data-toggle="tooltip" data-placement="bottom" title="Copy External Link"><i class="fa fa-hand-o-up"></i></button>   
                         </span>
                     </div>
                     <div id="wiki-edit-toolbar" class="col-xs-4 col-sm-4 col-md-3 col-lg-3" style="display:none;">
@@ -63,7 +65,8 @@
                 <div id="WikiViewArea" class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-10 col-lg-offset-2">
                     <div id="Wiki-Body"></div>
                 </div>
-                <div id="WikiEditArea" class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-10 col-lg-offset-2">                    
+                <!--<div id="WikiEditArea" class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-10 col-lg-offset-2">-->      
+                <div id="WikiEditArea" class="col-sm-12 col-md-12 col-lg-12">              
                     <div>
                         <textarea id="Wiki-Edit-Body" class="editWikiDesc" tabindex="21"></textarea>
                         <label>Sub Article of:</label>

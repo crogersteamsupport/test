@@ -198,11 +198,13 @@ function BuildWikiEditEvents() {
         $("#wiki-title-edit").val(_wikiTitle).show();
         $("#Wiki-Edit-Body").tinymce().focus();
         $("#Wiki-Update-Comment").val('');
-
+        $("#wiki-sidebar-div").hide();
         $("#wiki-view-toolbar").hide();
         $("#wiki-edit-toolbar").show();
         $("#WikiViewArea").hide();
         $("#WikiEditArea").show();
+        $("#wiki-edit-title-div").show();
+        $("#wiki-title-div").hide();
         _editingWiki = true;
     });
 
@@ -214,6 +216,9 @@ function BuildWikiEditEvents() {
         $("#WikiEditArea").hide();
         $('#Wiki-Title').show();
         $("#wiki-title-edit").hide();
+        $("#wiki-sidebar-div").show();
+        $("#wiki-edit-title-div").hide();
+        $("#wiki-title-div").show();
         _editingWiki = false;
     });
 
@@ -228,6 +233,9 @@ function BuildWikiEditEvents() {
             $("#WikiEditArea").hide();
             $('#Wiki-Title').show();
             $("#wiki-title-edit").hide();
+            $("#wiki-sidebar-div").show();
+            $("#wiki-edit-title-div").hide();
+            $("#wiki-title-div").show();
             _editingWiki = false;
         }
     });
@@ -253,6 +261,9 @@ function BuildWikiEditEvents() {
             $("#WikiEditArea").hide();
             $('#Wiki-Title').show();
             $("#wiki-title-edit").hide();
+            $("#wiki-sidebar-div").show();
+            $("#wiki-edit-title-div").hide();
+            $("#wiki-title-div").show();
             _editingWiki = false;
         }
         else { alert('Please select a parent article other than the one you are editing.') };
@@ -276,6 +287,9 @@ function BuildWikiEditEvents() {
         $("#wiki-title-edit").show().focus();
         $("#WikiViewArea").hide();
         $("#WikiEditArea").show();
+        $("#wiki-sidebar-div").hide();
+        $("#wiki-edit-title-div").show();
+        $("#wiki-title-div").hide();
 
         top.Ts.System.logAction('Wiki - Wiki Created');
     });
