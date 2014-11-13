@@ -22,6 +22,7 @@ var _wikiSubMenuLITemplate = '<li class="wiki-menu-subitem"><a id="{ID}" href="#
 var _editingWiki = false;
 var _isWikiOwner = false;
 var _canDeleteWiki = false;
+var _isCreatingNewWiki = false;
 
 $(document).ready(function () {
     wikiPage = new WikiPage();
@@ -95,12 +96,6 @@ function BuildWikiView() {
         $("#Wiki-Edit-PrivateView").attr("disabled", true);
     }
 
-    if (_canDeleteWiki) {
-        $("#wiki-edit-delete").show();
-    } else {
-        $("#wiki-edit-delete").hide();
-    }
-
 
     $("#Wiki-Title").text(_wikiTitle);
     $("#Wiki-Body").html(_wikiBody);
@@ -122,12 +117,9 @@ function BuildWikiView() {
     });
 
     $('a[href*="JustArticle.aspx"]').click(function (e) {
-        debugger;
         e.preventDefault();
-
         var url = ($(this).attr('href'));
-        var ArticleID = getURLParameter(url, 'ArticleID');
-
+        var ArticleID = getURLParameter(url, 'ArticleID');s
         top.Ts.MainPage.openWiki(ArticleID, true)
     });
 };
@@ -219,7 +211,13 @@ function BuildWikiEditEvents() {
         $("#WikiEditArea").show();
         $("#wiki-edit-title-div").show();
         $("#wiki-title-div").hide();
+        if (_canDeleteWiki) {
+            $("#wiki-edit-delete").show();
+        } else {
+            $("#wiki-edit-delete").hide();
+        }
         _editingWiki = true;
+        _isCreatingNewWiki = false;
     });
 
     $("#wiki-edit-cancel").click(function (e) {
@@ -234,6 +232,7 @@ function BuildWikiEditEvents() {
         $("#wiki-edit-title-div").hide();
         $("#wiki-title-div").show();
         _editingWiki = false;
+        _isCreatingNewWiki = false;
     });
 
     $("#wiki-edit-delete").click(function (e) {
@@ -251,6 +250,7 @@ function BuildWikiEditEvents() {
             $("#wiki-edit-title-div").hide();
             $("#wiki-title-div").show();
             _editingWiki = false;
+            _isCreatingNewWiki = false;
         }
     });
 
@@ -264,10 +264,15 @@ function BuildWikiEditEvents() {
         var private = $("#Wiki-Edit-PrivateView").is(':checked');
         var portal = $("#Wiki-Edit-PortalView").is(':checked');
         var parent = $('#Wiki-Edit-Parent').val();
-
+        var wikiID;
+        if (_isCreatingNewWiki) {
+            wikiID = 0;
+        }
+        else {
+            wikiID = _wikiID;
+        }
         if (_wikiID.toString() !== parent) {
-
-            SaveWiki(_wikiID, parent, body, title, public, private, portal, comment);
+            SaveWiki(wikiID, parent, body, title, public, private, portal, comment);
             $('#Wiki-Comment-Modal').modal('hide')
             $("#wiki-view-toolbar").show();
             $("#wiki-edit-toolbar").hide();
@@ -285,7 +290,7 @@ function BuildWikiEditEvents() {
     });
 
     $("#NewWiki").click(function () {
-        _wikiID = 0;
+        _isCreatingNewWiki = true;
         $("#Wiki-Edit-Title").val(null);
         $("#wiki-title-edit").val("");
         $("#Wiki-Edit-Body").html("");
@@ -304,6 +309,7 @@ function BuildWikiEditEvents() {
         $("#wiki-sidebar-div").hide();
         $("#wiki-edit-title-div").show();
         $("#wiki-title-div").hide();
+        $("#wiki-edit-delete").hide();
 
         top.Ts.System.logAction('Wiki - Wiki Created');
     });
