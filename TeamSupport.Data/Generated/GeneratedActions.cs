@@ -611,7 +611,7 @@ namespace TeamSupport.Data
 				SqlParameter parameter = updateCommand.Parameters[i];
 				parameter.Value = action.Row[parameter.ParameterName];
 			  }
-			  if (updateCommand.Parameters.Contains("ModifierID")) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
+              if (updateCommand.Parameters.Contains("ModifierID") && null == updateCommand.Parameters["ModifierID"].Value) updateCommand.Parameters["ModifierID"].Value = LoginUser.UserID;
 			  if (updateCommand.Parameters.Contains("DateModified")) updateCommand.Parameters["DateModified"].Value = DateTime.UtcNow;
 
 			  updateCommand.ExecuteNonQuery();
