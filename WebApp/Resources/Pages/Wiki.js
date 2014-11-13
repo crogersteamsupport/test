@@ -219,7 +219,7 @@ function BuildWikiEditEvents() {
         }
         _editingWiki = true;
         _isCreatingNewWiki = false;
-        tinyMCE.activeEditor.setContent(_wikiBody).focus();
+        tinyMCE.activeEditor.setContent(_wikiBody);
     });
 
     $("#wiki-edit-cancel").click(function (e) {
@@ -476,6 +476,10 @@ var initEditor = function (element, init) {
                         else if (top.Ts.System.Organization.FontSize != "0") {
                             ed.execCommand("FontSize", false, top.Ts.System.Organization.FontSize + 1);
                             ed.getBody().style.fontSize = GetTinyMCEFontSize(top.Ts.System.Organization.FontSize + 1);
+                        }
+
+                        if (_isCreatingNewWiki) {
+                            $("#wiki-title-edit").focus();
                         }
                     });
                 });
