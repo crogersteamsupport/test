@@ -357,6 +357,9 @@ function GetWiki(wikiID) {
             GetWikiHistory(wikiID);
             BuildWikiView();
         }
+        else {
+            alert('You do not have access to this wiki. Please select a wiki from the menu below. ')
+        }
     });
 };
 

@@ -595,13 +595,15 @@ namespace TeamSupport.Data
       return new WikiArticle(row, this);
     }
     
-    public virtual void LoadByArticleID(int articleID)
+    public virtual void LoadByArticleID(int articleID, int userID, int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ArticleID], [ParentID], [OrganizationID], [ArticleName], [Body], [Version], [PublicView], [PublicEdit], [PortalView], [PortalEdit], [Private], [IsDeleted], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [NeedsIndexing] FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID);";
+          command.CommandText = "SET NOCOUNT OFF; SELECT * FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID) and ([OrganizationID] = @OrganizationID) and ((IsNull(Private,0)=0) or (CreatedBy=@UserID)) and IsNull(IsDeleted,0)=0 ORDER BY ArticleName";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("ArticleID", articleID);
+        command.Parameters.AddWithValue("@ArticleID", articleID);
+        command.Parameters.AddWithValue("@UserID", userID);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);
       }
     }
@@ -610,7 +612,7 @@ namespace TeamSupport.Data
     public static WikiArticle GetWikiArticle(LoginUser loginUser, int articleID)
     {
       WikiArticles wikiArticles = new WikiArticles(loginUser);
-      wikiArticles.LoadByArticleID(articleID);
+      wikiArticles.LoadByArticleID(articleID, loginUser.UserID, loginUser.OrganizationID);
       if (wikiArticles.IsEmpty)
         return null;
       else
