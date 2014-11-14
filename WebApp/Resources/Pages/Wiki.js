@@ -375,7 +375,7 @@ function GetWikiHistory(wikiID) {
         if (wikiHistory !== null) {
             $('.wiki-revision-div').show();
             $.each(wikiHistory, function (key, value) {
-                $(".wiki-revision-history tbody").append('<tr><td>' + value.RevisionNumber + '</td><td>' + value.RevisedDate + '</td><td>' + value.RevisedBy + '</td><td>' + value.Comment + '</td><td><button data-id="' + value.HistoryID + '" class="btn btn-primary btn-xs wiki-restore">Preview</button></td></tr>');
+                $(".wiki-revision-history tbody").append('<tr><td>' + value.RevisionNumber + '</td><td>' + value.RevisedDate.localeFormat(top.Ts.Utils.getDateTimePattern()) + '</td><td>' + value.RevisedBy + '</td><td>' + value.Comment + '</td><td><button data-id="' + value.HistoryID + '" class="btn btn-primary btn-xs wiki-restore">Preview</button></td></tr>');
             });
         }
         else {

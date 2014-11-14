@@ -153,7 +153,7 @@ namespace TSWebServices
                             item.RevisedBy = user.DisplayName;
                         }
                     }
-                    item.RevisedDate = wiki.ModifiedDate.ToString();
+                    item.RevisedDate = wiki.ModifiedDate;
                     item.Comment = (wiki.Comment != null) ? wiki.Comment : "";
 
                     wikiHistory.Add(item);
@@ -343,7 +343,7 @@ namespace TSWebServices
             [DataMember]
             public int? RevisionNumber { get; set; }
             [DataMember]
-            public string RevisedDate { get; set; }
+            public DateTime? RevisedDate { get; set; }
             [DataMember]
             public string RevisedBy { get; set; }
             [DataMember]
