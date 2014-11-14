@@ -388,7 +388,7 @@ function GetWikiHistory(wikiID) {
 
             if (wikiRevisionID !== "") {
                 top.Ts.Services.Wiki.GetWikiRevision(wikiRevisionID, function (revision) {
-                    $("#Wiki-Title").text(revision.ArticleName);
+                    $("#wiki-title-edit").val(revision.ArticleName);
                     $("#Wiki-Edit-Body").html(revision.Body);
                     $("#Wiki-Edit-PublicView").prop('checked', false);
                     $("#Wiki-Edit-PrivateView").prop('checked', false);
@@ -396,7 +396,7 @@ function GetWikiHistory(wikiID) {
                 });
             }
             else {
-                $("#Wiki-Edit-Title").val(_wikiTitle);
+                $("#wiki-title-edi").val(_wikiTitle);
                 $("#Wiki-Edit-Body").html(_wikiBody);
                 $("#Wiki-Edit-PublicView").prop('checked', _wikiPublicView);
                 $("#Wiki-Edit-PrivateView").prop('checked', _wikiPrivateView);
