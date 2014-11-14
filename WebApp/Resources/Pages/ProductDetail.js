@@ -550,6 +550,11 @@ $(document).ready(function () {
       $('#unAssociateAllToggle').hide();
   }
 
+  if (!_isAdmin) {
+      $('#productDelete').hide();
+      $('.version-action-add').hide();
+  }
+
   $('#customerToggle').click(function (e) {
       top.Ts.System.logAction('Product Detail - Toggle Customer Form');
       $('#customerForm').toggle();

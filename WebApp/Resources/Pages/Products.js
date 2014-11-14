@@ -163,6 +163,11 @@
     fetchItems();
   });
 
+  var _isAdmin = top.Ts.System.User.IsSystemAdmin;
+  if (!_isAdmin) {
+      $('.product-new').hide();
+  }
+
   $('.product-new').click(function (e) {
     e.preventDefault();
     top.Ts.MainPage.newProduct();

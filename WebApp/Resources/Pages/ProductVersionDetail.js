@@ -574,6 +574,10 @@ $(document).ready(function () {
       $('#unAssociateAllToggle').hide();
   }
 
+  if (!_isAdmin) {
+      $('#productVersionDelete').hide();
+  }
+
   $('#customerToggle').click(function (e) {
       top.Ts.System.logAction('Product Version Detail - Toggle Customer Form');
       $('#customerForm').toggle();
