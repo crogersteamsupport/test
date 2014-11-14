@@ -607,7 +607,7 @@ function showSearchResults(results) {
         break;
       case 5: //ProductVersions
         iconPath = "/vcr/1_9_0/images/nav/16/products.png";
-        onClickHandler = "top.Ts.MainPage.openProductVersion(" + results.Items[i].ProductID + ", " + results.Items[i].ID + ", true)";
+        onClickHandler = "top.Ts.MainPage.openNewProductVersion(" + results.Items[i].ID + ")";
         subText = '<h2>Status: ' + results.Items[i].Status + ' </h2>' +
                 '<h2>Modified on: ' + results.Items[i].DateModified + '</h2>';
         break;

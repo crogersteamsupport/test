@@ -21,9 +21,9 @@ public partial class Tips_Version : System.Web.UI.Page
       if (version.OrganizationID != TSAuthentication.OrganizationID) EndResponse("Invalid Version");
       
       tipProduct.InnerText = version.ProductName;
-      tipProduct.Attributes.Add("onclick", "top.Ts.MainPage.openProduct(" + version.ProductID.ToString() + "); return false;");
+      tipProduct.Attributes.Add("onclick", "top.Ts.MainPage.openNewProduct(" + version.ProductID.ToString() + "); return false;");
       tipVersion.InnerText = version.VersionNumber;
-      tipVersion.Attributes.Add("onclick", "top.Ts.MainPage.openProduct(" + version.ProductID.ToString() + "," + version.ProductVersionID.ToString() + "); return false;");
+      tipVersion.Attributes.Add("onclick", "top.Ts.MainPage.openNewProductVersion(" + version.ProductVersionID.ToString() + "); return false;");
       tipStatus.InnerText = version.VersionStatus;
       tipReleased.InnerText = version.IsReleased ? "Yes" : "No";
       tipDate.InnerText = version.ReleaseDate == null ? "None" : ((DateTime)version.ReleaseDate).ToString("d");

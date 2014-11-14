@@ -1144,6 +1144,12 @@ $(document).ready(function () {
       _isLoadingInventory = false;
   }
 
+  $('.assetList').on('click', '.assetLink', function (e) {
+      e.preventDefault();
+      top.Ts.System.logAction('Product Version Detail - Open Asset From List');
+      top.Ts.MainPage.openNewAsset(this.id);
+  });
+
   $('.maincontainer').bind('scroll', function () {
       if (_viewingCustomers) {
           if (_isLoadingCustomers == true) return;

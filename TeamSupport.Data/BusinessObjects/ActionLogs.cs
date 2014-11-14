@@ -414,7 +414,7 @@ namespace TeamSupport.Data
 
     public void LoadByProductVersionIDLimit(int productVersionID, int start)
     {
-      int end = start + 49;
+      int end = start + 20;
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = @"

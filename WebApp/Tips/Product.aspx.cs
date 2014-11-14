@@ -21,7 +21,7 @@ public partial class Tips_Product : System.Web.UI.Page
       if (product.OrganizationID != TSAuthentication.OrganizationID) EndResponse("Invalid Product");
 
       tipName.InnerText = product.Name;
-      tipName.Attributes.Add("onclick", "top.Ts.MainPage.openProduct(" + productID.ToString() + "); return false;");
+      tipName.Attributes.Add("onclick", "top.Ts.MainPage.openNewProduct(" + productID.ToString() + "); return false;");
 
       tipDesc.InnerHtml = product.Description;
     }

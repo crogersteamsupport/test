@@ -954,6 +954,12 @@ $(document).ready(function () {
       }
       _isLoadingInventory = false;
   }
+
+    $('.assetList').on('click', '.assetLink', function (e) {
+        e.preventDefault();
+        top.Ts.System.logAction('Product Detail - Open Asset From List');
+        top.Ts.MainPage.openNewAsset(this.id);
+    });
 });
 
 var getUrls = function (input) {

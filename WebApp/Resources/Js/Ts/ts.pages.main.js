@@ -533,8 +533,11 @@ Ts.Pages.Main.prototype = {
 
         var productID = Ts.Utils.getQueryValue('productid');
         var versionID = Ts.Utils.getQueryValue('versionid');
-        if (productID || versionID) {
-          self.openProduct(productID, versionID);
+        if (versionID) {
+          self.openNewProductVersion(versionID);
+        }
+        else if (productID) {
+            self.openNewProduct(productID);
         }
 
         var organizationProductID = Ts.Utils.getQueryValue('organizationproductid');

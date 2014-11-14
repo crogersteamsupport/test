@@ -1011,7 +1011,7 @@ function updateattachments (message) {
         if (tixprod.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixprod.length; i++) {
-                tixprodstr = tixprodstr + ' ' + tixprod[i].CreatorName + ' added product <a href="#" target="_blank" onclick="top.Ts.MainPage.openProduct(' + tixprod[i].AttachmentID + '); return false;">' + tixprod[i].ProductName + '</a><br/>';
+                tixprodstr = tixprodstr + ' ' + tixprod[i].CreatorName + ' added product <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewProduct(' + tixprod[i].AttachmentID + '); return false;">' + tixprod[i].ProductName + '</a><br/>';
             }
         }
 
@@ -1225,7 +1225,7 @@ function createThread(thread) {
         if (tixprod.length > 0) {
             tixHasAtt = true;
             for (var i = 0; i < tixprod.length; i++) {
-                tixprodstr = tixprodstr + ' ' + tixprod[i].CreatorName + ' added product <a href="#" target="_blank" onclick="top.Ts.MainPage.openProduct(' + tixprod[i].AttachmentID + '); return false;">' + tixprod[i].ProductName + '</a><br/>';
+                tixprodstr = tixprodstr + ' ' + tixprod[i].CreatorName + ' added product <a href="#" target="_blank" onclick="top.Ts.MainPage.openNewProduct(' + tixprod[i].AttachmentID + '); return false;">' + tixprod[i].ProductName + '</a><br/>';
             }
         }
 
