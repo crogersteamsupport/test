@@ -78,7 +78,7 @@ function BuildWikiView() {
     $("#wiki-internal-link").attr("data-clipboard-text", _wikiInternalLink);
 
 
-    if (_wikiPrivateView) {
+    if (!_wikiPublicView) {
         $("#wiki-external-link").hide();
     }
     else {
