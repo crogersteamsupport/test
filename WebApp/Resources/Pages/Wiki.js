@@ -108,7 +108,7 @@ function BuildWikiView() {
     $('a[href*="JustArticle.aspx"]').click(function (e) {
         e.preventDefault();
         var url = ($(this).attr('href'));
-        var ArticleID = getURLParameter(url, 'ArticleID');s
+        var ArticleID = getURLParameter(url, 'ArticleID');
         top.Ts.MainPage.openWiki(ArticleID, true)
     });
 
