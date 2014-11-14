@@ -41,10 +41,13 @@ $(document).ready(function () {
   if (defaultTab) {
     $('#productTabs a:first').tab('show');
     $('#productTabs a:last').tab('show');
-  }
+    $('#productTabs a:first').hide();
+    $('#productsList').hide();
+}
   else {
     $('#productTabs a:first').tab('show');
-  }
+    $('#productTabs a:last').hide();
+}
 
   initEditor($('#inputDescription'), function (ed) {
     $('#inputDescription').tinymce().focus();
