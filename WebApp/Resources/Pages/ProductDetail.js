@@ -546,13 +546,13 @@ $(document).ready(function () {
   if (!top.Ts.System.User.CanEditCompany && !_isAdmin) 
   {
       $('#customerToggle').hide();
-      $('#associateAllToggle').hide();
-      $('#unAssociateAllToggle').hide();
   }
 
   if (!_isAdmin) {
       $('#productDelete').hide();
       $('.version-action-add').hide();
+      $('#associateAllToggle').hide();
+      $('#unAssociateAllToggle').hide();
   }
 
   $('#customerToggle').click(function (e) {
