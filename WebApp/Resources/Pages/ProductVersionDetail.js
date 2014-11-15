@@ -1351,7 +1351,7 @@ var appendCustomEditCombo = function (field, element) {
           }
           else {
             top.Ts.System.logAction('Product Version Detail - Save Custom Edit Change');
-            top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productID, value, function (result) {
+            top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productVersionID, value, function (result) {
               parent.closest('.form-group').data('field', result);
               parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
               $('#productEdit').removeClass("disabled");
@@ -1429,7 +1429,7 @@ var appendCustomEditNumber = function (field, element) {
               }
               else {
                 top.Ts.System.logAction('Product Version Detail - Save Custom Number Edit');
-                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productID, value, function (result) {
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productVersionID, value, function (result) {
                   parent.closest('.form-group').data('field', result);
                   parent.text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
                   $('#productEdit').removeClass("disabled");
@@ -1477,7 +1477,7 @@ var appendCustomEditBool = function (field, element) {
         top.Ts.System.logAction('Product Version Detail - Edit Custom Boolean Value');
         var parent = $(this);
         var value = $(this).text() === 'No' || $(this).text() === 'False' ? true : false;
-        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productID, value, function (result) {
+        top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productVersionID, value, function (result) {
           parent.closest('.form-group').data('field', result);
           parent.text((result.Value === null || $.trim(result.Value) === '' ? 'False' : result.Value));
         }, function () {
