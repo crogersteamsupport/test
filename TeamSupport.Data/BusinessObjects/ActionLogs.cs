@@ -423,11 +423,13 @@ namespace TeamSupport.Data
         FROM
         (
           SELECT
+            TOP " + end.ToString() + @"
             *, 
             ROW_NUMBER() OVER (ORDER BY DateModified Desc) AS rownum  
           FROM
           (
             SELECT
+              TOP " + end.ToString() + @"
               al.*, 
               u.FirstName + ' ' + u.LastName AS CreatorName
             FROM
@@ -441,6 +443,7 @@ namespace TeamSupport.Data
             UNION 
                                 
             SELECT 
+              TOP " + end.ToString() + @"
               al.*, 
               u.FirstName + ' ' + u.LastName AS CreatorName
             FROM 
@@ -454,6 +457,7 @@ namespace TeamSupport.Data
             UNION 
                                 
             SELECT 
+              TOP " + end.ToString() + @"
               al.*, 
               u.FirstName + ' ' + u.LastName AS CreatorName
             FROM

@@ -55,6 +55,9 @@ $(document).ready(function () {
 
   LoadProducts();
   LoadStatuses();
+
+  $('#inputExpectedRelease').datetimepicker({ pickTime: false });
+
   LoadCustomControls();
   LoadVersionCustomControls();
 
@@ -90,6 +93,7 @@ $(document).ready(function () {
             $(this).mask(maskValue);
           }
         });
+        $('.datetimepicker').datetimepicker({});
       }
     });
   }
@@ -107,6 +111,7 @@ $(document).ready(function () {
             $(this).mask(maskValue);
           }
         });
+        $('.datetimepicker').datetimepicker({});
       }
     });
   }

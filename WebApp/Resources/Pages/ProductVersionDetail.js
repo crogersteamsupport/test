@@ -464,7 +464,6 @@ $(document).ready(function () {
 
       var select = $('<select>').addClass('form-control').attr('id', 'ddlStatus').appendTo(container1);
       top.Ts.Services.Products.LoadVersionStatuses(function (statuses) {
-          $('<option>').attr('value', '-1').text('Unassigned').appendTo(select);
           for (var i = 0; i < statuses.length; i++) {
               var opt = $('<option>').attr('value', statuses[i].ProductVersionStatusID).text(statuses[i].Name).data('o', statuses[i]);
               if (header.data('field') == statuses[i].ProductVersionStatusID)
@@ -1544,7 +1543,7 @@ var appendCustomEdit = function (field, element) {
                   }
                   else {
                     top.Ts.System.logAction('Product Version Detail - Save Custom Textbox Edit');
-                    top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productID, value, function (result) {
+                    top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productVersionID, value, function (result) {
                       parent.closest('.form-group').data('field', result);
                       parent.html((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : getUrls(result.Value)));
                       $('#productEdit').removeClass("disabled");
@@ -1627,7 +1626,7 @@ var appendCustomEditDate = function (field, element) {
               }
               else {
                 top.Ts.System.logAction('Product Version Detail - Save Custom Date Change');
-                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productID, value, function (result) {
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productVersionID, value, function (result) {
                   parent.closest('.form-group').data('field', result);
                   var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                   parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDatePattern())))
@@ -1712,7 +1711,7 @@ var appendCustomEditDateTime = function (field, element) {
               }
               else {
                 top.Ts.System.logAction('Product Version Detail - Save Custom DateTime');
-                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productID, value, function (result) {
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productVersionID, value, function (result) {
                   parent.closest('.form-group').data('field', result);
                   var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                   parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
@@ -1796,7 +1795,7 @@ var appendCustomEditTime = function (field, element) {
               }
               else {
                 top.Ts.System.logAction('Product Version Detail - Save Custom Time');
-                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productID, value, function (result) {
+                top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _productVersionID, value, function (result) {
                   parent.closest('.form-group').data('field', result);
                   var date = result.Value === null ? null : top.Ts.Utils.getMsDate(result.Value);
                   parent.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getTimePattern())))
