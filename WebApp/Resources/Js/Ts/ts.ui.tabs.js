@@ -101,6 +101,15 @@ Ts.Ui.Tabs.prototype = {
       }
       self._history.push(tabType + '-' + id);
       self._callEvent('afterSelect', tab);
+      if (tabType == 'product_version') {
+          top.privateServices.SetUserSetting('SelectedProductVersionID', id);
+          top.Ts.Services.Products.GetVersion(id, function (productVersion) {
+              top.privateServices.SetUserSetting('SelectedProductID', productVersion.ProductID);
+          });
+      }
+      else if (tabType == 'product') {
+          top.privateServices.SetUserSetting('SelectedProductID', id);
+      }
     });
     self._callEvent('afterAdd');
 
@@ -183,6 +192,15 @@ Ts.Ui.Tabs.prototype = {
       }
       self._history.push(tabType + '-' + id);
       self._callEvent('afterSelect', tab);
+      if (tabType == 'product_version') {
+          top.privateServices.SetUserSetting('SelectedProductVersionID', id);
+          top.Ts.Services.Products.GetVersion(id, function (productVersion) {
+              top.privateServices.SetUserSetting('SelectedProductID', productVersion.ProductID);
+          });
+      }
+      else if (tabType == 'product') {
+          top.privateServices.SetUserSetting('SelectedProductID', id);
+      }
     });
     self._callEvent('afterAdd');
 
