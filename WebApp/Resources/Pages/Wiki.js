@@ -615,7 +615,7 @@ var initEditor = function (element, init) {
                                 }
                                 //var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
                                 //var html = '<a href="#" onclick="top.Ts.MainPage.openWiki(' + wiki.ArticleID + ', true)" class="ts-link">' + wiki.ArticleName + '</a>'
-                                var html = '<a href="./JustArticle.aspx?Organizationid=' + wiki.OrganizationID + '&amp;ArticleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
+                                var html = '<a href="' + top.Ts.System.AppDomain + '/wiki/JustArticle.aspx?Organizationid=' + wiki.OrganizationID + '&amp;ArticleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
                                 ed.focus();
                                 ed.selection.moveToBookmark(bookmark);
                                 ed.selection.setContent(html);
