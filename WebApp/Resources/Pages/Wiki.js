@@ -265,13 +265,14 @@ function BuildWikiEditEvents() {
         var portal = $("#Wiki-Edit-PortalView").is(':checked');
         var parent = $('#Wiki-Edit-Parent').val();
         var wikiID;
+
         if (_isCreatingNewWiki) {
             wikiID = 0;
         }
         else {
             wikiID = _wikiID;
         }
-        if (_wikiID.toString() !== parent) {
+        if (wikiID.toString() !== parent) {
             SaveWiki(wikiID, parent, body, title, public, private, portal, comment);
             $('#Wiki-Comment-Modal').modal('hide')
             $("#wiki-view-toolbar").show();
@@ -409,6 +410,7 @@ function GetWikiHistory(wikiID) {
 
 
 function SaveWiki(wikiID, parent, wikiBody, wikiTitle, publicView, privateView, portalView, comment) {
+debugger
     top.Ts.Services.Wiki.SaveWiki(wikiID, parent, wikiBody, wikiTitle, publicView, privateView, portalView, comment, function (wiki) {
         MapWikiProperties(wiki);
         BuildWikiPage();
