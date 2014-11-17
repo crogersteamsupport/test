@@ -794,7 +794,7 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         //3. End of trial: 1496361
         //Eric's ID 159931
         TSHighrise.CreateTaskFrame("", "today", "1496359", "Party", hrContactID.ToString(), salesGuyID, true, true);
-        TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Party", hrContactID.ToString(), "159931", true, false);
+        TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Company", hrCompanyID.ToString(), "159931", true, false);
       }
       catch (Exception ex)
       {
