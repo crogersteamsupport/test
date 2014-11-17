@@ -60,14 +60,14 @@ namespace TSWebServices
     public int[] GetIDByPhone(string phone)
     {
       int[] result = new int[2] { -1, -1 };
-      phone = phone.Replace(")", "").Replace("(", "").Replace("-", "").Replace(".", "").Replace(" ", "").ToLower();
+      phone = phone.Replace(")", "").Replace("(", "").Replace("-", "").Replace(".", "").Replace(" ", "").Replace("+1","").Replace("+","").ToLower();
 
       PhoneNumbers phoneNumbers = new PhoneNumbers(TSAuthentication.GetLoginUser());
       phoneNumbers.LoadByOrganizationID(TSAuthentication.OrganizationID);
 
       foreach (PhoneNumber phoneNumber in phoneNumbers)
       {
-        string number = phoneNumber.Number.Replace(")", "").Replace("(", "").Replace("-", "").Replace(".", "").Replace(" ", "").ToLower();
+        string number = phoneNumber.Number.Replace(")", "").Replace("(", "").Replace("-", "").Replace(".", "").Replace(" ", "").Replace("%2B1", "").Replace("%2B", "").ToLower();
         if (number == phone)
         {
           if (phoneNumber.RefType == ReferenceType.Organizations)

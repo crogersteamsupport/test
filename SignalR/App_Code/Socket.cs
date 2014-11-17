@@ -27,7 +27,7 @@ public class Socket : Hub
     {
     }
 
-    public override Task OnDisconnected()
+    public override Task OnDisconnected(bool stopCalled)
     {
       try
       {
@@ -48,7 +48,7 @@ public class Socket : Hub
         }
         Clients.All.serverleave(Context.ConnectionId, DateTime.Now.ToString());
 
-        return base.OnDisconnected();
+        return base.OnDisconnected(stopCalled);
       }
       catch (Exception ex)
       {
@@ -265,7 +265,7 @@ public class TicketSocket : Hub{
     {
     }
 
-    public override Task OnDisconnected()
+    public override Task OnDisconnected(bool stopCalled)
     {
         try
         {
@@ -280,7 +280,7 @@ public class TicketSocket : Hub{
             }
             Clients.All.serverleave(Context.ConnectionId, DateTime.Now.ToString());
 
-            return base.OnDisconnected();
+            return base.OnDisconnected(stopCalled);
         }
         catch (Exception ex)
         {
