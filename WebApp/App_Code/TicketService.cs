@@ -1214,8 +1214,14 @@ namespace TSWebServices
         action.CreatorID = TSAuthentication.UserID;
         if (!string.IsNullOrWhiteSpace(user.Signature) && proxy.IsVisibleOnPortal)
         {
-          if (!proxy.Description.Contains(user.Signature))
-            action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+            if (!proxy.Description.Contains(user.Signature))
+            {
+                action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+            }
+            else
+            {
+                action.Description = proxy.Description;
+            }
         }
         else
         {
@@ -1229,7 +1235,17 @@ namespace TSWebServices
               if (!string.IsNullOrWhiteSpace(user.Signature))
               {
                   if (!action.Description.Contains(user.Signature.Replace(" />", ">")))
+                  {
                       action.Description = proxy.Description + "<br/><br/>" + user.Signature;
+                  }
+                  else
+                  {
+                      action.Description = proxy.Description;
+                  }
+              }
+              else
+              {
+                  action.Description = proxy.Description;
               }
           }
           else
