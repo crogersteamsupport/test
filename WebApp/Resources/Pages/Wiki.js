@@ -365,7 +365,7 @@ function GetWiki(wikiID) {
             BuildWikiView();
         }
         else {
-            alert('You do not have access to this wiki. Please select a wiki from the menu below. ')
+            alert('You do not have access to this wiki or the wiki no longer exists.  Check your default wiki settings to ensure you are not using a old deleted wiki or select a wiki from the menu below. ')
         }
     });
 };
@@ -410,7 +410,6 @@ function GetWikiHistory(wikiID) {
 
 
 function SaveWiki(wikiID, parent, wikiBody, wikiTitle, publicView, privateView, portalView, comment) {
-debugger
     top.Ts.Services.Wiki.SaveWiki(wikiID, parent, wikiBody, wikiTitle, publicView, privateView, portalView, comment, function (wiki) {
         MapWikiProperties(wiki);
         BuildWikiPage();
