@@ -212,28 +212,6 @@ namespace TeamSupport.Data
       }
     }
 
-    public int GetProductVersionTicketCount(int productVersionID, int closed)
-    {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"
-        SELECT 
-          COUNT(*) 
-        FROM 
-          TicketsView tv 
-        WHERE 
-          tv.IsClosed = @closed
-          AND (tv.ReportedVersionID = @ProductVersionID OR tv.SolvedVersionID = @ProductVersionID)
-        ";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@ProductVersionID", productVersionID);
-        command.Parameters.AddWithValue("@closed", closed);
-        object o = ExecuteScalar(command);
-        if (o == null || o == DBNull.Value) return 0;
-        return (int)o;
-      }
-    }
-
     public void LoadByOrganizationID(int organizationID)
     {
       using (SqlCommand command = new SqlCommand())
