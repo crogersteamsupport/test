@@ -3,14 +3,14 @@ $(document).ready(function () {
     $('body').layout({
         applyDemoStyles: true
     });
-    /*
+    
     if (!top.Ts.System.User.IsSystemAdmin) {
-        $('#infoTab').hide();
-        $('#openTab').hide();
-        $('#closedTab').hide();
-    }*/
+        $('#groupDelete').remove();
+        //$('#openTab').hide();
+        //$('#closedTab').hide();
+    }
 
-    if (top.Ts.Utils.getQueryValue("groupID", window) != null) {
+    if (top.Ts.Utils.getQueryValue("groupID", window) != null) {    
         groupID = top.Ts.Utils.getQueryValue("groupID", window);
         top.Ts.Services.Organizations.GetGroupInfo(groupID, function (group) {
             groupID = group.GroupID;
