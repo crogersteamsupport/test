@@ -66,7 +66,7 @@
       var container = $('.searchresults');
       for (var i = 0; i < items.length; i++) {
         var parsedItem = JSON.parse(items[i]);
-//        here is where we need to find out how to identify a product version from a product by looking at the customer page
+        //        here is where we need to find out how to identify a product version from a product by looking at the customer page
         if ((searchProducts && !parsedItem.productVersionID) || (searchProductVersions && parsedItem.productVersionID)) {
           appendItem(container, parsedItem);
         }
@@ -86,11 +86,14 @@
 
     var div = $('<div>')
           .addClass('productinfo');
-    //          .append(
-    //            $('<div>')
-    //              .addClass('pull-right')
-    //              .append($('<p>').text(item.openTicketCount + ' open tickets'))
-    //          );
+
+    if (typeof item.openTicketCount != 'undefined') {
+      div.append(
+        $('<div>')
+          .addClass('pull-right')
+          .append($('<p>').text(item.openTicketCount + ' open tickets'))
+      );
+    }
 
     $('<td>').append(div).appendTo(el);
 
@@ -129,6 +132,39 @@
           .text(item.productName)
           .appendTo(firstRow);
 
+    var secondRow = $('<li>').appendTo(list);
+
+    $('<a>')
+          .attr('href', '#')
+          .addClass('productversionlink')
+          .data('productversionid', item.productVersionID)
+          .text(item.versionStatus)
+          .appendTo(secondRow);
+
+    var thirdRow = $('<li>').appendTo(list);
+
+    var releasedLabel = 'Not released';
+    if (item.isReleased) {
+      releasedLabel = 'Released';
+    }
+
+    $('<a>')
+          .attr('href', '#')
+          .addClass('productversionlink')
+          .data('productversionid', item.productVersionID)
+          .text(releasedLabel)
+          .appendTo(thirdRow);
+
+    if (item.isReleased) {
+      var fourthRow = $('<li>').appendTo(list);
+
+      $('<a>')
+          .attr('href', '#')
+          .addClass('productversionlink')
+          .data('productversionid', item.productVersionID)
+          .text(top.Ts.Utils.getMsDate(item.releaseDate).localeFormat(top.Ts.Utils.getDatePattern()))
+          .appendTo(fourthRow);
+    }
   }
 
   function appendProduct(el, item) {
@@ -165,7 +201,7 @@
 
   var _isAdmin = top.Ts.System.User.IsSystemAdmin;
   if (!_isAdmin) {
-      $('.product-new').hide();
+    $('.product-new').hide();
   }
 
   $('.product-new').click(function (e) {

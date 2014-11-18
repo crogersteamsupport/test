@@ -371,5 +371,6 @@ namespace TeamSupport.Data
     public string description { get; set; }
     public DateTime? dateCreated { get; set; }
     public DateTime? dateModified { get; set; }
+    public int openTicketCount { get; set; }
   }
 }

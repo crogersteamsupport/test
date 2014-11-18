@@ -45,6 +45,8 @@ namespace TeamSupport.ServiceLibrary
         DocDisplayName = product.Name;
 
         ProductSearch productItem = new ProductSearch(product);
+        Tickets tickets = new Tickets(_loginUser);
+        productItem.openTicketCount = tickets.GetProductTicketCount(product.ProductID, 0);
         AddDocField("**JSON", JsonConvert.SerializeObject(productItem));
 
         CustomValues customValues = new CustomValues(_loginUser);

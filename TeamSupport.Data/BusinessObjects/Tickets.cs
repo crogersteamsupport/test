@@ -2219,6 +2219,30 @@ WHERE
             return (int)o;
         }
     }
+
+    public int GetProductTicketCount(int productID, int closed)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+        SELECT 
+          COUNT(*) 
+        FROM 
+          Tickets t
+          JOIN TicketStatuses ts
+            ON t.TicketStatusID = ts.TicketStatusID
+        WHERE 
+          ts.IsClosed = @closed
+          AND t.ProductID = @ProductID
+        ";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ProductID", productID);
+        command.Parameters.AddWithValue("@closed", closed);
+        object o = ExecuteScalar(command);
+        if (o == null || o == DBNull.Value) return 0;
+        return (int)o;
+      }
+    }
   }
 }
 

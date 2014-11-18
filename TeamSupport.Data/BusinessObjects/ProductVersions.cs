@@ -296,5 +296,6 @@ namespace TeamSupport.Data
     public string versionStatus { get; set; }
     public string productName { get; set; }
     public int organizationID { get; set; }
+    public int openTicketCount { get; set; }
   }
 }
