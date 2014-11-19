@@ -82,7 +82,7 @@ $(document).ready(function () {
 
   function LoadCustomControls() {
     top.Ts.Services.Assets.LoadCustomControls(top.Ts.ReferenceTypes.Products, function (html) {
-      if (html.length < 1) {
+      if (html.length < 31) {
         $('#productCustomInfoBox').hide();
       }
       else {
@@ -100,7 +100,7 @@ $(document).ready(function () {
 
   function LoadVersionCustomControls() {
     top.Ts.Services.Assets.LoadCustomControls(top.Ts.ReferenceTypes.ProductVersions, function (html) {
-      if (html.length < 1) {
+      if (html.length < 31) {
         $('#versionCustomInfoBox').hide();
       }
       else {
