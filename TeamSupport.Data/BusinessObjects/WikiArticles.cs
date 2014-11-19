@@ -19,7 +19,7 @@ namespace TeamSupport.Data
       {
         command.CommandText = "SELECT * FROM WikiArticles WHERE OrganizationID = @OrganizationID ORDER BY ArticleName";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@OrganizationID", LoginUser.OrganizationID);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command);
       }
     }
