@@ -1042,6 +1042,7 @@ Ts.Pages.Main.prototype = {
           break;
         case Ts.Ui.Tabs.Tab.Type.Product:
           var productID = tab.getId();
+          top.privateServices.SetUserSetting('SelectedProductID', productID);
           div = $('.main-tab-content .main-Product-' + productID);
           if (div.length < 1) {
             var query = '';
@@ -1058,7 +1059,6 @@ Ts.Pages.Main.prototype = {
                     .attr('src', 'vcr/1_9_0/Pages/ProductDetail.html' + query);
           }
           else {
-              top.privateServices.SetUserSetting('SelectedProductID', productID);
               div.show();
           }
           $('.main-info-content').load('vcr/1_9_0/PaneInfo/Products.html');
@@ -1087,6 +1087,10 @@ Ts.Pages.Main.prototype = {
           break;
         case Ts.Ui.Tabs.Tab.Type.ProductVersion:
           var productVersionID = tab.getId();
+          top.privateServices.SetUserSetting('SelectedProductVersionID', productVersionID);
+          top.Ts.Services.Products.GetVersion(productVersionID, function (productVersion) {
+            top.privateServices.SetUserSetting('SelectedProductID', productVersion.ProductID);
+          });
           div = $('.main-tab-content .main-Product-Version-' + productVersionID);
           if (div.length < 1) {
             var query = '';
@@ -1103,7 +1107,6 @@ Ts.Pages.Main.prototype = {
                     .attr('src', 'vcr/1_9_0/Pages/ProductVersionDetail.html' + query);
           }
           else {
-              top.privateServices.SetUserSetting('SelectedProductVersionID', productVersionID);
               div.show();
           }
           $('.main-info-content').load('vcr/1_9_0/PaneInfo/Products.html');

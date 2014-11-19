@@ -1709,18 +1709,17 @@ $(document).ready(function () {
           if (result > -1) $('.newticket-user').combobox('setValue', result);
         });
         break;
-        // Moved to do at all times.
-      //case 'mniproducts':
-      //  top.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
-      //    if (productID > -1) {
-      //      $('.newticket-product').combobox('setValue', productID);
-      //      loadVersions();
-      //      top.Ts.Services.Settings.ReadUserSetting('SelectedVersionID', -1, function (versionID) {
-      //        if (versionID > -1) $('.newticket-reported').combobox('setValue', versionID);
-      //      });
-      //    }
-      //  });
-      //  break;
+      case 'mniproducts':
+        top.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
+          if (productID > -1) {
+            $('.newticket-product').combobox('setValue', productID);
+            loadVersions();
+            top.Ts.Services.Settings.ReadUserSetting('SelectedProductVersionID', -1, function (versionID) {
+              if (versionID > -1) $('.newticket-reported').combobox('setValue', versionID);
+            });
+          }
+        });
+        break;
       case 'mnicustomers':
         top.Ts.Services.Settings.ReadUserSetting('SelectedOrganizationID', -1, function (organizationID) {
           if (organizationID > -1) {
@@ -1864,17 +1863,7 @@ $(document).ready(function () {
         appendCustomer(result);
       });
     }
-
-    top.Ts.Services.Settings.ReadUserSetting('SelectedProductID', -1, function (productID) {
-        if (productID > -1) {
-            $('.newticket-product').combobox('setValue', productID);
-            loadVersions();
-            top.Ts.Services.Settings.ReadUserSetting('SelectedVersionID', -1, function (versionID) {
-                if (versionID > -1) $('.newticket-reported').combobox('setValue', versionID);
-            });
-        }
-    });
-}
+  }
 
 
   $('.file-upload').fileupload({
