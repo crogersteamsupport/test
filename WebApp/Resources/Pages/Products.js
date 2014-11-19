@@ -200,8 +200,8 @@
   });
 
   var _isAdmin = top.Ts.System.User.IsSystemAdmin;
-  if (!_isAdmin) {
-    $('.product-new').hide();
+  if (!_isAdmin && !top.Ts.System.User.CanCreateProducts) {
+    $('.product-new').remove();
   }
 
   $('.product-new').click(function (e) {

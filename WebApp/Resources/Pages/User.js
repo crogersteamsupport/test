@@ -110,7 +110,10 @@ UserPage = function () {
     $('#userCanEditContacts').html((user.CanEditContact == true ? 'Yes' : 'No'));
     $('#userCanCreateAssets').html((user.CanCreateAsset == true ? 'Yes' : 'No'));
     $('#userCanEditAssets').html((user.CanEditAsset == true ? 'Yes' : 'No'));
-
+    $('#userCanCreateProducts').html((user.CanCreateProducts == true ? 'Yes' : 'No'));
+    $('#userCanEditProducts').html((user.CanEditProducts == true ? 'Yes' : 'No'));
+    $('#userCanCreateVersions').html((user.CanCreateVersions == true ? 'Yes' : 'No'));
+    $('#userCanEditVersions').html((user.CanEditVersions == true ? 'Yes' : 'No'));
     $('#userKBVisibility').html((user.ChangeKbVisibility == true ? 'Yes' : 'No'));
     $('#userTicketRights').html(userRightsToString(user.TicketRights)).data('o', user.TicketRights);
     $('#userRightsAllTicketCustomers').html((user.AllowAnyTicketCustomer == true ? 'Yes' : 'No'));
@@ -259,7 +262,14 @@ UserPage = function () {
       $('#userCanEditAssets').addClass('disabledlink');
       $('#userCanCreateAssets').removeClass('ui-state-default ts-link');
       $('#userCanCreateAssets').addClass('disabledlink');
-
+      $('#userCanCreatProducts').removeClass('ui-state-default ts-link');
+      $('#userCanCreatProducts').addClass('disabledlink');
+      $('#userCanEditProducts').removeClass('ui-state-default ts-link');
+      $('#userCanEditProducts').addClass('disabledlink');
+      $('#userCanCreateVersiosn').removeClass('ui-state-default ts-link');
+      $('#userCanCreateVersiosn').addClass('disabledlink');
+      $('#userCanEditVersions').removeClass('ui-state-default ts-link');
+      $('#userCanEditVersions').addClass('disabledlink');
       $('#userKBVisibility').removeClass('ui-state-default ts-link');
       $('#userKBVisibility').addClass('disabledlink');
       $('#userRightsAllTicketCustomers').removeClass('ui-state-default ts-link').addClass('disabledlink');
@@ -958,6 +968,82 @@ UserPage = function () {
           }
       });
 
+
+    $('#userCanCreateProducts')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCanCreateProducts(_user.UserID, (item.text() !== 'Yes'),
+                      function (result) {
+                          top.Ts.System.logAction('User Info - User Change Can Create Products Changed');
+                          item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                      },
+                      function (error) {
+                          alert('There was an error saving the user change to can create products.');
+                          item.next().hide();
+                      });
+          }
+      });
+
+    $('#userCanEditProducts')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCanEditProducts(_user.UserID, (item.text() !== 'Yes'),
+                      function (result) {
+                          top.Ts.System.logAction('User Info - User Change Can Edit Products Changed');
+                          item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                      },
+                      function (error) {
+                          alert('There was an error saving the user change to can edit products.');
+                          item.next().hide();
+                      });
+          }
+      });
+
+    $('#userCanCreateVersions')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCanCreateVersions(_user.UserID, (item.text() !== 'Yes'),
+                      function (result) {
+                          top.Ts.System.logAction('User Info - User Change Can Create Versions Changed');
+                          item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                      },
+                      function (error) {
+                          alert('There was an error saving the user change to can create versions.');
+                          item.next().hide();
+                      });
+          }
+      });
+
+    $('#userCanEditVersions')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          if (isSysAdmin) {
+              item.next().show();
+              top.Ts.Services.Users.SetChangeCanEditVersions(_user.UserID, (item.text() !== 'Yes'),
+                      function (result) {
+                          top.Ts.System.logAction('User Info - User Change Can Edit Versions Changed');
+                          item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+                      },
+                      function (error) {
+                          alert('There was an error saving the user change to can edit versions.');
+                          item.next().hide();
+                      });
+          }
+      });
 
     $('#userKBVisibility')
       .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')

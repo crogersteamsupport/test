@@ -571,6 +571,10 @@ $(document).ready(function () {
       $('#customerToggle').hide();
   }
 
+  if (!top.Ts.System.User.CanEditVersions && !_isAdmin) {
+      $('#productVersionEdit').remove();
+  }
+
   if (!_isAdmin) {
       $('#productVersionDelete').hide();
       $('#associateAllToggle').hide();

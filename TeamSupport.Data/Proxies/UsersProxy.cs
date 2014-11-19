@@ -89,6 +89,10 @@ namespace TeamSupport.Data
     [DataMember] public bool PortalLimitOrgTickets { get; set; }
     [DataMember] public bool FilterInactive { get; set; }
     [DataMember] public bool DisableExporting { get; set; }
+    [DataMember] public bool CanCreateProducts { get; set; }
+    [DataMember] public bool CanCreateVersions { get; set; }
+    [DataMember] public bool CanEditProducts { get; set; }
+    [DataMember] public bool CanEditVersions { get; set; }
           
   }
   
@@ -185,7 +189,10 @@ namespace TeamSupport.Data
       result.CanEditContact = this.CanEditContact;
       result.CanCreateAsset = this.CanCreateAsset;
       result.CanEditAsset = this.CanEditAsset;
-
+      result.CanCreateProducts = this.CanCreateProducts;
+      result.CanEditProducts = this.CanEditProducts;
+      result.CanCreateVersions = this.CanCreateVersions;
+      result.CanEditVersions = this.CanEditVersions;
       Attachments att = new Attachments(BaseCollection.LoginUser);
       att.LoadByReference(ReferenceType.UserPhoto, this.UserID);
 

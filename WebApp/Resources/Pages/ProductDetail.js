@@ -548,6 +548,15 @@ $(document).ready(function () {
       $('#customerToggle').hide();
   }
 
+  if (!top.Ts.System.User.CanEditProducts && !_isAdmin) {
+      $('#productEdit').remove();
+  }
+
+  if (!top.Ts.System.User.CanCreateVersions && !_isAdmin) {
+      $('#addProductVersion').remove();
+  }
+  
+
   if (!_isAdmin) {
       $('#productDelete').hide();
       $('.version-action-add').hide();
