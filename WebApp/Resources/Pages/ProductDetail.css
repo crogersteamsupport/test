@@ -54,3 +54,7 @@
 .fa-sort-desc, .fa-sort-asc {
     margin-left: 3px;
 }
+
+.expandCustomersContainer {
+    width: auto;
+}

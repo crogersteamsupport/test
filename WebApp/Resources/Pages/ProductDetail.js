@@ -604,6 +604,9 @@ $(document).ready(function () {
                   $('#tblCustomers th:last').after('<th>' + header + '</th>');
               }
               _headersLoaded = true;
+              if (headers.length > 5) {
+                  $('#customersContainer').addClass('expandCustomersContainer');
+              }
           });
           }
 
