@@ -457,6 +457,7 @@ var initEditor = function (element, init) {
                 moxiemanager_rootpath: "/" + top.Ts.System.Organization.OrganizationID + "/images/",
                 extensions: 'gif,jpg,jpeg,png'
             },
+            
             setup: function (ed) {
                 ed.on('init', function (e) {
                     top.Ts.System.refreshUser(function () {
@@ -481,6 +482,7 @@ var initEditor = function (element, init) {
                         if (_isCreatingNewWiki) {
                             $("#wiki-title-edit").focus();
                         }
+
                     });
                 });
 

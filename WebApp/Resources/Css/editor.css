@@ -195,4 +195,4 @@ li.ts-menutree-item  div { border:1px solid transparent; }
 .loading-indicator label {padding-left: 20px;	background: url('../images/ajax-loader-small.gif') no-repeat center left; }
 
 /*Wiki Editor*/
-.wiki-desc-editor{ height:430px !important; overflow-y:auto !important; }
+.wiki-desc-editor{ min-height:430px !important; overflow-y:auto !important; }
