@@ -440,6 +440,7 @@ namespace TeamSupport.Data
               al.RefType = 14
               AND al.RefID = @ProductVersionID
                                 
+            /* Query timing out. 
             UNION 
                                 
             SELECT 
@@ -468,6 +469,7 @@ namespace TeamSupport.Data
             WHERE
               al.RefType = 0
               AND (t.ReportedVersionID = @ProductVersionID OR t.SolvedVersionID = @ProductVersionID)                               
+            */                               
           ) as temp
         ) as results
         WHERE
