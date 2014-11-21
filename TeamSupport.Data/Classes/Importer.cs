@@ -1146,7 +1146,8 @@ namespace TeamSupport.Data
         int orgID;
         if (!idList.TryGetValue(row["CustomerID"].ToString().Trim(), out orgID))
         {
-          orgID = unknown.OrganizationID;        
+          orgID = unknown.OrganizationID;
+          _log.AppendError(row, "Company not found: " + row["CustomerID"].ToString().Trim());
         }
 
        /*
@@ -1182,7 +1183,7 @@ namespace TeamSupport.Data
         user.ImportID = "[contact]" + row["ContactID"].ToString().Trim();
         user.InOffice = false;
         user.InOfficeComment = "";
-        user.IsActive = true;
+        user.IsActive = GetDBBool(row, "IsActive", true);
         user.IsFinanceAdmin = false;
         user.IsPasswordExpired = true;
         user.IsPortalUser = false;
