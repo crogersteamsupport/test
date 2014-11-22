@@ -665,9 +665,10 @@ AND ts.IsClosed = 0";
 
     public Ticket FindByImportID(string importID)
     {
+      importID = importID.Trim().ToLower();
       foreach (Ticket ticket in this)
       {
-        if (ticket.ImportID == importID)
+        if (ticket.ImportID.Trim().ToLower() == importID)
         {
           return ticket;
         }
