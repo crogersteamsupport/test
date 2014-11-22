@@ -60,6 +60,7 @@ namespace TeamSupport.ServiceLibrary
       //payload={"channel": "#customer-responded", "username": "webhookbot", "text": "This is posted to #customer-responded and comes from a bot named webhookbot.", "icon_emoji": ":ghost:"}
       try
       {
+        Logs.WriteEvent("Processing Ticket " + ticket.TicketNumber);
       
         var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://hooks.slack.com/services/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");
         httpWebRequest.ContentType = "application/x-www-form-urlencoded";
