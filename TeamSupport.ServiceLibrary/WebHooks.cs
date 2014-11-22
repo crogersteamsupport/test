@@ -30,6 +30,7 @@ namespace TeamSupport.ServiceLibrary
       if (lastStatusHistoryID < 1)
       { 
         lastStatusHistoryID = (int) SqlExecutor.ExecuteScalar(LoginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory");
+        Settings.WriteInt("LastStatusHistoryID", lastStatusHistoryID);
       }
 
       try
