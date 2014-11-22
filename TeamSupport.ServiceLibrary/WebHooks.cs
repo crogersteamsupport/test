@@ -15,6 +15,8 @@ using System.Net.Mime;
 using System.Threading;
 using System.ComponentModel;
 using Newtonsoft.Json;
+using System.Dynamic;
+using System.Web;
 
 
 namespace TeamSupport.ServiceLibrary
@@ -63,11 +65,6 @@ namespace TeamSupport.ServiceLibrary
       {
         Logs.WriteEvent("Processing Ticket " + ticket.TicketNumber);
 
-        ActionsView actions = new ActionsView(ticket.Collection.LoginUser);
-        actions.LoadLatestByTicket(ticket.TicketID, true);
-
-        string body = actions.IsEmpty ? "" : actions[0].Description;
-        string customer = actions.IsEmpty ? "" : (string.IsNullOrEmpty(actions[0].ModifierName) ? "" : actions[0].ModifierName);
         string user = string.IsNullOrWhiteSpace(ticket.UserName) ? "" : ticket.UserName;
         string customers = string.IsNullOrWhiteSpace(ticket.Customers) ? "" : ticket.Customers;
       
@@ -77,32 +74,33 @@ namespace TeamSupport.ServiceLibrary
 
         using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
         {
-          string message = string.Format("{0} responded to Ticket {1}, severity is {2}", ticket.ModifierName, ticket.TicketNumber.ToString(), ticket.Severity);
+          dynamic payload = new ExpandoObject();
+          string msg = WebUtility.HtmlEncode(string.Format("A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}", ticket.TicketNumber.ToString(), ticket.Name, ticket.Severity, customers, user));
+          payload.channel = "#customer-responded";
+          payload.username = "customer-responded-bot";
+          //payload.text = msg;
 
-          string payload = @"
-{
-  ""channel"": ""#customer-responded"", 
-  ""username"": ""customer-responded-bot"", 
-  ""text"": ""A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}"", 
-   ""attachments"":[
-      {
-         ""fallback"":""A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}"",
-         ""pretext"":""A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}"",
-         ""color"":""#D00000"",
-         ""fields"":[
-            {
-               ""title"":""{5}"",
-               ""value"":""{6}"",
-               ""short"":false
-            }
-         ]
-      }
-   ]
+          List<dynamic> attachments = new List<dynamic>();
+          dynamic attachment = new ExpandoObject();
+          attachment.fallback = msg;
+          attachment.pretext = WebUtility.HtmlEncode(string.Format("A customer responded to Ticket {0} - {1}", ticket.TicketNumber.ToString(), ticket.Name)); ;
+          attachment.color = "#D00000";
 
-}
-";
+          List<dynamic> fields = new List<dynamic>();
+          dynamic field = new ExpandoObject();
+          field.title = "Customers: " + WebUtility.HtmlEncode(customers);
+          field.value = WebUtility.HtmlEncode(string.Format("Assigned to {0}, and the severity is {1}", user, ticket.Severity));
+          field.shortxxx = false;
 
-          streamWriter.Write("payload=" + Uri.EscapeUriString(string.Format(payload, ticket.TicketNumber.ToString(), ticket.Name, ticket.Severity, customers, user, customer, body)));
+          fields.Add(field);
+          attachment.fields = fields.ToArray();
+          attachments.Add(attachment);
+          payload.attachments = attachments.ToArray();
+
+
+          string json = JsonConvert.SerializeObject(payload);
+
+          streamWriter.Write("payload=" + Uri.EscapeUriString(json.Replace("shortxxx", "short")));
           streamWriter.Flush();
           streamWriter.Close();
 
