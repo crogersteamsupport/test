@@ -36,7 +36,7 @@ namespace TeamSupport.ServiceLibrary
       {
         TicketsView tickets = new TicketsView(LoginUser);
         tickets.LoadNewCustomerResponded(LoginUser, lastStatusHistoryID);
-        if (!tickets.IsEmpty) Settings.ReadInt("LastStatusHistoryID", lastStatusHistoryID);
+        if (!tickets.IsEmpty) Settings.WriteInt("LastStatusHistoryID", lastStatusHistoryID);
         foreach (TicketsViewItem ticket in tickets)
         {
           SendToSlack(ticket);
