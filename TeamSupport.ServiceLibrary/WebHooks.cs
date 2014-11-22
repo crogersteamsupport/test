@@ -28,16 +28,16 @@ namespace TeamSupport.ServiceLibrary
       int lastStatusHistoryID = Settings.ReadInt("LastStatusHistoryID", 0);
 
       if (lastStatusHistoryID < 1)
-      { 
-        lastStatusHistoryID = (int) SqlExecutor.ExecuteScalar(LoginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory");
+      {
+        lastStatusHistoryID = (int)SqlExecutor.ExecuteScalar(LoginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory");
         Settings.WriteInt("LastStatusHistoryID", lastStatusHistoryID);
       }
 
       try
       {
         TicketsView tickets = new TicketsView(LoginUser);
+        Settings.WriteInt("LastStatusHistoryID", (int)SqlExecutor.ExecuteScalar(LoginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory"));
         tickets.LoadNewCustomerResponded(LoginUser, lastStatusHistoryID);
-        if (!tickets.IsEmpty) Settings.WriteInt("LastStatusHistoryID", lastStatusHistoryID);
         foreach (TicketsViewItem ticket in tickets)
         {
           SendToSlack(ticket);
