@@ -865,6 +865,7 @@ namespace TeamSupport.Data
     private int? GetUserOrContact(IdList list, string id)
     {
       int value;
+      id = id.ToLower().Trim();
       if (list.TryGetValue(id, out value))
       {
         return value;
@@ -880,6 +881,7 @@ namespace TeamSupport.Data
     private int? GetListID(IdList list, string id)
     {
       int value;
+      id = id.ToLower().Trim();
       if (list.TryGetValue(id, out value))
       {
         return value;
@@ -1142,12 +1144,12 @@ namespace TeamSupport.Data
       foreach (DataRow row in table.Rows)
       {
         _currentRow = row;
-        string customerID = row["CustomerID"].ToString().Trim();
+        string customerID = row["CustomerID"].ToString().Trim().ToLower();
         int orgID;
-        if (!idList.TryGetValue(row["CustomerID"].ToString().Trim(), out orgID))
+        if (!idList.TryGetValue(customerID, out orgID))
         {
           orgID = unknown.OrganizationID;
-          _log.AppendError(row, "Company not found: " + row["CustomerID"].ToString().Trim());
+          _log.AppendError(row, "Company not found: " + customerID);
         }
 
        /*
@@ -1346,7 +1348,7 @@ namespace TeamSupport.Data
         asset.Notes = GetDBString(row["Notes"], 0, true);
 
         int productID;
-        if (productIDs.TryGetValue(row["ProductID"].ToString(), out productID))
+        if (productIDs.TryGetValue(row["ProductID"].ToString().Trim().ToLower(), out productID))
         {
           asset.ProductID = productID;
         }
@@ -1402,7 +1404,7 @@ namespace TeamSupport.Data
         AssetHistoryItem item = history.AddNewAssetHistoryItem();
         
         int assetID;
-        if (!assetIDs.TryGetValue(row["AssetID"].ToString(), out assetID))
+        if (!assetIDs.TryGetValue(row["AssetID"].ToString().ToLower().Trim(), out assetID))
         {
           _log.AppendMessage("Asset not found: " + row["AssetID"].ToString());
 
@@ -1419,7 +1421,7 @@ namespace TeamSupport.Data
         item.ShippedFromRefType = 9;
         
         int userID;
-        if (userIDs.TryGetValue("[contact]" + row["ShippedTo"].ToString(), out userID))
+        if (userIDs.TryGetValue("[contact]" + row["ShippedTo"].ToString().ToLower().Trim(), out userID))
         {
           item.ShippedTo = userID;
         }
@@ -2189,9 +2191,9 @@ AND a.OrganizationID = @OrganizationID
         int ticketID;
         int orgID;
 
-        if (ticketIDs.TryGetValue(row["TicketID"].ToString().Trim(), out ticketID))
+        if (ticketIDs.TryGetValue(row["TicketID"].ToString().Trim().ToLower(), out ticketID))
         {
-          if (organizationIDs.TryGetValue(row["CustomerID"].ToString().Trim(), out orgID))
+          if (organizationIDs.TryGetValue(row["CustomerID"].ToString().Trim().ToLower(), out orgID))
           {
             tickets.AddOrganization(orgID, ticketID);
           }
@@ -2229,9 +2231,9 @@ AND a.OrganizationID = @OrganizationID
         int ticketID;
         int assetID;
 
-        if (ticketIDs.TryGetValue(row["TicketID"].ToString(), out ticketID))
+        if (ticketIDs.TryGetValue(row["TicketID"].ToString().ToLower().Trim(), out ticketID))
         {
-          if (assetIDs.TryGetValue(row["AssetID"].ToString(), out assetID))
+          if (assetIDs.TryGetValue(row["AssetID"].ToString().ToLower().Trim(), out assetID))
           {
             tickets.AddAsset(assetID, ticketID);
             count++;
@@ -2265,7 +2267,7 @@ AND a.OrganizationID = @OrganizationID
       {
         _currentRow = row;
         int parentID;
-        if (ticketIDs.TryGetValue(row["ParentTicketID"].ToString(), out parentID))
+        if (ticketIDs.TryGetValue(row["ParentTicketID"].ToString().ToLower().Trim(), out parentID))
         {
           Ticket ticket = tickets.FindByImportID(row["ChildTicketID"].ToString().Trim());
           if (ticket == null)
@@ -2337,9 +2339,9 @@ AND a.OrganizationID = @OrganizationID
       {
         int userID;
         int ticketID;
-        if (userIDs.TryGetValue("[contact]" + row["ContactID"].ToString(), out userID))
+        if (userIDs.TryGetValue("[contact]" + row["ContactID"].ToString().ToLower().Trim(), out userID))
         {
-          if (ticketIDs.TryGetValue(row["TicketID"].ToString().Trim(), out ticketID))
+          if (ticketIDs.TryGetValue(row["TicketID"].ToString().Trim().ToLower(), out ticketID))
           {
             tickets.AddContact(userID, ticketID);
           }
