@@ -668,7 +668,7 @@ AND ts.IsClosed = 0";
       importID = importID.Trim().ToLower();
       foreach (Ticket ticket in this)
       {
-        if (ticket.ImportID.Trim().ToLower() == importID)
+        if (!string.IsNullOrWhiteSpace(ticket.ImportID) && ticket.ImportID.Trim().ToLower() == importID)
         {
           return ticket;
         }
