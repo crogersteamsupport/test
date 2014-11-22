@@ -59,7 +59,7 @@ namespace TeamSupport.ServiceLibrary
       SqlExecutor.ExecuteNonQuery(LoginUser, command);
     }
 
-    private static bool ObtainLock(int organizationID)
+    private bool ObtainLock(int organizationID)
     {
       bool result = false;
       lock (_staticLock)
@@ -67,7 +67,7 @@ namespace TeamSupport.ServiceLibrary
         SqlCommand command = new SqlCommand();
         command.CommandText = "UPDATE Organizations SET IsIndexLocked = 1 WHERE IsIndexLocked = 0 AND OrganizationID = @OrganizationID";
         command.Parameters.AddWithValue("OrganizationID", organizationID);
-        result = SqlExecutor.ExecuteNonQuery(LoginUser.Anonymous, command) > 0;
+        result = SqlExecutor.ExecuteNonQuery(LoginUser, command) > 0;
       }
       return result;
     }
