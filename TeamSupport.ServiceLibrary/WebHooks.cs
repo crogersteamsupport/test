@@ -26,7 +26,6 @@ namespace TeamSupport.ServiceLibrary
     public override void Run()
     {
       int lastStatusHistoryID = Settings.ReadInt("LastStatusHistoryID", 0);
-      lastStatusHistoryID = 8407614;
 
       if (lastStatusHistoryID < 1)
       { 
