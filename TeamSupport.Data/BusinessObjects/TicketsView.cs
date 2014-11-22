@@ -1522,5 +1522,25 @@ WHERE tgv.OrganizationID = @OrganizationID"
       else
         return ticketsView[0];
     }
+
+    public void LoadNewCustomerResponded(LoginUser loginUser, int lastStatusHistoryID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+SELECT t.*, sh.StatusHistoryID
+FROM StatusHistory sh
+INNER JOIN TicketStatuses ts ON ts.TicketStatusID = sh.NewStatus
+INNER JOIN TicketsView t ON sh.TicketID = t.TicketID
+WHERE ts.OrganizationID = 1078
+AND ts.IsEmailResponse = 1
+AND sh.StatusHistoryID > @StatusHistoryID
+";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@StatusHistoryID", lastStatusHistoryID);
+        Fill(command);
+      }
+    }
+
   } 
 }

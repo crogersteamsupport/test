@@ -41,6 +41,7 @@ namespace TeamSupport.Service
         case "TSIndexRebuilder": result = new ServiceThreadPool<Indexer>("Indexer"); break;
         case "TSCrmPool": result = new CrmPool(); break;
         case "TSReminderProcessor": result = new ReminderProcessor(); break;
+        case "TSWebhooks": result = new WebHooks(); break;
         default: result = null; break;
       }
 
