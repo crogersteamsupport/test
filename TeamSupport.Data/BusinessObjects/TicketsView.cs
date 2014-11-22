@@ -1528,13 +1528,15 @@ WHERE tgv.OrganizationID = @OrganizationID"
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = @"
-SELECT t.*, sh.StatusHistoryID
-FROM StatusHistory sh
-INNER JOIN TicketStatuses ts ON ts.TicketStatusID = sh.NewStatus
-INNER JOIN TicketsView t ON sh.TicketID = t.TicketID
-WHERE ts.OrganizationID = 1078
-AND ts.IsEmailResponse = 1
-AND sh.StatusHistoryID > @StatusHistoryID
+SELECT * FROM TicketsView WHERE TicketID IN
+(
+  SELECT DISTINCT(sh.TicketID)
+  FROM StatusHistory sh
+  INNER JOIN TicketStatuses ts ON ts.TicketStatusID = sh.NewStatus
+  WHERE ts.OrganizationID = 1078
+  AND ts.IsEmailResponse = 1
+  AND sh.StatusHistoryID > @StatusHistoryID
+)
 ";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@StatusHistoryID", lastStatusHistoryID);

@@ -62,6 +62,14 @@ namespace TeamSupport.ServiceLibrary
       try
       {
         Logs.WriteEvent("Processing Ticket " + ticket.TicketNumber);
+
+        ActionsView actions = new ActionsView(ticket.Collection.LoginUser);
+        actions.LoadLatestByTicket(ticket.TicketID, true);
+
+        string body = actions.IsEmpty ? "" : actions[0].Description;
+        string customer = actions.IsEmpty ? "" : (string.IsNullOrEmpty(actions[0].ModifierName) ? "" : actions[0].ModifierName);
+        string user = string.IsNullOrWhiteSpace(ticket.UserName) ? "" : ticket.UserName;
+        string customers = string.IsNullOrWhiteSpace(ticket.Customers) ? "" : ticket.Customers;
       
         var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://hooks.slack.com/services/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");
         httpWebRequest.ContentType = "application/x-www-form-urlencoded";
@@ -70,8 +78,31 @@ namespace TeamSupport.ServiceLibrary
         using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
         {
           string message = string.Format("{0} responded to Ticket {1}, severity is {2}", ticket.ModifierName, ticket.TicketNumber.ToString(), ticket.Severity);
-          SlackPayload payload = new SlackPayload(message, "#customer-responded", "customer-responded-bot");
-          streamWriter.Write("payload=" + Uri.EscapeUriString(JsonConvert.SerializeObject(payload)));
+
+          string payload = @"
+{
+  ""channel"": ""#customer-responded"", 
+  ""username"": ""customer-responded-bot"", 
+  ""text"": ""A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}"", 
+   ""attachments"":[
+      {
+         ""fallback"":""A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}"",
+         ""pretext"":""A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}"",
+         ""color"":""#D00000"",
+         ""fields"":[
+            {
+               ""title"":""{5}"",
+               ""value"":""{6}"",
+               ""short"":false
+            }
+         ]
+      }
+   ]
+
+}
+";
+
+          streamWriter.Write("payload=" + Uri.EscapeUriString(string.Format(payload, ticket.TicketNumber.ToString(), ticket.Name, ticket.Severity, customers, user, customer, body)));
           streamWriter.Flush();
           streamWriter.Close();
 
@@ -91,6 +122,30 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
+  }
+
+  class SlackAttachmentField
+  {
+    public SlackAttachmentField()
+    { 
+    
+    }
+    public string title { get; set; }
+    public string value { get; set; }
+    public string short { get; set; }
+  
+  }
+
+  class SlackAttachment
+  {
+    public SlackAttachment()
+    { 
+    
+    }
+    public string fallback { get; set; }
+    public string pretext { get; set; }
+    public string color { get; set; }
+  
   }
 
   class SlackPayload
