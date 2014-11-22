@@ -124,42 +124,5 @@ namespace TeamSupport.ServiceLibrary
 
   }
 
-  class SlackAttachmentField
-  {
-    public SlackAttachmentField()
-    { 
-    
-    }
-    public string title { get; set; }
-    public string value { get; set; }
-    public string short { get; set; }
-  
-  }
 
-  class SlackAttachment
-  {
-    public SlackAttachment()
-    { 
-    
-    }
-    public string fallback { get; set; }
-    public string pretext { get; set; }
-    public string color { get; set; }
-  
-  }
-
-  class SlackPayload
-  {
-    public SlackPayload(string text, string channel, string username)
-    {
-      this.text = text;
-      this.username = username;
-      this.channel = channel;
-    }
-    
-    public string text { get; set; }
-    public string username { get; set; }
-    public string channel { get; set; }
-  
-  }
 }
