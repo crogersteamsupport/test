@@ -43,6 +43,10 @@ namespace TeamSupport.Api
       Asset asset = assets.AddNewAsset();
       asset.OrganizationID = command.Organization.OrganizationID;
       asset.FullReadFromXml(command.Data, true);
+      if (asset.ProductID == null)
+      {
+          throw new RestException(HttpStatusCode.BadRequest, "Product required");
+      }
       // For consistency all assets are created in the warehouse.
       asset.Location = "2";
       // This is normally not necessary, but as the CreatorID is defined as a null field in this table it is needed.
@@ -122,6 +126,10 @@ namespace TeamSupport.Api
       if (asset == null || asset.OrganizationID != command.Organization.OrganizationID) throw new RestException(HttpStatusCode.Unauthorized);
       string originalLocation = asset.Location;
       asset.FullReadFromXml(command.Data, false);
+      if (asset.ProductID == null)
+      {
+          throw new RestException(HttpStatusCode.BadRequest, "Product required");
+      }
 
       if (
         String.IsNullOrEmpty(asset.Location.Trim()) || 
