@@ -231,6 +231,25 @@ AND cv.RefID=@RefID";
       }
     }
 
+    public void LoadByApiFieldName(int organizationID, string apiFieldName, int refID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = @"
+    SELECT * FROM CustomValues cv
+    LEFT JOIN CustomFields cf on cv.CustomFieldID=cf.CustomFieldID
+    WHERE cf.ApiFieldName=@ApiFieldName
+    AND cf.OrganizationID=@OrganizationID
+    AND cv.RefID=@RefID";
+
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@RefID", refID);
+        command.Parameters.AddWithValue("@ApiFieldName", apiFieldName);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
     public void LoadByReferenceType(int organizationID, ReferenceType refType, int refID)
     {
       LoadByReferenceType(organizationID, refType, null, refID); 
@@ -388,6 +407,8 @@ END";
       customFields.LoadByOrganization(loginUser.OrganizationID);
       UpdateByAPIFieldName(loginUser, customFields, refID, apiFieldName, value);
     }
+
+
 
   }
 }

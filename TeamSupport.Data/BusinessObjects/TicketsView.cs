@@ -1546,23 +1546,6 @@ SELECT * FROM TicketsView WHERE TicketID IN
 
     public void LoadNewUrgentTickets(LoginUser loginUser, int lastStatusHistoryID)
     {
-      using (SqlCommand command = new SqlCommand())
-      {
-        command.CommandText = @"
-SELECT * FROM TicketsView WHERE TicketID IN
-(
-  SELECT DISTINCT(sh.TicketID)
-  FROM StatusHistory sh
-  INNER JOIN TicketStatuses ts ON ts.TicketStatusID = sh.NewStatus
-  WHERE ts.OrganizationID = 1078
-  AND ts.IsEmailResponse = 1
-  AND sh.StatusHistoryID > @StatusHistoryID
-)
-";
-        command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@StatusHistoryID", lastStatusHistoryID);
-        Fill(command);
-      }
     }
   } 
 }
