@@ -42,7 +42,7 @@ namespace TeamSupport.ServiceLibrary
         tickets.LoadNewCustomerResponded(LoginUser, lastStatusHistoryID);
         foreach (TicketsViewItem ticket in tickets)
         {
-          SendToSlack(ticket);
+          SendCustomerRespondedToSlack(ticket);
         }
       }
       catch (Exception ex)
@@ -54,62 +54,46 @@ namespace TeamSupport.ServiceLibrary
  
     }
 
-    private void SendToSlack(TicketsViewItem ticket)
+    private string GetUserSlackID(int? userID)
     {
-      //payload={"text": "This is a line of text in a channel.\nAnd this is another line of text."}
-      //payload={"text": "A very important thing has occurred! <https://alert-system.com/alerts/1234|Click here> for details!"}
-      //https://hooks.slack.com/services/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
-      //https://teamsupport.slack.com/services/3065457408?added=1
-      //payload={"channel": "#customer-responded", "username": "webhookbot", "text": "This is posted to #customer-responded and comes from a bot named webhookbot.", "icon_emoji": ":ghost:"}
+
+      return null;
+    }
+
+    private void SendUrgentTicketToSlack(TicketsViewItem ticket)
+    { 
+    
+    
+    }
+
+    private void SendCustomerRespondedToSlack(TicketsViewItem ticket)
+    {
       try
       {
-        Logs.WriteEvent("Processing Ticket " + ticket.TicketNumber);
+        Logs.WriteEvent("Processing Customer Responded, Ticket: " + ticket.TicketNumber);
 
         string user = string.IsNullOrWhiteSpace(ticket.UserName) ? "" : ticket.UserName;
         string customers = string.IsNullOrWhiteSpace(ticket.Customers) ? "" : ticket.Customers;
-      
-        var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://hooks.slack.com/services/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");
-        httpWebRequest.ContentType = "application/x-www-form-urlencoded";
-        httpWebRequest.Method = "POST";
 
-        using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+        SlackMessage message = new SlackMessage();
+
+        message.Channel = "#customer-responded";
+        message.TextPlain = string.Format("A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}", ticket.TicketNumber.ToString(), ticket.Name, ticket.Severity, customers, user);
+        message.TextRich = string.Format("A customer responded to Ticket {0} - {1}", ticket.TicketNumber.ToString(), ticket.Name);
+        message.Color = "#D00000";
+        message.Fields.Add(new SlackField("Customers", customers, true));
+        message.Fields.Add(new SlackField("Assigned To", user, true));
+        message.Fields.Add(new SlackField("Severity", ticket.Severity, true));
+
+        // send to channel
+        SendSlackMessage(message);
+
+        // send to user
+        string slackUser = GetUserSlackID(ticket.UserID);
+        if (!string.IsNullOrWhiteSpace(slackUser))
         {
-          dynamic payload = new ExpandoObject();
-          string msg = WebUtility.HtmlEncode(string.Format("A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}", ticket.TicketNumber.ToString(), ticket.Name, ticket.Severity, customers, user));
-          payload.channel = "#customer-responded";
-          payload.username = "customer-responded-bot";
-          //payload.text = msg;
-
-          List<dynamic> attachments = new List<dynamic>();
-          dynamic attachment = new ExpandoObject();
-          attachment.fallback = msg;
-          attachment.pretext = WebUtility.HtmlEncode(string.Format("A customer responded to Ticket {0} - {1}", ticket.TicketNumber.ToString(), ticket.Name)); ;
-          attachment.color = "#D00000";
-
-          List<dynamic> fields = new List<dynamic>();
-          dynamic field = new ExpandoObject();
-          field.title = "Customers: " + WebUtility.HtmlEncode(customers);
-          field.value = WebUtility.HtmlEncode(string.Format("Assigned to {0}, and the severity is {1}", user, ticket.Severity));
-          field.shortxxx = false;
-
-          fields.Add(field);
-          attachment.fields = fields.ToArray();
-          attachments.Add(attachment);
-          payload.attachments = attachments.ToArray();
-
-
-          string json = JsonConvert.SerializeObject(payload);
-
-          streamWriter.Write("payload=" + Uri.EscapeUriString(json.Replace("shortxxx", "short")));
-          streamWriter.Flush();
-          streamWriter.Close();
-
-
-          var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-          using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-          {
-            var result = streamReader.ReadToEnd();
-          }
+          message.Channel = "@" + slackUser;
+          SendSlackMessage(message);
         }
       }
       catch (Exception ex)
@@ -120,6 +104,81 @@ namespace TeamSupport.ServiceLibrary
       }
     }
 
+    private void SendSlackMessage(SlackMessage message)
+    {
+      var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://hooks.slack.com/services/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");
+      httpWebRequest.ContentType = "application/x-www-form-urlencoded";
+      httpWebRequest.Method = "POST";
+
+      using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+      {
+        dynamic payload = new ExpandoObject();
+        payload.channel = message.Channel;
+        payload.username = "teamsupport-bot";
+
+        List<dynamic> attachments = new List<dynamic>();
+        dynamic attachment = new ExpandoObject();
+        attachment.fallback = WebUtility.HtmlEncode(message.TextPlain);
+        attachment.pretext = WebUtility.HtmlEncode(message.TextRich);
+        attachment.color = message.Color;
+
+        List<dynamic> fields = new List<dynamic>();
+
+        foreach (SlackField slackField in message.Fields)
+        {
+          dynamic field = new ExpandoObject();
+          field.title = WebUtility.HtmlEncode(slackField.Title);
+          field.value = WebUtility.HtmlEncode(slackField.Value);
+          field.shortxxx = slackField.IsShort;
+          fields.Add(field);
+        }
+
+        attachment.fields = fields.ToArray();
+        attachments.Add(attachment);
+        payload.attachments = attachments.ToArray();
+
+        string json = JsonConvert.SerializeObject(payload);
+
+        streamWriter.Write("payload=" + Uri.EscapeUriString(json.Replace("shortxxx", "short")));
+        streamWriter.Flush();
+        streamWriter.Close();
+
+
+        var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+        using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+        {
+          var result = streamReader.ReadToEnd();
+        }
+      }
+    }
+  }
+
+  class SlackMessage
+  { 
+    public SlackMessage()
+    {
+      Fields = new List<SlackField>();
+    }
+
+    public string Channel { get; set; }
+    public string TextPlain { get; set; }
+    public string TextRich { get; set; }
+    public string Color { get; set; }
+    public List<SlackField> Fields { get; set; }
+  }
+
+  class SlackField
+  {
+    public SlackField(string title, string value, bool isShort)
+    {
+      Title = title;
+      Value = value;
+      IsShort = isShort;
+    }
+    
+    public string Title { get; set; }
+    public string Value { get; set; }
+    public bool IsShort { get; set; }  
   }
 
 

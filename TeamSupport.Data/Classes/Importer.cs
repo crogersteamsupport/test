@@ -2199,12 +2199,12 @@ AND a.OrganizationID = @OrganizationID
           }
           else
           {
-            _log.AppendError(row, "Customer Ticket skipped due to missing ticket.");
+            _log.AppendError(row, "Customer Ticket skipped due to missing organization.");
           }
         }
         else
         {
-          _log.AppendError(row, "Customer Ticket skipped due to missing organization.");
+          _log.AppendError(row, "Customer Ticket skipped due to missing ticket.");
         }
       }
       EmailPosts.DeleteImportEmails(_loginUser);
