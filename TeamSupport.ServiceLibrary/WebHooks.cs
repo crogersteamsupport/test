@@ -28,7 +28,6 @@ namespace TeamSupport.ServiceLibrary
     public override void Run()
     {
       int lastStatusHistoryID = Settings.ReadInt("LastStatusHistoryID", 0);
-
       if (lastStatusHistoryID < 1)
       {
         lastStatusHistoryID = (int)SqlExecutor.ExecuteScalar(LoginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory");
@@ -39,11 +38,20 @@ namespace TeamSupport.ServiceLibrary
       {
         TicketsView tickets = new TicketsView(LoginUser);
         Settings.WriteInt("LastStatusHistoryID", (int)SqlExecutor.ExecuteScalar(LoginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory"));
+
         tickets.LoadNewCustomerResponded(LoginUser, lastStatusHistoryID);
         foreach (TicketsViewItem ticket in tickets)
         {
           SendCustomerRespondedToSlack(ticket);
         }
+
+        tickets = new TicketsView(LoginUser);
+        tickets.LoadNewUrgentTickets(LoginUser, lastStatusHistoryID);
+        foreach (TicketsViewItem ticket in tickets)
+        {
+          SendUrgentTicketToSlack(ticket);
+        }
+
       }
       catch (Exception ex)
       {
@@ -116,26 +124,33 @@ namespace TeamSupport.ServiceLibrary
         payload.channel = message.Channel;
         payload.username = "teamsupport-bot";
 
-        List<dynamic> attachments = new List<dynamic>();
-        dynamic attachment = new ExpandoObject();
-        attachment.fallback = WebUtility.HtmlEncode(message.TextPlain);
-        attachment.pretext = WebUtility.HtmlEncode(message.TextRich);
-        attachment.color = message.Color;
-
-        List<dynamic> fields = new List<dynamic>();
-
-        foreach (SlackField slackField in message.Fields)
+        if (message.IsPlain)
         {
-          dynamic field = new ExpandoObject();
-          field.title = WebUtility.HtmlEncode(slackField.Title);
-          field.value = WebUtility.HtmlEncode(slackField.Value);
-          field.shortxxx = slackField.IsShort;
-          fields.Add(field);
+          payload.text = WebUtility.HtmlEncode(message.TextPlain);
         }
+        else
+        {
+          List<dynamic> attachments = new List<dynamic>();
+          dynamic attachment = new ExpandoObject();
+          attachment.fallback = WebUtility.HtmlEncode(message.TextPlain);
+          attachment.pretext = WebUtility.HtmlEncode(message.TextRich);
+          attachment.color = message.Color;
 
-        attachment.fields = fields.ToArray();
-        attachments.Add(attachment);
-        payload.attachments = attachments.ToArray();
+          List<dynamic> fields = new List<dynamic>();
+
+          foreach (SlackField slackField in message.Fields)
+          {
+            dynamic field = new ExpandoObject();
+            field.title = WebUtility.HtmlEncode(slackField.Title);
+            field.value = WebUtility.HtmlEncode(slackField.Value);
+            field.shortxxx = slackField.IsShort;
+            fields.Add(field);
+          }
+
+          attachment.fields = fields.ToArray();
+          attachments.Add(attachment);
+          payload.attachments = attachments.ToArray();
+        }
 
         string json = JsonConvert.SerializeObject(payload);
 
@@ -158,8 +173,10 @@ namespace TeamSupport.ServiceLibrary
     public SlackMessage()
     {
       Fields = new List<SlackField>();
+      IsPlain = false;
     }
 
+    public bool IsPlain { get; set; }
     public string Channel { get; set; }
     public string TextPlain { get; set; }
     public string TextRich { get; set; }
