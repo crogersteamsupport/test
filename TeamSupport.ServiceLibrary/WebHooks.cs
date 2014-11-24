@@ -24,22 +24,25 @@ namespace TeamSupport.ServiceLibrary
   [Serializable]
   public class WebHooks : ServiceThread
   {
-
+    private LoginUser _loginUser;
     public override void Run()
     {
+      _loginUser = new Data.LoginUser(LoginUser.ConnectionString, -1, 1078, null);
+
       int lastStatusHistoryID = Settings.ReadInt("LastStatusHistoryID", 0);
+      lastStatusHistoryID = 8426935;
       if (lastStatusHistoryID < 1)
       {
-        lastStatusHistoryID = (int)SqlExecutor.ExecuteScalar(LoginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory");
+        lastStatusHistoryID = (int)SqlExecutor.ExecuteScalar(_loginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory");
         Settings.WriteInt("LastStatusHistoryID", lastStatusHistoryID);
       }
 
       try
       {
-        TicketsView tickets = new TicketsView(LoginUser);
-        Settings.WriteInt("LastStatusHistoryID", (int)SqlExecutor.ExecuteScalar(LoginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory"));
+        TicketsView tickets = new TicketsView(_loginUser);
+        Settings.WriteInt("LastStatusHistoryID", (int)SqlExecutor.ExecuteScalar(_loginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory"));
 
-        tickets.LoadNewCustomerResponded(LoginUser, lastStatusHistoryID);
+        tickets.LoadNewCustomerResponded(_loginUser, lastStatusHistoryID);
         foreach (TicketsViewItem ticket in tickets)
         {
           SendCustomerRespondedToSlack(ticket);
@@ -48,8 +51,8 @@ namespace TeamSupport.ServiceLibrary
 
         /*
          * There is no easy way to get the change set of severity yet.  Holding off
-        tickets = new TicketsView(LoginUser);
-        tickets.LoadNewUrgentTickets(LoginUser, lastStatusHistoryID);
+        tickets = new TicketsView(_loginUser);
+        tickets.LoadNewUrgentTickets(_loginUser, lastStatusHistoryID);
         foreach (TicketsViewItem ticket in tickets)
         {
           SendUrgentTicketToSlack(ticket);
@@ -61,7 +64,7 @@ namespace TeamSupport.ServiceLibrary
       {
         Logs.WriteEvent("Error sending to slack");
         Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Webhooks", "Error to slack");
+        ExceptionLogs.LogException(_loginUser, ex, "Webhooks", "Error to slack");
       }
  
     }
@@ -72,7 +75,7 @@ namespace TeamSupport.ServiceLibrary
       {
         string user = string.IsNullOrWhiteSpace(ticket.UserName) ? "" : ticket.UserName;
         string customers = string.IsNullOrWhiteSpace(ticket.Customers) ? "" : ticket.Customers;
-        SlackMessage message = new SlackMessage(LoginUser);
+        SlackMessage message = new SlackMessage(_loginUser);
         message.TextPlain = string.Format("Urgent Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}", ticket.TicketNumber.ToString(), ticket.Name, ticket.Severity, customers, user);
         message.TextRich = string.Format("Urgent Ticket {0} - {1}", ticket.TicketNumber.ToString(), ticket.Name);
         message.Color = "#D00000";
@@ -89,7 +92,7 @@ namespace TeamSupport.ServiceLibrary
       {
         Logs.WriteEvent("Error sending urgent ticket");
         Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Webhooks", ticket.Row);
+        ExceptionLogs.LogException(_loginUser, ex, "Webhooks", ticket.Row);
       }
     
     
@@ -101,7 +104,7 @@ namespace TeamSupport.ServiceLibrary
       {
         string user = string.IsNullOrWhiteSpace(ticket.UserName) ? "" : ticket.UserName;
         string customers = string.IsNullOrWhiteSpace(ticket.Customers) ? "" : ticket.Customers;
-        SlackMessage message = new SlackMessage(LoginUser);
+        SlackMessage message = new SlackMessage(_loginUser);
         message.TextPlain = string.Format("A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}", ticket.TicketNumber.ToString(), ticket.Name, ticket.Severity, customers, user);
         message.TextRich = string.Format("A customer responded to Ticket {0} - {1}", ticket.TicketNumber.ToString(), ticket.Name);
         message.Color = "#D00000";
@@ -118,7 +121,7 @@ namespace TeamSupport.ServiceLibrary
       {
         Logs.WriteEvent("Error sending customer responded");
         Logs.WriteException(ex);
-        ExceptionLogs.LogException(LoginUser, ex, "Webhooks", ticket.Row);
+        ExceptionLogs.LogException(_loginUser, ex, "Webhooks", ticket.Row);
       }
     }
   }
@@ -163,7 +166,7 @@ namespace TeamSupport.ServiceLibrary
       {
         dynamic payload = new ExpandoObject();
         payload.channel = channel;
-        payload.username = "teamsupport-bot";
+        payload.username = "TeamSupport";
 
         if (this.IsPlain)
         {
