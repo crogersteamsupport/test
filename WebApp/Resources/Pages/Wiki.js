@@ -311,7 +311,9 @@ function BuildWikiEditEvents() {
         $("#wiki-title-div").hide();
         $("#wiki-edit-delete").hide();
         $("#Wiki-Edit-PrivateView").removeAttr("disabled");
-        tinyMCE.activeEditor.remove();
+        if (tinyMCE.activeEditor !== null) {
+            tinyMCE.activeEditor.remove();
+        }
         var element = $('body').find('#Wiki-Edit-Body');
         initEditor(element, function (ed) {
             ed.setContent('');
