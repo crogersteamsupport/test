@@ -30,7 +30,6 @@ namespace TeamSupport.ServiceLibrary
       _loginUser = new Data.LoginUser(LoginUser.ConnectionString, -1, 1078, null);
 
       int lastStatusHistoryID = Settings.ReadInt("LastStatusHistoryID", 0);
-      lastStatusHistoryID = 8426935;
       if (lastStatusHistoryID < 1)
       {
         lastStatusHistoryID = (int)SqlExecutor.ExecuteScalar(_loginUser, "SELECT MAX(StatusHistoryID) FROM StatusHistory");
