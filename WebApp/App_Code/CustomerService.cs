@@ -1984,7 +1984,7 @@ namespace TSWebServices
           productVersionsView.LoadByProductVersionID(productVersionID);
 
           OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
-          existingOrganizationProducts.LoadByParentOrganizationID(loginUser.OrganizationID);
+          existingOrganizationProducts.LoadByParentOrganizationIDAndVersionID(loginUser.OrganizationID, productVersionID);
 
           Organizations allCustomers = new Organizations(loginUser);
           allCustomers.LoadByParentID(loginUser.OrganizationID, true);
@@ -2038,7 +2038,7 @@ namespace TSWebServices
           products.LoadByProductID(productID);
 
           OrganizationProducts existingOrganizationProducts = new OrganizationProducts(loginUser);
-          existingOrganizationProducts.LoadByParentOrganizationID(loginUser.OrganizationID);
+          existingOrganizationProducts.LoadByParentOrganizationIDAndProductID(loginUser.OrganizationID, productID);
 
           Organizations allCustomers = new Organizations(loginUser);
           allCustomers.LoadByParentID(loginUser.OrganizationID, true);

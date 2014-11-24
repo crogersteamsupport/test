@@ -42,6 +42,48 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadByParentOrganizationIDAndProductID(int parentID, int productID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SELECT 
+                    op.* 
+                FROM 
+                    OrganizationProducts op
+                    LEFT JOIN Organizations o
+                        ON o.OrganizationID = op.OrganizationID
+                WHERE
+                    o.ParentID = @OrganizationID
+                    AND op.ProductID = @ProductID";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", parentID);
+            command.Parameters.AddWithValue("@ProductID", productID);
+            Fill(command);
+        }
+    }
+
+    public void LoadByParentOrganizationIDAndVersionID(int parentID, int versionID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SELECT 
+                    op.* 
+                FROM 
+                    OrganizationProducts op
+                    LEFT JOIN Organizations o
+                        ON o.OrganizationID = op.OrganizationID
+                WHERE
+                    o.ParentID = @OrganizationID
+                    AND op.ProductVersionID = @ProductVersionID";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", parentID);
+            command.Parameters.AddWithValue("@ProductVersionID", versionID);
+            Fill(command);
+        }
+    }
+
     public void LoadByProductVersionID(int productVersionID)
     {
       using (SqlCommand command = new SqlCommand())
