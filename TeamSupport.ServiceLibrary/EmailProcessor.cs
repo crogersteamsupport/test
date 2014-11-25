@@ -15,6 +15,7 @@ using System.Net.Mime;
 using System.Threading;
 using System.ComponentModel;
 using System.Configuration;
+using TeamSupport.Data.WebHooks;
 
 
 namespace TeamSupport.ServiceLibrary
@@ -328,10 +329,10 @@ namespace TeamSupport.ServiceLibrary
         Organization ticketOrganization = Organizations.GetOrganization(LoginUser, ticket.OrganizationID);
         Logs.WriteEvent("OrganizationID: " + ticketOrganization.OrganizationID.ToString());
 
+        TicketStatus status = TicketStatuses.GetTicketStatus(LoginUser, ticket.TicketStatusID);
         Logs.WriteEvent("DisableStatusNotification: " + OrganizationSettings.ReadString(LoginUser, ticket.OrganizationID, "DisableStatusNotification", "False"));
         if (oldTicketStatusID != null && bool.Parse(OrganizationSettings.ReadString(LoginUser, ticket.OrganizationID, "DisableStatusNotification", "False")))
         {
-          TicketStatus status = TicketStatuses.GetTicketStatus(LoginUser, ticket.TicketStatusID);
           Logs.WriteEvent(string.Format("TicketStatusID: {0}  IsClosedEmail: {1}", ticket.TicketStatusID.ToString(), status.IsClosed.ToString()));
           if (!status.IsClosedEmail) oldTicketStatusID = null;
         }
@@ -363,7 +364,31 @@ namespace TeamSupport.ServiceLibrary
           Logs.WriteEvent("Processing New Ticket");
           AddMessageNewTicket(ticket, modifier, ticketOrganization);
         }
+        // web hooks
+        if (!_isDebug && ticket.OrganizationID == 1078)
+        {
+          if (ticket.TicketSeverityID == 3169 && (oldTicketSeverityID == null || oldTicketSeverityID != 3169))
+          {
+            SendUrgentTicketToSlack(ticket.GetTicketView());
+          }
 
+          if (status.IsEmailResponse)
+          {
+            if (oldTicketStatusID == null)
+            {
+              SendCustomerRespondedToSlack(ticket.GetTicketView());
+            }
+            else
+            {
+              TicketStatus oldStatus = TicketStatuses.GetTicketStatus(LoginUser, (int)oldTicketStatusID);
+              if (oldStatus != null && !oldStatus.IsEmailResponse)
+              {
+                SendCustomerRespondedToSlack(ticket.GetTicketView());
+              }
+
+            }
+          }
+        }
       }
       catch (Exception ex)
       {
@@ -371,6 +396,60 @@ namespace TeamSupport.ServiceLibrary
         throw;
       }
 
+    }
+
+    private void SendCustomerRespondedToSlack(TicketsViewItem ticket)
+    {
+      try
+      {
+        string user = string.IsNullOrWhiteSpace(ticket.UserName) ? "" : ticket.UserName;
+        string customers = string.IsNullOrWhiteSpace(ticket.Customers) ? "" : ticket.Customers;
+        SlackMessage message = new SlackMessage(LoginUser);
+        message.TextPlain = string.Format("A customer responded to Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}", ticket.TicketNumber.ToString(), ticket.Name, ticket.Severity, customers, user);
+        message.TextRich = string.Format("A customer responded to Ticket {0} - {1}", ticket.TicketNumber.ToString(), ticket.Name);
+        message.Color = "#D00000";
+        message.AddField("Customers", customers, true);
+        message.AddField("Assigned To", user, true);
+        message.AddField("Severity", ticket.Severity, true);
+
+        // send to channel
+        message.Send("#customer-responded");
+        // send to user
+        message.Send(ticket.UserID);
+      }
+      catch (Exception ex)
+      {
+        Logs.WriteEvent("Error sending customer responded");
+        Logs.WriteException(ex);
+        ExceptionLogs.LogException(LoginUser, ex, "Webhooks", ticket.Row);
+      }
+    }
+
+    private void SendUrgentTicketToSlack(TicketsViewItem ticket)
+    {
+      try
+      {
+        string user = string.IsNullOrWhiteSpace(ticket.UserName) ? "" : ticket.UserName;
+        string customers = string.IsNullOrWhiteSpace(ticket.Customers) ? "" : ticket.Customers;
+        SlackMessage message = new SlackMessage(LoginUser);
+        message.TextPlain = string.Format("Urgent Ticket {0} - {1}\nSeverity is {2}\nCustomers are {3}\nAssigned to {4}", ticket.TicketNumber.ToString(), ticket.Name, ticket.Severity, customers, user);
+        message.TextRich = string.Format("Urgent Ticket {0} - {1}", ticket.TicketNumber.ToString(), ticket.Name);
+        message.Color = "#D00000";
+        message.AddField("Customers", customers, true);
+        message.AddField("Assigned To", user, true);
+        message.AddField("Severity", ticket.Severity, true);
+
+        // send to channel
+        message.Send("#urgent-tickets");
+        // send to user
+        message.Send(ticket.UserID);
+      }
+      catch (Exception ex)
+      {
+        Logs.WriteEvent("Error sending urgent ticket");
+        Logs.WriteException(ex);
+        ExceptionLogs.LogException(LoginUser, ex, "Webhooks", ticket.Row);
+      }
     }
 
     private string GetOrganizationName(int organizationID)

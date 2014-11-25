@@ -768,6 +768,7 @@
     <Compile Include="Proxies\WikiArticlesProxy.cs" />
     <Compile Include="Proxies\WikiArticlesViewProxy.cs" />
     <Compile Include="Proxies\WikiHistoryCollectionProxy.cs" />
+    <Compile Include="WebHooks\Slack.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
