@@ -67,6 +67,10 @@ function BuildWikiPage() {
                 GetWiki(_wikiID);
                 BuildWikiMenuItems();
             };
+            $("#EditWiki").show();
+        }
+        else {
+            $("#EditWiki").hide();
         };
     });
     top.Ts.System.logAction('Wiki - Wiki Viewed');
