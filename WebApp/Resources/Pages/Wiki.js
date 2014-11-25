@@ -148,9 +148,6 @@ function BuildWikiMenuItems() {
                     SidebarFunction($(this));
                 });
             });
-//            $('.sidebar').animate({
-//                scrollTop: $("#" + _wikiID).offset().top
-//            }, 2000);
         }
     });
 };
@@ -557,7 +554,7 @@ var initEditor = function (element, init) {
                             linkType: "preview",
                             success: function (files) {
                                 ed.focus();
-                                var html = '<a href=' + files[0].link + '>' + files[0].name + '</a>';
+                                var html = '<a href=' + files[0].link + ' target="_blank">' + files[0].name + '</a>';
                                 ed.selection.setContent(html);
                                 ed.execCommand('mceAutoResize');
                                 ed.focus();
@@ -618,8 +615,6 @@ var initEditor = function (element, init) {
                                     alert('There was an error inserting your wiki article.');
                                     return;
                                 }
-                                //var html = '<a href="' + top.Ts.System.AppDomain + '?articleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
-                                //var html = '<a href="#" onclick="top.Ts.MainPage.openWiki(' + wiki.ArticleID + ', true)" class="ts-link">' + wiki.ArticleName + '</a>'
                                 var html = '<a href="' + top.Ts.System.AppDomain + '/wiki/JustArticle.aspx?Organizationid=' + wiki.OrganizationID + '&amp;ArticleID=' + wiki.ArticleID + '">' + wiki.ArticleName + '</a>';
                                 ed.focus();
                                 ed.selection.moveToBookmark(bookmark);
