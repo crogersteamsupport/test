@@ -94,20 +94,42 @@ namespace TeamSupport.Data
     {
       return ExecuteNonQuery(loginUser, new SqlCommand(commandText));
     }
-    
+
     public static int ExecuteNonQuery(LoginUser loginUser, SqlCommand command)
     {
       BaseCollection.FixCommandParameters(command);
       int rows = 0;
+      int deadlockCount = 0;
       using (SqlConnection connection = new SqlConnection(loginUser.ConnectionString))
       {
-        connection.Open();
         command.Connection = connection;
-        rows = command.ExecuteNonQuery();
-        connection.Close();
-      }
 
-      return rows;
+        while (deadlockCount < 4)
+        {
+          try
+          {
+            connection.Open();
+            rows = command.ExecuteNonQuery();
+            connection.Close();
+            return rows;
+          }
+          catch (SqlException ex)
+          {
+            if (ex.Number == 1205 && deadlockCount < 3)
+            {
+              deadlockCount++;
+              connection.Close();
+              System.Threading.Thread.Sleep(10000);
+            }
+            else
+            {
+              connection.Close();
+              throw ex;
+            }
+          }
+        }
+        return rows;
+      }
     }
   }
 
