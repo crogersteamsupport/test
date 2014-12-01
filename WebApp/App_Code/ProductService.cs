@@ -362,6 +362,24 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public int GetProductVersionOpenTicketCount(int versionID)
+    {
+        Organizations organizations = new Organizations(TSAuthentication.GetLoginUser());
+        organizations.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID);
+
+        TicketTypes ticketTypes = new TicketTypes(TSAuthentication.GetLoginUser());
+        ticketTypes.LoadByOrganizationID(TSAuthentication.GetLoginUser().OrganizationID, organizations[0].ProductType);
+
+        int count = 0;
+        foreach (TicketType ticketType in ticketTypes)
+        {
+            count += Tickets.GetProductVersionOpenTicketCount(TSAuthentication.GetLoginUser(), versionID, ticketType.TicketTypeID);
+        }
+
+        return count;
+    }
+
+    [WebMethod]
     public string LoadChartData(int productID, bool open)
     {
 
