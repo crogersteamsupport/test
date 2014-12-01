@@ -33,11 +33,13 @@
               <asp:Repeater ID="rptUsers" runat="server">
                 <ItemTemplate>
                   <div style="margin: 0px 5px 5px 15px;">
-                    <div class="repeaterItem">
+                    <div class="repeaterItem" style="display:inline-block" runat="server" id="trash">
                       <img class="editImg" src="../images/icons/Trash.png" alt="Trash" onclick="radconfirm('Are you sure you would like to remove this user?', function(arg){if(arg){RemoveUser(<%# DataBinder.Eval(Container.DataItem, "UserID")%>, <%# DataBinder.Eval(Container.DataItem, "GroupID")%>);}}, 250, 125, null, 'Remove User'); return false;" />
-                      <span>
-                        <%# DataBinder.Eval(Container.DataItem, "Name")%></span>
+
                     </div>
+                      <span style="display:inline-block">
+                        <%# DataBinder.Eval(Container.DataItem, "Name")%>  
+                      </span>
                   </div>
                 </ItemTemplate>
               </asp:Repeater>

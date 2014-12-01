@@ -62,4 +62,13 @@ public partial class Frames_GroupInformation : BaseFramePage
     rptUsers.DataBind();
 
   }
+
+  protected void rptUsers_ItemDataBound(object sender, RepeaterItemEventArgs e)
+  {
+        RepeaterItem item = e.Item;
+        Control myControl = (Control)e.Item.FindControl("trash");
+        if (myControl != null && !TSAuthentication.IsSystemAdmin)
+            myControl.Visible = false;
+  }
+
 }

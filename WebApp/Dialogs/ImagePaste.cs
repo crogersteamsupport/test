@@ -120,7 +120,7 @@ public partial class Dialogs_ProfileImage : BaseDialogPage
 
         if (img1.Value != "")
         {
-            string filename = DateTime.UtcNow.Ticks.ToString();
+            string filename = Guid.NewGuid().ToString();
             using (WebClient Client = new WebClient())
             {
                 img1.Value = img1.Value.Replace(".ashx", "");

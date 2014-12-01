@@ -1451,8 +1451,8 @@ $(document).ready(function () {
                 top.Ts.System.logAction('Ticket - Assignment Changed');
                 top.Ts.Services.Tickets.SetTicketUser(_ticketID, user.UserID, function (userInfo) {
                     setUserName(userInfo);
-                    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
                     parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
+                    window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changeassigned", userFullName);
                 },
           function (error) {
               parent.show().find('img').hide();

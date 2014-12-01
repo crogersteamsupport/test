@@ -18,6 +18,8 @@ $(document).ready(function () {
   _assetDetailPage.refresh();
   $('.asset-tooltip').tooltip({ placement: 'bottom', container: 'body' });
 
+  var _isAdmin = top.Ts.System.User.IsSystemAdmin;
+
   $('body').layout({
     defaults: {
       spacing_open: 0,
@@ -44,7 +46,7 @@ $(document).ready(function () {
   LoadFiles();
 
 
-  if (!top.Ts.System.User.CanEditAsset) {
+  if (!top.Ts.System.User.CanEditAsset && !_isAdmin) {
     $('#assetEdit').hide();
   }
 

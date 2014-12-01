@@ -67,7 +67,7 @@ namespace TSWebServices
 
       foreach (PhoneNumber phoneNumber in phoneNumbers)
       {
-        string number = phoneNumber.Number.Replace(")", "").Replace("(", "").Replace("-", "").Replace(".", "").Replace(" ", "").Replace("%2B1", "").Replace("%2B", "").ToLower();
+        string number = phoneNumber.Number.Replace(")", "").Replace("(", "").Replace("-", "").Replace(".", "").Replace(" ", "").Replace("+1", "").Replace("+", "").ToLower();
         if (number == phone)
         {
           if (phoneNumber.RefType == ReferenceType.Organizations)

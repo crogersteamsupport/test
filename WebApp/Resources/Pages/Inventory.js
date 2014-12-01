@@ -1,9 +1,7 @@
 ﻿$(document).ready(function () {
 
-  //  var _isAdmin = top.Ts.System.User.IsSystemAdmin;
-  //  if (!top.Ts.System.User.CanCreateCompany && !top.Ts.System.User.CanCreateContact && !_isAdmin) {
-  //    $('.action-new').hide();
-  //  }
+  var _isAdmin = top.Ts.System.User.IsSystemAdmin;
+
   $('input, textarea').placeholder();
 
   function fetchItems(start) {
@@ -34,8 +32,8 @@
       searchJunkyard = true;
     }
 
-    if (!top.Ts.System.User.CanCreateAsset) {
-        $('.action-new').hide();
+    if (!top.Ts.System.User.CanCreateAsset && !_isAdmin) {
+        $('.action-new').remove();
     }
 
     top.Ts.Services.Search.SearchAssets($('#searchString').val(), start, 20, searchAssigned, searchWarehouse, searchJunkyard, function (items) {
