@@ -1368,6 +1368,13 @@ namespace TSWebServices
       if (status.OrganizationID != TSAuthentication.OrganizationID) return null;
       ticket.TicketStatusID = ticketStatusID;
       ticket.Collection.Save();
+
+        if(ticket.ProductID != null)
+        {
+            Product product = Products.GetProduct(TSAuthentication.GetLoginUser(), (int)ticket.ProductID);
+            product.NeedsIndexing = true;
+            product.Collection.Save();
+        }
       return status.GetProxy();
     }
 
@@ -1385,6 +1392,13 @@ namespace TSWebServices
       {
         if (ticketSeverityID == ticket.TicketSeverityID || !CanEditTicket(ticket)) continue;
         ticket.TicketSeverityID = ticketSeverityID;
+
+        if (ticket.ProductID != null)
+        {
+            Product product = Products.GetProduct(TSAuthentication.GetLoginUser(), (int)ticket.ProductID);
+            product.NeedsIndexing = true;
+            product.Collection.Save();
+        }
       }
       tickets.Save();
     }
