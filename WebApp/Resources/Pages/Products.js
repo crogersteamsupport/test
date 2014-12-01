@@ -87,13 +87,13 @@
     var div = $('<div>')
           .addClass('productinfo');
 
-    if (typeof item.openTicketCount != 'undefined') {
-      div.append(
+    top.Ts.Services.Products.GetProductOpenTicketCount(item.productID, function (count) {
+        div.append(
         $('<div>')
           .addClass('pull-right')
-          .append($('<p>').text(item.openTicketCount + ' open tickets'))
+          .append($('<p>').text(count + ' open tickets'))
       );
-    }
+    });
 
     $('<td>').append(div).appendTo(el);
 

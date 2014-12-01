@@ -636,7 +636,7 @@ function showSearchResults(results) {
         '</div>' +
         '<div class="resultItem-text">' +
           '<h1>' +
-            '<a href="#" onclick="' + onClickHandler + '" class="ts-link">' + text + '</a>' +
+            '<a href="#" onclick="' + onClickHandler + '; return false;" class="ts-link">' + text + '</a>' +
           '</h1>' +
           subText +
         '</div>' +
