@@ -28,6 +28,7 @@ var clueTipOptions = top.Ts.Utils.getClueTipOptions(tipTimer);
 var userFullName = top.Ts.System.User.FirstName + " " + top.Ts.System.User.LastName;
 var canKbEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility;
 var alertMessage = null;
+var dateFormat;
 
 $(document).ready(function () {
     if (top.Ts.System.Organization.IsInventoryEnabled != true) $('.ticket-widget-assets').hide();
@@ -133,6 +134,10 @@ $(document).ready(function () {
             },
             Cancel: function () { $(this).dialog("close"); clearDialog(); }
         }
+    });
+
+    top.Ts.Services.Customers.GetDateFormat(true, function (format) {
+        dateFormat = format.replace("yyyy", "yy");
     });
 
     $('.ticket-rail .collapsable')
@@ -1262,7 +1267,7 @@ $(document).ready(function () {
             .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
             .css('width', '100%')
             .appendTo(container)
-            .datetimepicker()
+            .datetimepicker({ dateFormat: dateFormat })
             .focus();
 
         if (_dueDate != null) {
@@ -2617,7 +2622,7 @@ var createActionForm = function (element, action, callback) {
     }
 
     selectType.combobox();
-    element.find('.ticket-action-form-date').datetimepicker().datetimepicker('setDate', new Date());
+    element.find('.ticket-action-form-date').datetimepicker({ dateFormat: dateFormat }).datetimepicker('setDate', new Date());
     element.find('.ticket-action-form-hours').spinner({ min: 0 }).val(0);
     element.find('.ticket-action-form-minutes').spinner({ min: 0 }).val(0);
 
@@ -2711,7 +2716,7 @@ var createActionForm = function (element, action, callback) {
         }
 
         if (action.DateStarted != null) {
-            element.find('.ticket-action-form-date').datetimepicker('setDate', action.DateStarted);
+            element.find('.ticket-action-form-date').datetimepicker({ dateFormat: dateFormat }).datetimepicker('setDate', action.DateStarted);
         }
 
         if (action.TimeSpent != null) {
@@ -3819,7 +3824,7 @@ var appendCustomEditDate = function(field, element) {
             .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
             .css('width', '100%')
             .appendTo(container)
-            .datepicker()
+            .datepicker({ dateFormat: dateFormat })
             //.datetimepicker('setDate', top.Ts.Utils.getMsDate(fieldValue))
             .focus();
 
@@ -4006,7 +4011,7 @@ var appendCustomEditDateTime = function (field, element) {
             .addClass('ui-widget-content ui-corner-all ticket-cutstom-edit-text-input')
             .css('width', '100%')
             .appendTo(container)
-            .datetimepicker()
+            .datetimepicker({ dateFormat: dateFormat })
             .datetimepicker('setDate', top.Ts.Utils.getMsDate(fieldValue))
             .focus();
 

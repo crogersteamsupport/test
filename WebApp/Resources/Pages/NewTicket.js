@@ -13,6 +13,7 @@ $(document).ready(function () {
   var _doClose = false;
   var canEdit = top.Ts.System.User.IsSystemAdmin || top.Ts.System.User.ChangeKbVisibility;
   var alertMessage = null;
+  var dateFormat;
   top.Ts.System.logAction('New Ticket - Started');
 
   $('#knowledgeBaseCategoryDiv').hide();
@@ -48,6 +49,11 @@ $(document).ready(function () {
       option = $('<option>').text(cat.CategoryName + ' -> ' + sub.CategoryName).attr('value', sub.CategoryID).appendTo('.newticket-kbCategory').data('o', sub);
     }
   }
+
+  top.Ts.Services.Customers.GetDateFormat(true, function (format) {
+      dateFormat = format.replace("yyyy", "yy");
+      $('.ticket-action-form-dueDate').datetimepicker({ dateFormat: dateFormat });
+  });
 
   $('.newticket-kbCategory').combobox();
 
@@ -217,8 +223,6 @@ $(document).ready(function () {
   for (var i = 0; i < groups.length; i++) {
     $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('.newticket-group');
   }
-
-  $('.ticket-action-form-dueDate').datetimepicker();
 
   function checkIfUserExistsInArray(user, array) {
     var result = false;
@@ -466,7 +470,7 @@ $(document).ready(function () {
     .appendTo(div)
     .addClass('ui-widget-content ui-corner-all newticket-custom-datetime')
     .css('width', '150px')
-    .datepicker();
+    .datepicker({ dateFormat: dateFormat });
   }
 
   function appendCustomEditTime(field) {
@@ -504,7 +508,7 @@ $(document).ready(function () {
     .appendTo(div)
     .addClass('ui-widget-content ui-corner-all newticket-custom-datetime')
     .css('width', '150px')
-    .datetimepicker();
+    .datetimepicker({ dateFormat: dateFormat });
   }
 
 
