@@ -651,7 +651,7 @@ namespace TeamSupport.ServiceLibrary
           {
             Logs.WriteEvent("Adding portal email to list");
 
-            userList.Add(new UserEmail(-3, "", "", ticket.PortalEmail, false));
+            userList.Add(new UserEmail(-2, "", "", ticket.PortalEmail, false));
           }
         }
         else
