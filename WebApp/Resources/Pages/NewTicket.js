@@ -219,7 +219,7 @@ $(document).ready(function () {
   addUnassignedComboItem($('.newticket-user').combobox());
   $('.newticket-user').combobox('setValue', top.Ts.System.User.UserID);
 
-  var groups = top.Ts.Cache.getGroups();
+  var groups = top.Ts.Cache.getTicketGroups();
   for (var i = 0; i < groups.length; i++) {
     $('<option>').attr('value', groups[i].GroupID).text(groups[i].Name).data('o', groups[i]).appendTo('.newticket-group');
   }

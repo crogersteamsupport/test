@@ -247,6 +247,34 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public GroupProxy[] GetTicketGroups()
+        {
+            List<GroupProxy> groupProxies = new List<GroupProxy>();
+
+            Groups orgGroups = new Groups(TSAuthentication.GetLoginUser());
+            orgGroups.LoadByNotUserID(TSAuthentication.UserID, TSAuthentication.OrganizationID);
+
+            Groups userGroups = new Groups(TSAuthentication.GetLoginUser());
+            userGroups.LoadByUserID(TSAuthentication.UserID);
+
+            GroupProxy lineBreak = new GroupProxy();
+            lineBreak.Name = "─────────────";
+
+            List<GroupProxy> userGroupProxies = new List<GroupProxy>();
+            userGroupProxies.AddRange(userGroups.GetGroupProxies());
+            userGroupProxies.Sort((x, y) => string.Compare(x.Name, y.Name));
+
+            List<GroupProxy> orgGroupProxies = new List<GroupProxy>();
+            orgGroupProxies.AddRange(orgGroups.GetGroupProxies());
+            orgGroupProxies.Sort((x, y) => string.Compare(x.Name, y.Name));
+
+            groupProxies.AddRange(userGroupProxies);
+            groupProxies.Add(lineBreak);
+            groupProxies.AddRange(orgGroupProxies);
+            return groupProxies.ToArray();
+        }
+
+        [WebMethod]
         public BasicUser[] GetGroupUsers(int groupID)
         {
           Users users = new Users(TSAuthentication.GetLoginUser());

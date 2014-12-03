@@ -1481,7 +1481,7 @@ $(document).ready(function () {
         var parent = $(this).closest('.ticket-name-value').hide();
         var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
         var select = $('<select>').appendTo(container);
-        var groups = top.Ts.Cache.getGroups();
+        var groups = top.Ts.Cache.getTicketGroups();
         var unassigned = new Object();
         unassigned.GroupID = null;
         unassigned.Name = "Unassigned";
