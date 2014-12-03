@@ -14,7 +14,6 @@
         this._ticketStatuses = null;
         this._ticketNextStatuses = null;
         this._ticketSeverities = null;
-        this._ticketgroups = null;
         this._forumCategories = null;
         this._actionTypes = null;
         this._timeZones = null;
@@ -35,7 +34,6 @@
       checkAll: function () {
           this.getUsers();
           this.getGroups();
-          this.getTicketGroups();
           this.getProducts();
           this.getProductVersionStatuses();
           this.getTicketNextStatuses();
@@ -74,18 +72,6 @@
               }
           });
           return self._groups;
-      },
-      getTicketGroups: function () {
-          var self = this;
-          Ts.Services.System.GetCheckSum(Ts.ReferenceTypes.Groups, function (checksum) {
-              if (!self._ticketgroups || !self._ticketgroups.CheckSum || checksum != self._ticketgroups.CheckSum) {
-                  Ts.Services.Users.GetTicketGroups(function (result) {
-                      self._ticketgroups = result;
-                      self._ticketgroups.CheckSum = checksum;
-                  });
-              }
-          });
-          return self._ticketgroups;
       },
       getTicketTypes: function () {
           var self = this;
