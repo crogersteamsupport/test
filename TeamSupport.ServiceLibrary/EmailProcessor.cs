@@ -79,7 +79,7 @@ namespace TeamSupport.ServiceLibrary
         {
           try
           {
-            if (emailPost.CreatorID != -2)
+            if (emailPost.CreatorID != -3)
             {
               _isDebug = Settings.ReadBool("Debug", false);
               _logEnabled = Settings.ReadInt("LoggingEnabled", 0) == 1;
@@ -647,7 +647,7 @@ namespace TeamSupport.ServiceLibrary
           {
             Logs.WriteEvent("Adding portal email to list");
 
-            userList.Add(new UserEmail(-2, "", "", ticket.PortalEmail, false));
+            userList.Add(new UserEmail(-3, "", "", ticket.PortalEmail, false));
           }
         }
         else

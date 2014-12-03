@@ -34,7 +34,7 @@ UPDATE EmailPosts
 SET LockProcessID = @ProcessID 
 OUTPUT Inserted.*
 WHERE EmailPostID IN (
-  SELECT TOP 1 EmailPostID FROM EmailPosts WHERE LockProcessID IS NULL AND CreatorID <> -2 AND DATEADD(SECOND, HoldTime, DateCreated) < GETUTCDATE() ORDER BY DateCreated
+  SELECT TOP 1 EmailPostID FROM EmailPosts WHERE LockProcessID IS NULL AND CreatorID <> -3 AND DATEADD(SECOND, HoldTime, DateCreated) < GETUTCDATE() ORDER BY DateCreated
 )
 ";
 
@@ -89,7 +89,7 @@ WHERE EmailPostID IN (
 
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "DELETE FROM EmailPosts WHERE CreatorID = -2";
+        command.CommandText = "DELETE FROM EmailPosts WHERE CreatorID = -3";
         command.CommandType = CommandType.Text;
         emailPosts.ExecuteNonQuery(command, "EmailPosts");
       }
