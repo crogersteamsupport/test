@@ -82,7 +82,7 @@ namespace TeamSupport.Data
     public Importer(LoginUser loginUser, string fileName)
     {
       _creator = Users.GetUser(loginUser, loginUser.UserID);
-      _loginUser = new LoginUser(loginUser.ConnectionString, -3, loginUser.OrganizationID, null);
+      _loginUser = new LoginUser(loginUser.ConnectionString, -5, loginUser.OrganizationID, null);
       _fileName = fileName;
     }
 
@@ -296,7 +296,7 @@ namespace TeamSupport.Data
       {
 
         _organizationID = organizationID;
-        _loginUser = new LoginUser(_loginUser.ConnectionString, -3, organizationID, null);
+        _loginUser = new LoginUser(_loginUser.ConnectionString, -5, organizationID, null);
 
         _log.AppendMessage("Import Started: " + DateTime.Now.ToString());
         _currentRow = null;
