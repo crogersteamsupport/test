@@ -70,6 +70,7 @@ namespace TeamSupport.ServiceLibrary
 
     public override void Run()
     {
+  
       while (!IsStopped)
       {
         EmailPost emailPost = GetNextEmailPost(LoginUser.ConnectionString, (int)_threadPosition);
@@ -349,7 +350,10 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent(string.Format("{0} Public Actions Loaded", publicActionCount.ToString()));
 
         Logs.WriteEvent("Processing Ticket Assignment");
-        AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
+        if (ticket.CreatorID != oldUserID && ticket.CreatorID != modifier.ModifierID)
+        {
+            AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
+        }
         Logs.WriteEvent("Processing Advanced Portal");
         AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
         Logs.WriteEvent("Processing Basic Portal");
@@ -1293,10 +1297,10 @@ namespace TeamSupport.ServiceLibrary
 
     private UserEmail FindByUserEmail(string address, List<UserEmail> list)
     {
-      address = address.Trim().ToLower();
+      address = address.Trim();
       foreach (UserEmail item in list)
       {
-        if (item.Address.ToLower().Trim() == address) return item;
+        if (item.Address.ToLower().Trim() == address.ToLower()) return item;
       }
       return null;
     }
