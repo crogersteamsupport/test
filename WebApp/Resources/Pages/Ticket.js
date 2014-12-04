@@ -1480,7 +1480,6 @@ $(document).ready(function () {
         removeComboBoxes();
         var parent = $(this).closest('.ticket-name-value').hide();
         var container = $('<div>').addClass('ticket-combobox').insertAfter(parent);
-        var select = $('<select>').appendTo(container);
         var groups;
 
         top.Ts.Services.Tickets.GetTicketGroups(_ticketID, function (result) {
@@ -1488,6 +1487,7 @@ $(document).ready(function () {
             var unassigned = new Object();
             unassigned.GroupID = null;
             unassigned.Name = "Unassigned";
+            var select = $('<select>').appendTo(container);
             var option = $('<option>').text(unassigned.Name).appendTo(select).data('group', unassigned);
             if ($(this).text() === unassigned.Name) {
                 option.attr('selected', 'selected');

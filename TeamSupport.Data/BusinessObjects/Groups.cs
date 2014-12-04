@@ -26,7 +26,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM Groups g LEFT JOIN GroupUsers gu ON g.GroupID = gu.GroupID WHERE gu.UserID = @UserID";
+        command.CommandText = "SELECT * FROM Groups g LEFT JOIN GroupUsers gu ON g.GroupID = gu.GroupID WHERE gu.UserID = @UserID Order By Name";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@UserID", userID);
         Fill(command, "Groups,GroupUsers");
@@ -62,13 +62,35 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SELECT * FROM Groups g WHERE (g.OrganizationID = @OrganizationID) AND (1 not in (SELECT 1 FROM GroupUsers gu WHERE gu.UserID = @UserID AND gu.GroupID = g.GroupID))";
+        command.CommandText = "SELECT * FROM Groups g WHERE (g.OrganizationID = @OrganizationID) AND (1 not in (SELECT 1 FROM GroupUsers gu WHERE gu.UserID = @UserID AND gu.GroupID = g.GroupID)) Order by Name";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@UserID", userID);
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         Fill(command, "Groups,GroupUsers");
       }
     }
+
+    public void LoadByUserIDGrouped(int userID, int organizationID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"SELECT G.*, 1 SORTBY FROM Groups g LEFT JOIN GroupUsers gu ON g.GroupID = gu.GroupID WHERE gu.UserID = 9761 
+                                    UNION ALL
+                                    SELECT 0, 0, '?????????????', '', NULL, NULL, NULL, 0, 0, 2 SORTBY
+                                    UNION ALL
+                                    SELECT G.*, 3 SORTBY
+                                    FROM Groups g 
+                                    WHERE (g.OrganizationID = 1078) 
+                                    AND (1 not in (SELECT 1 FROM GroupUsers gu WHERE gu.UserID = 9761 AND gu.GroupID = g.GroupID)) 
+                                    ORDER BY SORTBY, NAME";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@UserID", userID);
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            Fill(command, "Groups,GroupUsers");
+        }
+    }
+
+
 
     public void LoadByOrganizationID(int organizationID, string orderBy = "Name")
     {
