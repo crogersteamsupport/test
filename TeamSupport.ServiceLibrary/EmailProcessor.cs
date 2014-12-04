@@ -350,16 +350,17 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent(string.Format("{0} Public Actions Loaded", publicActionCount.ToString()));
 
         Logs.WriteEvent("Processing Ticket Assignment");
-        if (ticket.CreatorID != oldUserID && ticket.CreatorID != modifier.ModifierID)
+        if (ticket.CreatorID != oldUserID && ticket.CreatorID != modifierID && (oldUserID != modifierID) && (ticket.UserID != modifierID) )
         {
             AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
+
+            Logs.WriteEvent("Processing Advanced Portal");
+            AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
+            Logs.WriteEvent("Processing Basic Portal");
+            AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, true);
+            Logs.WriteEvent("Processing Internal Modified");
+            AddMessageInternalTicketModified(ticket, oldUserID, oldGroupID, isNew, oldTicketStatusID, oldTicketSeverityID, !actions.IsEmpty, modifierName, modifier == null ? -1 : modifier.UserID, ticketOrganization);
         }
-        Logs.WriteEvent("Processing Advanced Portal");
-        AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
-        Logs.WriteEvent("Processing Basic Portal");
-        AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, true);
-        Logs.WriteEvent("Processing Internal Modified");
-        AddMessageInternalTicketModified(ticket, oldUserID, oldGroupID, isNew, oldTicketStatusID, oldTicketSeverityID, !actions.IsEmpty, modifierName, modifier == null ? -1 : modifier.UserID, ticketOrganization);
         if (!isNew)
         {
         }
