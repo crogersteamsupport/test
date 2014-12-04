@@ -30,7 +30,7 @@
             <div class="groupBodyWrapperDiv">
               <div class="groupBodyDiv">
                             <div id="pnlUsers" runat="server" class="adminDiv" style="padding: 10px 0;">
-              <asp:Repeater ID="rptUsers" runat="server">
+              <asp:Repeater ID="rptUsers" runat="server" OnItemDataBound="rptUsers_ItemDataBound">
                 <ItemTemplate>
                   <div style="margin: 0px 5px 5px 15px;">
                     <div class="repeaterItem" style="display:inline-block" runat="server" id="trash">
