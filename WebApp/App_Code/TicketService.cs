@@ -3408,7 +3408,7 @@ namespace TSWebServices
 
         String temppath = HttpContext.Current.Request.PhysicalApplicationPath + "images\\";
         string path = AttachmentPath.GetPath(TSAuthentication.GetLoginUser(), TSAuthentication.OrganizationID, AttachmentPath.Folder.Images);
-        string filename = DateTime.UtcNow.Ticks.ToString();
+        string filename = Guid.NewGuid().ToString();
 
         if (source.StartsWith("data:image/png;base64,"))
         {
