@@ -504,7 +504,7 @@ namespace TeamSupport.ServiceLibrary
         {
           Logs.WriteEventFormat("Owner: {0} ({1}) - ReceiveTicketNotifications:{2}", owner.DisplayName, owner.UserID.ToString(), owner.ReceiveTicketNotifications.ToString());
           Logs.WriteParam("ModifierID", modifierID.ToString());
-          if (modifierID != owner.UserID && owner.ReceiveTicketNotifications)
+          if (modifierID != owner.UserID && owner.UserID != ticket.CreatorID && owner.ReceiveTicketNotifications)
           {
             Logs.WriteEvent("Getting Ticket Assignment Email");
             MailMessage message = EmailTemplates.GetTicketAssignmentUser(LoginUser, modifierName, ticket.GetTicketView());
