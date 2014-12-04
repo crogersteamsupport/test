@@ -527,6 +527,7 @@ namespace TeamSupport.ServiceLibrary
         if (ticket.UserID != null)
         {
           RemoveUser(list, (int)ticket.UserID);
+          RemoveUser(list, (int)ticket.ModifierID);
           Logs.WriteParam("Removing UserID from list: ", ticket.UserID.ToString());
         }
         MailMessage message = EmailTemplates.GetTicketAssignmentGroup(LoginUser, modifierName, ticket.GetTicketView());
