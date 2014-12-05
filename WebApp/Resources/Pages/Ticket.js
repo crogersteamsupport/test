@@ -1335,7 +1335,7 @@ $(document).ready(function () {
                   parent.find('img').hide().next().show().delay(800).fadeOut(400);
                   var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                   var anchor = parent.find('a');
-                  anchor.text((date === null ? 'Unassigned' : date.localeFormat(top.Ts.Utils.getDateTimePattern())))
+                  anchor.text((date === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern())))
                   _dueDate = result;
                   if (date != null && date < Date.now()) {
                       parent.addClass('nonrequired-field-error ui-corner-all');
