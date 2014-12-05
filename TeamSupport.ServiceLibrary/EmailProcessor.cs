@@ -324,6 +324,7 @@ namespace TeamSupport.ServiceLibrary
 
 
         User modifier = Users.GetUser(LoginUser, modifierID);
+       
         string modifierName = modifier == null ? GetOrganizationName(ticket.OrganizationID) : modifier.FirstLastName;
         Logs.WriteEvent("Modifier: " + modifierName);
 
