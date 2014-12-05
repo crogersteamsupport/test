@@ -1293,6 +1293,28 @@ $(document).ready(function () {
               parent.show().find('img').show();
               var value = '';
               if (input.val()) {
+                  if (dateFormat.indexOf("m") != 0)
+                  {
+                    var dateArr = input.val().split('/');
+                    if (dateFormat.indexOf("d") == 0)
+                        var day = dateArr[0];
+                    if (dateFormat.indexOf("y") == 0)
+                        var year = dateArr[0];
+                    if (dateFormat.indexOf("m") == 3)
+                        var month = dateArr[1];
+
+                    var timeSplit = dateArr[2].split(' ');
+                    if (dateFormat.indexOf("y") == 6)
+                        var year = timeSplit[0];
+                    else
+                        var day = timeSplit[0];
+
+                    var theTime = timeSplit[1];
+
+                    var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+                    value = top.Ts.Utils.getMsDate(formattedDate);
+                  }
+                  else
                   value = top.Ts.Utils.getMsDate(input.val());
               }
               container.remove();
@@ -2543,7 +2565,7 @@ var initEditor = function (element, init) {
           //image: '../images/nav/16/imagepaste.png',
           icon: 'awesome fa fa-paste',
           onclick: function () {
-          debugger
+          
             if (BrowserDetect.browser == 'Safari' || BrowserDetect.browser == 'Explorer') {
               alert("Sorry, this feature is not supported by " + BrowserDetect.browser);
             }

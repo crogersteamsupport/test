@@ -1984,7 +1984,29 @@ $(document).ready(function () {
       info.GroupID = $('.newticket-group').val();
       var dueDate = $('.ticket-action-form-dueDate').datetimepicker('getDate');
       if (dueDate != null) {
-        info.DueDate = top.Ts.Utils.getMsDate(dueDate);
+
+          if (dateFormat.indexOf("m") != 0) {
+              var dateArr = $('.ticket-action-form-dueDate').val().split('/');
+              if (dateFormat.indexOf("d") == 0)
+                  var day = dateArr[0];
+              if (dateFormat.indexOf("y") == 0)
+                  var year = dateArr[0];
+              if (dateFormat.indexOf("m") == 3)
+                  var month = dateArr[1];
+
+              var timeSplit = dateArr[2].split(' ');
+              if (dateFormat.indexOf("y") == 6)
+                  var year = timeSplit[0];
+              else
+                  var day = timeSplit[0];
+
+              var theTime = timeSplit[1];
+
+              var formattedDate = month + "/" + day + "/" + year + " " + theTime;
+              info.DueDate = top.Ts.Utils.getMsDate(formattedDate);
+          }
+          else
+              info.DueDate = top.Ts.Utils.getMsDate(dueDate);
       }
       info.CategoryID = $('.newticket-community').val();
       info.ProductID = $('.newticket-product').val();
