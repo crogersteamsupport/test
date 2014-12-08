@@ -86,6 +86,12 @@ namespace TeamSupport.ServiceLibrary
           {
             string debugAddresses = Settings.ReadString("Debug Email Address").Replace(';', ',');
             Logs.WriteEvent("DEBUG Addresses: " + debugAddresses);
+            StringBuilder builder = new StringBuilder("<div><strong>Orginal To List:</strong></div>");
+            foreach (MailAddress address in message.To)
+            {
+              builder.AppendLine(string.Format("<div>{0}</div>", WebUtility.HtmlEncode(address.ToString())));
+            }
+            builder.AppendLine("<br /><br /><br />");
 
             message.To.Clear();
             message.To.Add(debugAddresses);
