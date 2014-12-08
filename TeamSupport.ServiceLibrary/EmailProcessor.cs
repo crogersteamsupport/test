@@ -252,7 +252,7 @@ namespace TeamSupport.ServiceLibrary
     private void AddMessage(int organizationID, string description, MailMessage message, string replyToAddress = null, string[] attachments = null, DateTime? timeToSend = null)
     {
       Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
-      string replyAddress = organization.GetReplyToAddress(replyToAddress).ToLower().Trim();
+      string replyAddress = organization.GetReplyToAddress(replyToAddress).Trim();
       
       int i = 0; 
       while (i < message.To.Count)
