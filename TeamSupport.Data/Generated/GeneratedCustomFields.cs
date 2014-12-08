@@ -64,6 +64,24 @@ namespace TeamSupport.Data
       set { Row["Mask"] = CheckValue("Mask", value); }
     }
     
+    public int? ParentCustomFieldID
+    {
+      get { return Row["ParentCustomFieldID"] != DBNull.Value ? (int?)Row["ParentCustomFieldID"] : null; }
+      set { Row["ParentCustomFieldID"] = CheckValue("ParentCustomFieldID", value); }
+    }
+    
+    public string ParentCustomValue
+    {
+      get { return Row["ParentCustomValue"] != DBNull.Value ? (string)Row["ParentCustomValue"] : null; }
+      set { Row["ParentCustomValue"] = CheckValue("ParentCustomValue", value); }
+    }
+    
+    public int? ParentProductID
+    {
+      get { return Row["ParentProductID"] != DBNull.Value ? (int?)Row["ParentProductID"] : null; }
+      set { Row["ParentProductID"] = CheckValue("ParentProductID", value); }
+    }
+    
 
     
     public bool IsRequiredToClose
@@ -263,7 +281,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomFields] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [ApiFieldName] = @ApiFieldName,    [RefType] = @RefType,    [FieldType] = @FieldType,    [AuxID] = @AuxID,    [Position] = @Position,    [ListValues] = @ListValues,    [Description] = @Description,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsFirstIndexSelect] = @IsFirstIndexSelect,    [IsRequired] = @IsRequired,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [CustomFieldCategoryID] = @CustomFieldCategoryID,    [IsRequiredToClose] = @IsRequiredToClose,    [Mask] = @Mask  WHERE ([CustomFieldID] = @CustomFieldID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CustomFields] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [ApiFieldName] = @ApiFieldName,    [RefType] = @RefType,    [FieldType] = @FieldType,    [AuxID] = @AuxID,    [Position] = @Position,    [ListValues] = @ListValues,    [Description] = @Description,    [IsVisibleOnPortal] = @IsVisibleOnPortal,    [IsFirstIndexSelect] = @IsFirstIndexSelect,    [IsRequired] = @IsRequired,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [CustomFieldCategoryID] = @CustomFieldCategoryID,    [IsRequiredToClose] = @IsRequiredToClose,    [Mask] = @Mask,    [ParentCustomFieldID] = @ParentCustomFieldID,    [ParentCustomValue] = @ParentCustomValue,    [ParentProductID] = @ParentProductID  WHERE ([CustomFieldID] = @CustomFieldID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CustomFieldID", SqlDbType.Int, 4);
@@ -392,13 +410,55 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
+		tempParameter = updateCommand.Parameters.Add("ParentCustomFieldID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ParentCustomValue", SqlDbType.VarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = updateCommand.Parameters.Add("ParentProductID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomFields] (    [OrganizationID],    [Name],    [ApiFieldName],    [RefType],    [FieldType],    [AuxID],    [Position],    [ListValues],    [Description],    [IsVisibleOnPortal],    [IsFirstIndexSelect],    [IsRequired],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [CustomFieldCategoryID],    [IsRequiredToClose],    [Mask]) VALUES ( @OrganizationID, @Name, @ApiFieldName, @RefType, @FieldType, @AuxID, @Position, @ListValues, @Description, @IsVisibleOnPortal, @IsFirstIndexSelect, @IsRequired, @DateCreated, @DateModified, @CreatorID, @ModifierID, @CustomFieldCategoryID, @IsRequiredToClose, @Mask); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[CustomFields] (    [OrganizationID],    [Name],    [ApiFieldName],    [RefType],    [FieldType],    [AuxID],    [Position],    [ListValues],    [Description],    [IsVisibleOnPortal],    [IsFirstIndexSelect],    [IsRequired],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [CustomFieldCategoryID],    [IsRequiredToClose],    [Mask],    [ParentCustomFieldID],    [ParentCustomValue],    [ParentProductID]) VALUES ( @OrganizationID, @Name, @ApiFieldName, @RefType, @FieldType, @AuxID, @Position, @ListValues, @Description, @IsVisibleOnPortal, @IsFirstIndexSelect, @IsRequired, @DateCreated, @DateModified, @CreatorID, @ModifierID, @CustomFieldCategoryID, @IsRequiredToClose, @Mask, @ParentCustomFieldID, @ParentCustomValue, @ParentProductID); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("ParentProductID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ParentCustomValue", SqlDbType.VarChar, -1);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
+		
+		tempParameter = insertCommand.Parameters.Add("ParentCustomFieldID", SqlDbType.Int, 4);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 10;
+		  tempParameter.Scale = 10;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("Mask", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -645,7 +705,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomFieldID], [OrganizationID], [Name], [ApiFieldName], [RefType], [FieldType], [AuxID], [Position], [ListValues], [Description], [IsVisibleOnPortal], [IsFirstIndexSelect], [IsRequired], [DateCreated], [DateModified], [CreatorID], [ModifierID], [CustomFieldCategoryID], [IsRequiredToClose], [Mask] FROM [dbo].[CustomFields] WHERE ([CustomFieldID] = @CustomFieldID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [CustomFieldID], [OrganizationID], [Name], [ApiFieldName], [RefType], [FieldType], [AuxID], [Position], [ListValues], [Description], [IsVisibleOnPortal], [IsFirstIndexSelect], [IsRequired], [DateCreated], [DateModified], [CreatorID], [ModifierID], [CustomFieldCategoryID], [IsRequiredToClose], [Mask], [ParentCustomFieldID], [ParentCustomValue], [ParentProductID] FROM [dbo].[CustomFields] WHERE ([CustomFieldID] = @CustomFieldID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("CustomFieldID", customFieldID);
         Fill(command);

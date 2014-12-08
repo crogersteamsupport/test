@@ -207,6 +207,10 @@
       margin-left: 6px;      
     }
 
+    .customFieldIndent {
+        margin-left: 1em;
+    }
+
     #ticketEmailIntroductionLabel { margin-top: 5px;}
 
     .fa-paste   { color: #5CB85C !important}

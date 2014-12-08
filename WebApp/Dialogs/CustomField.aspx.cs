@@ -29,19 +29,26 @@ public partial class Dialogs_CustomField : BaseDialogPage
     {
       _customFieldID = int.Parse(Request["CustomFieldID"]);
     }
-    else
-    {
+
       _refType = (ReferenceType)int.Parse(Request["RefType"]);
       if (Request["AuxID"] != null)
       {
         _auxID = int.Parse(Request["AuxID"]);
       }
       
-    }
-
     if (!IsPostBack)
     {
       LoadFieldTypes();
+      if (_refType == ReferenceType.Tickets)
+      {
+        LoadParentFields();
+        LoadParentProducts();
+      }
+      else
+      {
+        parentFields.Visible = false;
+      }
+
       if (_customFieldID > -1)
       {
         LoadCustomField(_customFieldID);
@@ -49,6 +56,7 @@ public partial class Dialogs_CustomField : BaseDialogPage
     }
 
     _manager.AjaxSettings.AddAjaxSetting(comboFieldType, divMain);
+    _manager.AjaxSettings.AddAjaxSetting(comboParentField, comboParentValue);
 
     CustomFieldType selectedFieldType = GetSelectedFieldType();
     pnlPickList.Visible = selectedFieldType == CustomFieldType.PickList;
@@ -75,6 +83,51 @@ public partial class Dialogs_CustomField : BaseDialogPage
     return (CustomFieldType)(int.Parse(comboFieldType.SelectedValue));
   }
 
+  private int? GetSelectedParentCustomFieldID()
+  {
+      if (String.IsNullOrEmpty(comboParentField.SelectedValue) || comboParentField.SelectedValue == "-1")
+      {
+          return null;
+      }
+      else
+      {
+          return int.Parse(comboParentField.SelectedValue);
+      }
+  }
+
+  private string GetSelectedParentCustomValue()
+  {
+      if (String.IsNullOrEmpty(comboParentField.SelectedValue) || comboParentField.SelectedValue == "-1")
+      {
+          return null;
+      }
+      else
+      {
+          CustomFields parentCustomField = new CustomFields(UserSession.LoginUser);
+          parentCustomField.LoadByCustomFieldID(int.Parse(comboParentField.SelectedValue));
+          if (parentCustomField[0].IsFirstIndexSelect && comboParentValue.SelectedIndex == 0)
+          {
+              return null;
+          }
+          else
+          {
+              return comboParentValue.SelectedItem.Text;
+          }
+      }
+  }
+
+  private int? GetSelectedParentProductID()
+  {
+      if (String.IsNullOrEmpty(comboParentProduct.SelectedValue) || comboParentProduct.SelectedValue == "-1")
+      {
+          return null;
+      }
+      else
+      {
+          return int.Parse(comboParentProduct.SelectedValue);
+      }
+  }
+
   private void LoadFieldTypes()
   {
     comboFieldType.Items.Clear();
@@ -85,6 +138,75 @@ public partial class Dialogs_CustomField : BaseDialogPage
     comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.DateTime), ((int)CustomFieldType.DateTime).ToString()));
     comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.Date), ((int)CustomFieldType.Date).ToString()));
     comboFieldType.Items.Add(new RadComboBoxItem(CustomFields.GetCustomFieldTypeName(CustomFieldType.Time), ((int)CustomFieldType.Time).ToString()));
+  }
+
+  private void LoadParentFields()
+  {
+    CustomFields pickListCustomFields = new CustomFields(UserSession.LoginUser);
+    pickListCustomFields.LoadByOrganizationFieldTypeAndTicketType(UserSession.LoginUser.OrganizationID, CustomFieldType.PickList, _auxID, _customFieldID);
+
+    if (pickListCustomFields.Count > 0 )
+    {
+      comboParentField.Items.Clear();
+      comboParentField.Items.Add(new RadComboBoxItem("Unassigned", "-1"));
+      foreach (CustomField field in pickListCustomFields)
+      {
+        comboParentField.Items.Add(new RadComboBoxItem(field.Name, field.CustomFieldID.ToString()));
+      }
+    }
+    else
+    {
+      parentPickList.Visible = false;
+    }
+  }
+
+  private void LoadParentValues(string values)
+  {
+    if (values != string.Empty)
+    {
+      parentValue.Visible = true;
+      comboParentValue.Items.Clear();
+      char[] delimitedChars = {'|'};
+      string[] separatedValues = values.Split(delimitedChars);
+      for (int i = 0; i < separatedValues.Length; i++) 
+      {
+        comboParentValue.Items.Add(new RadComboBoxItem(separatedValues[i], separatedValues[i]));
+      }
+    }
+    else
+    {
+      parentValue.Visible = false;
+    }
+  }
+
+  private void LoadParentProducts()
+  {
+    Organizations organization = new Organizations(UserSession.LoginUser);
+    organization.LoadByOrganizationID(UserSession.LoginUser.OrganizationID);
+
+    if (organization[0].ProductType == ProductType.Enterprise || organization[0].ProductType == ProductType.BugTracking)
+    {
+      Products products = new Products(UserSession.LoginUser);
+      products.LoadByOrganizationID(UserSession.LoginUser.OrganizationID);
+
+      if (products.Count > 0)
+      {
+        comboParentProduct.Items.Clear();
+        comboParentProduct.Items.Add(new RadComboBoxItem("Unassigned", "-1"));
+        foreach (Product product in products)
+        {
+          comboParentProduct.Items.Add(new RadComboBoxItem(product.Name, product.ProductID.ToString()));
+        }
+      }
+      else
+      {
+        parentProduct.Visible = false;
+      }
+    }
+    else
+    {
+      parentProduct.Visible = false;
+    }
   }
 
   private void LoadCustomField(int customFieldID)
@@ -104,6 +226,29 @@ public partial class Dialogs_CustomField : BaseDialogPage
     textName.Text = fields[0].Name;
     textApiFieldName.Text = fields[0].ApiFieldName;
     textList.Text = fields[0].ListValues.Replace("|", "\n");
+    if (fields[0].ParentCustomFieldID == null)
+    {
+      comboParentField.SelectedValue = "-1";
+    }
+    else
+    {
+      comboParentField.SelectedValue = ((int)fields[0].ParentCustomFieldID).ToString();
+      CustomFields parentCustomField = new CustomFields(UserSession.LoginUser);
+      parentCustomField.LoadByCustomFieldID((int)fields[0].ParentCustomFieldID);
+      LoadParentValues(parentCustomField[0].ListValues);
+      if (fields[0].ParentCustomValue != null)
+      {
+        comboParentValue.SelectedValue = fields[0].ParentCustomValue;
+      }
+    }
+    if (fields[0].ParentProductID == null)
+    {
+      comboParentProduct.SelectedValue = "-1";
+    }
+    else
+    {
+      comboParentProduct.SelectedValue = ((int)fields[0].ParentProductID).ToString();
+    }
     comboFieldType.SelectedValue = ((int)fields[0].FieldType).ToString();
     cbIsVisibleOnPortal.Checked = fields[0].IsVisibleOnPortal == null ? false : (bool)fields[0].IsVisibleOnPortal;
     cbIsRequired.Checked = fields[0].IsRequired;
@@ -157,6 +302,9 @@ public partial class Dialogs_CustomField : BaseDialogPage
     field.Name = textName.Text;
     field.ApiFieldName = apiFieldName;
     field.FieldType = GetSelectedFieldType();
+    field.ParentCustomFieldID = GetSelectedParentCustomFieldID();
+    field.ParentCustomValue = GetSelectedParentCustomValue();
+    field.ParentProductID = GetSelectedParentProductID();
     field.IsVisibleOnPortal = cbIsVisibleOnPortal.Checked;
     field.IsFirstIndexSelect = cbFirstSelect.Checked;
     field.IsRequired = cbIsRequired.Checked;
@@ -209,13 +357,13 @@ public partial class Dialogs_CustomField : BaseDialogPage
 
     foreach (CustomField field in fields)
     {
-      if (field.ApiFieldName.Trim().ToLower() == apiFieldName.Trim().ToLower())
+      if (field.ApiFieldName.Trim().ToLower() == apiFieldName.Trim().ToLower() && _customFieldID != field.CustomFieldID)
       {
         _manager.Alert("Please choose a unique API field name for this custom field.");
         return true;
       }
 
-      if (field.Name.Trim().ToLower() == textName.Text.Trim().ToLower())
+      if (field.Name.Trim().ToLower() == textName.Text.Trim().ToLower() && _customFieldID != field.CustomFieldID)
       {
         _manager.Alert("Please choose a unique name for this custom field.");
         return true;
@@ -224,4 +372,23 @@ public partial class Dialogs_CustomField : BaseDialogPage
     return false;
   }
 
+  protected void comboParentField_SelectedIndexChanged(object o, Telerik.Web.UI.RadComboBoxSelectedIndexChangedEventArgs e)
+  {
+      CustomFields selectedCustomField = new CustomFields(UserSession.LoginUser);
+      selectedCustomField.LoadByCustomFieldID((Convert.ToInt32(comboParentField.SelectedValue)));
+      if (selectedCustomField.IsEmpty)
+      {
+          LoadParentValues(string.Empty);
+          return;
+      }
+
+      if (selectedCustomField[0].OrganizationID != UserSession.LoginUser.OrganizationID)
+      {
+          Response.Write("Invalid Request");
+          Response.End();
+          return;
+      }
+
+      LoadParentValues(selectedCustomField[0].ListValues);
+  }
 }

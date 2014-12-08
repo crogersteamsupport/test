@@ -1370,7 +1370,7 @@ namespace TSWebServices
       ticket.Collection.Save();
       List<object> result = new List<object>();
       result.Add(statuses[0].GetProxy());
-      result.Add(GetCustomValues(ticketID));
+      result.Add(GetParentCustomValues(ticketID));
       return result.ToArray();
     }
 
@@ -2717,7 +2717,7 @@ namespace TSWebServices
       info.Customers = GetTicketCustomers(ticket.TicketID);
       info.Related = GetRelatedTickets(ticket.TicketID);
       info.Tags = GetTicketTags(ticket.TicketID);
-      info.CustomValues = GetCustomValues(ticket.TicketID);
+      info.CustomValues = GetParentCustomValues(ticket.TicketID);
       info.Subscribers = GetSubscribers(ticket);
       info.Queuers = GetQueuers(ticket);
 
@@ -2798,6 +2798,16 @@ namespace TSWebServices
       CustomValues values = new CustomValues(ticket.Collection.LoginUser);
       values.LoadByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID);
       return values.GetCustomValueProxies();
+    }
+
+    [WebMethod]
+    public CustomValueProxy[] GetParentCustomValues(int ticketID)
+    {
+        Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+        if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+        CustomValues values = new CustomValues(ticket.Collection.LoginUser);
+        values.LoadParentsByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID);
+        return values.GetCustomValueProxies();
     }
 
     [WebMethod]
@@ -3550,7 +3560,38 @@ namespace TSWebServices
       return result;
     }
 
-    
+    [WebMethod]
+    public CustomValueProxy[] GetParentValues(int ticketID)
+    {
+        Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+        if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+        CustomValues values = new CustomValues(ticket.Collection.LoginUser);
+        values.LoadParentsByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID);
+        return values.GetCustomValueProxies();
+    }
+
+    [WebMethod]
+    public CustomValueProxy[] GetMatchingParentValueFields(int ticketID, int parentFieldID, string parentValue)
+    {
+        Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+        if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+        CustomValues values = new CustomValues(ticket.Collection.LoginUser);
+        values.LoadByParentValue(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID, parentFieldID, parentValue, ticket.ProductID);
+        return values.GetCustomValueProxies();
+    }
+
+    [WebMethod]
+    public CustomValueProxy[] GetMatchingProductFields(int ticketID)
+    {
+        Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
+        if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
+        CustomValues values = new CustomValues(ticket.Collection.LoginUser);
+        if (ticket.ProductID != null)
+        {
+            values.LoadByParentProduct(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID, (int)ticket.ProductID);
+        }
+        return values.GetCustomValueProxies();
+    }
   }
 
 

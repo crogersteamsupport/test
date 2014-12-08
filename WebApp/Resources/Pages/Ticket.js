@@ -12,6 +12,7 @@ var _timerElapsed = 0;
 var _ticketGroupID = null;
 var _ticketGroupUsers = null;
 var _dueDate = null;
+var _parentFields = [];
 var speed = 50, counter = 0, start;
 
 var execSelectTicket = null;
@@ -1072,6 +1073,7 @@ $(document).ready(function () {
                 .toggleClass('ticket-closed', result[0].IsClosed)
                 .data('ticketStatusID', result[0].TicketStatusID);
                         appendCustomValues(result[1]);
+                        appendConditionalFields();
                         parent.show().find('img').hide().next().show().delay(800).fadeOut(400);
                         window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changetype", userFullName);
                     }
@@ -3226,6 +3228,10 @@ var loadProducts = function (productIDs) {
                 else {
                     parent.show().find('img').hide();
                 }
+                top.Ts.Services.Tickets.GetParentValues(_ticketID, function (fields) {
+                    appendCustomValues(fields);
+                    appendConditionalFields();
+                });
             },
               function (error) {
                   parent.show().find('img').hide();
@@ -3488,6 +3494,8 @@ var loadTicket = function (ticketNumber, refresh) {
             $('.ticket-widget-jira').hide();
         }
 
+    appendConditionalFields();
+
         if (typeof refresh === "undefined") {
             window.top.ticketSocket.server.getTicketViewing(_ticketNumber);
         }
@@ -3546,6 +3554,7 @@ var appendCustomValues = function (fields) {
   }
   $('.ticket-widget-properties').show();
   var container = $('#divProperties').empty().removeClass('ts-loading');
+  _parentFields = [];
   for (var i = 0; i < fields.length; i++) {
     var item = null;
 
@@ -3564,7 +3573,7 @@ var appendCustomValues = function (fields) {
       case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
       case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
       case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
-      case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div); break;
+      case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div, false); break;
       default:
     }
 
@@ -3572,7 +3581,7 @@ var appendCustomValues = function (fields) {
   }
 }
 
-var appendCustomEditCombo = function (field, element) {
+var appendCustomEditCombo = function (field, element, loadConditionalFields) {
   var result = $('<a>')
       .attr('href', '#')
       .text((field.Value === null || $.trim(field.Value) === '' ? 'Unassigned' : field.Value))
@@ -3598,7 +3607,7 @@ var appendCustomEditCombo = function (field, element) {
 
         select.combobox({
           selected: function (e, ui) {
-            parent.show().find('img').show();
+            parent.show().find('img').first().show();
             var value = $(this).val();
             container.remove();
 
@@ -3625,9 +3634,12 @@ var appendCustomEditCombo = function (field, element) {
             }
             top.Ts.System.logAction('Ticket - Custom Value Set');
             top.Ts.Services.System.SaveCustomValue(field.CustomFieldID, _ticketID, value, function (result) {
-              parent.find('img').hide().next().show().delay(800).fadeOut(400);
+              parent.find('img').first().hide().next().show().delay(800).fadeOut(400);
               parent.closest('.ticket-name-value').data('field', result);
-              parent.find('a').text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+              parent.find('a').first().text((result.Value === null || $.trim(result.Value) === '' ? 'Unassigned' : result.Value));
+              $('.' + field.CustomFieldID + 'children').remove();
+              var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children customFieldIndent').insertAfter(element);
+              appendMatchingParentValueFields(childrenContainer, result);
               window.top.ticketSocket.server.ticketUpdate(_ticketNumber, "changecustom", userFullName);
             }, function () {
               alert("There was a problem saving your ticket property.");
@@ -3651,9 +3663,17 @@ var appendCustomEditCombo = function (field, element) {
   if (field.IsRequiredToClose) {
     result.parent().addClass('is-required-to-close');
   }
-  if ((field.IsFirstIndexSelect == true && items[0] == field.Value) || field.Value == null || $.trim(field.Value) === '') 
-  {
+  if ((field.IsFirstIndexSelect == true && items[0] == field.Value) || field.Value == null || $.trim(field.Value) === '') {
     result.parent().addClass('is-empty');
+  }
+  //We could always call the appendMatchingParentValueFields but in this way we limit the impact in case of error in new code.
+  if (loadConditionalFields) {
+    $('.' + field.CustomFieldID + 'children').remove();
+    var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children customFieldIndent').insertAfter(element);
+    appendMatchingParentValueFields(childrenContainer, field);
+  }
+  else {
+    _parentFields.push(element);
   }
 }
 
@@ -4178,6 +4198,76 @@ var loadCustomValues = function() {
 
 
     }, function () { alert('There was a problem retrieving the ticket properties.'); });
+}
+
+var appendConditionalFields = function () {
+    appendMatchingProductFields();
+    for (var i = 0; i < _parentFields.length; i++) {
+      var field = _parentFields[i].data('field');
+      $('.' + field.CustomFieldID + 'children').remove();
+      var childrenContainer = $('<div>').addClass(field.CustomFieldID + 'children  customFieldIndent').insertAfter(_parentFields[i]);
+      appendMatchingParentValueFields(childrenContainer, field);
+    }
+}
+
+var appendMatchingProductFields = function () {
+    top.Ts.Services.Tickets.GetMatchingProductFields(_ticketID, function (fields) {
+        var container = $('#divProperties');
+        for (var i = 0; i < fields.length; i++) {
+            var item = null;
+
+            var field = fields[i];
+
+            var div = $('<div>').addClass('ticket-name-value').data('field', field);
+            $('<span>')
+                  .addClass('property')
+                  .text(field.Name + ': ')
+                  .appendTo(div);
+
+            switch (field.FieldType) {
+                case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+                case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+                case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+                case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
+                case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+                case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+                case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div, true); break;
+                default:
+            }
+
+            container.append(div);
+        }
+    });
+
+}
+
+var appendMatchingParentValueFields = function (container, parentField) {
+    top.Ts.Services.Tickets.GetMatchingParentValueFields(_ticketID, parentField.CustomFieldID, parentField.Value, function (fields) {
+        for (var i = 0; i < fields.length; i++) {
+            var item = null;
+
+            var field = fields[i];
+
+            var div = $('<div>').addClass('ticket-name-value').data('field', field);
+            $('<span>')
+                  .addClass('property')
+                  .text(field.Name + ': ')
+                  .appendTo(div);
+
+            container.append(div);
+
+            switch (field.FieldType) {
+                case top.Ts.CustomFieldType.Text: appendCustomEdit(field, div); break;
+                case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, div); break;
+                case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, div); break;
+                case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, div); break;
+                case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, div); break;
+                case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, div); break;
+                case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, div, true); break;
+                default:
+            }
+        }
+    });
 }
 
 var setProduct = function(id, name) {

@@ -1,880 +1,955 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
 
 (
-  @OrganizationProductID int
+  @CustomFieldID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [Product],
-    [VersionStatus],
-    [IsShipping],
-    [IsDiscontinued],
-    [VersionNumber],
-    [ProductVersionStatusID],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [OrganizationProductID],
+    [CustomFieldID],
     [OrganizationID],
-    [OrganizationName],
-    [ProductID],
-    [ProductVersionID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
     [IsVisibleOnPortal],
-    [SupportExpiration],
+    [IsFirstIndexSelect],
+    [IsRequired],
     [DateCreated],
     [DateModified],
     [CreatorID],
-    [ModifierID]
-  FROM [dbo].[OrganizationProductsView]
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+    [ModifierID],
+    [CustomFieldCategoryID],
+    [IsRequiredToClose],
+    [Mask],
+    [ParentCustomFieldID],
+    [ParentCustomValue],
+    [ParentProductID]
+  FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
 
 (
-  @Product varchar(255),
-  @VersionStatus varchar(255),
-  @IsShipping bit,
-  @IsDiscontinued bit,
-  @VersionNumber varchar(50),
-  @ProductVersionStatusID int,
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @OrganizationProductID int,
   @OrganizationID int,
-  @OrganizationName varchar(255),
-  @ProductID int,
-  @ProductVersionID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
   @IsVisibleOnPortal bit,
-  @SupportExpiration datetime,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
+  @CustomFieldCategoryID int,
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX),
+  @ParentCustomFieldID int,
+  @ParentCustomValue varchar(MAX),
+  @ParentProductID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[OrganizationProductsView]
+  INSERT INTO [dbo].[CustomFields]
   (
-    [Product],
-    [VersionStatus],
-    [IsShipping],
-    [IsDiscontinued],
-    [VersionNumber],
-    [ProductVersionStatusID],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [OrganizationProductID],
     [OrganizationID],
-    [OrganizationName],
-    [ProductID],
-    [ProductVersionID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
     [IsVisibleOnPortal],
-    [SupportExpiration],
+    [IsFirstIndexSelect],
+    [IsRequired],
     [DateCreated],
     [DateModified],
     [CreatorID],
-    [ModifierID])
+    [ModifierID],
+    [CustomFieldCategoryID],
+    [IsRequiredToClose],
+    [Mask],
+    [ParentCustomFieldID],
+    [ParentCustomValue],
+    [ParentProductID])
   VALUES (
-    @Product,
-    @VersionStatus,
-    @IsShipping,
-    @IsDiscontinued,
-    @VersionNumber,
-    @ProductVersionStatusID,
-    @ReleaseDate,
-    @IsReleased,
-    @Description,
-    @OrganizationProductID,
     @OrganizationID,
-    @OrganizationName,
-    @ProductID,
-    @ProductVersionID,
+    @Name,
+    @ApiFieldName,
+    @RefType,
+    @FieldType,
+    @AuxID,
+    @Position,
+    @ListValues,
+    @Description,
     @IsVisibleOnPortal,
-    @SupportExpiration,
+    @IsFirstIndexSelect,
+    @IsRequired,
     @DateCreated,
     @DateModified,
     @CreatorID,
-    @ModifierID)
+    @ModifierID,
+    @CustomFieldCategoryID,
+    @IsRequiredToClose,
+    @Mask,
+    @ParentCustomFieldID,
+    @ParentCustomValue,
+    @ParentProductID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
 
 (
-  @Product varchar(255),
-  @VersionStatus varchar(255),
-  @IsShipping bit,
-  @IsDiscontinued bit,
-  @VersionNumber varchar(50),
-  @ProductVersionStatusID int,
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @OrganizationProductID int,
+  @CustomFieldID int,
   @OrganizationID int,
-  @OrganizationName varchar(255),
-  @ProductID int,
-  @ProductVersionID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
   @IsVisibleOnPortal bit,
-  @SupportExpiration datetime,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
   @DateModified datetime,
-  @ModifierID int
+  @ModifierID int,
+  @CustomFieldCategoryID int,
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX),
+  @ParentCustomFieldID int,
+  @ParentCustomValue varchar(MAX),
+  @ParentProductID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[OrganizationProductsView]
+  UPDATE [dbo].[CustomFields]
   SET
-    [Product] = @Product,
-    [VersionStatus] = @VersionStatus,
-    [IsShipping] = @IsShipping,
-    [IsDiscontinued] = @IsDiscontinued,
-    [VersionNumber] = @VersionNumber,
-    [ProductVersionStatusID] = @ProductVersionStatusID,
-    [ReleaseDate] = @ReleaseDate,
-    [IsReleased] = @IsReleased,
-    [Description] = @Description,
     [OrganizationID] = @OrganizationID,
-    [OrganizationName] = @OrganizationName,
-    [ProductID] = @ProductID,
-    [ProductVersionID] = @ProductVersionID,
+    [Name] = @Name,
+    [ApiFieldName] = @ApiFieldName,
+    [RefType] = @RefType,
+    [FieldType] = @FieldType,
+    [AuxID] = @AuxID,
+    [Position] = @Position,
+    [ListValues] = @ListValues,
+    [Description] = @Description,
     [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [SupportExpiration] = @SupportExpiration,
+    [IsFirstIndexSelect] = @IsFirstIndexSelect,
+    [IsRequired] = @IsRequired,
     [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+    [ModifierID] = @ModifierID,
+    [CustomFieldCategoryID] = @CustomFieldCategoryID,
+    [IsRequiredToClose] = @IsRequiredToClose,
+    [Mask] = @Mask,
+    [ParentCustomFieldID] = @ParentCustomFieldID,
+    [ParentCustomValue] = @ParentCustomValue,
+    [ParentProductID] = @ParentProductID
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
 
 (
-  @OrganizationProductID int
+  @CustomFieldID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[OrganizationProductsView]
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+  DELETE FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
 
 (
-  @OrganizationProductID int
+  @CustomFieldID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [Product],
-    [VersionStatus],
-    [IsShipping],
-    [IsDiscontinued],
-    [VersionNumber],
-    [ProductVersionStatusID],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [OrganizationProductID],
+    [CustomFieldID],
     [OrganizationID],
-    [OrganizationName],
-    [ProductID],
-    [ProductVersionID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
     [IsVisibleOnPortal],
-    [SupportExpiration],
+    [IsFirstIndexSelect],
+    [IsRequired],
     [DateCreated],
     [DateModified],
     [CreatorID],
-    [ModifierID]
-  FROM [dbo].[OrganizationProductsView]
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+    [ModifierID],
+    [CustomFieldCategoryID],
+    [IsRequiredToClose],
+    [Mask],
+    [ParentCustomFieldID],
+    [ParentCustomValue],
+    [ParentProductID]
+  FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
 
 (
-  @Product varchar(255),
-  @VersionStatus varchar(255),
-  @IsShipping bit,
-  @IsDiscontinued bit,
-  @VersionNumber varchar(50),
-  @ProductVersionStatusID int,
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @OrganizationProductID int,
   @OrganizationID int,
-  @OrganizationName varchar(255),
-  @ProductID int,
-  @ProductVersionID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
   @IsVisibleOnPortal bit,
-  @SupportExpiration datetime,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
+  @CustomFieldCategoryID int,
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX),
+  @ParentCustomFieldID int,
+  @ParentCustomValue varchar(MAX),
+  @ParentProductID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[OrganizationProductsView]
+  INSERT INTO [dbo].[CustomFields]
   (
-    [Product],
-    [VersionStatus],
-    [IsShipping],
-    [IsDiscontinued],
-    [VersionNumber],
-    [ProductVersionStatusID],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [OrganizationProductID],
     [OrganizationID],
-    [OrganizationName],
-    [ProductID],
-    [ProductVersionID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
     [IsVisibleOnPortal],
-    [SupportExpiration],
+    [IsFirstIndexSelect],
+    [IsRequired],
     [DateCreated],
     [DateModified],
     [CreatorID],
-    [ModifierID])
+    [ModifierID],
+    [CustomFieldCategoryID],
+    [IsRequiredToClose],
+    [Mask],
+    [ParentCustomFieldID],
+    [ParentCustomValue],
+    [ParentProductID])
   VALUES (
-    @Product,
-    @VersionStatus,
-    @IsShipping,
-    @IsDiscontinued,
-    @VersionNumber,
-    @ProductVersionStatusID,
-    @ReleaseDate,
-    @IsReleased,
-    @Description,
-    @OrganizationProductID,
     @OrganizationID,
-    @OrganizationName,
-    @ProductID,
-    @ProductVersionID,
+    @Name,
+    @ApiFieldName,
+    @RefType,
+    @FieldType,
+    @AuxID,
+    @Position,
+    @ListValues,
+    @Description,
     @IsVisibleOnPortal,
-    @SupportExpiration,
+    @IsFirstIndexSelect,
+    @IsRequired,
     @DateCreated,
     @DateModified,
     @CreatorID,
-    @ModifierID)
+    @ModifierID,
+    @CustomFieldCategoryID,
+    @IsRequiredToClose,
+    @Mask,
+    @ParentCustomFieldID,
+    @ParentCustomValue,
+    @ParentProductID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
 
 (
-  @Product varchar(255),
-  @VersionStatus varchar(255),
-  @IsShipping bit,
-  @IsDiscontinued bit,
-  @VersionNumber varchar(50),
-  @ProductVersionStatusID int,
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @OrganizationProductID int,
+  @CustomFieldID int,
   @OrganizationID int,
-  @OrganizationName varchar(255),
-  @ProductID int,
-  @ProductVersionID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
   @IsVisibleOnPortal bit,
-  @SupportExpiration datetime,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
   @DateModified datetime,
-  @ModifierID int
+  @ModifierID int,
+  @CustomFieldCategoryID int,
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX),
+  @ParentCustomFieldID int,
+  @ParentCustomValue varchar(MAX),
+  @ParentProductID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[OrganizationProductsView]
+  UPDATE [dbo].[CustomFields]
   SET
-    [Product] = @Product,
-    [VersionStatus] = @VersionStatus,
-    [IsShipping] = @IsShipping,
-    [IsDiscontinued] = @IsDiscontinued,
-    [VersionNumber] = @VersionNumber,
-    [ProductVersionStatusID] = @ProductVersionStatusID,
-    [ReleaseDate] = @ReleaseDate,
-    [IsReleased] = @IsReleased,
-    [Description] = @Description,
     [OrganizationID] = @OrganizationID,
-    [OrganizationName] = @OrganizationName,
-    [ProductID] = @ProductID,
-    [ProductVersionID] = @ProductVersionID,
+    [Name] = @Name,
+    [ApiFieldName] = @ApiFieldName,
+    [RefType] = @RefType,
+    [FieldType] = @FieldType,
+    [AuxID] = @AuxID,
+    [Position] = @Position,
+    [ListValues] = @ListValues,
+    [Description] = @Description,
     [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [SupportExpiration] = @SupportExpiration,
+    [IsFirstIndexSelect] = @IsFirstIndexSelect,
+    [IsRequired] = @IsRequired,
     [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+    [ModifierID] = @ModifierID,
+    [CustomFieldCategoryID] = @CustomFieldCategoryID,
+    [IsRequiredToClose] = @IsRequiredToClose,
+    [Mask] = @Mask,
+    [ParentCustomFieldID] = @ParentCustomFieldID,
+    [ParentCustomValue] = @ParentCustomValue,
+    [ParentProductID] = @ParentProductID
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
 
 (
-  @OrganizationProductID int
+  @CustomFieldID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[OrganizationProductsView]
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+  DELETE FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
 
 (
-  @OrganizationProductID int
+  @CustomFieldID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [Product],
-    [VersionStatus],
-    [IsShipping],
-    [IsDiscontinued],
-    [VersionNumber],
-    [ProductVersionStatusID],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [OrganizationProductID],
+    [CustomFieldID],
     [OrganizationID],
-    [OrganizationName],
-    [ProductID],
-    [ProductVersionID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
     [IsVisibleOnPortal],
-    [SupportExpiration],
+    [IsFirstIndexSelect],
+    [IsRequired],
     [DateCreated],
     [DateModified],
     [CreatorID],
-    [ModifierID]
-  FROM [dbo].[OrganizationProductsView]
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+    [ModifierID],
+    [CustomFieldCategoryID],
+    [IsRequiredToClose],
+    [Mask],
+    [ParentCustomFieldID],
+    [ParentCustomValue],
+    [ParentProductID]
+  FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
 
 (
-  @Product varchar(255),
-  @VersionStatus varchar(255),
-  @IsShipping bit,
-  @IsDiscontinued bit,
-  @VersionNumber varchar(50),
-  @ProductVersionStatusID int,
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @OrganizationProductID int,
   @OrganizationID int,
-  @OrganizationName varchar(255),
-  @ProductID int,
-  @ProductVersionID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
   @IsVisibleOnPortal bit,
-  @SupportExpiration datetime,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
+  @CustomFieldCategoryID int,
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX),
+  @ParentCustomFieldID int,
+  @ParentCustomValue varchar(MAX),
+  @ParentProductID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[OrganizationProductsView]
+  INSERT INTO [dbo].[CustomFields]
   (
-    [Product],
-    [VersionStatus],
-    [IsShipping],
-    [IsDiscontinued],
-    [VersionNumber],
-    [ProductVersionStatusID],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [OrganizationProductID],
     [OrganizationID],
-    [OrganizationName],
-    [ProductID],
-    [ProductVersionID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
     [IsVisibleOnPortal],
-    [SupportExpiration],
+    [IsFirstIndexSelect],
+    [IsRequired],
     [DateCreated],
     [DateModified],
     [CreatorID],
-    [ModifierID])
+    [ModifierID],
+    [CustomFieldCategoryID],
+    [IsRequiredToClose],
+    [Mask],
+    [ParentCustomFieldID],
+    [ParentCustomValue],
+    [ParentProductID])
   VALUES (
-    @Product,
-    @VersionStatus,
-    @IsShipping,
-    @IsDiscontinued,
-    @VersionNumber,
-    @ProductVersionStatusID,
-    @ReleaseDate,
-    @IsReleased,
-    @Description,
-    @OrganizationProductID,
     @OrganizationID,
-    @OrganizationName,
-    @ProductID,
-    @ProductVersionID,
+    @Name,
+    @ApiFieldName,
+    @RefType,
+    @FieldType,
+    @AuxID,
+    @Position,
+    @ListValues,
+    @Description,
     @IsVisibleOnPortal,
-    @SupportExpiration,
+    @IsFirstIndexSelect,
+    @IsRequired,
     @DateCreated,
     @DateModified,
     @CreatorID,
-    @ModifierID)
+    @ModifierID,
+    @CustomFieldCategoryID,
+    @IsRequiredToClose,
+    @Mask,
+    @ParentCustomFieldID,
+    @ParentCustomValue,
+    @ParentProductID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
 
 (
-  @Product varchar(255),
-  @VersionStatus varchar(255),
-  @IsShipping bit,
-  @IsDiscontinued bit,
-  @VersionNumber varchar(50),
-  @ProductVersionStatusID int,
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @OrganizationProductID int,
+  @CustomFieldID int,
   @OrganizationID int,
-  @OrganizationName varchar(255),
-  @ProductID int,
-  @ProductVersionID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
   @IsVisibleOnPortal bit,
-  @SupportExpiration datetime,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
   @DateModified datetime,
-  @ModifierID int
+  @ModifierID int,
+  @CustomFieldCategoryID int,
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX),
+  @ParentCustomFieldID int,
+  @ParentCustomValue varchar(MAX),
+  @ParentProductID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[OrganizationProductsView]
+  UPDATE [dbo].[CustomFields]
   SET
-    [Product] = @Product,
-    [VersionStatus] = @VersionStatus,
-    [IsShipping] = @IsShipping,
-    [IsDiscontinued] = @IsDiscontinued,
-    [VersionNumber] = @VersionNumber,
-    [ProductVersionStatusID] = @ProductVersionStatusID,
-    [ReleaseDate] = @ReleaseDate,
-    [IsReleased] = @IsReleased,
-    [Description] = @Description,
     [OrganizationID] = @OrganizationID,
-    [OrganizationName] = @OrganizationName,
-    [ProductID] = @ProductID,
-    [ProductVersionID] = @ProductVersionID,
+    [Name] = @Name,
+    [ApiFieldName] = @ApiFieldName,
+    [RefType] = @RefType,
+    [FieldType] = @FieldType,
+    [AuxID] = @AuxID,
+    [Position] = @Position,
+    [ListValues] = @ListValues,
+    [Description] = @Description,
     [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [SupportExpiration] = @SupportExpiration,
+    [IsFirstIndexSelect] = @IsFirstIndexSelect,
+    [IsRequired] = @IsRequired,
     [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+    [ModifierID] = @ModifierID,
+    [CustomFieldCategoryID] = @CustomFieldCategoryID,
+    [IsRequiredToClose] = @IsRequiredToClose,
+    [Mask] = @Mask,
+    [ParentCustomFieldID] = @ParentCustomFieldID,
+    [ParentCustomValue] = @ParentCustomValue,
+    [ParentProductID] = @ParentProductID
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
 
 (
-  @OrganizationProductID int
+  @CustomFieldID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[OrganizationProductsView]
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+  DELETE FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
 
 (
-  @OrganizationProductID int
+  @CustomFieldID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [Product],
-    [VersionStatus],
-    [IsShipping],
-    [IsDiscontinued],
-    [VersionNumber],
-    [ProductVersionStatusID],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [OrganizationProductID],
+    [CustomFieldID],
     [OrganizationID],
-    [OrganizationName],
-    [ProductID],
-    [ProductVersionID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
     [IsVisibleOnPortal],
-    [SupportExpiration],
+    [IsFirstIndexSelect],
+    [IsRequired],
     [DateCreated],
     [DateModified],
     [CreatorID],
-    [ModifierID]
-  FROM [dbo].[OrganizationProductsView]
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+    [ModifierID],
+    [CustomFieldCategoryID],
+    [IsRequiredToClose],
+    [Mask],
+    [ParentCustomFieldID],
+    [ParentCustomValue],
+    [ParentProductID]
+  FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
 
 (
-  @Product varchar(255),
-  @VersionStatus varchar(255),
-  @IsShipping bit,
-  @IsDiscontinued bit,
-  @VersionNumber varchar(50),
-  @ProductVersionStatusID int,
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @OrganizationProductID int,
   @OrganizationID int,
-  @OrganizationName varchar(255),
-  @ProductID int,
-  @ProductVersionID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
   @IsVisibleOnPortal bit,
-  @SupportExpiration datetime,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
+  @CustomFieldCategoryID int,
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX),
+  @ParentCustomFieldID int,
+  @ParentCustomValue varchar(MAX),
+  @ParentProductID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[OrganizationProductsView]
+  INSERT INTO [dbo].[CustomFields]
   (
-    [Product],
-    [VersionStatus],
-    [IsShipping],
-    [IsDiscontinued],
-    [VersionNumber],
-    [ProductVersionStatusID],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [OrganizationProductID],
     [OrganizationID],
-    [OrganizationName],
-    [ProductID],
-    [ProductVersionID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
     [IsVisibleOnPortal],
-    [SupportExpiration],
+    [IsFirstIndexSelect],
+    [IsRequired],
     [DateCreated],
     [DateModified],
     [CreatorID],
-    [ModifierID])
+    [ModifierID],
+    [CustomFieldCategoryID],
+    [IsRequiredToClose],
+    [Mask],
+    [ParentCustomFieldID],
+    [ParentCustomValue],
+    [ParentProductID])
   VALUES (
-    @Product,
-    @VersionStatus,
-    @IsShipping,
-    @IsDiscontinued,
-    @VersionNumber,
-    @ProductVersionStatusID,
-    @ReleaseDate,
-    @IsReleased,
-    @Description,
-    @OrganizationProductID,
     @OrganizationID,
-    @OrganizationName,
-    @ProductID,
-    @ProductVersionID,
+    @Name,
+    @ApiFieldName,
+    @RefType,
+    @FieldType,
+    @AuxID,
+    @Position,
+    @ListValues,
+    @Description,
     @IsVisibleOnPortal,
-    @SupportExpiration,
+    @IsFirstIndexSelect,
+    @IsRequired,
     @DateCreated,
     @DateModified,
     @CreatorID,
-    @ModifierID)
+    @ModifierID,
+    @CustomFieldCategoryID,
+    @IsRequiredToClose,
+    @Mask,
+    @ParentCustomFieldID,
+    @ParentCustomValue,
+    @ParentProductID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
 
 (
-  @Product varchar(255),
-  @VersionStatus varchar(255),
-  @IsShipping bit,
-  @IsDiscontinued bit,
-  @VersionNumber varchar(50),
-  @ProductVersionStatusID int,
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @OrganizationProductID int,
+  @CustomFieldID int,
   @OrganizationID int,
-  @OrganizationName varchar(255),
-  @ProductID int,
-  @ProductVersionID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
   @IsVisibleOnPortal bit,
-  @SupportExpiration datetime,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
   @DateModified datetime,
-  @ModifierID int
+  @ModifierID int,
+  @CustomFieldCategoryID int,
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX),
+  @ParentCustomFieldID int,
+  @ParentCustomValue varchar(MAX),
+  @ParentProductID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[OrganizationProductsView]
+  UPDATE [dbo].[CustomFields]
   SET
-    [Product] = @Product,
-    [VersionStatus] = @VersionStatus,
-    [IsShipping] = @IsShipping,
-    [IsDiscontinued] = @IsDiscontinued,
-    [VersionNumber] = @VersionNumber,
-    [ProductVersionStatusID] = @ProductVersionStatusID,
-    [ReleaseDate] = @ReleaseDate,
-    [IsReleased] = @IsReleased,
-    [Description] = @Description,
     [OrganizationID] = @OrganizationID,
-    [OrganizationName] = @OrganizationName,
-    [ProductID] = @ProductID,
-    [ProductVersionID] = @ProductVersionID,
+    [Name] = @Name,
+    [ApiFieldName] = @ApiFieldName,
+    [RefType] = @RefType,
+    [FieldType] = @FieldType,
+    [AuxID] = @AuxID,
+    [Position] = @Position,
+    [ListValues] = @ListValues,
+    [Description] = @Description,
     [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [SupportExpiration] = @SupportExpiration,
+    [IsFirstIndexSelect] = @IsFirstIndexSelect,
+    [IsRequired] = @IsRequired,
     [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+    [ModifierID] = @ModifierID,
+    [CustomFieldCategoryID] = @CustomFieldCategoryID,
+    [IsRequiredToClose] = @IsRequiredToClose,
+    [Mask] = @Mask,
+    [ParentCustomFieldID] = @ParentCustomFieldID,
+    [ParentCustomValue] = @ParentCustomValue,
+    [ParentProductID] = @ParentProductID
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
 
 (
-  @OrganizationProductID int
+  @CustomFieldID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[OrganizationProductsView]
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+  DELETE FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
 
 (
-  @OrganizationProductID int
+  @CustomFieldID int
 )
 AS
   SET NOCOUNT OFF;
   SELECT
-    [Product],
-    [VersionStatus],
-    [IsShipping],
-    [IsDiscontinued],
-    [VersionNumber],
-    [ProductVersionStatusID],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [OrganizationProductID],
+    [CustomFieldID],
     [OrganizationID],
-    [OrganizationName],
-    [ProductID],
-    [ProductVersionID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
     [IsVisibleOnPortal],
-    [SupportExpiration],
+    [IsFirstIndexSelect],
+    [IsRequired],
     [DateCreated],
     [DateModified],
     [CreatorID],
-    [ModifierID]
-  FROM [dbo].[OrganizationProductsView]
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+    [ModifierID],
+    [CustomFieldCategoryID],
+    [IsRequiredToClose],
+    [Mask],
+    [ParentCustomFieldID],
+    [ParentCustomValue],
+    [ParentProductID]
+  FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
 
 (
-  @Product varchar(255),
-  @VersionStatus varchar(255),
-  @IsShipping bit,
-  @IsDiscontinued bit,
-  @VersionNumber varchar(50),
-  @ProductVersionStatusID int,
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @OrganizationProductID int,
   @OrganizationID int,
-  @OrganizationName varchar(255),
-  @ProductID int,
-  @ProductVersionID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
   @IsVisibleOnPortal bit,
-  @SupportExpiration datetime,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
   @DateCreated datetime,
   @DateModified datetime,
   @CreatorID int,
   @ModifierID int,
+  @CustomFieldCategoryID int,
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX),
+  @ParentCustomFieldID int,
+  @ParentCustomValue varchar(MAX),
+  @ParentProductID int,
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[OrganizationProductsView]
+  INSERT INTO [dbo].[CustomFields]
   (
-    [Product],
-    [VersionStatus],
-    [IsShipping],
-    [IsDiscontinued],
-    [VersionNumber],
-    [ProductVersionStatusID],
-    [ReleaseDate],
-    [IsReleased],
-    [Description],
-    [OrganizationProductID],
     [OrganizationID],
-    [OrganizationName],
-    [ProductID],
-    [ProductVersionID],
+    [Name],
+    [ApiFieldName],
+    [RefType],
+    [FieldType],
+    [AuxID],
+    [Position],
+    [ListValues],
+    [Description],
     [IsVisibleOnPortal],
-    [SupportExpiration],
+    [IsFirstIndexSelect],
+    [IsRequired],
     [DateCreated],
     [DateModified],
     [CreatorID],
-    [ModifierID])
+    [ModifierID],
+    [CustomFieldCategoryID],
+    [IsRequiredToClose],
+    [Mask],
+    [ParentCustomFieldID],
+    [ParentCustomValue],
+    [ParentProductID])
   VALUES (
-    @Product,
-    @VersionStatus,
-    @IsShipping,
-    @IsDiscontinued,
-    @VersionNumber,
-    @ProductVersionStatusID,
-    @ReleaseDate,
-    @IsReleased,
-    @Description,
-    @OrganizationProductID,
     @OrganizationID,
-    @OrganizationName,
-    @ProductID,
-    @ProductVersionID,
+    @Name,
+    @ApiFieldName,
+    @RefType,
+    @FieldType,
+    @AuxID,
+    @Position,
+    @ListValues,
+    @Description,
     @IsVisibleOnPortal,
-    @SupportExpiration,
+    @IsFirstIndexSelect,
+    @IsRequired,
     @DateCreated,
     @DateModified,
     @CreatorID,
-    @ModifierID)
+    @ModifierID,
+    @CustomFieldCategoryID,
+    @IsRequiredToClose,
+    @Mask,
+    @ParentCustomFieldID,
+    @ParentCustomValue,
+    @ParentProductID)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
 
 (
-  @Product varchar(255),
-  @VersionStatus varchar(255),
-  @IsShipping bit,
-  @IsDiscontinued bit,
-  @VersionNumber varchar(50),
-  @ProductVersionStatusID int,
-  @ReleaseDate datetime,
-  @IsReleased bit,
-  @Description varchar(MAX),
-  @OrganizationProductID int,
+  @CustomFieldID int,
   @OrganizationID int,
-  @OrganizationName varchar(255),
-  @ProductID int,
-  @ProductVersionID int,
+  @Name varchar(50),
+  @ApiFieldName varchar(100),
+  @RefType int,
+  @FieldType int,
+  @AuxID int,
+  @Position int,
+  @ListValues varchar(MAX),
+  @Description varchar(250),
   @IsVisibleOnPortal bit,
-  @SupportExpiration datetime,
+  @IsFirstIndexSelect bit,
+  @IsRequired bit,
   @DateModified datetime,
-  @ModifierID int
+  @ModifierID int,
+  @CustomFieldCategoryID int,
+  @IsRequiredToClose bit,
+  @Mask varchar(MAX),
+  @ParentCustomFieldID int,
+  @ParentCustomValue varchar(MAX),
+  @ParentProductID int
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[OrganizationProductsView]
+  UPDATE [dbo].[CustomFields]
   SET
-    [Product] = @Product,
-    [VersionStatus] = @VersionStatus,
-    [IsShipping] = @IsShipping,
-    [IsDiscontinued] = @IsDiscontinued,
-    [VersionNumber] = @VersionNumber,
-    [ProductVersionStatusID] = @ProductVersionStatusID,
-    [ReleaseDate] = @ReleaseDate,
-    [IsReleased] = @IsReleased,
-    [Description] = @Description,
     [OrganizationID] = @OrganizationID,
-    [OrganizationName] = @OrganizationName,
-    [ProductID] = @ProductID,
-    [ProductVersionID] = @ProductVersionID,
+    [Name] = @Name,
+    [ApiFieldName] = @ApiFieldName,
+    [RefType] = @RefType,
+    [FieldType] = @FieldType,
+    [AuxID] = @AuxID,
+    [Position] = @Position,
+    [ListValues] = @ListValues,
+    [Description] = @Description,
     [IsVisibleOnPortal] = @IsVisibleOnPortal,
-    [SupportExpiration] = @SupportExpiration,
+    [IsFirstIndexSelect] = @IsFirstIndexSelect,
+    [IsRequired] = @IsRequired,
     [DateModified] = @DateModified,
-    [ModifierID] = @ModifierID
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+    [ModifierID] = @ModifierID,
+    [CustomFieldCategoryID] = @CustomFieldCategoryID,
+    [IsRequiredToClose] = @IsRequiredToClose,
+    [Mask] = @Mask,
+    [ParentCustomFieldID] = @ParentCustomFieldID,
+    [ParentCustomValue] = @ParentCustomValue,
+    [ParentProductID] = @ParentProductID
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteOrganizationProductsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteOrganizationProductsViewItem
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteOrganizationProductsViewItem
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
 
 (
-  @OrganizationProductID int
+  @CustomFieldID int
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[OrganizationProductsView]
-  WHERE ([OrganizationProductID] = @OrganizationProductID)
+  DELETE FROM [dbo].[CustomFields]
+  WHERE ([CustomFieldID] = @CustomFieldID)
 GO
 
 

@@ -83,6 +83,33 @@ namespace TSWebServices
     }
 
     [WebMethod]
+    public CustomFieldProxy[] GetParentCustomFields(ReferenceType refType, int? auxID)
+    {
+        CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+        fields.LoadParentsByReferenceType(TSAuthentication.OrganizationID, refType, auxID);
+        return fields.GetCustomFieldProxies();
+
+    }
+
+    [WebMethod]
+    public CustomFieldProxy[] GetProductMatchingCustomFields(ReferenceType refType, int ticketTypeID, int productID)
+    {
+        CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+        fields.LoadProductMatchingByReferenceType(TSAuthentication.OrganizationID, refType, ticketTypeID, productID);
+        return fields.GetCustomFieldProxies();
+
+    }
+
+    [WebMethod]
+    public CustomFieldProxy[] GetParentValueMatchingCustomFields(int parentCustomFieldID, string parentCustomValue, int productID)
+    {
+        CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+        fields.LoadParentValueMatching(TSAuthentication.OrganizationID, parentCustomFieldID, parentCustomValue, productID);
+        return fields.GetCustomFieldProxies();
+
+    }
+
+    [WebMethod]
     public CustomFieldCategoryProxy[] GetCategories(ReferenceType refType, int? auxID)
     {
       CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());

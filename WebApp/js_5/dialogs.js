@@ -356,9 +356,10 @@ function GetCustomFieldDialog(customFieldID, refType, auxID, catID) {
     var url = 'Dialogs/CustomField.aspx?'
 
     if (customFieldID != null) {
-        url = url + 'CustomFieldID=' + customFieldID;
+        url = url + 'CustomFieldID=' + customFieldID + '&';
     }
-    else if (auxID != null) {
+    
+    if (auxID != null) {
       url = url + 'RefType=' + refType + '&AuxID=' + auxID;
     }
     else {

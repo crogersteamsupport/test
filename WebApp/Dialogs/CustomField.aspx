@@ -18,22 +18,45 @@
         <div>
           Name:</div>
         <div class="inputDiv">
-          <telerik:RadTextBox ID="textName" runat="server" MaxLength="50" Width="350px"></telerik:RadTextBox></div>
+          <telerik:RadTextBox ID="textName" runat="server" MaxLength="50" Width="340px"></telerik:RadTextBox></div>
         <div>
           API Field Name:</div>
         <div class="inputDiv">
-          <telerik:RadTextBox ID="textApiFieldName" runat="server" MaxLength="50" Width="350px"></telerik:RadTextBox></div>
+          <telerik:RadTextBox ID="textApiFieldName" runat="server" MaxLength="50" Width="340px"></telerik:RadTextBox></div>
+        <div id="parentFields" runat="server">
+          <div id="parentPickList" runat="server">
+            <div id="labelParentField">
+              Parent Field:</div>
+            <div class="inputDiv">
+              <telerik:RadComboBox ID="comboParentField" runat="server" AutoPostBack="true" Width="340px" OnSelectedIndexChanged="comboParentField_SelectedIndexChanged"></telerik:RadComboBox>
+            </div>
+            <div id="parentValue" runat="server" visible="false">
+              <div id="labelParentValue">
+                Parent Value:</div>
+              <div class="inputDiv">
+                <telerik:RadComboBox ID="comboParentValue" runat="server" AutoPostBack="false" Width="340px"></telerik:RadComboBox>
+              </div>
+            </div>
+          </div>
+          <div id="parentProduct" runat="server">
+            <div id="labelParentProduct">
+              Parent Product:</div>
+            <div class="inputDiv">
+              <telerik:RadComboBox ID="comboParentProduct" runat="server" AutoPostBack="false" Width="340px"></telerik:RadComboBox>
+            </div>
+          </div>
+        </div>
         <div>
-          Property Type:</div>
+          Field Type:</div>
         <div class="inputDiv">
-          <telerik:RadComboBox ID="comboFieldType" runat="server" AutoPostBack="true" Width="350px">
+          <telerik:RadComboBox ID="comboFieldType" runat="server" AutoPostBack="true" Width="340px">
           </telerik:RadComboBox>
         </div>
         <div id="pnlPickList" runat="server">
           <div>
             Pick List Values:</div>
           <div class="inputDiv">
-            <asp:TextBox ID="textList" runat="server" Height="50px" Width="350px" Wrap="True"
+            <asp:TextBox ID="textList" runat="server" Height="50px" Width="330px" Wrap="True"
               TextMode="MultiLine" MaxLength="8000" Style="overflow: auto;" Rows="400" Columns="30"></asp:TextBox>
           </div>
           <div><asp:CheckBox ID="cbFirstSelect" runat="server" Text="The first value is not a valid selection for a required field." /></div>
@@ -44,7 +67,7 @@
         <div>
           Description:</div>
         <div class="inputDiv">
-          <telerik:RadTextBox ID="textDescription" runat="server" MaxLength="250" Width="350px">
+          <telerik:RadTextBox ID="textDescription" runat="server" MaxLength="250" Width="340px">
           </telerik:RadTextBox></div>
           <div>
             <asp:CheckBox ID="cbIsVisibleOnPortal" runat="server" Text="Visible on Portal" />
@@ -55,7 +78,7 @@
             Mask: -leave blank for no mask (What's an edit mask? <a href="https://sites.google.com/site/teamsupportdocumentation/administration/custom-fields/#inputMask" target="_blank">Click here</a>)
           </div>
           <div class="inputDiv">
-            <telerik:RadTextBox ID="textMask" runat="server" MaxLength="250" Width="350px">
+            <telerik:RadTextBox ID="textMask" runat="server" MaxLength="250" Width="340px">
             </telerik:RadTextBox>
           </div>
         </div>

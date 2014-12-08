@@ -33,6 +33,9 @@ namespace TeamSupport.Data
     [DataMember] public int? CustomFieldCategoryID { get; set; }
     [DataMember] public bool IsRequiredToClose { get; set; }
     [DataMember] public string Mask { get; set; }
+    [DataMember] public int? ParentCustomFieldID { get; set; }
+    [DataMember] public string ParentCustomValue { get; set; }
+    [DataMember] public int? ParentProductID { get; set; }
           
   }
   
@@ -41,6 +44,9 @@ namespace TeamSupport.Data
     public CustomFieldProxy GetProxy()
     {
       CustomFieldProxy result = new CustomFieldProxy();
+      result.ParentProductID = this.ParentProductID;
+      result.ParentCustomValue = this.ParentCustomValue;
+      result.ParentCustomFieldID = this.ParentCustomFieldID;
       result.Mask = this.Mask;
       result.IsRequiredToClose = this.IsRequiredToClose;
       result.CustomFieldCategoryID = this.CustomFieldCategoryID;

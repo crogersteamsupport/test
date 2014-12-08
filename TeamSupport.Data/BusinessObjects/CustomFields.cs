@@ -155,6 +155,37 @@ namespace TeamSupport.Data
     
     }
 
+    public void LoadByOrganizationFieldTypeAndTicketType(int organizationID, CustomFieldType fieldType, int ticketTypeID, int selfID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        string exceptSelfClause = string.Empty;
+        if (selfID != -1)
+        {
+            exceptSelfClause = " AND CustomFieldID <> " + selfID.ToString() + " ";
+        }
+
+        command.CommandText = @"
+        SELECT 
+          *
+        FROM
+          CustomFields
+        WHERE
+          OrganizationID = @OrganizationID
+          AND FieldType = @FieldType
+          AND AuxID = @TicketType
+          " + exceptSelfClause + @"
+        ORDER BY
+          Position";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("@FieldType", fieldType);
+        command.Parameters.AddWithValue("@TicketType", ticketTypeID);
+        Fill(command, "CustomFields");
+      }
+
+    }
+
     public void LoadByReferenceType(int organizationID, ReferenceType refType, int? auxID, string orderBy = "Position")
     {
       if (auxID == null) auxID = -1;
@@ -167,6 +198,83 @@ namespace TeamSupport.Data
         command.Parameters.AddWithValue("@AuxID", auxID);
         Fill(command, "CustomFields");
       }
+    }
+
+    public void LoadParentsByReferenceType(int organizationID, ReferenceType refType, int? auxID, string orderBy = "Position")
+    {
+        if (auxID == null) auxID = -1;
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SELECT 
+                    * 
+                FROM 
+                    CustomFields 
+                WHERE 
+                    OrganizationID = @OrganizationID
+                    AND RefType = @RefType
+                    AND (AuxID = @AuxID OR @AuxID < 0)
+                    AND ParentCustomFieldID IS NULL
+                    AND ParentProductID IS NULL
+                ORDER BY " 
+                    + orderBy;
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@RefType", (int)refType);
+            command.Parameters.AddWithValue("@AuxID", auxID);
+            Fill(command, "CustomFields");
+        }
+    }
+
+    public void LoadProductMatchingByReferenceType(int organizationID, ReferenceType refType, int auxID, int productID, string orderBy = "Position")
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SELECT 
+                    * 
+                FROM 
+                    CustomFields 
+                WHERE 
+                    OrganizationID = @OrganizationID
+                    AND RefType = @RefType
+                    AND (AuxID = @AuxID OR @AuxID < 0)
+                    AND ParentCustomFieldID IS NULL
+                    AND ParentProductID = @ProductID
+                ORDER BY "
+                    + orderBy;
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@RefType", (int)refType);
+            command.Parameters.AddWithValue("@AuxID", auxID);
+            command.Parameters.AddWithValue("@ProductID", productID);
+            Fill(command, "CustomFields");
+        }
+    }
+
+    public void LoadParentValueMatching(int organizationID, int parentCustomFieldID, string parentCustomValue, int productID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+                SELECT 
+                    * 
+                FROM 
+                    CustomFields 
+                WHERE 
+                    OrganizationID = @OrganizationID
+                    AND ParentCustomFieldID = @ParentCustomFieldID
+                    AND ParentCustomValue = @ParentCustomValue
+                    AND (ParentProductID IS NULL OR ParentProductID = @ProductID)
+                ORDER BY 
+                    Position";
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            command.Parameters.AddWithValue("@ParentCustomFieldID", parentCustomFieldID);
+            command.Parameters.AddWithValue("@ParentCustomValue", parentCustomValue);
+            command.Parameters.AddWithValue("@ProductID", productID);
+            Fill(command, "CustomFields");
+        }
     }
 
     public void LoadByReferenceType(int organizationID, ReferenceType refType)
