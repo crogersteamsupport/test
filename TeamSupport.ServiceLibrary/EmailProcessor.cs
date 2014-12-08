@@ -55,11 +55,18 @@ namespace TeamSupport.ServiceLibrary
 
     private static object _staticLock = new object();
 
-    private static EmailPost GetNextEmailPost(string connectionString, int lockID)
+    private static EmailPost GetNextEmailPost(string connectionString, int lockID, bool isDebug)
     {
       EmailPost result;
       LoginUser loginUser = new LoginUser(connectionString, -1, -1, null);
-      lock (_staticLock) { result = EmailPosts.GetNextWaiting(loginUser, lockID.ToString()); }
+      lock (_staticLock) {
+        if (isDebug)
+        {
+          SqlExecutor.ExecuteNonQuery(loginUser, "UPDATE EmailPosts SET HoldTime=30 WHERE HoldTime > 30");        
+        }
+        
+        result = EmailPosts.GetNextWaiting(loginUser, lockID.ToString()); 
+      }
       return result;
     }
 
