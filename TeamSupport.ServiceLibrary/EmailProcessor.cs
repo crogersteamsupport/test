@@ -80,7 +80,7 @@ namespace TeamSupport.ServiceLibrary
         {
           try
           {
-            if (emailPost.CreatorID != -3)
+            if (emailPost.CreatorID != -5)
             {
               _isDebug = Settings.ReadBool("Debug", false);
               _logEnabled = Settings.ReadInt("LoggingEnabled", 0) == 1;
@@ -370,30 +370,37 @@ namespace TeamSupport.ServiceLibrary
           Logs.WriteEvent("Processing New Ticket");
           AddMessageNewTicket(ticket, modifier, ticketOrganization);
         }
-        // web hooks
-        if (!_isDebug && ticket.OrganizationID == 1078)
+        try
         {
-          if (ticket.TicketSeverityID == 3169 && (oldTicketSeverityID == null || oldTicketSeverityID != 3169))
+          // web hooks
+          if (!_isDebug && ticket.OrganizationID == 1078)
           {
-            SendUrgentTicketToSlack(ticket.GetTicketView());
-          }
-
-          if (status.IsEmailResponse)
-          {
-            if (oldTicketStatusID == null)
+            if (ticket.TicketSeverityID == 3169 && (oldTicketSeverityID == null || oldTicketSeverityID != 3169))
             {
-              SendCustomerRespondedToSlack(ticket.GetTicketView());
+              SendUrgentTicketToSlack(ticket.GetTicketView());
             }
-            else
+
+            if (status.IsEmailResponse)
             {
-              TicketStatus oldStatus = TicketStatuses.GetTicketStatus(LoginUser, (int)oldTicketStatusID);
-              if (oldStatus != null && !oldStatus.IsEmailResponse)
+              if (oldTicketStatusID == null)
               {
                 SendCustomerRespondedToSlack(ticket.GetTicketView());
               }
+              else
+              {
+                TicketStatus oldStatus = TicketStatuses.GetTicketStatus(LoginUser, (int)oldTicketStatusID);
+                if (oldStatus != null && !oldStatus.IsEmailResponse)
+                {
+                  SendCustomerRespondedToSlack(ticket.GetTicketView());
+                }
 
+              }
             }
           }
+        }
+        catch (Exception)
+        {
+          
         }
       }
       catch (Exception ex)
