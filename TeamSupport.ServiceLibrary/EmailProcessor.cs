@@ -252,7 +252,7 @@ namespace TeamSupport.ServiceLibrary
     private void AddMessage(int organizationID, string description, MailMessage message, string replyToAddress = null, string[] attachments = null, DateTime? timeToSend = null)
     {
       Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
-      string replyAddress = organization.GetReplyToAddress(replyToAddress).ToLower().Trim();
+      string replyAddress = organization.GetReplyToAddress(replyToAddress).Trim();
       
       int i = 0; 
       while (i < message.To.Count)
@@ -324,7 +324,6 @@ namespace TeamSupport.ServiceLibrary
 
 
         User modifier = Users.GetUser(LoginUser, modifierID);
-       
         string modifierName = modifier == null ? GetOrganizationName(ticket.OrganizationID) : modifier.FirstLastName;
         Logs.WriteEvent("Modifier: " + modifierName);
 
@@ -512,7 +511,7 @@ namespace TeamSupport.ServiceLibrary
         {
           Logs.WriteEventFormat("Owner: {0} ({1}) - ReceiveTicketNotifications:{2}", owner.DisplayName, owner.UserID.ToString(), owner.ReceiveTicketNotifications.ToString());
           Logs.WriteParam("ModifierID", modifierID.ToString());
-          if (modifierID != owner.UserID && owner.UserID != ticket.CreatorID && owner.ReceiveTicketNotifications)
+          if (modifierID != owner.UserID && owner.ReceiveTicketNotifications)
           {
             Logs.WriteEvent("Getting Ticket Assignment Email");
             MailMessage message = EmailTemplates.GetTicketAssignmentUser(LoginUser, modifierName, ticket.GetTicketView());
@@ -535,7 +534,6 @@ namespace TeamSupport.ServiceLibrary
         if (ticket.UserID != null)
         {
           RemoveUser(list, (int)ticket.UserID);
-          RemoveUser(list, (int)ticket.ModifierID);
           Logs.WriteParam("Removing UserID from list: ", ticket.UserID.ToString());
         }
         MailMessage message = EmailTemplates.GetTicketAssignmentGroup(LoginUser, modifierName, ticket.GetTicketView());
