@@ -80,7 +80,7 @@ namespace TeamSupport.ServiceLibrary
         {
           try
           {
-            if (emailPost.CreatorID != -5)
+            if (emailPost.CreatorID != -3)
             {
               _isDebug = Settings.ReadBool("Debug", false);
               _logEnabled = Settings.ReadInt("LoggingEnabled", 0) == 1;
@@ -252,7 +252,7 @@ namespace TeamSupport.ServiceLibrary
     private void AddMessage(int organizationID, string description, MailMessage message, string replyToAddress = null, string[] attachments = null, DateTime? timeToSend = null)
     {
       Organization organization = Organizations.GetOrganization(LoginUser, organizationID);
-      string replyAddress = organization.GetReplyToAddress(replyToAddress).Trim();
+      string replyAddress = organization.GetReplyToAddress(replyToAddress).ToLower().Trim();
       
       int i = 0; 
       while (i < message.To.Count)
@@ -350,17 +350,16 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent(string.Format("{0} Public Actions Loaded", publicActionCount.ToString()));
 
         Logs.WriteEvent("Processing Ticket Assignment");
-        if (ticket.CreatorID != oldUserID && ticket.CreatorID != modifierID && (oldUserID != modifierID) && (ticket.UserID != modifierID) )
+        if (ticket.CreatorID != oldUserID && ticket.CreatorID != modifier.ModifierID)
         {
             AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
-
-            Logs.WriteEvent("Processing Advanced Portal");
-            AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
-            Logs.WriteEvent("Processing Basic Portal");
-            AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, true);
-            Logs.WriteEvent("Processing Internal Modified");
-            AddMessageInternalTicketModified(ticket, oldUserID, oldGroupID, isNew, oldTicketStatusID, oldTicketSeverityID, !actions.IsEmpty, modifierName, modifier == null ? -1 : modifier.UserID, ticketOrganization);
         }
+        Logs.WriteEvent("Processing Advanced Portal");
+        AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
+        Logs.WriteEvent("Processing Basic Portal");
+        AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, true);
+        Logs.WriteEvent("Processing Internal Modified");
+        AddMessageInternalTicketModified(ticket, oldUserID, oldGroupID, isNew, oldTicketStatusID, oldTicketSeverityID, !actions.IsEmpty, modifierName, modifier == null ? -1 : modifier.UserID, ticketOrganization);
         if (!isNew)
         {
         }
@@ -369,37 +368,30 @@ namespace TeamSupport.ServiceLibrary
           Logs.WriteEvent("Processing New Ticket");
           AddMessageNewTicket(ticket, modifier, ticketOrganization);
         }
-        try
+        // web hooks
+        if (!_isDebug && ticket.OrganizationID == 1078)
         {
-          // web hooks
-          if (!_isDebug && ticket.OrganizationID == 1078)
+          if (ticket.TicketSeverityID == 3169 && (oldTicketSeverityID == null || oldTicketSeverityID != 3169))
           {
-            if (ticket.TicketSeverityID == 3169 && (oldTicketSeverityID == null || oldTicketSeverityID != 3169))
-            {
-              SendUrgentTicketToSlack(ticket.GetTicketView());
-            }
+            SendUrgentTicketToSlack(ticket.GetTicketView());
+          }
 
-            if (status.IsEmailResponse)
+          if (status.IsEmailResponse)
+          {
+            if (oldTicketStatusID == null)
             {
-              if (oldTicketStatusID == null)
+              SendCustomerRespondedToSlack(ticket.GetTicketView());
+            }
+            else
+            {
+              TicketStatus oldStatus = TicketStatuses.GetTicketStatus(LoginUser, (int)oldTicketStatusID);
+              if (oldStatus != null && !oldStatus.IsEmailResponse)
               {
                 SendCustomerRespondedToSlack(ticket.GetTicketView());
               }
-              else
-              {
-                TicketStatus oldStatus = TicketStatuses.GetTicketStatus(LoginUser, (int)oldTicketStatusID);
-                if (oldStatus != null && !oldStatus.IsEmailResponse)
-                {
-                  SendCustomerRespondedToSlack(ticket.GetTicketView());
-                }
 
-              }
             }
           }
-        }
-        catch (Exception)
-        {
-          
         }
       }
       catch (Exception ex)
