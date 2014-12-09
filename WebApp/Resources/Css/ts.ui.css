@@ -370,8 +370,9 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .bgcolor-magenta { background-color: #BA55D3; }
 
 .ticket-action-description table[border="1"], .ticket-preview-action table[border="1"]{
-    border-width: 1px; border-style: outset;
+    border-width: 1px; border-style: solid;
     border-spacing: 2px;
+    border-color: #999999;
 }
 
 
@@ -380,5 +381,5 @@ div.jGrowl-message { max-height: 68px; overflow:hidden;}
 .ticket-action-description table[border="1"] tbody tr, .ticket-preview-action table[border="1"] tbody tr, 
 .ticket-action-description table[border="1"] tbody th, .ticket-preview-action table[border="1"] tbody th, 
 .ticket-action-description table[border="1"] td, .ticket-preview-action table[border="1"] td{ 
-    border-width: 1px; border-style: inset;
+    border-width: 1px; border-style: solid;border-color: #999999;
 }
