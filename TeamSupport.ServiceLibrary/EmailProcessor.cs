@@ -216,7 +216,6 @@ namespace TeamSupport.ServiceLibrary
             GetNullIntParam(emailPost.Param5),
             actionList.ToArray(),
             userList.ToArray(),
-            emailPost.CreatorID,
             GetIntParam(emailPost.Param7) == 1
             );
           break;
@@ -302,7 +301,7 @@ namespace TeamSupport.ServiceLibrary
 
     #region Ticket Processing
 
-    public void ProcessTicketModified(int ticketID, int? oldUserID, int? oldGroupID, int? oldTicketStatusID, int? oldTicketSeverityID, int[] modifiedActions, int[] users, int modifierID, bool isNew)
+    public void ProcessTicketModified(int ticketID, int? oldUserID, int? oldGroupID, int? oldTicketStatusID, int? oldTicketSeverityID, int[] modifiedActions, int[] users, bool isNew)
     {
       Logs.WriteEvent(string.Format("TicketID: {0}", ticketID.ToString()));
       Logs.WriteEvent(string.Format("OldUserID: {0}",  (oldUserID == null ? "NULL" : oldUserID.ToString())));
@@ -315,6 +314,7 @@ namespace TeamSupport.ServiceLibrary
       {
 
         Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
+        int modifierID = ticket.ModifierID;
         if (ticket == null)
         {
           Logs.WriteEvent("Ticket is NULL, canceling.");
@@ -533,6 +533,7 @@ namespace TeamSupport.ServiceLibrary
         if (ticket.UserID != null)
         {
           RemoveUser(list, (int)ticket.UserID);
+          
           Logs.WriteParam("Removing UserID from list: ", ticket.UserID.ToString());
         }
         MailMessage message = EmailTemplates.GetTicketAssignmentGroup(LoginUser, modifierName, ticket.GetTicketView());
