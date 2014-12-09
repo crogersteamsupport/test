@@ -315,6 +315,9 @@ namespace TeamSupport.ServiceLibrary
 
         Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
         int modifierID = ticket.ModifierID;
+
+       
+
         if (ticket == null)
         {
           Logs.WriteEvent("Ticket is NULL, canceling.");
@@ -532,10 +535,17 @@ namespace TeamSupport.ServiceLibrary
         AddTicketOwners(list, ticket);
         if (ticket.UserID != null)
         {
-          RemoveUser(list, (int)ticket.UserID);
-          
+          RemoveUser(list, (int)ticket.UserID);          
           Logs.WriteParam("Removing UserID from list: ", ticket.UserID.ToString());
         }
+        if (ticket.ModifierID != null)
+        {
+            RemoveUser(list, (int)modifierID); //User Who Made Modifications should not get email about modifications RemoveUser(users, (int)modifierID); //User Who Made Modifications should not get email about modifications
+            Logs.WriteParam("Removing Modifier from list: ", ticket.ModifierID.ToString());
+        }
+
+        RemoveUser(list, (int)modifierID); //User Who Made Modifications should not get email about modifications RemoveUser(users, (int)modifierID); //User Who Made Modifications should not get email about modifications
+
         MailMessage message = EmailTemplates.GetTicketAssignmentGroup(LoginUser, modifierName, ticket.GetTicketView());
         AddUsersToAddresses(message.To, list, modifierID);
         message.Subject = message.Subject + subject;
