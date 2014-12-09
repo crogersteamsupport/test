@@ -303,6 +303,7 @@ namespace TeamSupport.ServiceLibrary
 
     public void ProcessTicketModified(int ticketID, int? oldUserID, int? oldGroupID, int? oldTicketStatusID, int? oldTicketSeverityID, int[] modifiedActions, int[] users, bool isNew)
     {
+        Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
         int modifierID = ticket.ModifierID;
       Logs.WriteEvent(string.Format("TicketID: {0}", ticketID.ToString()));
       Logs.WriteEvent(string.Format("OldUserID: {0}",  (oldUserID == null ? "NULL" : oldUserID.ToString())));
@@ -314,7 +315,7 @@ namespace TeamSupport.ServiceLibrary
       try
       {
 
-        Ticket ticket = Tickets.GetTicket(LoginUser, ticketID);
+        
         
 
        
