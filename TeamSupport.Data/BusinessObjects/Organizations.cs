@@ -1991,7 +1991,7 @@ AND (@UseFilter=0 OR (OrganizationID IN (SELECT OrganizationID FROM UserRightsOr
 @"DECLARE @TIndex TABLE (ID int);
 
 WITH X AS (
-  SELECT OrganizationID, IsRebuildingIndex FROM Organizations o 
+  SELECT OrganizationID, IsRebuildingIndex, DateLastIndexed FROM Organizations o 
 	WHERE o.IsIndexLocked = 0
 	AND o.ParentID = 1
 	AND (IsRebuildingIndex = 0 OR DATEDIFF(SECOND, DateLastIndexed, GETUTCDATE()) > 300)
