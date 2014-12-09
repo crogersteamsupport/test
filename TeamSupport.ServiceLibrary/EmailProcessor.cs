@@ -87,7 +87,7 @@ namespace TeamSupport.ServiceLibrary
         {
           try
           {
-            if (emailPost.CreatorID != -3)
+            if (emailPost.CreatorID != -5)
             {
               _isDebug = Settings.ReadBool("Debug", false);
               _logEnabled = Settings.ReadInt("LoggingEnabled", 0) == 1;
