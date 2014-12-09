@@ -1221,7 +1221,6 @@ namespace TeamSupport.Data
       {
         case "year": return string.Format("DATEPART(YEAR, {0})", fieldName);
         case "qtryear": return string.Format("CAST(DATEPART(YEAR, {0}) AS VARCHAR) + '-' + CAST(DATEPART(QUARTER, {0}) AS VARCHAR)", fieldName);
-        //case "monthyear": return string.Format("CAST(DATEPART(YEAR, {0}) AS VARCHAR) + '-' + CAST(DATEPART(MONTH, {0}) AS VARCHAR)", fieldName);
         case "monthyear": return string.Format("CONVERT(CHAR(7), {0}, 121)", fieldName);
         case "weekyear": return string.Format("CAST(DATEPART(YEAR, {0}) AS VARCHAR) + '-' + CAST(DATEPART(WEEK, {0}) AS VARCHAR)", fieldName);
         case "date": return string.Format("CAST({0} AS DATE)", fieldName);

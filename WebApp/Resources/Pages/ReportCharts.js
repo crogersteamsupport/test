@@ -71,7 +71,7 @@ function addChartData(options, records) {
             total += parseInt(records[1].data[i]);
         }
 
-        options.series = [{ type: 'pie', name: options.ts.seriesTitle, data: []}];
+        options.series = [{ type: 'pie', name: options.ts.seriesTitle, data: [], dataLabels: { enabled: true, format: '<b>{point.name}</b>: {point.y}'}}];
 
         for (var i = 0; i < records[1].data.length; i++) {
             var val = records[1].data[i] / total * 100;

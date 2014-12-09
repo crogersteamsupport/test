@@ -620,7 +620,7 @@ $(document).ready(function () {
                         pie: {
                             allowPointSelect: true,
                             cursor: 'pointer',
-                            dataLabels: { enabled: false },
+                            dataLabels: { enabled: true, format: '<b>{point.name}</b>: {point.y}'},
                             showInLegend: true
                         }
                     }
