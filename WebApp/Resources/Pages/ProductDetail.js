@@ -553,13 +553,12 @@ $(document).ready(function () {
   }
 
   if (!top.Ts.System.User.CanCreateVersions && !_isAdmin) {
-      $('#addProductVersion').remove();
+      $('.version-action-add').hide();
   }
   
 
   if (!_isAdmin) {
       $('#productDelete').hide();
-      $('.version-action-add').hide();
       $('#associateAllToggle').hide();
       $('#unAssociateAllToggle').hide();
   }
