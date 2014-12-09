@@ -32,7 +32,7 @@
 
   <script src="../js_5/imagepaste.js" type="text/javascript"></script>
   <script src="../js_5/jquery.Jcrop.js" type="text/javascript"></script>
-  <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+  <script src="https://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
   <!-- Start Apptegic Code -->
   <script type="text/javascript">
     var _aaq = _aaq || [];
@@ -74,7 +74,7 @@
 
       if (BrowserDetect.browser != 'Safari' || BrowserDetect.isMobile != 1) {
         try {
-          $.getScript("http://localhost:8080/signalr/hubs", function (data, textStatus, jqxhr) {
+          $.getScript("signalr/signalr/hubs", function (data, textStatus, jqxhr) {
             $.getScript("vcr/1_9_0/Js/ts/ts.wc.signalr.js", function (data, textStatus, jqxhr) {
               if (loadSignalR) { loadSignalR(); }
 
