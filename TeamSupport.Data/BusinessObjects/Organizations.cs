@@ -2015,7 +2015,7 @@ WITH X AS (
 ),
 
 Y AS (
-  SELECT X.OrganizationID, X.IsRebuildingIndex, ROW_NUMBER() OVER (ORDER BY X.IsRebuildingIndex) AS 'RowNum' FROM X
+  SELECT X.OrganizationID, X.IsRebuildingIndex, ROW_NUMBER() OVER (ORDER BY X.DateLastIndexed) AS 'RowNum' FROM X
   )
 
 UPDATE Organizations
