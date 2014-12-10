@@ -100,7 +100,7 @@ namespace TeamSupport.Api
     private LoginUser GetLoginUser()
     {
       string connection = System.Web.Configuration.WebConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
-      return new LoginUser(connection, -1, -1, null);
+      return new LoginUser(connection, -3, -1, null);
     }
     
     private void AccessDenied(HttpApplication app)
