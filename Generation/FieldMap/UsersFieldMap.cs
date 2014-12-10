@@ -86,6 +86,10 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("CanEditAsset", "CanEditAsset", false, false, false);
       _fieldMap.AddMap("CanChangeCommunityVisibility", "CanChangeCommunityVisibility", false, false, false);
       _fieldMap.AddMap("FilterInactive", "FilterInactive", false, false, false);
+      _fieldMap.AddMap("CanCreateProducts", "CanCreateProducts", false, false, false);
+      _fieldMap.AddMap("CanEditProducts", "CanEditProducts", false, false, false);
+      _fieldMap.AddMap("CanCreateVersions", "CanCreateVersions", false, false, false);
+      _fieldMap.AddMap("CanEditVersions", "CanEditVersions", false, false, false);
             
     }
   }

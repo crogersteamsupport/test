@@ -373,7 +373,17 @@ namespace TeamSupport.Data
       if (DataCache != null) DataCache.InvalidateItem(TableName, LoginUser.OrganizationID);
     }
 
-
+    public EMailAlternateInboundItem FindBySystemEMailID(int systemEMailID)
+    {
+      foreach (EMailAlternateInboundItem eMailAlternateInboundItem in this)
+      {
+        if (eMailAlternateInboundItem.SystemEMailID == systemEMailID)
+        {
+          return eMailAlternateInboundItem;
+        }
+      }
+      return null;
+    }
 
     public virtual EMailAlternateInboundItem AddNewEMailAlternateInboundItem()
     {

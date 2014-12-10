@@ -276,7 +276,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("Body", SqlDbType.Text, 2147483647);
+		tempParameter = updateCommand.Parameters.Add("Body", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -459,7 +459,7 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 10;
 		}
 		
-		tempParameter = insertCommand.Parameters.Add("Body", SqlDbType.Text, 2147483647);
+		tempParameter = insertCommand.Parameters.Add("Body", SqlDbType.VarChar, -1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
 		{
 		  tempParameter.Precision = 255;
@@ -595,69 +595,29 @@ namespace TeamSupport.Data
       return new WikiArticle(row, this);
     }
     
-    public virtual void LoadByArticleID(int articleID, int userID, int organizationID)
+    public virtual void LoadByArticleID(int articleID)
     {
       using (SqlCommand command = new SqlCommand())
       {
-          command.CommandText = "SET NOCOUNT OFF; SELECT * FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID) and ([OrganizationID] = @OrganizationID) and ((IsNull(Private,0)=0) or (CreatedBy=@UserID)) and IsNull(IsDeleted,0)=0 ORDER BY ArticleName";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ArticleID], [ParentID], [OrganizationID], [ArticleName], [Body], [Version], [PublicView], [PublicEdit], [PortalView], [PortalEdit], [Private], [IsDeleted], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [NeedsIndexing] FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID);";
         command.CommandType = CommandType.Text;
-        command.Parameters.AddWithValue("@ArticleID", articleID);
-        command.Parameters.AddWithValue("@UserID", userID);
-        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        command.Parameters.AddWithValue("ArticleID", articleID);
         Fill(command);
       }
     }
-
     
     public static WikiArticle GetWikiArticle(LoginUser loginUser, int articleID)
     {
       WikiArticles wikiArticles = new WikiArticles(loginUser);
-      wikiArticles.LoadByArticleID(articleID, loginUser.UserID, loginUser.OrganizationID);
+      wikiArticles.LoadByArticleID(articleID);
       if (wikiArticles.IsEmpty)
         return null;
       else
         return wikiArticles[0];
     }
-
-    public static WikiArticles GetWikiArticles(LoginUser loginUser)
-    {
-        WikiArticles wikiArticles = new WikiArticles(loginUser);
-        wikiArticles.LoadByOrganizationIDAndUserID();
-        if (wikiArticles.IsEmpty)
-            return null;
-        else
-            return wikiArticles;
-    }
-
-    public static WikiArticles GetWikiParentArticles(LoginUser loginUser)
-    {
-        WikiArticles wikiArticles = new WikiArticles(loginUser);
-        wikiArticles.LoadParentsByOrganizationID();
-        if (wikiArticles.IsEmpty)
-            return null;
-        else
-            return wikiArticles;
-    }
-
-    public static WikiArticles GetWikiSubArticles(LoginUser loginUser, int articleID)
-    {
-        WikiArticles wikiArticles = new WikiArticles(loginUser);
-        wikiArticles.LoadSubArticlesByParentID(articleID);
-        if (wikiArticles.IsEmpty)
-            return null;
-        else
-            return wikiArticles;
-    }
-
-    public static WikiArticles GetWikiArticlesBySearchTerm(LoginUser loginUser, string searchTerm)
-    {
-        WikiArticles wikiArticles = new WikiArticles(loginUser);
-        wikiArticles.LoadBySearchTerm(searchTerm);
-        if (wikiArticles.IsEmpty)
-            return null;
-        else
-            return wikiArticles;
-    }
+    
+    
+    
 
     #endregion
 

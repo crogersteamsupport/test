@@ -64,6 +64,12 @@ namespace TeamSupport.Data
       set { Row["ModifiedBy"] = CheckValue("ModifiedBy", value); }
     }
     
+    public string Comment
+    {
+      get { return Row["Comment"] != DBNull.Value ? (string)Row["Comment"] : null; }
+      set { Row["Comment"] = CheckValue("Comment", value); }
+    }
+    
 
     
     public int OrganizationID
@@ -77,13 +83,7 @@ namespace TeamSupport.Data
       get { return (int)Row["ArticleID"]; }
       set { Row["ArticleID"] = CheckValue("ArticleID", value); }
     }
-
-    public string Comment
-    {
-        get { return Row["Comment"] != DBNull.Value ? (string)Row["Comment"] : null; }
-        set { Row["Comment"] = CheckValue("Comment", value); }
-    }
-
+    
 
     /* DateTime */
     
@@ -209,7 +209,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WikiHistory] SET     [ArticleID] = @ArticleID,    [OrganizationID] = @OrganizationID,    [ArticleName] = @ArticleName,    [Body] = @Body,    [Version] = @Version,    [CreatedBy] = @CreatedBy,    [CreatedDate] = @CreatedDate,    [ModifiedBy] = @ModifiedBy,    [ModifiedDate] = @ModifiedDate,   [Comment] = @Comment  WHERE ([HistoryID] = @HistoryID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[WikiHistory] SET     [ArticleID] = @ArticleID,    [OrganizationID] = @OrganizationID,    [ArticleName] = @ArticleName,    [Body] = @Body,    [Version] = @Version,    [CreatedBy] = @CreatedBy,    [CreatedDate] = @CreatedDate,    [ModifiedBy] = @ModifiedBy,    [ModifiedDate] = @ModifiedDate,    [Comment] = @Comment  WHERE ([HistoryID] = @HistoryID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("HistoryID", SqlDbType.Int, 4);
@@ -281,21 +281,28 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 23;
 		  tempParameter.Scale = 23;
 		}
-
-        tempParameter = updateCommand.Parameters.Add("Comment", SqlDbType.VarChar, 500);
-        if (tempParameter.SqlDbType == SqlDbType.Float)
-        {
-            tempParameter.Precision = 255;
-            tempParameter.Scale = 255;
-        }
+		
+		tempParameter = updateCommand.Parameters.Add("Comment", SqlDbType.VarChar, 500);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WikiHistory] (    [ArticleID],    [OrganizationID],    [ArticleName],    [Body],    [Version],    [CreatedBy],    [CreatedDate],    [ModifiedBy],    [ModifiedDate],   [Comment]) VALUES ( @ArticleID, @OrganizationID, @ArticleName, @Body, @Version, @CreatedBy, @CreatedDate, @ModifiedBy, @ModifiedDate, @Comment); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[WikiHistory] (    [ArticleID],    [OrganizationID],    [ArticleName],    [Body],    [Version],    [CreatedBy],    [CreatedDate],    [ModifiedBy],    [ModifiedDate],    [Comment]) VALUES ( @ArticleID, @OrganizationID, @ArticleName, @Body, @Version, @CreatedBy, @CreatedDate, @ModifiedBy, @ModifiedDate, @Comment); SET @Identity = SCOPE_IDENTITY();";
 
+		
+		tempParameter = insertCommand.Parameters.Add("Comment", SqlDbType.VarChar, 500);
+		if (tempParameter.SqlDbType == SqlDbType.Float)
+		{
+		  tempParameter.Precision = 255;
+		  tempParameter.Scale = 255;
+		}
 		
 		tempParameter = insertCommand.Parameters.Add("ModifiedDate", SqlDbType.DateTime, 8);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -359,13 +366,6 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
 		}
-
-        tempParameter = insertCommand.Parameters.Add("Comment", SqlDbType.VarChar, 500);
-        if (tempParameter.SqlDbType == SqlDbType.Float)
-        {
-            tempParameter.Precision = 255;
-            tempParameter.Scale = 255;
-        }
 		
 
 		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;
@@ -485,17 +485,6 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
-
-    public virtual void LoadByArticleID(int articleID)
-    {
-        using (SqlCommand command = new SqlCommand())
-        {
-            command.CommandText = "SET NOCOUNT OFF; SELECT [HistoryID], [ArticleID], [OrganizationID], [ArticleName], [Body], [Version], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [Comment] FROM [dbo].[WikiHistory] WHERE ([ArticleID] = @ArticleID) ORDER BY VERSION DESC;";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@ArticleID", articleID);
-            Fill(command);
-        }
-    }
     
     public static WikiHistory GetWikiHistory(LoginUser loginUser, int historyID)
     {
@@ -506,16 +495,7 @@ namespace TeamSupport.Data
       else
         return wikiHistoryCollection[0];
     }
-
-    public static WikiHistoryCollection GetWikiHistoryByArticleID(LoginUser loginUser, int articleID)
-    {
-        WikiHistoryCollection wikiHistoryCollection = new WikiHistoryCollection(loginUser);
-        wikiHistoryCollection.LoadByArticleID(articleID);
-        if (wikiHistoryCollection.IsEmpty)
-            return null;
-        else
-            return wikiHistoryCollection;
-    }
+    
     
     
 

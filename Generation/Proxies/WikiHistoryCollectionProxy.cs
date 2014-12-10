@@ -23,6 +23,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime? CreatedDate { get; set; }
     [DataMember] public int? ModifiedBy { get; set; }
     [DataMember] public DateTime? ModifiedDate { get; set; }
+    [DataMember] public string Comment { get; set; }
           
   }
   
@@ -31,6 +32,7 @@ namespace TeamSupport.Data
     public WikiHistoryProxy GetProxy()
     {
       WikiHistoryProxy result = new WikiHistoryProxy();
+      result.Comment = this.Comment;
       result.ModifiedBy = this.ModifiedBy;
       result.CreatedBy = this.CreatedBy;
       result.Version = this.Version;

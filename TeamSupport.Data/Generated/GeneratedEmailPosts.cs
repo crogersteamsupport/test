@@ -626,24 +626,7 @@ namespace TeamSupport.Data
         Fill(command);
       }
     }
-
-    public virtual void LoadByRecentUserID(int userID)
-    {
-        using (SqlCommand command = new SqlCommand())
-        {
-            command.CommandText = "Select *  FROM [dbo].[EmailPosts] WHERE ([Param8] Like @userID AND DateCreated > DATEADD(MINUTE, -1, GETUTCDATE()))";
-            command.CommandType = CommandType.Text;
-            command.Parameters.AddWithValue("@userID", "%" + userID + "%");
-            try
-            {
-                Fill(command);
-            }
-            catch (Exception e)
-            {
-            }
-        }
-    }
-
+    
     public static EmailPost GetEmailPost(LoginUser loginUser, int emailPostID)
     {
       EmailPosts emailPosts = new EmailPosts(loginUser);
