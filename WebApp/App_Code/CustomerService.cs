@@ -2448,17 +2448,20 @@ namespace TSWebServices
 
                 foreach (AgentRating a in ratings)
                 {
-                    switch (a.Rating)
+                    if (Tickets.GetTicket(TSAuthentication.GetLoginUser(), a.TicketID) != null)
                     {
-                        case -1:
-                            negativeRating++;
-                            break;
-                        case 0:
-                            neutralRating++;
-                            break;
-                        case 1:
-                            positiveRating++;
-                            break;
+                        switch (a.Rating)
+                        {
+                            case -1:
+                                negativeRating++;
+                                break;
+                            case 0:
+                                neutralRating++;
+                                break;
+                            case 1:
+                                positiveRating++;
+                                break;
+                        }
                     }
                 }
 
@@ -2546,30 +2549,35 @@ namespace TSWebServices
 
                 foreach (AgentRating a in ratings)
                 {
-                    Users users = new Users(TSAuthentication.GetLoginUser());
-                    CustomRatingClass ratingclass = new CustomRatingClass();
-                    ratingclass.rating = a.GetProxy();
-                    AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
-                    agents.LoadByAgentRatingID(a.AgentRatingID);
 
-                    Organizations org = new Organizations(TSAuthentication.GetLoginUser());
-                    org.LoadByOrganizationID(a.CompanyID);
-
-                    ratingclass.users = new List<UserProxy>();
-                    foreach (AgentRatingUser u in agents)
+                    if (Tickets.GetTicket(TSAuthentication.GetLoginUser(), a.TicketID) != null)
                     {
 
-                        users.LoadByUserID(u.UserID);
+                        Users users = new Users(TSAuthentication.GetLoginUser());
+                        CustomRatingClass ratingclass = new CustomRatingClass();
+                        ratingclass.rating = a.GetProxy();
+                        AgentRatingUsers agents = new AgentRatingUsers(TSAuthentication.GetLoginUser());
+                        agents.LoadByAgentRatingID(a.AgentRatingID);
 
-                        ratingclass.users.Add(users[0].GetProxy());
+                        Organizations org = new Organizations(TSAuthentication.GetLoginUser());
+                        org.LoadByOrganizationID(a.CompanyID);
+
+                        ratingclass.users = new List<UserProxy>();
+                        foreach (AgentRatingUser u in agents)
+                        {
+
+                            users.LoadByUserID(u.UserID);
+
+                            ratingclass.users.Add(users[0].GetProxy());
+                        }
+
+                        ratingclass.org = org[0].GetProxy();
+                        users.LoadByUserID(ratings[count].ContactID);
+                        ratingclass.reporter = users[0].GetProxy();
+
+                        list.Add(ratingclass);
+                        count++;
                     }
-
-                    ratingclass.org = org[0].GetProxy();
-                    users.LoadByUserID(ratings[count].ContactID);
-                    ratingclass.reporter = users[0].GetProxy();
-
-                    list.Add(ratingclass);
-                    count++;
                 }
             }
 
