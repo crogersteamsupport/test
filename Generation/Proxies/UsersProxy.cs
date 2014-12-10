@@ -86,10 +86,6 @@ namespace TeamSupport.Data
     [DataMember] public bool CanEditAsset { get; set; }
     [DataMember] public bool CanChangeCommunityVisibility { get; set; }
     [DataMember] public bool FilterInactive { get; set; }
-    [DataMember] public bool CanCreateProducts { get; set; }
-    [DataMember] public bool CanEditProducts { get; set; }
-    [DataMember] public bool CanCreateVersions { get; set; }
-    [DataMember] public bool CanEditVersions { get; set; }
           
   }
   
@@ -98,10 +94,6 @@ namespace TeamSupport.Data
     public UserProxy GetProxy()
     {
       UserProxy result = new UserProxy();
-      result.CanEditVersions = this.CanEditVersions;
-      result.CanCreateVersions = this.CanCreateVersions;
-      result.CanEditProducts = this.CanEditProducts;
-      result.CanCreateProducts = this.CanCreateProducts;
       result.FilterInactive = this.FilterInactive;
       result.CanChangeCommunityVisibility = this.CanChangeCommunityVisibility;
       result.CanEditAsset = this.CanEditAsset;

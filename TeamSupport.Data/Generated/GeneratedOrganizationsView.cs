@@ -143,19 +143,7 @@ namespace TeamSupport.Data
       set { Row["CompanyDomains"] = CheckValue("CompanyDomains", value); }
     }
     
-    public int? CustDistIndexTrend
-    {
-      get { return Row["CustDistIndexTrend"] != DBNull.Value ? (int?)Row["CustDistIndexTrend"] : null; }
-      set { Row["CustDistIndexTrend"] = CheckValue("CustDistIndexTrend", value); }
-    }
-    
 
-    
-    public int CustDisIndex
-    {
-      get { return (int)Row["CustDisIndex"]; }
-      set { Row["CustDisIndex"] = CheckValue("CustDisIndex", value); }
-    }
     
     public bool NeedsIndexing
     {
@@ -347,7 +335,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationsView] SET     [Name] = @Name,    [Description] = @Description,    [Website] = @Website,    [IsActive] = @IsActive,    [InActiveReason] = @InActiveReason,    [PrimaryUserID] = @PrimaryUserID,    [PrimaryContactEmail] = @PrimaryContactEmail,    [PrimaryContact] = @PrimaryContact,    [ParentID] = @ParentID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [HasPortalAccess] = @HasPortalAccess,    [CreatedBy] = @CreatedBy,    [LastModifiedBy] = @LastModifiedBy,    [SAExpirationDate] = @SAExpirationDate,    [SlaName] = @SlaName,    [CRMLinkID] = @CRMLinkID,    [PortalGuid] = @PortalGuid,    [SlaLevelID] = @SlaLevelID,    [DefaultWikiArticleID] = @DefaultWikiArticleID,    [DefaultSupportGroupID] = @DefaultSupportGroupID,    [DefaultSupportUserID] = @DefaultSupportUserID,    [DefaultSupportUser] = @DefaultSupportUser,    [DefaultSupportGroup] = @DefaultSupportGroup,    [CompanyDomains] = @CompanyDomains,    [SupportHoursMonth] = @SupportHoursMonth,    [SupportHoursUsed] = @SupportHoursUsed,    [SupportHoursRemaining] = @SupportHoursRemaining,    [NeedsIndexing] = @NeedsIndexing,    [CustDisIndex] = @CustDisIndex,    [CustDistIndexTrend] = @CustDistIndexTrend  WHERE ([OrganizationID] = @OrganizationID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[OrganizationsView] SET     [Name] = @Name,    [Description] = @Description,    [Website] = @Website,    [IsActive] = @IsActive,    [InActiveReason] = @InActiveReason,    [PrimaryUserID] = @PrimaryUserID,    [PrimaryContactEmail] = @PrimaryContactEmail,    [PrimaryContact] = @PrimaryContact,    [ParentID] = @ParentID,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [HasPortalAccess] = @HasPortalAccess,    [CreatedBy] = @CreatedBy,    [LastModifiedBy] = @LastModifiedBy,    [SAExpirationDate] = @SAExpirationDate,    [SlaName] = @SlaName,    [CRMLinkID] = @CRMLinkID,    [PortalGuid] = @PortalGuid,    [SlaLevelID] = @SlaLevelID,    [DefaultWikiArticleID] = @DefaultWikiArticleID,    [DefaultSupportGroupID] = @DefaultSupportGroupID,    [DefaultSupportUserID] = @DefaultSupportUserID,    [DefaultSupportUser] = @DefaultSupportUser,    [DefaultSupportGroup] = @DefaultSupportGroup,    [CompanyDomains] = @CompanyDomains,    [SupportHoursMonth] = @SupportHoursMonth,    [SupportHoursUsed] = @SupportHoursUsed,    [SupportHoursRemaining] = @SupportHoursRemaining,    [NeedsIndexing] = @NeedsIndexing  WHERE ([OrganizationID] = @OrganizationID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("OrganizationID", SqlDbType.Int, 4);
@@ -560,41 +548,13 @@ namespace TeamSupport.Data
 		  tempParameter.Scale = 255;
 		}
 		
-		tempParameter = updateCommand.Parameters.Add("CustDisIndex", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = updateCommand.Parameters.Add("CustDistIndexTrend", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationsView] (    [OrganizationID],    [Name],    [Description],    [Website],    [IsActive],    [InActiveReason],    [PrimaryUserID],    [PrimaryContactEmail],    [PrimaryContact],    [ParentID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [HasPortalAccess],    [CreatedBy],    [LastModifiedBy],    [SAExpirationDate],    [SlaName],    [CRMLinkID],    [PortalGuid],    [SlaLevelID],    [DefaultWikiArticleID],    [DefaultSupportGroupID],    [DefaultSupportUserID],    [DefaultSupportUser],    [DefaultSupportGroup],    [CompanyDomains],    [SupportHoursMonth],    [SupportHoursUsed],    [SupportHoursRemaining],    [NeedsIndexing],    [CustDisIndex],    [CustDistIndexTrend]) VALUES ( @OrganizationID, @Name, @Description, @Website, @IsActive, @InActiveReason, @PrimaryUserID, @PrimaryContactEmail, @PrimaryContact, @ParentID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @HasPortalAccess, @CreatedBy, @LastModifiedBy, @SAExpirationDate, @SlaName, @CRMLinkID, @PortalGuid, @SlaLevelID, @DefaultWikiArticleID, @DefaultSupportGroupID, @DefaultSupportUserID, @DefaultSupportUser, @DefaultSupportGroup, @CompanyDomains, @SupportHoursMonth, @SupportHoursUsed, @SupportHoursRemaining, @NeedsIndexing, @CustDisIndex, @CustDistIndexTrend); SET @Identity = SCOPE_IDENTITY();";
+		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[OrganizationsView] (    [OrganizationID],    [Name],    [Description],    [Website],    [IsActive],    [InActiveReason],    [PrimaryUserID],    [PrimaryContactEmail],    [PrimaryContact],    [ParentID],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [HasPortalAccess],    [CreatedBy],    [LastModifiedBy],    [SAExpirationDate],    [SlaName],    [CRMLinkID],    [PortalGuid],    [SlaLevelID],    [DefaultWikiArticleID],    [DefaultSupportGroupID],    [DefaultSupportUserID],    [DefaultSupportUser],    [DefaultSupportGroup],    [CompanyDomains],    [SupportHoursMonth],    [SupportHoursUsed],    [SupportHoursRemaining],    [NeedsIndexing]) VALUES ( @OrganizationID, @Name, @Description, @Website, @IsActive, @InActiveReason, @PrimaryUserID, @PrimaryContactEmail, @PrimaryContact, @ParentID, @DateCreated, @DateModified, @CreatorID, @ModifierID, @HasPortalAccess, @CreatedBy, @LastModifiedBy, @SAExpirationDate, @SlaName, @CRMLinkID, @PortalGuid, @SlaLevelID, @DefaultWikiArticleID, @DefaultSupportGroupID, @DefaultSupportUserID, @DefaultSupportUser, @DefaultSupportGroup, @CompanyDomains, @SupportHoursMonth, @SupportHoursUsed, @SupportHoursRemaining, @NeedsIndexing); SET @Identity = SCOPE_IDENTITY();";
 
-		
-		tempParameter = insertCommand.Parameters.Add("CustDistIndexTrend", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
-		
-		tempParameter = insertCommand.Parameters.Add("CustDisIndex", SqlDbType.Int, 4);
-		if (tempParameter.SqlDbType == SqlDbType.Float)
-		{
-		  tempParameter.Precision = 10;
-		  tempParameter.Scale = 10;
-		}
 		
 		tempParameter = insertCommand.Parameters.Add("NeedsIndexing", SqlDbType.Bit, 1);
 		if (tempParameter.SqlDbType == SqlDbType.Float)
@@ -932,7 +892,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [Name], [Description], [Website], [IsActive], [InActiveReason], [PrimaryUserID], [PrimaryContactEmail], [PrimaryContact], [ParentID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [HasPortalAccess], [CreatedBy], [LastModifiedBy], [SAExpirationDate], [SlaName], [CRMLinkID], [PortalGuid], [SlaLevelID], [DefaultWikiArticleID], [DefaultSupportGroupID], [DefaultSupportUserID], [DefaultSupportUser], [DefaultSupportGroup], [CompanyDomains], [SupportHoursMonth], [SupportHoursUsed], [SupportHoursRemaining], [NeedsIndexing], [CustDisIndex], [CustDistIndexTrend] FROM [dbo].[OrganizationsView] WHERE ([OrganizationID] = @OrganizationID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [OrganizationID], [Name], [Description], [Website], [IsActive], [InActiveReason], [PrimaryUserID], [PrimaryContactEmail], [PrimaryContact], [ParentID], [DateCreated], [DateModified], [CreatorID], [ModifierID], [HasPortalAccess], [CreatedBy], [LastModifiedBy], [SAExpirationDate], [SlaName], [CRMLinkID], [PortalGuid], [SlaLevelID], [DefaultWikiArticleID], [DefaultSupportGroupID], [DefaultSupportUserID], [DefaultSupportUser], [DefaultSupportGroup], [CompanyDomains], [SupportHoursMonth], [SupportHoursUsed], [SupportHoursRemaining], [NeedsIndexing] FROM [dbo].[OrganizationsView] WHERE ([OrganizationID] = @OrganizationID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("OrganizationID", organizationID);
         Fill(command);

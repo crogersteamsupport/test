@@ -611,6 +611,7 @@ namespace TeamSupport.Data
       using (SqlCommand command = new SqlCommand())
       {
         command.CommandText = "SET NOCOUNT OFF; SELECT [AssetID], [OrganizationID], [SerialNumber], [Name], [Location], [Notes], [ProductID], [WarrantyExpiration], [AssignedTo], [DateCreated], [DateModified], [CreatorID], [ModifierID], [SubPartOf], [Status], [ImportID], [ProductVersionID], [NeedsIndexing] FROM [dbo].[Assets] WHERE ([AssetID] = @AssetID);";
+        command.CommandText = InjectCustomFields(command.CommandText, "AssetID", ReferenceType.Assets);
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("AssetID", assetID);
         Fill(command);

@@ -35,11 +35,6 @@ namespace TeamSupport.Data
       get { return Row["ModifierName"] != DBNull.Value ? (string)Row["ModifierName"] : null; }
     }
     
-    public string ContactName
-    {
-      get { return Row["ContactName"] != DBNull.Value ? (string)Row["ContactName"] : null; }
-    }
-    
     
     
 
@@ -55,6 +50,15 @@ namespace TeamSupport.Data
       get { return Row["OrganizationName"] != DBNull.Value ? (string)Row["OrganizationName"] : null; }
       set { Row["OrganizationName"] = CheckValue("OrganizationName", value); }
     }
+    
+    public string ContactName
+    {
+      get { return Row["ContactName"] != DBNull.Value ? (string)Row["ContactName"] : null; }
+    }
+    
+    
+    
+
     
 
     

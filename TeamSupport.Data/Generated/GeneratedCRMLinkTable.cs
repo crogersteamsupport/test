@@ -108,6 +108,7 @@ namespace TeamSupport.Data
     
 
     
+    
     public bool AlwaysUseDefaultProjectKey
     {
       get { return (bool)Row["AlwaysUseDefaultProjectKey"]; }
@@ -293,7 +294,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed,    [LastTicketID] = @LastTicketID,    [AllowPortalAccess] = @AllowPortalAccess,    [SendWelcomeEmail] = @SendWelcomeEmail,    [DefaultSlaLevelID] = @DefaultSlaLevelID,    [PullCasesAsTickets] = @PullCasesAsTickets,    [PushTicketsAsCases] = @PushTicketsAsCases,    [PullCustomerProducts] = @PullCustomerProducts,    [UpdateStatus] = @UpdateStatus,    [ActionTypeIDToPush] = @ActionTypeIDToPush,    [HostName] = @HostName,    [DefaultProject] = @DefaultProject,    [MatchAccountsByName] = @MatchAccountsByName,    [UseSandBoxServer] = @UseSandBoxServer,    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey  WHERE ([CRMLinkID] = @CRMLinkID);";
+		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[CRMLinkTable] SET     [OrganizationID] = @OrganizationID,    [Active] = @Active,    [CRMType] = @CRMType,    [Username] = @Username,    [Password] = @Password,    [SecurityToken] = @SecurityToken,    [TypeFieldMatch] = @TypeFieldMatch,    [LastLink] = @LastLink,    [SendBackTicketData] = @SendBackTicketData,    [LastProcessed] = @LastProcessed,    [LastTicketID] = @LastTicketID,    [AllowPortalAccess] = @AllowPortalAccess,    [SendWelcomeEmail] = @SendWelcomeEmail,    [DefaultSlaLevelID] = @DefaultSlaLevelID,    [PullCasesAsTickets] = @PullCasesAsTickets,    [PushTicketsAsCases] = @PushTicketsAsCases,    [PullCustomerProducts] = @PullCustomerProducts,    [UpdateStatus] = @UpdateStatus,    [ActionTypeIDToPush] = @ActionTypeIDToPush,    [HostName] = @HostName,    [DefaultProject] = @DefaultProject, [MatchAccountsByName] = @MatchAccountsByName,    [UseSandBoxServer] = @UseSandBoxServer,    [AlwaysUseDefaultProjectKey] = @AlwaysUseDefaultProjectKey WHERE ([CRMLinkID] = @CRMLinkID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("CRMLinkID", SqlDbType.Int, 4);
