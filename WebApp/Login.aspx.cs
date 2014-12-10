@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Data;
 using System.Linq;
@@ -327,10 +328,38 @@ public partial class Login : System.Web.UI.Page
     }
 
     if (user.IsPasswordExpired)
-      return "ChangePassword.aspx?reason=expired";
+        return "ChangePassword.aspx?reason=expired";
     else
-      return ".";
+    {
+        
+        string rawQueryString = HttpContext.Current.Request.UrlReferrer.Query; 
+        if(null != rawQueryString)
+        {
+            string urlRedirect = GetQueryStringValue(rawQueryString, "ReturnUrl");
+            if (null != urlRedirect && urlRedirect.Trim().Length > 0)
+                return urlRedirect;
+            else
+                return "."; 
+        }
+        else
+        {
+            return ".";
+        }
+
+    }
       //return FormsAuthentication.GetRedirectUrl(user.DisplayName, storeInfo);
+  }
+  
+  private static string GetQueryStringValue(string queryStr, string key)
+  {
+      string rtnValue = null;
+      NameValueCollection queryStrPairs = HttpUtility.ParseQueryString(queryStr);
+      
+      if(null != queryStrPairs && queryStrPairs.AllKeys.Contains(key))
+      {
+          rtnValue =  queryStrPairs[key];
+      }
+      return rtnValue;
   }
 
   private static void ConfirmBaseData(LoginUser loginUser)
