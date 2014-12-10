@@ -87,6 +87,60 @@ namespace TeamSupport.Data
         }
 
     }
+
+    public virtual void LoadByArticleID(int articleID, int userID, int organizationID)
+    {
+      using (SqlCommand command = new SqlCommand())
+      {
+        command.CommandText = "SET NOCOUNT OFF; SELECT * FROM [dbo].[WikiArticles] WHERE ([ArticleID] = @ArticleID) and ([OrganizationID] = @OrganizationID) and ((IsNull(Private,0)=0) or (CreatedBy=@UserID)) and IsNull(IsDeleted,0)=0 ORDER BY ArticleName";
+        command.CommandType = CommandType.Text;
+        command.Parameters.AddWithValue("@ArticleID", articleID);
+        command.Parameters.AddWithValue("@UserID", userID);
+        command.Parameters.AddWithValue("@OrganizationID", organizationID);
+        Fill(command);
+      }
+    }
+
+    public static WikiArticles GetWikiArticles(LoginUser loginUser)
+    {
+      WikiArticles wikiArticles = new WikiArticles(loginUser);
+      wikiArticles.LoadByOrganizationIDAndUserID();
+      if (wikiArticles.IsEmpty)
+        return null;
+      else
+        return wikiArticles;
+    }
+
+    public static WikiArticles GetWikiParentArticles(LoginUser loginUser)
+    {
+      WikiArticles wikiArticles = new WikiArticles(loginUser);
+      wikiArticles.LoadParentsByOrganizationID();
+      if (wikiArticles.IsEmpty)
+        return null;
+      else
+        return wikiArticles;
+    }
+
+    public static WikiArticles GetWikiSubArticles(LoginUser loginUser, int articleID)
+    {
+      WikiArticles wikiArticles = new WikiArticles(loginUser);
+      wikiArticles.LoadSubArticlesByParentID(articleID);
+      if (wikiArticles.IsEmpty)
+        return null;
+      else
+        return wikiArticles;
+    }
+
+    public static WikiArticles GetWikiArticlesBySearchTerm(LoginUser loginUser, string searchTerm)
+    {
+      WikiArticles wikiArticles = new WikiArticles(loginUser);
+      wikiArticles.LoadBySearchTerm(searchTerm);
+      if (wikiArticles.IsEmpty)
+        return null;
+      else
+        return wikiArticles;
+    }
+
   }
   
 }
