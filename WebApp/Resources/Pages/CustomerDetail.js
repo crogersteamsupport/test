@@ -190,7 +190,7 @@ $(document).ready(function () {
         $(this).toggleClass("btn-primary");
         $(this).toggleClass("btn-success");
         $('#companyTabs a:first').tab('show');
-        if ((!_isAdmin && !top.Ts.System.User.IsPortalUser) || !top.Ts.System.User.CanEditCompany) {
+        if ((!_isAdmin && !top.Ts.System.User.IsPortalUser) || (!top.Ts.System.User.CanEditCompany && !_isAdmin)) {
             $('#fieldPortalAccess').removeClass('editable');
         }
 
