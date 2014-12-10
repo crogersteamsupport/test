@@ -567,6 +567,7 @@ $(document).ready(function () {
 
         function getHighChartOptions() {
             var options = {};
+            var showDataLabels = ($('#chart-data-labels').val() === 'true');
             options.chart = { zoomType: 'x' }
             options.ts = { chartType: $('#chart-type').val(), seriesTitle: $('#chart-series-title').val() }
             options.credits = { enabled: false }
@@ -580,39 +581,40 @@ $(document).ready(function () {
             options.yAxis = {};
             options.yAxis.title = { text: $('#chart-series-title').val() };
             options.yAxis.plotLines = [{ value: 0, width: 1, color: '#808080'}];
-
             switch ($('#chart-type').val()) {
                 case 'line':
                     options.plotOptions = {};
-                    options.plotOptions.line = { turboThreshold: 100000 };
+                    options.plotOptions.line = { turboThreshold: 100000, dataLabels: { enabled: showDataLabels} };
                     break;
                 case 'area':
                     options.chart = { type: 'area' };
+                    options.plotOptions = {};
+                    options.plotOptions.area = { stacking: 'normal', dataLabels: { enabled: showDataLabels} };
                     break;
                 case 'stackedarea':
                     options.chart = { type: 'area' };
                     options.plotOptions = {};
-                    options.plotOptions.area = { stacking: 'normal' };
+                    options.plotOptions.area = { stacking: 'normal', dataLabels: { enabled: showDataLabels} };
                     break;
                 case 'bar':
                     options.chart = { type: 'bar' };
                     options.plotOptions = {};
-                    options.plotOptions.bar = { dataLabels: true };
+                    options.plotOptions.bar = { dataLabels: { enabled: showDataLabels} };
                     break;
                 case 'stackedbar':
                     options.chart = { type: 'bar' };
                     options.plotOptions = {};
-                    options.plotOptions.bar = { stacking: 'normal' };
+                    options.plotOptions.bar = { stacking: 'normal', dataLabels: { enabled: showDataLabels, color: 'white'} };
                     break;
                 case 'column':
                     options.chart = { type: 'column' };
                     options.plotOptions = {};
-                    options.plotOptions.column = { dataLabels: true };
+                    options.plotOptions.column = { dataLabels: { enabled: showDataLabels} };
                     break;
                 case 'stackedcolumn':
                     options.chart = { type: 'column' };
                     options.plotOptions = {};
-                    options.plotOptions.column = { stacking: 'normal' };
+                    options.plotOptions.column = { stacking: 'normal', dataLabels: { enabled: showDataLabels, color: 'white'} };
                     break;
                 case 'pie':
                     options.chart = { plotBackgroundColor: null, plotBorderWidth: null, plotShadow: false };
@@ -620,7 +622,7 @@ $(document).ready(function () {
                         pie: {
                             allowPointSelect: true,
                             cursor: 'pointer',
-                            dataLabels: { enabled: true, format: '<b>{point.name}</b>: {point.y}'},
+                            dataLabels: { enabled: showDataLabels, format: '<b>{point.name}</b>: {point.y}' },
                             showInLegend: true
                         }
                     }
@@ -662,6 +664,17 @@ $(document).ready(function () {
                 $('#chart-legend-layout').val(options.legend.layout);
                 $('#chart-legend-align').val(options.legend.align);
                 $('#chart-legend-valign').val(options.legend.verticalAlign);
+
+                if (options.plotOptions.hasOwnProperty(options.ts.chartType) && options.plotOptions[options.ts.chartType].hasOwnProperty('dataLabels.endabled')) {
+                    $('#chart-data-labels').val(options.plotOptions[options.ts.chartType].dataLabels.enabled.toString());
+                }
+                else if (options.plotOptions.hasOwnProperty(options.chart.type) && options.plotOptions[options.chart.type].hasOwnProperty('dataLabels.endabled')) {
+                    $('#chart-data-labels').val(options.plotOptions[options.chart.type].dataLabels.enabled.toString());
+                }
+                else {
+                    $('#chart-data-labels').val(false.toString());
+                }
+
             }
             if (callback) callback();
         }
