@@ -1664,6 +1664,7 @@ namespace TSWebServices
       }
       if (ticket.UserID == userID) return null;
       ticket.UserID = userID;
+      ticket.ModifierID = TSAuthentication.GetLoginUser().UserID;
       ticket.Collection.Save();
       return user == null ? null : new UserInfo(user);
     }
