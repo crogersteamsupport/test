@@ -376,6 +376,7 @@ AND ot.TicketID = @TicketID
           ticket.DateClosed = DateTime.UtcNow;
         }
       }
+      ticket.Name = (ticket.Row["Name"] == DBNull.Value) ? string.Empty : ticket.Name;
     }
 
     partial void AfterRowInsert(Ticket ticket)
@@ -506,6 +507,7 @@ AND ts.IsClosed = 0";
         ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, description);
       }
 
+      ticket.Name = (ticket.Row["Name"] == DBNull.Value) ? string.Empty : ticket.Name;
       if (oldTicketView.Name != ticket.Name)
       {
         description = "Changed ticket name from '" + oldTicketView.Name + "' to '" + ticket.Name + "' for " + GetTicketLink(ticket);

@@ -88,7 +88,7 @@ namespace TeamSupport.Data
 
     partial void BeforeRowEdit(Action action)
     {
-      action.Description = HtmlUtility.FixScreenRFrame(action.Description);
+      action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
       string actionNumber = GetActionNumber(action.TicketID, action.ActionID);
       string description = "Modified action #" + actionNumber + " on " + Tickets.GetTicketLink(LoginUser, action.TicketID);
       ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, action.TicketID, description);
@@ -109,7 +109,7 @@ namespace TeamSupport.Data
 
     partial void BeforeRowInsert(Action action)
     {
-      action.Description = HtmlUtility.FixScreenRFrame(action.Description);
+        action.Description = HtmlUtility.FixScreenRFrame((action.Row["Description"] == DBNull.Value) ? string.Empty : action.Description);
     }
 
     partial void AfterRowInsert(Action action)
