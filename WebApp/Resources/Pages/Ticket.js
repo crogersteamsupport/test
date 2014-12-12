@@ -1339,7 +1339,7 @@ $(document).ready(function () {
                   var date = result === null ? null : top.Ts.Utils.getMsDate(result);
                   var anchor = parent.find('a');
                   anchor.text((date === null ? 'Unassigned' : value.localeFormat(top.Ts.Utils.getDateTimePattern())))
-                  _dueDate = result;
+                  _dueDate = top.Ts.Utils.getMsDate(value);//result;
                   if (date != null && date < Date.now()) {
                       parent.addClass('nonrequired-field-error ui-corner-all');
                       anchor.addClass('nonrequired-field-error-font');
