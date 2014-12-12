@@ -2807,7 +2807,7 @@ namespace TSWebServices
         Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
         if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
         CustomValues values = new CustomValues(ticket.Collection.LoginUser);
-        values.LoadParentsByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID);
+        values.LoadParentsByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID, ticket.ProductID);
         return values.GetCustomValueProxies();
     }
 
@@ -3567,7 +3567,7 @@ namespace TSWebServices
         Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
         if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
         CustomValues values = new CustomValues(ticket.Collection.LoginUser);
-        values.LoadParentsByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID);
+        values.LoadParentsByReferenceType(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID, ticket.ProductID);
         return values.GetCustomValueProxies();
     }
 
@@ -3578,19 +3578,6 @@ namespace TSWebServices
         if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
         CustomValues values = new CustomValues(ticket.Collection.LoginUser);
         values.LoadByParentValue(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID, parentFieldID, parentValue, ticket.ProductID);
-        return values.GetCustomValueProxies();
-    }
-
-    [WebMethod]
-    public CustomValueProxy[] GetMatchingProductFields(int ticketID)
-    {
-        Ticket ticket = Tickets.GetTicket(TSAuthentication.GetLoginUser(), ticketID);
-        if (ticket.OrganizationID != TSAuthentication.OrganizationID) return null;
-        CustomValues values = new CustomValues(ticket.Collection.LoginUser);
-        if (ticket.ProductID != null)
-        {
-            values.LoadByParentProduct(TSAuthentication.OrganizationID, ReferenceType.Tickets, ticket.TicketTypeID, ticket.TicketID, (int)ticket.ProductID);
-        }
         return values.GetCustomValueProxies();
     }
   }

@@ -155,14 +155,20 @@ namespace TeamSupport.Data
     
     }
 
-    public void LoadByOrganizationFieldTypeAndTicketType(int organizationID, CustomFieldType fieldType, int ticketTypeID, int selfID)
+    public void LoadByOrganizationFieldTypeAndTicketType(int organizationID, CustomFieldType fieldType, int ticketTypeID, int selfID, int? customFieldCategoryID)
     {
       using (SqlCommand command = new SqlCommand())
       {
         string exceptSelfClause = string.Empty;
         if (selfID != -1)
         {
-            exceptSelfClause = " AND CustomFieldID <> " + selfID.ToString() + " ";
+            exceptSelfClause = " AND CustomFieldID <> @SelfID ";
+        }
+
+        string categoryClause = " AND CustomFieldCategoryID IS NULL ";
+        if (customFieldCategoryID != null)
+        {
+            categoryClause = " AND CustomFieldCategoryID = @CustomFieldCategoryID ";
         }
 
         command.CommandText = @"
@@ -175,12 +181,15 @@ namespace TeamSupport.Data
           AND FieldType = @FieldType
           AND AuxID = @TicketType
           " + exceptSelfClause + @"
+          " + categoryClause + @"
         ORDER BY
           Position";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("@OrganizationID", organizationID);
         command.Parameters.AddWithValue("@FieldType", fieldType);
         command.Parameters.AddWithValue("@TicketType", ticketTypeID);
+        command.Parameters.AddWithValue("@SelfID", selfID);
+        command.Parameters.AddWithValue("@CustomFieldCategoryID", customFieldCategoryID ?? -1);
         Fill(command, "CustomFields");
       }
 

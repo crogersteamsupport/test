@@ -142,8 +142,9 @@ public partial class Dialogs_CustomField : BaseDialogPage
 
   private void LoadParentFields()
   {
+    int? catID = Request["CatID"] == null ? null : (int?)int.Parse(Request["CatID"]);
     CustomFields pickListCustomFields = new CustomFields(UserSession.LoginUser);
-    pickListCustomFields.LoadByOrganizationFieldTypeAndTicketType(UserSession.LoginUser.OrganizationID, CustomFieldType.PickList, _auxID, _customFieldID);
+    pickListCustomFields.LoadByOrganizationFieldTypeAndTicketType(UserSession.LoginUser.OrganizationID, CustomFieldType.PickList, _auxID, _customFieldID, catID);
 
     if (pickListCustomFields.Count > 0 )
     {

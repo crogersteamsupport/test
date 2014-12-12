@@ -100,7 +100,7 @@ AdminCustomFields = function () {
             })
             .appendTo(div);
 
-        if (refType == 9) {
+        if (refType == 9 || refType == 17) {
           var addCat = $('<a>')
             .text('Add Category')
             .attr('href', '#')
@@ -299,7 +299,13 @@ AdminCustomFields = function () {
         .addClass('ts-icon ts-icon-edit')
         .click(function (e) {
           e.preventDefault();
-          showFieldDialog($(this).closest('.admin-cf-field').data('CustomField').CustomFieldID);
+          var cat = $(this).closest('.admin-cf-cat').data('Category');
+          if (cat) {
+            showFieldDialog($(this).closest('.admin-cf-field').data('CustomField').CustomFieldID, cat.CustomFieldCategoryID);
+          }
+          else {
+            showFieldDialog($(this).closest('.admin-cf-field').data('CustomField').CustomFieldID);
+          }
         })
         .appendTo(fieldDiv).hide();
       $('<span>')

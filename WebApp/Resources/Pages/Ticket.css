@@ -211,6 +211,10 @@
         margin-left: 1em;
     }
 
+    .customFieldCategoryHeader {
+        padding-top: 1em !important;
+    }
+
     #ticketEmailIntroductionLabel { margin-top: 5px;}
 
     .fa-paste   { color: #5CB85C !important}
