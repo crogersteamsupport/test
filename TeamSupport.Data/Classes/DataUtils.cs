@@ -340,6 +340,9 @@ namespace TeamSupport.Data
         case ReferenceType.OrganizationProducts:
           result = "OrganizationProductsView.OrganizationProductID";
           break;
+        case ReferenceType.Assets:
+          result = "AssetsView.AssetID";
+          break;
         default:
           result = "";
           break;

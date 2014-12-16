@@ -1749,8 +1749,11 @@ namespace TSWebServices
               {
                   if (!string.IsNullOrWhiteSpace(author.Signature))
                   {
-                      if (action.Description.Contains(author.Signature.Replace(" />",">")))
-                          action.Description = action.Description.Replace("<br><br>" + author.Signature.Replace(" />", ">"), "");
+                      if (action.Description.Contains(author.Signature.Replace(" />", ">")))
+                      {
+                          action.Description = action.Description.Replace("<p><br><br></p>\n" + author.Signature.Replace(" />", ">"), "").Replace("<br><br>" + author.Signature.Replace(" />", ">"), "");
+                          //action.Description = action.Description.Replace("<br><br>" + author.Signature.Replace(" />", ">"), "");
+                      }
                   }
               }
           }
