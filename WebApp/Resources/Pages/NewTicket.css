@@ -1,3 +1,12 @@
 ﻿    .ticket-customer-add{ padding-left: 10px; }
 
     .newticket-kbCategory { width: 350px; }
+
+    .category {
+        color: #444;
+        display: inline-block;
+        line-height: 18px;
+        margin: 0;
+        font-size: 18px;
+        font-weight: 300 !important;
+    }

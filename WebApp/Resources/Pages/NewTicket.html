@@ -35,6 +35,11 @@
 
   <style type="text/css">
     .newticket-fields { padding: 0; margin: 0; clear: both; }
+      .custom-fields-container {
+          padding: 0;
+          margin: 0;
+          clear: both;
+      }
     .new-ticket-save-buttons { margin: 1em 0; text-align:center; height: 21px;  }
     .new-ticket-save-buttons button { margin-right: 1em;}
     .new-ticket-save-buttons.saving { background: transparent url('../Images/loading/dots64.gif') no-repeat scroll 50% 50%; }
@@ -161,9 +166,18 @@
             </div>
           </div>
           <div class="ui-helper-clearfix"></div>
-          <div class="new-ticket-save-buttons"> <button class="newticket-save">Save</button><button class="newticket-save-close">Save &amp Close</button><button class="newticket-cancel">Cancel</button></div>
-          <div class="ui-helper-clearfix"></div>
         </div>
+          <div class="ui-widget-content ui-corner-all ticket-content-section custom-fields">
+              <h3 class="category">Custom Fields</h3>
+              <div class="custom-fields-container"></div>
+          </div>
+          <div class="ui-widget-content ui-corner-all ticket-content-section">
+              <div class="new-ticket-save-buttons">
+                  <button class="newticket-save">Save</button>
+                  <button class="newticket-save-close">Save &amp Close</button>
+                  <button class="newticket-cancel">Cancel</button>
+              </div>
+          </div>
       </div>
     </div>
     <div class="ticket-rail-wrapper">

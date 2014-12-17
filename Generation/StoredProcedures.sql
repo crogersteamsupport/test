@@ -1,10 +1,10 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldsViewItem
 
 (
-  @CustomFieldID int
+
 )
 AS
   SET NOCOUNT OFF;
@@ -31,17 +31,20 @@ AS
     [Mask],
     [ParentCustomFieldID],
     [ParentCustomValue],
-    [ParentProductID]
-  FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
+    [ParentProductID],
+    [ParentFieldName],
+    [ParentProductName]
+  FROM [dbo].[CustomFieldsView]
+  WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldsViewItem
 
 (
+  @CustomFieldID int,
   @OrganizationID int,
   @Name varchar(50),
   @ApiFieldName varchar(100),
@@ -64,12 +67,15 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
   @ParentCustomFieldID int,
   @ParentCustomValue varchar(MAX),
   @ParentProductID int,
+  @ParentFieldName varchar(50),
+  @ParentProductName varchar(255),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomFields]
+  INSERT INTO [dbo].[CustomFieldsView]
   (
+    [CustomFieldID],
     [OrganizationID],
     [Name],
     [ApiFieldName],
@@ -91,8 +97,11 @@ AS
     [Mask],
     [ParentCustomFieldID],
     [ParentCustomValue],
-    [ParentProductID])
+    [ParentProductID],
+    [ParentFieldName],
+    [ParentProductName])
   VALUES (
+    @CustomFieldID,
     @OrganizationID,
     @Name,
     @ApiFieldName,
@@ -114,15 +123,17 @@ AS
     @Mask,
     @ParentCustomFieldID,
     @ParentCustomValue,
-    @ParentProductID)
+    @ParentProductID,
+    @ParentFieldName,
+    @ParentProductName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldsViewItem
 
 (
   @CustomFieldID int,
@@ -145,12 +156,15 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
   @Mask varchar(MAX),
   @ParentCustomFieldID int,
   @ParentCustomValue varchar(MAX),
-  @ParentProductID int
+  @ParentProductID int,
+  @ParentFieldName varchar(50),
+  @ParentProductName varchar(255)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomFields]
+  UPDATE [dbo].[CustomFieldsView]
   SET
+    [CustomFieldID] = @CustomFieldID,
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
     [ApiFieldName] = @ApiFieldName,
@@ -170,32 +184,34 @@ AS
     [Mask] = @Mask,
     [ParentCustomFieldID] = @ParentCustomFieldID,
     [ParentCustomValue] = @ParentCustomValue,
-    [ParentProductID] = @ParentProductID
-  WHERE ([CustomFieldID] = @CustomFieldID)
+    [ParentProductID] = @ParentProductID,
+    [ParentFieldName] = @ParentFieldName,
+    [ParentProductName] = @ParentProductName
+  WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldsViewItem
 
 (
-  @CustomFieldID int
+
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
+  DELETE FROM [dbo].[CustomFieldsView]
+  WH)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldsViewItem
 
 (
-  @CustomFieldID int
+
 )
 AS
   SET NOCOUNT OFF;
@@ -222,17 +238,20 @@ AS
     [Mask],
     [ParentCustomFieldID],
     [ParentCustomValue],
-    [ParentProductID]
-  FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
+    [ParentProductID],
+    [ParentFieldName],
+    [ParentProductName]
+  FROM [dbo].[CustomFieldsView]
+  WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldsViewItem
 
 (
+  @CustomFieldID int,
   @OrganizationID int,
   @Name varchar(50),
   @ApiFieldName varchar(100),
@@ -255,12 +274,15 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
   @ParentCustomFieldID int,
   @ParentCustomValue varchar(MAX),
   @ParentProductID int,
+  @ParentFieldName varchar(50),
+  @ParentProductName varchar(255),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomFields]
+  INSERT INTO [dbo].[CustomFieldsView]
   (
+    [CustomFieldID],
     [OrganizationID],
     [Name],
     [ApiFieldName],
@@ -282,8 +304,11 @@ AS
     [Mask],
     [ParentCustomFieldID],
     [ParentCustomValue],
-    [ParentProductID])
+    [ParentProductID],
+    [ParentFieldName],
+    [ParentProductName])
   VALUES (
+    @CustomFieldID,
     @OrganizationID,
     @Name,
     @ApiFieldName,
@@ -305,15 +330,17 @@ AS
     @Mask,
     @ParentCustomFieldID,
     @ParentCustomValue,
-    @ParentProductID)
+    @ParentProductID,
+    @ParentFieldName,
+    @ParentProductName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldsViewItem
 
 (
   @CustomFieldID int,
@@ -336,12 +363,15 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
   @Mask varchar(MAX),
   @ParentCustomFieldID int,
   @ParentCustomValue varchar(MAX),
-  @ParentProductID int
+  @ParentProductID int,
+  @ParentFieldName varchar(50),
+  @ParentProductName varchar(255)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomFields]
+  UPDATE [dbo].[CustomFieldsView]
   SET
+    [CustomFieldID] = @CustomFieldID,
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
     [ApiFieldName] = @ApiFieldName,
@@ -361,32 +391,34 @@ AS
     [Mask] = @Mask,
     [ParentCustomFieldID] = @ParentCustomFieldID,
     [ParentCustomValue] = @ParentCustomValue,
-    [ParentProductID] = @ParentProductID
-  WHERE ([CustomFieldID] = @CustomFieldID)
+    [ParentProductID] = @ParentProductID,
+    [ParentFieldName] = @ParentFieldName,
+    [ParentProductName] = @ParentProductName
+  WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldsViewItem
 
 (
-  @CustomFieldID int
+
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
+  DELETE FROM [dbo].[CustomFieldsView]
+  WH)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldsViewItem
 
 (
-  @CustomFieldID int
+
 )
 AS
   SET NOCOUNT OFF;
@@ -413,17 +445,20 @@ AS
     [Mask],
     [ParentCustomFieldID],
     [ParentCustomValue],
-    [ParentProductID]
-  FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
+    [ParentProductID],
+    [ParentFieldName],
+    [ParentProductName]
+  FROM [dbo].[CustomFieldsView]
+  WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldsViewItem
 
 (
+  @CustomFieldID int,
   @OrganizationID int,
   @Name varchar(50),
   @ApiFieldName varchar(100),
@@ -446,12 +481,15 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
   @ParentCustomFieldID int,
   @ParentCustomValue varchar(MAX),
   @ParentProductID int,
+  @ParentFieldName varchar(50),
+  @ParentProductName varchar(255),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomFields]
+  INSERT INTO [dbo].[CustomFieldsView]
   (
+    [CustomFieldID],
     [OrganizationID],
     [Name],
     [ApiFieldName],
@@ -473,8 +511,11 @@ AS
     [Mask],
     [ParentCustomFieldID],
     [ParentCustomValue],
-    [ParentProductID])
+    [ParentProductID],
+    [ParentFieldName],
+    [ParentProductName])
   VALUES (
+    @CustomFieldID,
     @OrganizationID,
     @Name,
     @ApiFieldName,
@@ -496,15 +537,17 @@ AS
     @Mask,
     @ParentCustomFieldID,
     @ParentCustomValue,
-    @ParentProductID)
+    @ParentProductID,
+    @ParentFieldName,
+    @ParentProductName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldsViewItem
 
 (
   @CustomFieldID int,
@@ -527,12 +570,15 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
   @Mask varchar(MAX),
   @ParentCustomFieldID int,
   @ParentCustomValue varchar(MAX),
-  @ParentProductID int
+  @ParentProductID int,
+  @ParentFieldName varchar(50),
+  @ParentProductName varchar(255)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomFields]
+  UPDATE [dbo].[CustomFieldsView]
   SET
+    [CustomFieldID] = @CustomFieldID,
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
     [ApiFieldName] = @ApiFieldName,
@@ -552,32 +598,34 @@ AS
     [Mask] = @Mask,
     [ParentCustomFieldID] = @ParentCustomFieldID,
     [ParentCustomValue] = @ParentCustomValue,
-    [ParentProductID] = @ParentProductID
-  WHERE ([CustomFieldID] = @CustomFieldID)
+    [ParentProductID] = @ParentProductID,
+    [ParentFieldName] = @ParentFieldName,
+    [ParentProductName] = @ParentProductName
+  WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldsViewItem
 
 (
-  @CustomFieldID int
+
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
+  DELETE FROM [dbo].[CustomFieldsView]
+  WH)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldsViewItem
 
 (
-  @CustomFieldID int
+
 )
 AS
   SET NOCOUNT OFF;
@@ -604,17 +652,20 @@ AS
     [Mask],
     [ParentCustomFieldID],
     [ParentCustomValue],
-    [ParentProductID]
-  FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
+    [ParentProductID],
+    [ParentFieldName],
+    [ParentProductName]
+  FROM [dbo].[CustomFieldsView]
+  WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldsViewItem
 
 (
+  @CustomFieldID int,
   @OrganizationID int,
   @Name varchar(50),
   @ApiFieldName varchar(100),
@@ -637,12 +688,15 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
   @ParentCustomFieldID int,
   @ParentCustomValue varchar(MAX),
   @ParentProductID int,
+  @ParentFieldName varchar(50),
+  @ParentProductName varchar(255),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomFields]
+  INSERT INTO [dbo].[CustomFieldsView]
   (
+    [CustomFieldID],
     [OrganizationID],
     [Name],
     [ApiFieldName],
@@ -664,8 +718,11 @@ AS
     [Mask],
     [ParentCustomFieldID],
     [ParentCustomValue],
-    [ParentProductID])
+    [ParentProductID],
+    [ParentFieldName],
+    [ParentProductName])
   VALUES (
+    @CustomFieldID,
     @OrganizationID,
     @Name,
     @ApiFieldName,
@@ -687,15 +744,17 @@ AS
     @Mask,
     @ParentCustomFieldID,
     @ParentCustomValue,
-    @ParentProductID)
+    @ParentProductID,
+    @ParentFieldName,
+    @ParentProductName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldsViewItem
 
 (
   @CustomFieldID int,
@@ -718,12 +777,15 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
   @Mask varchar(MAX),
   @ParentCustomFieldID int,
   @ParentCustomValue varchar(MAX),
-  @ParentProductID int
+  @ParentProductID int,
+  @ParentFieldName varchar(50),
+  @ParentProductName varchar(255)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomFields]
+  UPDATE [dbo].[CustomFieldsView]
   SET
+    [CustomFieldID] = @CustomFieldID,
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
     [ApiFieldName] = @ApiFieldName,
@@ -743,32 +805,34 @@ AS
     [Mask] = @Mask,
     [ParentCustomFieldID] = @ParentCustomFieldID,
     [ParentCustomValue] = @ParentCustomValue,
-    [ParentProductID] = @ParentProductID
-  WHERE ([CustomFieldID] = @CustomFieldID)
+    [ParentProductID] = @ParentProductID,
+    [ParentFieldName] = @ParentFieldName,
+    [ParentProductName] = @ParentProductName
+  WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldsViewItem
 
 (
-  @CustomFieldID int
+
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
+  DELETE FROM [dbo].[CustomFieldsView]
+  WH)
 GO
 
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedSelectCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedSelectCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedSelectCustomField
+CREATE PROCEDURE dbo.uspGeneratedSelectCustomFieldsViewItem
 
 (
-  @CustomFieldID int
+
 )
 AS
   SET NOCOUNT OFF;
@@ -795,17 +859,20 @@ AS
     [Mask],
     [ParentCustomFieldID],
     [ParentCustomValue],
-    [ParentProductID]
-  FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
+    [ParentProductID],
+    [ParentFieldName],
+    [ParentProductName]
+  FROM [dbo].[CustomFieldsView]
+  WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedInsertCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedInsertCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
+CREATE PROCEDURE dbo.uspGeneratedInsertCustomFieldsViewItem
 
 (
+  @CustomFieldID int,
   @OrganizationID int,
   @Name varchar(50),
   @ApiFieldName varchar(100),
@@ -828,12 +895,15 @@ CREATE PROCEDURE dbo.uspGeneratedInsertCustomField
   @ParentCustomFieldID int,
   @ParentCustomValue varchar(MAX),
   @ParentProductID int,
+  @ParentFieldName varchar(50),
+  @ParentProductName varchar(255),
   @Identity int OUT
 )
 AS
   SET NOCOUNT OFF;
-  INSERT INTO [dbo].[CustomFields]
+  INSERT INTO [dbo].[CustomFieldsView]
   (
+    [CustomFieldID],
     [OrganizationID],
     [Name],
     [ApiFieldName],
@@ -855,8 +925,11 @@ AS
     [Mask],
     [ParentCustomFieldID],
     [ParentCustomValue],
-    [ParentProductID])
+    [ParentProductID],
+    [ParentFieldName],
+    [ParentProductName])
   VALUES (
+    @CustomFieldID,
     @OrganizationID,
     @Name,
     @ApiFieldName,
@@ -878,15 +951,17 @@ AS
     @Mask,
     @ParentCustomFieldID,
     @ParentCustomValue,
-    @ParentProductID)
+    @ParentProductID,
+    @ParentFieldName,
+    @ParentProductName)
 
 SET @Identity = SCOPE_IDENTITY()
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedUpdateCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedUpdateCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
+CREATE PROCEDURE dbo.uspGeneratedUpdateCustomFieldsViewItem
 
 (
   @CustomFieldID int,
@@ -909,12 +984,15 @@ CREATE PROCEDURE dbo.uspGeneratedUpdateCustomField
   @Mask varchar(MAX),
   @ParentCustomFieldID int,
   @ParentCustomValue varchar(MAX),
-  @ParentProductID int
+  @ParentProductID int,
+  @ParentFieldName varchar(50),
+  @ParentProductName varchar(255)
 )
 AS
   SET NOCOUNT OFF;
-  UPDATE [dbo].[CustomFields]
+  UPDATE [dbo].[CustomFieldsView]
   SET
+    [CustomFieldID] = @CustomFieldID,
     [OrganizationID] = @OrganizationID,
     [Name] = @Name,
     [ApiFieldName] = @ApiFieldName,
@@ -934,22 +1012,24 @@ AS
     [Mask] = @Mask,
     [ParentCustomFieldID] = @ParentCustomFieldID,
     [ParentCustomValue] = @ParentCustomValue,
-    [ParentProductID] = @ParentProductID
-  WHERE ([CustomFieldID] = @CustomFieldID)
+    [ParentProductID] = @ParentProductID,
+    [ParentFieldName] = @ParentFieldName,
+    [ParentProductName] = @ParentProductName
+  WH)
 GO
 
-IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomField' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomField
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'uspGeneratedDeleteCustomFieldsViewItem' AND user_name(uid) = 'dbo')	DROP PROCEDURE dbo.uspGeneratedDeleteCustomFieldsViewItem
 GO
 
-CREATE PROCEDURE dbo.uspGeneratedDeleteCustomField
+CREATE PROCEDURE dbo.uspGeneratedDeleteCustomFieldsViewItem
 
 (
-  @CustomFieldID int
+
 )
 AS
   SET NOCOUNT OFF;
-  DELETE FROM [dbo].[CustomFields]
-  WHERE ([CustomFieldID] = @CustomFieldID)
+  DELETE FROM [dbo].[CustomFieldsView]
+  WH)
 GO
 
 

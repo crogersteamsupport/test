@@ -332,38 +332,85 @@ $(document).ready(function () {
       selected: function (e, ui) {
           loadVersions();
           $('.productChild').remove();
-          var productID = $('.newticket-product option:selected').data('o').ProductID;
-          top.Ts.Services.CustomFields.GetProductMatchingCustomFields(top.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
-              for (var i = 0; i < result.length; i++) {
-                  try {
-                      switch (result[i].FieldType) {
-                          case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                          case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                          case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                          case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                          case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                          case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                          case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                          default:
+          var productID = -1;
+          if ($('.newticket-product option:selected').data('o')) {
+              productID = $('.newticket-product option:selected').data('o').ProductID;
+              top.Ts.Services.CustomFields.GetProductMatchingCustomFields(top.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
+                  var container = $('.custom-fields-container');
+                  for (var i = 0; i < result.length; i++) {
+                      if (!result[i].CustomFieldCategoryID) {
+                          try {
+                              switch (result[i].FieldType) {
+                                  case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], container, null, 'productChild'); break;
+                                  case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], container, null, 'productChild'); break;
+                                  case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], container, null, 'productChild'); break;
+                                  case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], container, null, 'productChild'); break;
+                                  case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], container, null, 'productChild'); break;
+                                  case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], container, null, 'productChild'); break;
+                                  case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], container, null, 'productChild'); break;
+                                  default:
+                              }
+                          } catch (err) {
+                              var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
+                              for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
+                              top.Ts.Services.System.LogException(err.message, errorString);
+                              $('.newticket-custom-field').remove();
+                              return;
+                          }
                       }
-                  } catch (err) {
-                      var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
-                      for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
-                      top.Ts.Services.System.LogException(err.message, errorString);
-                      $('.newticket-custom-field').remove();
-                      return;
                   }
-
-              }
-              $('<div>').addClass('ui-helper-clearfix').appendTo('.newticket-fields');
-              showCustomFields();
-          });
+                  container.find('.ui-helper-clearfix').remove();
+                  $('<div>').addClass('ui-helper-clearfix').appendTo(container);
+                  appendCategorizedCustomFields(result, 'productChild');
+              });
+          }
       }
   }).combobox('setValue', -1);
 
 
   $('.newticket-resolved').combobox();
   $('.newticket-reported').combobox();
+
+  var appendCategorizedCustomFields = function (fields, className) {
+      top.Ts.Services.CustomFields.GetCategories(top.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, function (categories) {
+          for (var j = 0; j < categories.length; j++) {
+              var isFirstFieldAdded = true;
+              for (var i = 0; i < fields.length; i++) {
+                  var item = null;
+
+                  var field = fields[i];
+
+                  if (field.CustomFieldCategoryID == categories[j].CustomFieldCategoryID) {
+                      if ($('.category-' + categories[j].CustomFieldCategoryID).length == 0) {
+                          isFirstFieldAdded = false;
+                          var header = $('<h3>').text(categories[j].Category).addClass('category');
+                          var innerContainer = $('<div>');
+                          var container = $('<div>').addClass('ui-widget-content ui-corner-all ticket-content-section custom-fields category-' + categories[j].CustomFieldCategoryID);
+                          container.append(header);
+                          container.append(innerContainer);
+                          container.insertBefore($('.new-ticket-save-buttons').parent());
+                      }
+                      
+                      var container = $('.category-' + categories[j].CustomFieldCategoryID + ' > div');
+
+                      switch (field.FieldType) {
+                          case top.Ts.CustomFieldType.Text: appendCustomEdit(field, container, null, className); break;
+                          case top.Ts.CustomFieldType.Date: appendCustomEditDate(field, container, null, className); break;
+                          case top.Ts.CustomFieldType.Time: appendCustomEditTime(field, container, null, className); break;
+                          case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(field, container, null, className); break;
+                          case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(field, container, null, className); break;
+                          case top.Ts.CustomFieldType.Number: appendCustomEditNumber(field, container, null, className); break;
+                          case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(field, container, null, className); break;
+                          default:
+                      }
+                  }
+              }
+              $('.category-' + categories[j].CustomFieldCategoryID + ' > div').find('.ui-helper-clearfix').remove();
+              $('<div>').addClass('ui-helper-clearfix').appendTo('.category-' + categories[j].CustomFieldCategoryID + ' > div');
+          }
+          showCustomFields();
+      });
+  }
 
   loadVersions();
 
@@ -386,42 +433,53 @@ $(document).ready(function () {
   createCustomFields();
   function createCustomFields() {
     top.Ts.Services.CustomFields.GetParentCustomFields(top.Ts.ReferenceTypes.Tickets, null, function (result) {
-      for (var i = 0; i < result.length; i++) {
-        try {
-          switch (result[i].FieldType) {
-            case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i]); break;
-            case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i]); break;
-            case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i]); break;
-            case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i]); break;
-            case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i]); break;
-            case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i]); break;
-            case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i]); break;
-            default:
-          }
-        } catch (err) {
-          var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
-          for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
-          top.Ts.Services.System.LogException(err.message, errorString);
-          $('.newticket-custom-field').remove();
-          return;
+        if (result.length == 0) {
+            $('.custom-fields').hide();
         }
-
+        else {
+            $('.custom-fields').show();
+            var container = $('.custom-fields-container');
+            for (var i = 0; i < result.length; i++) {
+                if (!result[i].CustomFieldCategoryID) {
+                    try {
+                        switch (result[i].FieldType) {
+                            case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], container); break;
+                            case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], container); break;
+                            case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], container); break;
+                            case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], container); break;
+                            case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], container); break;
+                            case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], container); break;
+                            case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], container); break;
+                            default:
+                        }
+                    } catch (err) {
+                        var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
+                        for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
+                        top.Ts.Services.System.LogException(err.message, errorString);
+                        $('.newticket-custom-field').remove();
+                        return;
+                    }
+                }
+            }
+            $('<div>').addClass('ui-helper-clearfix').appendTo(container);
       }
-      $('<div>').addClass('ui-helper-clearfix').appendTo('.newticket-fields');
-      showCustomFields();
+        appendCategorizedCustomFields(result, null);
     });
   }
 
 
-  function appendCustomEditCombo(field, insertAfterElement, idClass) {
+  function appendCustomEditCombo(field, container, insertAfterElement, idClass) {
     var div = $('<div>')
     .addClass('label-block newticket-custom-field')
     .data('o', field)
     if (!insertAfterElement) {
-        div.appendTo('.newticket-fields');
+        div.appendTo(container);
     }
     else {
         div.insertAfter(insertAfterElement);
+    }
+
+    if (idClass) {
         div.addClass(idClass);
     }
 
@@ -445,13 +503,13 @@ $(document).ready(function () {
             for (var i = 0; i < result.length; i++) {
                 try {
                     switch (result[i].FieldType) {
-                        case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], div, field.CustomFieldID + 'child'); break;
-                        case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], div, field.CustomFieldID + 'child'); break;
+                        case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], null, div, field.CustomFieldID + 'child'); break;
+                        case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], null, div, field.CustomFieldID + 'child'); break;
                         default:
                     }
                 } catch (err) {
@@ -463,7 +521,6 @@ $(document).ready(function () {
                 }
 
             }
-            $('<div>').addClass('ui-helper-clearfix').appendTo('.newticket-fields');
             showCustomFields();
         });
 
@@ -483,13 +540,13 @@ $(document).ready(function () {
           for (var i = 0; i < result.length; i++) {
               try {
                   switch (result[i].FieldType) {
-                      case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
-                      case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
+                      case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], null, div, div.attr("class") + ' ' + field.CustomFieldID + 'child'); break;
                       default:
                   }
               } catch (err) {
@@ -501,7 +558,6 @@ $(document).ready(function () {
               }
 
           }
-          $('<div>').addClass('ui-helper-clearfix').appendTo('.newticket-fields');
           showCustomFields();
       });
 
@@ -509,15 +565,18 @@ $(document).ready(function () {
     });
   }
 
-  function appendCustomEditNumber(field, insertAfterElement, idClass) {
+  function appendCustomEditNumber(field, container, insertAfterElement, idClass) {
     var div = $('<div>')
     .addClass('label-block newticket-custom-field')
     .data('o', field)
     if (!insertAfterElement) {
-        div.appendTo('.newticket-fields');
+        div.appendTo(container);
     }
     else {
         div.insertAfter(insertAfterElement);
+    }
+
+    if (idClass) {
         div.addClass(idClass);
     }
 
@@ -533,15 +592,18 @@ $(document).ready(function () {
     .appendTo(div);
   }
 
-  function appendCustomEdit(field, insertAfterElement, idClass) {
+  function appendCustomEdit(field, container, insertAfterElement, idClass) {
     var div = $('<div>')
     .addClass('label-block newticket-custom-field')
     .data('o', field)
     if (!insertAfterElement) {
-        div.appendTo('.newticket-fields');
+        div.appendTo(container);
     }
     else {
         div.insertAfter(insertAfterElement);
+    }
+
+    if (idClass) {
         div.addClass(idClass);
     }
 
@@ -562,15 +624,18 @@ $(document).ready(function () {
     }
   }
 
-  function appendCustomEditDate(field, insertAfterElement, idClass) {
+  function appendCustomEditDate(field, container, insertAfterElement, idClass) {
     var div = $('<div>')
     .addClass('label-block newticket-custom-field')
     .data('o', field)
     if (!insertAfterElement) {
-        div.appendTo('.newticket-fields');
+        div.appendTo(container);
     }
     else {
         div.insertAfter(insertAfterElement);
+    }
+
+    if (idClass) {
         div.addClass(idClass);
     }
 
@@ -587,15 +652,18 @@ $(document).ready(function () {
     .datepicker({ dateFormat: dateFormat });
   }
 
-  function appendCustomEditTime(field, insertAfterElement, idClass) {
+  function appendCustomEditTime(field, container, insertAfterElement, idClass) {
     var div = $('<div>')
     .addClass('label-block newticket-custom-field')
     .data('o', field)
     if (!insertAfterElement) {
-        div.appendTo('.newticket-fields');
+        div.appendTo(container);
     }
     else {
         div.insertAfter(insertAfterElement);
+    }
+
+    if (idClass) {
         div.addClass(idClass);
     }
 
@@ -612,15 +680,18 @@ $(document).ready(function () {
     .timepicker();
   }
 
-  function appendCustomEditDateTime(field, insertAfterElement, idClass) {
+  function appendCustomEditDateTime(field, container, insertAfterElement, idClass) {
     var div = $('<div>')
     .addClass('label-block newticket-custom-field')
     .data('o', field)
     if (!insertAfterElement) {
-        div.appendTo('.newticket-fields');
+        div.appendTo(container);
     }
     else {
         div.insertAfter(insertAfterElement);
+    }
+
+    if (idClass) {
         div.addClass(idClass);
     }
 
@@ -638,15 +709,18 @@ $(document).ready(function () {
   }
 
 
-  function appendCustomEditBool(field, insertAfterElement, idClass) {
+  function appendCustomEditBool(field, container, insertAfterElement, idClass) {
     var div = $('<div>')
     .addClass('label-block newticket-custom-field checkbox')
     .data('o', field)
     if (!insertAfterElement) {
-        div.appendTo('.newticket-fields');
+        div.appendTo(container);
     }
     else {
         div.insertAfter(insertAfterElement);
+    }
+
+    if (idClass) {
         div.addClass(idClass);
     }
 
@@ -663,11 +737,15 @@ $(document).ready(function () {
 
   function showCustomFields() {
     var ticketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
+    $('.custom-fields').hide();
     $('.newticket-custom-field').hide().each(
 
     function () {
       var field = $(this).data('o');
-      if (field.AuxID == ticketTypeID) $(this).show();
+      if (field.AuxID == ticketTypeID) {
+          $(this).show();
+          $(this).parent().parent().show();
+      }
     }
     );
 
@@ -1836,7 +1914,6 @@ $(document).ready(function () {
     });
   }
 
-  setInitialValue();
   function setInitialValue() {
     var menuID = top.Ts.MainPage.MainMenu.getSelected().getId().toLowerCase();
     switch (menuID) {
@@ -1854,29 +1931,32 @@ $(document).ready(function () {
               if (versionID > -1) $('.newticket-reported').combobox('setValue', versionID);
             });
             top.Ts.Services.CustomFields.GetProductMatchingCustomFields(top.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, productID, function (result) {
+                var container = $('.custom-fields-container');
                 for (var i = 0; i < result.length; i++) {
-                    try {
-                        switch (result[i].FieldType) {
-                            case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                            case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                            case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                            case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                            case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                            case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                            case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], $('.newticket-resolved').parent(), 'productChild'); break;
-                            default:
+                    if (!result[i].CustomFieldCategoryID) {
+                        try {
+                            switch (result[i].FieldType) {
+                                case top.Ts.CustomFieldType.Text: appendCustomEdit(result[i], container, null, 'productChild'); break;
+                                case top.Ts.CustomFieldType.Date: appendCustomEditDate(result[i], container, null, 'productChild'); break;
+                                case top.Ts.CustomFieldType.Time: appendCustomEditTime(result[i], container, null, 'productChild'); break;
+                                case top.Ts.CustomFieldType.DateTime: appendCustomEditDateTime(result[i], container, null, 'productChild'); break;
+                                case top.Ts.CustomFieldType.Boolean: appendCustomEditBool(result[i], container, null, 'productChild'); break;
+                                case top.Ts.CustomFieldType.Number: appendCustomEditNumber(result[i], container, null, 'productChild'); break;
+                                case top.Ts.CustomFieldType.PickList: appendCustomEditCombo(result[i], container, null, 'productChild'); break;
+                                default:
+                            }
+                        } catch (err) {
+                            var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
+                            for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
+                            top.Ts.Services.System.LogException(err.message, errorString);
+                            $('.newticket-custom-field').remove();
+                            return;
                         }
-                    } catch (err) {
-                        var errorString = '1001 NewTicket.js createCustomFields   FieldType: ' + result[i].FieldType + '  CustomFieldID: ' + result[i].CustomFieldID + ' ::  Exception Properties: ';
-                        for (var property in err) { errorString += property + ': ' + err[property] + '; '; }
-                        top.Ts.Services.System.LogException(err.message, errorString);
-                        $('.newticket-custom-field').remove();
-                        return;
                     }
-
                 }
-                $('<div>').addClass('ui-helper-clearfix').appendTo('.newticket-fields');
-                showCustomFields();
+                container.find('.ui-helper-clearfix').remove();
+                $('<div>').addClass('ui-helper-clearfix').appendTo(container);
+                appendCategorizedCustomFields(result, 'productChild');
             });
         }
         });

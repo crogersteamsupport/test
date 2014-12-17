@@ -276,6 +276,8 @@ AdminCustomFields = function () {
       if (field.IsRequired) typeName = typeName + ', Required';
       if (field.IsRequiredToClose) typeName = typeName + ', Required to Close';
       if (field.IsVisibleOnPortal) typeName = typeName + ', Visible to Customers';
+      if (field.ParentCustomFieldID) typeName = typeName + ', Related to ' + field.ParentFieldName + ' and value ' + field.ParentCustomValue;
+      if (field.ParentProductID) typeName = typeName + ', Related to ' + field.ParentProductName;
       typeName = '(' + typeName + ')';
 
       var fieldDiv = $('<div>')

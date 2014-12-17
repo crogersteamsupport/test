@@ -74,11 +74,11 @@ namespace TSWebServices
     }
 
     [WebMethod]
-    public CustomFieldProxy[] GetCustomFields(ReferenceType refType, int? auxID)
+    public CustomFieldsViewItemProxy[] GetCustomFields(ReferenceType refType, int? auxID)
     {
-      CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
+      CustomFieldsView fields = new CustomFieldsView(TSAuthentication.GetLoginUser());
       fields.LoadByReferenceType(TSAuthentication.OrganizationID, refType, auxID);
-      return fields.GetCustomFieldProxies();
+      return fields.GetCustomFieldsViewItemProxies();
       
     }
 

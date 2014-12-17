@@ -194,6 +194,7 @@
     <Compile Include="BusinessObjects\CRMLinkTable.cs" />
     <Compile Include="BusinessObjects\CustomFieldCategories.cs" />
     <Compile Include="BusinessObjects\CustomFields.cs" />
+    <Compile Include="BusinessObjects\CustomFieldsView.cs" />
     <Compile Include="BusinessObjects\CustomPortalColumns.cs" />
     <Compile Include="BusinessObjects\CustomValues.cs" />
     <Compile Include="BusinessObjects\DeletedIndexItems.cs" />
@@ -282,6 +283,7 @@
     <Compile Include="FieldMaps\CRMLinkFieldsFieldMap.cs" />
     <Compile Include="FieldMaps\CRMLinkSynchedOrganizationsFieldMap.cs" />
     <Compile Include="FieldMaps\CustomFieldCategoriesFieldMap.cs" />
+    <Compile Include="FieldMaps\CustomFieldsViewFieldMap.cs" />
     <Compile Include="FieldMaps\CustomPortalColumnsFieldMap.cs" />
     <Compile Include="FieldMaps\DeletedIndexItemsFieldMap.cs" />
     <Compile Include="FieldMaps\EMailAlternateInboundFieldMap.cs" />
@@ -506,6 +508,7 @@
     <Compile Include="Generated\GeneratedCRMLinkTable.cs" />
     <Compile Include="Generated\GeneratedCustomFieldCategories.cs" />
     <Compile Include="Generated\GeneratedCustomFields.cs" />
+    <Compile Include="Generated\GeneratedCustomFieldsView.cs" />
     <Compile Include="Generated\GeneratedCustomPortalColumns.cs" />
     <Compile Include="Generated\GeneratedCustomValues.cs" />
     <Compile Include="Generated\GeneratedDeletedIndexItems.cs" />
@@ -613,6 +616,7 @@
     <Compile Include="Generated\GeneratedWikiArticles.cs" />
     <Compile Include="Generated\GeneratedWikiArticlesView.cs" />
     <Compile Include="Generated\GeneratedWikiHistoryCollection.cs" />
+    <Compile Include="Proxies\CustomFieldsViewProxy.cs" />
     <Compile Include="Proxies\CustomPortalColumnsProxy.cs" />
     <Compile Include="Proxies\GroupAssignmentHistoryProxy.cs" />
     <Compile Include="Proxies\SlaViolationHistoryProxy.cs" />
