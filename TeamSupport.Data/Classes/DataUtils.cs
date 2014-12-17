@@ -1007,7 +1007,6 @@ namespace TeamSupport.Data
         if (i > 0) builder.Append(",");
         builder.Append(table.Columns[i].ColumnName);
       }
-      DateTime dateValue;
       foreach (DataRow row in table.Rows)
       {
         builder.AppendLine();
@@ -1016,10 +1015,6 @@ namespace TeamSupport.Data
           if (i > 0) builder.Append(",");
           string value = row[i].ToString();
           if (value.Length > 8000) value = value.Substring(0, 8000);
-          if (DateTime.TryParse(value, out dateValue))
-          {
-            value = TimeZoneInfo.ConvertTimeFromUtc(dateValue, loginUser.TimeZoneInfo).ToString(loginUser.CultureInfo);
-          }
 
           value = "\"" + value.Replace("\"", "\"\"") + "\"";
           if (replaceNewLineWithHtml) value = value.Replace(Environment.NewLine, "<br />");
