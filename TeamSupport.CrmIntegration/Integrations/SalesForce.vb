@@ -2400,7 +2400,7 @@ Namespace TeamSupport
 
                     If ticketValuesChanged AndAlso isNotCollidingWithATicketToPush Then
                       ticket.DateModifiedBySalesForceSync = DateTime.UtcNow
-                      ticket.UpdateSalesForceData()
+                      ticket.Collection.Save()
                       If isUpdate Then
                         Dim actionLogDescription As String = "Updated Ticket with SalesForce Case ID: '" + ticket.SalesForceID + "' changes."
                         ActionLogs.AddActionLog(User, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, actionLogDescription)
