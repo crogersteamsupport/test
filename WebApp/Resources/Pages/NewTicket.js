@@ -86,7 +86,7 @@ $(document).ready(function () {
   $('.newticket-type').combobox({
     selected: function (e, ui) {
       setTicketStatus();
-      showCustomFields();
+      createCustomFields();
       copyCustomFieldValues();
       _lastTicketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
       setTicketTypeTemplateText();
@@ -432,6 +432,7 @@ $(document).ready(function () {
   setInitialValue();
   createCustomFields();
   function createCustomFields() {
+    $('.newticket-custom-field').remove();
     top.Ts.Services.CustomFields.GetParentCustomFields(top.Ts.ReferenceTypes.Tickets, null, function (result) {
         if (result.length == 0) {
             $('.custom-fields').hide();
@@ -2090,7 +2091,7 @@ $(document).ready(function () {
           var ticketTypeID = menuID.substr(14, menuID.length - 14);
           $('.newticket-type').combobox('setValue', ticketTypeID);
           setTicketStatus();
-          showCustomFields();
+          createCustomFields();
           copyCustomFieldValues();
           _lastTicketTypeID = ticketTypeID;
           //setTicketTypeTemplateText();
