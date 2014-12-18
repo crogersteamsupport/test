@@ -364,7 +364,7 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent("Processing Ticket Assignment");
         
 
-        if (ticket.CreatorID != oldUserID)
+        if (ticket.CreatorID != oldUserID && (((modifier != null) && (ticket.CreatorID != modifier.ModifierID)) || modifier == null) )
         {
             AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
         }
