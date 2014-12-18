@@ -363,19 +363,9 @@ namespace TeamSupport.ServiceLibrary
 
         Logs.WriteEvent("Processing Ticket Assignment");
         
-         if (ticket.UserID != null && modifier != null)
-         {
-             if(ticket.UserID != modifier.ModifierID)
-             {
-                 AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
-             }
-         }
-         else
-         {
-             //If Either is null, go ahead and send the email chances are it was updated/created by automation
-             AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization); 
-         }
-        
+         
+
+        AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
         Logs.WriteEvent("Processing Advanced Portal");
         AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
         Logs.WriteEvent("Processing Basic Portal");
@@ -494,6 +484,7 @@ namespace TeamSupport.ServiceLibrary
       }
 
       int modifierID = modifier == null ? -1 : modifier.UserID;
+      ticket.UserID = (ticket.UserID == null) ? -1 : ticket.UserID;
       string modifierName = modifier == null ? GetOrganizationName(ticket.OrganizationID) : modifier.FirstLastName;
       Logs.WriteEventFormat("Modifier Name: {0}", modifierName);
 
@@ -516,10 +507,11 @@ namespace TeamSupport.ServiceLibrary
           Logs.WriteEventFormat("Adding Attachment   AttachmentID:{0}, ActionID:{1}, Path:{2}", attachment.AttachmentID.ToString(), actions[0].ActionID.ToString(), attachment.Path);
         }
       }
-
+      
       if (ticket.UserID != null && oldUserID != null)
       {
         Logs.WriteEvent("Ticket.UserID is not null AND old userid is not null");
+        
         User owner = Users.GetUser(LoginUser, (int)ticket.UserID);
         if (owner != null)
         {
