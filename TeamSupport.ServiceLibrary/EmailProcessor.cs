@@ -362,7 +362,9 @@ namespace TeamSupport.ServiceLibrary
         Logs.WriteEvent(string.Format("{0} Public Actions Loaded", publicActionCount.ToString()));
 
         Logs.WriteEvent("Processing Ticket Assignment");
-        if (ticket.CreatorID != oldUserID && ticket.CreatorID != modifier.ModifierID)
+        
+
+        if (ticket.CreatorID != oldUserID)
         {
             AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
         }
