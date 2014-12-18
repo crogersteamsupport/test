@@ -117,6 +117,14 @@ namespace TSWebServices
       return cats.GetCustomFieldCategoryProxies();
     }
 
+    [WebMethod]
+    public CustomFieldCategoryProxy[] GetAllTypesCategories(ReferenceType refType)
+    {
+        CustomFieldCategories cats = new CustomFieldCategories(TSAuthentication.GetLoginUser());
+        cats.LoadByRefType(refType);
+        return cats.GetCustomFieldCategoryProxies();
+    }
+
     public bool IsDuplicateCategory(int? categoryID, ReferenceType refType, int? auxID, string text)
     {
       text = text.Trim();

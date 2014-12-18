@@ -86,7 +86,7 @@ $(document).ready(function () {
   $('.newticket-type').combobox({
     selected: function (e, ui) {
       setTicketStatus();
-      createCustomFields();
+      showCustomFields();
       copyCustomFieldValues();
       _lastTicketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
       setTicketTypeTemplateText();
@@ -160,7 +160,7 @@ $(document).ready(function () {
                 field2.find('input').val(field1.find('input').val());
                 break;
               case top.Ts.CustomFieldType.PickList:
-                field2.find('select').combobox('setValue', field1.find('select').val());
+                field2.find('select').combobox('setValue', field1.find('select  option:selected').val());
                 break;
               default:
             }
@@ -372,7 +372,7 @@ $(document).ready(function () {
   $('.newticket-reported').combobox();
 
   var appendCategorizedCustomFields = function (fields, className) {
-      top.Ts.Services.CustomFields.GetCategories(top.Ts.ReferenceTypes.Tickets, _lastTicketTypeID, function (categories) {
+      top.Ts.Services.CustomFields.GetAllTypesCategories(top.Ts.ReferenceTypes.Tickets, function (categories) {
           for (var j = 0; j < categories.length; j++) {
               var isFirstFieldAdded = true;
               for (var i = 0; i < fields.length; i++) {
@@ -494,7 +494,7 @@ $(document).ready(function () {
 
     var items = field.ListValues.split('|');
     for (var i = 0; i < items.length; i++) {
-      $('<option>').text(items[i]).appendTo(select);
+      $('<option>').attr('value', items[i]).text(items[i]).appendTo(select);
     }
 
     var ticketTypeID = $('.newticket-type option:selected').data('o').TicketTypeID;
@@ -2091,7 +2091,7 @@ $(document).ready(function () {
           var ticketTypeID = menuID.substr(14, menuID.length - 14);
           $('.newticket-type').combobox('setValue', ticketTypeID);
           setTicketStatus();
-          createCustomFields();
+          showCustomFields();
           copyCustomFieldValues();
           _lastTicketTypeID = ticketTypeID;
           //setTicketTypeTemplateText();
