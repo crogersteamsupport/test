@@ -363,11 +363,19 @@ namespace TeamSupport.ServiceLibrary
 
         Logs.WriteEvent("Processing Ticket Assignment");
         
-
-        if (ticket.CreatorID != oldUserID && (((modifier != null) && (ticket.CreatorID != modifier.ModifierID)) || modifier == null) )
-        {
-            AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
-        }
+         if (ticket.UserID != null && modifier != null)
+         {
+             if(ticket.UserID != modifier.ModifierID)
+             {
+                 AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization);
+             }
+         }
+         else
+         {
+             //If Either is null, go ahead and send the email chances are it was updated/created by automation
+             AddMessageTicketAssignment(ticket, oldUserID, oldGroupID, isNew, modifier, ticketOrganization); 
+         }
+        
         Logs.WriteEvent("Processing Advanced Portal");
         AddMessagePortalTicketModified(ticket, isNew, oldTicketStatusID, publicActionCount > 0, users, modifierName, modifierID, ticketOrganization, false);
         Logs.WriteEvent("Processing Basic Portal");
