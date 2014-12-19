@@ -19,9 +19,8 @@ function loadSignalR() {
     $.connection.hub.url = "signalr/signalr";
     // Start the connection only if on main wc page
 
-    $.connection.hub.start(function () {
-        chatHubClient.server.login(top.Ts.System.User.UserID);
-    });
+    $.connection.hub.qs = "userID=" + top.Ts.System.User.UserID + "&organizationID=" + top.Ts.System.User.OrganizationID;
+    //$.connection.hub.qs = "organizationID=" + top.Ts.System.User.OrganizationID;
 
     var tryingToReconnect = false;
 
@@ -245,6 +244,9 @@ function loadSignalR() {
         }
     };
 
+    $.connection.hub.start(function () {
+        chatHubClient.server.login();
+    });
 
     originalTitle = document.title;
 
