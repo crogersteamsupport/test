@@ -3,8 +3,8 @@
 <html lang="en">
 <head>
     <title>Socket</title>
-    <script src="Scripts/jquery-1.7.2.js"></script>
-    <script src="Scripts/jquery.signalR-1.1.4.min.js"></script>
+    <script src="Scripts/jquery-2.0.1.min.js"></script>
+    <script src="Scripts/jquery.signalR-2.1.2.min.js"></script>
     <script src="signalr/hubs"></script>
     <script type="text/javascript">
         $(function () {
@@ -54,6 +54,7 @@
                 chat.server.send($('#msg').val());
             });
 
+            $.connection.hub.qs = "userID=-1&organizationID=-1";
             // Start the connection
             $.connection.hub.logging = true;
             $.connection.hub.start();
