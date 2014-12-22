@@ -177,7 +177,11 @@ namespace TeamSupport.ServiceLibrary
       history.ViolationType = slaViolationType;
       history.TicketID = ticket.TicketID;
       history.Collection.Save();
+
+      Actions actions = new Actions(LoginUser);
+      actions.LoadLatestByTicket(ticket.TicketID, false);
       
+
 
       string violationType = "";
       switch (slaViolationType)
@@ -189,7 +193,7 @@ namespace TeamSupport.ServiceLibrary
       }
       Logs.WriteEvent(string.Format("NOTIFYING TicketID:{0}  TicketNumber:{1}  OrganizationID:{2} ", ticket.TicketID.ToString(), ticket.TicketNumber.ToString(), ticket.OrganizationID.ToString()));
       Logs.WriteEvent(string.Format("User:{1}  Group:{2}  IsWarning:{3}  NoficationType:{4}", ticketID.ToString(), useUser.ToString(), useGroup.ToString(), isWarning.ToString(), slaViolationType));
-      
+      ActionLogs.AddActionLog(LoginUser, ActionLogType.Update, ReferenceType.Tickets, ticket.TicketID, violationType + " SLA violation occured");
 
       MailMessage message = EmailTemplates.GetSlaEmail(LoginUser, ticket, violationType, isWarning);
 
