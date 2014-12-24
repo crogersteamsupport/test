@@ -279,7 +279,7 @@ namespace TeamSupport.ServiceLibrary
       StringBuilder builder = new StringBuilder();
       //builder.AppendLine("<span class=\"TeamSupportStart\">&nbsp</span>");
       builder.AppendLine(message.Body);
-
+      message.HeadersEncoding = Encoding.UTF8;
       message.Body = builder.ToString();
       List<MailAddress> addresses = message.To.ToList();
       string body = message.Body;
@@ -288,7 +288,9 @@ namespace TeamSupport.ServiceLibrary
       {
         message.To.Clear();
         Logs.WriteEvent(string.Format("Adding email address [{0}]", address.ToString()));
-        message.To.Add(address);
+        message.To.Add(new MailAddress(address.Address.Replace("<", "").Replace(">", ""), address.DisplayName));
+        Logs.WriteEvent(string.Format("Successfuly added email address [{0}]", address.ToString()));
+        message.HeadersEncoding = Encoding.UTF8;
         message.Body = body;
         message.Subject = subject;
         message.From = new MailAddress(replyAddress);
@@ -811,9 +813,9 @@ namespace TeamSupport.ServiceLibrary
                         message.Body = body;
                         message.Subject = subject;
                         message.To.Clear();
-                        MailAddress mailAddress = new MailAddress(userEmail.Address, userEmail.Name);
+                        MailAddress mailAddress = new MailAddress(userEmail.Address.Replace("<","").Replace(">",""), userEmail.Name);
                         message.To.Add(mailAddress);
-
+                        message.HeadersEncoding = Encoding.UTF8;
                         ContactsViewItem contact = ContactsView.GetContactsViewItem(_loginUser, userEmail.UserID);
                         EmailTemplate.ReplaceMessageFields(_loginUser, "Recipient", contact, message, -1, ticket.OrganizationID);
 
