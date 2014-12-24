@@ -459,6 +459,7 @@ ReportPage = function () {
         else if (item.hasClass('menu-external')) { top.Ts.Services.Reports.GetReportsByReportType(2, loadReports); }
         else if (item.hasClass('menu-custom')) { top.Ts.Services.Reports.GetReportsByReportType(3, loadReports); }
         else if (item.hasClass('menu-stock')) { top.Ts.Services.Reports.GetStockReports(loadReports); }
+        else if (item.hasClass('menu-tickets')) { top.Ts.Services.Reports.GetReportsByReportType(5, loadReports); }
         else if (item.hasClass('report-folder')) {
             var folder = item.data('o');
             top.Ts.Services.Reports.GetReportsByFolder(folder.FolderID, loadReports);

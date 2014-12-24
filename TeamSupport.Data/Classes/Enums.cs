@@ -177,7 +177,8 @@ namespace TeamSupport.Data
     Chart = 1,
     External = 2,
     Custom = 3,
-    Summary = 4
+    Summary = 4,
+    TicketView = 5,
   }
 
   public enum ReportTypeOld { 

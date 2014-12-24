@@ -87,6 +87,11 @@ $(document).ready(function () {
                 $('.reports-header i').addClass('fa-tasks color-yellow');
                 $('.report-title').text(_report ? _report.Name : 'New Summary Report');
                 break;
+            case 5:
+                _typeClass = 'report-class-tickets';
+                $('.reports-header i').addClass('fa-th-list');
+                $('.report-title').text(_report ? _report.Name : 'Ticket Views');
+                break;
             default:
         }
         $('.report-class-item.' + _typeClass).show();
@@ -99,7 +104,21 @@ $(document).ready(function () {
             $('.action-back, .action-next').hide();
             $('.action-save').show();
             $('.action-cancel').css('float', 'none');
-        } else {
+        }
+        else if (type == 5) {
+
+            if (_report && _report.ReportDef) {
+                _report.Def = JSON.parse(_report.ReportDef);
+            }
+            top.Ts.Services.Reports.GetCategories(loadCats);
+
+            var option = $('<option/>').attr('value', 25).text('Tickets');
+            option.prop('selected', true);
+            $('#selectCat').append(option);
+            $('#selectCat').val(25);
+            $('#selectSubCat').val(47);
+        }
+        else {
             if (_report && _report.ReportDef) {
                 _report.Def = JSON.parse(_report.ReportDef);
             }
@@ -427,6 +446,7 @@ $(document).ready(function () {
                 case 0: data = JSON.stringify(getTabularObject()); break;
                 case 1: data = JSON.stringify(getChartObject()); break;
                 case 4: data = JSON.stringify(getSummaryObject('.report-summary-fields', $('.report-filter').reportFilter('getObject'))); break;
+                case 5: data = JSON.stringify(getTabularObject()); break;
                 case 2:
                     data = $('#external-url').val();
                     if (data.indexOf('https://') < 0) data = 'https://' + data;

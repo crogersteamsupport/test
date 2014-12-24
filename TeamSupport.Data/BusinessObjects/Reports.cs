@@ -321,6 +321,9 @@ namespace TeamSupport.Data
         case ReportType.Summary:
           GetSummarySql(Collection.LoginUser, command, JsonConvert.DeserializeObject<SummaryReport>(ReportDef), isSchemaOnly, ReportID, useUserFilter, false);
           break;
+        case ReportType.TicketView:
+          GetTabularSql(Collection.LoginUser, command, JsonConvert.DeserializeObject<TabularReport>(ReportDef), inlcudeHiddenFields, isSchemaOnly, ReportID, useUserFilter);
+          break;
         default:
           break;
       }
@@ -1973,7 +1976,7 @@ WHERE RowNum BETWEEN @From AND @To";
     public static ReportColumn[] GetReportColumns(LoginUser loginUser, int reportID)
     {
       Report report = Reports.GetReport(loginUser, reportID);
-      if (report.ReportDefType == ReportType.Table) return report.GetTabularColumns();
+      if (report.ReportDefType == ReportType.Table || report.ReportDefType == ReportType.TicketView) return report.GetTabularColumns();
       return report.GetSqlColumns();
     }
 

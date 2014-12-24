@@ -531,6 +531,7 @@ namespace TSWebServices
           case 1: report.ReportDefType = ReportType.Chart; break;
           case 2: report.ReportDefType = ReportType.External; break;
           case 4: report.ReportDefType = ReportType.Summary; break;
+          case 5: report.ReportDefType = ReportType.TicketView; break;
           default:
             break;
         }
