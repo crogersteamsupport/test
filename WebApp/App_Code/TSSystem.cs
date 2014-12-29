@@ -128,6 +128,23 @@ namespace TSWebServices
           items.Add(new TsMenuItem("mytickets", "mniMyTickets", "My Tickets", "vcr/1_9_0/images/nav/20/mytickets.png", string.Format(data, "vcr/1_9_0/Pages/TicketTabs.html?UserID=" + TSAuthentication.UserID, "vcr/1_9_0/PaneInfo/MyTickets.html")));
         }
 
+        if (TSAuthentication.OrganizationID == 1078)
+        {
+            Reports reports = new Reports(TSAuthentication.GetLoginUser());
+            reports.LoadAllTicketViews(TSAuthentication.OrganizationID, TSAuthentication.UserID);
+
+            if (!reports.IsEmpty)
+            {
+                TsMenuItem ticketViews = new TsMenuItem("tickets", "mniTicketViews", "Ticket Views", "vcr/1_9_0/images/nav/20/reports.png", string.Format(data, "vcr/1_9_0/Pages/Reports_View_Tickets.html?ReportID=" + reports[0].ReportID.ToString(), "vcr/1_9_0/PaneInfo/Reports.html"));
+                items.Add(ticketViews);
+
+                foreach (Report report in reports)
+                {
+                    ticketViews.AddItem(new TsMenuItem("tickettype", "mniTicketView_" + report.ReportID.ToString(), report.Name, "vcr/1_9_0/images/nav/20/reports.png", string.Format(data, "vcr/1_9_0/Pages/Reports_View_Tickets.html?ReportID=" + report.ReportID.ToString(), "vcr/1_9_0/PaneInfo/Reports.html")));
+                }
+            }
+        }
+
         if (IsMenuItemActive(user, "mniTickets"))
         {
           TsMenuItem ticketItem = new TsMenuItem("tickets", "mniTickets", "All Tickets", "vcr/1_9_0/images/nav/20/tickets.png", string.Format(data, "vcr/1_9_0/Pages/TicketTabs.html", "vcr/1_9_0/PaneInfo/Tickets.html"));

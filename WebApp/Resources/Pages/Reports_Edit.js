@@ -539,7 +539,6 @@ $(document).ready(function () {
 
         function closeReport(report) {
             var result = '/vcr/1_9_0/pages/';
-
             function getReportUrl() {
                 switch (_reportType) {
                     case 0:
@@ -550,6 +549,8 @@ $(document).ready(function () {
                         return 'Reports_View_External.html?ReportID=' + _reportID;
                     case 4:
                         return 'Reports_View_Tabular.html?ReportID=' + _reportID;
+                    case 5:
+                        return 'Reports_View_Tickets.html?ReportID=' + _reportID;
                 }
             }
 

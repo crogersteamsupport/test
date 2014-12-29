@@ -511,6 +511,7 @@ ReportPage = function () {
             case 2: item.find('.report-list-title i').addClass('fa-globe color-blue'); break;
             case 3: item.find('.report-list-title i').addClass('fa-wrench color-orange'); break;
             case 4: item.find('.report-list-title i').addClass('fa-tasks color-yellow'); break;
+            case 5: item.find('.report-list-title i').addClass('fa-list'); break;
             default: item.find('.report-list-title i').addClass('fa-table color-red');
         }
 
