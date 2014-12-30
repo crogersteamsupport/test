@@ -118,6 +118,9 @@ $(document).ready(function () {
             $('#selectCat').append(option);
             $('#selectCat').val(25);
             $('#selectSubCat').val(47);
+            if (top.Ts.System.User.IsSystemAdmin == true) {
+                $('.report-class-tickets-privacy').show();
+            }
         }
         else {
             if (_report && _report.ReportDef) {
@@ -442,7 +445,6 @@ $(document).ready(function () {
         }
 
         $('.action-save').click(function (e) {
-        debugger
             e.preventDefault();
             var data = null;
             var isPrivate = false;
