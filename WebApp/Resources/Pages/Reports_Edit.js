@@ -440,6 +440,7 @@ $(document).ready(function () {
         }
 
         $('.action-save').click(function (e) {
+        debugger
             e.preventDefault();
             var data = null;
             switch (_reportType) {
@@ -460,7 +461,8 @@ $(document).ready(function () {
                 "name": $('.report-name').val(),
                 "reportType": _reportType,
                 "data": data,
-                "isStock": $('#cbStock').prop('checked')
+                "isStock": $('#cbStock').prop('checked'),
+                "isPrivate": $('.report-privacy').val()
             },
             closeReport,
             function (error) { alert(error.get_message()); });

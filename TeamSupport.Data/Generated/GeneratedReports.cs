@@ -137,6 +137,12 @@ namespace TeamSupport.Data
       get { return (string)Row["Name"]; }
       set { Row["Name"] = CheckValue("Name", value); }
     }
+
+    public bool IsPrivate
+    {
+        get { return (bool)Row["IsPrivate"]; }
+        set { Row["IsPrivate"] = CheckValue("IsPrivate", value); }
+    }
     
 
     /* DateTime */
@@ -179,7 +185,6 @@ namespace TeamSupport.Data
     {
       get { return (DateTime)Row["DateCreated"]; }
     }
-    
 
     #endregion
     
@@ -274,7 +279,7 @@ namespace TeamSupport.Data
 		updateCommand.Connection = connection;
 		//updateCommand.Transaction = transaction;
 		updateCommand.CommandType = CommandType.Text;
-		updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Reports] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [Query] = @Query,    [CustomFieldKeyName] = @CustomFieldKeyName,    [CustomRefType] = @CustomRefType,    [CustomAuxID] = @CustomAuxID,    [ReportSubcategoryID] = @ReportSubcategoryID,    [QueryObject] = @QueryObject,    [ExternalURL] = @ExternalURL,    [LastSqlExecuted] = @LastSqlExecuted,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ReportType] = @ReportType,    [ReportDef] = @ReportDef,    [ReportDefType] = @ReportDefType,    [DateEdited] = @DateEdited,    [EditorID] = @EditorID  WHERE ([ReportID] = @ReportID);";
+        updateCommand.CommandText = "SET NOCOUNT OFF; UPDATE [dbo].[Reports] SET     [OrganizationID] = @OrganizationID,    [Name] = @Name,    [Description] = @Description,    [Query] = @Query,    [CustomFieldKeyName] = @CustomFieldKeyName,    [CustomRefType] = @CustomRefType,    [CustomAuxID] = @CustomAuxID,    [ReportSubcategoryID] = @ReportSubcategoryID,    [QueryObject] = @QueryObject,    [ExternalURL] = @ExternalURL,    [LastSqlExecuted] = @LastSqlExecuted,    [DateModified] = @DateModified,    [ModifierID] = @ModifierID,    [ReportType] = @ReportType,    [ReportDef] = @ReportDef,    [ReportDefType] = @ReportDefType,    [DateEdited] = @DateEdited,    [EditorID] = @EditorID, [IsPrivate] = @IsPrivate  WHERE ([ReportID] = @ReportID);";
 
 		
 		tempParameter = updateCommand.Parameters.Add("ReportID", SqlDbType.Int, 4);
@@ -409,13 +414,20 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
 		}
+
+        tempParameter = updateCommand.Parameters.Add("IsPrivate", SqlDbType.Bit);
+        if (tempParameter.SqlDbType == SqlDbType.Float)
+        {
+            tempParameter.Precision = 10;
+            tempParameter.Scale = 10;
+        }
 		
 
 		SqlCommand insertCommand = connection.CreateCommand();
 		insertCommand.Connection = connection;
 		//insertCommand.Transaction = transaction;
 		insertCommand.CommandType = CommandType.Text;
-		insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Reports] (    [OrganizationID],    [Name],    [Description],    [Query],    [CustomFieldKeyName],    [CustomRefType],    [CustomAuxID],    [ReportSubcategoryID],    [QueryObject],    [ExternalURL],    [LastSqlExecuted],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ReportType],    [ReportDef],    [ReportDefType],    [DateEdited],    [EditorID]) VALUES ( @OrganizationID, @Name, @Description, @Query, @CustomFieldKeyName, @CustomRefType, @CustomAuxID, @ReportSubcategoryID, @QueryObject, @ExternalURL, @LastSqlExecuted, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ReportType, @ReportDef, @ReportDefType, @DateEdited, @EditorID); SET @Identity = SCOPE_IDENTITY();";
+        insertCommand.CommandText = "SET NOCOUNT OFF; INSERT INTO [dbo].[Reports] (    [OrganizationID],    [Name],    [Description],    [Query],    [CustomFieldKeyName],    [CustomRefType],    [CustomAuxID],    [ReportSubcategoryID],    [QueryObject],    [ExternalURL],    [LastSqlExecuted],    [DateCreated],    [DateModified],    [CreatorID],    [ModifierID],    [ReportType],    [ReportDef],    [ReportDefType],    [DateEdited],    [EditorID], [IsPrivate]) VALUES ( @OrganizationID, @Name, @Description, @Query, @CustomFieldKeyName, @CustomRefType, @CustomAuxID, @ReportSubcategoryID, @QueryObject, @ExternalURL, @LastSqlExecuted, @DateCreated, @DateModified, @CreatorID, @ModifierID, @ReportType, @ReportDef, @ReportDefType, @DateEdited, @EditorID, @IsPrivate); SET @Identity = SCOPE_IDENTITY();";
 
 		
 		tempParameter = insertCommand.Parameters.Add("EditorID", SqlDbType.Int, 4);
@@ -557,6 +569,13 @@ namespace TeamSupport.Data
 		  tempParameter.Precision = 10;
 		  tempParameter.Scale = 10;
 		}
+
+        tempParameter = insertCommand.Parameters.Add("IsPrivate", SqlDbType.Bit);
+        if (tempParameter.SqlDbType == SqlDbType.Float)
+        {
+            tempParameter.Precision = 10;
+            tempParameter.Scale = 10;
+        }
 		
 
 		insertCommand.Parameters.Add("Identity", SqlDbType.Int).Direction = ParameterDirection.Output;

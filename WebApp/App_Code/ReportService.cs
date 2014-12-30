@@ -497,7 +497,7 @@ namespace TSWebServices
       }
 
       [WebMethod]
-      public ReportItem SaveReport(int? reportID, string name, int reportType, string data, bool isStock)
+      public ReportItem SaveReport(int? reportID, string name, int reportType, string data, bool isStock, bool isPrivate = false)
       {
         Report report = null;
         if (reportID == null)
@@ -524,6 +524,7 @@ namespace TSWebServices
         report.ReportDef = data;
         report.EditorID = TSAuthentication.UserID;
         report.DateEdited = DateTime.UtcNow;
+        report.IsPrivate = isPrivate;
 
         switch (reportType)
         {
