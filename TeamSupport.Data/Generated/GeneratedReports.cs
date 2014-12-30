@@ -689,7 +689,7 @@ namespace TeamSupport.Data
     {
       using (SqlCommand command = new SqlCommand())
       {
-        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportID], [OrganizationID], [Name], [Description], [Query], [CustomFieldKeyName], [CustomRefType], [CustomAuxID], [ReportSubcategoryID], [QueryObject], [ExternalURL], [LastSqlExecuted], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ReportType], [ReportDef], [ReportDefType], [DateEdited], [EditorID] FROM [dbo].[Reports] WHERE ([ReportID] = @ReportID);";
+        command.CommandText = "SET NOCOUNT OFF; SELECT [ReportID], [OrganizationID], [Name], [Description], [Query], [CustomFieldKeyName], [CustomRefType], [CustomAuxID], [ReportSubcategoryID], [QueryObject], [ExternalURL], [LastSqlExecuted], [DateCreated], [DateModified], [CreatorID], [ModifierID], [ReportType], [ReportDef], [ReportDefType], [DateEdited], [EditorID], [IsPrivate] FROM [dbo].[Reports] WHERE ([ReportID] = @ReportID);";
         command.CommandType = CommandType.Text;
         command.Parameters.AddWithValue("ReportID", reportID);
         Fill(command);

@@ -104,6 +104,7 @@ $(document).ready(function () {
             $('.action-back, .action-next').hide();
             $('.action-save').show();
             $('.action-cancel').css('float', 'none');
+            $('.report-privacy').val(false);
         }
         else if (type == 5) {
 
@@ -123,6 +124,7 @@ $(document).ready(function () {
                 _report.Def = JSON.parse(_report.ReportDef);
             }
             top.Ts.Services.Reports.GetCategories(loadCats);
+            $('.report-privacy').val(false);
         }
 
         $('.action-cancel').click(function (e) {
@@ -443,11 +445,12 @@ $(document).ready(function () {
         debugger
             e.preventDefault();
             var data = null;
+            var isPrivate = false;
             switch (_reportType) {
                 case 0: data = JSON.stringify(getTabularObject()); break;
                 case 1: data = JSON.stringify(getChartObject()); break;
                 case 4: data = JSON.stringify(getSummaryObject('.report-summary-fields', $('.report-filter').reportFilter('getObject'))); break;
-                case 5: data = JSON.stringify(getTabularObject()); break;
+                case 5: data = JSON.stringify(getTabularObject()); isPrivate = $('.report-privacy').val(); break;
                 case 2:
                     data = $('#external-url').val();
                     if (data.indexOf('https://') < 0) data = 'https://' + data;
@@ -462,7 +465,7 @@ $(document).ready(function () {
                 "reportType": _reportType,
                 "data": data,
                 "isStock": $('#cbStock').prop('checked'),
-                "isPrivate": $('.report-privacy').val()
+                "isPrivate": isPrivate
             },
             closeReport,
             function (error) { alert(error.get_message()); });
