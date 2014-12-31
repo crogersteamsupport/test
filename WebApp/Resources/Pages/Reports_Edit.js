@@ -121,6 +121,9 @@ $(document).ready(function () {
             if (top.Ts.System.User.IsSystemAdmin == true) {
                 $('.report-class-tickets-privacy').show();
             }
+            else {
+                $('.report-privacy').val('true');
+            }
         }
         else {
             if (_report && _report.ReportDef) {
