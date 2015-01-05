@@ -39,6 +39,7 @@ namespace TeamSupport.Data
     [DataMember] public string InOfficeComment { get; set; }
     [DataMember] public bool ReceiveTicketNotifications { get; set; }
     [DataMember] public bool ReceiveAllGroupNotifications { get; set; }
+    [DataMember] public bool ReceiveUnassignedGroupEmails { get; set; }
     [DataMember] public bool SubscribeToNewTickets { get; set; }
     [DataMember] public bool SubscribeToNewActions { get; set; }
     [DataMember] public DateTime ActivatedOn { get; set; }
@@ -136,6 +137,7 @@ namespace TeamSupport.Data
       result.SubscribeToNewTickets = this.SubscribeToNewTickets;
       result.SubscribeToNewActions = this.SubscribeToNewActions;
       result.ReceiveAllGroupNotifications = this.ReceiveAllGroupNotifications;
+      result.ReceiveUnassignedGroupEmails = this.ReceiveUnassignedGroupEmails;
       result.ReceiveTicketNotifications = this.ReceiveTicketNotifications;
       result.InOfficeComment = this.InOfficeComment;
       result.InOffice = this.InOffice;

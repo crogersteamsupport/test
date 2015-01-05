@@ -1153,7 +1153,7 @@ namespace TSWebServices
         public AttachmentProxy[] LoadFiles(int refID, ReferenceType refType)
         {
             Attachments attachments = new Attachments(TSAuthentication.GetLoginUser());
-            attachments.LoadByReference(refType, refID);
+            attachments.LoadByReference(refType, refID, "DateCreated desc");
 
             return attachments.GetAttachmentProxies();
         }

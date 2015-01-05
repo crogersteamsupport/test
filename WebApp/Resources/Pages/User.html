@@ -158,49 +158,54 @@
 
         <div class="ts-section ui-widget-content ui-corner-all">
             
-            <h2 >User Properties</h2>
+            <h2 >Properties</h2>
             <div id="userProperties" style="display: block;">
+                <div class="user-name-value"><span class="property-wide">Active:</span><a id="userActive" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Activated On:</span><span class="value" id="activatedOn"></span></div>
+                <div class="user-name-value"><span class="property-wide">Last Logged In:</span><span class="value" id="userLastLogin"></span></div>
                 <div class="user-name-value"><span class="property-wide">System Administrator:</span><a id="userSysAdmin" class="ts-link" href="#"></a></div>
-                <div class="user-name-value ui-helper-hidden"><span class="property-wide">Ticket Rights:</span><a id="userTicketRights" class="ts-link" href="#"></a></div>
-                <div class="user-name-value ui-helper-hidden"><span class="property-wide">Allow user to assign tickets to all customers:</span><a id="userRightsAllTicketCustomers" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Restrict User From Exporting Data:</span><a id="userDisableExporting" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Restrict User From Editing Any Actions:</span><a id="userRestrictFromEditingAnyActions" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Allow User To Edit Any Action:</span><a id="userAllowToEditAnyAction" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">User Can Pin Action:</span><a id="userCanPinAction" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Change Knowledgebase Visibility:</span><a id="userKBVisibility" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Change Ticket Visibility:</span><a id="userTicketVisibility" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Change Community Visibility:</span><a id="userCommunityVisibility" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Create Companies:</span><a id="userCanCreateCompany" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Edit Companies:</span><a id="userCanEditCompany" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Create Contacts:</span><a id="userCanCreateContacts" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Edit Contacts:</span><a id="userCanEditContacts" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Create Assets:</span><a id="userCanCreateAssets" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Edit Assets:</span><a id="userCanEditAssets" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Create Products:</span><a id="userCanCreateProducts" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Edit Products:</span><a id="userCanEditProducts" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Create Versions:</span><a id="userCanCreateVersions" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Can Edit Versions:</span><a id="userCanEditVersions" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Customer Chat User:</span><a id="chatUser" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Password:</span><a id="userPW" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Time Zone:</span><a id="userTimeZone" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Date Format:</span><span><a id="userDateFormat" class="ts-link" href="#"></a></span></div>
                 <div class="user-name-value"><span class="property-wide">Default Font Family:</span><a id="userFontFamily" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Default Font Size:</span><a id="userFontSize" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Email Ticket Notifications:</span><a id="userEmailNotify" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Receive Assigned Group Notifications:</span><a id="userGroupNotify" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Receive Unassigned  Group Notifications:</span><a id="userUnassignedGroupNotify" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Disable group ticket emails during business hours:</span><a id="userEmailAfterHours" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Automatically subscribe to new tickets I post:</span><a id="userSubscribeTickets" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Automatically subscribe to tickets when I post an action:</span><a id="userSubscribeActions" class="ts-link" href="#"></a></div>
                 <div class="user-name-value"><span class="property-wide">Do not subscribe to tickets when cc'd on email:</span><a id="userAutoSubscribe" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Receive Assigned Group Notifications:</span><a id="userGroupNotify" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Disable group ticket emails during business hours:</span><a id="userEmailAfterHours" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Date Format:</span><span><a id="userDateFormat" class="ts-link" href="#"></a></span></div>
-                <div class="user-name-value"><span class="property-wide">Customer Chat User:</span><a id="chatUser" class="ts-link" href="#"></a></div>
-                <div class="user-name-value"><span class="property-wide">Active:</span><a id="userActive" class="ts-link" href="#"></a></div>
-                
-                <div class="user-name-value"><span class="property-wide">Password:</span><a id="userPW" class="ts-link" href="#"></a></div>
-
-                <div class="user-name-value"><span class="property-wide">Activated On:</span><span class="value" id="activatedOn"></span></div>
-                <div class="user-name-value"><span class="property-wide">Last Logged In:</span><span class="value" id="userLastLogin"></span></div>
             </div>
             
             <div class="clearfix"></div>
           </div>
+
+            <div class="ts-section ui-widget-content ui-corner-all">
+                <h2 >Rights</h2>
+                <div class="user-name-value ui-helper-hidden"><span class="property-wide">Ticket Rights:</span><a id="userTicketRights" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Allow User To Edit Any Action:</span><a id="userAllowToEditAnyAction" class="ts-link" href="#"></a></div>
+                <div class="user-name-value ui-helper-hidden"><span class="property-wide">Allow user to assign tickets to all customers:</span><a id="userRightsAllTicketCustomers" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Change Ticket Visibility:</span><a id="userTicketVisibility" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Change Knowledgebase Visibility:</span><a id="userKBVisibility" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Change Community Visibility:</span><a id="userCommunityVisibility" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">User Can Pin Action:</span><a id="userCanPinAction" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Create Companies:</span><a id="userCanCreateCompany" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Edit Companies:</span><a id="userCanEditCompany" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Create Contacts:</span><a id="userCanCreateContacts" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Edit Contacts:</span><a id="userCanEditContacts" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Create Products:</span><a id="userCanCreateProducts" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Edit Products:</span><a id="userCanEditProducts" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Create Versions:</span><a id="userCanCreateVersions" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Edit Versions:</span><a id="userCanEditVersions" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Create Assets:</span><a id="userCanCreateAssets" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Can Edit Assets:</span><a id="userCanEditAssets" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Restrict User From Exporting Data:</span><a id="userDisableExporting" class="ts-link" href="#"></a></div>
+                <div class="user-name-value"><span class="property-wide">Restrict User From Editing Any Actions:</span><a id="userRestrictFromEditingAnyActions" class="ts-link" href="#"></a></div>
+
+                <div class="clearfix"></div>
+            </div>
 
           <div class="ts-section ui-widget-content ui-corner-all ui-helper-hidden" id="divCustomerContainer">
             <h2>User Customers</h2>

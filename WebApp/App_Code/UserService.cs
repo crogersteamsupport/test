@@ -441,6 +441,17 @@ namespace TSWebServices
         }
 
         [WebMethod]
+        public bool SetUnassignedGroupNotify(int userID, bool value)
+        {
+            User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);
+            if (user.OrganizationID != TSAuthentication.OrganizationID) return value;
+
+            user.ReceiveUnassignedGroupEmails = value;
+            user.Collection.Save();
+            return user.ReceiveUnassignedGroupEmails;
+        }
+
+        [WebMethod]
         public bool SetBlockEmail(int userID, bool value)
         {
           User user = Users.GetUser(TSAuthentication.GetLoginUser(), userID);

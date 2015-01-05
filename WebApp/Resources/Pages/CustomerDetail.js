@@ -1604,6 +1604,8 @@ $(document).ready(function () {
 
     function LoadProperties() {
         top.Ts.Services.Customers.GetProperties(organizationID, function (result) {
+            if (result.SAED == '[None]')
+                result.SAED = null;
             var date = result.SAED == null ? null : top.Ts.Utils.getMsDate(result.SAED);
             $('#fieldName').text(result.orgproxy.Name);
             $('#fieldWebsite').text(result.orgproxy.Website != null && result.orgproxy.Website != "" ? result.orgproxy.Website : "Empty");
@@ -1613,7 +1615,7 @@ $(document).ready(function () {
             $('#fieldActive').text(result.orgproxy.IsActive);
             $('#fieldPortalAccess').text(result.orgproxy.HasPortalAccess);
             $('#fieldAPIEnabled').text(result.orgproxy.IsApiActive && result.orgproxy.IsApiEnabled);
-            $('#fieldSAED').text(result.SAED == null ? "Empty" : date.localeFormat(top.Ts.Utils.getDatePattern()));
+            $('#fieldSAED').text(result.SAED == null ? "[None]" : date.localeFormat(top.Ts.Utils.getDatePattern()));
             $('#fieldSLA').text(result.SLA);
             $('#fieldSLA').data('field', result.orgproxy.SlaLevelID);
             $('#fieldSupportHours').text(result.orgproxy.SupportHoursMonth);

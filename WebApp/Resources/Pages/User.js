@@ -127,6 +127,7 @@ UserPage = function () {
     $('#userSubscribeActions').text((user.SubscribeToNewActions == true ? 'Yes' : 'No'));
     $('#userAutoSubscribe').text((user.DoNotAutoSubscribe == true ? 'Yes' : 'No'));
     $('#userGroupNotify').text((user.ReceiveAllGroupNotifications == true ? 'Yes' : 'No'));
+    $('#userUnassignedGroupNotify').text((user.ReceiveUnassignedGroupEmails == true ? 'Yes' : 'No'));
     $('#userEmailAfterHours').text((user.OnlyEmailAfterHours == true ? 'Yes' : 'No'));
     $('#userDateFormat').text(user.CultureDisplay);
     $('#userSysAdmin').text((user.IsSystemAdmin == true ? 'Yes' : 'No'));
@@ -693,6 +694,23 @@ UserPage = function () {
             alert('There was an error saving the user group notification subscription status.');
             item.next().hide();
           });
+      });
+
+    $('#userUnassignedGroupNotify')
+      .after('<img src="../Images/loading/loading_small2.gif" /><span class="ts-icon ts-icon-saved"></span>')
+      .click(function (e) {
+          e.preventDefault();
+          var item = $(this);
+          item.next().show();
+          top.Ts.Services.Users.SetUnassignedGroupNotify(_user.UserID, (item.text() !== 'Yes'),
+            function (result) {
+                top.Ts.System.logAction('User Info - Group Unassigned Notification Changed');
+                item.text((result === true ? 'Yes' : 'No')).next().hide().next().show().delay(800).fadeOut(400);
+            },
+            function (error) {
+                alert('There was an error saving the user group unassigned notification subscription status.');
+                item.next().hide();
+            });
       });
 
     $('#userEmailAfterHours')
