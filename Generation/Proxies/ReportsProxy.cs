@@ -35,6 +35,7 @@ namespace TeamSupport.Data
     [DataMember] public DateTime DateEdited { get; set; }
     [DataMember] public int EditorID { get; set; }
     [DataMember] public int? FolderID { get; set; }
+    [DataMember] public bool IsPrivate { get; set; }
           
   }
   
@@ -43,6 +44,7 @@ namespace TeamSupport.Data
     public ReportProxy GetProxy()
     {
       ReportProxy result = new ReportProxy();
+      result.IsPrivate = this.IsPrivate;
       result.FolderID = this.FolderID;
       result.EditorID = this.EditorID;
       result.ReportDefType = this.ReportDefType;

@@ -170,13 +170,16 @@ namespace TeamSupport.ServiceLibrary
       TicketsViewItem ticket = TicketsView.GetTicketsViewItem(LoginUser, ticketID);
       if (ticket == null) return;
 
-      SlaViolationHistoryItem history = (new SlaViolationHistory(LoginUser)).AddNewSlaViolationHistoryItem();
-      history.DateViolated = DateTime.UtcNow;
-      history.GroupID = ticket.GroupID;
-      history.UserID = ticket.UserID;
-      history.ViolationType = slaViolationType;
-      history.TicketID = ticket.TicketID;
-      history.Collection.Save();
+      if (!isWarning)
+      {
+        SlaViolationHistoryItem history = (new SlaViolationHistory(LoginUser)).AddNewSlaViolationHistoryItem();
+        history.DateViolated = DateTime.UtcNow;
+        history.GroupID = ticket.GroupID;
+        history.UserID = ticket.UserID;
+        history.ViolationType = slaViolationType;
+        history.TicketID = ticket.TicketID;
+        history.Collection.Save();
+      }
 
       Actions actions = new Actions(LoginUser);
       actions.LoadLatestByTicket(ticket.TicketID, false);

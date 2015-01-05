@@ -35,6 +35,7 @@ namespace TeamSupport.Data
       _fieldMap.AddMap("DateEdited", "DateEdited", false, false, false);
       _fieldMap.AddMap("EditorID", "EditorID", false, false, false);
       _fieldMap.AddMap("FolderID", "FolderID", false, false, false);
+      _fieldMap.AddMap("IsPrivate", "IsPrivate", false, false, false);
             
     }
   }
