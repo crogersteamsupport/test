@@ -56,7 +56,8 @@ namespace TeamSupport.Data
      Notes = 40,
      Tags = 41,
      KnowledgeBaseCategories = 42,
-     Reports = 43
+     Reports = 43,
+     SlaTickets=44
   };
 
   public enum SlaViolationType
