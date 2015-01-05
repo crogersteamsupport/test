@@ -293,7 +293,7 @@ namespace TeamSupport.ServiceLibrary
         message.HeadersEncoding = Encoding.UTF8;
         message.Body = body;
         message.Subject = subject;
-        Logs.WriteEvent(string.Format("Adding ReplyTo Address[{0}]", replyAddress));
+        Logs.WriteEvent(string.Format("Adding ReplyTo Address[{0}]", replyAddress.Replace("<","").Replace(">","")));
         message.From = new MailAddress(replyAddress);
         EmailTemplates.ReplaceMailAddressParameters(message);
         Emails.AddEmail(LoginUser, organizationID, _currentEmailPostID, description, message, attachments, timeToSend);
