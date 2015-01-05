@@ -337,9 +337,6 @@ namespace TeamSupport.Data
         case ReferenceType.Tickets:
           result = "ReportTicketsView.TicketID";
           break;
-        case ReferenceType.SlaTickets:
-          result = "SlaViolationHistoryView.TicketID";
-          break;
         case ReferenceType.OrganizationProducts:
           result = "OrganizationProductsView.OrganizationProductID";
           break;
