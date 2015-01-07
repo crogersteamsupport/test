@@ -110,6 +110,7 @@ namespace TeamSupport.Data
       WriteEventFormat("{0}: {1}", paramName, value);
     }
     public void WriteEvent(string message)
+    
     {
       WriteEvent(message, true);
     }

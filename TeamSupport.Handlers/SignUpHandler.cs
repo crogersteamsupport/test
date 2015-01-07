@@ -259,7 +259,8 @@ namespace TeamSupport.Handlers
         dictFormValues.Add("company", company);
         dictFormValues.Add("campaign", promo);
         dictFormValues.Add("marketingsource", source);
-        dictFormValues.Add("lifecyclestage", "Sales Qualified Lead");
+        dictFormValues.Add("lifecycle_stage", "Sales Qualified Lead");
+        dictFormValues.Add("type_of_sql", "Trial");
 
         int intPortalID = 448936; 
 		string strFormGUID = "95bb0d19-4eb4-4fec-8b83-9ab00a3efde2"; 
