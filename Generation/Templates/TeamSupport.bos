@@ -27184,6 +27184,23 @@
     <Scale>255</Scale>
   </Fields>
   <Fields>
+    <TableName>ReportTicketsView</TableName>
+    <FieldName>WeekdaysOpenened</FieldName>
+    <CustomType>int</CustomType>
+    <IsReadOnly>true</IsReadOnly>
+    <AllowDBNull>true</AllowDBNull>
+    <IsNullable>true</IsNullable>
+    <IsPrimaryKey>false</IsPrimaryKey>
+    <IsIdentity>false</IsIdentity>
+    <IsAutoInc>false</IsAutoInc>
+    <DBType>int</DBType>
+    <SqlDbType>SqlDbType.Int</SqlDbType>
+    <SystemType>System.Int32</SystemType>
+    <Size>4</Size>
+    <Precision>10</Precision>
+    <Scale>255</Scale>
+  </Fields>
+  <Fields>
     <TableName>vw_aspnet_Users</TableName>
     <FieldName>ApplicationId</FieldName>
     <CustomType>Guid</CustomType>

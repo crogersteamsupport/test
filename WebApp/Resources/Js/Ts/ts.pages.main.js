@@ -560,10 +560,7 @@ Ts.Pages.Main.prototype = {
 
                 if (result != null) {
 
-                    if (result.RefreshID != refreshID && refreshID > -1) {
-                        window.location = '.';
-                        return;
-                    }
+                    //if (result.RefreshID != refreshID && refreshID > -1) { window.location = '.'; return; }
                     if (result.IsExpired == true) {
                         window.location = 'AnotherSession.aspx';
                     }
