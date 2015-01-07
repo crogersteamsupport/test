@@ -288,8 +288,8 @@ namespace TeamSupport.Handlers
         dictFormValues.Add("recent_conversion_event_name", "TS Trial Sign Up");
         dictFormValues.Add("product_edition", GetProductVersionName(version));
 
-        int intPortalID = 448936; 
-		string strFormGUID = "95bb0d19-4eb4-4fec-8b83-9ab00a3efde2"; 
+        int intPortalID = 448936;
+        string strFormGUID = "0ddd21dd-ed3a-4282-afc8-26707a31d04e"; 
 
 		// Tracking Code Variables
 		string strHubSpotUTK = cookies["hubspotutk"].Value;
