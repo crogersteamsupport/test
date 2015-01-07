@@ -1289,7 +1289,7 @@ namespace TeamSupport.ServiceLibrary
         Users users = new Users(LoginUser);
         users.LoadByGroupID((int)ticket.GroupID);
         foreach (User user in users) {
-          if (ticket.UserHasRights(user) && (user.ReceiveAllGroupNotifications || ticket.UserID == null))
+            if ((ticket.UserHasRights(user) && (user.ReceiveAllGroupNotifications || ticket.UserID == null)) || (ticket.UserID == null && user.ReceiveUnassignedGroupEmails))
           {
             AddUser(userList, user, true);
             Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
@@ -1299,7 +1299,14 @@ namespace TeamSupport.ServiceLibrary
             Logs.WriteEventFormat("{0} ({1}) <{2}> was DENIED to the list. || Ticket.UserHasRights = {3} AND (ReceiveAllGroupNotifications = {4} OR ticket.UserID is NULL)", user.DisplayName, user.UserID.ToString(), user.Email, ticket.UserHasRights(user).ToString(), user.ReceiveAllGroupNotifications.ToString() ,(ticket.UserID==null).ToString());
           }
         }
-        if (ticket.UserID != null) RemoveBusinessHoursUsers(userList, ticket);
+        if (ticket.UserID != null)
+        {
+            RemoveBusinessHoursUsers(userList, ticket);
+        }
+        else
+        {
+
+        }
       }
     }
 
