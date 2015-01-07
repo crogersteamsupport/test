@@ -285,7 +285,7 @@ namespace TeamSupport.Handlers
         dictFormValues.Add("marketingsource", source);
         dictFormValues.Add("lifecyclestage", "salesqualifiedlead");
         dictFormValues.Add("type_of_sql", "Trial");
-        dictFormValues.Add("recent_conversion_event_name", "TS Trial Sign Up");
+        //dictFormValues.Add("recent_conversion_event_name", "TS Trial Sign Up");
         dictFormValues.Add("product_edition", GetProductVersionName(version));
 
         int intPortalID = 448936;
