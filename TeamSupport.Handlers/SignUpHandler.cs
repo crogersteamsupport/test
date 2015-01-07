@@ -240,7 +240,7 @@ namespace TeamSupport.Handlers
 
           }
         }
-        HubspotPost(fname, lname, email, company, phone, promo, source, cookies);
+        HubspotPost(fname, lname, email, company, phone, promo, source, cookies, version);
         return Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
       }
       else
@@ -248,7 +248,31 @@ namespace TeamSupport.Handlers
         throw new Exception("Invalid Company: " + company);
       }
     }
-    private static void HubspotPost(string fname, string lname, string email, string company, string phone, string promo, string source, HttpCookieCollection cookies)
+    
+    private static string GetProductVersionName(int productVersionAsInt)
+    {
+        string rtnValue = "";
+        switch(productVersionAsInt)
+        {
+            case (int)ProductType.Enterprise:
+                rtnValue = "Enterprise";
+                break;
+            case (int)ProductType.BugTracking:
+                rtnValue = "Bug Tracking";
+                break;
+            case (int)ProductType.Express:
+                rtnValue = "Express";
+                break;
+            case (int)ProductType.HelpDesk:
+                rtnValue = "Help Desk";
+                break;
+            default:
+                rtnValue = "Unknown";
+                break;              
+        }
+        return rtnValue;
+    }
+    private static void HubspotPost(string fname, string lname, string email, string company, string phone, string promo, string source, HttpCookieCollection cookies, int version)
     {
        
         Dictionary <string, string> dictFormValues = new Dictionary < string, string > ();
@@ -261,6 +285,8 @@ namespace TeamSupport.Handlers
         dictFormValues.Add("marketingsource", source);
         dictFormValues.Add("lifecyclestage", "salesqualifiedlead");
         dictFormValues.Add("type_of_sql", "Trial");
+        dictFormValues.Add("recent_conversion_event_name", "TS Trial Sign Up");
+        dictFormValues.Add("product_edition", GetProductVersionName(version));
 
         int intPortalID = 448936; 
 		string strFormGUID = "95bb0d19-4eb4-4fec-8b83-9ab00a3efde2"; 
@@ -270,7 +296,7 @@ namespace TeamSupport.Handlers
 		string strIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
 
 		// Page Variables
-		string strPageTitle = "";
+        string strPageTitle = "TS";
 		string strPageURL = System.Web.HttpContext.Current.Request.Url.AbsoluteUri;
 
 		// Do the post, returns true/false
