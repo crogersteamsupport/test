@@ -36,7 +36,8 @@
   <!-- Start Apptegic Code -->
   <script type="text/javascript">
 
-    window.onbeforeunload = function () { return "Warning!"; }
+    window.onbeforeunload = function () { if (console && console.trace && console.log) { console.log('Refreshing stack trace:'); console.trace(); } return "Warning!"; }
+
     var _aaq = _aaq || [];
     var _evergageDataset = '';
     var _evergageAccount = 'teamsupport';
