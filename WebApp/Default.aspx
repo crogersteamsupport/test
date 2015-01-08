@@ -36,7 +36,7 @@
   <!-- Start Apptegic Code -->
   <script type="text/javascript">
 
-    window.onbeforeunload = function () { return "Are you sure you would like to leave this application?"; }
+    window.onbeforeunload = function () { return "Warning!"; }
     var _aaq = _aaq || [];
     var _evergageDataset = '';
     var _evergageAccount = 'teamsupport';

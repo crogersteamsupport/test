@@ -559,8 +559,6 @@ Ts.Pages.Main.prototype = {
             Ts.Services.System.GetUserStatusUpdate(Ts.System.getSessionID(), function (result) {
 
                 if (result != null) {
-
-                    if (result.RefreshID != refreshID && refreshID > -1) { window.location = '.'; return; }
                     if (result.IsExpired == true) {
                         window.location = 'AnotherSession.aspx';
                     }
