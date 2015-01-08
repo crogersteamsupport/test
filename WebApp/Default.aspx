@@ -35,6 +35,8 @@
   <script src="https://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
   <!-- Start Apptegic Code -->
   <script type="text/javascript">
+
+    window.onbeforeunload = function () { return "Are you sure you would like to leave this application?"; }
     var _aaq = _aaq || [];
     var _evergageDataset = '';
     var _evergageAccount = 'teamsupport';
