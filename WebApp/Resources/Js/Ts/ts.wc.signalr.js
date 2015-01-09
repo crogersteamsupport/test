@@ -34,7 +34,10 @@ function loadSignalR() {
 
     $.connection.hub.disconnected(function () {
         if (tryingToReconnect) {
-            location.reload(); // Reload the connection if it has disconnected
+            setTimeout(function () {
+                $.connection.hub.start();
+            }, 5000);
+            //location.reload(); // Reload the connection if it has disconnected
         }
     });
 
