@@ -1192,7 +1192,7 @@ namespace TeamSupport.ServiceLibrary
     private void AddUser(List<UserEmail> list, User user, bool honorTicketNotifications)
     {
       if (user == null || user.Email == null) return;
-      if (IsUserAlreadyInList(list, user.UserID) || (!user.ReceiveTicketNotifications && honorTicketNotifications)) return;
+      if ((IsUserAlreadyInList(list, user.UserID) || (!user.ReceiveTicketNotifications && honorTicketNotifications)) || (user.ReceiveUnassignedGroupEmails == false)) return;
       list.Add(new UserEmail(user.UserID, user.FirstName, user.LastName, user.Email, user.OnlyEmailAfterHours));
     }
 
@@ -1329,15 +1329,7 @@ namespace TeamSupport.ServiceLibrary
         if (ticket.UserHasRights(user)) AddUser(userList, user); 
       }
 
-      if (ticket.UserID == null)
-      {
-          users = new Users(LoginUser);
-          users.LoadByReceiveUnassignedGroupEmails(ticket.OrganizationID);
-          foreach (User user in users)
-          {
-              AddUser(userList, user);
-          }
-      }
+     
 
     }
 
