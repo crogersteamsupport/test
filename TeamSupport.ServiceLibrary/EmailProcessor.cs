@@ -1299,6 +1299,7 @@ namespace TeamSupport.ServiceLibrary
             Logs.WriteEventFormat("{0} ({1}) <{2}> was DENIED to the list. || Ticket.UserHasRights = {3} AND (ReceiveAllGroupNotifications = {4} OR ticket.UserID is NULL)", user.DisplayName, user.UserID.ToString(), user.Email, ticket.UserHasRights(user).ToString(), user.ReceiveAllGroupNotifications.ToString() ,(ticket.UserID==null).ToString());
           }
         }
+
         if (ticket.UserID != null)
         {
             RemoveBusinessHoursUsers(userList, ticket);
@@ -1313,7 +1314,7 @@ namespace TeamSupport.ServiceLibrary
     private void AddTicketSubscribers(List<UserEmail> userList, Ticket ticket)
     {
       Users users;
-
+        
       // Ticket Subscribers
       users = new Users(LoginUser);
       users.LoadByTicketSubscription(ticket.TicketID);
@@ -1327,6 +1328,17 @@ namespace TeamSupport.ServiceLibrary
       foreach (User user in users) {
         if (ticket.UserHasRights(user)) AddUser(userList, user); 
       }
+
+      if (ticket.UserID == null)
+      {
+          users = new Users(LoginUser);
+          users.LoadByReceiveUnassignedGroupEmails(ticket.OrganizationID);
+          foreach (User user in users)
+          {
+              AddUser(userList, user);
+          }
+      }
+
     }
 
     private void AddBasicPortalUsers(List<UserEmail> userList, Ticket ticket)

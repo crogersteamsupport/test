@@ -811,6 +811,18 @@ namespace TeamSupport.Data
 
     }
 
+    public void LoadByReceiveUnassignedGroupEmails( int organizationID)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = "SELECT * FROM Users u WHERE (u.OrganizationID = @OrganizationID) AND (u.IsActive = 1) AND (u.MarkDeleted = 0) AND  (u.ReceiveUnassignedGroupEmails = 1)";
+            command.CommandType = CommandType.Text;            
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            Fill(command, "Userss");
+        }
+
+    }
+
     public void LoadByTicketSubscription(int ticketID)
     {
       using (SqlCommand command = new SqlCommand())
