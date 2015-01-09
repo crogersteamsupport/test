@@ -46,6 +46,7 @@ namespace TeamSupport.Data
     [DataMember] public bool NeedsIndexing { get; set; }
     [DataMember] public bool? OrganizationActive { get; set; }
     [DataMember] public DateTime? OrganizationSAExpirationDate { get; set; }
+    [DataMember] public bool PortalLimitOrgTickets { get; set; }
           
   }
   
@@ -54,6 +55,7 @@ namespace TeamSupport.Data
     public ContactsViewItemProxy GetProxy()
     {
       ContactsViewItemProxy result = new ContactsViewItemProxy();
+      result.PortalLimitOrgTickets = this.PortalLimitOrgTickets;
       result.OrganizationActive = this.OrganizationActive;
       result.NeedsIndexing = this.NeedsIndexing;
       result.SalesForceID = this.SalesForceID;
