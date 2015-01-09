@@ -829,7 +829,7 @@ TicketGrid = function (options) {
         }
     });
 
-    grid.onClick.subscribe(function (e, args) {
+    grid.onClick.subscribe(function (e, args) {debugger
         var cell = args.cell;
         var row = args.row;
         var ticket = loader.data[row];

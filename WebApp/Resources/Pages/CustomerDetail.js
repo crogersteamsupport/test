@@ -1579,7 +1579,7 @@ $(document).ready(function () {
           .text(tickets[i].TicketNumber + ': ' + ellipseString(tickets[i].Name, 50))
           .appendTo(caption)
           .click(function (e) {
-
+              e.preventDefault();
               top.Ts.MainPage.openTicket($(this).closest('.ticket').data('o').TicketNumber, true);
           });
 

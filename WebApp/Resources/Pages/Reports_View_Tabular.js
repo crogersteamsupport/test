@@ -8,7 +8,6 @@
     if (top.Ts.System.User.DisableExporting == true) { $('.reports-export').remove(); }
 
     function getReportData(from, to, sortcol, isdesc, callback) {
-    debugger
         var params = { "reportID":
         _reportID,
             "from": from,

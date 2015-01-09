@@ -28,3 +28,13 @@
     .slick-sort-indicator.slick-sort-indicator-asc:before { content: "\f106"; }
     .slick-row.odd { background-color: #f9f9f9; }
     .slick-column-name, .slick-sort-indicator { display: inline-block; float: left; margin-bottom: 100px; }
+    
+    .ts-icon { margin-top: 6px; display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat;width: 16px; height: 16px; background-image: url(../images/ts_icons_normal.png); }
+    .grid-compact .ts-icon { margin-top: 2px;  }
+    .slick-cell i { cursor:pointer;}
+    .slick-cell.selected { background-color:#ffffcc;}
+    .active .slick-cell.selected { background-color:#ffffcc;}
+    .slick-row .slick-cell.selected i.fa-square-o:before, .slick-row .active i.fa-square-o:before { content: "\f046"; }
+    .slick-row .slick-cell.selected i.fa-square-o,.slick-row .active i.fa-square-o {color: #333; }
+    .slick-row .slick-cell i.fa-square-o { color: #999; }
+    .no-header-name .slick-column-name {display: none;}
