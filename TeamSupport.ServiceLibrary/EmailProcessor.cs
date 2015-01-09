@@ -1289,7 +1289,7 @@ namespace TeamSupport.ServiceLibrary
         Users users = new Users(LoginUser);
         users.LoadByGroupID((int)ticket.GroupID);
         foreach (User user in users) {
-            if (((ticket.UserHasRights(user) && (user.ReceiveAllGroupNotifications || ticket.UserID == null))) && (user.ReceiveUnassignedGroupEmails == true))
+            if (((ticket.UserHasRights(user) && (user.ReceiveAllGroupNotifications || ticket.UserID == null))) || (user.ReceiveUnassignedGroupEmails == true))
           {
             AddUser(userList, user, true);
             Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
