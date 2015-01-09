@@ -35,9 +35,6 @@
   <script src="https://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
   <!-- Start Apptegic Code -->
   <script type="text/javascript">
-
-    window.onbeforeunload = function () { if (console && console.trace && console.log) { console.log('Refreshing stack trace:'); console.trace(); } return "Warning!"; }
-
     var _aaq = _aaq || [];
     var _evergageDataset = '';
     var _evergageAccount = 'teamsupport';
@@ -70,6 +67,13 @@
       g_uac = $('#fieldAuth').val();
       Ts.MainPage = new Ts.Pages.Main();
       Ts.MainPage.init();
+      try {
+        window.onbeforeunload = function () {
+          if (console && console.trace && console.log) {
+            console.log('Refreshing stack trace:'); console.trace();
+          } return "Warning!";
+        }
+      } catch (e) { }
 
       g_PrivateServices = privateServices = new TeamSupport.Services.PrivateServices();
       g_PrivateServices.set_defaultSucceededCallback(function (result) { });
@@ -77,7 +81,7 @@
 
       if (BrowserDetect.browser != 'Safari' || BrowserDetect.isMobile != 1) {
         try {
-            $.getScript("signalr/signalr/hubs", function (data, textStatus, jqxhr) {
+          $.getScript("signalr/signalr/hubs", function (data, textStatus, jqxhr) {
             $.getScript("vcr/1_9_0/Js/ts/ts.wc.signalr.js", function (data, textStatus, jqxhr) {
               if (loadSignalR) { loadSignalR(); }
 
