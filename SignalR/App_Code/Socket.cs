@@ -284,7 +284,7 @@ public class Socket : Hub
 
 public class TicketSocket : Hub
 {
-    string connString = "Application Name=app.teamsupport.com;Data Source=localhost;Initial Catalog=TeamSupportTest; Integrated Security=True";
+    string connString = ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
 
     public TicketSocket()
     {
