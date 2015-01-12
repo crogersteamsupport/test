@@ -1312,6 +1312,7 @@ namespace TeamSupport.ServiceLibrary
       }
       else
       {
+          Users users = new Users(LoginUser);
           users.LoadByReceiveUnassignedGroupEmails(ticket.OrganizationID);
           foreach (User user in users)
           {
