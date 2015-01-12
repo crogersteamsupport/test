@@ -240,7 +240,10 @@ namespace TeamSupport.Handlers
 
           }
         }
-        HubspotPost(fname, lname, email, company, phone, promo, source, cookies, version);
+        prams.promo = promo;
+        prams.hubspotutk = cookies["hubspotutk"].Value;
+        prams.soure = source;
+        //HubspotPost(fname, lname, email, company, phone, promo, source, cookies, version);
         return Organizations.SetupNewAccount(fname, lname, email, company, phone, (ProductType)version, prams);
       }
       else
@@ -249,120 +252,8 @@ namespace TeamSupport.Handlers
       }
     }
     
-    private static string GetProductVersionName(int productVersionAsInt)
-    {
-        string rtnValue = "";
-        switch(productVersionAsInt)
-        {
-            case (int)ProductType.Enterprise:
-                rtnValue = "Enterprise";
-                break;
-            case (int)ProductType.BugTracking:
-                rtnValue = "Bug Tracking";
-                break;
-            case (int)ProductType.Express:
-                rtnValue = "Express";
-                break;
-            case (int)ProductType.HelpDesk:
-                rtnValue = "Help Desk";
-                break;
-            default:
-                rtnValue = "Unknown";
-                break;              
-        }
-        return rtnValue;
-    }
-    private static void HubspotPost(string fname, string lname, string email, string company, string phone, string promo, string source, HttpCookieCollection cookies, int version)
-    {
-       
-        Dictionary <string, string> dictFormValues = new Dictionary < string, string > ();
-		dictFormValues.Add("firstname", fname);
-		dictFormValues.Add("lastname", lname);
-		dictFormValues.Add("email", email);
-		dictFormValues.Add("phone", phone);
-        dictFormValues.Add("company", company);
-        dictFormValues.Add("campaign", promo);
-        dictFormValues.Add("marketingsource", source);
-        dictFormValues.Add("lifecyclestage", "salesqualifiedlead");
-        dictFormValues.Add("type_of_sql", "Trial");
-        //dictFormValues.Add("recent_conversion_event_name", "TS Trial Sign Up");
-        dictFormValues.Add("product_edition", GetProductVersionName(version));
-
-        int intPortalID = 448936;
-        string strFormGUID = "0ddd21dd-ed3a-4282-afc8-26707a31d04e"; 
-
-		// Tracking Code Variables
-		string strHubSpotUTK = cookies["hubspotutk"].Value;
-		string strIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
-
-		// Page Variables
-        string strPageTitle = "TS";
-		string strPageURL = System.Web.HttpContext.Current.Request.Url.AbsoluteUri;
-
-		// Do the post, returns true/false
-		string strError = "";
-		bool blnRet = Do_Post_To_HubSpot_FormsAPI(intPortalID, strFormGUID, dictFormValues, strHubSpotUTK, strIpAddress, strPageTitle, strPageURL, ref strError);
-		if (!blnRet) {
-			ExceptionLogs.LogException(LoginUser.Anonymous, new Exception("Error Posting To HUB SPOT"), "HUB SPOT", dictFormValues.ToDebugString());			
-		}
-
-    }
-    private static bool Do_Post_To_HubSpot_FormsAPI(int intPortalID, string strFormGUID, Dictionary<string, string> dictFormValues, string strHubSpotUTK, string strIpAddress, string strPageTitle, string strPageURL, ref string strMessage)
-    {
-
-        // Build Endpoint URL
-        string strEndpointURL = string.Format("https://forms.hubspot.com/uploads/form/v2/{0}/{1}", intPortalID, strFormGUID);
-
-        // Setup HS Context Object
-        Dictionary<string, string> hsContext = new Dictionary<string, string>();
-        hsContext.Add("hutk", strHubSpotUTK);
-        hsContext.Add("ipAddress", strIpAddress);
-        hsContext.Add("pageUrl", strPageURL);
-        hsContext.Add("pageName", strPageTitle);
-
-        // Serialize HS Context to JSON (string)
-        System.Web.Script.Serialization.JavaScriptSerializer json = new System.Web.Script.Serialization.JavaScriptSerializer();
-        string strHubSpotContextJSON = json.Serialize(hsContext);
-
-        // Create string with post data
-        string strPostData = "";
-
-        // Add dictionary values
-        foreach (var d in dictFormValues)
-        {
-            strPostData += d.Key + "=" + HttpUtility.UrlEncode(d.Value) + "&";
-        }
-
-        // Append HS Context JSON
-        strPostData += "hs_context=" + HttpUtility.UrlEncode(strHubSpotContextJSON);
-
-        // Create web request object
-        System.Net.HttpWebRequest r = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(strEndpointURL);
-
-        // Set headers for POST
-        r.Method = "POST";
-        r.ContentType = "application/x-www-form-urlencoded";
-        r.ContentLength = strPostData.Length;
-        r.KeepAlive = false;
-
-        // POST data to endpoint
-        using (System.IO.StreamWriter sw = new System.IO.StreamWriter(r.GetRequestStream()))
-        {
-            try
-            {
-                sw.Write(strPostData);
-            }
-            catch (Exception ex)
-            {
-                // POST Request Failed
-                strMessage = ex.Message;
-                return false;
-            }
-        }
-
-        return true; //POST Succeeded
-
-    }
+   
+    
 
     private static string parseGAString(string cookieValue, string key)
     {
@@ -403,12 +294,6 @@ namespace TeamSupport.Handlers
     }
   }
 
-  public static class ExtensionMethods
-  {
-      public static string ToDebugString<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
-      {
-          return "{" + string.Join(",", dictionary.Select(kv => kv.Key.ToString() + "=" + kv.Value.ToString()).ToArray()) + "}";
-      }
-  }
+ 
 
 }

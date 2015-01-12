@@ -323,6 +323,9 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
       gaSource = "";
       gaTerm = "";
       gaVisits = 0;
+      hubspotutk = "";
+      promo = "";
+      source = "";
     }
 
     public string initialSource { get; set; }
@@ -343,6 +346,10 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
     public string gaContent { get; set; }
     public string gaCampaign { get; set; }
     public int gaVisits { get; set; }
+
+    public string hubspotutk { get; set; }
+    public string promo { get; set; }
+    public string source { get; set; }
   }
 
   public partial class Organizations
@@ -795,6 +802,14 @@ AND MONTH(a.DateModified)  = MONTH(GetDate())
         //Eric's ID 159931
         TSHighrise.CreateTaskFrame("", "today", "1496359", "Party", hrContactID.ToString(), salesGuyID, true, true);
         TSHighrise.CreateTaskDate("", DateTime.Now.AddDays(14), "1496361", "Company", hrCompanyID.ToString(), "159931", true, false);
+        try
+        {
+            TSHubSpot.HubspotPost(mUser.FirstName, mUser.LastName, mUser.Email, mOrg.Name, phoneNumber, signUpParams.promo, signUpParams.source, signUpParams.hubspotutk, productType, salesGuy);
+        }
+        catch(Exception ex)
+        {
+            ExceptionLogs.LogException(loginUser, ex, "Sign Up - HubSpot", "UserID: " + tsUser.UserID.ToString());
+        }
       }
       catch (Exception ex)
       {
