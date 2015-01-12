@@ -1289,7 +1289,7 @@ namespace TeamSupport.ServiceLibrary
         Users users = new Users(LoginUser);
         users.LoadByGroupID((int)ticket.GroupID);
         foreach (User user in users) {
-            if (((ticket.UserHasRights(user) && (user.ReceiveAllGroupNotifications || ticket.UserID == null))) || (user.ReceiveUnassignedGroupEmails == true))
+            if ((ticket.UserHasRights(user) && (user.ReceiveAllGroupNotifications)))
           {
             AddUser(userList, user, true);
             Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
@@ -1306,9 +1306,21 @@ namespace TeamSupport.ServiceLibrary
         }
         else
         {
-
+           
         }
+
       }
+      else
+      {
+          users.LoadByReceiveUnassignedGroupEmails(ticket.OrganizationID);
+          foreach (User user in users)
+          {
+              AddUser(userList, user);
+              Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list (LoadByReceiveUnassignedGroupEmails)", user.DisplayName, user.UserID.ToString(), user.Email);
+          }
+      }
+
+        
     }
 
     private void AddTicketSubscribers(List<UserEmail> userList, Ticket ticket)
