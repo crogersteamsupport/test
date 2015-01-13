@@ -3,7 +3,7 @@ var chatHubClient = $.connection.socket;
 var ticketSocket = $.connection.ticketSocket;
 var notify = false;
 
-function loadSignalR() { 
+function loadSignalR() {
     $("#jquery_jplayer_1").jPlayer({
         ready: function () {
             $(this).jPlayer("setMedia", {
@@ -19,8 +19,9 @@ function loadSignalR() {
     $.connection.hub.url = "signalr/signalr";
     // Start the connection only if on main wc page
 
-    $.connection.hub.qs = "userID=" + top.Ts.System.User.UserID + "&organizationID=" + top.Ts.System.User.OrganizationID;
-    //$.connection.hub.qs = "organizationID=" + top.Ts.System.User.OrganizationID;
+    $.connection.hub.start(function () {
+        chatHubClient.server.login();
+    });
 
     var tryingToReconnect = false;
 
@@ -36,8 +37,7 @@ function loadSignalR() {
         if (tryingToReconnect) {
             setTimeout(function () {
                 $.connection.hub.start();
-            }, 5000);
-            //location.reload(); // Reload the connection if it has disconnected
+            }, 10000);
         }
     });
 
@@ -53,24 +53,24 @@ function loadSignalR() {
         }
     };
 
-    function getChildWindows()  {
-      var result = [];
+    function getChildWindows() {
+        var result = [];
 
-      function addWindow(element) {
-        for (var i = 0; i < element.length; i++) {
-          try {
-            if (element[i].contentWindow && element[i].contentWindow != null) result.push(element[i].contentWindow);
-          } catch (e) {}
+        function addWindow(element) {
+            for (var i = 0; i < element.length; i++) {
+                try {
+                    if (element[i].contentWindow && element[i].contentWindow != null) result.push(element[i].contentWindow);
+                } catch (e) { }
+            }
         }
-      }
 
-      addWindow($("#iframe-mniWC2"));
-      addWindow($("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame"));
+        addWindow($("#iframe-mniWC2"));
+        addWindow($("#iframe-mniGroups").contents().find("#ctl00_ContentPlaceHolder1_groupContentFrame"));
         //addWindow($("#iframe-mniCustomers").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
-      addWindow($(".customerIframe").contents().find("#watercoolerIframe"));
-      addWindow($("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
-      addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));  
-      return result;
+        addWindow($(".customerIframe").contents().find("#watercoolerIframe"));
+        addWindow($("#iframe-mniProducts").contents().find("#ctl00_ContentPlaceHolder1_frmOrganizations"));
+        addWindow($(".ticketIframe").contents().find("#watercoolerIframe"));
+        return result;
     }
 
     function getTicketWindows() {
@@ -108,59 +108,59 @@ function loadSignalR() {
     };
 
     chatHubClient.client.addThread = function (message) {
-      var windows = getChildWindows();
-      for (var i = 0; i < windows.length; i++) {
-        try { if (windows[i].addThread) windows[i].addThread(message); } catch (err) { }
-      }
+        var windows = getChildWindows();
+        for (var i = 0; i < windows.length; i++) {
+            try { if (windows[i].addThread) windows[i].addThread(message); } catch (err) { }
+        }
     };
 
     chatHubClient.client.addComment = function (message) {
-      var windows = getChildWindows();
-      for (var i = 0; i < windows.length; i++) {
-          try { if (windows[i].addComment) windows[i].addComment(message); } catch (err) { }
-      }
+        var windows = getChildWindows();
+        for (var i = 0; i < windows.length; i++) {
+            try { if (windows[i].addComment) windows[i].addComment(message); } catch (err) { }
+        }
     };
 
     chatHubClient.client.deleteMessage = function (messageID, parentID) {
-      var windows = getChildWindows();
-      for (var i = 0; i < windows.length; i++) {
-        try { if (windows[i].deleteMessage) windows[i].deleteMessage(messageID, parentID); } catch (err) { }
-      }
+        var windows = getChildWindows();
+        for (var i = 0; i < windows.length; i++) {
+            try { if (windows[i].deleteMessage) windows[i].deleteMessage(messageID, parentID); } catch (err) { }
+        }
     };
 
     chatHubClient.client.updateLikes = function (likes, messageID, messageParentID) {
-      var windows = getChildWindows();
-      for (var i = 0; i < windows.length; i++) {
-        try { if (windows[i].updateLikes) windows[i].updateLikes(likes, messageID, messageParentID); } catch (err) { }
-      }
+        var windows = getChildWindows();
+        for (var i = 0; i < windows.length; i++) {
+            try { if (windows[i].updateLikes) windows[i].updateLikes(likes, messageID, messageParentID); } catch (err) { }
+        }
     };
 
     chatHubClient.client.updateattachments = function (message) {
-      var windows = getChildWindows();
-      for (var i = 0; i < windows.length; i++) {
-        try { if (windows[i].updateattachments) windows[i].updateattachments(message); } catch (err) { }
-      }
+        var windows = getChildWindows();
+        for (var i = 0; i < windows.length; i++) {
+            try { if (windows[i].updateattachments) windows[i].updateattachments(message); } catch (err) { }
+        }
     };
 
     chatHubClient.client.disconnect = function (windowid) {
-      var windows = getChildWindows();
-      for (var i = 0; i < windows.length; i++) {
-        try { if (windows[i].disconnect) windows[i].disconnect(windowid); } catch (err) { }
-      }
+        var windows = getChildWindows();
+        for (var i = 0; i < windows.length; i++) {
+            try { if (windows[i].disconnect) windows[i].disconnect(windowid); } catch (err) { }
+        }
 
-      var mainWC = $("#iframe-mniUsers");
+        var mainWC = $("#iframe-mniUsers");
         try {
             if (mainWC[0].contentWindow.Update) { mainWC[0].contentWindow.Update(); }
         } catch (err) { }
     };
 
     chatHubClient.client.updateUsers = function () {
-      var mainWC = $("#iframe-mniWC2");
-      try {
-        if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUsers(); }
-      } catch (err) { }
+        var mainWC = $("#iframe-mniWC2");
+        try {
+            if (mainWC[0].contentWindow.updateUsers) { mainWC[0].contentWindow.updateUsers(); }
+        } catch (err) { }
 
-      var userPage = $("#iframe-mniUsers");
+        var userPage = $("#iframe-mniUsers");
         try {
             if (userPage[0].contentWindow.Update) { userPage[0].contentWindow.Update(); }
         } catch (err) { }
@@ -170,8 +170,7 @@ function loadSignalR() {
     ticketSocket.client.displayTicketUpdate = function (ticketNum, updateType) {
         var mergeticket;
 
-        if (ticketNum.indexOf(',') != -1)
-        {
+        if (ticketNum.indexOf(',') != -1) {
             var mergeTickets = ticketNum.split(',');
             var losingTicket = mergeTickets[0];
             mergeticket = 1;
@@ -192,7 +191,7 @@ function loadSignalR() {
         }
 
         if ($('.main-ticket-' + ticketNum).length > 0) {
-            if (!$('.main-ticket-' + ticketNum).is(":visible") && mergeticket != 1){
+            if (!$('.main-ticket-' + ticketNum).is(":visible") && mergeticket != 1) {
                 top.Ts.MainPage.AppNotify("Ticket " + ticketNum, updateType);
 
                 if (updateType.indexOf('delete') != -1) {
@@ -209,18 +208,18 @@ function loadSignalR() {
             $('.main-ticket-' + ticketNum).find('iframe')[0].contentWindow.loadTicket(ticketNum, 0);
             //$('.main-ticket-' + ticketNum).hide();
             //$('.main-ticket-' + ticketNum).removeClass("tmp-visible");
-            
+
         }
 
 
         //if ($('.main-tab-content-item-mniDashboard').length > 0 && $('.main-tab-content-item-mniDashboard').is(":visible"))
-            //$('.main-tab-content-item-mniDashboard').find('iframe')[0].contentWindow.refresh();
+        //$('.main-tab-content-item-mniDashboard').find('iframe')[0].contentWindow.refresh();
     };
 
     ticketSocket.client.getTicketViewing = function (ticketNum) {
 
         if ($('.main-ticket-' + ticketNum).length > 0) {
-            if ($('.main-ticket-' + ticketNum).is(":visible")){
+            if ($('.main-ticket-' + ticketNum).is(":visible")) {
                 window.top.ticketSocket.server.ticketViewingAdd(ticketNum, top.Ts.System.User.UserID);
             }
         }
@@ -236,7 +235,7 @@ function loadSignalR() {
 
         var ticketWin = $(".ticketIframe");
         for (var i = 0; i < ticketWin.length; i++) {
-            ticketWin[i].contentWindow.removeUserViewing(ticketNum,userID);
+            ticketWin[i].contentWindow.removeUserViewing(ticketNum, userID);
         }
     };
 
@@ -246,10 +245,6 @@ function loadSignalR() {
             ticketWin[i].contentWindow.removeUserViewing(null, userID);
         }
     };
-
-    $.connection.hub.start(function () {
-        chatHubClient.server.login();
-    });
 
     originalTitle = document.title;
 
@@ -268,8 +263,8 @@ function openChat(name, chatid) {
 }
 
 function chime(chimeType) {
-        $("#jquery_jplayer_1").jPlayer("setMedia", {
-            mp3: "vcr/1_9_0/Audio/drop.mp3"
-        }).jPlayer("play", 0);
+    $("#jquery_jplayer_1").jPlayer("setMedia", {
+        mp3: "vcr/1_9_0/Audio/drop.mp3"
+    }).jPlayer("play", 0);
 }
 
