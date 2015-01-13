@@ -1944,10 +1944,10 @@ $(document).ready(function () {
                 //$('#tblProducts > tbody:last').append('<tr><td><a href="#" id='+ product.ProductID +'><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td></td></tr>');
             }
 
-            $('.customers-loading').hide();
-            $('.customers-empty').hide();
-            if (product.length > 0) {
-                $('.customers-empty').show();
+            $('.products-loading').hide();
+            $('.products-empty').hide();
+            if (product.length == 0) {
+                $('.products-empty').show();
             }
         });
 
