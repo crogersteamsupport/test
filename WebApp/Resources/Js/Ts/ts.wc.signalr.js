@@ -20,7 +20,7 @@ function loadSignalR() {
     // Start the connection only if on main wc page
 
     $.connection.hub.start(function () {
-        chatHubClient.server.login();
+        chatHubClient.server.login(top.Ts.System.User.UserID);
     });
 
     var tryingToReconnect = false;
