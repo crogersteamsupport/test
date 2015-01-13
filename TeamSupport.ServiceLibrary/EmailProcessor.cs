@@ -869,6 +869,7 @@ namespace TeamSupport.ServiceLibrary
                 catch (Exception ex)
                 {
                     Logs.WriteException(ex);
+                    ExceptionLogs.LogException(LoginUser, ex, "AddMessagePortalTicketModified", ticket.Row);
                 }
             }
 

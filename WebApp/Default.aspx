@@ -67,6 +67,7 @@
       g_uac = $('#fieldAuth').val();
       Ts.MainPage = new Ts.Pages.Main();
       Ts.MainPage.init();
+      /*
       try {
         window.onbeforeunload = function () {
           if (console && console.trace && console.log) {
@@ -74,7 +75,7 @@
           } return "Warning!";
         }
       } catch (e) { }
-
+      */
       g_PrivateServices = privateServices = new TeamSupport.Services.PrivateServices();
       g_PrivateServices.set_defaultSucceededCallback(function (result) { });
       g_PrivateServices.set_defaultFailedCallback(function (error, userContext, methodName) { });
