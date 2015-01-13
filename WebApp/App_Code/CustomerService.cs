@@ -1159,10 +1159,10 @@ namespace TSWebServices
         }
 
         [WebMethod]
-        public OrganizationCustomProduct[] LoadProducts(int organizationID)
+        public OrganizationCustomProduct[] LoadProducts(int organizationID, string sortColumn, string sortDirection)
         {
             OrganizationProducts organizationProducts = new OrganizationProducts(TSAuthentication.GetLoginUser());
-            organizationProducts.LoadForCustomerProductGrid(organizationID);
+            organizationProducts.LoadForCustomerProductGridSorting(organizationID, GetSortColumnTableName(sortColumn), sortDirection);
             List<OrganizationCustomProduct> list = new List<OrganizationCustomProduct>();
             CustomFields fields = new CustomFields(TSAuthentication.GetLoginUser());
             fields.LoadByReferenceType(TSAuthentication.GetLoginUser().OrganizationID, ReferenceType.OrganizationProducts);
@@ -1171,12 +1171,13 @@ namespace TSWebServices
             foreach (DataRow row in organizationProducts.Table.Rows)
             {
                 OrganizationCustomProduct test = new OrganizationCustomProduct();
-                test.ProductName = row["ProductName"].ToString();
+                test.ProductName = row["Product"].ToString();
                 test.VersionNumber = row["VersionNumber"].ToString();
                 test.SupportExpiration = row["SupportExpiration"].ToString() != "" ? DataUtils.DateToLocal(TSAuthentication.GetLoginUser(),(((DateTime)row["SupportExpiration"]))).ToString(GetDateFormatNormal()) : "";
                 test.VersionStatus = row["VersionStatus"].ToString();
                 test.IsReleased = row["IsReleased"].ToString();
                 test.ReleaseDate = row["ReleaseDate"].ToString() != "" ? ((DateTime)row["ReleaseDate"]).ToString(GetDateFormatNormal()) : "";
+                test.DateCreated = row["DateCreated"].ToString() != "" ? ((DateTime)row["DateCreated"]).ToString(GetDateFormatNormal()) : "";
                 test.OrganizationProductID = (int)row["OrganizationProductID"];
                 test.CustomFields = new List<string>();
                 foreach (CustomField field in fields)
@@ -1193,6 +1194,35 @@ namespace TSWebServices
             return list.ToArray();
         }
 
+        private string GetSortColumnTableName(string interfaceName)
+        {
+            string result = "OrganizationProductID";
+            switch (interfaceName.ToLower())
+            {
+                case "product name":
+                    result = "Product";
+                    break;
+                case "version":
+                    result = "VersionNumber";
+                    break;
+                case "support expiration":
+                    result = "SupportExpiration";
+                    break;
+                case "status":
+                    result = "VersionStatus";
+                    break;
+                case "released":
+                    result = "IsReleased";
+                    break;
+                case "released date":
+                    result = "ReleaseDate";
+                    break;
+                case "date created":
+                    result = "OrganizationProductID";
+                    break;
+            }
+            return result;
+        }
         
         [WebMethod]
         public OrganizationCustomProduct LoadProduct(int productID)
@@ -2859,6 +2889,8 @@ namespace TSWebServices
             public string IsReleased { get; set; }
             [DataMember]
             public string ReleaseDate { get; set; }
+            [DataMember]
+            public string DateCreated { get; set; }
             [DataMember]
             public int ProductID { get; set; }
             [DataMember]

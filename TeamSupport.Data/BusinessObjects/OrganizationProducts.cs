@@ -144,6 +144,38 @@ namespace TeamSupport.Data
       }
     }
 
+    public void LoadForCustomerProductGridSorting(int organizationID, string sortColumn, string sortDirection)
+    {
+        //int end = start + 20;
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.CommandText = @"
+        WITH OrderedOrganizationProduct AS
+        (
+	        SELECT 
+		        OrganizationProductID, 
+		        ROW_NUMBER() OVER (ORDER BY " + sortColumn + " " + sortDirection + @") AS rownum
+	        FROM 
+		        OrganizationProductsView 
+	        WHERE 
+		        OrganizationID = @OrganizationID 
+        ) 
+        SELECT 
+          v.*
+        FROM
+          OrganizationProductsView v
+          JOIN OrderedOrganizationProduct oop
+            ON v.OrganizationProductID = oop.OrganizationProductID
+        ORDER BY
+          v." + sortColumn + " " + sortDirection;
+            command.CommandType = CommandType.Text;
+            command.Parameters.AddWithValue("@OrganizationID", organizationID);
+            //command.Parameters.AddWithValue("@start", start);
+            //command.Parameters.AddWithValue("@end", end);
+            Fill(command);
+        }
+    }
+
     public void LoadForProductCustomerGridByVersion(int versionID)
     {
       using (SqlCommand command = new SqlCommand())

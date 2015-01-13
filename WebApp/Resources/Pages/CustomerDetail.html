@@ -333,7 +333,7 @@
         </div>
         <div class="tab-pane fade" id="company-products">
           <div class="row">
-            <div class="col-xs-12">
+            <div class="col-xs-12" id="productsContainer">
               <div class="box" id="productForm" style="display: none;">
                 <div class="box-header">
                 </div>
@@ -384,17 +384,20 @@
                           <tr>
                             <th></th>
                             <th></th>
-                            <th>Product Name</th>
-                            <th>Version</th>
-                            <th>Support Expiration</th>
-                            <th>Status</th>
-                            <th>Released</th>
-                            <th>Released Date</th>
+                            <th><a href="#" class="productHeader">Product Name</a></th>
+                            <th><a href="#" class="productHeader">Version</a></th>
+                            <th><a href="#" class="productHeader">Support Expiration</a></th>
+                            <th><a href="#" class="productHeader">Status</a></th>
+                            <th><a href="#" class="productHeader">Released</a></th>
+                            <th><a href="#" class="productHeader">Released Date</a></th>
+                            <th><a href="#" class="productHeader">Date Created<i class="fa fa-sort-desc"></i></a></th>
                           </tr>
                         </thead>
                         <tbody>
                         </tbody>
                       </table>
+                        <div class="products-loading"><i class="fa fa-spinner fa-spin"></i>&nbsp; Loading...</div>
+                        <div class="products-empty" hidden>This customer has no products.</div>
                     </div>
                   </div>
                 </div>

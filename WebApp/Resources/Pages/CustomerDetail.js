@@ -13,6 +13,10 @@ var organizationID = null;
 var ratingFilter = '';
 var _isUnknown = false;
 var _execGetAsset = null;
+var _productsSortColumn = 'Date Created';
+var _productsSortDirection = 'DESC';
+var _productHeadersAdded = false;
+
 $(document).ready(function () {
     customerDetailPage = new CustomerDetailPage();
     customerDetailPage.refresh();
@@ -61,7 +65,6 @@ $(document).ready(function () {
     LoadProperties();
     LoadCustomProperties();
     LoadContacts();
-    LoadProducts();
     LoadProductTypes();
     LoadCustomControls(top.Ts.ReferenceTypes.OrganizationProducts);
     LoadReminderUsers();
@@ -973,7 +976,7 @@ $(document).ready(function () {
         if (hasError == 0)
         {
             top.Ts.Services.Customers.SaveProduct(top.JSON.stringify(productInfo), function (prod) {
-                LoadProducts(true);
+                LoadProducts();
                 $('#btnProductSave').text("Save Product");
                 $('#productExpiration').val('');
                 $('#fieldProductID').val('-1');
@@ -1108,6 +1111,38 @@ $(document).ready(function () {
 
     });
 
+    $('#tblProducts').on('click', '.productHeader', function (e) {
+        e.preventDefault();
+        _productsSortColumn = $(this).text();
+        var sortIcon = $(this).children(i);
+        if (sortIcon.length > 0) {
+            if (sortIcon.hasClass('fa-sort-asc')) {
+                _productsSortDirection = 'DESC'
+            }
+            else {
+                _productsSortDirection = 'ASC'
+            }
+            sortIcon.toggleClass('fa-sort-asc fa-sort-desc');
+        }
+        else {
+            $('.productHeader').children(i).remove();
+            var newSortIcon = $('<i>')
+                .addClass('fa fa-sort-asc')
+                .appendTo($(this));
+            _customersSortDirection = 'ASC';
+            switch (_productsSortColumn.toLowerCase()) {
+                case "version":
+                case "support expiration":
+                case "released date":
+                case "date created":
+                    newSortIcon.toggleClass('fa-sort-asc fa-sort-desc');
+                    _productsSortDirection = 'DESC';
+
+            }
+        }
+        LoadProducts();
+    });
+
     $("#btnProductCancel").click(function (e) {
         e.preventDefault();
         LoadProductTypes();
@@ -1132,7 +1167,7 @@ $(document).ready(function () {
         if (confirm('Are you sure you would like to remove this product association?')) {
             top.Ts.System.logAction('Customer Detail - Delete Product');
             top.privateServices.DeleteOrganizationProduct($(this).parent().parent().attr('id'), function (e) {
-                LoadProducts(true);
+                LoadProducts();
             });
             
         }
@@ -1867,18 +1902,22 @@ $(document).ready(function () {
         });
     }
 
-    function LoadProducts(noheaders) {
+    function LoadProducts() {
 
-        if(!noheaders){
+        if (!_productHeadersAdded) {
             top.Ts.Services.Customers.LoadcustomProductHeaders(function (headers) {
                 for (var i = 0; i < headers.length; i++) {
                     $('#tblProducts th:last').after('<th>' + headers[i] + '</th>');
+                }
+                _productHeadersAdded = true;
+                if (headers.length > 5) {
+                    $('#productsContainer').addClass('expandProductsContainer');
                 }
             });
             }
 
         $('#tblProducts tbody').empty();
-        top.Ts.Services.Customers.LoadProducts(organizationID, function (product) {
+        top.Ts.Services.Customers.LoadProducts(organizationID, _productsSortColumn, _productsSortDirection, function (product) {
             for (var i = 0; i < product.length; i++) {
                 var customfields = "";
                 for (var p = 0; p < product[i].CustomFields.length; p++)
@@ -1890,11 +1929,11 @@ $(document).ready(function () {
 
                 if(top.Ts.System.User.CanEditCompany || _isAdmin)
                 {
-                    html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields;
+                    html = '<td><i class="fa fa-edit productEdit"></i></td><td><i class="fa fa-trash-o productDelete"></i></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields;
                 }
                 else
                 {
-                    html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td>' + customfields
+                    html = '<td></td><td></td><td><a href="#" class="productView">' + product[i].ProductName + '</a></td><td><a href="#" class="productVersionView">' + product[i].VersionNumber + '</a></td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td>' + product[i].DateCreated + '</td>' + customfields
                 }
                 var tr = $('<tr>')
                 .attr('id', product[i].OrganizationProductID)
@@ -1903,6 +1942,12 @@ $(document).ready(function () {
 
 
                 //$('#tblProducts > tbody:last').append('<tr><td><a href="#" id='+ product.ProductID +'><i class="glyphicon glyphicon-edit productEdit"></i></td><td><i class="glyphicon glyphicon-trash productDelete"></i></td><td><i class="fa fa-folder-open productView"></i></td><td>' + product[i].ProductName + '</td><td>' + product[i].VersionNumber + '</td><td>' + product[i].SupportExpiration + '</td><td>' + product[i].VersionStatus + '</td><td>' + product[i].IsReleased + '</td><td>' + product[i].ReleaseDate + '</td><td></td></tr>');
+            }
+
+            $('.customers-loading').hide();
+            $('.customers-empty').hide();
+            if (product.length > 0) {
+                $('.customers-empty').show();
             }
         });
 
@@ -2222,6 +2267,9 @@ $(document).ready(function () {
             LoadNotes();
         else if (e.target.innerHTML == "Files")
             LoadFiles();
+        else if (e.target.innerHTML == "Products") {
+            LoadProducts();
+        }
         else if (e.target.innerHTML == "Inventory")
             LoadInventory();
         else if (e.target.innerHTML == "Ratings")

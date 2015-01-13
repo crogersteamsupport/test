@@ -130,3 +130,7 @@
 .red{
     color: red;
 }
+
+.expandProductsContainer {
+    width: auto;
+}
