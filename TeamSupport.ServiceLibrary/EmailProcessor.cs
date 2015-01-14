@@ -869,7 +869,6 @@ namespace TeamSupport.ServiceLibrary
                 catch (Exception ex)
                 {
                     Logs.WriteException(ex);
-                    ExceptionLogs.LogException(LoginUser, ex, "AddMessagePortalTicketModified", ticket.Row);
                 }
             }
 
@@ -1263,24 +1262,28 @@ namespace TeamSupport.ServiceLibrary
       Logs.WriteEvent("Adding Ticket Owners");
       if (ticket.UserID != null)
       {
-        User user =  Users.GetUser(LoginUser, (int)ticket.UserID);
-        if (user != null) 
-        {
-          if (receiveTicketNotifications != null)
+          User user = Users.GetUser(LoginUser, (int)ticket.UserID);
+          if (user != null)
           {
-            if (user.ReceiveTicketNotifications == (bool) receiveTicketNotifications)
-            {
-              AddUser(userList, user, true);
-              Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
-            }
-            Logs.WriteEventFormat("Owner Skipped due to receiveTicketNotifications: {0} ({1})", user.DisplayName, user.UserID.ToString());
+              if (receiveTicketNotifications != null)
+              {
+                  if (user.ReceiveTicketNotifications == (bool)receiveTicketNotifications)
+                  {
+                      AddUser(userList, user, true);
+                      Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
+                  }
+                  Logs.WriteEventFormat("Owner Skipped due to receiveTicketNotifications: {0} ({1})", user.DisplayName, user.UserID.ToString());
+              }
+              else
+              {
+                  AddUser(userList, user, true);
+                  Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
+              }
           }
-          else
-          {
-            AddUser(userList, user, true);
-            Logs.WriteEventFormat("Adding Assigned User: {0} ({1})", user.DisplayName, user.UserID.ToString());
-          }
-        }
+      }
+      else
+      {
+
       }
       
       if (ticket.GroupID != null)
@@ -1290,7 +1293,7 @@ namespace TeamSupport.ServiceLibrary
         Users users = new Users(LoginUser);
         users.LoadByGroupID((int)ticket.GroupID);
         foreach (User user in users) {
-            if ((ticket.UserHasRights(user) && (user.ReceiveAllGroupNotifications)))
+           if ((ticket.UserHasRights(user) && (user.ReceiveAllGroupNotifications)))
           {
             AddUser(userList, user, true);
             Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list", user.DisplayName, user.UserID.ToString(), user.Email);
@@ -1305,10 +1308,7 @@ namespace TeamSupport.ServiceLibrary
         {
             RemoveBusinessHoursUsers(userList, ticket);
         }
-        else
-        {
-           
-        }
+        
 
       }
       else
@@ -1343,10 +1343,12 @@ namespace TeamSupport.ServiceLibrary
         if (ticket.UserHasRights(user)) AddUser(userList, user); 
       }
 
+      
      
 
     }
 
+    
     private void AddBasicPortalUsers(List<UserEmail> userList, Ticket ticket)
     {
       Users users;
