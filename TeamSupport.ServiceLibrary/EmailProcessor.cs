@@ -1281,16 +1281,7 @@ namespace TeamSupport.ServiceLibrary
               }
           }
       }
-      else
-      {
-          Users users = new Users(LoginUser);
-          users.LoadByReceiveUnassignedGroupEmails(ticket.OrganizationID);
-          foreach (User user in users)
-          {
-              AddUser(userList, user);
-              Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list (LoadByReceiveUnassignedGroupEmails)", user.DisplayName, user.UserID.ToString(), user.Email);
-          }
-      }
+     
       
       if (ticket.GroupID != null)
       {
@@ -1307,28 +1298,27 @@ namespace TeamSupport.ServiceLibrary
           else
           {
             Logs.WriteEventFormat("{0} ({1}) <{2}> was DENIED to the list. || Ticket.UserHasRights = {3} AND (ReceiveAllGroupNotifications = {4} OR ticket.UserID is NULL)", user.DisplayName, user.UserID.ToString(), user.Email, ticket.UserHasRights(user).ToString(), user.ReceiveAllGroupNotifications.ToString() ,(ticket.UserID==null).ToString());
-          }
+          }          
         }
-
+        
         if (ticket.UserID != null)
         {
             RemoveBusinessHoursUsers(userList, ticket);
         }
-        
 
-      }
-      else
-      {
-          Users users = new Users(LoginUser);
-          users.LoadByReceiveUnassignedGroupEmails(ticket.OrganizationID);
-          foreach (User user in users)
-          {
-              AddUser(userList, user);
-              Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list (LoadByReceiveUnassignedGroupEmails)", user.DisplayName, user.UserID.ToString(), user.Email);
-          }
-      }
+         foreach (User user in users)
+         {
+             if (ticket.UserID == null)
+             {
+                 if (user.ReceiveUnassignedGroupEmails == false)                 
+                 {
+                     RemoveUser(userList, user.UserID);
+                     Logs.WriteEventFormat("{0} ({1}) <{2}> was removed from the list (ReceiveUnassignedGroupEmails = false", user.DisplayName, user.UserID.ToString(), user.Email);
+                 }
+             }
+         }
 
-        
+      } 
     }
 
     private void AddTicketSubscribers(List<UserEmail> userList, Ticket ticket)
