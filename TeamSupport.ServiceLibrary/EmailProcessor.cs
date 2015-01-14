@@ -1283,7 +1283,13 @@ namespace TeamSupport.ServiceLibrary
       }
       else
       {
-
+          Users users = new Users(LoginUser);
+          users.LoadByReceiveUnassignedGroupEmails(ticket.OrganizationID);
+          foreach (User user in users)
+          {
+              AddUser(userList, user);
+              Logs.WriteEventFormat("{0} ({1}) <{2}> was added to the list (LoadByReceiveUnassignedGroupEmails)", user.DisplayName, user.UserID.ToString(), user.Email);
+          }
       }
       
       if (ticket.GroupID != null)
