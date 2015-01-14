@@ -56,7 +56,7 @@
 
       assetInfo.Name = $("#inputName").val();
       assetInfo.ProductID = $("#ddlProduct").val();
-      if ($('#ddlProductVersion').val().isNumeric) {
+      if ($.isNumeric($('#ddlProductVersion').val())) {
         assetInfo.ProductVersionID = $('#ddlProductVersion').val();
       }
       assetInfo.SerialNumber = $("#inputSerialNumber").val();
