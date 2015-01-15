@@ -197,6 +197,11 @@ namespace TSWebServices
           items.Add(new TsMenuItem("wc2", "mniWC2", "Water Cooler", "vcr/1_9_0/images/nav/20/watercooler.png", string.Format(data, "vcr/1_9_0/Pages/WaterCooler.html", "vcr/1_9_0/PaneInfo/WaterCooler.html")));
         }
 
+        if (IsMenuItemActive(user, "mniCalendar"))
+        {
+            items.Add(new TsMenuItem("calender", "mniCalender", "Calendar", "vcr/1_9_0/images/nav/20/watercooler.png", string.Format(data, "vcr/1_9_0/Pages/Calendar.html", "vcr/1_9_0/PaneInfo/Calendar.html")));
+        }
+
         if (IsMenuItemActive(user, "mniUsers"))
         {
             items.Add(new TsMenuItem("users", "mniUsers", "Users", "vcr/1_9_0/images/nav/20/users.png", string.Format(data, "vcr/1_9_0/Pages/Users.html", "vcr/1_9_0/PaneInfo/Users.html")));

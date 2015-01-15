@@ -1216,6 +1216,7 @@ $(document).ready(function () {
                 if (window.parent.document.getElementById('iframe-mniCustomers'))
                     window.parent.document.getElementById('iframe-mniCustomers').contentWindow.refreshPage();
                 top.Ts.MainPage.closeNewCustomerTab(organizationID);
+                alert(e);
             });
         }
     });
